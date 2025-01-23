@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Card, CardHeader, CardTitle, CardContent } from "@/Components/ui/card";
-import { Head } from '@inertiajs/react';
+import {Head, Link} from '@inertiajs/react';
 import { Button } from "@/Components/ui/button";
-import { Download, Eye, Printer } from 'lucide-react';
+import {ArrowLeft, Download, Eye, FileText, Printer} from 'lucide-react';
 import { useToast } from "@/Components/ui/use-toast";
 
 interface CvModelProps {
@@ -85,14 +85,22 @@ export default function Show({ auth, cvInformation, selectedCvModel }: Props) {
                     <CardContent>
                         <div className="space-y-6">
                             <div className="flex flex-col md:flex-row gap-4">
-                                <Button
-                                    onClick={handleDownload}
-                                    className="bg-primary w-full md:w-auto"
-                                    disabled={isLoading}
-                                >
-                                    <Download className="mr-2 h-4 w-4" />
-                                    {isLoading ? 'Téléchargement...' : 'Télécharger PDF'}
-                                </Button>
+                                <div className="flex items-center gap-4">
+                                    <Link href={route('cv-infos.index')}>
+                                        <Button variant="outline" className="flex items-center gap-2">
+                                            <ArrowLeft className="w-4 h-4" />
+                                            Retour aux CVs
+                                        </Button>
+                                    </Link>
+                                </div>
+                                {/*<Button*/}
+                                {/*    onClick={handleDownload}*/}
+                                {/*    className="bg-primary w-full md:w-auto"*/}
+                                {/*    disabled={isLoading}*/}
+                                {/*>*/}
+                                {/*    <Download className="mr-2 h-4 w-4" />*/}
+                                {/*    {isLoading ? 'Téléchargement...' : 'Télécharger PDF'}*/}
+                                {/*</Button>*/}
                                 <Button onClick={handlePreview} variant="outline" className="w-full md:w-auto">
                                     <Eye className="mr-2 h-4 w-4" />
                                     Prévisualiser

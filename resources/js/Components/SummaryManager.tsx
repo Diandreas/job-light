@@ -11,7 +11,6 @@ import { Input } from "@/Components/ui/input";
 import { motion, AnimatePresence } from 'framer-motion';
 import Swal from 'sweetalert2';
 
-// Base de données simplifiée pour génération de résumés
 const generalProfiles = {
     skills: [
         "travail en équipe",
@@ -131,11 +130,18 @@ const generateSimpleResume = (userTitle = '') => {
     };
 };
 
-const SummaryManager = ({ auth, summaries: initialSummaries, selectedSummary: initialSelectedSummary }) => {
+interface Props {
+    auth: any;
+    summaries: Summary[];
+    selectedSummary: Summary[];
+    onUpdate: (summaries: Summary[]) => void;
+}
+
+const SummaryManager: React.FC<Props> = ({ auth, summaries: initialSummaries, selectedSummary: initialSelectedSummary, onUpdate }) => {
     const [summaries, setSummaries] = useState(initialSummaries);
     const [selectedSummary, setSelectedSummary] = useState(initialSelectedSummary);
     const [isFormVisible, setIsFormVisible] = useState(false);
-    const [filteredSummaries, setFilteredSummaries] = useState([]);
+    const [filteredSummaries, setFilteredSummaries] = useState(initialSummaries);
     const [searchQuery, setSearchQuery] = useState('');
 
     const { data, setData, processing, errors, reset } = useForm({
@@ -143,6 +149,19 @@ const SummaryManager = ({ auth, summaries: initialSummaries, selectedSummary: in
         name: '',
         description: '',
     });
+
+    useEffect(() => {
+        setFilteredSummaries(
+            summaries.filter((summary) =>
+                summary.name.toLowerCase().includes(searchQuery.toLowerCase())
+            )
+        );
+    }, [summaries, searchQuery]);
+
+    useEffect(() => {
+        setSummaries(initialSummaries);
+        setSelectedSummary(initialSelectedSummary);
+    }, [initialSummaries, initialSelectedSummary]);
 
     const showAlert = (title, icon = 'success') => {
         const Toast = Swal.mixin({
@@ -156,18 +175,8 @@ const SummaryManager = ({ auth, summaries: initialSummaries, selectedSummary: in
                 toast.addEventListener('mouseleave', Swal.resumeTimer)
             }
         });
-
-        // @ts-ignore
         Toast.fire({ icon, title });
     };
-
-    useEffect(() => {
-        setFilteredSummaries(
-            summaries.filter((summary) =>
-                summary.name.toLowerCase().includes(searchQuery.toLowerCase())
-            )
-        );
-    }, [summaries, searchQuery]);
 
     const handleAutoFill = () => {
         const newSummary = generateSimpleResume(data.name);
@@ -178,56 +187,66 @@ const SummaryManager = ({ auth, summaries: initialSummaries, selectedSummary: in
         });
     };
 
-    const handleSelectSummary = (summaryId) => {
-        axios.post(route('summaries.select', summaryId))
-            .then(response => {
-                const updatedSummary = response.data.summary;
-                setSelectedSummary([updatedSummary]);
-                setSummaries(prevSummaries =>
-                    prevSummaries.map(summary =>
-                        summary.id === updatedSummary.id ? updatedSummary : summary
-                    )
-                );
-                showAlert('Résumé sélectionné avec succès');
-            })
-            .catch(error => {
-                console.error(error);
-                showAlert('Erreur lors de la sélection du résumé', 'error');
-            });
+    const handleSelectSummary = async (summaryId) => {
+        try {
+            const response = await axios.post(route('summaries.select', summaryId));
+            const updatedSummary = response.data.summary;
+            const newSelectedSummary = [updatedSummary];
+
+            setSelectedSummary(newSelectedSummary);
+            setSummaries(prev => prev.map(summary =>
+                summary.id === updatedSummary.id ? updatedSummary : summary
+            ));
+
+            onUpdate(newSelectedSummary);
+            showAlert('Résumé sélectionné avec succès');
+        } catch (error) {
+            console.error(error);
+            showAlert('Erreur lors de la sélection du résumé', 'error');
+        }
     };
 
-    const handleCreate = (e) => {
+    const handleCreate = async (e) => {
         e.preventDefault();
-        axios.post(route('summaries.store'), data)
-            .then(response => {
-                setSummaries([...summaries, response.data.summary]);
-                showAlert('Résumé créé avec succès');
-                resetForm();
-            })
-            .catch(error => {
-                handleValidationErrors(error.response.data.errors);
-            });
+        try {
+            const response = await axios.post(route('summaries.store'), data);
+            const updatedSummaries = [...summaries, response.data.summary];
+            setSummaries(updatedSummaries);
+            onUpdate(selectedSummary);
+            showAlert('Résumé créé avec succès');
+            resetForm();
+        } catch (error) {
+            handleValidationErrors(error.response.data.errors);
+        }
     };
 
-    const handleUpdate = (e) => {
+    const handleUpdate = async (e) => {
         e.preventDefault();
-        axios.put(route('summaries.update', data.id), data)
-            .then(response => {
-                setSummaries(prevSummaries =>
-                    prevSummaries.map(summary =>
-                        summary.id === response.data.summary.id ? response.data.summary : summary
-                    )
-                );
-                showAlert('Résumé mis à jour avec succès');
-                resetForm();
-            })
-            .catch(error => {
-                handleValidationErrors(error.response.data.errors);
-            });
+        try {
+            const response = await axios.put(route('summaries.update', data.id), data);
+            const updatedSummary = response.data.summary;
+            const updatedSummaries = summaries.map(summary =>
+                summary.id === updatedSummary.id ? updatedSummary : summary
+            );
+            setSummaries(updatedSummaries);
+
+            if (selectedSummary.some(s => s.id === updatedSummary.id)) {
+                const newSelectedSummary = [updatedSummary];
+                setSelectedSummary(newSelectedSummary);
+                onUpdate(newSelectedSummary);
+            } else {
+                onUpdate(selectedSummary);
+            }
+
+            showAlert('Résumé mis à jour avec succès');
+            resetForm();
+        } catch (error) {
+            handleValidationErrors(error.response.data.errors);
+        }
     };
 
-    const handleDelete = (summaryId) => {
-        Swal.fire({
+    const handleDelete = async (summaryId) => {
+        const result = await Swal.fire({
             title: 'Supprimer ce résumé ?',
             text: "Cette action est irréversible",
             icon: 'warning',
@@ -236,24 +255,26 @@ const SummaryManager = ({ auth, summaries: initialSummaries, selectedSummary: in
             cancelButtonColor: '#d33',
             confirmButtonText: 'Oui, supprimer',
             cancelButtonText: 'Annuler'
-        }).then((result) => {
-            if (result.isConfirmed) {
-                axios.delete(route('summaries.destroy', summaryId))
-                    .then(() => {
-                        setSummaries(prevSummaries =>
-                            prevSummaries.filter(summary => summary.id !== summaryId)
-                        );
-                        if (selectedSummary.some(s => s.id === summaryId)) {
-                            setSelectedSummary([]);
-                        }
-                        showAlert('Résumé supprimé avec succès');
-                    })
-                    .catch(error => {
-                        console.error(error);
-                        showAlert('Erreur lors de la suppression', 'error');
-                    });
-            }
         });
+
+        if (result.isConfirmed) {
+            try {
+                await axios.delete(route('summaries.destroy', summaryId));
+                const updatedSummaries = summaries.filter(summary => summary.id !== summaryId);
+                setSummaries(updatedSummaries);
+
+                if (selectedSummary.some(s => s.id === summaryId)) {
+                    const newSelectedSummary = [];
+                    setSelectedSummary(newSelectedSummary);
+                    onUpdate(newSelectedSummary);
+                }
+
+                showAlert('Résumé supprimé avec succès');
+            } catch (error) {
+                console.error(error);
+                showAlert('Erreur lors de la suppression', 'error');
+            }
+        }
     };
 
     const handleSelect = (summary) => {
@@ -350,46 +371,55 @@ const SummaryManager = ({ auth, summaries: initialSummaries, selectedSummary: in
                     className="max-w-md"
                 />
 
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                    {filteredSummaries.map((summary) => (
-                        <Card key={summary.id} className={
-                            selectedSummary.some(s => s.id === summary.id)
-                                ? 'border-primary'
-                                : ''
-                        }>
-                            <CardHeader className="flex flex-row justify-between items-start space-y-0">
-                                <CardTitle className="text-lg">{summary.name}</CardTitle>
-                                <div className="flex gap-2">
-                                    <Button
-                                        variant="ghost"
-                                        size="icon"
-                                        onClick={() => handleSelect(summary)}
-                                    >
-                                        <PencilIcon className="h-4 w-4" />
-                                    </Button>
-                                    <Button
-                                        variant="ghost"
-                                        size="icon"
-                                        onClick={() => handleDelete(summary.id)}
-                                    >
-                                        <TrashIcon className="h-4 w-4" />
-                                    </Button>
-                                </div>
-                            </CardHeader>
-                            <CardContent>
-                                <p className="text-sm text-gray-600 mb-4">{summary.description}</p>
-                                <Button
-                                    variant={selectedSummary.some(s => s.id === summary.id) ? "default" : "outline"}
-                                    onClick={() => handleSelectSummary(summary.id)}
-                                    className="w-full"
-                                >
-                                    {selectedSummary.some(s => s.id === summary.id)
-                                        ? 'Sélectionné'
-                                        : 'Sélectionner'}
-                                </Button>
-                            </CardContent>
-                        </Card>
-                    ))}
+                <div className="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-1 gap-4">
+                    <AnimatePresence>
+                        {filteredSummaries.map((summary) => (
+                            <motion.div
+                                key={summary.id}
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: 1 }}
+                                exit={{ opacity: 0 }}
+                            >
+                                <Card className={
+                                    selectedSummary.some(s => s.id === summary.id)
+                                        ? 'border-primary'
+                                        : ''
+                                }>
+                                    <CardHeader className="flex flex-row justify-between items-start space-y-0">
+                                        <CardTitle className="text-lg">{summary.name}</CardTitle>
+                                        <div className="flex gap-2">
+                                            <Button
+                                                variant="ghost"
+                                                size="icon"
+                                                onClick={() => handleSelect(summary)}
+                                            >
+                                                <PencilIcon className="h-4 w-4" />
+                                            </Button>
+                                            <Button
+                                                variant="ghost"
+                                                size="icon"
+                                                onClick={() => handleDelete(summary.id)}
+                                            >
+                                                <TrashIcon className="h-4 w-4" />
+                                            </Button>
+                                        </div>
+                                    </CardHeader>
+                                    <CardContent>
+                                        <p className="text-sm text-gray-600 mb-4">{summary.description}</p>
+                                        <Button
+                                            variant={selectedSummary.some(s => s.id === summary.id) ? "default" : "outline"}
+                                            onClick={() => handleSelectSummary(summary.id)}
+                                            className="w-full"
+                                        >
+                                            {selectedSummary.some(s => s.id === summary.id)
+                                                ? 'Sélectionné'
+                                                : 'Sélectionner'}
+                                        </Button>
+                                    </CardContent>
+                                </Card>
+                            </motion.div>
+                        ))}
+                    </AnimatePresence>
                 </div>
 
                 {filteredSummaries.length === 0 && (

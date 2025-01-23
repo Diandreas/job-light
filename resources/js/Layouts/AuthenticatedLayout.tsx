@@ -41,29 +41,11 @@ export default function Authenticated({ user, header, children }: PropsWithChild
             active: route().current('cv-infos.index')
         },
         {
-            name: "Mon Portfolio",
-            href: route('portfolio.index'),
-            icon: Folder,
-            active: route().current('portfolio.index')
-        },
-        {
-            name: "Job Announce(Comming Soon)",
-            href: '#',
-            icon: Briefcase,
-            active: route().current('index')
-        },
-        {
             name: "Career Advisor(IA)",
             href: route('career-advisor.index'),
             icon: GraduationCap,
             active: route().current('career-advisor.index')
         },
-        {
-            name: "Sponsorship",
-            href: route('sponsorship.index'),
-            icon: Users,
-            active: route().current('sponsorship.index')
-        }
     ];
 
     const cvSideMenuItems = [

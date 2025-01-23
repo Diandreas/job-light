@@ -20,9 +20,10 @@ interface Props {
     auth: { user: { id: number } };
     availableCompetences: Competence[];
     initialUserCompetences: Competence[];
+    onUpdate: (competences: Competence[]) => void;
 }
 
-const CompetenceManager: React.FC<Props> = ({ auth, availableCompetences, initialUserCompetences }) => {
+const CompetenceManager: React.FC<Props> = ({ auth, availableCompetences, initialUserCompetences, onUpdate }) => {
     const [selectedCompetenceId, setSelectedCompetenceId] = useState<number | null>(null);
     const [userCompetences, setUserCompetences] = useState<Competence[]>(initialUserCompetences);
     const [searchTerm, setSearchTerm] = useState('');
@@ -58,7 +59,9 @@ const CompetenceManager: React.FC<Props> = ({ auth, availableCompetences, initia
 
             const newCompetence = availableCompetences.find(c => c.id === selectedCompetenceId);
             if (newCompetence) {
-                setUserCompetences(prev => [...prev, newCompetence]);
+                const updatedCompetences = [...userCompetences, newCompetence];
+                setUserCompetences(updatedCompetences);
+                onUpdate(updatedCompetences);
                 setSelectedCompetenceId(null);
                 toast({
                     title: "Competence assigned successfully",
@@ -72,10 +75,10 @@ const CompetenceManager: React.FC<Props> = ({ auth, availableCompetences, initia
                 variant: "destructive",
             });
         }
-    }, [selectedCompetenceId, auth.user.id, availableCompetences, toast]);
+    }, [selectedCompetenceId, auth.user.id, availableCompetences, userCompetences, onUpdate, toast]);
 
     const handleRemoveCompetence = useCallback(async (competenceId: number) => {
-        Swal.fire({
+        const result = await Swal.fire({
             title: 'Remove Competence?',
             text: "Are you sure you want to remove this competence?",
             icon: 'warning',
@@ -88,36 +91,28 @@ const CompetenceManager: React.FC<Props> = ({ auth, availableCompetences, initia
             position: 'top-end',
             timer: 5000,
             timerProgressBar: true,
-        }).then((result) => {
-            if (result.isConfirmed) {
-                axios.delete(`/user-competences/${auth.user.id}/${competenceId}`)
-                    .then(() => {
-                        setUserCompetences(prev => prev.filter(c => c.id !== competenceId));
-                        Swal.fire({
-                            title: 'Competence removed',
-                            text: 'The competence has been removed from your profile.',
-                            icon: 'success',
-                            toast: true,
-                            position: 'top-end',
-                            timer: 3000,
-                            timerProgressBar: true,
-                        });
-                    })
-                    .catch(error => {
-                        console.error(error);
-                        Swal.fire({
-                            title: 'Error removing competence',
-                            text: error.response?.data?.message || 'An error occurred.',
-                            icon: 'error',
-                            toast: true,
-                            position: 'top-end',
-                            timer: 3000,
-                            timerProgressBar: true,
-                        });
-                    });
-            }
         });
-    }, [auth.user.id]);
+
+        if (result.isConfirmed) {
+            try {
+                await axios.delete(`/user-competences/${auth.user.id}/${competenceId}`);
+                const updatedCompetences = userCompetences.filter(c => c.id !== competenceId);
+                setUserCompetences(updatedCompetences);
+                onUpdate(updatedCompetences);
+                toast({
+                    title: "Competence removed successfully",
+                    description: "The competence has been removed from your profile.",
+                });
+            } catch (error) {
+                console.error(error);
+                toast({
+                    title: "Error removing competence",
+                    description: error.response?.data?.message || 'An error occurred.',
+                    variant: "destructive",
+                });
+            }
+        }
+    }, [auth.user.id, userCompetences, onUpdate, toast]);
 
     return (
         <motion.div

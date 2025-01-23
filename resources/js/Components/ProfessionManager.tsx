@@ -20,9 +20,10 @@ interface Props {
     auth: any;
     availableProfessions: Profession[];
     initialUserProfession: Profession | null;
+    onUpdate: (profession: Profession | null) => void;
 }
 
-const ProfessionManager: React.FC<Props> = ({ auth, availableProfessions, initialUserProfession }) => {
+const ProfessionManager: React.FC<Props> = ({ auth, availableProfessions, initialUserProfession, onUpdate }) => {
     const [selectedProfessionId, setSelectedProfessionId] = useState<number | null>(initialUserProfession?.id || null);
     const [userProfession, setUserProfession] = useState<Profession | null>(initialUserProfession);
     const [searchTerm, setSearchTerm] = useState('');
@@ -41,10 +42,7 @@ const ProfessionManager: React.FC<Props> = ({ auth, availableProfessions, initia
 
     const handleSelectProfession = async () => {
         if (!selectedProfessionId) {
-            toast({
-                title: 'Please select a profession',
-                variant: 'destructive'
-            });
+            toast({ title: 'Please select a profession', variant: 'destructive' });
             return;
         }
 
@@ -57,6 +55,7 @@ const ProfessionManager: React.FC<Props> = ({ auth, availableProfessions, initia
             const newProfession = availableProfessions.find(p => p.id === selectedProfessionId);
             if (newProfession) {
                 setUserProfession(newProfession);
+                onUpdate(newProfession);
                 toast({
                     title: 'Profession assigned successfully',
                     description: `You are now registered as a ${newProfession.name}.`
@@ -72,7 +71,7 @@ const ProfessionManager: React.FC<Props> = ({ auth, availableProfessions, initia
     };
 
     const handleRemoveProfession = async () => {
-        Swal.fire({
+        const result = await Swal.fire({
             title: 'Remove Profession?',
             text: "Are you sure you want to remove your profession?",
             icon: 'warning',
@@ -85,36 +84,23 @@ const ProfessionManager: React.FC<Props> = ({ auth, availableProfessions, initia
             position: 'top-end',
             timer: 5000,
             timerProgressBar: true,
-        }).then((result) => {
-            if (result.isConfirmed) {
-                axios.delete(`/user-professions/${auth.user.id}`)
-                    .then(() => {
-                        setUserProfession(null);
-                        setSelectedProfessionId(null);
-                        Swal.fire({
-                            title: 'Profession removed',
-                            text: 'Your profession has been removed from your profile.',
-                            icon: 'success',
-                            toast: true,
-                            position: 'top-end',
-                            timer: 3000,
-                            timerProgressBar: true,
-                        });
-                    })
-                    .catch(error => {
-                        console.error(error);
-                        Swal.fire({
-                            title: 'Error removing profession',
-                            text: error.response?.data?.message || 'An error occurred.',
-                            icon: 'error',
-                            toast: true,
-                            position: 'top-end',
-                            timer: 3000,
-                            timerProgressBar: true,
-                        });
-                    });
-            }
         });
+
+        if (result.isConfirmed) {
+            try {
+                await axios.delete(`/user-professions/${auth.user.id}`);
+                setUserProfession(null);
+                setSelectedProfessionId(null);
+                onUpdate(null);
+                toast({ title: 'Profession removed successfully' });
+            } catch (error) {
+                toast({
+                    title: 'Error removing profession',
+                    description: error.response?.data?.message || 'An error occurred.',
+                    variant: 'destructive'
+                });
+            }
+        }
     };
 
     return (
@@ -198,6 +184,7 @@ const ProfessionManager: React.FC<Props> = ({ auth, availableProfessions, initia
                                     <X className="h-5 w-5" />
                                 </Button>
                             </Badge>
+                            <p className="mt-2 text-sm text-gray-600">{userProfession.description}</p>
                         </motion.div>
                     )}
                 </CardContent>

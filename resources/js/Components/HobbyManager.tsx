@@ -19,9 +19,10 @@ interface Props {
     auth: any;
     availableHobbies: Hobby[];
     initialUserHobbies: Hobby[];
+    onUpdate: (hobbies: Hobby[]) => void;
 }
 
-const HobbyManager: React.FC<Props> = ({ auth, availableHobbies, initialUserHobbies }) => {
+const HobbyManager: React.FC<Props> = ({ auth, availableHobbies, initialUserHobbies, onUpdate }) => {
     const [selectedHobbyId, setSelectedHobbyId] = useState<number | null>(null);
     const [userHobbies, setUserHobbies] = useState<Hobby[]>(initialUserHobbies);
     const [searchTerm, setSearchTerm] = useState('');
@@ -55,7 +56,9 @@ const HobbyManager: React.FC<Props> = ({ auth, availableHobbies, initialUserHobb
 
             const newHobby = availableHobbies.find(h => h.id === selectedHobbyId);
             if (newHobby) {
-                setUserHobbies(prev => [...prev, newHobby]);
+                const updatedHobbies = [...userHobbies, newHobby];
+                setUserHobbies(updatedHobbies);
+                onUpdate(updatedHobbies);
                 setSelectedHobbyId(null);
                 toast({
                     title: 'Hobby added successfully',
@@ -72,7 +75,7 @@ const HobbyManager: React.FC<Props> = ({ auth, availableHobbies, initialUserHobb
     };
 
     const handleRemoveHobby = async (hobbyId: number) => {
-        Swal.fire({
+        const result = await Swal.fire({
             title: 'Remove Hobby?',
             text: "Are you sure you want to remove this hobby?",
             icon: 'warning',
@@ -85,35 +88,26 @@ const HobbyManager: React.FC<Props> = ({ auth, availableHobbies, initialUserHobb
             position: 'top-end',
             timer: 5000,
             timerProgressBar: true,
-        }).then((result) => {
-            if (result.isConfirmed) {
-                axios.delete(`/user-hobbies/${auth.user.id}/${hobbyId}`)
-                    .then(() => {
-                        setUserHobbies(prev => prev.filter(h => h.id !== hobbyId));
-                        Swal.fire({
-                            title: 'Hobby removed',
-                            text: 'The hobby has been removed from your profile.',
-                            icon: 'success',
-                            toast: true,
-                            position: 'top-end',
-                            timer: 3000,
-                            timerProgressBar: true,
-                        });
-                    })
-                    .catch(error => {
-                        console.error(error);
-                        Swal.fire({
-                            title: 'Error removing hobby',
-                            text: error.response?.data?.message || 'An error occurred.',
-                            icon: 'error',
-                            toast: true,
-                            position: 'top-end',
-                            timer: 3000,
-                            timerProgressBar: true,
-                        });
-                    });
-            }
         });
+
+        if (result.isConfirmed) {
+            try {
+                await axios.delete(`/user-hobbies/${auth.user.id}/${hobbyId}`);
+                const updatedHobbies = userHobbies.filter(h => h.id !== hobbyId);
+                setUserHobbies(updatedHobbies);
+                onUpdate(updatedHobbies);
+                toast({
+                    title: 'Hobby removed successfully',
+                    description: 'The hobby has been removed from your profile.'
+                });
+            } catch (error) {
+                toast({
+                    title: 'Error removing hobby',
+                    description: error.response?.data?.message || 'An error occurred.',
+                    variant: 'destructive'
+                });
+            }
+        }
     };
 
     return (

@@ -17,7 +17,11 @@ return [
     'postmark' => [
         'token' => env('POSTMARK_TOKEN'),
     ],
-
+    'notchpay' => [
+        'public_key' => env('VITE_NOTCHPAY_PUBLIC_KEY'),
+        'secret_key' => env('NOTCHPAY_SECRET_KEY'),
+        'sandbox' => env('NOTCHPAY_SANDBOX', true)
+    ],
     'ses' => [
         'key' => env('AWS_ACCESS_KEY_ID'),
         'secret' => env('AWS_SECRET_ACCESS_KEY'),

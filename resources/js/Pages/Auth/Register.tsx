@@ -15,12 +15,6 @@ export default function Register({ professions }) {
         email: '',
         password: '',
         password_confirmation: '',
-        profession_id: '',
-        surname: '',
-        github: '',
-        linkedin: '',
-        address: '',
-        phone_number: '',
     });
 
     const [passwordStrength, setPasswordStrength] = useState(0);
@@ -60,16 +54,7 @@ export default function Register({ professions }) {
                                 />
                                 {errors.name && <p className="text-sm text-red-500">{errors.name}</p>}
                             </div>
-                            <div className="space-y-2">
-                                <Label htmlFor="surname">Surname</Label>
-                                <Input
-                                    id="surname"
-                                    value={data.surname}
-                                    onChange={(e) => setData('surname', e.target.value)}
-                                    required
-                                />
-                                {errors.surname && <p className="text-sm text-red-500">{errors.surname}</p>}
-                            </div>
+
                         </div>
 
                         <div className="space-y-2">
@@ -125,66 +110,6 @@ export default function Register({ professions }) {
                             </div>
                         </div>
 
-                        <div className="space-y-2">
-                            <Label htmlFor="profession">Profession</Label>
-                            <Select
-                                value={data.profession_id}
-                                onValueChange={(value) => setData('profession_id', value)}
-                            >
-                                <SelectTrigger>
-                                    <SelectValue placeholder="Select a profession" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    {professions.map((profession) => (
-                                        <SelectItem key={profession.id} value={profession.id}>
-                                            {profession.name}
-                                        </SelectItem>
-                                    ))}
-                                </SelectContent>
-                            </Select>
-                            {errors.profession_id && <p className="text-sm text-red-500">{errors.profession_id}</p>}
-                        </div>
-
-                        <div className="grid grid-cols-2 gap-4">
-                            <div className="space-y-2">
-                                <Label htmlFor="github">GitHub</Label>
-                                <Input
-                                    id="github"
-                                    value={data.github}
-                                    onChange={(e) => setData('github', e.target.value)}
-                                />
-                                {errors.github && <p className="text-sm text-red-500">{errors.github}</p>}
-                            </div>
-                            <div className="space-y-2">
-                                <Label htmlFor="linkedin">LinkedIn</Label>
-                                <Input
-                                    id="linkedin"
-                                    value={data.linkedin}
-                                    onChange={(e) => setData('linkedin', e.target.value)}
-                                />
-                                {errors.linkedin && <p className="text-sm text-red-500">{errors.linkedin}</p>}
-                            </div>
-                        </div>
-
-                        <div className="space-y-2">
-                            <Label htmlFor="address">Address</Label>
-                            <Input
-                                id="address"
-                                value={data.address}
-                                onChange={(e) => setData('address', e.target.value)}
-                            />
-                            {errors.address && <p className="text-sm text-red-500">{errors.address}</p>}
-                        </div>
-
-                        <div className="space-y-2">
-                            <Label htmlFor="phone_number">Phone Number</Label>
-                            <Input
-                                id="phone_number"
-                                value={data.phone_number}
-                                onChange={(e) => setData('phone_number', e.target.value)}
-                            />
-                            {errors.phone_number && <p className="text-sm text-red-500">{errors.phone_number}</p>}
-                        </div>
                     </form>
                 </CardContent>
                 <CardFooter className="flex justify-between">

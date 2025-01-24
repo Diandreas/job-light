@@ -50,6 +50,7 @@
         "html2pdf.js": "^0.10.2",
         "lucide-react": "^0.376.0",
         "next-themes": "^0.3.0",
+        "notchpay.js": "^1.0.1",
         "print-js": "^1.6.0",
         "react-day-picker": "^8.10.1",
         "react-hook-form": "^7.51.4",

@@ -40,24 +40,24 @@ class RegisteredUserController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|string|lowercase|email|max:255|unique:'.User::class,
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
-            'profession_id' => 'required|exists:professions,id', // Assurez-vous que l'ID de la profession existe dans la table des professions
-            'surname' => 'nullable|string|max:45',
-            'github' => 'nullable|string|max:255',
-            'linkedin' => 'nullable|string|max:255',
-            'address' => 'nullable|string|max:255',
-            'phone_number' => 'nullable|string|max:255',
+//            'profession_id' => 'required|exists:professions,id', // Assurez-vous que l'ID de la profession existe dans la table des professions
+//            'surname' => 'nullable|string|max:45',
+//            'github' => 'nullable|string|max:255',
+//            'linkedin' => 'nullable|string|max:255',
+//            'address' => 'nullable|string|max:255',
+//            'phone_number' => 'nullable|string|max:255',
         ]);
 
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
-            'profession_id' => $request->profession_id,
-            'surname' => $request->surname,
-            'github' => $request->github,
-            'linkedin' => $request->linkedin,
-            'address' => $request->address,
-            'phone_number' => $request->phone_number,
+//            'profession_id' => $request->profession_id,
+//            'surname' => $request->surname,
+//            'github' => $request->github,
+//            'linkedin' => $request->linkedin,
+//            'address' => $request->address,
+//            'phone_number' => $request->phone_number,
         ]);
 
         event(new Registered($user));

@@ -342,6 +342,15 @@ export default function CvInterface({ auth, cvInformation: initialCvInformation 
                         </div>
                     </Card>
                 </div>
+                <div className="mb-6 flex justify-start">
+                    <Link href={route('userCvModels.index')}>
+                        <Button className="bg-primary hover:bg-primary/90">
+                            <Paintbrush className="mr-2 h-4 w-4"/>
+                            Choisissez le design de CV
+                            <CircleChevronRight/>
+                        </Button>
+                    </Link>
+                </div>
             </div>
         </AuthenticatedLayout>
     );

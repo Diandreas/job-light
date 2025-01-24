@@ -1,7 +1,6 @@
 <?php
 
-use App\Http\Controllers\{
-    AddressController,
+use App\Http\Controllers\{AddressController,
     CareerAdvisorController,
     CompetenceController,
     CvGalleryController,
@@ -11,6 +10,7 @@ use App\Http\Controllers\{
     ExperienceController,
     HobbyController,
     LanguageController,
+    PaymentController,
     PersonalInformationController,
     PortfolioController,
     ProfessionCategoryController,
@@ -21,8 +21,7 @@ use App\Http\Controllers\{
     SummaryController,
     UserCompetenceController,
     UserHobbyController,
-    UserProfessionsController
-};
+    UserProfessionsController};
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -33,7 +32,13 @@ Route::get('/', function () {
 })->name('welcome');
 
 Route::middleware(['auth'])->group(function () {
-    Route::get('/portfolio', [PortfolioController::class, 'index'])->name('portfolio.index');
+    Route::get('/api/check-download-status/{modelId}', [PaymentController::class, 'checkDownloadStatus']);
+        Route::post('/api/update-wallet', [PaymentController::class, 'updateWallet']);
+        Route::post('/api/process-download', [PaymentController::class, 'processDownload']);
+        Route::post('/api/notchpay/callback', [PaymentController::class, 'handleCallback']);
+        Route::get('/api/wallet/balance', [PaymentController::class, 'getBalance']);
+        Route::post('/api/notchpay/webhook', [PaymentController::class, 'webhook'])->name('notchpay.webhook');
+        Route::get('/portfolio', [PortfolioController::class, 'index'])->name('portfolio.index');
     Route::get('/portfolio/edit', [PortfolioController::class, 'edit'])->name('portfolio.edit');
     Route::put('/portfolio', [PortfolioController::class, 'update'])->name('portfolio.update');
 });

@@ -19,6 +19,7 @@ import {
     SheetHeader,
     SheetTitle,
 } from "@/Components/ui/sheet";
+import axios from "axios";
 
 const ModelCard = ({ model, isActive, onSelect, onPreview, loading }) => (
     <motion.div

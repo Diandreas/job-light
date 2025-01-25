@@ -2,18 +2,13 @@ import React, { useState, useEffect } from 'react';
 import NotchPay from 'notchpay.js';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Card, CardHeader, CardTitle, CardContent } from "@/Components/ui/card";
-import { Head, Link, router } from '@inertiajs/react';
+import { Head, Link } from '@inertiajs/react';
 import { Button } from "@/Components/ui/button";
-import { ArrowLeft, Download, Eye, FileText, Printer, Wallet } from 'lucide-react';
+import { ArrowLeft, Printer, Wallet } from 'lucide-react';
 import { useToast } from "@/Components/ui/use-toast";
 import axios from 'axios';
 
-interface CvModelProps {
-    id: number;
-    viewPath: string;
-    price: number;
-    name: string;
-}
+const notchpay = NotchPay(import.meta.env.VITE_NOTCHPAY_PUBLIC_KEY);
 
 interface Props {
     auth: {
@@ -25,41 +20,109 @@ interface Props {
         };
     };
     cvInformation: any;
-    selectedCvModel: CvModelProps | null;
+    selectedCvModel: {
+        id: number;
+        viewPath: string;
+        price: number;
+        name: string;
+    } | null;
 }
-
-const notchpay = NotchPay('pk_test.27HM7WgXYb5PzM5eNTb7yXyi7QwXdqb2ZKEd28im86wM4YRIOyKQaBD3tKKsAD3jU8HKoFavsDFQ9l6wdLsNbRT33szW9NbkdFDLSdpbFyMuFv2TUZSdsgCcMrJJ5');
 
 export default function Show({ auth, cvInformation, selectedCvModel }: Props) {
     const { toast } = useToast();
     const [isLoading, setIsLoading] = useState(false);
     const [walletBalance, setWalletBalance] = useState(auth.user.wallet_balance);
     const [hasDownloaded, setHasDownloaded] = useState(false);
-    const [isPaymentProcessing, setIsPaymentProcessing] = useState(false);
+    const [isProcessing, setIsProcessing] = useState(false);
 
-    const canDownload = walletBalance >= (selectedCvModel?.price || 0) && !hasDownloaded;
+    const canAccessFeatures = walletBalance >= (selectedCvModel?.price || 0);
 
     useEffect(() => {
         const checkDownloadStatus = async () => {
+            if (!selectedCvModel?.id) return;
             try {
-                const response = await axios.get(`/api/check-download-status/${selectedCvModel?.id}`);
+                const response = await axios.get(`/api/check-download-status/${selectedCvModel.id}`);
                 setHasDownloaded(response.data.hasDownloaded);
             } catch (error) {
                 console.error('Error checking download status:', error);
             }
         };
 
-        if (selectedCvModel?.id) {
-            checkDownloadStatus();
-        }
+        checkDownloadStatus();
     }, [selectedCvModel?.id]);
+
+    const handlePayment = async () => {
+        try {
+            setIsProcessing(true);
+            const payment = await notchpay.payments.initializePayment({
+                currency: "XAF",
+                amount: selectedCvModel?.price.toString(),
+                email: auth.user.email,
+                phone: auth.user.phone || '',
+                reference: `cv_${selectedCvModel?.id}_${auth.user.id}`,
+                description: `Paiement pour le modèle CV ${selectedCvModel?.name}`,
+                meta: {
+                    user_id: auth.user.id,
+                    model_id: selectedCvModel?.id
+                }
+            });
+
+            if (payment.authorization_url) {
+                window.location.href = payment.authorization_url;
+            }
+        } catch (error) {
+            console.error('Payment error:', error);
+            toast({
+                title: "Erreur",
+                description: "Une erreur est survenue lors du paiement",
+                variant: "destructive",
+            });
+        } finally {
+            setIsProcessing(false);
+        }
+    };
+
+    const handlePrint = async () => {
+        if (!canAccessFeatures && !hasDownloaded) {
+            return toast({
+                title: "Accès restreint",
+                description: "Veuillez effectuer le paiement pour accéder à cette fonctionnalité",
+                variant: "destructive",
+            });
+        }
+
+        if (!hasDownloaded) {
+            try {
+                await axios.post('/api/process-download', {
+                    user_id: auth.user.id,
+                    model_id: selectedCvModel?.id,
+                    price: selectedCvModel?.price
+                });
+                setWalletBalance(prev => prev - (selectedCvModel?.price || 0));
+                setHasDownloaded(true);
+            } catch (error) {
+                return toast({
+                    title: "Erreur",
+                    description: "Erreur lors du traitement",
+                    variant: "destructive",
+                });
+            }
+        }
+
+        const printUrl = route('cv.preview', {
+            id: selectedCvModel?.id,
+            print: true
+        });
+        window.open(printUrl, '_blank');
+
+        setTimeout(() => {
+            window.location.reload();
+        }, 2000);
+    };
 
     if (!selectedCvModel) {
         return (
-            <AuthenticatedLayout
-                user={auth.user}
-                header={<h2 className="font-semibold text-2xl text-gray-800 leading-tight">Mon CV Professionnel</h2>}
-            >
+            <AuthenticatedLayout user={auth.user}>
                 <Head title="CV Professionnel" />
                 <div className="w-full p-6">
                     <Card>
@@ -74,80 +137,8 @@ export default function Show({ auth, cvInformation, selectedCvModel }: Props) {
         );
     }
 
-    const handlePayment = async () => {
-        try {
-            setIsPaymentProcessing(true);
-            const payment = await notchpay.payments.initializePayment({
-                currency: "XAF",
-                amount: selectedCvModel.price.toString(),
-                email: auth.user.email,
-                phone: auth.user.phone || '',
-                reference: `cv_${selectedCvModel.id}_${auth.user.id}_${Date.now()}`,
-                description: `Paiement pour le modèle CV ${selectedCvModel.name}`,
-                callback_url: `${window.location.origin}/api/notchpay/callback` // Ajout
-            });
-
-            if (payment.authorization_url) {
-                window.location.href = payment.authorization_url;
-            }
-        } catch (error) {
-            console.error('Payment error:', error);
-            toast({
-                title: "Erreur",
-                description: "Une erreur est survenue lors du paiement",
-                variant: "destructive",
-            });
-        }
-    };
-
-    const handlePreview = () => {
-        const previewUrl = route('cv.preview', { id: selectedCvModel.id });
-        window.open(previewUrl, '_blank');
-    };
-
-    const handlePrint = () => {
-        const printUrl = route('cv.preview', { id: selectedCvModel.id });
-        const printWindow = window.open(printUrl, '_blank');
-        printWindow?.addEventListener('load', () => {
-            printWindow.print();
-        });
-    };
-
-    const handleDownload = async () => {
-        try {
-            setIsLoading(true);
-            await axios.post('/api/process-download', {
-                user_id: auth.user.id,
-                model_id: selectedCvModel.id,
-                price: selectedCvModel.price
-            });
-
-            const downloadUrl = route('cv.download', { id: selectedCvModel.id });
-            window.location.href = downloadUrl;
-
-            setWalletBalance(prev => prev - selectedCvModel.price);
-            setHasDownloaded(true);
-
-            toast({
-                title: "Succès",
-                description: "Téléchargement effectué avec succès",
-            });
-        } catch (error: any) {
-            toast({
-                title: "Erreur",
-                description: error.response?.data?.message || "Erreur lors du téléchargement",
-                variant: "destructive",
-            });
-        } finally {
-            setIsLoading(false);
-        }
-    };
-
     return (
-        <AuthenticatedLayout
-            user={auth.user}
-            header={<h2 className="font-semibold text-2xl text-gray-800 leading-tight">Mon CV Professionnel</h2>}
-        >
+        <AuthenticatedLayout user={auth.user}>
             <Head title="CV Professionnel" />
             <div className="w-full p-6">
                 <Card>
@@ -166,40 +157,32 @@ export default function Show({ auth, cvInformation, selectedCvModel }: Props) {
                     <CardContent>
                         <div className="space-y-6">
                             <div className="flex flex-col md:flex-row gap-4">
-                                <div className="flex items-center gap-4">
-                                    <Link href={route('userCvModels.index')}>
-                                        <Button variant="outline" className="flex items-center gap-2">
-                                            <ArrowLeft className="w-4 h-4" />
-                                            Retour aux CVs
-                                        </Button>
-                                    </Link>
-                                </div>
-                                {canDownload ? (
-                                    <Button
-                                        onClick={handleDownload}
-                                        className="bg-primary w-full md:w-auto"
-                                        disabled={isLoading}
-                                    >
-                                        <Download className="mr-2 h-4 w-4" />
-                                        {isLoading ? 'Téléchargement...' : 'Télécharger PDF'}
+                                <Link href={route('userCvModels.index')}>
+                                    <Button variant="outline" className="flex items-center gap-2">
+                                        <ArrowLeft className="w-4 h-4" />
+                                        Retour aux CVs
                                     </Button>
-                                ) : !hasDownloaded && (
+                                </Link>
+
+                                {!hasDownloaded && !canAccessFeatures ? (
                                     <Button
                                         onClick={handlePayment}
                                         className="bg-primary w-full md:w-auto"
-                                        disabled={isPaymentProcessing}
+                                        disabled={isProcessing}
                                     >
-                                        {isPaymentProcessing ? 'Traitement...' : `Payer ${selectedCvModel.price} FCFA`}
+                                        <Wallet className="mr-2 h-4 w-4" />
+                                        {isProcessing ? 'Traitement...' : `Payer ${selectedCvModel.price} FCFA`}
+                                    </Button>
+                                ) : (
+                                    <Button
+                                        onClick={handlePrint}
+                                        className="bg-primary w-full md:w-auto"
+                                        disabled={isLoading}
+                                    >
+                                        <Printer className="mr-2 h-4 w-4" />
+                                        {isLoading ? 'En cours...' : 'Imprimer'}
                                     </Button>
                                 )}
-                                <Button onClick={handlePreview} variant="outline" className="w-full md:w-auto">
-                                    <Eye className="mr-2 h-4 w-4" />
-                                    Prévisualiser
-                                </Button>
-                                <Button onClick={handlePrint} variant="outline" className="w-full md:w-auto">
-                                    <Printer className="mr-2 h-4 w-4" />
-                                    Imprimer
-                                </Button>
                             </div>
 
                             <div className="w-full border rounded-lg bg-white shadow-sm overflow-auto">

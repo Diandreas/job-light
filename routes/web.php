@@ -61,7 +61,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     // CV Information
     Route::resource('cv-infos', CvInfosController::class);
-    Route::get('/cv-preview/{id}', [CvInfosController::class, 'previewCv'])->name('cv.preview');
+    Route::get('/cv-preview/{id}', [CvInfosController::class, 'previewCv'])
+        ->name('cv.preview')
+        ->middleware(['auth', 'check.print']);
     Route::get('/cv-download/{id}', [CvInfosController::class, 'downloadPdf'])->name('cv.download');
     Route::put('/cv-infos', [PersonalInformationController::class, 'update'])->name('personal-information.update');
 

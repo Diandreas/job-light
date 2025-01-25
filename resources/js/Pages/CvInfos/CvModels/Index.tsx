@@ -1,124 +1,117 @@
-import React, { useState, useCallback, memo } from 'react';
+import React, { useState, useCallback } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
-import { Head } from '@inertiajs/react';
+import { Head, Link } from '@inertiajs/react';
 import { Button } from '@/Components/ui/button';
 import { useToast } from '@/Components/ui/use-toast';
-import { Search, CheckCircle } from 'lucide-react';
+import {
+    Search, CheckCircle, FileText, Star,
+    Plus, ArrowUpRight, AlertCircle, ChevronLeft, Settings
+} from 'lucide-react';
 import { Input } from '@/Components/ui/input';
-import { Dialog, DialogContent } from '@/Components/ui/dialog';
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from "@/Components/ui/sheet";
+import { ScrollArea } from '@/Components/ui/scroll-area';
+import { Badge } from "@/Components/ui/badge";
+import { Alert, AlertDescription } from "@/Components/ui/alert";
+import axios from "axios";
 
-interface CvModel {
-    id: number;
-    name: string;
-    previewImagePath: string;
-    price: number;
-    category: string;
-}
-
-const ModelCard = memo(({
-                            model,
-                            isActive,
-                            onSelect,
-                            onPreview,
-                            loading,
-                            actionLabel,
-                            actionVariant = "outline"
-                        }: {
-    model: CvModel;
-    isActive?: boolean;
-    onSelect: (id: number) => void;
-    onPreview: (model: CvModel) => void;
-    loading: boolean;
-    actionLabel: string;
-    actionVariant?: "outline" | "secondary";
-}) => (
-    <div className={`p-4 rounded-lg border transition-all ${
-        isActive ? 'border-green-500 bg-green-50' : 'border-gray-200 hover:border-gray-300'
-    }`}>
-        <div className="relative aspect-video mb-4 overflow-hidden rounded-md">
+const ModelCard = ({ model, isActive, onSelect, onAdd, onPreview, loading, inCatalog }) => (
+    <motion.div
+        layout
+        initial={{ opacity: 0, scale: 0.9 }}
+        animate={{ opacity: 1, scale: 1 }}
+        exit={{ opacity: 0, scale: 0.9 }}
+        className={`group relative p-6 rounded-lg border transition-all ${
+            isActive ? 'border-primary bg-primary/5' : 'border-gray-200'
+        } hover:shadow-lg hover:border-primary/30`}
+    >
+        <div className="relative aspect-[4/3] mb-4 overflow-hidden rounded-md bg-gray-100">
             <img
                 src={`/storage/${model.previewImagePath}`}
                 alt={model.name}
-                className="w-full h-full object-cover cursor-pointer hover:scale-105 transition-transform"
+                className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
                 onClick={() => onPreview(model)}
             />
+            {isActive && (
+                <motion.div
+                    initial={false}
+                    animate={{ opacity: 1 }}
+                    className="absolute top-2 right-2"
+                >
+                    <div className="bg-primary text-white px-3 py-1 rounded-full text-sm">
+                        Actif
+                    </div>
+                </motion.div>
+            )}
         </div>
-        <div className="flex items-start justify-between gap-4">
+
+        <div className="space-y-4">
             <div>
-                <h3 className="font-medium">{model.name}</h3>
-                <p className="text-sm text-gray-500 mt-1">{model.category}</p>
+                <h3 className="font-semibold text-lg leading-tight">{model.name}</h3>
+                <p className="text-sm text-muted-foreground mt-1">{model.category}</p>
                 {model.price > 0 && (
-                    <p className="text-sm font-medium mt-2">{model.price.toLocaleString()} FCFA</p>
+                    <p className="text-sm font-medium text-primary mt-2">
+                        {model.price.toLocaleString()} FCFA
+                    </p>
                 )}
             </div>
-            <Button
-                variant={actionVariant}
-                size="sm"
-                disabled={isActive || loading}
-                onClick={() => onSelect(model.id)}
-            >
-                {actionLabel}
-            </Button>
+
+            <div className="flex gap-2">
+                {inCatalog ? (
+                    <Button
+                        variant={isActive ? "secondary" : "default"}
+                        className="w-full"
+                        disabled={isActive || loading}
+                        onClick={() => onSelect(model.id)}
+                    >
+                        {isActive ? 'Modèle actif' : 'Utiliser ce modèle'}
+                    </Button>
+                ) : (
+                    <Button
+                        className="w-full"
+                        disabled={loading}
+                        onClick={() => onAdd(model)}
+                    >
+                        Ajouter au catalogue
+                    </Button>
+                )}
+            </div>
         </div>
-    </div>
-));
+    </motion.div>
+);
 
-const PreviewModal = memo(({ model, onClose }: { model: CvModel | null; onClose: () => void }) => (
-    <Dialog open={!!model} onOpenChange={onClose}>
-        <DialogContent className="max-w-4xl">
-            {model && (
-                <>
-                    <img
-                        src={`/storage/${model.previewImagePath}`}
-                        alt={model.name}
-                        className="w-full rounded-lg"
-                    />
-                    <div className="mt-4 flex justify-end">
-                        <Button variant="outline" onClick={onClose}>
-                            Fermer
-                        </Button>
-                    </div>
-                </>
-            )}
-        </DialogContent>
-    </Dialog>
-));
+const ModelPreview = ({ model, onClose }) => (
+    <Sheet open={Boolean(model)} onOpenChange={() => onClose(null)}>
+        <SheetContent side="right" className="w-full sm:max-w-2xl">
+            <SheetHeader>
+                <SheetTitle>{model?.name}</SheetTitle>
+                <SheetDescription>{model?.category}</SheetDescription>
+            </SheetHeader>
+            <ScrollArea className="h-[calc(100vh-10rem)] mt-6 rounded-md">
+                <img
+                    src={`/storage/${model?.previewImagePath}`}
+                    alt={model?.name}
+                    className="w-full h-auto rounded-lg shadow-lg"
+                />
+            </ScrollArea>
+        </SheetContent>
+    </Sheet>
+);
 
-const CvModelsIndex = ({ auth, userCvModels, availableCvModels, maxAllowedModels }: Props) => {
+export default function CvModelsIndex({ auth, userCvModels, availableCvModels, maxAllowedModels }) {
     const { toast } = useToast();
-    const [selectedModelId, setSelectedModelId] = useState<number>(auth.user.selected_cv_model_id);
-    const [searchTerm, setSearchTerm] = useState<string>('');
-    const [loading, setLoading] = useState<boolean>(false);
-    const [previewModel, setPreviewModel] = useState<CvModel | null>(null);
+    const [selectedModelId, setSelectedModelId] = useState(auth.user.selected_cv_model_id);
+    const [searchTerm, setSearchTerm] = useState('');
+    const [loading, setLoading] = useState(false);
+    const [previewModel, setPreviewModel] = useState(null);
+    const [activeModels, setActiveModels] = useState(userCvModels);
+    const [availableModels, setAvailableModels] = useState(availableCvModels);
 
-    const handleSelectModel = useCallback(async (cvModelId: number) => {
-        try {
-            setLoading(true);
-            await axios.post('/user-cv-models/select-active', {
-                user_id: auth.user.id,
-                cv_model_id: cvModelId,
-            });
-            setSelectedModelId(cvModelId);
+    const handleAddModel = async (model) => {
+        if (activeModels.length >= maxAllowedModels) {
             toast({
-                title: 'Success',
-                description: 'CV model updated successfully.'
-            });
-        } catch (error: any) {
-            toast({
-                title: 'Error',
-                description: error.response?.data?.message || 'An error occurred.',
-                variant: 'destructive'
-            });
-        } finally {
-            setLoading(false);
-        }
-    }, [auth.user.id, toast]);
-
-    const handleAddModel = useCallback(async (cvModel: CvModel) => {
-        if (userCvModels.length >= maxAllowedModels) {
-            toast({
-                title: 'Limit Reached',
-                description: `Maximum ${maxAllowedModels} models allowed.`,
+                title: 'Limite atteinte',
+                description: `Vous ne pouvez pas ajouter plus de ${maxAllowedModels} modèles.`,
                 variant: 'destructive'
             });
             return;
@@ -128,99 +121,159 @@ const CvModelsIndex = ({ auth, userCvModels, availableCvModels, maxAllowedModels
             setLoading(true);
             await axios.post('/user-cv-models', {
                 user_id: auth.user.id,
-                cv_model_id: cvModel.id,
+                cv_model_id: model.id,
             });
-            window.location.reload();
-        } catch (error: any) {
+
+            setActiveModels(prev => [...prev, model]);
+            setAvailableModels(prev => prev.filter(m => m.id !== model.id));
+
             toast({
-                title: 'Error',
-                description: error.response?.data?.message || 'An error occurred.',
+                title: 'Succès',
+                description: 'Modèle ajouté au catalogue'
+            });
+        } catch (error) {
+            toast({
+                title: 'Erreur',
+                description: error.response?.data?.message || 'Une erreur est survenue',
                 variant: 'destructive'
             });
         } finally {
             setLoading(false);
         }
-    }, [userCvModels.length, maxAllowedModels, auth.user.id, toast]);
+    };
 
-    const filteredModels = useCallback((models: CvModel[]) => {
-        const searchLower = searchTerm.toLowerCase();
+    const handleSelectModel = useCallback(async (modelId) => {
+        setLoading(true);
+        try {
+            await axios.post('/user-cv-models/select-active', {
+                user_id: auth.user.id,
+                cv_model_id: modelId,
+            });
+            setSelectedModelId(modelId);
+            toast({
+                title: 'Succès',
+                description: 'Votre modèle de CV a été mis à jour avec succès.'
+            });
+        } catch (error) {
+            toast({
+                title: 'Erreur',
+                description: error.response?.data?.message || 'Une erreur est survenue.',
+                variant: 'destructive'
+            });
+        } finally {
+            setLoading(false);
+        }
+    }, [auth.user.id, toast]);
+
+    const filteredModels = useCallback((models) => {
         return models.filter(model =>
-            model.name.toLowerCase().includes(searchLower) ||
-            model.category.toLowerCase().includes(searchLower)
+            model.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            model.category.toLowerCase().includes(searchTerm.toLowerCase())
         );
     }, [searchTerm]);
 
     return (
         <AuthenticatedLayout user={auth.user}>
-            <Head title="CV Models" />
+            <Head title="My CV Models" />
 
-            <div className="max-w-6xl mx-auto px-4 py-8">
-                <div className="flex justify-between items-center mb-8">
-                    <h1 className="text-2xl font-semibold">My CV Models</h1>
-                    <div className="flex items-center gap-2">
-                        <Search className="text-gray-400 w-5 h-5" />
-                        <Input
-                            type="text"
-                            placeholder="Search models..."
-                            value={searchTerm}
-                            onChange={(e) => setSearchTerm(e.target.value)}
-                            className="w-64"
-                        />
-                    </div>
-                </div>
-
-                <div className="space-y-6 mb-12">
-                    <div className="flex items-center justify-between">
-                        <h2 className="text-lg font-medium flex items-center gap-2">
-                            <CheckCircle className="text-green-500 w-5 h-5" />
-                            Active Models
-                        </h2>
-                        <span className="text-sm text-gray-500">
-                            {userCvModels.length}/{maxAllowedModels} models
-                        </span>
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+                {/* Navigation */}
+                <nav className="flex items-center justify-between mb-8">
+                    <div className="flex items-center gap-4">
+                        <Link href={route('cv-infos.index')}>
+                            <Button variant="ghost" className="flex items-center gap-2">
+                                <ChevronLeft className="w-4 h-4" />
+                                Retour
+                            </Button>
+                        </Link>
+                        <h1 className="text-2xl font-bold">Mes modèles de CV</h1>
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                        {filteredModels(userCvModels).map((model) => (
-                            <ModelCard
-                                key={model.id}
-                                model={model}
-                                isActive={selectedModelId === model.id}
-                                onSelect={handleSelectModel}
-                                onPreview={setPreviewModel}
-                                loading={loading}
-                                actionLabel={selectedModelId === model.id ? 'Active' : 'Use'}
-                                actionVariant={selectedModelId === model.id ? "secondary" : "outline"}
+                    <div className="flex items-center gap-4">
+                        <div className="relative">
+                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+                            <Input
+                                type="text"
+                                placeholder="Rechercher un modèle..."
+                                value={searchTerm}
+                                onChange={(e) => setSearchTerm(e.target.value)}
+                                className="pl-10 w-64"
                             />
-                        ))}
-                    </div>
-                </div>
-
-                {availableCvModels.length > 0 && (
-                    <div className="space-y-6">
-                        <h2 className="text-lg font-medium">Available Models</h2>
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                            {filteredModels(availableCvModels).map((model) => (
-                                <ModelCard
-                                    key={model.id}
-                                    model={model}
-                                    onSelect={() => handleAddModel(model)}
-                                    onPreview={setPreviewModel}
-                                    loading={loading}
-                                    actionLabel="Add"
-                                />
-                            ))}
                         </div>
+                        <Link href="/cv-infos/show">
+                            <Button className="flex items-center gap-2">
+                                <FileText className="w-4 h-4" />
+                                Exporter CV
+                            </Button>
+                        </Link>
                     </div>
+                </nav>
+
+                {/* Active Models Section */}
+                <section className="space-y-6 mb-12">
+                    <header className="flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                            <CheckCircle className="text-primary w-5 h-5" />
+                            <h2 className="text-xl font-semibold">Modèles actifs</h2>
+                        </div>
+                        <div className="text-sm text-muted-foreground">
+                            {activeModels.length}/{maxAllowedModels} modèles
+                        </div>
+                    </header>
+
+                    {activeModels.length === 0 ? (
+                        <Alert>
+                            <AlertCircle className="w-4 h-4" />
+                            <AlertDescription>
+                                Vous n'avez pas encore de modèles actifs.
+                                Sélectionnez-en un parmi les modèles disponibles ci-dessous.
+                            </AlertDescription>
+                        </Alert>
+                    ) : (
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                            <AnimatePresence>
+                                {filteredModels(activeModels).map((model) => (
+                                    <ModelCard
+                                        key={model.id}
+                                        model={model}
+                                        isActive={selectedModelId === model.id}
+                                        onSelect={handleSelectModel}
+                                        onAdd={handleAddModel}
+                                        onPreview={setPreviewModel}
+                                        loading={loading}
+                                        inCatalog={true}
+                                    />
+                                ))}
+                            </AnimatePresence>
+                        </div>
+                    )}
+                </section>
+
+                {/* Available Models Section */}
+                {availableModels.length > 0 && (
+                    <section className="space-y-6">
+                        <h2 className="text-xl font-semibold">Modèles disponibles</h2>
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                            <AnimatePresence>
+                                {filteredModels(availableModels).map((model) => (
+                                    <ModelCard
+                                        key={model.id}
+                                        model={model}
+                                        onSelect={handleSelectModel}
+                                        onAdd={handleAddModel}
+                                        onPreview={setPreviewModel}
+                                        loading={loading}
+                                        inCatalog={false}
+                                    />
+                                ))}
+                            </AnimatePresence>
+                        </div>
+                    </section>
                 )}
 
-                <PreviewModal
-                    model={previewModel}
-                    onClose={() => setPreviewModel(null)}
-                />
+                {/* Preview Sheet */}
+                <ModelPreview model={previewModel} onClose={setPreviewModel} />
             </div>
         </AuthenticatedLayout>
     );
-};
-
-export default CvModelsIndex;
+}

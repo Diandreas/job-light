@@ -16,6 +16,7 @@ use App\Models\Summary;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
@@ -93,17 +94,35 @@ class CvInfosController extends Controller
         }
 
         $cvModel = CvModel::findOrFail($id);
-        if ($user->selected_cv_model_id !== $cvModel->id) {
-            abort(403, 'Unauthorized');
-        }
-
         $cvInformation = $this->prepareCvInformation($user);
         $experiencesByCategory = $this->groupExperiencesByCategory($cvInformation['experiences']);
 
-        // Correction du chemin de la vue
+        // Scripts pour l'impression automatique et le bouton
+        $printScript = "
+
+        <script>
+            window.onload = function() {
+
+                    window.print();
+
+
+                const button = document.createElement('button');
+                button.className = 'print-button';
+                button.innerHTML = 'Imprimer';
+                button.onclick = function() {
+                    window.print();
+                };
+                document.body.appendChild(button);
+            }
+        </script>
+    ";
+
+        // Injecter le script dans la vue
+        view()->share('additionalScripts', $printScript);
+
         return view("cv-templates." . $cvModel->viewPath, [
             'cvInformation' => $cvInformation,
-            'experiencesByCategory' => $experiencesByCategory
+            'experiencesByCategory' => $experiencesByCategory,
         ]);
     }
 

@@ -16,9 +16,22 @@ class PaymentController extends Controller
 
         return response()->json(['success' => true, 'balance' => $user->wallet_balance]);
     }
+    public function processQuestionCost(Request $request)
+    {
+        $user = User::findOrFail($request->user_id);
 
+        if ($user->wallet_balance < $request->cost) {
+            return response()->json(['error' => 'Solde insuffisant'], 400);
+        }
+
+        $user->wallet_balance -= $request->cost;
+        $user->save();
+
+        return response()->json(['success' => true, 'balance' => $user->wallet_balance]);
+    }
     public function processDownload(Request $request)
     {
+
         $user = User::findOrFail($request->user_id);
 
         if ($user->wallet_balance < $request->price) {

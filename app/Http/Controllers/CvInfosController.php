@@ -97,32 +97,20 @@ class CvInfosController extends Controller
         $cvInformation = $this->prepareCvInformation($user);
         $experiencesByCategory = $this->groupExperiencesByCategory($cvInformation['experiences']);
 
-        // Scripts pour l'impression automatique et le bouton
-        $printScript = "
-
-        <script>
-            window.onload = function() {
-
-                    window.print();
-
-
-                const button = document.createElement('button');
-                button.className = 'print-button';
-                button.innerHTML = 'Imprimer';
-                button.onclick = function() {
-                    window.print();
-                };
-                document.body.appendChild(button);
-            }
-        </script>
-    ";
-
-        // Injecter le script dans la vue
-        view()->share('additionalScripts', $printScript);
+//        if (request()->has('print')) {
+//            $pdf = PDF::loadView("cv-templates." . $cvModel->viewPath, [
+//                'cvInformation' => $cvInformation,
+//                'experiencesByCategory' => $experiencesByCategory,
+//                'showPrintButton' => ''
+//            ]);
+//
+//            return $pdf->download($cvInformation['personalInformation']['firstName'] . '_CV.pdf');
+//        }
 
         return view("cv-templates." . $cvModel->viewPath, [
             'cvInformation' => $cvInformation,
             'experiencesByCategory' => $experiencesByCategory,
+            'showPrintButton' => request()->has('print')
         ]);
     }
 

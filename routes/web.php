@@ -32,6 +32,7 @@ Route::get('/', function () {
 })->name('welcome');
 
 Route::middleware(['auth'])->group(function () {
+    Route::post('/api/process-question-cost', [PaymentController::class, 'processQuestionCost']);
     Route::get('/api/check-download-status/{modelId}', [PaymentController::class, 'checkDownloadStatus']);
         Route::post('/api/update-wallet', [PaymentController::class, 'updateWallet']);
         Route::post('/api/process-download', [PaymentController::class, 'processDownload']);

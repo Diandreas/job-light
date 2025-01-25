@@ -65,20 +65,18 @@
 
     <script>
         window.onload = function() {
-            if (!window.matchMedia('print').matches) {
+            if ({{ $showPrintButton ? 'true' : 'false' }}) {
                 const button = document.createElement('button');
                 button.id = 'printButton';
                 button.innerHTML = `
-                    <i class="bi bi-printer"></i>
-                    Imprimer CV
-                `;
+            <i class="bi bi-printer"></i>
+            Imprimer CV
+        `;
                 button.onclick = function() {
                     window.print();
                 };
                 document.body.appendChild(button);
-            }
 
-            if ({{ request()->has('print') ? 'true' : 'false' }}) {
                 setTimeout(function() {
                     window.print();
                 }, 1000);

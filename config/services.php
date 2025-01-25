@@ -17,10 +17,44 @@ return [
     'postmark' => [
         'token' => env('POSTMARK_TOKEN'),
     ],
+    'mistral' => [
+        'api_key' => env('MISTRAL_API_KEY'),
+        'organization' => env('MISTRAL_ORGANIZATION'),
+        'models' => [
+            'default' => 'mistral-medium',
+            'small' => 'mistral-small',
+            'large' => 'mistral-large'
+        ],
+    ],
+
     'notchpay' => [
-        'public_key' => env('VITE_NOTCHPAY_PUBLIC_KEY'),
+        'public_key' => env('NOTCHPAY_PUBLIC_KEY'),
         'secret_key' => env('NOTCHPAY_SECRET_KEY'),
-        'sandbox' => env('NOTCHPAY_SANDBOX', true)
+        'sandbox' => env('NOTCHPAY_SANDBOX', true),
+    ],
+
+    'career_advisor' => [
+        'max_history' => 3,
+        'token_limit' => 2000,
+        'services' => [
+            'career-advice' => [
+                'cost' => 100,
+                'model' => 'mistral-medium',
+            ],
+            'cover-letter' => [
+                'cost' => 200,
+                'model' => 'mistral-large',
+                'formats' => ['pdf', 'docx']
+            ],
+            'interview-prep' => [
+                'cost' => 150,
+                'model' => 'mistral-medium',
+            ],
+            'resume-review' => [
+                'cost' => 180,
+                'model' => 'mistral-large',
+            ],
+        ],
     ],
     'ses' => [
         'key' => env('AWS_ACCESS_KEY_ID'),

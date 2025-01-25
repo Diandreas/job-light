@@ -80,6 +80,20 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // User Competences
 //    Route::resource('user-competences', UserCompetenceController::class)->except(['edit', 'update', 'show']);
 
+    // Career Advisor Routes
+    Route::prefix('career-advisor')->group(function () {
+        Route::get('/', [CareerAdvisorController::class, 'index'])->name('career-advisor.index');
+        Route::post('/chat', [CareerAdvisorController::class, 'chat'])->name('career-advisor.chat');
+        Route::post('/export', [CareerAdvisorController::class, 'export'])->name('career-advisor.export');
+    });
+
+    // API Routes for Career Advisor
+    Route::prefix('api')->group(function () {
+        Route::post('/process-question-cost', [PaymentController::class, 'processQuestionCost']);
+        Route::get('/chat-history/{contextId}', [ChatHistoryController::class, 'show']);
+        Route::get('/user-exports', [DocumentExportController::class, 'index']);
+        Route::delete('/chat-history/{contextId}', [ChatHistoryController::class, 'destroy']);
+    });
     // Summaries
     Route::resource('summaries', SummaryController::class);
     Route::post('summaries/{summary}/select', [SummaryController::class, 'select'])->name('summaries.select');

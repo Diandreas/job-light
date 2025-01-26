@@ -94,6 +94,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/user-exports', [DocumentExportController::class, 'index']);
         Route::delete('/chat-history/{contextId}', [ChatHistoryController::class, 'destroy']);
     });
+
+    Route::post('/update-photo', [PersonalInformationController::class, 'updatePhoto'])
+        ->name('personal-information.update-photo');
     // Summaries
     Route::resource('summaries', SummaryController::class);
     Route::post('summaries/{summary}/select', [SummaryController::class, 'select'])->name('summaries.select');

@@ -1,18 +1,18 @@
+
 import { useState, PropsWithChildren, ReactNode } from 'react';
-import { Link } from '@inertiajs/react';
+import { Link, usePage } from '@inertiajs/react';
 import { User } from '@/types';
 import { Toaster } from "@/Components/ui/toaster";
 import {
-    Briefcase, Folder, FileText, Eye, Menu, X, Home,
-    User as UserIcon, ChevronRight, ScrollText, Layout,
-    GraduationCap, BookOpen, LucideIcon, Users
+    Folder, Star, Eye, Menu, X, Brain, Layout,
+    ChevronRight, Sparkles, LucideIcon
 } from 'lucide-react';
 import Dropdown from '@/Components/Dropdown';
 import NavLink from '@/Components/NavLink';
-import ResponsiveNavLink from '@/Components/ResponsiveNavLink';
-import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/Components/ui/sheet";
+import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/Components/ui/sheet";
 import { Button } from '@/Components/ui/button';
 import { cn } from "@/lib/utils";
+import { motion, AnimatePresence } from 'framer-motion';
 
 interface MenuItem {
     name: string;
@@ -22,105 +22,180 @@ interface MenuItem {
     adminOnly?: boolean;
 }
 
-export default function Authenticated({ user, header, children }: PropsWithChildren<{ user: User, header?: ReactNode }>) {
+const getCvSideMenuItems = () => [
+    {
+        name: "Éditer mon CV",
+        href: route('cv-infos.index'),
+        icon: Folder,
+        active: route().current('cv-infos.index')
+    },
+    {
+        name: "Designs Premium",
+        href: route('userCvModels.index'),
+        icon: Star,
+        active: route().current('userCvModels.index')
+    },
+    {
+        name: "Aperçu & Export",
+        href: '/cv-infos/show',
+        icon: Eye,
+        active: route().current('cv-infos.show')
+    }
+];
+
+
+export default function Authenticated({ user, header, children }: PropsWithChildren<Props>) {
+    const { url } = usePage();
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-    const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+    const [isNavOpen, setIsNavOpen] = useState(false);
+    const showNav = ['cv-infos.show', 'cv-infos.index', 'userCvModels.index'].includes(route().current());
+    const cvSideMenuItems = getCvSideMenuItems();
 
     const mainMenuItems: MenuItem[] = [
         {
-            name: "ADMIN PART",
+            name: "Administration",
             href: route('dashboard'),
             icon: Layout,
             active: route().current('dashboard'),
             adminOnly: true
         },
         {
-            name: "CV",
-            href: route('cv-infos.index'),
-            icon: ScrollText,
-            active: route().current('cv-infos.index')
-        },
-        {
-            name: "Career Advisor(IA)",
-            href: route('career-advisor.index'),
-            icon: GraduationCap,
-            active: route().current('career-advisor.index')
-        },
-    ];
-
-    const cvSideMenuItems = [
-        {
-            name: "Mon CV",
+            name: "Créer mon CV",
             href: route('cv-infos.index'),
             icon: Folder,
             active: route().current('cv-infos.index')
         },
         {
-            name: "Mes designs",
-            href: route('userCvModels.index'),
-            icon: FileText,
-            active: route().current('userCvModels.index')
-        },
-        {
-            name: "Preview/Export",
-            href: '/cv-infos/show',
-            icon: Eye,
-            active: route().current('cv-infos.show')
+            name: "Assistant Guidy",
+            href: route('career-advisor.index'),
+            icon: Brain,
+            active: route().current('career-advisor.index')
         }
     ];
 
-    const showSidebar = ['cv-infos.show', 'cv-infos.index', 'userCvModels.index'].includes(route().current());
 
-    // @ts-ignore
+
+
+    const NavButton = ({ item }: { item: MenuItem }) => (
+        <motion.div
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+            className="relative"
+        >
+            <Link
+                href={item.href}
+                className={cn(
+                    "flex items-center gap-3 px-4 py-3 rounded-lg transition-all",
+                    item.active
+                        ? "bg-gradient-to-r from-amber-500 to-purple-500 text-white shadow-md"
+                        : "text-gray-700 hover:bg-amber-50"
+                )}
+            >
+                <item.icon className="h-5 w-5" />
+                <span className="font-medium">{item.name}</span>
+                {item.active && (
+                    <motion.div
+                        layoutId="activeIndicator"
+                        className="absolute right-2 w-2 h-2 rounded-full bg-white"
+                        transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                    />
+                )}
+            </Link>
+        </motion.div>
+    );
+
+    const MobileNav = () => (
+        <div className="sticky top-16 z-30 md:hidden bg-white/80 backdrop-blur-md border-b border-amber-100">
+            <div className="max-w-7xl mx-auto px-4 py-2">
+                <Button
+                    variant="ghost"
+                    onClick={() => setIsNavOpen(!isNavOpen)}
+                    className="w-full flex items-center justify-between p-2 hover:bg-amber-50 rounded-lg"
+                >
+                    <div className="flex items-center gap-2">
+                        <Folder className="h-5 w-5 text-amber-500" />
+                        <span>Navigation CV</span>
+                    </div>
+                    <ChevronRight className={`h-5 w-5 transition-transform ${isNavOpen ? 'rotate-90' : ''}`} />
+                </Button>
+                <AnimatePresence>
+                    {isNavOpen && (
+                        <motion.div
+                            initial={{ height: 0, opacity: 0 }}
+                            animate={{ height: "auto", opacity: 1 }}
+                            exit={{ height: 0, opacity: 0 }}
+                            transition={{ duration: 0.2 }}
+                            className="py-2 space-y-1"
+                        >
+                            {cvSideMenuItems.map((item, index) => (
+                                <NavButton key={index} item={item} />
+                            ))}
+                        </motion.div>
+                    )}
+                </AnimatePresence>
+            </div>
+        </div>
+    );
+
     return (
-        <div className="min-h-screen bg-gray-50">
-            {/* Top Navigation */}
-            <nav className="sticky top-0 z-40 bg-white shadow-sm">
-                <div className="px-4 sm:px-6">
+        <div className="min-h-screen bg-gradient-to-br from-amber-50/50 to-purple-50/50">
+            <nav className="sticky top-0 z-50 bg-white/80 backdrop-blur-md shadow-sm border-b border-amber-100">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6">
                     <div className="flex h-16 items-center justify-between">
-                        {/* Logo and Mobile Menu Button */}
                         <div className="flex items-center gap-4">
-
                             <Link href="/" className="flex items-center gap-2">
-                                <h1 className="font-bold text-indigo-600 text-xl sm:text-2xl">JOB PORTAL</h1>
+                                <Sparkles className="h-6 w-6 text-amber-500" />
+                                <span className="font-bold text-2xl bg-gradient-to-r from-amber-500 to-purple-500 text-transparent bg-clip-text">
+                                    Guidy
+                                </span>
                             </Link>
                         </div>
 
-                        {/* Desktop Navigation */}
                         <div className="hidden md:flex md:items-center md:gap-6">
                             {mainMenuItems.map((item, index) => (
-                                //@ts-ignore
                                 (!item.adminOnly || user.UserType === 1) && (
-                                    <NavLink
+                                    <Link
                                         key={index}
                                         href={item.href}
-                                        active={item.active}
-                                        className="text-sm font-medium transition-colors hover:text-indigo-600"
+
+                                        className={cn(
+                                            "text-sm font-medium transition-all px-4 py-2 rounded-full",
+                                            item.active
+                                                ? "bg-gradient-to-r from-amber-500 to-purple-500 text-white shadow-md"
+                                                : "hover:bg-amber-50"
+                                        )}
                                     >
-                                        {item.name}
-                                    </NavLink>
+                                        <div className="flex items-center gap-2">
+                                            <item.icon className="h-4 w-4" />
+                                            {item.name}
+                                        </div>
+                                    </Link>
                                 )
                             ))}
                         </div>
 
-                        {/* User Menu */}
                         <div className="flex items-center gap-4">
                             <Dropdown>
                                 <Dropdown.Trigger>
                                     <Button variant="ghost" className="gap-2">
-                                        {user.name}
-                                        <ChevronRight className="h-4 w-4" />
+                                        <div className="flex items-center gap-2">
+                                            <div className="h-8 w-8 rounded-full bg-gradient-to-r from-amber-500 to-purple-500 flex items-center justify-center">
+                                                <span className="text-white font-medium">
+                                                    {user.name.charAt(0).toUpperCase()}
+                                                </span>
+                                            </div>
+                                            <span className="hidden sm:block">{user.name}</span>
+                                        </div>
                                     </Button>
                                 </Dropdown.Trigger>
                                 <Dropdown.Content>
-                                    <Dropdown.Link href={route('profile.edit')}>Profile</Dropdown.Link>
+                                    <Dropdown.Link href={route('profile.edit')}>Mon Profil</Dropdown.Link>
                                     <Dropdown.Link href={route('logout')} method="post" as="button">
-                                        Log Out
+                                        Déconnexion
                                     </Dropdown.Link>
                                 </Dropdown.Content>
                             </Dropdown>
 
-                            {/* Mobile Menu Trigger */}
                             <Button
                                 variant="ghost"
                                 size="sm"
@@ -134,124 +209,54 @@ export default function Authenticated({ user, header, children }: PropsWithChild
                 </div>
             </nav>
 
-            {/* Mobile Navigation Sheet */}
             <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
-                <SheetContent side="right" className="w-[300px] sm:w-[400px]">
+                <SheetContent side="right" className="bg-white w-[300px]">
                     <SheetHeader>
-                        <SheetTitle>Menu</SheetTitle>
+                        <SheetTitle className="flex items-center gap-2">
+                            <Sparkles className="h-5 w-5 text-amber-500" />
+                            <span className="bg-gradient-to-r from-amber-500 to-purple-500 text-transparent bg-clip-text">
+                                Menu Guidy
+                            </span>
+                        </SheetTitle>
                     </SheetHeader>
                     <div className="mt-8 flex flex-col gap-4">
                         {mainMenuItems.map((item, index) => (
-                            //@ts-ignore
                             (!item.adminOnly || user.UserType === 1) && (
-                                <Link
-                                    key={index}
-                                    href={item.href}
-                                    className={cn(
-                                        "flex items-center gap-3 rounded-lg px-3 py-2 text-gray-900 transition-all hover:bg-gray-100",
-                                        item.active && "bg-indigo-50 text-indigo-600"
-                                    )}
-                                    onClick={() => setIsMobileMenuOpen(false)}
-                                >
-                                    <item.icon className="h-5 w-5" />
-                                    {item.name}
-                                </Link>
+                                <NavButton key={index} item={item} />
                             )
                         ))}
-                        <hr className="my-4" />
-                        <Link
-                            href={route('profile.edit')}
-                            className="flex items-center gap-3 rounded-lg px-3 py-2 text-gray-900 transition-all hover:bg-gray-100"
-                        >
-                            <UserIcon className="h-5 w-5" />
-                            Profile
-                        </Link>
-                        <Link
-                            href={route('logout')}
-                            method="post"
-                            as="button"
-                            className="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-red-600 transition-all hover:bg-red-50"
-                        >
-                            <X className="h-5 w-5" />
-                            Log Out
-                        </Link>
                     </div>
                 </SheetContent>
             </Sheet>
 
-            {/* CV Section Mobile Sidebar */}
-            {showSidebar && (
-                <Sheet open={isSidebarOpen} onOpenChange={setIsSidebarOpen}>
-                    <SheetContent side="left" className="w-[300px]">
-                        <SheetHeader>
-                            <SheetTitle>CV Navigation</SheetTitle>
-                        </SheetHeader>
-                        <div className="mt-8 flex flex-col gap-2">
-                            {cvSideMenuItems.map((item, index) => (
-                                <Link
-                                    key={index}
-                                    href={item.href}
-                                    className={cn(
-                                        "flex items-center gap-3 rounded-lg px-3 py-2 text-gray-900 transition-all hover:bg-gray-100",
-                                        item.active && "bg-indigo-50 text-indigo-600"
-                                    )}
-                                    onClick={() => setIsSidebarOpen(false)}
-                                >
-                                    <item.icon className="h-5 w-5" />
-                                    {item.name}
-                                </Link>
-                            ))}
-                        </div>
-                    </SheetContent>
-                </Sheet>
-            )}
+            {showNav && <MobileNav />}
 
-            {/* Page Header */}
             {header && (
-                <header className="bg-white shadow">
-                  <div className="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">{header}
-                      {showSidebar && (
-                    <Button
-                        variant="ghost"
-                        size="sm"
-                        className="md:hidden"
-                        onClick={() => setIsSidebarOpen(true)}
-                    >
-                        <Menu className="h-5 w-5" /> Menu
-                    </Button>
-                )}</div>
+                <header className="bg-white/80 backdrop-blur-md border-b border-amber-100">
+                    <div className="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
+                        {header}
+                    </div>
                 </header>
             )}
 
-            {/* Main Content */}
             <div className="flex">
-                {/* Desktop Sidebar */}
-                {showSidebar && (
-                    <aside className="hidden md:block w-64 bg-white shadow-lg min-h-screen">
-                        <div className="sticky top-20">
-                            <ul className="space-y-1 py-4">
+                {showNav && (
+                    <aside className="hidden md:block w-64 bg-white/80 backdrop-blur-md border-r border-amber-100 min-h-screen">
+                        <div className="sticky top-20 p-4">
+                            <div className="mb-6">
+                                <h2 className="text-lg font-semibold bg-gradient-to-r from-amber-500 to-purple-500 text-transparent bg-clip-text">
+                                    Navigation CV
+                                </h2>
+                            </div>
+                            <div className="space-y-2">
                                 {cvSideMenuItems.map((item, index) => (
-                                    <li key={index}>
-                                        <Link
-                                            href={item.href}
-                                            className={cn(
-                                                "flex items-center gap-3 mx-2 px-3 py-2 rounded-md transition-colors duration-200",
-                                                item.active
-                                                    ? "bg-indigo-50 text-indigo-600"
-                                                    : "text-gray-700 hover:bg-gray-100"
-                                            )}
-                                        >
-                                            <item.icon className="h-5 w-5" />
-                                            <span>{item.name}</span>
-                                        </Link>
-                                    </li>
+                                    <NavButton key={index} item={item} />
                                 ))}
-                            </ul>
+                            </div>
                         </div>
                     </aside>
                 )}
 
-                {/* Main Content Area */}
                 <main className="flex-1 p-4 sm:p-6">
                     {children}
                 </main>

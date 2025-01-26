@@ -4,9 +4,9 @@ import { motion, AnimatePresence } from 'framer-motion';
 import {
     User, FileText, Briefcase, Code, GraduationCap, Heart,
     ChevronRight, ChevronLeft, Mail, Phone, MapPin, Linkedin,
-    Github, PencilIcon, Paintbrush, CircleChevronRight
+    Github, PencilIcon, Sparkles, CircleChevronRight, Star, Camera, Upload
 } from 'lucide-react';
-
+import axios from 'axios';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Card, CardHeader, CardTitle, CardContent } from "@/Components/ui/card";
 import { Button } from "@/Components/ui/button";
@@ -20,42 +20,12 @@ import ExperienceManager from "@/Components/ExperienceManager";
 import SummaryManager from '@/Components/SummaryManager';
 
 const SIDEBAR_ITEMS = [
-    {
-        id: 'personalInfo',
-        label: 'Informations Personnelles',
-        icon: User,
-        color: 'text-blue-500',
-    },
-    {
-        id: 'summary',
-        label: 'Résumé',
-        icon: FileText,
-        color: 'text-green-500',
-    },
-    {
-        id: 'experience',
-        label: 'Expériences',
-        icon: Briefcase,
-        color: 'text-purple-500',
-    },
-    {
-        id: 'competence',
-        label: 'Compétences',
-        icon: Code,
-        color: 'text-yellow-500',
-    },
-    {
-        id: 'profession',
-        label: 'Formation',
-        icon: GraduationCap,
-        color: 'text-red-500',
-    },
-    {
-        id: 'hobby',
-        label: 'Centres d\'Intérêt',
-        icon: Heart,
-        color: 'text-pink-500',
-    }
+    { id: 'personalInfo', label: 'Informations Personnelles', icon: User, color: 'text-amber-500' },
+    { id: 'summary', label: 'Résumé', icon: FileText, color: 'text-purple-500' },
+    { id: 'experience', label: 'Expériences', icon: Briefcase, color: 'text-amber-600' },
+    { id: 'competence', label: 'Compétences', icon: Code, color: 'text-purple-600' },
+    { id: 'profession', label: 'Formation', icon: GraduationCap, color: 'text-amber-500' },
+    { id: 'hobby', label: 'Centres d\'Intérêt', icon: Heart, color: 'text-purple-500' }
 ];
 
 const PERSONAL_INFO_FIELDS = [
@@ -66,56 +36,133 @@ const PERSONAL_INFO_FIELDS = [
     { label: "GitHub", key: "github", icon: Github }
 ];
 
-const PersonalInfoCard = ({ item, onEdit }) => (
-    <div className="space-y-6">
-        <div className="flex flex-col md:flex-row justify-between items-center">
-            <h2 className="text-2xl font-bold text-gray-800">Informations Personnelles</h2>
-            <Button onClick={onEdit} className="bg-primary hover:bg-primary/90 text-white mt-4 md:mt-0">
-                <PencilIcon className="h-4 w-4 mr-2" />
-                Modifier
-            </Button>
-        </div>
+const PersonalInfoCard = ({ item, onEdit, updateCvInformation }) => {
+    const { toast } = useToast();
+    const [isUploading, setIsUploading] = useState(false);
 
-        <Card>
-            <CardContent className="p-6 space-y-6">
-                <div className="flex flex-col md:flex-row items-center gap-4 border-b pb-4">
-                    <div className="h-20 w-20 rounded-full bg-primary/10 flex items-center justify-center">
-                        <User className="h-10 w-10 text-primary" />
-                    </div>
-                    <div>
-                        <h3 className="text-2xl font-bold text-gray-900">
-                            {item.firstName} {item.lastName}
-                        </h3>
-                        <p className="text-gray-500 text-lg">Développeur Web Full Stack</p>
-                    </div>
-                </div>
+    const handlePhotoChange = async (e) => {
+        if (!e.target.files?.[0]) return;
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
-                    {PERSONAL_INFO_FIELDS.map(({ label, key, icon: Icon }) => (
-                        <div key={label} className="flex items-start gap-3">
-                            <div className="mt-1">
-                                <Icon className="h-5 w-5 text-primary" />
-                            </div>
-                            <div className="flex-1">
-                                <p className="text-sm text-gray-500 font-medium">{label}</p>
-                                <p className="text-gray-900 font-medium">{item[key] || 'Non renseigné'}</p>
-                            </div>
+        const file = e.target.files[0];
+        if (file.size > 5 * 1024 * 1024) {
+            toast({
+                title: "Erreur",
+                description: "La photo ne doit pas dépasser 5MB",
+                variant: "destructive"
+            });
+            return;
+        }
+
+        try {
+            setIsUploading(true);
+            const formData = new FormData();
+            formData.append('photo', file);
+
+            const response = await axios.post(route('personal-information.update-photo'), formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data'
+                }
+            });
+
+            if (response.data.success) {
+                updateCvInformation('personalInformation', {
+                    ...item,
+                    photo: response.data.photo_url
+                });
+
+                toast({
+                    title: "Succès",
+                    description: "Photo mise à jour avec succès"
+                });
+            }
+        } catch (error) {
+            console.error('Upload error:', error);
+            toast({
+                title: "Erreur",
+                description: error.response?.data?.message || "Échec de la mise à jour de la photo",
+                variant: "destructive"
+            });
+        } finally {
+            setIsUploading(false);
+        }
+    };
+
+    return (
+        <div className="space-y-6">
+            <div className="flex flex-col md:flex-row justify-between items-center">
+                <h2 className="text-2xl font-bold text-gray-800">Informations Personnelles</h2>
+                <Button
+                    onClick={onEdit}
+                    className="bg-gradient-to-r from-amber-500 to-purple-500 hover:from-amber-600 hover:to-purple-600 text-white mt-4 md:mt-0"
+                >
+                    <PencilIcon className="h-4 w-4 mr-2" />
+                    Modifier
+                </Button>
+            </div>
+
+            <Card>
+                <CardContent className="p-6 space-y-6">
+                    <div className="flex flex-col md:flex-row items-center gap-4 border-b pb-4">
+                        <div className="relative h-20 w-20">
+                            {item.photo ? (
+                                <img
+                                    src={item.photo}
+                                    alt="Profile"
+                                    className="h-full w-full rounded-full object-cover"
+                                />
+                            ) : (
+                                <div className="h-full w-full rounded-full bg-gradient-to-r from-amber-500/10 to-purple-500/10 flex items-center justify-center">
+                                    <Camera className="h-8 w-8 text-amber-500" />
+                                </div>
+                            )}
+                            <label className="absolute bottom-0 right-0 p-1.5 bg-white rounded-full shadow-lg cursor-pointer hover:bg-gray-50 transition-colors">
+                                <input
+                                    type="file"
+                                    className="hidden"
+                                    accept="image/*"
+                                    onChange={handlePhotoChange}
+                                    disabled={isUploading}
+                                />
+                                <Upload className={`h-4 w-4 ${isUploading ? 'text-gray-400 animate-pulse' : 'text-amber-500'}`} />
+                            </label>
                         </div>
-                    ))}
-                </div>
-            </CardContent>
-        </Card>
-    </div>
-);
+                        <div>
+                            <h3 className="text-2xl font-bold text-gray-900">
+                                {item.firstName}
+                            </h3>
+                            <p className="text-gray-500 text-lg">
+                                {item.profession || 'Non spécifié'}
+                            </p>
+                        </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
+                        {PERSONAL_INFO_FIELDS.map(({ label, key, icon: Icon }) => (
+                            <div key={label} className="flex items-start gap-3">
+                                <div className="mt-1">
+                                    <Icon className="h-5 w-5 text-amber-500" />
+                                </div>
+                                <div className="flex-1">
+                                    <p className="text-sm text-gray-500 font-medium">{label}</p>
+                                    <p className="text-gray-900 font-medium">{item[key] || 'Non renseigné'}</p>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </CardContent>
+            </Card>
+        </div>
+    );
+};
 
 const ProgressIndicator = ({ percentage }) => (
     <div className="flex items-center gap-4">
         <div className="text-right">
             <p className="text-sm text-gray-500">Progression</p>
-            <p className="text-xl font-bold text-primary">{percentage}%</p>
+            <p className="text-xl font-bold text-amber-500">{percentage}%</p>
         </div>
-        <div className="h-12 w-12 rounded-full border-4 border-primary flex items-center justify-center">
-            <span className="text-primary font-bold">{percentage}%</span>
+        <div className="h-12 w-12 rounded-full bg-gradient-to-r from-amber-500 to-purple-500 flex items-center justify-center">
+            <span className="text-white font-bold">{percentage}%</span>
         </div>
     </div>
 );
@@ -124,7 +171,7 @@ const SidebarButton = ({ item, isActive, isComplete, onClick }) => (
     <button
         onClick={onClick}
         className={`w-full flex items-center justify-center md:justify-between p-2 md:p-3 rounded-lg transition-all ${
-            isActive ? 'bg-primary text-white shadow-md' : 'hover:bg-gray-100'
+            isActive ? 'bg-gradient-to-r from-amber-500 to-purple-500 text-white shadow-lg' : 'hover:bg-amber-50'
         }`}
     >
         <div className="flex items-center gap-3">
@@ -132,7 +179,7 @@ const SidebarButton = ({ item, isActive, isComplete, onClick }) => (
             <span className="hidden md:block font-medium">{item.label}</span>
         </div>
         <div className="hidden md:flex items-center gap-2">
-            {isComplete && <div className="w-2 h-2 rounded-full bg-green-500" />}
+            {isComplete && <div className="w-2 h-2 rounded-full bg-green-400" />}
             <ChevronRight className={`h-4 w-4 ${isActive ? 'text-white' : 'text-gray-400'}`} />
         </div>
     </button>
@@ -144,7 +191,7 @@ const SectionNavigation = ({ currentSection, nextSection, prevSection, canProgre
             <Button
                 variant="outline"
                 onClick={() => onNavigate(prevSection.id)}
-                className="flex items-center gap-2 w-full md:w-auto mb-2 md:mb-0"
+                className="flex items-center gap-2 w-full md:w-auto mb-2 md:mb-0 border-amber-200 hover:bg-amber-50"
             >
                 <ChevronLeft className="w-4 h-4" />
                 {prevSection.label}
@@ -154,7 +201,7 @@ const SectionNavigation = ({ currentSection, nextSection, prevSection, canProgre
             <Button
                 onClick={() => onNavigate(nextSection.id)}
                 disabled={!canProgress}
-                className="flex items-center gap-2 w-full md:w-auto ml-auto"
+                className="flex items-center gap-2 w-full md:w-auto ml-auto bg-gradient-to-r from-amber-500 to-purple-500 hover:from-amber-600 hover:to-purple-600 text-white"
             >
                 {nextSection.label}
                 <ChevronRight className="w-4 h-4" />
@@ -167,21 +214,21 @@ export default function CvInterface({ auth, cvInformation: initialCvInformation 
     const [activeSection, setActiveSection] = useState('personalInfo');
     const [cvInformation, setCvInformation] = useState(initialCvInformation);
     const [isEditing, setIsEditing] = useState(false);
-    const {toast} = useToast();
+    const { toast } = useToast();
 
     const updateCvInformation = useCallback((section, data) => {
         setCvInformation(prev => ({
             ...prev,
-            [section]: Array.isArray(data) ? [...data] : {...data}
+            [section]: Array.isArray(data) ? [...data] : { ...data }
         }));
     }, []);
 
     const completionStatus = {
-        personalInfo: true,
+        personalInfo: Boolean(cvInformation.personalInformation?.firstName),
         summary: cvInformation.summaries?.length > 0,
         experience: cvInformation.experiences?.length > 0,
         competence: cvInformation.competences?.length > 0,
-        profession: true,
+        profession: Boolean(cvInformation.myProfession),
         hobby: cvInformation.hobbies?.length > 0,
     };
 
@@ -196,8 +243,8 @@ export default function CvInterface({ auth, cvInformation: initialCvInformation 
         updateCvInformation('personalInformation', updatedInfo);
         setIsEditing(false);
         toast({
-            title: "Informations mises à jour",
-            description: "Vos informations personnelles ont été enregistrées."
+            title: "Mise à jour réussie",
+            description: "Vos informations ont été enregistrées avec succès."
         });
     };
 
@@ -213,6 +260,7 @@ export default function CvInterface({ auth, cvInformation: initialCvInformation 
                 <PersonalInfoCard
                     item={cvInformation.personalInformation}
                     onEdit={handleEdit}
+                    updateCvInformation={updateCvInformation}
                 />
             ),
             summary: (
@@ -264,46 +312,53 @@ export default function CvInterface({ auth, cvInformation: initialCvInformation 
     const prevSection = SIDEBAR_ITEMS[currentSectionIndex - 1];
 
     return (
-        <AuthenticatedLayout
-            user={auth.user}
-            header={<h2 className="font-semibold text-2xl text-gray-800 leading-tight">Mon CV Professionnel</h2>}
-        >
-            <Head title="CV Professionnel"/>
+        <AuthenticatedLayout user={auth.user}>
+            <Head title="CV Professionnel" />
 
-            <div className="min-h-screen bg-gray-50">
-                <div className="mb-6 flex justify-end">
-                    <Link href={route('userCvModels.index')}>
-                        <Button className="bg-primary hover:bg-primary/90">
-                            <Paintbrush className="mr-2 h-4 w-4"/>
-                            Choisissez le design de CV
-                            <CircleChevronRight/>
-                        </Button>
-                    </Link>
-                </div>
+            <div className="min-h-screen bg-gradient-to-b from-amber-50/50 to-purple-50/50">
                 <div className="container mx-auto py-6 px-4">
-                    <Card className="shadow-lg">
-                        <CardHeader className="bg-white border-b">
+                    <div className="flex justify-between items-center mb-8">
+                        <div className="flex items-center gap-3">
+                            <Sparkles className="h-8 w-8 text-amber-500" />
+                            <h2 className="font-bold text-2xl bg-gradient-to-r from-amber-500 to-purple-500 text-transparent bg-clip-text">
+                                Mon CV Guidy
+                            </h2>
+                        </div>
+                        <Link href={route('userCvModels.index')}>
+                            <Button className="bg-gradient-to-r from-amber-500 to-purple-500 hover:from-amber-600 hover:to-purple-600 text-white">
+                                <Star className="mr-2 h-4 w-4" />
+                                Choisir un design
+                                <CircleChevronRight className="ml-2 h-4 w-4" />
+                            </Button>
+                        </Link>
+                    </div>
+
+                    <Card className="shadow-xl border border-amber-100">
+                        <CardHeader className="bg-white border-b border-amber-100">
                             <div className="flex flex-col md:flex-row justify-between items-center">
                                 <div>
-                                    <CardTitle className="text-2xl font-bold">Mon CV Professionnel</CardTitle>
-                                    <p className="text-gray-500 mt-1">Complétez votre profil pour créer un CV
-                                        percutant</p>
+                                    <CardTitle className="text-2xl font-bold bg-gradient-to-r from-amber-500 to-purple-500 text-transparent bg-clip-text">
+                                        Créez votre CV professionnel
+                                    </CardTitle>
+                                    <p className="text-gray-500 mt-1">
+                                        Complétez votre profil pour un CV qui vous ressemble
+                                    </p>
                                 </div>
-                                <ProgressIndicator percentage={getCompletionPercentage()}/>
+                                <ProgressIndicator percentage={getCompletionPercentage()} />
                             </div>
 
                             <div className="mt-4 h-2 bg-gray-100 rounded-full overflow-hidden">
                                 <motion.div
-                                    className="h-full bg-primary"
-                                    initial={{width: 0}}
-                                    animate={{width: `${getCompletionPercentage()}%`}}
-                                    transition={{duration: 0.5}}
+                                    className="h-full bg-gradient-to-r from-amber-500 to-purple-500"
+                                    initial={{ width: 0 }}
+                                    animate={{ width: `${getCompletionPercentage()}%` }}
+                                    transition={{ duration: 0.5 }}
                                 />
                             </div>
                         </CardHeader>
 
                         <div className="flex flex-row min-h-[600px]">
-                            <div className="w-14 md:w-64 flex-shrink-0 border-r bg-gray-50 transition-all duration-300">
+                            <div className="w-14 md:w-64 flex-shrink-0 border-r border-amber-100 bg-white/50 transition-all duration-300">
                                 <nav className="sticky top-0 p-2 md:p-4 space-y-1 md:space-y-2">
                                     {SIDEBAR_ITEMS.map(item => (
                                         <SidebarButton
@@ -321,10 +376,10 @@ export default function CvInterface({ auth, cvInformation: initialCvInformation 
                                 <AnimatePresence mode="wait">
                                     <motion.div
                                         key={activeSection}
-                                        initial={{opacity: 0, x: 20}}
-                                        animate={{opacity: 1, x: 0}}
-                                        exit={{opacity: 0, x: -20}}
-                                        transition={{duration: 0.3}}
+                                        initial={{ opacity: 0, x: 20 }}
+                                        animate={{ opacity: 1, x: 0 }}
+                                        exit={{ opacity: 0, x: -20 }}
+                                        transition={{ duration: 0.3 }}
                                         className="space-y-6"
                                     >
                                         {getSectionComponent(activeSection)}
@@ -341,15 +396,18 @@ export default function CvInterface({ auth, cvInformation: initialCvInformation 
                             </div>
                         </div>
                     </Card>
-                </div>
-                <div className="mb-6 flex justify-start">
-                    <Link href={route('userCvModels.index')}>
-                        <Button className="bg-primary hover:bg-primary/90">
-                            <Paintbrush className="mr-2 h-4 w-4"/>
-                            Choisissez le design de CV
-                            <CircleChevronRight/>
-                        </Button>
-                    </Link>
+
+                    <div className="mt-8 text-center">
+                        <Link href={route('userCvModels.index')}>
+                            <Button className="bg-gradient-to-r from-amber-500 to-purple-500 hover:from-amber-600 hover:to-purple-600 text-white p-6 rounded-xl shadow-lg group">
+                                <div className="flex flex-col items-center gap-2">
+                                    <Sparkles className="h-6 w-6 group-hover:animate-spin" />
+                                    <span className="text-lg font-medium">Donnez vie à votre CV avec nos designs professionnels</span>
+                                    <span className="text-sm opacity-90">Choisissez parmi nos modèles premium</span>
+                                </div>
+                            </Button>
+                        </Link>
+                    </div>
                 </div>
             </div>
         </AuthenticatedLayout>

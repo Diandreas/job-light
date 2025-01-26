@@ -1,124 +1,126 @@
-import React from 'react';
-import { Link, useForm } from '@inertiajs/react';
-import { Button } from '@/Components/ui/button';
-import InputLabel from "@/Components/InputLabel";
-import TextInput from "@/Components/TextInput";
-import InputError from "@/Components/InputError";
+import React, { useState } from 'react';
+import { Button } from "@/Components/ui/button";
+import { useToast } from "@/Components/ui/use-toast";
+import axios from 'axios';
 
 const PersonalInformationEdit = ({ user, onUpdate, onCancel }) => {
-    const { data, setData, put, processing, errors, reset } = useForm({
-        name: user.firstName,
-        email: user.email,
-        github: user.github,
-        linkedin: user.linkedin,
-        address: user.address,
-        phone_number: user.phone,
+    const [formData, setFormData] = useState({
+        firstName: user.firstName || '',
+        email: user.email || '',
+        phone: user.phone || '',
+        address: user.address || '',
+        linkedin: user.linkedin || '',
+        github: user.github || ''
     });
+    const { toast } = useToast();
 
-    const handleSubmit = (e) => {
-        e.preventDefault();
-        put(route('personal-information.update'), {
-            preserveState: true,
-            preserveScroll: true,
-            onSuccess: (response) => {
-                console.log('Success response:', response);
-
-                // Ensure the correct user data is available in the response
-                // @ts-ignore
-                if (response.props.cvInformation && response.props.cvInformation.personalInformation) {
-                    reset('name', 'email', 'github', 'linkedin', 'address', 'phone_number');
-                    // @ts-ignore
-                    onUpdate(response.props.cvInformation.personalInformation);
-                } else {
-                    console.error("User data not found in response");
-                }
-            },
-            onError: (errors) => {
-                console.error(errors);
-            }
+    const handleChange = (e) => {
+        setFormData({
+            ...formData,
+            [e.target.name]: e.target.value,
         });
     };
 
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        try {
+            const response = await axios.put(route('personal-information.update'), formData);
+            if (response.data.success) {
+                onUpdate(formData);
+                toast({
+                    title: "Succès",
+                    description: "Informations personnelles mises à jour avec succès",
+                });
+            }
+        } catch (error) {
+            console.error('Update error:', error);
+            toast({
+                title: "Erreur",
+                description: error.response?.data?.message || "Échec de la mise à jour des informations personnelles",
+                variant: "destructive",
+            });
+        }
+    };
+
     return (
-        <div className="p-4">
-            <h1 className="text-2xl font-semibold mb-4">Modifier informations personnelles</h1>
-            <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
                 <div>
-                    <InputLabel htmlFor="name" value="Nom" />
-                    <TextInput
-                        id="name"
+                    <label htmlFor="firstName" className="block text-sm font-medium text-gray-700">Prénom</label>
+                    <input
                         type="text"
-                        value={data.name}
-                        onChange={(e) => setData('name', e.target.value)}
-                        className="mt-1 block w-full"
+                        name="firstName"
+                        id="firstName"
+                        value={formData.firstName}
+                        onChange={handleChange}
+                        className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                     />
-                    <InputError message={errors.name} className="mt-2" />
                 </div>
                 <div>
-                    <InputLabel htmlFor="email" value="Email" />
-                    <TextInput
-                        id="email"
+                    <label htmlFor="email" className="block text-sm font-medium text-gray-700">Email</label>
+                    <input
                         type="email"
-                        value={data.email}
-                        onChange={(e) => setData('email', e.target.value)}
-                        className="mt-1 block w-full"
+                        name="email"
+                        id="email"
+                        value={formData.email}
+                        onChange={handleChange}
+                        className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                     />
-                    <InputError message={errors.email} className="mt-2" />
                 </div>
                 <div>
-                    <InputLabel htmlFor="github" value="GitHub" />
-                    <TextInput
-                        id="github"
+                    <label htmlFor="phone" className="block text-sm font-medium text-gray-700">Téléphone</label>
+                    <input
                         type="text"
-                        value={data.github}
-                        onChange={(e) => setData('github', e.target.value)}
-                        className="mt-1 block w-full"
+                        name="phone"
+                        id="phone"
+                        value={formData.phone}
+                        onChange={handleChange}
+                        className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                     />
-                    <InputError message={errors.github} className="mt-2" />
                 </div>
                 <div>
-                    <InputLabel htmlFor="linkedin" value="LinkedIn" />
-                    <TextInput
-                        id="linkedin"
+                    <label htmlFor="address" className="block text-sm font-medium text-gray-700">Adresse</label>
+                    <input
                         type="text"
-                        value={data.linkedin}
-                        onChange={(e) => setData('linkedin', e.target.value)}
-                        className="mt-1 block w-full"
-                    />
-                    <InputError message={errors.linkedin} className="mt-2" />
-                </div>
-                <div>
-                    <InputLabel htmlFor="address" value="Address" />
-                    <TextInput
+                        name="address"
                         id="address"
-                        type="text"
-                        value={data.address}
-                        onChange={(e) => setData('address', e.target.value)}
-                        className="mt-1 block w-full"
+                        value={formData.address}
+                        onChange={handleChange}
+                        className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                     />
-                    <InputError message={errors.address} className="mt-2" />
                 </div>
                 <div>
-                    <InputLabel htmlFor="phone_number" value="Phone Number" />
-                    <TextInput
-                        id="phone_number"
+                    <label htmlFor="linkedin" className="block text-sm font-medium text-gray-700">LinkedIn</label>
+                    <input
                         type="text"
-                        value={data.phone_number}
-                        onChange={(e) => setData('phone_number', e.target.value)}
-                        className="mt-1 block w-full"
+                        name="linkedin"
+                        id="linkedin"
+                        value={formData.linkedin}
+                        onChange={handleChange}
+                        className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                     />
-                    <InputError message={errors.phone_number} className="mt-2" />
                 </div>
-                <div className="flex items-center gap-2">
-                    <Button type="submit" disabled={processing}>
-                        Enregistrer les modifications
-                    </Button>
-                    <Button type="button" onClick={onCancel} variant="outline">
-                        Annuler
-                    </Button>
+                <div>
+                    <label htmlFor="github" className="block text-sm font-medium text-gray-700">GitHub</label>
+                    <input
+                        type="text"
+                        name="github"
+                        id="github"
+                        value={formData.github}
+                        onChange={handleChange}
+                        className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                    />
                 </div>
-            </form>
-        </div>
+            </div>
+            <div className="flex justify-end gap-2">
+                <Button type="button" onClick={onCancel} variant="outline">
+                    Annuler
+                </Button>
+                <Button type="submit" className="bg-gradient-to-r from-amber-500 to-purple-500 hover:from-amber-600 hover:to-purple-600 text-white">
+                    Enregistrer
+                </Button>
+            </div>
+        </form>
     );
 };
 

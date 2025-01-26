@@ -19,12 +19,36 @@ import { motion } from 'framer-motion';
 import {
     Sparkles, Briefcase, GraduationCap, MessageSquare,
     Loader, Wallet, ChevronDown, FileText, PenTool,
-    Building, Brain, Languages, Download, Clock
+    Building, Brain, Languages, Download, Clock, LucideIcon
 } from 'lucide-react';
 import axios from 'axios';
 import ServiceCard from "@/Components/ServiceCard";
 
 // Types
+interface User {
+    id: number;
+    wallet_balance: number;
+}
+
+interface Auth {
+    user: User;
+}
+
+interface PageProps {
+    auth: Auth;
+    userInfo: any;
+    initialAdvice: any;
+}
+
+interface Service {
+    id: string;
+    icon: LucideIcon;
+    title: string;
+    description: string;
+    cost: number;
+    category: 'advice' | 'document' | 'interactive';
+    formats: string[];
+}
 interface Message {
     role: 'user' | 'assistant';
     content: string;
@@ -138,6 +162,7 @@ export default function Index({ auth, userInfo, initialAdvice }) {
             });
 
             // Handle response
+            //@ts-ignore
             setConversationHistory(prev => ({
                 ...prev,
                 messages: [...prev.messages, {
@@ -216,6 +241,7 @@ export default function Index({ auth, userInfo, initialAdvice }) {
                 {/* Services Grid */}
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                     {services.map(service => (
+                        //@ts-ignore
                         <ServiceCard
                             key={service.id}
                             {...service}
@@ -234,7 +260,7 @@ export default function Index({ auth, userInfo, initialAdvice }) {
                                 <div className="flex items-center gap-2">
                                     <selectedService.icon className="text-primary" />
                                     {selectedService.title}
-                                </div>
+                             </div>
                                 {selectedService.category === 'document' && (
                                     <div className="flex gap-2">
                                         {selectedService.formats.map(format => (

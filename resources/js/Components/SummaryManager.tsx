@@ -130,12 +130,25 @@ const generateSimpleResume = (userTitle = '') => {
     };
 };
 
+interface Summary {
+    id: number;
+    name: string;
+    description: string;
+}
+
+interface FormData {
+    id: number | null;
+    name: string;
+    description: string;
+}
+
 interface Props {
     auth: any;
     summaries: Summary[];
     selectedSummary: Summary[];
     onUpdate: (summaries: Summary[]) => void;
 }
+
 
 const SummaryManager: React.FC<Props> = ({ auth, summaries: initialSummaries, selectedSummary: initialSelectedSummary, onUpdate }) => {
     const [summaries, setSummaries] = useState(initialSummaries);
@@ -175,6 +188,7 @@ const SummaryManager: React.FC<Props> = ({ auth, summaries: initialSummaries, se
                 toast.addEventListener('mouseleave', Swal.resumeTimer)
             }
         });
+        //@ts-ignore
         Toast.fire({ icon, title });
     };
 

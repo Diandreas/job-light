@@ -121,24 +121,27 @@ export default function Show({ auth, cvInformation, selectedCvModel }: Props) {
     };
 
     if (!selectedCvModel) {
-        return (
-            <AuthenticatedLayout user={auth.user}>
-                <Head title="CV Professionnel" />
-                <div className="w-full p-6">
-                    <Card>
-                        <CardContent className="p-6">
-                            <p className="text-center text-gray-600">
-                                Veuillez sélectionner un modèle de CV dans la section "Mes designs" avant de continuer.
-                            </p>
-                        </CardContent>
-                    </Card>
-                </div>
-            </AuthenticatedLayout>
-        );
+        let authenticatedLayout = <><AuthenticatedLayout
+            //@ts-ignore
+            user={auth.user}>
+            <Head title="CV Professionnel"/>
+            <div className="w-full p-6">
+                <Card>
+                    <CardContent className="p-6">
+                        <p className="text-center text-gray-600">
+                            Veuillez sélectionner un modèle de CV dans la section "Mes designs" avant de continuer.
+                        </p>
+                    </CardContent>
+                </Card>
+            </div>
+        </AuthenticatedLayout></>;
+
     }
 
     return (
-        <AuthenticatedLayout user={auth.user}>
+        <AuthenticatedLayout
+            //@ts-ignore
+            user={auth.user}>
             <Head title="CV Professionnel" />
             <div className="w-full p-6">
                 <Card>

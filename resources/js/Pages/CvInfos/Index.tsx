@@ -11,6 +11,9 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Card, CardHeader, CardTitle, CardContent } from "@/Components/ui/card";
 import { Button } from "@/Components/ui/button";
 import { useToast } from '@/Components/ui/use-toast';
+import { ScrollArea } from "@/Components/ui/scroll-area";
+import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "@/Components/ui/sheet";
+import { Separator } from "@/Components/ui/separator";
 
 import PersonalInformationEdit from './PersonalInformation/Edit';
 import CompetenceManager from '@/Components/CompetenceManager';
@@ -18,6 +21,8 @@ import HobbyManager from '@/Components/HobbyManager';
 import ProfessionManager from '@/Components/ProfessionManager';
 import ExperienceManager from "@/Components/ExperienceManager";
 import SummaryManager from '@/Components/SummaryManager';
+import ReactCrop, { centerCrop, makeAspectCrop } from 'react-image-crop';
+import 'react-image-crop/dist/ReactCrop.css';
 
 const SIDEBAR_ITEMS = [
     { id: 'personalInfo', label: 'Informations Personnelles', icon: User, color: 'text-amber-500' },
@@ -25,7 +30,7 @@ const SIDEBAR_ITEMS = [
     { id: 'experience', label: 'Expériences', icon: Briefcase, color: 'text-amber-600' },
     { id: 'competence', label: 'Compétences', icon: Code, color: 'text-purple-600' },
     { id: 'profession', label: 'Formation', icon: GraduationCap, color: 'text-amber-500' },
-    { id: 'hobby', label: 'Centres d\'Intérêt', icon: Heart, color: 'text-purple-500' }
+    { id: 'hobby', label: "Centres d'Intérêt", icon: Heart, color: 'text-purple-500' }
 ];
 
 const PERSONAL_INFO_FIELDS = [
@@ -37,26 +42,68 @@ const PERSONAL_INFO_FIELDS = [
 ];
 
 const PersonalInfoCard = ({ item, onEdit, updateCvInformation }) => {
-    const { toast } = useToast();
     const [isUploading, setIsUploading] = useState(false);
+    const [isOpen, setIsOpen] = useState(false);
+    const [uploadedImage, setUploadedImage] = useState(null);
+    const [crop, setCrop] = useState({ unit: '%', width: 100, aspect: 1 });
+    const [completedCrop, setCompletedCrop] = useState(null);
+    const [imageRef, setImageRef] = useState(null);
+    const { toast } = useToast();
 
-    const handlePhotoChange = async (e) => {
-        if (!e.target.files?.[0]) return;
-
-        const file = e.target.files[0];
-        if (file.size > 5 * 1024 * 1024) {
-            toast({
-                title: "Erreur",
-                description: "La photo ne doit pas dépasser 5MB",
-                variant: "destructive"
-            });
-            return;
+    const onSelectFile = (e) => {
+        if (e.target.files && e.target.files.length > 0) {
+            const file = e.target.files[0];
+            if (file.size > 5 * 1024 * 1024) {
+                toast({
+                    title: "Fichier trop volumineux",
+                    description: "La taille maximum autorisée est de 5MB",
+                    variant: "destructive"
+                });
+                return;
+            }
+            const reader = new FileReader();
+            reader.addEventListener('load', () => setUploadedImage(reader.result));
+            reader.readAsDataURL(file);
+            setIsOpen(true);
         }
+    };
 
+    const getCroppedImg = useCallback(() => {
+        if (!imageRef || !completedCrop) return;
+
+        const canvas = document.createElement('canvas');
+        const scaleX = imageRef.naturalWidth / imageRef.width;
+        const scaleY = imageRef.naturalHeight / imageRef.height;
+        canvas.width = completedCrop.width;
+        canvas.height = completedCrop.height;
+        const ctx = canvas.getContext('2d');
+
+        ctx.drawImage(
+            imageRef,
+            completedCrop.x * scaleX,
+            completedCrop.y * scaleY,
+            completedCrop.width * scaleX,
+            completedCrop.height * scaleY,
+            0,
+            0,
+            completedCrop.width,
+            completedCrop.height
+        );
+
+        return new Promise((resolve) => {
+            canvas.toBlob((blob) => {
+                resolve(blob);
+            }, 'image/jpeg', 0.95);
+        });
+    }, [imageRef, completedCrop]);
+
+    const handleSave = async () => {
         try {
             setIsUploading(true);
+            const croppedImage = await getCroppedImg();
             const formData = new FormData();
-            formData.append('photo', file);
+            //@ts-ignore
+            formData.append('photo', croppedImage, 'profile.jpg');
 
             const response = await axios.post(route('personal-information.update-photo'), formData, {
                 headers: {
@@ -69,7 +116,7 @@ const PersonalInfoCard = ({ item, onEdit, updateCvInformation }) => {
                     ...item,
                     photo: response.data.photo_url
                 });
-
+                setIsOpen(false);
                 toast({
                     title: "Succès",
                     description: "Photo mise à jour avec succès"
@@ -80,11 +127,29 @@ const PersonalInfoCard = ({ item, onEdit, updateCvInformation }) => {
             toast({
                 title: "Erreur",
                 description: error.response?.data?.message || "Échec de la mise à jour de la photo",
-                variant: "destructive"
+                variant: "destructive",
             });
         } finally {
             setIsUploading(false);
         }
+    };
+
+    const onImageLoad = (e) => {
+        const { naturalWidth: width, naturalHeight: height } = e.currentTarget;
+        const crop = centerCrop(
+            makeAspectCrop(
+                {
+                    unit: '%',
+                    width: 90,
+                },
+                1,
+                width,
+                height
+            ),
+            width,
+            height
+        );
+        setCrop(crop);
     };
 
     return (
@@ -115,12 +180,12 @@ const PersonalInfoCard = ({ item, onEdit, updateCvInformation }) => {
                                     <Camera className="h-8 w-8 text-amber-500" />
                                 </div>
                             )}
-                            <label className="absolute bottom-0 right-0 p-1.5 bg-white rounded-full shadow-lg cursor-pointer hover:bg-gray-50 transition-colors">
+                            <label className="absolute bottom-0 right-0 p-1.5 bg-white rounded-full shadow-lg cursor-pointer">
                                 <input
                                     type="file"
                                     className="hidden"
                                     accept="image/*"
-                                    onChange={handlePhotoChange}
+                                    onChange={onSelectFile}
                                     disabled={isUploading}
                                 />
                                 <Upload className={`h-4 w-4 ${isUploading ? 'text-gray-400 animate-pulse' : 'text-amber-500'}`} />
@@ -151,10 +216,59 @@ const PersonalInfoCard = ({ item, onEdit, updateCvInformation }) => {
                     </div>
                 </CardContent>
             </Card>
+
+            <Sheet open={isOpen} onOpenChange={setIsOpen}>
+                <SheetContent side="right" className="w-full sm:max-w-xl">
+                    <SheetHeader>
+                        <SheetTitle>Ajuster la photo</SheetTitle>
+                        <SheetDescription>
+                            Rognez votre photo pour l'adapter au format carré
+                        </SheetDescription>
+                    </SheetHeader>
+
+                    <Separator className="my-4" />
+
+                    <ScrollArea className="h-[calc(100vh-12rem)] pr-4">
+                        <div className="space-y-4">
+                            {uploadedImage && (
+                                <ReactCrop
+                                    crop={crop}
+                                    onChange={c => setCrop(c)}
+                                    onComplete={c => setCompletedCrop(c)}
+                                    aspect={1}
+                                    className="max-w-full"
+                                >
+                                    <img
+                                        ref={setImageRef}
+                                        src={uploadedImage}
+                                        alt="Upload"
+                                        className="max-w-full h-auto"
+                                        onLoad={onImageLoad}
+                                    />
+                                </ReactCrop>
+                            )}
+                        </div>
+                    </ScrollArea>
+
+                    <div className="flex justify-end gap-2 mt-4 sticky bottom-0 bg-white pt-4 border-t">
+                        <Button variant="outline" onClick={() => setIsOpen(false)}>
+                            Annuler
+                        </Button>
+                        <Button
+                            onClick={handleSave}
+                            disabled={!completedCrop || isUploading}
+                            className="bg-gradient-to-r from-amber-500 to-purple-500 hover:from-amber-600 hover:to-purple-600"
+                        >
+                            {isUploading ? 'Enregistrement...' : 'Enregistrer'}
+                        </Button>
+                    </div>
+                </SheetContent>
+            </Sheet>
         </div>
     );
 };
 
+// Remaining components stay the same
 const ProgressIndicator = ({ percentage }) => (
     <div className="flex items-center gap-4">
         <div className="text-right">
@@ -217,10 +331,33 @@ export default function CvInterface({ auth, cvInformation: initialCvInformation 
     const { toast } = useToast();
 
     const updateCvInformation = useCallback((section, data) => {
-        setCvInformation(prev => ({
-            ...prev,
-            [section]: Array.isArray(data) ? [...data] : { ...data }
-        }));
+        setCvInformation(prev => {
+            const newState = { ...prev };
+
+            // Gestion spéciale pour les résumés
+            if (section === 'summaries') {
+                newState.summaries = data;
+                // Mettre à jour aussi allsummaries si nécessaire
+                if (Array.isArray(data) && data.length > 0) {
+                    const existingIds = new Set(newState.allsummaries.map(s => s.id));
+                    data.forEach(summary => {
+                        if (!existingIds.has(summary.id)) {
+                            newState.allsummaries.push(summary);
+                        } else {
+                            // Mettre à jour le résumé existant dans allsummaries
+                            const index = newState.allsummaries.findIndex(s => s.id === summary.id);
+                            if (index !== -1) {
+                                newState.allsummaries[index] = summary;
+                            }
+                        }
+                    });
+                }
+            } else {
+                newState[section] = Array.isArray(data) ? [...data] : { ...data };
+            }
+
+            return newState;
+        });
     }, []);
 
     const completionStatus = {
@@ -268,7 +405,9 @@ export default function CvInterface({ auth, cvInformation: initialCvInformation 
                     auth={auth}
                     summaries={cvInformation.allsummaries}
                     selectedSummary={cvInformation.summaries}
-                    onUpdate={(summaries) => updateCvInformation('summaries', summaries)}
+                    onUpdate={(summaries) => {
+                        updateCvInformation('summaries', summaries);
+                    }}
                 />
             ),
             experience: (
@@ -359,17 +498,19 @@ export default function CvInterface({ auth, cvInformation: initialCvInformation 
 
                         <div className="flex flex-row min-h-[600px]">
                             <div className="w-14 md:w-64 flex-shrink-0 border-r border-amber-100 bg-white/50 transition-all duration-300">
-                                <nav className="sticky top-0 p-2 md:p-4 space-y-1 md:space-y-2">
-                                    {SIDEBAR_ITEMS.map(item => (
-                                        <SidebarButton
-                                            key={item.id}
-                                            item={item}
-                                            isActive={activeSection === item.id}
-                                            isComplete={completionStatus[item.id]}
-                                            onClick={() => setActiveSection(item.id)}
-                                        />
-                                    ))}
-                                </nav>
+                                <ScrollArea className="h-full py-2">
+                                    <nav className="sticky top-0 p-2 md:p-4 space-y-1 md:space-y-3">
+                                        {SIDEBAR_ITEMS.map(item => (
+                                            <SidebarButton
+                                                key={item.id}
+                                                item={item}
+                                                isActive={activeSection === item.id}
+                                                isComplete={completionStatus[item.id]}
+                                                onClick={() => setActiveSection(item.id)}
+                                            />
+                                        ))}
+                                    </nav>
+                                </ScrollArea>
                             </div>
 
                             <div className="flex-grow p-4 md:p-6 overflow-x-hidden">

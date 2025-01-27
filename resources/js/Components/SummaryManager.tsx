@@ -3,141 +3,36 @@ import { Head, useForm } from '@inertiajs/react';
 import { Button } from '@/Components/ui/button';
 import { useToast } from '@/Components/ui/use-toast';
 import { Textarea } from "@/Components/ui/textarea";
-import { TrashIcon, PencilIcon, PlusIcon, XIcon, Wand2 } from 'lucide-react';
+import {
+    TrashIcon, PencilIcon, PlusIcon, XIcon,
+    Wand2, BookOpen, ChevronRight, CheckCircle
+} from 'lucide-react';
 import axios from "axios";
-import { Card, CardContent, CardHeader, CardTitle } from "@/Components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/Components/ui/card";
 import { Label } from "@/Components/ui/label";
 import { Input } from "@/Components/ui/input";
 import { motion, AnimatePresence } from 'framer-motion';
-import Swal from 'sweetalert2';
+import { ScrollArea } from "@/Components/ui/scroll-area";
+import { Alert, AlertDescription } from "@/Components/ui/alert";
 
-const generalProfiles = {
-    skills: [
-        "travail en équipe",
-        "communication",
-        "organisation",
-        "adaptation",
-        "capacité d'apprentissage",
-        "sens du service",
-        "rigueur",
-        "ponctualité",
-        "polyvalence",
-        "esprit d'initiative",
-        "sens des responsabilités",
-        "gestion du temps",
-        "efficacité",
-        "relation client",
-        "respect des procédures",
-        "capacité d'écoute"
-    ],
-
-    experiences: [
-        "stage en entreprise",
-        "job étudiant",
-        "bénévolat",
-        "projet personnel",
-        "formation pratique",
-        "projet d'études",
-        "service civique",
-        "aide familiale",
-        "projet associatif",
-        "travail saisonnier",
-        "alternance",
-        "première expérience professionnelle"
-    ],
-
-    qualities: [
-        "motivé",
-        "dynamique",
-        "sérieux",
-        "à l'écoute",
-        "impliqué",
-        "fiable",
-        "enthousiaste",
-        "sociable",
-        "ponctuel",
-        "consciencieux",
-        "autonome",
-        "rigoureux"
-    ],
-
-    objectives: [
-        "acquérir de l'expérience professionnelle",
-        "développer mes compétences",
-        "intégrer une équipe dynamique",
-        "contribuer au succès de l'entreprise",
-        "évoluer professionnellement",
-        "apprendre de nouvelles méthodes de travail",
-        "mettre en pratique mes connaissances",
-        "participer à des projets enrichissants",
-        "progresser dans mon domaine",
-        "m'investir dans de nouveaux défis"
-    ],
-
-    domains: [
-        "commercial",
-        "administratif",
-        "service client",
-        "vente",
-        "accueil",
-        "logistique",
-        "assistance",
-        "support",
-        "restauration",
-        "hôtellerie",
-        "commerce",
-        "distribution"
-    ]
-};
-
-const generateSimpleResume = (userTitle = '') => {
-    const getRandomItems = (array, count) => {
-        const shuffled = [...array].sort(() => 0.5 - Math.random());
-        return shuffled.slice(0, count);
-    };
-
-    const qualities = getRandomItems(generalProfiles.qualities, 2);
-    const skills = getRandomItems(generalProfiles.skills, 3);
-    const experience = getRandomItems(generalProfiles.experiences, 1)[0];
-    const objective = getRandomItems(generalProfiles.objectives, 1)[0];
-    const domain = getRandomItems(generalProfiles.domains, 1)[0];
-
-    let title = userTitle || `${domain.charAt(0).toUpperCase() + domain.slice(1)}`;
-
-    const introTemplates = [
-        `Profil ${qualities.join(" et ")} avec une première expérience en tant que ${experience}.`,
-        `Jeune professionnel ${qualities.join(" et ")} ayant découvert le domaine via ${experience}.`,
-        `Candidat ${qualities.join(" et ")} avec une expérience enrichissante en ${experience}.`
-    ];
-
-    const skillsTemplates = [
-        `Possède de solides compétences en ${skills.join(", ")}.`,
-        `Fait preuve d'aptitudes en ${skills.join(", ")}.`,
-        `Démontre des capacités en ${skills.join(", ")}.`
-    ];
-
-    const objectiveTemplates = [
-        `Souhaite ${objective} pour développer mon potentiel.`,
-        `Motivé à ${objective} au sein d'une entreprise dynamique.`,
-        `Cherche à ${objective} dans un environnement stimulant.`
-    ];
-
-    const description = `${getRandomItems(introTemplates, 1)[0]} ${getRandomItems(skillsTemplates, 1)[0]} ${getRandomItems(objectiveTemplates, 1)[0]}`;
-
-    return {
-        name: title,
-        description: description
-    };
+// Réduire les templates à 3 options plus générales
+const templates = {
+    etudiant: {
+        name: "Étudiant",
+        description: "Jeune diplômé motivé, à l'écoute et dynamique. Formation académique solide avec une première expérience via des stages et projets étudiants. Maîtrise des outils informatiques et capacité d'apprentissage rapide."
+    },
+    archiviste: {
+        name: "Assistant Archiviste",
+        description: "Passionné par l'organisation et la préservation des documents. Méthodique et rigoureux, avec une bonne maîtrise des outils numériques. Capable de travailler en autonomie et en équipe."
+    },
+    debutant: {
+        name: "Premier Emploi",
+        description: "Bachelier enthousiaste et polyvalent, prêt à mettre en pratique mes connaissances. Forte capacité d'adaptation et volonté d'apprendre. Maîtrise des outils bureautiques de base."
+    }
 };
 
 interface Summary {
     id: number;
-    name: string;
-    description: string;
-}
-
-interface FormData {
-    id: number | null;
     name: string;
     description: string;
 }
@@ -149,15 +44,15 @@ interface Props {
     onUpdate: (summaries: Summary[]) => void;
 }
 
-
 const SummaryManager: React.FC<Props> = ({ auth, summaries: initialSummaries, selectedSummary: initialSelectedSummary, onUpdate }) => {
     const [summaries, setSummaries] = useState(initialSummaries);
     const [selectedSummary, setSelectedSummary] = useState(initialSelectedSummary);
     const [isFormVisible, setIsFormVisible] = useState(false);
     const [filteredSummaries, setFilteredSummaries] = useState(initialSummaries);
     const [searchQuery, setSearchQuery] = useState('');
+    const { toast } = useToast();
 
-    const { data, setData, processing, errors, reset } = useForm({
+    const { data, setData, processing, reset } = useForm({
         id: null,
         name: '',
         description: '',
@@ -176,28 +71,19 @@ const SummaryManager: React.FC<Props> = ({ auth, summaries: initialSummaries, se
         setSelectedSummary(initialSelectedSummary);
     }, [initialSummaries, initialSelectedSummary]);
 
-    const showAlert = (title, icon = 'success') => {
-        const Toast = Swal.mixin({
-            toast: true,
-            position: 'top-end',
-            showConfirmButton: false,
-            timer: 3000,
-            timerProgressBar: true,
-            didOpen: (toast) => {
-                toast.addEventListener('mouseenter', Swal.stopTimer)
-                toast.addEventListener('mouseleave', Swal.resumeTimer)
-            }
+    const showToast = (title: string, description: string, variant: "default" | "destructive" = "default") => {
+        toast({
+            title,
+            description,
+            variant,
         });
-        //@ts-ignore
-        Toast.fire({ icon, title });
     };
 
-    const handleAutoFill = () => {
-        const newSummary = generateSimpleResume(data.name);
+    const handleTemplateSelect = (template) => {
         setData({
             ...data,
-            name: data.name || newSummary.name,
-            description: newSummary.description
+            name: template.name,
+            description: template.description
         });
     };
 
@@ -213,10 +99,9 @@ const SummaryManager: React.FC<Props> = ({ auth, summaries: initialSummaries, se
             ));
 
             onUpdate(newSelectedSummary);
-            showAlert('Résumé sélectionné avec succès');
+            showToast("Succès", "Résumé sélectionné avec succès");
         } catch (error) {
-            console.error(error);
-            showAlert('Erreur lors de la sélection du résumé', 'error');
+            showToast("Erreur", "Impossible de sélectionner le résumé", "destructive");
         }
     };
 
@@ -224,13 +109,23 @@ const SummaryManager: React.FC<Props> = ({ auth, summaries: initialSummaries, se
         e.preventDefault();
         try {
             const response = await axios.post(route('summaries.store'), data);
-            const updatedSummaries = [...summaries, response.data.summary];
+            const newSummary = response.data.summary;
+            const updatedSummaries = [...summaries, newSummary];
+
+            // Mettre à jour l'état local
             setSummaries(updatedSummaries);
-            onUpdate(selectedSummary);
-            showAlert('Résumé créé avec succès');
+
+            // Sélectionner automatiquement le nouveau résumé
+            const newSelectedSummary = [newSummary];
+            setSelectedSummary(newSelectedSummary);
+
+            // Mettre à jour le parent
+            onUpdate(newSelectedSummary);
+
+            showToast("Succès", "Résumé créé avec succès");
             resetForm();
         } catch (error) {
-            handleValidationErrors(error.response.data.errors);
+            showToast("Erreur", error.response.data.message, "destructive");
         }
     };
 
@@ -239,55 +134,47 @@ const SummaryManager: React.FC<Props> = ({ auth, summaries: initialSummaries, se
         try {
             const response = await axios.put(route('summaries.update', data.id), data);
             const updatedSummary = response.data.summary;
+
+            // Mettre à jour la liste des résumés
             const updatedSummaries = summaries.map(summary =>
                 summary.id === updatedSummary.id ? updatedSummary : summary
             );
             setSummaries(updatedSummaries);
 
+            // Mettre à jour la sélection si le résumé modifié était sélectionné
             if (selectedSummary.some(s => s.id === updatedSummary.id)) {
                 const newSelectedSummary = [updatedSummary];
                 setSelectedSummary(newSelectedSummary);
+                // Propager la mise à jour au parent
                 onUpdate(newSelectedSummary);
             } else {
-                onUpdate(selectedSummary);
+                // Si le résumé n'était pas sélectionné, le sélectionner automatiquement
+                const newSelectedSummary = [updatedSummary];
+                setSelectedSummary(newSelectedSummary);
+                onUpdate(newSelectedSummary);
             }
 
-            showAlert('Résumé mis à jour avec succès');
+            showToast("Succès", "Résumé mis à jour avec succès");
             resetForm();
         } catch (error) {
-            handleValidationErrors(error.response.data.errors);
+            showToast("Erreur", error.response.data.message, "destructive");
         }
     };
 
     const handleDelete = async (summaryId) => {
-        const result = await Swal.fire({
-            title: 'Supprimer ce résumé ?',
-            text: "Cette action est irréversible",
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#3085d6',
-            cancelButtonColor: '#d33',
-            confirmButtonText: 'Oui, supprimer',
-            cancelButtonText: 'Annuler'
-        });
+        try {
+            await axios.delete(route('summaries.destroy', summaryId));
+            const updatedSummaries = summaries.filter(summary => summary.id !== summaryId);
+            setSummaries(updatedSummaries);
 
-        if (result.isConfirmed) {
-            try {
-                await axios.delete(route('summaries.destroy', summaryId));
-                const updatedSummaries = summaries.filter(summary => summary.id !== summaryId);
-                setSummaries(updatedSummaries);
-
-                if (selectedSummary.some(s => s.id === summaryId)) {
-                    const newSelectedSummary = [];
-                    setSelectedSummary(newSelectedSummary);
-                    onUpdate(newSelectedSummary);
-                }
-
-                showAlert('Résumé supprimé avec succès');
-            } catch (error) {
-                console.error(error);
-                showAlert('Erreur lors de la suppression', 'error');
+            if (selectedSummary.some(s => s.id === summaryId)) {
+                setSelectedSummary([]);
+                onUpdate([]);
             }
+
+            showToast("Succès", "Résumé supprimé avec succès");
+        } catch (error) {
+            showToast("Erreur", "Impossible de supprimer le résumé", "destructive");
         }
     };
 
@@ -306,16 +193,17 @@ const SummaryManager: React.FC<Props> = ({ auth, summaries: initialSummaries, se
         setIsFormVisible(false);
     };
 
-    const handleValidationErrors = (errors) => {
-        const errorMessages = Object.values(errors).join('\n');
-        showAlert(errorMessages, 'error');
-    };
-
     return (
-        <div className="container mx-auto p-8 space-y-8">
-            <div className="flex justify-between items-center">
-                <h1 className="text-2xl font-bold">Mes Résumés</h1>
-                <Button onClick={() => setIsFormVisible(!isFormVisible)}>
+        <div className="space-y-6">
+            <div className="flex flex-col md:flex-row justify-between items-center gap-4">
+                <div>
+                    <h2 className="text-2xl font-bold text-gray-800">Mes Résumés</h2>
+                    <p className="text-gray-500">Gérez vos résumés professionnels</p>
+                </div>
+                <Button
+                    onClick={() => setIsFormVisible(!isFormVisible)}
+                    className="bg-gradient-to-r from-amber-500 to-purple-500 hover:from-amber-600 hover:to-purple-600 text-white"
+                >
                     {isFormVisible ? (
                         <><XIcon className="w-4 h-4 mr-2" /> Fermer</>
                     ) : (
@@ -324,129 +212,192 @@ const SummaryManager: React.FC<Props> = ({ auth, summaries: initialSummaries, se
                 </Button>
             </div>
 
-            {isFormVisible && (
-                <Card>
-                    <CardContent className="pt-6">
-                        <form onSubmit={data.id ? handleUpdate : handleCreate} className="space-y-4">
-                            <div>
-                                <div className="flex justify-end mb-4">
-                                    <Button
-                                        type="button"
-                                        onClick={handleAutoFill}
-                                        variant="outline"
-                                        className="flex items-center"
-                                    >
-                                        <Wand2 className="w-4 h-4 mr-2" />
-                                        Suggérer un résumé
-                                    </Button>
-                                </div>
-
-                                <Label htmlFor="name">Poste ou titre</Label>
-                                <Input
-                                    id="name"
-                                    value={data.name}
-                                    onChange={e => setData('name', e.target.value)}
-                                    placeholder="Ex: Vendeur, Assistant administratif..."
-                                />
-                                {errors.name && <p className="text-red-500 text-sm mt-1">{errors.name}</p>}
-                            </div>
-
-                            <div>
-                                <Label htmlFor="description">Description</Label>
-                                <Textarea
-                                    id="description"
-                                    value={data.description}
-                                    onChange={e => setData('description', e.target.value)}
-                                    placeholder="Décrivez votre profil..."
-                                    rows={6}
-                                />
-                                {errors.description && <p className="text-red-500 text-sm mt-1">{errors.description}</p>}
-                            </div>
-
-                            <div className="flex justify-end gap-2">
-                                <Button type="submit" disabled={processing}>
-                                    {data.id ? 'Modifier' : 'Créer'}
-                                </Button>
-                                <Button type="button" variant="outline" onClick={resetForm}>
-                                    Annuler
-                                </Button>
-                            </div>
-                        </form>
-                    </CardContent>
-                </Card>
-            )}
-
-            <div className="space-y-4">
-                <Input
-                    type="text"
-                    placeholder="Rechercher un résumé..."
-                    value={searchQuery}
-                    onChange={e => setSearchQuery(e.target.value)}
-                    className="max-w-md"
-                />
-
-                <div className="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-1 gap-4">
-                    <AnimatePresence>
-                        {filteredSummaries.map((summary) => (
-                            <motion.div
-                                key={summary.id}
-                                initial={{ opacity: 0 }}
-                                animate={{ opacity: 1 }}
-                                exit={{ opacity: 0 }}
-                            >
-                                <Card className={
-                                    selectedSummary.some(s => s.id === summary.id)
-                                        ? 'border-primary'
-                                        : ''
-                                }>
-                                    <CardHeader className="flex flex-row justify-between items-start space-y-0">
-                                        <CardTitle className="text-lg">{summary.name}</CardTitle>
-                                        <div className="flex gap-2">
-                                            <Button
-                                                variant="ghost"
-                                                size="icon"
-                                                onClick={() => handleSelect(summary)}
+            <AnimatePresence mode="wait">
+                {isFormVisible && (
+                    <motion.div
+                        initial={{ opacity: 0, y: -20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -20 }}
+                    >
+                        <Card className="border-amber-100 shadow-md">
+                            <CardHeader>
+                                <CardTitle className="text-lg font-semibold">
+                                    {data.id ? 'Modifier le résumé' : 'Créer un nouveau résumé'}
+                                </CardTitle>
+                                <CardDescription>
+                                    Décrivez votre profil professionnel ou choisissez un modèle
+                                </CardDescription>
+                            </CardHeader>
+                            <CardContent>
+                                <form onSubmit={data.id ? handleUpdate : handleCreate} className="space-y-4">
+                                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                                        {Object.entries(templates).map(([key, template]) => (
+                                            <Card
+                                                key={key}
+                                                className="cursor-pointer hover:shadow-md transition-shadow"
+                                                onClick={() => handleTemplateSelect(template)}
                                             >
-                                                <PencilIcon className="h-4 w-4" />
+                                                <CardHeader>
+                                                    <CardTitle className="text-sm font-medium">
+                                                        <BookOpen className="w-4 h-4 inline-block mr-2 text-amber-500"/>
+                                                        {template.name}
+                                                    </CardTitle>
+                                                </CardHeader>
+                                                <CardContent>
+                                                    <p className="text-xs text-gray-500">{template.description}</p>
+                                                </CardContent>
+                                            </Card>
+                                        ))}
+                                    </div>
+
+                                    <div className="space-y-4">
+                                        <div>
+                                            <Label htmlFor="name">Titre du poste</Label>
+                                            <Input
+                                                id="name"
+                                                value={data.name}
+                                                onChange={e => setData('name', e.target.value)}
+                                                placeholder="Ex: Commercial, Assistant administratif..."
+                                                className="border-amber-200 focus:ring-amber-500"
+                                            />
+                                        </div>
+
+                                        <div>
+                                            <Label htmlFor="description">Description</Label>
+                                            <Textarea
+                                                id="description"
+                                                value={data.description}
+                                                onChange={e => setData('description', e.target.value)}
+                                                placeholder="Décrivez votre profil..."
+                                                rows={6}
+                                                className="border-amber-200 focus:ring-amber-500"
+                                            />
+                                        </div>
+
+                                        <div className="flex justify-end gap-2">
+                                            <Button
+                                                type="submit"
+                                                disabled={processing}
+                                                className="bg-gradient-to-r from-amber-500 to-purple-500 hover:from-amber-600 hover:to-purple-600 text-white"
+                                            >
+                                                {data.id ? 'Modifier' : 'Créer'}
                                             </Button>
                                             <Button
-                                                variant="ghost"
-                                                size="icon"
-                                                onClick={() => handleDelete(summary.id)}
+                                                type="button"
+                                                variant="outline"
+                                                onClick={resetForm}
+                                                className="border-amber-200 hover:bg-amber-50"
                                             >
-                                                <TrashIcon className="h-4 w-4" />
+                                                Annuler
                                             </Button>
                                         </div>
-                                    </CardHeader>
-                                    <CardContent>
-                                        <p className="text-sm text-gray-600 mb-4">{summary.description}</p>
-                                        <Button
-                                            variant={selectedSummary.some(s => s.id === summary.id) ? "default" : "outline"}
-                                            onClick={() => handleSelectSummary(summary.id)}
-                                            className="w-full"
-                                        >
-                                            {selectedSummary.some(s => s.id === summary.id)
-                                                ? 'Sélectionné'
-                                                : 'Sélectionner'}
-                                        </Button>
-                                    </CardContent>
-                                </Card>
-                            </motion.div>
-                        ))}
-                    </AnimatePresence>
+                                    </div>
+                                </form>
+                            </CardContent>
+                        </Card>
+                    </motion.div>
+                )}
+            </AnimatePresence>
+
+            <div className="space-y-4">
+                <div className="relative">
+                    <Input
+                        type="text"
+                        placeholder="Rechercher un résumé..."
+                        value={searchQuery}
+                        onChange={e => setSearchQuery(e.target.value)}
+                        className="max-w-md border-amber-200 focus:ring-amber-500"
+                    />
                 </div>
 
-                {filteredSummaries.length === 0 && (
-                    <Card>
-                        <CardContent className="text-center py-6">
-                            <p className="text-gray-500">
-                                {searchQuery
-                                    ? "Aucun résumé ne correspond à votre recherche."
-                                    : "Aucun résumé disponible. Créez votre premier résumé !"}
-                            </p>
-                        </CardContent>
-                    </Card>
-                )}
+                <ScrollArea className="h-[500px] pr-4">
+                    <div className="space-y-4">
+                        <AnimatePresence>
+                            {filteredSummaries.map((summary) => (
+                                <motion.div
+                                    key={summary.id}
+                                    initial={{ opacity: 0, x: -20 }}
+                                    animate={{ opacity: 1, x: 0 }}
+                                    exit={{ opacity: 0, x: 20 }}
+                                    className="group"
+                                >
+                                    <Card className={`
+                                        border-amber-100 transition-all duration-200
+                                        ${selectedSummary.some(s => s.id === summary.id)
+                                        ? 'shadow-md bg-gradient-to-r from-amber-50 to-purple-50'
+                                        : 'hover:shadow-md'
+                                    }
+                                    `}>
+                                        <CardHeader className="flex flex-row justify-between items-start space-y-0">
+                                            <div className="flex items-center gap-2">
+                                                <CardTitle className="text-lg">
+                                                    {summary.name}
+                                                </CardTitle>
+                                                {selectedSummary.some(s => s.id === summary.id) && (
+                                                    <CheckCircle className="w-4 h-4 text-green-500" />
+                                                )}
+                                            </div>
+                                            <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                                                <Button
+                                                    variant="ghost"
+                                                    size="icon"
+                                                    onClick={() => handleSelect(summary)}
+                                                    className="hover:bg-amber-50"
+                                                >
+                                                    <PencilIcon className="h-4 w-4 text-amber-500" />
+                                                </Button>
+                                                <Button
+                                                    variant="ghost"
+                                                    size="icon"
+                                                    onClick={() => handleDelete(summary.id)}
+                                                    className="hover:bg-red-50"
+                                                >
+                                                    <TrashIcon className="h-4 w-4 text-red-500" />
+                                                </Button>
+                                            </div>
+                                        </CardHeader>
+                                        <CardContent className="space-y-4">
+                                            <p className="text-sm text-gray-600">{summary.description}</p>
+                                            <Button
+                                                variant={selectedSummary.some(s => s.id === summary.id) ? "default" : "outline"}
+                                                onClick={() => handleSelectSummary(summary.id)}
+                                                className={`w-full group ${
+                                                    selectedSummary.some(s => s.id === summary.id)
+                                                        ? 'bg-gradient-to-r from-amber-500 to-purple-500 hover:from-amber-600 hover:to-purple-600 text-white'
+                                                        : 'border-amber-200 hover:bg-amber-50'
+                                                }`}
+                                            >
+                                                <div className="flex items-center justify-center gap-2">
+                                                    {selectedSummary.some(s => s.id === summary.id)
+                                                        ? 'Sélectionné'
+                                                        : 'Sélectionner'}
+                                                    <ChevronRight className={`w-4 h-4 transition-transform group-hover:translate-x-1 ${
+                                                        selectedSummary.some(s => s.id === summary.id) ? 'text-white' : 'text-amber-500'
+                                                    }`} />
+                                                </div>
+                                            </Button>
+                                        </CardContent>
+                                    </Card>
+                                </motion.div>
+                            ))}
+                        </AnimatePresence>
+
+                        {filteredSummaries.length === 0 && (
+                            <motion.div
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: 1 }}
+                            >
+                                <Alert variant="default" className="bg-gradient-to-r from-amber-50 to-purple-50 border-amber-100">
+                                    <AlertDescription className="text-center py-4">
+                                        {searchQuery
+                                            ? "Aucun résumé ne correspond à votre recherche."
+                                            : "Créez votre premier résumé professionnel !"}
+                                    </AlertDescription>
+                                </Alert>
+                            </motion.div>
+                        )}
+                    </div>
+                </ScrollArea>
             </div>
         </div>
     );

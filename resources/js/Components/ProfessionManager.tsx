@@ -1,14 +1,14 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { Button } from '@/Components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/Components/ui/select';
-import { Card, CardHeader, CardContent, CardFooter } from '@/Components/ui/card';
+import { Card, CardHeader, CardContent, CardTitle, CardDescription } from '@/Components/ui/card';
 import { Badge } from '@/Components/ui/badge';
 import { Input } from '@/Components/ui/input';
-import { Briefcase, X, Search } from 'lucide-react';
+import { Briefcase, X, Search, GraduationCap, CheckCircle } from 'lucide-react';
 import { useToast } from '@/Components/ui/use-toast';
+import { ScrollArea } from "@/Components/ui/scroll-area";
 import axios from 'axios';
 import { motion, AnimatePresence } from 'framer-motion';
-import Swal from 'sweetalert2';
 
 interface Profession {
     id: number;
@@ -35,14 +35,20 @@ const ProfessionManager: React.FC<Props> = ({ auth, availableProfessions, initia
     }, [initialUserProfession]);
 
     const filteredProfessions = useMemo(() => {
-        return availableProfessions.filter(profession =>
-            profession.name.toLowerCase().includes(searchTerm.toLowerCase())
-        );
+        return availableProfessions
+            .filter(profession =>
+                profession.name.toLowerCase().includes(searchTerm.toLowerCase())
+            )
+            .sort((a, b) => a.name.localeCompare(b.name, 'fr', { sensitivity: 'base' }));
     }, [availableProfessions, searchTerm]);
 
     const handleSelectProfession = async () => {
         if (!selectedProfessionId) {
-            toast({ title: 'Please select a profession', variant: 'destructive' });
+            toast({
+                title: 'Erreur',
+                description: 'Veuillez sélectionner une formation',
+                variant: 'destructive'
+            });
             return;
         }
 
@@ -57,146 +63,145 @@ const ProfessionManager: React.FC<Props> = ({ auth, availableProfessions, initia
                 setUserProfession(newProfession);
                 onUpdate(newProfession);
                 toast({
-                    title: 'Profession assigned successfully',
-                    description: `You are now registered as a ${newProfession.name}.`
+                    title: 'Formation mise à jour',
+                    description: `Vous êtes maintenant enregistré en tant que ${newProfession.name}.`
                 });
             }
         } catch (error) {
             toast({
-                title: 'Error assigning profession',
-                description: error.response?.data?.message || 'An error occurred.',
+                title: 'Erreur',
+                description: error.response?.data?.message || 'Une erreur est survenue.',
                 variant: 'destructive'
             });
         }
     };
 
     const handleRemoveProfession = async () => {
-        const result = await Swal.fire({
-            title: 'Remove Profession?',
-            text: "Are you sure you want to remove your profession?",
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#3085d6',
-            cancelButtonColor: '#d33',
-            confirmButtonText: 'Yes',
-            cancelButtonText: 'No',
-            toast: true,
-            position: 'top-end',
-            timer: 5000,
-            timerProgressBar: true,
-        });
-
-        if (result.isConfirmed) {
-            try {
-                await axios.delete(`/user-professions/${auth.user.id}`);
-                setUserProfession(null);
-                setSelectedProfessionId(null);
-                onUpdate(null);
-                toast({ title: 'Profession removed successfully' });
-            } catch (error) {
-                toast({
-                    title: 'Error removing profession',
-                    description: error.response?.data?.message || 'An error occurred.',
-                    variant: 'destructive'
-                });
-            }
+        try {
+            await axios.delete(`/user-professions/${auth.user.id}`);
+            setUserProfession(null);
+            setSelectedProfessionId(null);
+            onUpdate(null);
+            toast({
+                title: 'Formation retirée',
+                description: 'Votre formation a été retirée avec succès.'
+            });
+        } catch (error) {
+            toast({
+                title: 'Erreur',
+                description: error.response?.data?.message || 'Une erreur est survenue.',
+                variant: 'destructive'
+            });
         }
     };
 
     return (
-        <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.5 }}
-            className="w-full max-w-md mx-auto"
-        >
-            <Card>
+        <div className="space-y-6">
+            <div className="flex flex-col md:flex-row justify-between items-center gap-4">
+                <div>
+                    <h2 className="text-2xl font-bold text-gray-800">Ma Formation</h2>
+                    <p className="text-gray-500">Indiquez votre parcours académique</p>
+                </div>
+            </div>
+
+            <Card className="border-amber-100 shadow-md">
                 <CardHeader>
-                    <motion.h2
-                        initial={{ y: -50 }}
-                        animate={{ y: 0 }}
-                        transition={{ type: "spring", stiffness: 300, damping: 20 }}
-                        className="text-2xl font-bold flex items-center"
-                    >
-                        <Briefcase className="mr-2" /> Manage Your Profession
-                    </motion.h2>
+                    <CardTitle className="text-lg font-semibold">
+                        <div className="flex items-center gap-2">
+                            <GraduationCap className="w-5 h-5 text-amber-500" />
+                            Gérer ma formation
+                        </div>
+                    </CardTitle>
+                    <CardDescription>
+                        Sélectionnez votre formation actuelle
+                    </CardDescription>
                 </CardHeader>
-                <CardContent className="space-y-4">
-                    <motion.div
-                        initial={{ y: -20, opacity: 0 }}
-                        animate={{ y: 0, opacity: 1 }}
-                        transition={{ duration: 0.3 }}
-                        className="relative"
-                    >
-                        <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 text-gray-400" />
+
+                <CardContent className="space-y-6">
+                    <div className="relative">
+                        <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 text-amber-500" />
                         <Input
                             type="text"
-                            placeholder="Search professions..."
+                            placeholder="Rechercher une formation..."
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
-                            className="pl-10"
+                            className="pl-10 border-amber-200 focus:ring-amber-500"
                         />
-                    </motion.div>
-                    <motion.div
-                        initial={{ y: -20, opacity: 0 }}
-                        animate={{ y: 0, opacity: 1 }}
-                        transition={{ duration: 0.3 }}
-                        className="flex items-center space-x-2"
-                    >
-                        <Select
-                            value={selectedProfessionId?.toString() || ''}
-                            onValueChange={(value) => setSelectedProfessionId(parseInt(value))}
-                        >
-                            <SelectTrigger className="w-full">
-                                <SelectValue placeholder="Select a profession" />
-                            </SelectTrigger>
-                            <SelectContent>
-                                {filteredProfessions.map((profession) => (
-                                    <SelectItem key={profession.id} value={profession.id.toString()}>
-                                        {profession.name}
-                                    </SelectItem>
-                                ))}
-                            </SelectContent>
-                        </Select>
-                        <Button onClick={handleSelectProfession}>
-                            Assign
-                        </Button>
-                    </motion.div>
-                    {userProfession && (
-                        <motion.div
-                            initial={{ y: -20, opacity: 0 }}
-                            animate={{ y: 0, opacity: 1 }}
-                            transition={{ duration: 0.3 }}
-                            className="mt-4"
-                        >
-                            <h3 className="text-lg font-semibold mb-2">Your Current Profession</h3>
-                            <Badge
-                                variant="secondary"
-                                className="flex items-center justify-between w-full p-2"
+                    </div>
+
+                    <div className="flex flex-col md:flex-row gap-2">
+                        <div className="flex-1">
+                            <Select
+                                value={selectedProfessionId?.toString() || ''}
+                                onValueChange={(value) => setSelectedProfessionId(parseInt(value))}
                             >
-                                <span className="text-lg">{userProfession.name}</span>
-                                <Button
-                                    variant="ghost"
-                                    size="sm"
-                                    onClick={handleRemoveProfession}
-                                    className="h-8 w-8 p-0"
-                                >
-                                    <X className="h-5 w-5" />
-                                </Button>
-                            </Badge>
-                            <p className="mt-2 text-sm text-gray-600">{userProfession.description}</p>
-                        </motion.div>
-                    )}
+                                <SelectTrigger className="border-amber-200 focus:ring-amber-500">
+                                    <SelectValue placeholder="Sélectionner une formation" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    {filteredProfessions.map((profession) => (
+                                        <SelectItem key={profession.id} value={profession.id.toString()}>
+                                            {profession.name}
+                                        </SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </Select>
+                        </div>
+                        <Button
+                            onClick={handleSelectProfession}
+                            className="bg-gradient-to-r from-amber-500 to-purple-500 hover:from-amber-600 hover:to-purple-600 text-white"
+                        >
+                            Sélectionner
+                        </Button>
+                    </div>
+
+                    <AnimatePresence mode="wait">
+                        {userProfession ? (
+                            <motion.div
+                                key="profession"
+                                initial={{ opacity: 0, y: 20 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                exit={{ opacity: 0, y: -20 }}
+                                className="rounded-lg bg-gradient-to-r from-amber-50 to-purple-50 p-4 border border-amber-100"
+                            >
+                                <div className="flex items-center justify-between mb-2">
+                                    <div className="flex items-center gap-2">
+                                        <GraduationCap className="w-5 h-5 text-amber-500" />
+                                        <h3 className="text-lg font-semibold">Formation actuelle</h3>
+                                    </div>
+                                    {/*<Button*/}
+                                    {/*    variant="ghost"*/}
+                                    {/*    size="sm"*/}
+                                    {/*    onClick={handleRemoveProfession}*/}
+                                    {/*    className="hover:bg-red-100 hover:text-red-500"*/}
+                                    {/*>*/}
+                                    {/*    <X className="h-4 w-4" />*/}
+                                    {/*</Button>*/}
+                                </div>
+                                <div className="space-y-2">
+                                    <Badge
+                                        variant="secondary"
+                                        className="bg-white px-3 py-1.5 text-base"
+                                    >
+                                        {userProfession.name}
+                                    </Badge>
+                                    <p className="text-sm text-gray-600">{userProfession.description}</p>
+                                </div>
+                            </motion.div>
+                        ) : (
+                            <motion.div
+                                key="no-profession"
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: 1 }}
+                                className="text-center py-6 text-gray-500 italic"
+                            >
+                                Aucune formation sélectionnée
+                            </motion.div>
+                        )}
+                    </AnimatePresence>
                 </CardContent>
-                <CardFooter>
-                    <p className="text-sm text-gray-500">
-                        {userProfession
-                            ? "You can change your profession at any time."
-                            : "Select a profession to get started."}
-                    </p>
-                </CardFooter>
             </Card>
-        </motion.div>
+        </div>
     );
 };
 

@@ -149,6 +149,7 @@ const PersonalInfoCard = ({ item, onEdit, updateCvInformation }) => {
             width,
             height
         );
+        //@ts-ignore
         setCrop(crop);
     };
 
@@ -232,8 +233,11 @@ const PersonalInfoCard = ({ item, onEdit, updateCvInformation }) => {
                         <div className="space-y-4">
                             {uploadedImage && (
                                 <ReactCrop
+                                    //@ts-ignore
                                     crop={crop}
+                                    //@ts-ignore
                                     onChange={c => setCrop(c)}
+                                    //@ts-ignore
                                     onComplete={c => setCompletedCrop(c)}
                                     aspect={1}
                                     className="max-w-full"

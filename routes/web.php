@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\{AddressController,
     CareerAdvisorController,
+    ChatHistoryController,
     CompetenceController,
     CvGalleryController,
     CvInfosController,

@@ -37,6 +37,57 @@ class CareerAdvisorController extends Controller
             ] : null
         ]);
     }
+    public function export(Request $request)
+    {
+        try {
+            $validated = $request->validate([
+                'contextId' => 'required|string',
+                'format' => 'required|string|in:pdf,docx',
+                'serviceId' => 'required|string'
+            ]);
+
+            // Récupérer l'historique de chat
+            $chatHistory = ChatHistory::where('context_id', $validated['contextId'])
+                ->where('user_id', auth()->id())
+                ->firstOrFail();
+
+            $messages = json_decode($chatHistory->messages, true);
+
+            // Construire le contenu du document
+            $content = "";
+            foreach ($messages as $message) {
+                $content .= ($message['role'] === 'user' ? "Question: " : "Réponse: ") . "\n";
+                $content .= $message['content'] . "\n\n";
+            }
+
+            if ($validated['format'] === 'pdf') {
+                $pdf = Pdf::loadView('exports.chat', [
+                    'content' => $content,
+                    'title' => 'Historique de conversation'
+                ]);
+
+                return $pdf->download('conversation.pdf');
+            } else {
+                // Pour le format DOCX, utilisez PhpWord
+                $phpWord = new \PhpOffice\PhpWord\PhpWord();
+                $section = $phpWord->addSection();
+
+                $section->addTitle('Historique de conversation', 1);
+                $section->addText($content);
+
+                $objWriter = \PhpOffice\PhpWord\IOFactory::createWriter($phpWord, 'Word2007');
+
+                $temp_file = tempnam(sys_get_temp_dir(), 'chat_');
+                $objWriter->save($temp_file);
+
+                return response()->download($temp_file, 'conversation.docx')
+                    ->deleteFileAfterSend(true);
+            }
+        } catch (\Exception $e) {
+            Log::error('Export error: ' . $e->getMessage());
+            return response()->json(['error' => 'Une erreur est survenue lors de l\'export'], 500);
+        }
+    }
     public function chat(Request $request)
     {
         try {
@@ -199,5 +250,74 @@ class CareerAdvisorController extends Controller
                 ->pluck('name')
                 ->toArray()
         ];
+    }
+
+
+
+    private function generatePdf($messages, $serviceId)
+    {
+        $content = $this->formatContent($messages, $serviceId);
+
+        $pdf = PDF::loadView('exports.chat', [
+            'content' => $content,
+            'title' => 'Document généré par Assistant Guidy',
+            'date' => now()->format('d/m/Y H:i')
+        ]);
+
+        return $pdf->download('document-guidy.pdf');
+    }
+
+    private function generateDocx($messages, $serviceId)
+    {
+        $phpWord = new PhpWord();
+        $section = $phpWord->addSection();
+
+        // Add title
+        $section->addText(
+            'Document généré par Assistant Guidy',
+            ['bold' => true, 'size' => 16],
+            ['alignment' => 'center', 'spaceAfter' => 400]
+        );
+
+        // Add date
+        $section->addText(
+            'Date: ' . now()->format('d/m/Y H:i'),
+            ['size' => 10],
+            ['alignment' => 'right', 'spaceAfter' => 400]
+        );
+
+        foreach ($messages as $message) {
+            $section->addText(
+                ($message['role'] === 'user' ? 'Question:' : 'Réponse:'),
+                ['bold' => true],
+                ['spaceAfter' => 0]
+            );
+            $section->addText(
+                $message['content'],
+                [],
+                ['spaceAfter' => 200]
+            );
+        }
+
+        $filename = storage_path('app/public/temp/' . uniqid() . '.docx');
+        $objWriter = IOFactory::createWriter($phpWord, 'Word2007');
+        $objWriter->save($filename);
+
+        return response()->download($filename)->deleteFileAfterSend(true);
+    }
+
+    private function formatContent($messages, $serviceId)
+    {
+        $content = [];
+
+        foreach ($messages as $message) {
+            $content[] = [
+                'role' => $message['role'],
+                'content' => $message['content'],
+                'timestamp' => $message['timestamp'] ?? now()->toDateTimeString()
+            ];
+        }
+
+        return $content;
     }
 }

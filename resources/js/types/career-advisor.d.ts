@@ -1,42 +1,13 @@
-// types/career-advisor.d.ts
+// resources/js/types/careerAdvisor.ts
+import { LucideIcon } from 'lucide-react';
 
-export interface UserInfo {
-    name: string;
-    profession?: string;
-    experiences: Experience[];
-    competences: string[];
-    education: Education[];
-    languages: Language[];
+export interface User {
+    id: number;
+    wallet_balance: number;
 }
 
-export interface Experience {
-    title: string;
-    company: string;
-    duration: string;
-    description?: string;
-}
-
-export interface Education {
-    degree: string;
-    institution: string;
-    year: string;
-    field?: string;
-}
-
-export interface Language {
-    name: string;
-    level: string;
-}
-
-export interface Message {
-    role: 'user' | 'assistant';
-    content: string;
-    timestamp: Date;
-}
-
-export interface ChatHistory {
-    messages: Message[];
-    contextId: string;
+export interface Auth {
+    user: User;
 }
 
 export interface Service {
@@ -49,21 +20,13 @@ export interface Service {
     formats: string[];
 }
 
-export interface ExportRequest {
-    contextId: string;
-    format: 'pdf' | 'docx';
-    serviceId: string;
+export interface Message {
+    role: 'user' | 'assistant';
+    content: string;
+    timestamp: Date;
 }
 
-export interface AIResponse {
-    message: string;
-    tokens: number;
-}
-
-export interface ChatRequest {
-    message: string;
+export interface ConversationHistory {
+    messages: Message[];
     contextId: string;
-    language: 'fr' | 'en';
-    serviceId: string;
-    history?: Message[];
 }

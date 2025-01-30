@@ -2,63 +2,87 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\DocumentExport;
 use Illuminate\Http\Request;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Storage;
 
 class DocumentExportController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * Get all exports for the authenticated user
+     *
+     * @param Request $request
+     * @return JsonResponse
      */
-    public function index()
+    public function index(Request $request): JsonResponse
     {
-        //
+        $exports = DocumentExport::where('user_id', auth()->id())
+            ->with('chatHistory')
+            ->orderBy('created_at', 'desc')
+            ->paginate($request->input('per_page', 10));
+
+        return response()->json($exports);
     }
 
     /**
-     * Show the form for creating a new resource.
+     * Download a specific export
+     *
+     * @param DocumentExport $export
+     * @return \Symfony\Component\HttpFoundation\StreamedResponse|JsonResponse
      */
-    public function create()
+    public function download(DocumentExport $export)
     {
-        //
+        if ($export->user_id !== auth()->id()) {
+            return response()->json(['error' => 'Unauthorized'], 403);
+        }
+
+        if (!Storage::exists("exports/{$export->file_path}")) {
+            return response()->json(['error' => 'File not found'], 404);
+        }
+
+        return Storage::download(
+            "exports/{$export->file_path}",
+            "career_document.{$export->format}"
+        );
     }
 
     /**
-     * Store a newly created resource in storage.
+     * Delete an export
+     *
+     * @param DocumentExport $export
+     * @return JsonResponse
      */
-    public function store(Request $request)
+    public function destroy(DocumentExport $export): JsonResponse
     {
-        //
+        if ($export->user_id !== auth()->id()) {
+            return response()->json(['error' => 'Unauthorized'], 403);
+        }
+
+        // Delete the file from storage
+        if (Storage::exists("exports/{$export->file_path}")) {
+            Storage::delete("exports/{$export->file_path}");
+        }
+
+        $export->delete();
+
+        return response()->json([
+            'message' => 'Export deleted successfully'
+        ]);
     }
 
     /**
-     * Display the specified resource.
+     * Get details of a specific export
+     *
+     * @param DocumentExport $export
+     * @return JsonResponse
      */
-    public function show(string $id)
+    public function show(DocumentExport $export): JsonResponse
     {
-        //
-    }
+        if ($export->user_id !== auth()->id()) {
+            return response()->json(['error' => 'Unauthorized'], 403);
+        }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
-    {
-        //
+        return response()->json($export->load('chatHistory'));
     }
 }

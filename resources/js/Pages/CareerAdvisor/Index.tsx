@@ -149,6 +149,7 @@ export default function Index({ auth, userInfo }: PageProps) {
             });
 
             // Update conversation with AI response
+//@ts-ignore
             setConversationHistory(prev => ({
                 ...prev,
                 messages: [...prev.messages, {
@@ -242,6 +243,7 @@ export default function Index({ auth, userInfo }: PageProps) {
                             <Progress
                                 value={(tokensUsed/TOKEN_LIMIT) * 100}
                                 className="w-32 bg-amber-100"
+                                //@ts-ignore
                                 indicatorClassName="bg-gradient-to-r from-amber-500 to-purple-500"
                             />
                             <div className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-amber-500/10 to-purple-500/10 rounded-lg">

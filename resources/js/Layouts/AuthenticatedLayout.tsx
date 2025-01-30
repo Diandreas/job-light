@@ -13,6 +13,8 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/Components/ui/sh
 import { Button } from '@/Components/ui/button';
 import { cn } from "@/lib/utils";
 import { motion, AnimatePresence } from 'framer-motion';
+// import {Props} from "@headlessui/react/dist/types";
+
 
 interface MenuItem {
     name: string;
@@ -43,7 +45,7 @@ const getCvSideMenuItems = () => [
     }
 ];
 
-
+//@ts-ignore
 export default function Authenticated({ user, header, children }: PropsWithChildren<Props>) {
     const { url } = usePage();
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);

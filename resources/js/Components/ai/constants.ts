@@ -1,6 +1,6 @@
 // resources/js/Components/ai/constants.ts
 import { Brain, FileText, MessageSquare, PenTool } from 'lucide-react';
-import { Service } from '@/types/careerAdvisor';
+import { Service } from '@/types/career-advisor';
 
 export const DEFAULT_PROMPTS = {
     'career-advice': {

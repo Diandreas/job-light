@@ -2,63 +2,61 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\ChatHistory;
 use Illuminate\Http\Request;
+use Illuminate\Http\JsonResponse;
 
 class ChatHistoryController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * Get chat history for a specific context
+     *
+     * @param string $contextId
+     * @return JsonResponse
      */
-    public function index()
+    public function show(string $contextId): JsonResponse
     {
-        //
+        $chatHistory = ChatHistory::where('context_id', $contextId)
+            ->where('user_id', auth()->id())
+            ->firstOrFail();
+
+        return response()->json([
+            'messages' => json_decode($chatHistory->messages),
+            'contextId' => $chatHistory->context_id
+        ]);
     }
 
     /**
-     * Show the form for creating a new resource.
+     * Delete a specific chat history
+     *
+     * @param string $contextId
+     * @return JsonResponse
      */
-    public function create()
+    public function destroy(string $contextId): JsonResponse
     {
-        //
+        $chatHistory = ChatHistory::where('context_id', $contextId)
+            ->where('user_id', auth()->id())
+            ->firstOrFail();
+
+        $chatHistory->delete();
+
+        return response()->json([
+            'message' => 'Chat history deleted successfully'
+        ]);
     }
 
     /**
-     * Store a newly created resource in storage.
+     * Get all chat histories for the authenticated user
+     *
+     * @param Request $request
+     * @return JsonResponse
      */
-    public function store(Request $request)
+    public function index(Request $request): JsonResponse
     {
-        //
-    }
+        $histories = ChatHistory::where('user_id', auth()->id())
+            ->orderBy('updated_at', 'desc')
+            ->paginate($request->input('per_page', 10));
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
-    {
-        //
+        return response()->json($histories);
     }
 }

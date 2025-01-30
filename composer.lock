@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "cc11950d428a7ee2abeeb2ede8776052",
+    "content-hash": "7583cbe354e25ac26b4a84a8dce097ce",
     "packages": [
         {
             "name": "amphp/amp",
@@ -2267,12 +2267,12 @@
             "type": "library",
             "extra": {
                 "laravel": {
-                    "providers": [
-                        "HelgeSverre\\Mistral\\MistralServiceProvider"
-                    ],
                     "aliases": {
                         "Mistral": "HelgeSverre\\Mistral\\Facades\\Mistral"
-                    }
+                    },
+                    "providers": [
+                        "HelgeSverre\\Mistral\\MistralServiceProvider"
+                    ]
                 }
             },
             "autoload": {

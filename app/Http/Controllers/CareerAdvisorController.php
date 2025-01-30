@@ -4,30 +4,21 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use App\Models\ChatHistory;
-use App\Models\DocumentExport;
-use App\Services\AIService;
-use App\Services\DocumentGenerator;
 use Illuminate\Http\Request;
-use Inertia\Inertia;
+use Illuminate\Support\Facades\Log;
 use HelgeSverre\Mistral\Mistral;
-use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Str;
+use HelgeSverre\Mistral\Enums\Model;
+use HelgeSverre\Mistral\Enums\Role;
+use Inertia\Inertia;
 
 class CareerAdvisorController extends Controller
 {
     protected $mistral;
-    protected $aiService;
-    protected $documentGenerator;
     protected $maxHistory = 3;
 
-    public function __construct(
-        Mistral $mistral,
-        AIService $aiService,
-        DocumentGenerator $documentGenerator
-    ) {
-        $this->mistral = $mistral;
-        $this->aiService = $aiService;
-        $this->documentGenerator = $documentGenerator;
+    public function __construct()
+    {
+        $this->mistral = new Mistral(apiKey: config('mistral.api_key'));
     }
 
     public function index()
@@ -46,150 +37,167 @@ class CareerAdvisorController extends Controller
             ] : null
         ]);
     }
-
     public function chat(Request $request)
     {
-        $request->validate([
-            'message' => 'required|string',
-            'contextId' => 'required|string',
-            'language' => 'required|string|in:fr,en',
-            'serviceId' => 'required|string',
-            'history' => 'array'
-        ]);
-
-        $user = auth()->user();
-        $userInfo = $this->getUserRelevantInfo($user);
-
         try {
-            // Construire le contexte
-            $context = [
-                'user_info' => $userInfo,
-                'language' => $request->language,
-                'service_id' => $request->serviceId,
-                'history' => array_slice($request->history ?? [], -$this->maxHistory)
+            // Valider la requête
+            $validated = $request->validate([
+                'message' => 'required|string',
+                'contextId' => 'required|string',
+                'language' => 'required|string|in:fr,en',
+                'serviceId' => 'required|string',
+                'history' => 'array'
+            ]);
+
+            $user = auth()->user();
+            $userInfo = $this->getUserRelevantInfo($user);
+
+            // Préparer les messages
+            $messages = [];
+            $messages[] = [
+                'role' => Role::system->value,
+                'content' => $this->getSystemPrompt($validated['language'])
             ];
 
-            // Obtenir la réponse de l'IA
-            $response = $this->aiService->getResponse($request->message, $context);
+            // Ajouter l'historique si présent
+            if (!empty($validated['history'])) {
+                foreach ($validated['history'] as $msg) {
+                    $messages[] = [
+                        'role' => $msg['role'],
+                        'content' => $msg['content']
+                    ];
+                }
+            }
+
+            // Ajouter le message actuel
+            $messages[] = [
+                'role' => Role::user->value,
+                'content' => $this->buildPrompt(
+                    $validated['message'],
+                    $validated['language'],
+                    $validated['serviceId'],
+                    $userInfo
+                )
+            ];
+
+            // Appeler l'API Mistral
+            $response = $this->mistral->chat()->create(
+                messages: $messages,
+                model: Model::large->value,
+                temperature: 0.7,
+                maxTokens: 1000,
+                safeMode: true
+            );
+
+            $dto = $response->dto();
+            $aiResponse = $dto->choices[0]->message->content;
 
             // Sauvegarder l'historique
-            $this->saveHistory($user->id, $request->contextId, $request->message, $response);
+            $this->saveHistory(
+                $user->id,
+                $validated['contextId'],
+                $validated['message'],
+                $aiResponse
+            );
 
             return response()->json([
-                'message' => $response['content'],
-                'tokens' => $response['tokens']
+                'message' => $aiResponse,
+                'tokens' => $dto->usage->totalTokens ?? 0
             ]);
 
         } catch (\Exception $e) {
-            report($e);
+            Log::error('Career advisor error: ' . $e->getMessage(), [
+                'user_id' => auth()->id(),
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+
             return response()->json([
                 'error' => 'Une erreur est survenue lors du traitement de votre demande'
             ], 500);
         }
     }
 
-    public function export(Request $request)
+    private function getSystemPrompt($language)
     {
-        $request->validate([
-            'contextId' => 'required|string',
-            'format' => 'required|string|in:pdf,docx',
-            'serviceId' => 'required|string'
-        ]);
+        $prompts = [
+            'fr' => "Vous êtes un conseiller professionnel expert. Votre rôle est d'aider les utilisateurs dans leur développement de carrière.
+                    Répondez de manière claire, structurée et bienveillante en français.
+                    Donnez des conseils pratiques et applicables.",
+            'en' => "You are an expert career advisor. Your role is to help users in their career development.
+                    Respond clearly, in a structured and supportive way in English.
+                    Provide practical and actionable advice."
+        ];
 
-        try {
-            $chatHistory = ChatHistory::where('context_id', $request->contextId)
-                ->firstOrFail();
+        return $prompts[$language];
+    }
 
-            $content = json_decode($chatHistory->messages, true);
-            $format = $request->format;
+    private function buildPrompt($message, $language, $serviceId, $userInfo)
+    {
+        $prompts = [
+            'career-advice' => [
+                'fr' => "Conseils de carrière pour le profil suivant :",
+                'en' => "Career advice for the following profile:"
+            ],
+            'interview-prep' => [
+                'fr' => "Préparation d'entretien pour le profil suivant :",
+                'en' => "Interview preparation for the following profile:"
+            ]
+        ];
 
-            // Générer le document
-            $document = $this->documentGenerator->generate(
-                $content,
-                $format,
-                $request->serviceId
-            );
+        $basePrompt = $prompts[$serviceId][$language] ?? $prompts['career-advice'][$language];
+        $profileInfo = json_encode($userInfo, JSON_PRETTY_PRINT);
 
-            // Sauvegarder l'export
-            $fileName = Str::random(40) . '.' . $format;
-            Storage::put("exports/{$fileName}", $document);
-
-            DocumentExport::create([
-                'user_id' => auth()->id(),
-                'chat_history_id' => $chatHistory->id,
-                'file_path' => $fileName,
-                'format' => $format
-            ]);
-
-            // Retourner le fichier
-            return response()->streamDownload(function() use ($document) {
-                echo $document;
-            }, "career_document.{$format}");
-
-        } catch (\Exception $e) {
-            report($e);
-            return response()->json([
-                'error' => 'Erreur lors de l\'export du document'
-            ], 500);
-        }
+        return "{$basePrompt}\n\nProfil:\n{$profileInfo}\n\nQuestion: {$message}";
     }
 
     private function saveHistory($userId, $contextId, $userMessage, $aiResponse)
     {
-        $chatHistory = ChatHistory::firstOrNew([
-            'user_id' => $userId,
-            'context_id' => $contextId
-        ]);
+        try {
+            $chatHistory = ChatHistory::firstOrNew([
+                'user_id' => $userId,
+                'context_id' => $contextId
+            ]);
 
-        $messages = json_decode($chatHistory->messages ?? '[]', true);
-        $messages[] = [
-            'role' => 'user',
-            'content' => $userMessage,
-            'timestamp' => now()
-        ];
-        $messages[] = [
-            'role' => 'assistant',
-            'content' => $aiResponse['content'],
-            'timestamp' => now()
-        ];
+            $messages = json_decode($chatHistory->messages ?? '[]', true);
+            $messages[] = [
+                'role' => 'user',
+                'content' => $userMessage,
+                'timestamp' => now()->toIso8601String()
+            ];
+            $messages[] = [
+                'role' => 'assistant',
+                'content' => $aiResponse,
+                'timestamp' => now()->toIso8601String()
+            ];
 
-        // Garder seulement les 3 derniers échanges
-        $messages = array_slice($messages, -($this->maxHistory * 2));
+            $messages = array_slice($messages, -($this->maxHistory * 2));
 
-        $chatHistory->messages = json_encode($messages);
-        $chatHistory->save();
+            $chatHistory->messages = json_encode($messages);
+            $chatHistory->save();
+        } catch (\Exception $e) {
+            Log::error('Error saving chat history: ' . $e->getMessage());
+        }
     }
 
-    private function getUserRelevantInfo(User $user)
+    private function getUserRelevantInfo($user)
     {
         return [
             'name' => $user->name,
-            'profession' => $user->profession?->name,
-            'experiences' => $user->experiences->map(function ($experience) {
-                return [
-                    'title' => $experience->name,
-                    'company' => $experience->InstitutionName,
-                    'duration' => $experience->date_start . ' - ' . ($experience->date_end ?? 'Present'),
-                    'description' => $experience->description
-                ];
-            }),
-            'competences' => $user->competences->pluck('name'),
-            'education' => $user->experiences
-                ->where('experience_categories_id', 2)
-                ->map(function ($education) {
-                    return [
-                        'degree' => $education->name,
-                        'institution' => $education->InstitutionName,
-                        'year' => $education->date_end,
-                        'field' => $education->field
-                    ];
-                }),
-            'languages' => $user->languages ? $user->languages->map(function ($language) {
-                return [
-                    'name' => $language->name,
-                    'level' => $language->pivot->level
-                ];
-            }) : [],
+            'profession' => $user->profession?->name ?? 'Non spécifié',
+            'experiences' => $user->experiences()
+                ->orderBy('date_start', 'desc')
+                ->take(3)
+                ->get()
+                ->map(fn($exp) => [
+                    'title' => $exp->name,
+                    'company' => $exp->InstitutionName,
+                    'duration' => $exp->date_start . ' - ' . ($exp->date_end ?? 'Present')
+                ])->toArray(),
+            'competences' => $user->competences()
+                ->take(5)
+                ->pluck('name')
+                ->toArray()
         ];
     }
 }

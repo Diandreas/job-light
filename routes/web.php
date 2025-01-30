@@ -33,6 +33,24 @@ Route::get('/', function () {
     return Inertia::render('Welcome');
 })->name('welcome');
 
+// Career Advisor Routes
+Route::prefix('career-advisor')->name('career-advisor.')->middleware(['auth'])->group(function () {
+    Route::get('/', [CareerAdvisorController::class, 'index'])->name('index');
+    Route::post('/chat', [CareerAdvisorController::class, 'chat'])->name('chat');
+    Route::post('/export', [CareerAdvisorController::class, 'export'])->name('export');
+});
+
+// Chat History Routes
+Route::prefix('api')->middleware(['auth'])->group(function () {
+    Route::get('/chat-history/{contextId}', [ChatHistoryController::class, 'show']);
+    Route::delete('/chat-history/{contextId}', [ChatHistoryController::class, 'destroy']);
+    Route::get('/chat-histories', [ChatHistoryController::class, 'index']);
+
+    // Document Export Routes
+    Route::get('/exports', [DocumentExportController::class, 'index']);
+    Route::get('/exports/{export}', [DocumentExportController::class, 'download']);
+    Route::delete('/exports/{export}', [DocumentExportController::class, 'destroy']);
+});
 Route::middleware(['auth'])->group(function () {
     Route::post('/api/process-question-cost', [PaymentController::class, 'processQuestionCost']);
     Route::get('/api/check-download-status/{modelId}', [PaymentController::class, 'checkDownloadStatus']);
@@ -82,20 +100,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // User Competences
 //    Route::resource('user-competences', UserCompetenceController::class)->except(['edit', 'update', 'show']);
 
-    // Career Advisor Routes
-    Route::prefix('career-advisor')->group(function () {
-        Route::get('/', [CareerAdvisorController::class, 'index'])->name('career-advisor.index');
-        Route::post('/chat', [CareerAdvisorController::class, 'chat'])->name('career-advisor.chat');
-        Route::post('/export', [CareerAdvisorController::class, 'export'])->name('career-advisor.export');
-    });
-
-    // API Routes for Career Advisor
-    Route::prefix('api')->group(function () {
-        Route::post('/process-question-cost', [PaymentController::class, 'processQuestionCost']);
-        Route::get('/chat-history/{contextId}', [ChatHistoryController::class, 'show']);
-        Route::get('/user-exports', [DocumentExportController::class, 'index']);
-        Route::delete('/chat-history/{contextId}', [ChatHistoryController::class, 'destroy']);
-    });
 
     Route::post('/update-photo', [PersonalInformationController::class, 'updatePhoto'])
         ->name('personal-information.update-photo');

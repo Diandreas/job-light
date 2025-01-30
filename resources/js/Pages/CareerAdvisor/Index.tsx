@@ -15,14 +15,13 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/Components/ui/select";
-import {AnimatePresence, motion} from 'framer-motion';
+import { AnimatePresence, motion } from 'framer-motion';
 import {
     Sparkles, Briefcase, GraduationCap, MessageSquare,
     Loader, Wallet, ChevronDown, FileText, PenTool,
     Building, Brain, Languages, Download, Clock, LucideIcon, Star
 } from 'lucide-react';
 import axios from 'axios';
-
 
 // Types
 interface User {
@@ -49,6 +48,7 @@ interface Service {
     category: 'advice' | 'document' | 'interactive';
     formats: string[];
 }
+
 interface Message {
     role: 'user' | 'assistant';
     content: string;
@@ -91,11 +91,16 @@ const services = [
         category: 'interactive',
         formats: ['conversation']
     },
-    // ... autres services
+    {
+        id: 'resume-review',
+        icon: PenTool,
+        title: 'Analyse CV',
+        description: 'Suggestions d\'amélioration pour votre CV',
+        cost: 180,
+        category: 'advice',
+        formats: ['conversation']
+    }
 ];
-
-
-
 
 const ServiceCard = ({ icon: Icon, title, description, cost, isSelected, onClick }) => (
     <motion.div
@@ -144,9 +149,8 @@ const MessageBubble = ({ message }) => {
     );
 };
 
-export default function Index({ auth, userInfo }) {
+export default function Index({ auth, userInfo }: PageProps) {
     const { toast } = useToast();
-    const [expandedSections, setExpandedSections] = useState({});
     const [isLoading, setIsLoading] = useState(false);
     const [walletBalance, setWalletBalance] = useState(auth.user.wallet_balance);
     const [selectedService, setSelectedService] = useState(services[0]);
@@ -158,7 +162,7 @@ export default function Index({ auth, userInfo }) {
     const [tokensUsed, setTokensUsed] = useState(0);
     const scrollRef = useRef<HTMLDivElement>(null);
 
-    const { data, setData, post, processing, errors } = useForm({
+    const { data, setData, processing, errors } = useForm({
         question: '',
         contextId: conversationHistory.contextId,
         language: language
@@ -172,6 +176,15 @@ export default function Index({ auth, userInfo }) {
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+        if (!data.question.trim()) {
+            toast({
+                title: "Message vide",
+                description: "Veuillez entrer votre message",
+                variant: "destructive",
+            });
+            return;
+        }
+
         if (walletBalance < selectedService.cost) {
             toast({
                 title: "Solde insuffisant",
@@ -190,6 +203,9 @@ export default function Index({ auth, userInfo }) {
                 service: selectedService.id
             });
 
+            // Update wallet balance immediately after successful payment
+            setWalletBalance(prev => prev - selectedService.cost);
+
             // Update conversation history
             const newMessage: Message = {
                 role: 'user',
@@ -203,7 +219,7 @@ export default function Index({ auth, userInfo }) {
             }));
 
             // Send request with context
-            const response = await axios.post('/api/career-advisor/chat', {
+            const response = await axios.post(route('career-advisor.chat'), {
                 message: data.question,
                 history: conversationHistory.messages.slice(-MAX_HISTORY),
                 contextId: conversationHistory.contextId,
@@ -211,8 +227,7 @@ export default function Index({ auth, userInfo }) {
                 serviceId: selectedService.id
             });
 
-            // Handle response
-            //@ts-ignore
+            // Update conversation with AI response
             setConversationHistory(prev => ({
                 ...prev,
                 messages: [...prev.messages, {
@@ -223,13 +238,25 @@ export default function Index({ auth, userInfo }) {
             }));
 
             setTokensUsed(response.data.tokens);
-            setWalletBalance(prev => prev - selectedService.cost);
             setData('question', '');
 
         } catch (error) {
+            console.error('Error:', error);
+
+            // Attempt to refund if payment was processed but request failed
+            try {
+                await axios.post('/api/update-wallet', {
+                    user_id: auth.user.id,
+                    amount: selectedService.cost
+                });
+                setWalletBalance(prev => prev + selectedService.cost);
+            } catch (refundError) {
+                console.error('Refund failed:', refundError);
+            }
+
             toast({
                 title: "Erreur",
-                description: "Une erreur est survenue",
+                description: error.response?.data?.message || "Une erreur est survenue lors du traitement",
                 variant: "destructive",
             });
         } finally {
@@ -239,14 +266,16 @@ export default function Index({ auth, userInfo }) {
 
     const handleExport = async (format: string) => {
         try {
-            const response = await axios.post('/api/career-advisor/export', {
+            const response = await axios.post(route('career-advisor.export'), {
                 contextId: conversationHistory.contextId,
                 format,
                 serviceId: selectedService.id
-            }, { responseType: 'blob' });
+            }, {
+                responseType: 'blob'
+            });
 
             // Create download link
-            const url = window.URL.createObjectURL(response.data);
+            const url = window.URL.createObjectURL(new Blob([response.data]));
             const link = document.createElement('a');
             link.href = url;
             link.download = `document.${format}`;
@@ -255,6 +284,10 @@ export default function Index({ auth, userInfo }) {
             document.body.removeChild(link);
             window.URL.revokeObjectURL(url);
 
+            toast({
+                title: "Succès",
+                description: "Document exporté avec succès",
+            });
         } catch (error) {
             toast({
                 title: "Erreur export",
@@ -288,8 +321,6 @@ export default function Index({ auth, userInfo }) {
                             <Progress
                                 value={(tokensUsed/TOKEN_LIMIT) * 100}
                                 className="w-32 bg-amber-100"
-                                //@ts-ignore
-                                indicatorClassName="bg-gradient-to-r from-amber-500 to-purple-500"
                             />
                             <div className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-amber-500/10 to-purple-500/10 rounded-lg">
                                 <Wallet className="text-amber-500" />
@@ -299,7 +330,7 @@ export default function Index({ auth, userInfo }) {
                     </div>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                     {services.map(service => (
                         <ServiceCard
                             key={service.id}
@@ -357,22 +388,64 @@ export default function Index({ auth, userInfo }) {
                                 </div>
                                 <Button
                                     type="submit"
-                                    disabled={processing || isLoading}
+                                    disabled={processing || isLoading || !data.question.trim()}
                                     className="bg-gradient-to-r from-amber-500 to-purple-500 hover:from-amber-600 hover:to-purple-600"
-                                >
-                                    {isLoading ? (
-                                        <div className="flex items-center gap-2">
-                                            <Loader className="h-4 w-4 animate-spin" />
-                                            Traitement...
-                                        </div>
-                                    ) : (
-                                        'Envoyer'
-                                    )}
+                                >{isLoading ? (
+                                    <div className="flex items-center gap-2">
+                                        <Loader className="h-4 w-4 animate-spin" />
+                                        Traitement...
+                                    </div>
+                                ) : (
+                                    'Envoyer'
+                                )}
                                 </Button>
                             </div>
                         </form>
                     </div>
                 </Card>
+
+                {/* Advice Section */}
+                <AnimatePresence>
+                    {conversationHistory.messages.length > 0 && (
+                        <motion.div
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={{ opacity: 0, y: -20 }}
+                            className="space-y-4"
+                        >
+                            <Card className="border-amber-100">
+                                <CardHeader>
+                                    <CardTitle className="flex items-center text-amber-500">
+                                        <Sparkles className="mr-2 h-5 w-5" />
+                                        Historique de la conversation
+                                    </CardTitle>
+                                </CardHeader>
+                                <CardContent>
+                                    <div className="space-y-4">
+                                        {conversationHistory.messages.map((message, index) => (
+                                            <div
+                                                key={index}
+                                                className={`p-4 rounded-lg ${
+                                                    message.role === 'user'
+                                                        ? 'bg-gradient-to-r from-amber-500/10 to-purple-500/10'
+                                                        : 'bg-gray-50'
+                                                }`}
+                                            >
+                                                <p className="font-semibold mb-2">
+                                                    {message.role === 'user' ? 'Vous' : 'Assistant'}
+                                                </p>
+                                                <p className="text-gray-700">{message.content}</p>
+                                                <p className="text-xs text-gray-500 mt-2">
+                                                    {new Date(message.timestamp).toLocaleString()}
+                                                </p>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </CardContent>
+                            </Card>
+                        </motion.div>
+                    )}
+                </AnimatePresence>
             </div>
         </AuthenticatedLayout>
     );

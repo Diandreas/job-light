@@ -1,362 +1,298 @@
 @extends('layouts.cv')
 
 @section('content')
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" media="all">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet" media="all">
+
     <div class="cv-container">
-        <!-- En-tête moderne avec gradient -->
         <header class="header-section">
             <div class="header-content">
-                <div class="name-section">
-                    <h1>{{ $cvInformation['personalInformation']['firstName'] }}</h1>
-                    <div class="title-tag">{{ $cvInformation['professions'][0]['name'] ?? '' }}</div>
+                <div class="profile-section">
+                    @if($cvInformation['personalInformation']['photo'])
+                        <div class="profile-photo">
+                            <img src="{{ $cvInformation['personalInformation']['photo'] }}" alt="Photo de profil">
+                        </div>
+                    @endif
+                    <div class="name-section">
+                        <h1>{{ $cvInformation['personalInformation']['firstName'] }}</h1>
+                        @if(!empty($cvInformation['professions']))
+                            <div class="title-tag">{{ $cvInformation['professions'][0]['name'] ?? '' }}</div>
+                        @endif
+                    </div>
                 </div>
                 <div class="contact-section">
-                    <a href="mailto:{{ $cvInformation['personalInformation']['email'] }}" class="contact-pill">
-                        <i class="bi bi-envelope-fill"></i>
-                        <span>{{ $cvInformation['personalInformation']['email'] }}</span>
-                    </a>
-                    <a href="tel:{{ $cvInformation['personalInformation']['phone'] }}" class="contact-pill">
-                        <i class="bi bi-telephone-fill"></i>
-                        <span>{{ $cvInformation['personalInformation']['phone'] }}</span>
-                    </a>
                     <div class="contact-pill">
-                        <i class="bi bi-geo-alt-fill"></i>
-                        <span>{{ $cvInformation['personalInformation']['address'] }}</span>
+                        <i class="bi bi-envelope"></i>{{ $cvInformation['personalInformation']['email'] }}
                     </div>
-                    @if(!empty($cvInformation['personalInformation']['linkedin']))
-                        <a href="{{ $cvInformation['personalInformation']['linkedin'] }}" class="contact-pill" target="_blank">
-                            <i class="bi bi-linkedin"></i>
-                            <span>LinkedIn</span>
-                        </a>
+                    @if($cvInformation['personalInformation']['phone'])
+                        <div class="contact-pill">
+                            <i class="bi bi-telephone"></i>{{ $cvInformation['personalInformation']['phone'] }}
+                        </div>
+                    @endif
+                    @if($cvInformation['personalInformation']['address'])
+                        <div class="contact-pill">
+                            <i class="bi bi-geo-alt"></i>{{ $cvInformation['personalInformation']['address'] }}
+                        </div>
+                    @endif
+                    @if($cvInformation['personalInformation']['linkedin'])
+                        <div class="contact-pill">
+                            <i class="bi bi-linkedin"></i>{{ $cvInformation['personalInformation']['linkedin'] }}
+                        </div>
                     @endif
                 </div>
             </div>
         </header>
 
-        <main class="main-content">
-            <div class="left-column">
-                <!-- À propos -->
-                @if(!empty($cvInformation['summaries']))
-                    <section class="about-section">
-                        <h2><i class="bi bi-person-lines-fill"></i>À propos</h2>
-                        <div class="content-card">
-                            {{ $cvInformation['summaries'][0]['description'] ?? '' }}
-                        </div>
-                    </section>
-                @endif
+        @if(!empty($cvInformation['summaries']))
+            <section class="summary-section">
+                <p>{{ $cvInformation['summaries'][0]['description'] ?? '' }}</p>
+            </section>
+        @endif
 
-                <!-- Expérience -->
-                @foreach($experiencesByCategory as $category => $experiences)
-                    <section class="experience-section">
-                        <h2><i class="bi bi-briefcase-fill"></i>{{ $category }}</h2>
-                        <div class="timeline">
-                            @foreach($experiences as $experience)
-                                <div class="timeline-item">
-                                    <div class="timeline-marker"></div>
-                                    <div class="content-card">
-                                        <div class="experience-header">
-                                            <div class="experience-title">
-                                                <h3>{{ $experience['name'] }}</h3>
-                                                <div class="company-name">{{ $experience['InstitutionName'] }}</div>
-                                            </div>
-                                            <div class="date-tag">
-                                                {{ $experience['date_start'] }} - {{ $experience['date_end'] ?? 'Présent' }}
-                                            </div>
-                                        </div>
-                                        <p class="experience-description">{{ $experience['description'] }}</p>
-                                        @if(!empty($experience['output']))
-                                            <div class="achievement-card">
-                                                <i class="bi bi-trophy-fill"></i>
-                                                <p>{{ $experience['output'] }}</p>
-                                            </div>
-                                        @endif
-                                    </div>
-                                </div>
-                            @endforeach
+        @foreach($experiencesByCategory as $category => $experiences)
+            <section class="experience-section">
+                <h2>{{ $category }}</h2>
+                @foreach($experiences as $experience)
+                    <div class="experience">
+                        <div class="experience-header">
+                            <div class="experience-title">
+                                <h3>{{ $experience['name'] }}</h3>
+                                <p class="company">{{ $experience['InstitutionName'] }}</p>
+                            </div>
+                            <div class="date-tag">
+                                {{ $experience['date_start'] }} - {{ $experience['date_end'] ?? 'Présent' }}
+                                @if($experience['attachment_path'])
+                                    <i class="bi bi-paperclip" style="margin-left:3pt;"></i>
+                                @endif
+                            </div>
                         </div>
-                    </section>
+                        <p class="experience-description">{{ $experience['description'] }}</p>
+                        @if($experience['output'])
+                            <p class="experience-output">{{ $experience['output'] }}</p>
+                        @endif
+                    </div>
                 @endforeach
-            </div>
+            </section>
+        @endforeach
 
-            <div class="right-column">
-                <!-- Compétences -->
-                @if(!empty($cvInformation['competences']))
-                    <section class="skills-section">
-                        <h2><i class="bi bi-gear-fill"></i>Compétences</h2>
-                        <div class="skills-grid">
-                            @foreach($cvInformation['competences'] as $competence)
-                                <div class="skill-card">
-                                    {{ $competence['name'] }}
-                                </div>
-                            @endforeach
-                        </div>
-                    </section>
-                @endif
+        <div class="skills-interests">
+            @if(!empty($cvInformation['competences']))
+                <section class="skills-section">
+                    <h2>Compétences</h2>
+                    <div class="tags-container">
+                        @foreach($cvInformation['competences'] as $competence)
+                            <span class="tag">{{ $competence['name'] }}</span>
+                        @endforeach
+                    </div>
+                </section>
+            @endif
 
-                <!-- Centres d'intérêt -->
-                @if(!empty($cvInformation['hobbies']))
-                    <section class="interests-section">
-                        <h2><i class="bi bi-heart-fill"></i>Centres d'intérêt</h2>
-                        <div class="interests-grid">
-                            @foreach($cvInformation['hobbies'] as $hobby)
-                                <div class="interest-card">
-                                    {{ $hobby['name'] }}
-                                </div>
-                            @endforeach
-                        </div>
-                    </section>
-                @endif
-            </div>
-        </main>
+            @if(!empty($cvInformation['hobbies']))
+                <section class="hobbies-section">
+                    <h2>Centres d'intérêt</h2>
+                    <div class="tags-container">
+                        @foreach($cvInformation['hobbies'] as $hobby)
+                            <span class="tag">{{ $hobby['name'] }}</span>
+                        @endforeach
+                    </div>
+                </section>
+            @endif
+        </div>
     </div>
 
     <style>
         :root {
             --primary-color: #2196F3;
             --primary-dark: #1976D2;
-            --primary-light: #BBDEFB;
-            --secondary-color: #78909C;
-            --accent-color: #FF4081;
-            --text-primary: #212121;
-            --text-secondary: #757575;
-            --background: #FFFFFF;
-            --surface: #F5F5F5;
-            --card-shadow: 0 2px 4px rgba(0,0,0,0.1);
-            --spacing-xs: 0.25rem;
-            --spacing-sm: 0.5rem;
-            --spacing-md: 1rem;
-            --spacing-lg: 1.5rem;
-            --border-radius: 8px;
-            --header-height: 180px;
+            --text-color: #2c3e50;
+            --text-light: #718096;
+            --border-color: #e2e8f0;
+            --tag-bg: #f7fafc;
         }
 
         .cv-container {
-            max-width: 210mm;
-            margin: 0 auto;
-            background: var(--background);
-            font-family: 'Inter', sans-serif;
-            line-height: 1.4;
+            width: 210mm;
+            min-height: 297mm;
+            margin: 0;
+            padding: 0;
+            background: white;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            font-size: 9pt;
+            line-height: 1.3;
+            color: var(--text-color);
         }
 
-        /* Header Styles */
         .header-section {
             background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
             color: white;
-            padding: var(--spacing-lg);
-            border-radius: 0 0 var(--border-radius) var(--border-radius);
+            padding: 8mm;
         }
 
-        .header-content {
+        .profile-section {
             display: flex;
-            flex-direction: column;
-            gap: var(--spacing-md);
+            align-items: center;
+            gap: 8mm;
+            margin-bottom: 4mm;
         }
 
-        .name-section h1 {
-            font-size: 24px;
-            font-weight: 700;
+        .profile-photo {
+            width: 25mm;
+            height: 25mm;
+            border-radius: 50%;
+            border: 0.5mm solid rgba(255,255,255,0.2);
+            overflow: hidden;
+        }
+
+        .profile-photo img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        h1 {
+            font-size: 16pt;
+            font-weight: 600;
             margin: 0;
         }
 
         .title-tag {
             display: inline-block;
-            background: rgba(255, 255, 255, 0.2);
-            padding: var(--spacing-xs) var(--spacing-sm);
-            border-radius: 20px;
-            font-size: 14px;
-            margin-top: var(--spacing-xs);
+            background: rgba(255,255,255,0.2);
+            padding: 1mm 3mm;
+            border-radius: 3mm;
+            font-size: 9pt;
+            margin-top: 1mm;
         }
 
         .contact-section {
             display: flex;
             flex-wrap: wrap;
-            gap: var(--spacing-sm);
+            gap: 2mm;
         }
 
         .contact-pill {
             display: flex;
             align-items: center;
-            gap: var(--spacing-xs);
-            background: rgba(255, 255, 255, 0.1);
-            padding: var(--spacing-xs) var(--spacing-sm);
-            border-radius: 20px;
-            font-size: 12px;
-            text-decoration: none;
-            color: white;
-            transition: background 0.3s;
+            gap: 1mm;
+            background: rgba(255,255,255,0.1);
+            padding: 1mm 3mm;
+            border-radius: 3mm;
+            font-size: 8pt;
         }
 
-        .contact-pill:hover {
-            background: rgba(255, 255, 255, 0.2);
-        }
-
-        /* Main Content Layout */
-        .main-content {
-            display: grid;
-            grid-template-columns: 2fr 1fr;
-            gap: var(--spacing-lg);
-            padding: var(--spacing-lg);
-        }
-
-        /* Section Styles */
         section {
-            margin-bottom: var(--spacing-lg);
+            padding: 3mm 8mm;
+        }
+
+        .summary-section {
+            font-size: 9pt;
+            color: var(--text-light);
+            padding-bottom: 2mm;
         }
 
         h2 {
-            display: flex;
-            align-items: center;
-            gap: var(--spacing-xs);
-            font-size: 16px;
+            font-size: 11pt;
+            font-weight: 600;
             color: var(--primary-color);
-            margin-bottom: var(--spacing-md);
-            padding-bottom: var(--spacing-xs);
-            border-bottom: 2px solid var(--primary-light);
+            margin: 2mm 0;
+            padding-bottom: 1mm;
+            border-bottom: 0.5mm solid var(--primary-color);
         }
 
-        h2 i {
-            font-size: 18px;
+        .experience {
+            margin-bottom: 3mm;
         }
 
-        /* Cards */
-        .content-card {
-            background: var(--surface);
-            padding: var(--spacing-md);
-            border-radius: var(--border-radius);
-            box-shadow: var(--card-shadow);
-            font-size: 14px;
+        .experience:last-child {
+            margin-bottom: 0;
         }
 
-        /* Timeline */
-        .timeline {
-            position: relative;
-            padding-left: var(--spacing-lg);
-        }
-
-        .timeline::before {
-            content: '';
-            position: absolute;
-            left: 0;
-            top: 0;
-            bottom: 0;
-            width: 2px;
-            background: var(--primary-light);
-        }
-
-        .timeline-item {
-            position: relative;
-            margin-bottom: var(--spacing-lg);
-        }
-
-        .timeline-marker {
-            position: absolute;
-            left: calc(-1 * var(--spacing-lg));
-            width: 12px;
-            height: 12px;
-            background: var(--primary-color);
-            border-radius: 50%;
-            border: 2px solid white;
-            transform: translateX(-50%);
-        }
-
-        /* Experience Cards */
         .experience-header {
             display: flex;
             justify-content: space-between;
             align-items: flex-start;
-            margin-bottom: var(--spacing-sm);
+            margin-bottom: 1mm;
         }
 
         .experience-title h3 {
-            font-size: 15px;
-            color: var(--primary-dark);
+            font-size: 10pt;
+            font-weight: 600;
             margin: 0;
         }
 
-        .company-name {
-            font-size: 13px;
-            color: var(--secondary-color);
+        .company {
+            color: var(--text-light);
+            font-size: 8pt;
+            margin: 0.5mm 0;
         }
 
         .date-tag {
-            font-size: 12px;
-            color: var(--accent-color);
-            background: var(--primary-light);
-            padding: var(--spacing-xs) var(--spacing-sm);
-            border-radius: 12px;
+            font-size: 8pt;
+            color: var(--text-light);
         }
 
-        .achievement-card {
+        .experience-description {
+            margin: 1mm 0;
+            font-size: 9pt;
+        }
+
+        .experience-output {
+            font-style: italic;
+            color: var(--text-light);
+            font-size: 8pt;
+            margin-top: 1mm;
+        }
+
+        .tags-container {
             display: flex;
-            align-items: flex-start;
-            gap: var(--spacing-sm);
-            background: white;
-            padding: var(--spacing-sm);
-            border-radius: var(--border-radius);
-            margin-top: var(--spacing-sm);
+            flex-wrap: wrap;
+            gap: 2mm;
         }
 
-        .achievement-card i {
-            color: var(--accent-color);
+        .tag {
+            background: var(--tag-bg);
+            padding: 1mm 3mm;
+            border-radius: 2mm;
+            font-size: 8pt;
         }
 
-        /* Skills and Interests */
-        .skills-grid, .interests-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
-            gap: var(--spacing-sm);
-        }
-
-        .skill-card, .interest-card {
-            background: var(--surface);
-            padding: var(--spacing-sm);
-            border-radius: var(--border-radius);
-            text-align: center;
-            font-size: 12px;
-            transition: transform 0.3s;
-        }
-
-        .skill-card:hover, .interest-card:hover {
-            transform: translateY(-2px);
-        }
-
-        /* Print Styles */
         @media print {
-            .cv-container {
-                max-width: none;
+            @page {
+                size: A4;
+                margin: 0;
+            }
+
+            html, body {
+                width: 210mm;
+                height: 297mm;
                 margin: 0;
                 padding: 0;
             }
 
-            .header-section {
-                -webkit-print-color-adjust: exact;
-                print-color-adjust: exact;
+            .cv-container {
+                width: 210mm;
+                min-height: 297mm;
+                margin: 0;
+                padding: 0;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
             }
 
-            .timeline-marker, .content-card, .skill-card, .interest-card {
-                break-inside: avoid;
+            .header-section {
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
             }
 
             section {
-                break-inside: avoid;
-            }
-        }
-
-        /* Responsive Design */
-        @media screen and (max-width: 768px) {
-            .main-content {
-                grid-template-columns: 1fr;
+                page-break-inside: avoid;
             }
 
-            .header-content {
-                flex-direction: column;
+            h2 {
+                page-break-after: avoid;
             }
 
-            .contact-section {
-                flex-direction: column;
-            }
-
-            .skills-grid, .interests-grid {
-                grid-template-columns: repeat(2, 1fr);
+            .experience {
+                page-break-inside: avoid;
             }
         }
     </style>

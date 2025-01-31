@@ -107,7 +107,7 @@ export default function Guest({ children }: PropsWithChildren) {
 
             {/* Main Content */}
             <div className="min-h-[calc(100vh-4rem)] flex flex-col sm:justify-center items-center px-4">
-                <div className="w-full sm:max-w-md mt-6 p-6 bg-white/80 backdrop-blur-md shadow-lg shadow-amber-100/20 border border-amber-100 rounded-lg">
+                <div>
                     {children}
                 </div>
             </div>

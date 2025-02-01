@@ -135,6 +135,7 @@ class CvInfosController extends Controller
         ]);
     }
 
+
     public function show()
     {
         $user = Auth::user();

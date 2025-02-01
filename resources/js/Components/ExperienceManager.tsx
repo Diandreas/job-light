@@ -804,6 +804,7 @@ const ExperienceManager: React.FC<Props> = ({ auth, experiences: initialExperien
                                     type="button"
                                     variant="outline"
                                     onClick={() => handleTemplateSelection('internship')}
+
                                     className="justify-start border-amber-200 hover:bg-amber-50"
                                 >
                                     <Briefcase className="w-4 h-4 mr-2 text-purple-500" />

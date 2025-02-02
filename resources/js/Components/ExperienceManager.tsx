@@ -316,8 +316,11 @@ const ExperienceManager: React.FC<Props> = ({ auth, experiences: initialExperien
                 return {
                     ...baseData,
                     name: getRandomItem(data.names),
+                    //@ts-ignore
                     InstitutionName: getRandomItem(data.institutions),
+                    //@ts-ignore
                     description: getRandomItem(data.descriptions),
+                    //@ts-ignore
                     output: getRandomItem(data.outputs),
                 };
         }

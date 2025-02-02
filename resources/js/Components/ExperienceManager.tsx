@@ -664,3 +664,239 @@ const ExperienceManager: React.FC<Props> = ({ auth, experiences: initialExperien
             </form>
         );
     };
+    // Rendu principal
+    return (
+        <div className="space-y-6">
+            <div className="flex flex-col md:flex-row justify-between items-center gap-4">
+                <div>
+                    <h2 className="text-2xl font-bold text-gray-800">Mes Expériences</h2>
+                    <p className="text-gray-500">
+                        Partagez vos expériences académiques, stages et engagements
+                    </p>
+                </div>
+            </div>
+
+            <Tabs defaultValue="experiences" className="w-full">
+                <TabsList className="grid w-full grid-cols-2 mb-4">
+                    <TabsTrigger value="experiences" className="flex items-center gap-2">
+                        <PencilRuler className="w-4 h-4" />
+                        Liste des expériences
+                    </TabsTrigger>
+                    <TabsTrigger value="attachments" className="flex items-center gap-2">
+                        <FileText className="w-4 h-4" />
+                        Pièces jointes
+                    </TabsTrigger>
+                </TabsList>
+
+                <TabsContent value="experiences">
+                    <Card className="border-amber-100">
+                        <CardContent className="p-4">
+                            <div className="flex flex-col md:flex-row gap-4">
+                                <div className="flex-1">
+                                    <div className="relative">
+                                        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-amber-500" />
+                                        <Input
+                                            type="text"
+                                            placeholder="Rechercher une expérience..."
+                                            value={searchTerm}
+                                            onChange={(e) => setSearchTerm(e.target.value)}
+                                            className="pl-10 border-amber-200 focus:ring-amber-500"
+                                        />
+                                    </div>
+                                </div>
+                                <Button
+                                    onClick={() => setIsFormOpen(true)}
+                                    className="bg-gradient-to-r from-amber-500 to-purple-500 hover:from-amber-600 hover:to-purple-600 text-white"
+                                >
+                                    <Plus className="w-4 h-4 mr-2" />
+                                    Ajouter une expérience
+                                </Button>
+                            </div>
+
+                            <div className="flex gap-2 overflow-x-auto py-4">
+                                <Button
+                                    variant={selectedCategory === 'all' ? "default" : "ghost"}
+                                    size="sm"
+                                    onClick={() => setSelectedCategory('all')}
+                                    className={selectedCategory === 'all' ? 'bg-gradient-to-r from-amber-500 to-purple-500 text-white' : ''}
+                                >
+                                    <PencilRuler className="w-4 h-4 mr-2" />
+                                    Toutes
+                                </Button>
+                                {categories.map((cat) => (
+                                    <Button
+                                        key={cat.id}
+                                        variant={selectedCategory === cat.id.toString() ? "default" : "ghost"}
+                                        size="sm"
+                                        onClick={() => setSelectedCategory(cat.id.toString())}
+                                        className={selectedCategory === cat.id.toString() ? 'bg-gradient-to-r from-amber-500 to-purple-500 text-white' : ''}
+                                    >
+                                        {cat.id === 1 && <Briefcase className="w-4 h-4 mr-2" />}
+                                        {cat.id === 2 && <GraduationCap className="w-4 h-4 mr-2" />}
+                                        {cat.id === 3 && <Users className="w-4 h-4 mr-2" />}
+                                        {cat.name}
+                                    </Button>
+                                ))}
+                            </div>
+                        </CardContent>
+                    </Card>
+
+                    <ScrollArea className="h-[600px] pr-4">
+                        <div className="space-y-4">
+                            <AnimatePresence mode="wait">
+                                {filteredExperiences.length > 0 ? (
+                                    filteredExperiences.map((exp) => (
+                                        <ExperienceCard key={exp.id} experience={exp} />
+                                    ))
+                                ) : (
+                                    <motion.div
+                                        initial={{ opacity: 0 }}
+                                        animate={{ opacity: 1 }}
+                                        exit={{ opacity: 0 }}
+                                    >
+                                        <Card className="border-amber-100">
+                                            <CardContent className="p-12 text-center">
+                                                <div className="flex flex-col items-center gap-2">
+                                                    <PencilRuler className="w-12 h-12 text-amber-500" />
+                                                    <p className="text-gray-500">
+                                                        {searchTerm
+                                                            ? "Aucune expérience ne correspond à votre recherche"
+                                                            : "Commencez par ajouter votre première expérience !"
+                                                        }
+                                                    </p>
+                                                </div>
+                                            </CardContent>
+                                        </Card>
+                                    </motion.div>
+                                )}
+                            </AnimatePresence>
+                        </div>
+                    </ScrollArea>
+                </TabsContent>
+
+                <TabsContent value="attachments">
+                    <Card className="border-amber-100">
+                        <CardContent className="p-6">
+                            <div className="space-y-6">
+                                {/* Statistiques des pièces jointes */}
+                                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                    <Card className="bg-gradient-to-r from-amber-50 to-purple-50 border-none">
+                                        <CardContent className="p-4">
+                                            <div className="flex items-center justify-between">
+                                                <div>
+                                                    <p className="text-sm font-medium text-gray-500">
+                                                        Espace utilisé
+                                                    </p>
+                                                    <h3 className="text-2xl font-bold text-gray-900">
+                                                        {formatBytes(attachmentSummary.total_size)}
+                                                    </h3>
+                                                </div>
+                                                <FileText className="w-8 h-8 text-amber-500" />
+                                            </div>
+                                        </CardContent>
+                                    </Card>
+
+                                    <Card className="bg-gradient-to-r from-amber-50 to-purple-50 border-none">
+                                        <CardContent className="p-4">
+                                            <div className="flex items-center justify-between">
+                                                <div>
+                                                    <p className="text-sm font-medium text-gray-500">
+                                                        Fichiers
+                                                    </p>
+                                                    <h3 className="text-2xl font-bold text-gray-900">
+                                                        {attachmentSummary.files_count}
+                                                    </h3>
+                                                </div>
+                                                <FileText className="w-8 h-8 text-purple-500" />
+                                            </div>
+                                        </CardContent>
+                                    </Card>
+
+                                    <Card className="bg-gradient-to-r from-amber-50 to-purple-50 border-none">
+                                        <CardContent className="p-4">
+                                            <div className="flex items-center justify-between">
+                                                <div>
+                                                    <p className="text-sm font-medium text-gray-500">
+                                                        Espace disponible
+                                                    </p>
+                                                    <h3 className="text-2xl font-bold text-gray-900">
+                                                        {formatBytes(attachmentSummary.max_size - attachmentSummary.total_size)}
+                                                    </h3>
+                                                </div>
+                                                <FileText className="w-8 h-8 text-amber-500" />
+                                            </div>
+                                        </CardContent>
+                                    </Card>
+                                </div>
+
+                                {/* Liste des pièces jointes */}
+                                <div className="space-y-4">
+                                    {experiences
+                                        .filter(exp => exp.attachment_path)
+                                        .map(exp => (
+                                            <Card key={exp.id} className="hover:shadow-md transition-all">
+                                                <CardContent className="p-4">
+                                                    <div className="flex items-center justify-between">
+                                                        <div className="flex-1">
+                                                            <h4 className="font-semibold">{exp.name}</h4>
+                                                            <p className="text-sm text-gray-500">{exp.InstitutionName}</p>
+                                                            {exp.attachment_size && (
+                                                                <Badge variant="outline" className="mt-2">
+                                                                    {formatBytes(exp.attachment_size)}
+                                                                </Badge>
+                                                            )}
+                                                        </div>
+                                                        <div className="flex gap-2">
+                                                            <Button
+                                                                variant="ghost"
+                                                                size="sm"
+                                                                onClick={() => handlePreviewPDF(exp.attachment_path)}
+                                                                className="hover:bg-amber-50"
+                                                            >
+                                                                <Eye className="w-4 h-4 text-amber-500" />
+                                                            </Button>
+                                                            <Button
+                                                                variant="ghost"
+                                                                size="sm"
+                                                                onClick={() => handleEdit(exp)}
+                                                                className="hover:bg-purple-50"
+                                                            >
+                                                                <Edit className="w-4 h-4 text-purple-500" />
+                                                            </Button>
+                                                            <Button
+                                                                variant="ghost"
+                                                                size="sm"
+                                                                onClick={() => handleDeleteAttachment(exp.id)}
+                                                                className="hover:bg-red-50"
+                                                            >
+                                                                <Trash2 className="w-4 h-4 text-red-500" />
+                                                            </Button>
+                                                        </div>
+                                                    </div>
+                                                </CardContent>
+                                            </Card>
+                                        ))}
+
+                                    {experiences.filter(exp => exp.attachment_path).length === 0 && (
+                                        <Card>
+                                            <CardContent className="p-12 text-center">
+                                                <FileText className="w-12 h-12 text-amber-500 mx-auto mb-4" />
+                                                <p className="text-gray-500">
+                                                    Aucune pièce jointe disponible. Ajoutez des documents à vos expériences !
+                                                </p>
+                                            </CardContent>
+                                        </Card>
+                                    )}
+                                </div>
+                            </div>
+                        </CardContent>
+                    </Card>
+                </TabsContent>
+            </Tabs>
+
+            {/* Reste du code... */}
+        </div>
+    );
+};
+
+export default ExperienceManager;

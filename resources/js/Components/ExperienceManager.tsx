@@ -464,3 +464,203 @@ const ExperienceManager: React.FC<Props> = ({ auth, experiences: initialExperien
             });
         }
     };
+    // Composant Card pour l'expérience
+    const ExperienceCard: React.FC<{ experience: Experience }> = ({ experience: exp }) => {
+        const getCategoryIcon = (categoryId: string) => {
+            switch(categoryId) {
+                case '1': return <Briefcase className="w-4 h-4" />;  // Stage/Pro
+                case '2': return <GraduationCap className="w-4 h-4" />; // Académique
+                case '3': return <Users className="w-4 h-4" />; // Bénévolat
+                default: return <Award className="w-4 h-4" />;
+            }
+        };
+
+        return (
+            <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+                transition={{ duration: 0.2 }}
+            >
+                <Card className="border-amber-100 hover:shadow-md transition-shadow">
+                    <CardContent className="p-4 sm:p-6">
+                        <div className="flex flex-col sm:flex-row justify-between items-start gap-4">
+                            <div className="flex-1">
+                                <div className="flex items-center gap-2 flex-wrap">
+                                    <h3 className="text-lg font-semibold">{exp.name}</h3>
+                                    <Badge
+                                        variant="secondary"
+                                        className="bg-gradient-to-r from-amber-100 to-purple-100 flex items-center gap-1"
+                                    >
+                                        {getCategoryIcon(exp.experience_categories_id)}
+                                        {categories.find(c => c.id === parseInt(exp.experience_categories_id))?.name}
+                                    </Badge>
+                                </div>
+
+                                <div className="flex items-center text-sm text-muted-foreground mt-1">
+                                    <Building2 className="w-4 h-4 mr-2 text-amber-500" />
+                                    <span>{exp.InstitutionName}</span>
+                                </div>
+
+                                <div className="flex items-center text-sm text-muted-foreground mt-1">
+                                    <BookOpen className="w-4 h-4 mr-2 text-purple-500" />
+                                    <span>
+                                        {new Date(exp.date_start).toLocaleDateString('fr-FR')} -
+                                        {exp.date_end ? new Date(exp.date_end).toLocaleDateString('fr-FR') : 'Présent'}
+                                    </span>
+                                </div>
+
+                                {exp.references && exp.references.length > 0 && (
+                                    <div className="mt-2 space-y-2">
+                                        <p className="text-sm font-medium text-gray-700">Références:</p>
+                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                                            {exp.references.map((ref, index) => (
+                                                <div key={index} className="text-sm bg-gray-50 p-2 rounded-md">
+                                                    <p className="font-medium">{ref.name}</p>
+                                                    <p className="text-gray-600">{ref.function}</p>
+                                                    {ref.email && (
+                                                        <p className="text-gray-500 text-xs">{ref.email}</p>
+                                                    )}
+                                                    {ref.telephone && (
+                                                        <p className="text-gray-500 text-xs">{ref.telephone}</p>
+                                                    )}
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
+
+                            <div className="flex gap-2 self-end sm:self-start">
+                                {exp.attachment_path && (
+                                    <Button
+                                        variant="ghost"
+                                        size="sm"
+                                        onClick={() => handlePreviewPDF(exp.attachment_path)}
+                                        className="hover:bg-amber-50"
+                                    >
+                                        <Eye className="w-4 h-4 text-amber-500" />
+                                    </Button>
+                                )}
+                                <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    onClick={() => handleEdit(exp)}
+                                    className="hover:bg-purple-50"
+                                >
+                                    <Edit className="w-4 h-4 text-purple-500" />
+                                </Button>
+                                <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    onClick={() => handleDelete(exp.id)}
+                                    className="hover:bg-red-50"
+                                >
+                                    <Trash2 className="w-4 h-4 text-red-500" />
+                                </Button>
+                            </div>
+                        </div>
+
+                        <div className="mt-4 space-y-3">
+                            <p className="text-sm text-gray-600">{exp.description}</p>
+
+                            {exp.output && (
+                                <div className="bg-gradient-to-r from-amber-50 to-purple-50 p-3 rounded-md">
+                                    <div className="flex items-center gap-2 mb-1">
+                                        <Award className="w-4 h-4 text-amber-500" />
+                                        <p className="text-sm font-medium text-gray-700">Résultat obtenu:</p>
+                                    </div>
+                                    <p className="text-sm text-gray-600">{exp.output}</p>
+                                </div>
+                            )}
+                        </div>
+                    </CardContent>
+                </Card>
+            </motion.div>
+        );
+    };
+
+    // Composant pour le formulaire de référence
+    const ReferenceForm: React.FC<{
+        reference: Reference | null;
+        onSave: (reference: Reference) => void;
+        onCancel: () => void;
+    }> = ({ reference, onSave, onCancel }) => {
+        const [formData, setFormData] = useState<Reference>({
+            name: reference?.name || '',
+            function: reference?.function || '',
+            email: reference?.email || '',
+            telephone: reference?.telephone || '',
+        });
+
+        const handleSubmit = (e: React.FormEvent) => {
+            e.preventDefault();
+            onSave(formData);
+        };
+
+        return (
+            <form onSubmit={handleSubmit} className="space-y-4">
+                <div className="space-y-2">
+                    <Label htmlFor="ref-name">Nom</Label>
+                    <Input
+                        id="ref-name"
+                        value={formData.name}
+                        onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                        className="border-amber-200 focus:ring-amber-500"
+                        placeholder="Nom de la référence"
+                    />
+                </div>
+
+                <div className="space-y-2">
+                    <Label htmlFor="ref-function">Fonction</Label>
+                    <Input
+                        id="ref-function"
+                        value={formData.function}
+                        onChange={(e) => setFormData({ ...formData, function: e.target.value })}
+                        className="border-amber-200 focus:ring-amber-500"
+                        placeholder="Fonction de la référence"
+                    />
+                </div>
+
+                <div className="space-y-2">
+                    <Label htmlFor="ref-email">Email</Label>
+                    <Input
+                        id="ref-email"
+                        type="email"
+                        value={formData.email}
+                        onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                        className="border-amber-200 focus:ring-amber-500"
+                        placeholder="Email de la référence"
+                    />
+                </div>
+
+                <div className="space-y-2">
+                    <Label htmlFor="ref-telephone">Téléphone</Label>
+                    <Input
+                        id="ref-telephone"
+                        value={formData.telephone}
+                        onChange={(e) => setFormData({ ...formData, telephone: e.target.value })}
+                        className="border-amber-200 focus:ring-amber-500"
+                        placeholder="Téléphone de la référence"
+                    />
+                </div>
+
+                <div className="flex justify-end gap-2">
+                    <Button
+                        type="button"
+                        variant="outline"
+                        onClick={onCancel}
+                        className="border-amber-200 hover:bg-amber-50"
+                    >
+                        Annuler
+                    </Button>
+                    <Button
+                        type="submit"
+                        className="bg-gradient-to-r from-amber-500 to-purple-500 hover:from-amber-600 hover:to-purple-600 text-white"
+                    >
+                        Enregistrer
+                    </Button>
+                </div>
+            </form>
+        );
+    };

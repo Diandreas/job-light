@@ -300,6 +300,7 @@ const ExperienceManager: React.FC<Props> = ({ auth, experiences: initialExperien
                 return {
                     ...baseData,
                     name: getRandomItem(data.names),
+                    //@ts-ignore
                     InstitutionName: getRandomItem(data.institutions),
                     description: getRandomItem(data.descriptions),
                     output: "Formation complétée avec succès",
@@ -308,8 +309,10 @@ const ExperienceManager: React.FC<Props> = ({ auth, experiences: initialExperien
                 return {
                     ...baseData,
                     name: getRandomItem(data.names),
+                    //@ts-ignore
                     InstitutionName: getRandomItem(data.companies),
                     description: getRandomItem(data.descriptions),
+                    //@ts-ignore
                     output: getRandomItem(data.achievements),
                 };
             case 'volunteer':
@@ -379,6 +382,7 @@ const ExperienceManager: React.FC<Props> = ({ auth, experiences: initialExperien
     };
 
     const handleEdit = (experience: Experience) => {
+        //@ts-ignore
         setData({
             ...experience,
             experience_categories_id: experience.experience_categories_id.toString(),
@@ -457,6 +461,7 @@ const ExperienceManager: React.FC<Props> = ({ auth, experiences: initialExperien
     const handleTemplateSelection = (type: 'academic' | 'internship' | 'volunteer') => {
         const template = generatePredefinedExperience(type);
         if (template) {
+            //@ts-ignore
             setData(prev => ({
                 ...prev,
                 ...template

@@ -894,7 +894,337 @@ const ExperienceManager: React.FC<Props> = ({ auth, experiences: initialExperien
                 </TabsContent>
             </Tabs>
 
-            {/* Reste du code... */}
+            <Sheet open={isFormOpen} onOpenChange={setIsFormOpen}>
+                <SheetContent side="right" className="w-full sm:max-w-xl overflow-y-auto">
+                    <SheetHeader>
+                        <SheetTitle className="flex items-center gap-2">
+                            <PencilRuler className="w-5 h-5 text-amber-500" />
+                            {data.id ? "Modifier l'expérience" : 'Nouvelle expérience'}
+                        </SheetTitle>
+                    </SheetHeader>
+
+                    <form onSubmit={handleSubmit} className="space-y-6 pt-6">
+                        <Card className="border-amber-100">
+                            <CardHeader>
+                                <CardTitle className="text-base">Modèles d'expérience</CardTitle>
+                                <CardDescription>
+                                    Sélectionnez un modèle pour démarrer rapidement
+                                </CardDescription>
+                            </CardHeader>
+                            <CardContent className="grid grid-cols-1 gap-2">
+                                <Button
+                                    type="button"
+                                    variant="outline"
+                                    onClick={() => handleTemplateSelection('academic')}
+                                    className="justify-start border-amber-200 hover:bg-amber-50"
+                                >
+                                    <GraduationCap className="w-4 h-4 mr-2 text-amber-500" />
+                                    Formation Académique
+                                </Button>
+                                <Button
+                                    type="button"
+                                    variant="outline"
+                                    onClick={() => handleTemplateSelection('internship')}
+                                    className="justify-start border-amber-200 hover:bg-amber-50"
+                                >
+                                    <Briefcase className="w-4 h-4 mr-2 text-purple-500" />
+                                    Stage Professionnel
+                                </Button>
+                                <Button
+                                    type="button"
+                                    variant="outline"
+                                    onClick={() => handleTemplateSelection('volunteer')}
+                                    className="justify-start border-amber-200 hover:bg-amber-50"
+                                >
+                                    <Users className="w-4 h-4 mr-2 text-amber-500" />
+                                    Expérience Bénévole
+                                </Button>
+                            </CardContent>
+                        </Card>
+
+                        <div className="grid grid-cols-2 gap-4">
+                            <div className="space-y-2">
+                                <Label htmlFor="name">Intitulé</Label>
+                                <Input
+                                    id="name"
+                                    value={data.name}
+                                    onChange={(e) => setData('name', e.target.value)}
+                                    placeholder="Ex: Stage en bibliothèque..."
+                                    className="border-amber-200 focus:ring-amber-500"
+                                />
+                                {errors.name && <p className="text-sm text-red-500">{errors.name}</p>}
+                            </div>
+                            <div className="space-y-2">
+                                <Label htmlFor="InstitutionName">Établissement</Label>
+                                <Input
+                                    id="InstitutionName"
+                                    value={data.InstitutionName}
+                                    onChange={(e) => setData('InstitutionName', e.target.value)}
+                                    placeholder="Nom de l'établissement ou de l'organisation"
+                                    className="border-amber-200 focus:ring-amber-500"
+                                />
+                                {errors.InstitutionName && (
+                                    <p className="text-sm text-red-500">{errors.InstitutionName}</p>
+                                )}
+                            </div>
+                        </div>
+
+                        <div className="grid grid-cols-2 gap-4">
+                            <div className="space-y-2">
+                                <Label htmlFor="date_start">Date de début</Label>
+                                <Input
+                                    id="date_start"
+                                    type="date"
+                                    value={data.date_start}
+                                    onChange={(e) => setData('date_start', e.target.value)}
+                                    className="border-amber-200 focus:ring-amber-500"
+                                />
+                                {errors.date_start && (
+                                    <p className="text-sm text-red-500">{errors.date_start}</p>
+                                )}
+                            </div>
+                            <div className="space-y-2">
+                                <Label htmlFor="date_end">Date de fin</Label>
+                                <Input
+                                    id="date_end"
+                                    type="date"
+                                    value={data.date_end || ''}
+                                    onChange={(e) => setData('date_end', e.target.value)}
+                                    className="border-amber-200 focus:ring-amber-500"
+                                />
+                                <p className="text-xs text-gray-500">
+                                    Laissez vide si en cours
+                                </p>
+                                {errors.date_end && <p className="text-sm text-red-500">{errors.date_end}</p>}
+                            </div>
+                        </div>
+
+                        <div className="space-y-2">
+                            <Label htmlFor="experience_categories_id">Type d'expérience</Label>
+                            <Select
+                                value={data.experience_categories_id}
+                                onValueChange={(value) => setData('experience_categories_id', value)}
+                            >
+                                <SelectTrigger className="border-amber-200 focus:ring-amber-500">
+                                    <SelectValue placeholder="Sélectionnez un type" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    {categories.map((cat) => (
+                                        <SelectItem key={cat.id} value={cat.id.toString()}>
+                                            <div className="flex items-center gap-2">
+                                                {cat.id === 1 && <Briefcase className="w-4 h-4 text-amber-500" />}
+                                                {cat.id === 2 && <GraduationCap className="w-4 h-4 text-purple-500" />}
+                                                {cat.id === 3 && <Users className="w-4 h-4 text-amber-500" />}
+                                                {cat.name}
+                                            </div>
+                                        </SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </Select>
+                            {errors.experience_categories_id && (
+                                <p className="text-sm text-red-500">{errors.experience_categories_id}</p>
+                            )}
+                        </div>
+
+                        <div className="space-y-2">
+                            <Label htmlFor="description">Description</Label>
+                            <Textarea
+                                id="description"
+                                value={data.description}
+                                onChange={(e) => setData('description', e.target.value)}
+                                placeholder="Décrivez vos responsabilités, tâches et apprentissages..."
+                                rows={4}
+                                className="border-amber-200 focus:ring-amber-500"
+                            />
+                            {errors.description && (
+                                <p className="text-sm text-red-500">{errors.description}</p>
+                            )}
+                        </div>
+
+                        <div className="space-y-2">
+                            <Label htmlFor="output">Résultat/Réalisation</Label>
+                            <Input
+                                id="output"
+                                value={data.output}
+                                onChange={(e) => setData('output', e.target.value)}
+                                placeholder="Ex: Compétences acquises, certificat obtenu..."
+                                className="border-amber-200 focus:ring-amber-500"
+                            />
+                            {errors.output && <p className="text-sm text-red-500">{errors.output}</p>}
+                        </div>
+
+                        <div className="space-y-2">
+                            <Label htmlFor="comment">Commentaire additionnel</Label>
+                            <Textarea
+                                id="comment"
+                                value={data.comment}
+                                onChange={(e) => setData('comment', e.target.value)}
+                                placeholder="Autres informations pertinentes..."
+                                className="border-amber-200 focus:ring-amber-500"
+                            />
+                            {errors.comment && <p className="text-sm text-red-500">{errors.comment}</p>}
+                        </div>
+
+                        {/* Section des références */}
+                        <div className="space-y-4">
+                            <div className="flex justify-between items-center">
+                                <Label>Références</Label>
+                                <Button
+                                    type="button"
+                                    variant="outline"
+                                    onClick={() => {
+                                        const references = [...(data.references || [])];
+                                        references.push({ name: '', function: '', email: '', telephone: '' });
+                                        setData('references', references);
+                                    }}
+                                    className="border-amber-200 hover:bg-amber-50"
+                                >
+                                    <Plus className="w-4 h-4 mr-2" />
+                                    Ajouter une référence
+                                </Button>
+                            </div>
+
+                            {data.references?.map((reference, index) => (
+                                <Card key={index} className="border-amber-100">
+                                    <CardContent className="p-4 space-y-4">
+                                        <div className="flex justify-end">
+                                            <Button
+                                                type="button"
+                                                variant="ghost"
+                                                size="sm"
+                                                onClick={() => {
+                                                    const references = [...data.references];
+                                                    references.splice(index, 1);
+                                                    setData('references', references);
+                                                }}
+                                                className="hover:bg-red-50"
+                                            >
+                                                <Trash2 className="w-4 h-4 text-red-500" />
+                                            </Button>
+                                        </div>
+                                        <div className="grid grid-cols-2 gap-4">
+                                            <div className="space-y-2">
+                                                <Label>Nom</Label>
+                                                <Input
+                                                    value={reference.name}
+                                                    onChange={(e) => {
+                                                        const references = [...data.references];
+                                                        references[index] = {
+                                                            ...reference,
+                                                            name: e.target.value
+                                                        };
+                                                        setData('references', references);
+                                                    }}
+                                                    className="border-amber-200 focus:ring-amber-500"
+                                                />
+                                            </div>
+                                            <div className="space-y-2">
+                                                <Label>Fonction</Label>
+                                                <Input
+                                                    value={reference.function}
+                                                    onChange={(e) => {
+                                                        const references = [...data.references];
+                                                        references[index] = {
+                                                            ...reference,
+                                                            function: e.target.value
+                                                        };
+                                                        setData('references', references);
+                                                    }}
+                                                    className="border-amber-200 focus:ring-amber-500"
+                                                />
+                                            </div>
+                                            <div className="space-y-2">
+                                                <Label>Email</Label>
+                                                <Input
+                                                    type="email"
+                                                    value={reference.email}
+                                                    onChange={(e) => {
+                                                        const references = [...data.references];
+                                                        references[index] = {
+                                                            ...reference,
+                                                            email: e.target.value
+                                                        };
+                                                        setData('references', references);
+                                                    }}
+                                                    className="border-amber-200 focus:ring-amber-500"
+                                                />
+                                            </div>
+                                            <div className="space-y-2">
+                                                <Label>Téléphone</Label>
+                                                <Input
+                                                    value={reference.telephone}
+                                                    onChange={(e) => {
+                                                        const references = [...data.references];
+                                                        references[index] = {
+                                                            ...reference,
+                                                            telephone: e.target.value
+                                                        };
+                                                        setData('references', references);
+                                                    }}
+                                                    className="border-amber-200 focus:ring-amber-500"
+                                                />
+                                            </div>
+                                        </div>
+                                    </CardContent>
+                                </Card>
+                            ))}
+                        </div>
+
+                        <div className="space-y-2">
+                            <Label>
+                                <div className="flex items-center gap-2">
+                                    <span>Pièce jointe</span>
+                                    <Badge
+                                        variant="secondary"
+                                        className="bg-gradient-to-r from-amber-100 to-purple-100"
+                                    >
+                                        Max 5MB
+                                    </Badge>
+                                </div>
+                            </Label>
+                            <Input
+                                id="attachment"
+                                type="file"
+                                onChange={(e) => {
+                                    const file = e.target.files?.[0] || null;
+                                    setData('attachment', file);
+                                }}
+                                className="border-amber-200 focus:ring-amber-500 cursor-pointer"
+                                accept=".pdf,.doc,.docx"
+                            />
+                            {errors.attachment && (
+                                <p className="text-sm text-red-500">{errors.attachment}</p>
+                            )}
+                            <p className="text-xs text-gray-500">
+                                Formats acceptés: PDF, DOC, DOCX (Certificats, attestations...)
+                            </p>
+                        </div>
+
+                        <div className="flex justify-between gap-2 sticky bottom-0 bg-white pt-4 border-t">
+                            <Button
+                                type="submit"
+                                disabled={isLoading}
+                                className="bg-gradient-to-r from-amber-500 to-purple-500 hover:from-amber-600 hover:to-purple-600 text-white"
+                            >
+                                {isLoading ? (
+                                    <div className="flex items-center gap-2">
+                                        <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                                        Chargement...
+                                    </div>
+                                ) : data.id ? 'Mettre à jour' : 'Enregistrer'}
+                            </Button>
+                            <Button
+                                type="button"
+                                variant="outline"
+                                onClick={resetForm}
+                                className="border-amber-200 hover:bg-amber-50"
+                            >
+                                Annuler
+                            </Button>
+                        </div>
+                    </form>
+                </SheetContent>
+            </Sheet>
         </div>
     );
 };

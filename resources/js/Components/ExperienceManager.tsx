@@ -204,6 +204,64 @@ const formatBytes = (bytes: number): string => {
     const i = Math.floor(Math.log(bytes) / Math.log(k));
     return `${parseFloat((bytes / Math.pow(k, i)).toFixed(2))} ${sizes[i]}`;
 };
+// Composant des statistiques
+const AttachmentStatistics: React.FC<{ attachmentSummary: AttachmentSummary }> = ({ attachmentSummary }) => {
+    const { total_size, max_size, files_count } = attachmentSummary;
+    const available_size = Math.max(0, max_size - total_size);
+
+    return (
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <Card className="bg-gradient-to-r from-amber-50 to-purple-50 border-none">
+                <CardContent className="p-4">
+                    <div className="flex items-center justify-between">
+                        <div>
+                            <p className="text-sm font-medium text-gray-500">
+                                Espace utilisé
+                            </p>
+                            <h3 className="text-2xl font-bold text-gray-900">
+                                {formatBytes(total_size)}
+                            </h3>
+                        </div>
+                        <FileText className="w-8 h-8 text-amber-500" />
+                    </div>
+                </CardContent>
+            </Card>
+
+            <Card className="bg-gradient-to-r from-amber-50 to-purple-50 border-none">
+                <CardContent className="p-4">
+                    <div className="flex items-center justify-between">
+                        <div>
+                            <p className="text-sm font-medium text-gray-500">
+                                Fichiers
+                            </p>
+                            <h3 className="text-2xl font-bold text-gray-900">
+                                {files_count}
+                            </h3>
+                        </div>
+                        <FileText className="w-8 h-8 text-purple-500" />
+                    </div>
+                </CardContent>
+            </Card>
+
+            <Card className="bg-gradient-to-r from-amber-50 to-purple-50 border-none">
+                <CardContent className="p-4">
+                    <div className="flex items-center justify-between">
+                        <div>
+                            <p className="text-sm font-medium text-gray-500">
+                                Espace disponible
+                            </p>
+                            <h3 className="text-2xl font-bold text-gray-900">
+                                {formatBytes(available_size)}
+                            </h3>
+                        </div>
+                        <FileText className="w-8 h-8 text-amber-500" />
+                    </div>
+                </CardContent>
+            </Card>
+        </div>
+    );
+};
+
 
 // Fonction utilitaire pour obtenir un élément aléatoire d'un tableau
 const getRandomItem = <T,>(array: T[]): T => {
@@ -335,45 +393,49 @@ const ExperienceManager: React.FC<Props> = ({ auth, experiences: initialExperien
 
         try {
             const formData = new FormData();
+
+            // Envoyer les références uniquement si le tableau n'est pas vide
+            if (data.references && data.references.length > 0) {
+                formData.append('references', JSON.stringify(data.references));
+            }
+
+            // Ajouter les autres données
             Object.entries(data).forEach(([key, value]) => {
-                if (value !== null && value !== undefined) {
+                if (value !== null && value !== undefined && key !== 'references') {
                     if (key === 'attachment' && value instanceof File) {
                         formData.append('attachment', value);
-                    } else if (key === 'references' && Array.isArray(value)) {
-                        formData.append('references', JSON.stringify(value));
                     } else if (key !== 'attachment') {
-                        formData.append(key, value.toString());
+                        formData.append(key, String(value));
                     }
                 }
             });
 
-            const response = data.id
-                ? await axios.post(`/experiences/${data.id}`, formData, {
-                    headers: { 'Content-Type': 'multipart/form-data' },
-                    params: { _method: 'PUT' }
-                })
-                : await axios.post('/experiences', formData, {
-                    headers: { 'Content-Type': 'multipart/form-data' }
-                });
+            console.log('Envoi des données:', {
+                ...Object.fromEntries(formData.entries()),
+                references: data.references
+            });
 
-            const updatedExperiences = data.id
-                ? experiences.map(exp => exp.id === response.data.experience.id ? response.data.experience : exp)
-                : [...experiences, response.data.experience];
+            const response = await axios.post('/experiences', formData, {
+                headers: { 'Content-Type': 'multipart/form-data' }
+            });
 
+            const updatedExperiences = [...experiences, response.data.experience];
             setExperiences(updatedExperiences);
             onUpdate(updatedExperiences);
-            fetchAttachmentStats();
 
             toast({
-                title: data.id ? "Expérience mise à jour" : "Expérience créée",
-                description: "L'opération a été effectuée avec succès.",
+                title: "Succès",
+                description: "L'expérience a été créée avec succès.",
             });
 
             resetForm();
         } catch (error: any) {
+            console.error('Erreur complète:', error);
+            console.error('Détails de l\'erreur:', error.response?.data);
+
             toast({
                 title: "Erreur",
-                description: error.response?.data?.message || "Une erreur est survenue.",
+                description: error.response?.data?.message || "Une erreur est survenue lors de la sauvegarde.",
                 variant: "destructive",
             });
         } finally {
@@ -751,7 +813,7 @@ const ExperienceManager: React.FC<Props> = ({ auth, experiences: initialExperien
 
                     <ScrollArea className="h-[600px] pr-4">
                         <div className="space-y-4">
-                            <AnimatePresence mode="wait">
+                            <AnimatePresence mode="sync">
                                 {filteredExperiences.length > 0 ? (
                                     filteredExperiences.map((exp) => (
                                         <ExperienceCard key={exp.id} experience={exp} />

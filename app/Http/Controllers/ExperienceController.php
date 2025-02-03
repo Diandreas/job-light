@@ -8,6 +8,7 @@ use App\Models\Reference;
 use App\Models\Attachment;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 
@@ -34,82 +35,102 @@ class ExperienceController extends Controller
 
     public function store(Request $request)
     {
-        $validatedData = $request->validate([
-            'name' => 'required|string|max:255',
-            'description' => 'nullable|string|max:255',
-            'date_start' => 'nullable|date',
-            'date_end' => 'nullable|date|after_or_equal:date_start',
-            'output' => 'nullable|string|max:255',
-            'experience_categories_id' => 'required|exists:experience_categories,id',
-            'comment' => 'nullable|string',
-            'InstitutionName' => 'nullable|string|max:255',
-            'attachment' => 'nullable|file|max:5120|mimes:pdf,doc,docx', // 5MB max
-            'references' => 'nullable|array',
-            'references.*.name' => 'required|string|max:255',
-            'references.*.function' => 'required|string|max:255',
-            'references.*.email' => 'nullable|email|max:255',
-            'references.*.telephone' => 'nullable|string|max:255',
+        Log::info('Début de la requête store', [
+            'data' => $request->all()
         ]);
 
-        DB::beginTransaction();
         try {
-            // Gestion de la pièce jointe
-            if ($request->hasFile('attachment')) {
-                $file = $request->file('attachment');
-                $path = $file->store('attachments', 'public');
+            // 1. Valider les données de base
+            $validatedData = $request->validate([
+                'name' => 'required|string|max:255',
+                'description' => 'nullable|string|max:255',
+                'date_start' => 'nullable|date',
+                'date_end' => 'nullable|date|after_or_equal:date_start',
+                'output' => 'nullable|string|max:255',
+                'experience_categories_id' => 'required|exists:experience_categories,id',
+                'comment' => 'nullable|string',
+                'InstitutionName' => 'nullable|string|max:255',
+                'attachment' => 'nullable|file',
+            ]);
 
-                $attachment = Attachment::create([
-                    'name' => $file->getClientOriginalName(),
-                    'path' => $path,
-                    'format' => $file->getClientOriginalExtension(),
-                    'size' => $file->getSize(),
-                ]);
+            DB::beginTransaction();
 
-                $validatedData['attachment_id'] = $attachment->id;
-            }
-
-            // Création de l'expérience
+            // 2. Créer l'expérience de base
             $experience = Experience::create($validatedData);
+
+            // 3. Attacher l'expérience à l'utilisateur
             auth()->user()->experiences()->attach($experience->id);
 
-            // Gestion des références
-            if (!empty($validatedData['references'])) {
-                foreach ($validatedData['references'] as $referenceData) {
-                    $reference = Reference::create($referenceData);
-                    $experience->references()->attach($reference->id);
+            // 4. Gérer la pièce jointe si présente
+            if ($request->hasFile('attachment')) {
+                $path = $request->file('attachment')->store('attachments', 'public');
+                $attachment = Attachment::create([
+                    'name' => $request->file('attachment')->getClientOriginalName(),
+                    'path' => $path,
+                    'format' => $request->file('attachment')->getClientOriginalExtension(),
+                    'size' => $request->file('attachment')->getSize(),
+                ]);
+                $experience->attachment_id = $attachment->id;
+                $experience->save();
+            }
+
+            // 5. Gérer les références seulement si elles sont présentes et non vides
+            if ($request->filled('references')) {
+                $referencesData = json_decode($request->references, true);
+
+                if (is_array($referencesData) && count($referencesData) > 0) {
+                    foreach ($referencesData as $refData) {
+                        if (!empty($refData['name']) && !empty($refData['function'])) {
+                            $reference = new Reference([
+                                'name' => $refData['name'],
+                                'function' => $refData['function'],
+                                'email' => $refData['email'] ?? null,
+                                'telephone' => $refData['telephone'] ?? null,
+                            ]);
+                            $reference->save();
+
+                            DB::table('ExperienceReferences')->insert([
+                                'experiences_id' => $experience->id,
+                                'references_id' => $reference->id,
+                                'created_at' => now(),
+                                'updated_at' => now(),
+                            ]);
+                        }
+                    }
                 }
             }
 
             DB::commit();
 
-            // Charger toutes les relations nécessaires
+            // 6. Charger les relations pour la réponse
             $experience->load(['category', 'attachment', 'references']);
 
             return response()->json([
                 'message' => 'Expérience créée avec succès',
                 'experience' => $experience,
             ]);
+
         } catch (\Exception $e) {
             DB::rollBack();
-            // Si une pièce jointe a été uploadée, la supprimer
-            if (isset($path)) {
-                Storage::disk('public')->delete($path);
-            }
+
+            Log::error('Erreur dans store()', [
+                'message' => $e->getMessage(),
+                'line' => $e->getLine(),
+                'file' => $e->getFile(),
+                'trace' => $e->getTraceAsString()
+            ]);
 
             return response()->json([
-                'message' => 'Une erreur est survenue lors de la création de l\'expérience',
-                'error' => $e->getMessage()
+                'message' => 'Une erreur est survenue lors de la création',
+                'error' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine()
             ], 500);
         }
     }
-
     public function show(Experience $experience)
     {
-        // Vérifier que l'utilisateur a accès à cette expérience
-        $this->authorize('view', $experience);
-
         $experience->load(['category', 'attachment', 'references']);
-
         return response()->json([
             'experience' => $experience,
         ]);
@@ -117,9 +138,6 @@ class ExperienceController extends Controller
 
     public function edit(Experience $experience)
     {
-        // Vérifier que l'utilisateur a accès à cette expérience
-        $this->authorize('update', $experience);
-
         $categories = ExperienceCategory::all();
         $experience->load(['category', 'attachment', 'references']);
 
@@ -131,9 +149,6 @@ class ExperienceController extends Controller
 
     public function update(Request $request, Experience $experience)
     {
-        // Vérifier que l'utilisateur a accès à cette expérience
-        $this->authorize('update', $experience);
-
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'description' => 'nullable|string|max:255',
@@ -143,13 +158,8 @@ class ExperienceController extends Controller
             'experience_categories_id' => 'required|exists:experience_categories,id',
             'comment' => 'nullable|string',
             'InstitutionName' => 'nullable|string|max:255',
-            'attachment' => 'nullable|file|max:5120|mimes:pdf,doc,docx', // 5MB max
-            'references' => 'nullable|array',
-            'references.*.id' => 'nullable|exists:references,id',
-            'references.*.name' => 'required|string|max:255',
-            'references.*.function' => 'required|string|max:255',
-            'references.*.email' => 'nullable|email|max:255',
-            'references.*.telephone' => 'nullable|string|max:255',
+            'attachment' => 'nullable|file',
+            'references' => 'nullable|string',
         ]);
 
         DB::beginTransaction();
@@ -162,53 +172,44 @@ class ExperienceController extends Controller
                     $experience->attachment->delete();
                 }
 
-                $file = $request->file('attachment');
-                $path = $file->store('attachments', 'public');
-
+                $path = $request->file('attachment')->store('attachments', 'public');
                 $attachment = Attachment::create([
-                    'name' => $file->getClientOriginalName(),
+                    'name' => $request->file('attachment')->getClientOriginalName(),
                     'path' => $path,
-                    'format' => $file->getClientOriginalExtension(),
-                    'size' => $file->getSize(),
+                    'format' => $request->file('attachment')->getClientOriginalExtension(),
+                    'size' => $request->file('attachment')->getSize(),
                 ]);
-
                 $validated['attachment_id'] = $attachment->id;
             }
 
             // Mise à jour de l'expérience
             $experience->update($validated);
 
-            // Gestion des références
-            if (isset($validated['references'])) {
-                // Récupérer les IDs des références existantes
-                $existingReferenceIds = $experience->references->pluck('id')->toArray();
+            // Mise à jour des références
+            if ($request->filled('references')) {
+                $referencesData = json_decode($request->references, true);
+                if (is_array($referencesData)) {
+                    // Supprimer les anciennes références
+                    $experience->references()->detach();
 
-                // Créer ou mettre à jour les références
-                $newReferenceIds = [];
-                foreach ($validated['references'] as $referenceData) {
-                    if (isset($referenceData['id'])) {
-                        // Mise à jour d'une référence existante
-                        $reference = Reference::find($referenceData['id']);
-                        $reference->update($referenceData);
-                        $newReferenceIds[] = $reference->id;
-                    } else {
-                        // Création d'une nouvelle référence
-                        $reference = Reference::create($referenceData);
-                        $newReferenceIds[] = $reference->id;
+                    // Ajouter les nouvelles références
+                    foreach ($referencesData as $refData) {
+                        if (!empty($refData['name']) && !empty($refData['function'])) {
+                            $reference = Reference::create([
+                                'name' => $refData['name'],
+                                'function' => $refData['function'],
+                                'email' => $refData['email'] ?? null,
+                                'telephone' => $refData['telephone'] ?? null,
+                            ]);
+                            $experience->references()->attach($reference->id);
+                        }
                     }
                 }
-
-                // Supprimer les références qui ne sont plus utilisées
-                $referencesToDelete = array_diff($existingReferenceIds, $newReferenceIds);
-                Reference::whereIn('id', $referencesToDelete)->delete();
-
-                // Synchroniser les références avec l'expérience
-                $experience->references()->sync($newReferenceIds);
             }
 
             DB::commit();
 
-            // Recharger l'expérience avec toutes ses relations
+            // Recharger les relations
             $experience->load(['category', 'attachment', 'references']);
 
             return response()->json([
@@ -218,13 +219,10 @@ class ExperienceController extends Controller
 
         } catch (\Exception $e) {
             DB::rollBack();
-            // Si une nouvelle pièce jointe a été uploadée, la supprimer
-            if (isset($path)) {
-                Storage::disk('public')->delete($path);
-            }
+            Log::error('Erreur lors de la mise à jour de l\'expérience: ' . $e->getMessage());
 
             return response()->json([
-                'message' => 'Une erreur est survenue lors de la mise à jour de l\'expérience',
+                'message' => 'Une erreur est survenue lors de la mise à jour',
                 'error' => $e->getMessage()
             ], 500);
         }
@@ -232,18 +230,18 @@ class ExperienceController extends Controller
 
     public function destroy(Experience $experience)
     {
-        // Vérifier que l'utilisateur a accès à cette expérience
-        $this->authorize('delete', $experience);
-
         DB::beginTransaction();
         try {
+            // Supprimer les références associées
+            $experience->references()->detach();
+
             // Supprimer la pièce jointe si elle existe
             if ($experience->attachment) {
                 Storage::disk('public')->delete($experience->attachment->path);
                 $experience->attachment->delete();
             }
 
-            // Les références associées seront automatiquement détachées grâce aux relations définies
+            // Supprimer l'expérience
             $experience->delete();
 
             DB::commit();
@@ -254,68 +252,12 @@ class ExperienceController extends Controller
 
         } catch (\Exception $e) {
             DB::rollBack();
+            Log::error('Erreur lors de la suppression de l\'expérience: ' . $e->getMessage());
+
             return response()->json([
-                'message' => 'Une erreur est survenue lors de la suppression de l\'expérience',
+                'message' => 'Une erreur est survenue lors de la suppression',
                 'error' => $e->getMessage()
             ], 500);
         }
-    }
-
-    public function deleteAttachment(Experience $experience)
-    {
-        // Vérifier que l'utilisateur a accès à cette expérience
-        $this->authorize('update', $experience);
-
-        if ($experience->attachment) {
-            DB::beginTransaction();
-            try {
-                // Supprimer le fichier physique
-                Storage::disk('public')->delete($experience->attachment->path);
-
-                // Supprimer l'enregistrement de la pièce jointe
-                $experience->attachment->delete();
-
-                // Mettre à jour l'expérience
-                $experience->attachment_id = null;
-                $experience->save();
-
-                DB::commit();
-
-                return response()->json([
-                    'message' => 'Pièce jointe supprimée avec succès',
-                ]);
-
-            } catch (\Exception $e) {
-                DB::rollBack();
-                return response()->json([
-                    'message' => 'Une erreur est survenue lors de la suppression de la pièce jointe',
-                    'error' => $e->getMessage()
-                ], 500);
-            }
-        }
-
-        return response()->json([
-            'message' => 'Aucune pièce jointe à supprimer',
-        ]);
-    }
-
-    public function getAttachmentStats()
-    {
-        $user = auth()->user();
-        $experiences = $user->experiences()->with('attachment')->get();
-
-        $totalSize = $experiences->sum(function ($experience) {
-            return $experience->attachment ? $experience->attachment->size : 0;
-        });
-
-        $filesCount = $experiences->filter(function ($experience) {
-            return $experience->attachment !== null;
-        })->count();
-
-        return response()->json([
-            'total_size' => $totalSize,
-            'max_size' => 104857600, // 100MB
-            'files_count' => $filesCount,
-        ]);
     }
 }

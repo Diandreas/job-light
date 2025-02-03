@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useForm } from '@inertiajs/react';
 import { Button } from '@/Components/ui/button';
 import {
@@ -41,7 +41,7 @@ import { ScrollArea } from "@/Components/ui/scroll-area";
 import { motion, AnimatePresence } from 'framer-motion';
 import axios from "axios";
 
-// Types et interfaces
+// Interfaces
 interface Reference {
     id?: number;
     name: string;
@@ -83,190 +83,22 @@ interface Props {
     onUpdate: (experiences: Experience[]) => void;
 }
 
-// Templates pour les différents types d'expériences
-const experienceData = {
-    academic: {
-        names: [
-            "Baccalauréat",
-            "Probatoire",
-            "BEPC",
-            "Formation en Informatique",
-            "Certification en Bureautique",
-            "Formation en Archivage Numérique",
-            "Stage académique",
-            "Projet d'études"
-        ],
-        institutions: [
-            "Lycée Classique",
-            "Lycée Technique",
-            "Collège",
-            "Centre de Formation Professionnelle",
-            "Institut de Formation",
-            "École de Commerce",
-            "Université",
-            "Centre de Formation Continue"
-        ],
-        descriptions: [
-            "Acquisition des connaissances fondamentales et préparation aux études supérieures",
-            "Formation aux outils bureautiques et à la gestion documentaire",
-            "Apprentissage des techniques de classement et d'organisation",
-            "Initiation aux méthodes d'archivage moderne",
-            "Développement des compétences en communication et travail d'équipe",
-            "Formation pratique aux outils informatiques essentiels",
-            "Participation à des projets de groupe et présentations"
-        ]
-    },
-    internship: {
-        names: [
-            "Stage en Archivage",
-            "Stage en Bibliothèque",
-            "Stage en Administration",
-            "Assistant Documentaliste",
-            "Stage en Gestion de Documents",
-            "Stage en Secrétariat",
-            "Stage en Saisie de Données",
-            "Stage en Numérisation"
-        ],
-        companies: [
-            "Bibliothèque Municipale",
-            "Centre d'Archives",
-            "Administration Publique",
-            "Cabinet Comptable",
-            "École",
-            "ONG Locale",
-            "PME",
-            "Service Municipal"
-        ],
-        descriptions: [
-            "Classement et organisation de documents administratifs",
-            "Assistance dans la gestion quotidienne des archives",
-            "Participation à la numérisation des documents",
-            "Accueil et orientation des utilisateurs",
-            "Saisie et mise à jour des bases de données",
-            "Support aux tâches administratives courantes",
-            "Aide à l'organisation d'événements"
-        ],
-        achievements: [
-            "Amélioration du système de classement",
-            "Participation à la transition numérique",
-            "Création d'un nouveau système d'organisation",
-            "Aide à la mise en place d'une base de données",
-            "Contribution à l'efficacité du service",
-            "Acquisition d'expérience pratique",
-            "Développement de compétences professionnelles"
-        ]
-    },
-    volunteer: {
-        names: [
-            "Bénévolat en Bibliothèque",
-            "Assistant Archiviste Volontaire",
-            "Soutien Administratif",
-            "Aide à l'Organisation",
-            "Participation Associative",
-            "Support Communautaire",
-            "Projet Social"
-        ],
-        institutions: [
-            "Association Locale",
-            "Centre Communautaire",
-            "Organisation Caritative",
-            "École Primaire",
-            "Centre Culturel",
-            "Maison de Quartier",
-            "ONG"
-        ],
-        descriptions: [
-            "Aide à l'organisation d'événements communautaires",
-            "Soutien aux activités administratives",
-            "Participation à des projets de classement",
-            "Assistance aux membres de la communauté",
-            "Contribution à la gestion documentaire",
-            "Aide à la coordination d'activités",
-            "Support aux tâches organisationnelles"
-        ],
-        outputs: [
-            "Amélioration de l'organisation",
-            "Contribution au développement local",
-            "Mise en place de nouvelles méthodes",
-            "Soutien efficace aux activités",
-            "Développement personnel",
-            "Acquisition d'expérience pratique",
-            "Renforcement des compétences sociales"
-        ]
-    }
-};
-
 // Fonction utilitaire pour formater les tailles de fichiers
-const formatBytes = (bytes: number): string => {
-    if (bytes === 0) return '0 B';
+const formatBytes = (bytes: number | undefined): string => {
+    if (!bytes || isNaN(bytes) || bytes === 0) return '0 B';
+
     const k = 1024;
     const sizes = ['B', 'KB', 'MB', 'GB'];
-    const i = Math.floor(Math.log(bytes) / Math.log(k));
-    return `${parseFloat((bytes / Math.pow(k, i)).toFixed(2))} ${sizes[i]}`;
-};
-// Composant des statistiques
-const AttachmentStatistics: React.FC<{ attachmentSummary: AttachmentSummary }> = ({ attachmentSummary }) => {
-    const { total_size, max_size, files_count } = attachmentSummary;
-    const available_size = Math.max(0, max_size - total_size);
 
-    return (
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <Card className="bg-gradient-to-r from-amber-50 to-purple-50 border-none">
-                <CardContent className="p-4">
-                    <div className="flex items-center justify-between">
-                        <div>
-                            <p className="text-sm font-medium text-gray-500">
-                                Espace utilisé
-                            </p>
-                            <h3 className="text-2xl font-bold text-gray-900">
-                                {formatBytes(total_size)}
-                            </h3>
-                        </div>
-                        <FileText className="w-8 h-8 text-amber-500" />
-                    </div>
-                </CardContent>
-            </Card>
+    const posBytes = Math.abs(bytes);
+    const i = Math.floor(Math.log(posBytes) / Math.log(k));
+    const sizeIndex = Math.min(i, sizes.length - 1);
 
-            <Card className="bg-gradient-to-r from-amber-50 to-purple-50 border-none">
-                <CardContent className="p-4">
-                    <div className="flex items-center justify-between">
-                        <div>
-                            <p className="text-sm font-medium text-gray-500">
-                                Fichiers
-                            </p>
-                            <h3 className="text-2xl font-bold text-gray-900">
-                                {files_count}
-                            </h3>
-                        </div>
-                        <FileText className="w-8 h-8 text-purple-500" />
-                    </div>
-                </CardContent>
-            </Card>
+    const formattedValue = (posBytes / Math.pow(k, sizeIndex)).toFixed(2);
 
-            <Card className="bg-gradient-to-r from-amber-50 to-purple-50 border-none">
-                <CardContent className="p-4">
-                    <div className="flex items-center justify-between">
-                        <div>
-                            <p className="text-sm font-medium text-gray-500">
-                                Espace disponible
-                            </p>
-                            <h3 className="text-2xl font-bold text-gray-900">
-                                {formatBytes(available_size)}
-                            </h3>
-                        </div>
-                        <FileText className="w-8 h-8 text-amber-500" />
-                    </div>
-                </CardContent>
-            </Card>
-        </div>
-    );
+    return `${formattedValue} ${sizes[sizeIndex]}`;
 };
 
-
-// Fonction utilitaire pour obtenir un élément aléatoire d'un tableau
-const getRandomItem = <T,>(array: T[]): T => {
-    return array[Math.floor(Math.random() * array.length)];
-};
 const ExperienceManager: React.FC<Props> = ({ auth, experiences: initialExperiences, categories, onUpdate }) => {
     // États
     const [experiences, setExperiences] = useState<Experience[]>(initialExperiences);
@@ -275,6 +107,7 @@ const ExperienceManager: React.FC<Props> = ({ auth, experiences: initialExperien
     const [isLoading, setIsLoading] = useState(false);
     const [searchTerm, setSearchTerm] = useState('');
     const [selectedCategory, setSelectedCategory] = useState('all');
+    const [currentTab, setCurrentTab] = useState('experiences');
     const [attachmentSummary, setAttachmentSummary] = useState<AttachmentSummary>({
         total_size: 0,
         max_size: 104857600, // 100MB par défaut
@@ -297,10 +130,32 @@ const ExperienceManager: React.FC<Props> = ({ auth, experiences: initialExperien
         references: [] as Reference[]
     });
 
+    // Calcul des statistiques des attachments
+    const calculateAttachmentStats = useCallback(() => {
+        const totalSize = experiences.reduce((acc, exp) => {
+            const size = exp.attachment_size ? Number(exp.attachment_size) : 0;
+            return acc + (isNaN(size) ? 0 : size);
+        }, 0);
+
+        const filesCount = experiences.filter(exp =>
+            exp.attachment_path && exp.attachment_size && Number(exp.attachment_size) > 0
+        ).length;
+
+        setAttachmentSummary(prev => ({
+            ...prev,
+            total_size: totalSize,
+            files_count: filesCount
+        }));
+    }, [experiences]);
+
     // Effets
     useEffect(() => {
         setExperiences(initialExperiences);
     }, [initialExperiences]);
+
+    useEffect(() => {
+        calculateAttachmentStats();
+    }, [experiences, calculateAttachmentStats]);
 
     useEffect(() => {
         let filtered = experiences;
@@ -323,70 +178,7 @@ const ExperienceManager: React.FC<Props> = ({ auth, experiences: initialExperien
         }
         setFilteredExperiences(filtered);
     }, [searchTerm, experiences, selectedCategory]);
-
-    useEffect(() => {
-        fetchAttachmentStats();
-    }, [experiences]);
-
-    // Fonctions de gestion des données
-    const fetchAttachmentStats = async () => {
-        try {
-            const totalSize = experiences.reduce((acc, exp) => acc + (exp.attachment_size || 0), 0);
-            const filesCount = experiences.filter(exp => exp.attachment_path).length;
-            setAttachmentSummary({
-                total_size: totalSize,
-                max_size: 104857600,
-                files_count: filesCount
-            });
-        } catch (error) {
-            console.error('Erreur lors de la récupération des statistiques:', error);
-        }
-    };
-
-    const generatePredefinedExperience = (type: 'academic' | 'internship' | 'volunteer') => {
-        const currentYear = new Date().getFullYear();
-        const data = experienceData[type];
-        const baseData = {
-            experience_categories_id: type === 'academic' ? '2' : type === 'internship' ? '1' : '3',
-            date_start: `${currentYear - 1}-09-01`,
-            date_end: type === 'academic' ? `${currentYear}-06-30` : `${currentYear}-12-31`,
-            comment: "Une expérience enrichissante qui m'a permis de développer mes compétences",
-        };
-
-        switch(type) {
-            case 'academic':
-                return {
-                    ...baseData,
-                    name: getRandomItem(data.names),
-                    //@ts-ignore
-                    InstitutionName: getRandomItem(data.institutions),
-                    description: getRandomItem(data.descriptions),
-                    output: "Formation complétée avec succès",
-                };
-            case 'internship':
-                return {
-                    ...baseData,
-                    name: getRandomItem(data.names),
-                    //@ts-ignore
-                    InstitutionName: getRandomItem(data.companies),
-                    description: getRandomItem(data.descriptions),
-                    //@ts-ignore
-                    output: getRandomItem(data.achievements),
-                };
-            case 'volunteer':
-                return {
-                    ...baseData,
-                    name: getRandomItem(data.names),
-                    //@ts-ignore
-                    InstitutionName: getRandomItem(data.institutions),
-                    //@ts-ignore
-                    description: getRandomItem(data.descriptions),
-                    //@ts-ignore
-                    output: getRandomItem(data.outputs),
-                };
-        }
-    };
-
+    // Fonctions de gestion
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setIsLoading(true);
@@ -394,38 +186,39 @@ const ExperienceManager: React.FC<Props> = ({ auth, experiences: initialExperien
         try {
             const formData = new FormData();
 
-            // Envoyer les références uniquement si le tableau n'est pas vide
-            if (data.references && data.references.length > 0) {
-                formData.append('references', JSON.stringify(data.references));
-            }
-
-            // Ajouter les autres données
+            // Traiter les données de base
             Object.entries(data).forEach(([key, value]) => {
-                if (value !== null && value !== undefined && key !== 'references') {
+                if (value !== null && value !== undefined) {
                     if (key === 'attachment' && value instanceof File) {
                         formData.append('attachment', value);
+                    } else if (key === 'references' && Array.isArray(value)) {
+                        formData.append('references', JSON.stringify(value));
                     } else if (key !== 'attachment') {
                         formData.append(key, String(value));
                     }
                 }
             });
 
-            console.log('Envoi des données:', {
-                ...Object.fromEntries(formData.entries()),
-                references: data.references
-            });
+            const response = data.id
+                ? await axios.post(`/experiences/${data.id}`, formData, {
+                    headers: { 'Content-Type': 'multipart/form-data' },
+                    params: { _method: 'PUT' }
+                })
+                : await axios.post('/experiences', formData, {
+                    headers: { 'Content-Type': 'multipart/form-data' }
+                });
 
-            const response = await axios.post('/experiences', formData, {
-                headers: { 'Content-Type': 'multipart/form-data' }
-            });
+            const updatedExperiences = data.id
+                ? experiences.map(exp => exp.id === response.data.experience.id ? response.data.experience : exp)
+                : [...experiences, response.data.experience];
 
-            const updatedExperiences = [...experiences, response.data.experience];
             setExperiences(updatedExperiences);
             onUpdate(updatedExperiences);
+            calculateAttachmentStats(); // Recalculer les statistiques
 
             toast({
-                title: "Succès",
-                description: "L'expérience a été créée avec succès.",
+                title: data.id ? "Expérience mise à jour" : "Expérience créée",
+                description: "L'opération a été effectuée avec succès.",
             });
 
             resetForm();
@@ -444,7 +237,6 @@ const ExperienceManager: React.FC<Props> = ({ auth, experiences: initialExperien
     };
 
     const handleEdit = (experience: Experience) => {
-        //@ts-ignore
         setData({
             ...experience,
             experience_categories_id: experience.experience_categories_id.toString(),
@@ -457,10 +249,11 @@ const ExperienceManager: React.FC<Props> = ({ auth, experiences: initialExperien
     const handleDelete = async (experienceId: number) => {
         try {
             await axios.delete(`/experiences/${experienceId}`);
+
             const updatedExperiences = experiences.filter(exp => exp.id !== experienceId);
             setExperiences(updatedExperiences);
             onUpdate(updatedExperiences);
-            fetchAttachmentStats();
+            calculateAttachmentStats(); // Recalculer les statistiques
 
             toast({
                 title: "Succès",
@@ -478,15 +271,21 @@ const ExperienceManager: React.FC<Props> = ({ auth, experiences: initialExperien
     const handleDeleteAttachment = async (experienceId: number) => {
         try {
             await axios.delete(`/experiences/${experienceId}/attachment`);
+
             const updatedExperiences = experiences.map(exp => {
                 if (exp.id === experienceId) {
-                    return { ...exp, attachment_path: undefined, attachment_size: 0 };
+                    return {
+                        ...exp,
+                        attachment_path: undefined,
+                        attachment_size: 0
+                    };
                 }
                 return exp;
             });
+
             setExperiences(updatedExperiences);
             onUpdate(updatedExperiences);
-            fetchAttachmentStats();
+            calculateAttachmentStats(); // Recalculer les statistiques
 
             toast({
                 title: "Pièce jointe supprimée",
@@ -515,15 +314,25 @@ const ExperienceManager: React.FC<Props> = ({ auth, experiences: initialExperien
 
     const resetForm = () => {
         reset();
-        setData('id', '');
-        setData('references', []);
+        setData({
+            id: '',
+            name: '',
+            description: '',
+            date_start: '',
+            date_end: '',
+            output: '',
+            experience_categories_id: '',
+            comment: '',
+            InstitutionName: '',
+            attachment: null,
+            references: []
+        });
         setIsFormOpen(false);
     };
 
     const handleTemplateSelection = (type: 'academic' | 'internship' | 'volunteer') => {
         const template = generatePredefinedExperience(type);
         if (template) {
-            //@ts-ignore
             setData(prev => ({
                 ...prev,
                 ...template
@@ -533,6 +342,49 @@ const ExperienceManager: React.FC<Props> = ({ auth, experiences: initialExperien
                 description: "Vous pouvez maintenant personnaliser les informations.",
             });
         }
+    };
+
+    // Fonction utilitaire pour générer des expériences prédéfinies
+    const generatePredefinedExperience = (type: 'academic' | 'internship' | 'volunteer') => {
+        const currentYear = new Date().getFullYear();
+        const data = experienceData[type];
+        const baseData = {
+            experience_categories_id: type === 'academic' ? '2' : type === 'internship' ? '1' : '3',
+            date_start: `${currentYear - 1}-09-01`,
+            date_end: type === 'academic' ? `${currentYear}-06-30` : `${currentYear}-12-31`,
+            comment: "Une expérience enrichissante qui m'a permis de développer mes compétences",
+        };
+
+        switch(type) {
+            case 'academic':
+                return {
+                    ...baseData,
+                    name: getRandomItem(data.names),
+                    InstitutionName: getRandomItem(data.institutions),
+                    description: getRandomItem(data.descriptions),
+                    output: "Formation complétée avec succès",
+                };
+            case 'internship':
+                return {
+                    ...baseData,
+                    name: getRandomItem(data.names),
+                    InstitutionName: getRandomItem(data.companies),
+                    description: getRandomItem(data.descriptions),
+                    output: getRandomItem(data.achievements),
+                };
+            case 'volunteer':
+                return {
+                    ...baseData,
+                    name: getRandomItem(data.names),
+                    InstitutionName: getRandomItem(data.institutions),
+                    description: getRandomItem(data.descriptions),
+                    output: getRandomItem(data.outputs),
+                };
+        }
+    };
+
+    const getRandomItem = <T,>(array: T[]): T => {
+        return array[Math.floor(Math.random() * array.length)];
     };
     // Composant Card pour l'expérience
     const ExperienceCard: React.FC<{ experience: Experience }> = ({ experience: exp }) => {
@@ -580,24 +432,14 @@ const ExperienceManager: React.FC<Props> = ({ auth, experiences: initialExperien
                                     </span>
                                 </div>
 
-                                {exp.references && exp.references.length > 0 && (
-                                    <div className="mt-2 space-y-2">
-                                        <p className="text-sm font-medium text-gray-700">Références:</p>
-                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
-                                            {exp.references.map((ref, index) => (
-                                                <div key={index} className="text-sm bg-gray-50 p-2 rounded-md">
-                                                    <p className="font-medium">{ref.name}</p>
-                                                    <p className="text-gray-600">{ref.function}</p>
-                                                    {ref.email && (
-                                                        <p className="text-gray-500 text-xs">{ref.email}</p>
-                                                    )}
-                                                    {ref.telephone && (
-                                                        <p className="text-gray-500 text-xs">{ref.telephone}</p>
-                                                    )}
-                                                </div>
-                                            ))}
-                                        </div>
-                                    </div>
+                                {exp.attachment_path && (
+                                    <Badge
+                                        variant="outline"
+                                        className="mt-2 bg-gradient-to-r from-amber-50 to-purple-50"
+                                    >
+                                        <FileText className="w-3 h-3 mr-1" />
+                                        {formatBytes(exp.attachment_size)}
+                                    </Badge>
                                 )}
                             </div>
 
@@ -644,97 +486,86 @@ const ExperienceManager: React.FC<Props> = ({ auth, experiences: initialExperien
                                 </div>
                             )}
                         </div>
+
+                        {exp.references && exp.references.length > 0 && (
+                            <div className="mt-4">
+                                <h4 className="text-sm font-semibold mb-2">Références</h4>
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                                    {exp.references.map((ref, index) => (
+                                        <div key={index} className="text-sm bg-gray-50 p-2 rounded-md">
+                                            <p className="font-medium">{ref.name}</p>
+                                            <p className="text-gray-600">{ref.function}</p>
+                                            {ref.email && (
+                                                <p className="text-gray-500 text-xs">{ref.email}</p>
+                                            )}
+                                            {ref.telephone && (
+                                                <p className="text-gray-500 text-xs">{ref.telephone}</p>
+                                            )}
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
                     </CardContent>
                 </Card>
             </motion.div>
         );
     };
 
-    // Composant pour le formulaire de référence
-    const ReferenceForm: React.FC<{
-        reference: Reference | null;
-        onSave: (reference: Reference) => void;
-        onCancel: () => void;
-    }> = ({ reference, onSave, onCancel }) => {
-        const [formData, setFormData] = useState<Reference>({
-            name: reference?.name || '',
-            function: reference?.function || '',
-            email: reference?.email || '',
-            telephone: reference?.telephone || '',
-        });
-
-        const handleSubmit = (e: React.FormEvent) => {
-            e.preventDefault();
-            onSave(formData);
-        };
-
+    // Composant des statistiques des attachments
+    const AttachmentStatistics: React.FC<{ summary: AttachmentSummary }> = ({ summary }) => {
         return (
-            <form onSubmit={handleSubmit} className="space-y-4">
-                <div className="space-y-2">
-                    <Label htmlFor="ref-name">Nom</Label>
-                    <Input
-                        id="ref-name"
-                        value={formData.name}
-                        onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                        className="border-amber-200 focus:ring-amber-500"
-                        placeholder="Nom de la référence"
-                    />
-                </div>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <Card className="bg-gradient-to-r from-amber-50 to-purple-50 border-none">
+                    <CardContent className="p-4">
+                        <div className="flex items-center justify-between">
+                            <div>
+                                <p className="text-sm font-medium text-gray-500">
+                                    Espace utilisé
+                                </p>
+                                <h3 className="text-2xl font-bold text-gray-900">
+                                    {formatBytes(Number(summary.total_size))}
+                                </h3>
+                            </div>
+                            <FileText className="w-8 h-8 text-amber-500" />
+                        </div>
+                    </CardContent>
+                </Card>
 
-                <div className="space-y-2">
-                    <Label htmlFor="ref-function">Fonction</Label>
-                    <Input
-                        id="ref-function"
-                        value={formData.function}
-                        onChange={(e) => setFormData({ ...formData, function: e.target.value })}
-                        className="border-amber-200 focus:ring-amber-500"
-                        placeholder="Fonction de la référence"
-                    />
-                </div>
+                <Card className="bg-gradient-to-r from-amber-50 to-purple-50 border-none">
+                    <CardContent className="p-4">
+                        <div className="flex items-center justify-between">
+                            <div>
+                                <p className="text-sm font-medium text-gray-500">
+                                    Fichiers
+                                </p>
+                                <h3 className="text-2xl font-bold text-gray-900">
+                                    {summary.files_count}
+                                </h3>
+                            </div>
+                            <FileText className="w-8 h-8 text-purple-500" />
+                        </div>
+                    </CardContent>
+                </Card>
 
-                <div className="space-y-2">
-                    <Label htmlFor="ref-email">Email</Label>
-                    <Input
-                        id="ref-email"
-                        type="email"
-                        value={formData.email}
-                        onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                        className="border-amber-200 focus:ring-amber-500"
-                        placeholder="Email de la référence"
-                    />
-                </div>
-
-                <div className="space-y-2">
-                    <Label htmlFor="ref-telephone">Téléphone</Label>
-                    <Input
-                        id="ref-telephone"
-                        value={formData.telephone}
-                        onChange={(e) => setFormData({ ...formData, telephone: e.target.value })}
-                        className="border-amber-200 focus:ring-amber-500"
-                        placeholder="Téléphone de la référence"
-                    />
-                </div>
-
-                <div className="flex justify-end gap-2">
-                    <Button
-                        type="button"
-                        variant="outline"
-                        onClick={onCancel}
-                        className="border-amber-200 hover:bg-amber-50"
-                    >
-                        Annuler
-                    </Button>
-                    <Button
-                        type="submit"
-                        className="bg-gradient-to-r from-amber-500 to-purple-500 hover:from-amber-600 hover:to-purple-600 text-white"
-                    >
-                        Enregistrer
-                    </Button>
-                </div>
-            </form>
+                <Card className="bg-gradient-to-r from-amber-50 to-purple-50 border-none">
+                    <CardContent className="p-4">
+                        <div className="flex items-center justify-between">
+                            <div>
+                                <p className="text-sm font-medium text-gray-500">
+                                    Espace disponible
+                                </p>
+                                <h3 className="text-2xl font-bold text-gray-900">
+                                    {formatBytes(Math.max(0, summary.max_size - summary.total_size))}
+                                </h3>
+                            </div>
+                            <FileText className="w-8 h-8 text-amber-500" />
+                        </div>
+                    </CardContent>
+                </Card>
+            </div>
         );
-    };
-    // Rendu principal
+    };// Rendu principal
     return (
         <div className="space-y-6">
             <div className="flex flex-col md:flex-row justify-between items-center gap-4">
@@ -746,7 +577,7 @@ const ExperienceManager: React.FC<Props> = ({ auth, experiences: initialExperien
                 </div>
             </div>
 
-            <Tabs defaultValue="experiences" className="w-full">
+            <Tabs defaultValue="experiences" value={currentTab} onValueChange={setCurrentTab} className="w-full">
                 <TabsList className="grid w-full grid-cols-2 mb-4">
                     <TabsTrigger value="experiences" className="flex items-center gap-2">
                         <PencilRuler className="w-4 h-4" />
@@ -754,7 +585,7 @@ const ExperienceManager: React.FC<Props> = ({ auth, experiences: initialExperien
                     </TabsTrigger>
                     <TabsTrigger value="attachments" className="flex items-center gap-2">
                         <FileText className="w-4 h-4" />
-                        Pièces jointes
+                        Pièces jointes {attachmentSummary.files_count > 0 && `(${attachmentSummary.files_count})`}
                     </TabsTrigger>
                 </TabsList>
 
@@ -811,7 +642,7 @@ const ExperienceManager: React.FC<Props> = ({ auth, experiences: initialExperien
                         </CardContent>
                     </Card>
 
-                    <ScrollArea className="h-[600px] pr-4">
+                    <ScrollArea className="h-[600px] pr-4 mt-4">
                         <div className="space-y-4">
                             <AnimatePresence mode="sync">
                                 {filteredExperiences.length > 0 ? (
@@ -848,104 +679,67 @@ const ExperienceManager: React.FC<Props> = ({ auth, experiences: initialExperien
                     <Card className="border-amber-100">
                         <CardContent className="p-6">
                             <div className="space-y-6">
-                                {/* Statistiques des pièces jointes */}
-                                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                                    <Card className="bg-gradient-to-r from-amber-50 to-purple-50 border-none">
-                                        <CardContent className="p-4">
-                                            <div className="flex items-center justify-between">
-                                                <div>
-                                                    <p className="text-sm font-medium text-gray-500">
-                                                        Espace utilisé
-                                                    </p>
-                                                    <h3 className="text-2xl font-bold text-gray-900">
-                                                        {formatBytes(attachmentSummary.total_size)}
-                                                    </h3>
-                                                </div>
-                                                <FileText className="w-8 h-8 text-amber-500" />
-                                            </div>
-                                        </CardContent>
-                                    </Card>
+                                <AttachmentStatistics summary={attachmentSummary} />
 
-                                    <Card className="bg-gradient-to-r from-amber-50 to-purple-50 border-none">
-                                        <CardContent className="p-4">
-                                            <div className="flex items-center justify-between">
-                                                <div>
-                                                    <p className="text-sm font-medium text-gray-500">
-                                                        Fichiers
-                                                    </p>
-                                                    <h3 className="text-2xl font-bold text-gray-900">
-                                                        {attachmentSummary.files_count}
-                                                    </h3>
-                                                </div>
-                                                <FileText className="w-8 h-8 text-purple-500" />
-                                            </div>
-                                        </CardContent>
-                                    </Card>
-
-                                    <Card className="bg-gradient-to-r from-amber-50 to-purple-50 border-none">
-                                        <CardContent className="p-4">
-                                            <div className="flex items-center justify-between">
-                                                <div>
-                                                    <p className="text-sm font-medium text-gray-500">
-                                                        Espace disponible
-                                                    </p>
-                                                    <h3 className="text-2xl font-bold text-gray-900">
-                                                        {formatBytes(attachmentSummary.max_size - attachmentSummary.total_size)}
-                                                    </h3>
-                                                </div>
-                                                <FileText className="w-8 h-8 text-amber-500" />
-                                            </div>
-                                        </CardContent>
-                                    </Card>
-                                </div>
-
-                                {/* Liste des pièces jointes */}
                                 <div className="space-y-4">
-                                    {experiences
-                                        .filter(exp => exp.attachment_path)
-                                        .map(exp => (
-                                            <Card key={exp.id} className="hover:shadow-md transition-all">
-                                                <CardContent className="p-4">
-                                                    <div className="flex items-center justify-between">
-                                                        <div className="flex-1">
-                                                            <h4 className="font-semibold">{exp.name}</h4>
-                                                            <p className="text-sm text-gray-500">{exp.InstitutionName}</p>
-                                                            {exp.attachment_size && (
-                                                                <Badge variant="outline" className="mt-2">
-                                                                    {formatBytes(exp.attachment_size)}
-                                                                </Badge>
-                                                            )}
-                                                        </div>
-                                                        <div className="flex gap-2">
-                                                            <Button
-                                                                variant="ghost"
-                                                                size="sm"
-                                                                onClick={() => handlePreviewPDF(exp.attachment_path)}
-                                                                className="hover:bg-amber-50"
-                                                            >
-                                                                <Eye className="w-4 h-4 text-amber-500" />
-                                                            </Button>
-                                                            <Button
-                                                                variant="ghost"
-                                                                size="sm"
-                                                                onClick={() => handleEdit(exp)}
-                                                                className="hover:bg-purple-50"
-                                                            >
-                                                                <Edit className="w-4 h-4 text-purple-500" />
-                                                            </Button>
-                                                            <Button
-                                                                variant="ghost"
-                                                                size="sm"
-                                                                onClick={() => handleDeleteAttachment(exp.id)}
-                                                                className="hover:bg-red-50"
-                                                            >
-                                                                <Trash2 className="w-4 h-4 text-red-500" />
-                                                            </Button>
-                                                        </div>
-                                                    </div>
-                                                </CardContent>
-                                            </Card>
-                                        ))}
+                                    <AnimatePresence mode="sync">
+                                        {experiences
+                                            .filter(exp => exp.attachment_path)
+                                            .map(exp => (
+                                                <motion.div
+                                                    key={exp.id}
+                                                    initial={{ opacity: 0, y: 20 }}
+                                                    animate={{ opacity: 1, y: 0 }}
+                                                    exit={{ opacity: 0, y: -20 }}
+                                                    transition={{ duration: 0.2 }}
+                                                >
+                                                    <Card className="hover:shadow-md transition-all">
+                                                        <CardContent className="p-4">
+                                                            <div className="flex items-center justify-between">
+                                                                <div className="flex-1">
+                                                                    <h4 className="font-semibold">{exp.name}</h4>
+                                                                    <p className="text-sm text-gray-500">{exp.InstitutionName}</p>
+                                                                    {exp.attachment_size && (
+                                                                        <Badge
+                                                                            variant="outline"
+                                                                            className="mt-2 bg-gradient-to-r from-amber-50 to-purple-50"
+                                                                        >
+                                                                            {formatBytes(Number(exp.attachment_size))}
+                                                                        </Badge>
+                                                                    )}
+                                                                </div>
+                                                                <div className="flex gap-2">
+                                                                    <Button
+                                                                        variant="ghost"
+                                                                        size="sm"
+                                                                        onClick={() => handlePreviewPDF(exp.attachment_path)}
+                                                                        className="hover:bg-amber-50"
+                                                                    >
+                                                                        <Eye className="w-4 h-4 text-amber-500" />
+                                                                    </Button>
+                                                                    <Button
+                                                                        variant="ghost"
+                                                                        size="sm"
+                                                                        onClick={() => handleEdit(exp)}
+                                                                        className="hover:bg-purple-50"
+                                                                    >
+                                                                        <Edit className="w-4 h-4 text-purple-500" />
+                                                                    </Button>
+                                                                    <Button
+                                                                        variant="ghost"
+                                                                        size="sm"
+                                                                        onClick={() => handleDeleteAttachment(exp.id)}
+                                                                        className="hover:bg-red-50"
+                                                                    >
+                                                                        <Trash2 className="w-4 h-4 text-red-500" />
+                                                                    </Button>
+                                                                </div>
+                                                            </div>
+                                                        </CardContent>
+                                                    </Card>
+                                                </motion.div>
+                                            ))}
+                                    </AnimatePresence>
 
                                     {experiences.filter(exp => exp.attachment_path).length === 0 && (
                                         <Card>
@@ -1062,9 +856,7 @@ const ExperienceManager: React.FC<Props> = ({ auth, experiences: initialExperien
                                     onChange={(e) => setData('date_end', e.target.value)}
                                     className="border-amber-200 focus:ring-amber-500"
                                 />
-                                <p className="text-xs text-gray-500">
-                                    Laissez vide si en cours
-                                </p>
+                                <p className="text-xs text-gray-500">Laissez vide si en cours</p>
                                 {errors.date_end && <p className="text-sm text-red-500">{errors.date_end}</p>}
                             </div>
                         </div>
@@ -1186,6 +978,7 @@ const ExperienceManager: React.FC<Props> = ({ auth, experiences: initialExperien
                                                         setData('references', references);
                                                     }}
                                                     className="border-amber-200 focus:ring-amber-500"
+                                                    placeholder="Nom de la référence"
                                                 />
                                             </div>
                                             <div className="space-y-2">
@@ -1201,6 +994,7 @@ const ExperienceManager: React.FC<Props> = ({ auth, experiences: initialExperien
                                                         setData('references', references);
                                                     }}
                                                     className="border-amber-200 focus:ring-amber-500"
+                                                    placeholder="Fonction de la référence"
                                                 />
                                             </div>
                                             <div className="space-y-2">
@@ -1217,6 +1011,7 @@ const ExperienceManager: React.FC<Props> = ({ auth, experiences: initialExperien
                                                         setData('references', references);
                                                     }}
                                                     className="border-amber-200 focus:ring-amber-500"
+                                                    placeholder="Email de la référence"
                                                 />
                                             </div>
                                             <div className="space-y-2">
@@ -1232,6 +1027,7 @@ const ExperienceManager: React.FC<Props> = ({ auth, experiences: initialExperien
                                                         setData('references', references);
                                                     }}
                                                     className="border-amber-200 focus:ring-amber-500"
+                                                    placeholder="Téléphone de la référence"
                                                 />
                                             </div>
                                         </div>

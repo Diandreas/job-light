@@ -2,19 +2,29 @@
 
 @section('content')
     <div class="cv-container">
-        <!-- En-tête compact avec toutes les infos essentielles -->
+        <!-- En-tête compact avec photo et infos essentielles -->
         <header class="cv-header">
-            <div class="header-main">
-                <h1>{{ $cvInformation['personalInformation']['firstName'] }} </h1>
-                <h2>{{ $cvInformation['professions'][0]['name']}}</h2>
-            </div>
-            <div class="header-contact">
-                <div class="contact-item"><i class="bi bi-envelope"></i>{{ $cvInformation['personalInformation']['email'] }}</div>
-                <div class="contact-item"><i class="bi bi-telephone"></i>{{ $cvInformation['personalInformation']['phone'] }}</div>
-                <div class="contact-item"><i class="bi bi-geo-alt"></i>{{ $cvInformation['personalInformation']['address'] }}</div>
-                @if($cvInformation['personalInformation']['linkedin'])
-                    <div class="contact-item"><i class="bi bi-linkedin"></i>{{ $cvInformation['personalInformation']['linkedin'] }}</div>
-                @endif
+            @if($cvInformation['personalInformation']['photo'])
+                <div class="header-photo">
+                    <img src="{{ $cvInformation['personalInformation']['photo'] }}" alt="Photo de profil">
+                </div>
+            @endif
+            <div class="header-content">
+                <div class="header-main">
+                    <h1>{{ $cvInformation['personalInformation']['firstName'] }}</h1>
+                    <h2>{{ $cvInformation['professions'][0]['name']}}</h2>
+                </div>
+                <div class="header-contact">
+                    <div class="contact-item"><i class="bi bi-envelope"></i>{{ $cvInformation['personalInformation']['email'] }}</div>
+                    <div class="contact-item"><i class="bi bi-telephone"></i>{{ $cvInformation['personalInformation']['phone'] }}</div>
+                    <div class="contact-item"><i class="bi bi-geo-alt"></i>{{ $cvInformation['personalInformation']['address'] }}</div>
+                    @if($cvInformation['personalInformation']['linkedin'])
+                        <div class="contact-item"><i class="bi bi-linkedin"></i>{{ $cvInformation['personalInformation']['linkedin'] }}</div>
+                    @endif
+                    @if($cvInformation['personalInformation']['github'])
+                        <div class="contact-item"><i class="bi bi-github"></i>{{ $cvInformation['personalInformation']['github'] }}</div>
+                    @endif
+                </div>
             </div>
         </header>
 
@@ -39,11 +49,46 @@
                                         <strong>{{ $experience['name'] }}</strong>
                                         <span class="company">{{ $experience['InstitutionName'] }}</span>
                                     </div>
-                                    <div class="date">{{ $experience['date_start'] }}-{{ $experience['date_end'] ?? 'Present' }}</div>
+                                    <div class="date">
+                                        {{ \Carbon\Carbon::parse($experience['date_start'])->format('M Y') }} -
+                                        {{ $experience['date_end'] ? \Carbon\Carbon::parse($experience['date_end'])->format('M Y') : 'Present' }}
+                                    </div>
                                 </div>
                                 <p class="description">{{ $experience['description'] }}</p>
                                 @if($experience['output'])
                                     <p class="output">• {{ $experience['output'] }}</p>
+                                @endif
+
+                                <!-- Références compactes -->
+                                @if(!empty($experience['references']))
+                                    <div class="references-compact">
+                                        <div class="references-title">Références:</div>
+                                        <div class="references-grid">
+                                            @foreach($experience['references'] as $reference)
+                                                <div class="reference-item">
+                                                    <div class="reference-name">{{ $reference['name'] }}</div>
+                                                    <div class="reference-function">{{ $reference['function'] }}</div>
+                                                    @if($reference['email'])
+                                                        <div class="reference-contact">
+                                                            <i class="bi bi-envelope"></i> {{ $reference['email'] }}
+                                                        </div>
+                                                    @endif
+                                                    @if($reference['telephone'])
+                                                        <div class="reference-contact">
+                                                            <i class="bi bi-telephone"></i> {{ $reference['telephone'] }}
+                                                        </div>
+                                                    @endif
+                                                </div>
+                                            @endforeach
+                                        </div>
+                                    </div>
+                                @endif
+
+                                <!-- Indicateur de pièce jointe -->
+                                @if($experience['attachment_path'])
+                                    <div class="attachment-indicator">
+                                        <i class="bi bi-paperclip"></i> Documentation disponible
+                                    </div>
                                 @endif
                             </div>
                         @endforeach
@@ -89,11 +134,12 @@
             --font-size-base: 0.875rem;
             --line-height-base: 1.4;
             --spacing-unit: 0.75rem;
+            --accent-color: #3182ce;
         }
 
         .cv-container {
-            width: calc(210mm - 60px); /* A4 width minus margins */
-            min-height: calc(297mm - 60px); /* A4 height minus margins */
+            width: calc(210mm - 60px);
+            min-height: calc(297mm - 60px);
             padding: calc(var(--spacing-unit) * 2);
             font-family: 'Arial', sans-serif;
             font-size: var(--font-size-base);
@@ -102,14 +148,35 @@
             background: white;
         }
 
-        /* Header compact */
+        /* Header avec photo */
         .cv-header {
             display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
+            gap: calc(var(--spacing-unit) * 1.5);
             padding-bottom: var(--spacing-unit);
             border-bottom: 1px solid var(--border-color);
             margin-bottom: var(--spacing-unit);
+        }
+
+        .header-photo {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            overflow: hidden;
+            flex-shrink: 0;
+            border: 2px solid var(--accent-color);
+        }
+
+        .header-photo img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .header-content {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
         }
 
         .header-main h1 {
@@ -128,7 +195,7 @@
 
         .header-contact {
             display: grid;
-            grid-template-columns: 1fr;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
             gap: calc(var(--spacing-unit) * 0.5);
             font-size: 0.8rem;
         }
@@ -142,10 +209,10 @@
 
         .contact-item i {
             font-size: 0.9rem;
-            color: var(--text-secondary);
+            color: var(--accent-color);
         }
 
-        /* Layout deux colonnes compact */
+        /* Layout deux colonnes */
         .two-columns {
             display: grid;
             grid-template-columns: 68% 30%;
@@ -157,6 +224,13 @@
             margin-bottom: var(--spacing-unit);
         }
 
+        .summary-section {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            margin-bottom: calc(var(--spacing-unit) * 1.5);
+            line-height: 1.5;
+        }
+
         h3 {
             font-size: 1rem;
             font-weight: 700;
@@ -165,6 +239,7 @@
             margin: 0 0 calc(var(--spacing-unit) * 0.75);
             padding-bottom: calc(var(--spacing-unit) * 0.25);
             border-bottom: 1px solid var(--border-color);
+            color: var(--accent-color);
         }
 
         /* Expériences */
@@ -203,8 +278,64 @@
         .output {
             font-size: 0.8rem;
             color: var(--text-secondary);
-            margin: 0;
+            margin: calc(var(--spacing-unit) * 0.5) 0;
             padding-left: calc(var(--spacing-unit) * 0.5);
+        }
+
+        /* Références compactes */
+        .references-compact {
+            margin-top: calc(var(--spacing-unit) * 0.75);
+            font-size: 0.8rem;
+            background: var(--bg-accent);
+            padding: calc(var(--spacing-unit) * 0.75);
+            border-radius: 4px;
+        }
+
+        .references-title {
+            font-weight: 600;
+            margin-bottom: calc(var(--spacing-unit) * 0.5);
+            color: var(--accent-color);
+        }
+
+        .references-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: calc(var(--spacing-unit) * 0.75);
+        }
+
+        .reference-item {
+            font-size: 0.75rem;
+        }
+
+        .reference-name {
+            font-weight: 600;
+        }
+
+        .reference-function {
+            color: var(--text-secondary);
+            margin-bottom: calc(var(--spacing-unit) * 0.25);
+        }
+
+        .reference-contact {
+            display: flex;
+            align-items: center;
+            gap: calc(var(--spacing-unit) * 0.25);
+            color: var(--text-secondary);
+        }
+
+        .reference-contact i {
+            font-size: 0.7rem;
+            color: var(--accent-color);
+        }
+
+        /* Indicateur de pièce jointe */
+        .attachment-indicator {
+            font-size: 0.75rem;
+            color: var(--accent-color);
+            margin-top: calc(var(--spacing-unit) * 0.5);
+            display: flex;
+            align-items: center;
+            gap: calc(var(--spacing-unit) * 0.25);
         }
 
         /* Compétences et centres d'intérêt */
@@ -222,11 +353,17 @@
             white-space: nowrap;
         }
 
+        .skill-tag {
+            border-left: 2px solid var(--accent-color);
+        }
+
         /* Style d'impression */
         @media print {
             .cv-container {
                 padding: 0;
                 margin: 0;
+                width: 210mm;
+                height: 297mm;
             }
 
             section {
@@ -235,6 +372,18 @@
 
             .experience-item {
                 break-inside: avoid;
+            }
+
+            .references-compact {
+                break-inside: avoid;
+            }
+
+            :root {
+                --accent-color: #000;
+            }
+
+            .skill-tag, .hobby-tag {
+                border: 1px solid var(--border-color);
             }
         }
 
@@ -246,11 +395,31 @@
 
             .cv-header {
                 flex-direction: column;
-                gap: var(--spacing-unit);
+                align-items: center;
+                text-align: center;
+            }
+
+            .header-content {
+                width: 100%;
+                align-items: center;
             }
 
             .header-contact {
+                grid-template-columns: 1fr;
                 width: 100%;
+            }
+
+            .contact-item {
+                justify-content: center;
+            }
+
+            .experience-header {
+                flex-direction: column;
+                gap: calc(var(--spacing-unit) * 0.25);
+            }
+
+            .references-grid {
+                grid-template-columns: 1fr;
             }
         }
     </style>

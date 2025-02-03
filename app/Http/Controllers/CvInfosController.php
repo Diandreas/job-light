@@ -77,26 +77,44 @@ class CvInfosController extends Controller
         Log::info('=== Photo Upload Ended ===');
     }
 
-
     private function getCommonCvInformation($user)
     {
+        // Récupérer les expériences avec leurs références
+        $experiences = $user->experiences()
+            ->with('references') // Charger la relation references
+            ->join('experience_categories', 'experiences.experience_categories_id', '=', 'experience_categories.id')
+            ->leftJoin('attachments', 'experiences.attachment_id', '=', 'attachments.id')
+            ->select([
+                'experiences.*',
+                'experience_categories.name as category_name',
+                DB::raw('COALESCE(attachments.name, NULL) as attachment_name'),
+                DB::raw('CASE WHEN attachments.path IS NOT NULL THEN CONCAT("/storage/", attachments.path) ELSE NULL END as attachment_path'),
+                DB::raw('COALESCE(attachments.format, NULL) as attachment_format'),
+                DB::raw('COALESCE(attachments.size, NULL) as attachment_size')
+            ])
+            ->orderBy('experience_categories.ranking', 'asc')
+            ->get();
+
+        // Transformer les expériences pour inclure les références
+        $experiencesWithReferences = $experiences->map(function ($experience) {
+            $experienceArray = $experience->toArray();
+            // Ajouter les références à chaque expérience
+            $experienceArray['references'] = $experience->references->map(function ($reference) {
+                return [
+                    'id' => $reference->id,
+                    'name' => $reference->name,
+                    'function' => $reference->function,
+                    'email' => $reference->email,
+                    'telephone' => $reference->telephone
+                ];
+            })->toArray();
+            return $experienceArray;
+        })->toArray();
+
         $baseInfo = [
             'hobbies' => $user->hobbies()->get()->toArray(),
             'competences' => $user->competences()->get()->toArray(),
-            'experiences' => $user->experiences()
-                ->join('experience_categories', 'experiences.experience_categories_id', '=', 'experience_categories.id')
-                ->leftJoin('attachments', 'experiences.attachment_id', '=', 'attachments.id')
-                ->select([
-                    'experiences.*',
-                    'experience_categories.name as category_name',
-                    DB::raw('COALESCE(attachments.name, NULL) as attachment_name'),
-                    DB::raw('CASE WHEN attachments.path IS NOT NULL THEN CONCAT("/storage/", attachments.path) ELSE NULL END as attachment_path'),
-                    DB::raw('COALESCE(attachments.format, NULL) as attachment_format'),
-                    DB::raw('COALESCE(attachments.size, NULL) as attachment_size')
-                ])
-                ->orderBy('experience_categories.ranking', 'asc')
-                ->get()
-                ->toArray(),
+            'experiences' => $experiencesWithReferences,
             'professions' => $user->profession()->take(2)->get()->toArray(),
             'summaries' => $user->selected_summary ? [$user->selected_summary->toArray()] : [],
             'personalInformation' => [
@@ -134,7 +152,6 @@ class CvInfosController extends Controller
             'translations' => trans('*'),
         ]);
     }
-
 
     public function show()
     {

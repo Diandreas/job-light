@@ -2,6 +2,8 @@
 
 @section('title', 'CV - {{ $personalInfo->name }}')
 
+
+
 @section('content')
     <div class="cv-container">
         <header class="cv-header">

@@ -276,6 +276,8 @@
                 break-inside: avoid;
             }
 
+
+
             .skills-hobbies-grid {
                 break-inside: avoid;
             }

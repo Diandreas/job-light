@@ -186,7 +186,6 @@ const ExperienceManager: React.FC<Props> = ({ auth, experiences: initialExperien
         try {
             const formData = new FormData();
 
-            // Traiter les données de base
             Object.entries(data).forEach(([key, value]) => {
                 if (value !== null && value !== undefined) {
                     if (key === 'attachment' && value instanceof File) {
@@ -208,13 +207,20 @@ const ExperienceManager: React.FC<Props> = ({ auth, experiences: initialExperien
                     headers: { 'Content-Type': 'multipart/form-data' }
                 });
 
+            // Mise à jour de l'expérience avec les nouvelles informations de pièce jointe
+            const updatedExperience = {
+                ...response.data.experience,
+                attachment_path: response.data.experience.attachment_path,
+                attachment_size: response.data.experience.attachment_size
+            };
+
             const updatedExperiences = data.id
-                ? experiences.map(exp => exp.id === response.data.experience.id ? response.data.experience : exp)
-                : [...experiences, response.data.experience];
+                ? experiences.map(exp => exp.id === updatedExperience.id ? updatedExperience : exp)
+                : [...experiences, updatedExperience];
 
             setExperiences(updatedExperiences);
             onUpdate(updatedExperiences);
-            calculateAttachmentStats(); // Recalculer les statistiques
+            calculateAttachmentStats();
 
             toast({
                 title: data.id ? "Expérience mise à jour" : "Expérience créée",

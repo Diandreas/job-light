@@ -69,6 +69,9 @@ Route::get('/portfolio/{identifier}', [PortfolioController::class, 'show'])
     ->where('identifier', '.*');
 
 Route::middleware(['auth', 'verified'])->group(function () {
+
+    Route::delete('/experiences/{experience}/attachment', [ExperienceController::class, 'deleteAttachment'])
+        ->name('experiences.attachment.delete');
     Route::get('/dashboard', function () {
         return Inertia::render('Dashboard');
     })->name('dashboard');
@@ -150,6 +153,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
             'cv-models' => CvModelController::class,
         ]);
     });
+
 
 
 });

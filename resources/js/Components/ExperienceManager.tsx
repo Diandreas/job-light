@@ -98,6 +98,189 @@ const formatBytes = (bytes: number | undefined): string => {
 
     return `${formattedValue} ${sizes[sizeIndex]}`;
 };
+// experienceData.ts
+export const experienceData = {
+    academic: {
+        names: [
+            "Formation en Développement Web",
+            "Master en Informatique",
+            "Certification en Gestion de Projet",
+            "Licence en Technologies Numériques",
+            "Formation en Cybersécurité",
+            "Programme Data Science",
+            "Certification Cloud Computing",
+            "Formation en Intelligence Artificielle"
+        ],
+        institutions: [
+            "École Supérieure du Digital",
+            "Institut des Technologies Avancées",
+            "Centre de Formation Tech",
+            "Université des Sciences Appliquées",
+            "Académie du Numérique",
+            "Institut de Formation Professionnelle",
+            "École d'Ingénierie Digitale"
+        ],
+        descriptions: [
+            "Programme intensif combinant théorie et pratique. Réalisation de projets concrets en utilisant les technologies les plus récentes. Développement de compétences techniques et méthodologiques avancées.",
+            "Formation approfondie axée sur les technologies émergentes. Participation à des projets innovants et acquisition d'une expertise technique pointue. Travail en équipe sur des cas réels.",
+            "Apprentissage des meilleures pratiques et méthodologies actuelles. Développement de compétences techniques et soft skills essentielles. Réalisation de projets pratiques avec des technologies modernes.",
+            "Programme complet couvrant les aspects théoriques et pratiques du domaine. Acquisition d'une expertise technique approfondie et développement de compétences transversales."
+        ]
+    },
+    internship: {
+        names: [
+            "Stage Développeur Full-Stack",
+            "Stage DevOps",
+            "Stage Data Analyst",
+            "Stage en Cybersécurité",
+            "Stage Développeur Mobile",
+            "Stage en Intelligence Artificielle",
+            "Stage UX/UI Designer",
+            "Stage Chef de Projet Digital"
+        ],
+        companies: [
+            "TechStart Solutions",
+            "Digital Innovation Lab",
+            "NextGen Technologies",
+            "SmartTech Solutions",
+            "DataCraft Systems",
+            "InnovateTech",
+            "WebSphere Solutions",
+            "FutureTech Industries"
+        ],
+        descriptions: [
+            "Participation active au développement de projets innovants. Collaboration étroite avec les équipes techniques et métier. Mise en œuvre de solutions techniques avancées.",
+            "Implication dans la conception et le développement de nouvelles fonctionnalités. Travail sur des projets d'envergure utilisant les dernières technologies. Participation aux phases d'analyse, développement et déploiement.",
+            "Contribution au développement de solutions techniques innovantes. Participation à l'amélioration continue des processus et méthodes. Collaboration avec des équipes pluridisciplinaires.",
+            "Participation à des projets techniques complexes. Utilisation des méthodologies agiles et des meilleures pratiques de développement. Travail en étroite collaboration avec les experts du domaine."
+        ],
+        achievements: [
+            "Développement et déploiement réussi de nouvelles fonctionnalités clés",
+            "Optimisation significative des performances du système",
+            "Mise en place d'une nouvelle architecture technique",
+            "Amélioration de la qualité du code et réduction de la dette technique",
+            "Implémentation de solutions innovantes pour des problèmes complexes",
+            "Création d'outils et frameworks réutilisables",
+            "Contribution majeure à la réussite de projets stratégiques"
+        ]
+    },
+    volunteer: {
+        names: [
+            "Mentor Tech pour Débutants",
+            "Organisateur d'Ateliers Coding",
+            "Formateur Bénévole en Informatique",
+            "Contributeur Open Source",
+            "Animateur Club Robotique",
+            "Support Technique Associatif",
+            "Coach Digital pour Seniors",
+            "Organisateur Hackathon Solidaire"
+        ],
+        institutions: [
+            "TechForAll Association",
+            "CodeCommunity",
+            "DigitalForGood",
+            "TechHelpers",
+            "AssociaTech",
+            "OpenSourceCommunity",
+            "DigitalSolidaire",
+            "TechEducation"
+        ],
+        descriptions: [
+            "Animation d'ateliers d'initiation aux technologies numériques. Accompagnement personnalisé des apprenants dans leur montée en compétences. Création de contenu pédagogique adapté.",
+            "Organisation et animation de sessions de formation technique. Accompagnement de projets digitaux à impact social. Développement de solutions numériques pour associations.",
+            "Participation active à des projets technologiques communautaires. Contribution au développement de solutions open source. Partage de connaissances et support technique.",
+            "Mise en place d'initiatives d'éducation numérique. Animation de communautés tech et partage d'expertise. Développement de projets collaboratifs à impact social."
+        ],
+        outputs: [
+            "Création d'une communauté d'entraide technique active",
+            "Développement de ressources pédagogiques open source",
+            "Mise en place d'un programme de mentorat tech",
+            "Organisation réussie d'événements tech communautaires",
+            "Contribution significative à des projets open source",
+            "Accompagnement de projets digitaux solidaires",
+            "Formation réussie de nouveaux développeurs"
+        ]
+    }
+};
+
+// Fonction utilitaire pour générer des dates cohérentes
+export const generateDates = (type: 'academic' | 'internship' | 'volunteer') => {
+    const currentDate = new Date();
+    const currentYear = currentDate.getFullYear();
+
+    let startDate, endDate;
+
+    switch(type) {
+        case 'academic':
+            // Format année scolaire/universitaire
+            startDate = `${currentYear-1}-09-01`;
+            endDate = `${currentYear}-06-30`;
+            break;
+        case 'internship':
+            // Format 6 mois
+            startDate = `${currentYear}-01-01`;
+            endDate = `${currentYear}-06-30`;
+            break;
+        case 'volunteer':
+            // Format année civile
+            startDate = `${currentYear-1}-01-01`;
+            endDate = `${currentYear}-12-31`;
+            break;
+    }
+
+    return { startDate, endDate };
+};
+
+// Fonction utilitaire pour obtenir un élément aléatoire d'un tableau
+export const getRandomItem = <T,>(array: T[]): T => {
+    return array[Math.floor(Math.random() * array.length)];
+};
+
+// Fonction principale pour générer une expérience prédéfinie
+export const generatePredefinedExperience = (type: 'academic' | 'internship' | 'volunteer') => {
+    const data = experienceData[type];
+    const dates = generateDates(type);
+
+    const baseData = {
+        experience_categories_id: type === 'academic' ? '2' : type === 'internship' ? '1' : '3',
+        date_start: dates.startDate,
+        date_end: dates.endDate,
+        comment: "Cette expérience m'a permis de développer de nouvelles compétences et d'acquérir une expertise précieuse dans le domaine.",
+        references: [{
+            name: "Jean Dupont",
+            function: "Responsable Technique",
+            email: "contact@example.com",
+            telephone: "+33 1 23 45 67 89"
+        }]
+    };
+
+    switch(type) {
+        case 'academic':
+            return {
+                ...baseData,
+                name: getRandomItem(data.names),
+                InstitutionName: getRandomItem(data.institutions),
+                description: getRandomItem(data.descriptions),
+                output: "Acquisition des compétences techniques et validation du programme avec succès",
+            };
+        case 'internship':
+            return {
+                ...baseData,
+                name: getRandomItem(data.names),
+                InstitutionName: getRandomItem(data.companies),
+                description: getRandomItem(data.descriptions),
+                output: getRandomItem(data.achievements),
+            };
+        case 'volunteer':
+            return {
+                ...baseData,
+                name: getRandomItem(data.names),
+                InstitutionName: getRandomItem(data.institutions),
+                description: getRandomItem(data.descriptions),
+                output: getRandomItem(data.outputs),
+            };
+    }
+};
 
 const ExperienceManager: React.FC<Props> = ({ auth, experiences: initialExperiences, categories, onUpdate }) => {
     // États

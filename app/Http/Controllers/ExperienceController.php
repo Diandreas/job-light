@@ -14,6 +14,53 @@ use Inertia\Inertia;
 
 class ExperienceController extends Controller
 {
+    public function deleteAttachment(Experience $experience)
+    {
+        try {
+            DB::beginTransaction();
+
+            // Vérifier si l'expérience appartient à l'utilisateur authentifié
+            if (!$experience->users->contains(auth()->id())) {
+                return response()->json([
+                    'message' => 'Non autorisé à modifier cette expérience'
+                ], 403);
+            }
+
+            // Supprimer le fichier physique
+            if ($experience->attachment) {
+                Storage::disk('public')->delete($experience->attachment->path);
+
+                // Supprimer l'enregistrement de la pièce jointe
+                $experience->attachment->delete();
+
+                // Mettre à jour l'expérience
+                $experience->attachment_id = null;
+                $experience->save();
+            }
+
+            DB::commit();
+
+            // Recharger les relations pour la réponse
+            $experience->load(['category', 'attachment', 'references']);
+
+            return response()->json([
+                'message' => 'Pièce jointe supprimée avec succès',
+                'experience' => $experience
+            ]);
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('Erreur lors de la suppression de la pièce jointe:', [
+                'error' => $e->getMessage(),
+                'experience_id' => $experience->id
+            ]);
+
+            return response()->json([
+                'message' => 'Impossible de supprimer la pièce jointe',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
     public function index()
     {
         $experiences = auth()->user()->experiences()

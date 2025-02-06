@@ -20,7 +20,7 @@ import {
 } from "@/Components/ui/select";
 import { useToast } from '@/Components/ui/use-toast';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/Components/ui/tabs";
-import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/Components/ui/sheet";
+import {Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle} from "@/Components/ui/sheet";
 import {
     Briefcase,
     GraduationCap,
@@ -179,68 +179,7 @@ const ExperienceManager: React.FC<Props> = ({ auth, experiences: initialExperien
         setFilteredExperiences(filtered);
     }, [searchTerm, experiences, selectedCategory]);
     // Fonctions de gestion
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
-        setIsLoading(true);
 
-        try {
-            const formData = new FormData();
-
-            Object.entries(data).forEach(([key, value]) => {
-                if (value !== null && value !== undefined) {
-                    if (key === 'attachment' && value instanceof File) {
-                        formData.append('attachment', value);
-                    } else if (key === 'references' && Array.isArray(value)) {
-                        formData.append('references', JSON.stringify(value));
-                    } else if (key !== 'attachment') {
-                        formData.append(key, String(value));
-                    }
-                }
-            });
-
-            const response = data.id
-                ? await axios.post(`/experiences/${data.id}`, formData, {
-                    headers: { 'Content-Type': 'multipart/form-data' },
-                    params: { _method: 'PUT' }
-                })
-                : await axios.post('/experiences', formData, {
-                    headers: { 'Content-Type': 'multipart/form-data' }
-                });
-
-            // Mise à jour de l'expérience avec les nouvelles informations de pièce jointe
-            const updatedExperience = {
-                ...response.data.experience,
-                attachment_path: response.data.experience.attachment_path,
-                attachment_size: response.data.experience.attachment_size
-            };
-
-            const updatedExperiences = data.id
-                ? experiences.map(exp => exp.id === updatedExperience.id ? updatedExperience : exp)
-                : [...experiences, updatedExperience];
-
-            setExperiences(updatedExperiences);
-            onUpdate(updatedExperiences);
-            calculateAttachmentStats();
-
-            toast({
-                title: data.id ? "Expérience mise à jour" : "Expérience créée",
-                description: "L'opération a été effectuée avec succès.",
-            });
-
-            resetForm();
-        } catch (error: any) {
-            console.error('Erreur complète:', error);
-            console.error('Détails de l\'erreur:', error.response?.data);
-
-            toast({
-                title: "Erreur",
-                description: error.response?.data?.message || "Une erreur est survenue lors de la sauvegarde.",
-                variant: "destructive",
-            });
-        } finally {
-            setIsLoading(false);
-        }
-    };
 
     const handleEdit = (experience: Experience) => {
         setData({
@@ -275,34 +214,132 @@ const ExperienceManager: React.FC<Props> = ({ auth, experiences: initialExperien
     };
 
     const handleDeleteAttachment = async (experienceId: number) => {
+        setIsLoading(true);
         try {
-            await axios.delete(`/experiences/${experienceId}/attachment`);
+            const response = await axios.delete(`/experiences/${experienceId}/attachment`);
 
-            const updatedExperiences = experiences.map(exp => {
-                if (exp.id === experienceId) {
-                    return {
-                        ...exp,
+            if (response.status === 200) {
+                // Mise à jour locale de l'état
+                const updatedExperiences = experiences.map(exp => {
+                    if (exp.id === experienceId) {
+                        return {
+                            ...exp,
+                            attachment_path: undefined,
+                            attachment_size: 0
+                        };
+                    }
+                    return exp;
+                });
+
+                setExperiences(updatedExperiences);
+                onUpdate(updatedExperiences);
+                calculateAttachmentStats();
+
+                toast({
+                    title: "Succès",
+                    description: "La pièce jointe a été supprimée avec succès.",
+                });
+
+                // Si nous sommes dans le formulaire d'édition, mettre à jour l'état du formulaire
+                if (data.id === experienceId) {
+                    setData(prev => ({
+                        ...prev,
                         attachment_path: undefined,
-                        attachment_size: 0
-                    };
+                        attachment_size: 0,
+                        attachment: null
+                    }));
                 }
-                return exp;
+            }
+        } catch (error: any) {
+            console.error('Erreur lors de la suppression:', error);
+
+            // Message d'erreur plus détaillé
+            let errorMessage = "Impossible de supprimer la pièce jointe. ";
+            if (error.response?.data?.message) {
+                errorMessage += error.response.data.message;
+            } else if (error.message) {
+                errorMessage += error.message;
+            }
+
+            toast({
+                title: "Erreur",
+                description: errorMessage,
+                variant: "destructive",
             });
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    const handleSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+        setIsLoading(true);
+
+        try {
+            const formData = new FormData();
+
+            // Gestion des données de base
+            Object.entries(data).forEach(([key, value]) => {
+                if (value !== null && value !== undefined) {
+                    if (key === 'attachment' && value instanceof File) {
+                        formData.append('attachment', value);
+                    } else if (key === 'references' && Array.isArray(value)) {
+                        formData.append('references', JSON.stringify(value));
+                    } else if (key !== 'attachment') {
+                        formData.append(key, String(value));
+                    }
+                }
+            });
+
+            // Ajout d'un flag pour indiquer si une pièce jointe doit être supprimée
+            if (data.id && !data.attachment && !data.attachment_path) {
+                formData.append('remove_attachment', '1');
+            }
+
+            const response = data.id
+                ? await axios.post(`/experiences/${data.id}`, formData, {
+                    headers: { 'Content-Type': 'multipart/form-data' },
+                    params: { _method: 'PUT' }
+                })
+                : await axios.post('/experiences', formData, {
+                    headers: { 'Content-Type': 'multipart/form-data' }
+                });
+
+            const updatedExperience = {
+                ...response.data.experience,
+                attachment_path: response.data.experience.attachment_path,
+                attachment_size: response.data.experience.attachment_size
+            };
+
+            const updatedExperiences = data.id
+                ? experiences.map(exp => exp.id === updatedExperience.id ? updatedExperience : exp)
+                : [...experiences, updatedExperience];
 
             setExperiences(updatedExperiences);
             onUpdate(updatedExperiences);
-            calculateAttachmentStats(); // Recalculer les statistiques
+            calculateAttachmentStats();
 
             toast({
-                title: "Pièce jointe supprimée",
-                description: "La pièce jointe a été supprimée avec succès.",
+                title: data.id ? "Expérience mise à jour" : "Expérience créée",
+                description: "L'opération a été effectuée avec succès.",
             });
-        } catch (error) {
+
+            resetForm();
+        } catch (error: any) {
+            console.error('Erreur complète:', error);
+
+            let errorMessage = "Une erreur est survenue lors de la sauvegarde. ";
+            if (error.response?.data?.message) {
+                errorMessage += error.response.data.message;
+            }
+
             toast({
                 title: "Erreur",
-                description: "Impossible de supprimer la pièce jointe.",
+                description: errorMessage,
                 variant: "destructive",
             });
+        } finally {
+            setIsLoading(false);
         }
     };
 
@@ -731,14 +768,6 @@ const ExperienceManager: React.FC<Props> = ({ auth, experiences: initialExperien
                                                                     >
                                                                         <Edit className="w-4 h-4 text-purple-500" />
                                                                     </Button>
-                                                                    <Button
-                                                                        variant="ghost"
-                                                                        size="sm"
-                                                                        onClick={() => handleDeleteAttachment(exp.id)}
-                                                                        className="hover:bg-red-50"
-                                                                    >
-                                                                        <Trash2 className="w-4 h-4 text-red-500" />
-                                                                    </Button>
                                                                 </div>
                                                             </div>
                                                         </CardContent>
@@ -771,6 +800,9 @@ const ExperienceManager: React.FC<Props> = ({ auth, experiences: initialExperien
                             <PencilRuler className="w-5 h-5 text-amber-500" />
                             {data.id ? "Modifier l'expérience" : 'Nouvelle expérience'}
                         </SheetTitle>
+                        <SheetDescription>
+                            {data.id ? "Modifiez les détails de votre expérience" : "Ajoutez une nouvelle expérience à votre profil"}
+                        </SheetDescription>
                     </SheetHeader>
 
                     <form onSubmit={handleSubmit} className="space-y-6 pt-6">
@@ -1044,14 +1076,28 @@ const ExperienceManager: React.FC<Props> = ({ auth, experiences: initialExperien
 
                         <div className="space-y-2">
                             <Label>
-                                <div className="flex items-center gap-2">
-                                    <span>Pièce jointe</span>
-                                    <Badge
-                                        variant="secondary"
-                                        className="bg-gradient-to-r from-amber-100 to-purple-100"
-                                    >
-                                        Max 5MB
-                                    </Badge>
+                                <div className="flex items-center justify-between">
+                                    <div className="flex items-center gap-2">
+                                        <span>Pièce jointe</span>
+                                        <Badge
+                                            variant="secondary"
+                                            className="bg-gradient-to-r from-amber-100 to-purple-100"
+                                        >
+                                            Max 5MB
+                                        </Badge>
+                                    </div>
+                                    {data.attachment_path && (
+                                        <Button
+                                            type="button"
+                                            variant="ghost"
+                                            size="sm"
+                                            onClick={() => handleDeleteAttachment(data.id)}
+                                            className="hover:bg-red-50"
+                                        >
+                                            <Trash2 className="w-4 h-4 text-red-500" />
+                                            Supprimer le fichier
+                                        </Button>
+                                    )}
                                 </div>
                             </Label>
                             <Input
@@ -1059,11 +1105,23 @@ const ExperienceManager: React.FC<Props> = ({ auth, experiences: initialExperien
                                 type="file"
                                 onChange={(e) => {
                                     const file = e.target.files?.[0] || null;
+                                    if (file && data.attachment_path) {
+                                        // Supprimer l'ancien fichier avant d'en ajouter un nouveau
+                                        handleDeleteAttachment(data.id);
+                                    }
                                     setData('attachment', file);
                                 }}
                                 className="border-amber-200 focus:ring-amber-500 cursor-pointer"
                                 accept=".pdf,.doc,.docx"
                             />
+                            {data.attachment_path && (
+                                <div className="flex items-center gap-2 mt-2">
+                                    <FileText className="w-4 h-4 text-amber-500" />
+                                    <span className="text-sm text-gray-600">
+                Fichier actuel: {data.attachment_path.split('/').pop()}
+            </span>
+                                </div>
+                            )}
                             {errors.attachment && (
                                 <p className="text-sm text-red-500">{errors.attachment}</p>
                             )}

@@ -70,11 +70,6 @@ class User extends Authenticatable
         return $this->belongsTo(Profession::class);
     }
 
-    public function models()
-    {
-        return $this->belongsToMany(Model::class);
-    }
-
     public function competences()
     {
         return $this->belongsToMany(Competence::class, 'user_competence', 'user_id', 'competence_id');

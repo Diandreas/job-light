@@ -365,12 +365,14 @@ const ExperienceManager: React.FC<Props> = ({ auth, experiences: initialExperien
 
 
     const handleEdit = (experience: Experience) => {
+        // @ts-ignore
         setData({
             ...experience,
             experience_categories_id: experience.experience_categories_id.toString(),
             attachment: null,
             references: experience.references || []
         });
+        calculateAttachmentStats(); // Recalculer les statistiques
         setIsFormOpen(true);
     };
 
@@ -500,7 +502,7 @@ const ExperienceManager: React.FC<Props> = ({ auth, experiences: initialExperien
 
             setExperiences(updatedExperiences);
             onUpdate(updatedExperiences);
-            calculateAttachmentStats();
+            calculateAttachmentStats(); // Recalculer les statistiques
 
             toast({
                 title: data.id ? "Expérience mise à jour" : "Expérience créée",
@@ -1301,8 +1303,8 @@ const ExperienceManager: React.FC<Props> = ({ auth, experiences: initialExperien
                                 <div className="flex items-center gap-2 mt-2">
                                     <FileText className="w-4 h-4 text-amber-500" />
                                     <span className="text-sm text-gray-600">
-                Fichier actuel: {data.attachment_path.split('/').pop()}
-            </span>
+                                        Fichier actuel: {data.attachment_path.split('/').pop()}
+                                    </span>
                                 </div>
                             )}
                             {errors.attachment && (

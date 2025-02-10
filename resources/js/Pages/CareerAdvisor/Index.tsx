@@ -7,67 +7,34 @@ import { Card, CardHeader, CardTitle, CardContent } from "@/Components/ui/card";
 import { useToast } from "@/Components/ui/use-toast";
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { ScrollArea } from "@/Components/ui/scroll-area";
-import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from "@/Components/ui/select";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/Components/ui/select";
 import { AnimatePresence, motion } from 'framer-motion';
-import {
-    Sparkles, Brain, Wallet, Clock,
-    Loader, Download, FileText, MessageSquare,
-    PenTool, Star
-} from 'lucide-react';
+import { Sparkles, Brain, Wallet, Clock, Loader, Download, Star } from 'lucide-react';
 import axios from 'axios';
-
-// Import des composants personnalisés
 import { MessageBubble } from '@/Components/ai/MessageBubble';
 import { ServiceCard } from '@/Components/ai/ServiceCard';
 import { SERVICES, DEFAULT_PROMPTS } from '@/Components/ai/constants';
 
-// Types
-interface User {
-    id: number;
-    wallet_balance: number;
-}
-
-interface Auth {
-    user: User;
-}
-
-interface PageProps {
-    auth: Auth;
-    userInfo: any;
-}
-
-interface Message {
-    role: 'user' | 'assistant';
-    content: string;
-    timestamp: Date;
-}
-
-interface ConversationHistory {
-    messages: Message[];
-    contextId: string;
-}
-
-const MAX_HISTORY = 3;
 const TOKEN_LIMIT = 2000;
 
-export default function Index({ auth, userInfo }: PageProps) {
+const getMaxHistoryForService = (serviceId: string): number => {
+    return serviceId === 'interview-prep' ? 10 : 3;
+};
+
+export default function Index({ auth, userInfo }) {
     const { toast } = useToast();
     const [isLoading, setIsLoading] = useState(false);
     const [walletBalance, setWalletBalance] = useState(auth.user.wallet_balance);
     const [selectedService, setSelectedService] = useState(SERVICES[0]);
     const [language, setLanguage] = useState('fr');
-    const [conversationHistory, setConversationHistory] = useState<ConversationHistory>({
+    const [conversationHistory, setConversationHistory] = useState({
         messages: [],
         contextId: crypto.randomUUID()
     });
     const [tokensUsed, setTokensUsed] = useState(0);
-    const scrollRef = useRef<HTMLDivElement>(null);
+    const scrollRef = useRef(null);
+
+    const maxHistory = getMaxHistoryForService(selectedService.id);
 
     const { data, setData, processing } = useForm({
         question: DEFAULT_PROMPTS[SERVICES[0].id][language],
@@ -76,8 +43,8 @@ export default function Index({ auth, userInfo }: PageProps) {
     });
 
     useEffect(() => {
-        setData('question', DEFAULT_PROMPTS[selectedService.id][language]);
-    }, [language]);
+        setData('question', DEFAULT_PROMPTS[selectedService.id][language] || '');
+    }, [language, selectedService]);
 
     useEffect(() => {
         if (scrollRef.current) {
@@ -87,7 +54,7 @@ export default function Index({ auth, userInfo }: PageProps) {
 
     const handleServiceSelection = (service) => {
         setSelectedService(service);
-        setData('question', DEFAULT_PROMPTS[service.id][language]);
+        setData('question', DEFAULT_PROMPTS[service.id][language] || '');
         setConversationHistory({
             messages: [],
             contextId: crypto.randomUUID()
@@ -99,8 +66,10 @@ export default function Index({ auth, userInfo }: PageProps) {
         e.preventDefault();
         if (!data.question.trim()) {
             toast({
-                title: "Message vide",
-                description: "Veuillez entrer votre message",
+                title: language === 'fr' ? "Message vide" : "Empty message",
+                description: language === 'fr' ?
+                    "Veuillez entrer votre message" :
+                    "Please enter your message",
                 variant: "destructive",
             });
             return;
@@ -108,8 +77,10 @@ export default function Index({ auth, userInfo }: PageProps) {
 
         if (walletBalance < selectedService.cost) {
             toast({
-                title: "Solde insuffisant",
-                description: "Veuillez recharger votre compte",
+                title: language === 'fr' ? "Solde insuffisant" : "Insufficient balance",
+                description: language === 'fr' ?
+                    "Veuillez recharger votre compte" :
+                    "Please top up your account",
                 variant: "destructive",
             });
             return;
@@ -117,18 +88,15 @@ export default function Index({ auth, userInfo }: PageProps) {
 
         setIsLoading(true);
         try {
-            // Process payment
             await axios.post('/api/process-question-cost', {
                 user_id: auth.user.id,
                 cost: selectedService.cost,
                 service: selectedService.id
             });
 
-            // Update wallet balance immediately
             setWalletBalance(prev => prev - selectedService.cost);
 
-            // Update conversation history
-            const newMessage: Message = {
+            const newMessage = {
                 role: 'user',
                 content: data.question,
                 timestamp: new Date()
@@ -136,27 +104,24 @@ export default function Index({ auth, userInfo }: PageProps) {
 
             setConversationHistory(prev => ({
                 ...prev,
-                messages: [...prev.messages, newMessage].slice(-MAX_HISTORY)
+                messages: [...prev.messages, newMessage].slice(-maxHistory)
             }));
 
-            // Send request with context
-            const response = await axios.post(route('career-advisor.chat'), {
+            const response = await axios.post('/career-advisor/chat', {
                 message: data.question,
-                history: conversationHistory.messages.slice(-MAX_HISTORY),
+                history: conversationHistory.messages.slice(-maxHistory),
                 contextId: conversationHistory.contextId,
                 language: language,
                 serviceId: selectedService.id
             });
 
-            // Update conversation with AI response
-//@ts-ignore
             setConversationHistory(prev => ({
                 ...prev,
                 messages: [...prev.messages, {
                     role: 'assistant',
                     content: response.data.message,
                     timestamp: new Date()
-                }].slice(-MAX_HISTORY)
+                }].slice(-maxHistory)
             }));
 
             setTokensUsed(response.data.tokens);
@@ -164,8 +129,6 @@ export default function Index({ auth, userInfo }: PageProps) {
 
         } catch (error) {
             console.error('Error:', error);
-
-            // Attempt to refund if payment was processed but request failed
             try {
                 await axios.post('/api/update-wallet', {
                     user_id: auth.user.id,
@@ -177,8 +140,11 @@ export default function Index({ auth, userInfo }: PageProps) {
             }
 
             toast({
-                title: "Erreur",
-                description: error.response?.data?.message || "Une erreur est survenue lors du traitement",
+                title: language === 'fr' ? "Erreur" : "Error",
+                description: error.response?.data?.message ||
+                    (language === 'fr' ?
+                        "Une erreur est survenue lors du traitement" :
+                        "An error occurred during processing"),
                 variant: "destructive",
             });
         } finally {
@@ -188,13 +154,11 @@ export default function Index({ auth, userInfo }: PageProps) {
 
     const handleExport = async (format: string) => {
         try {
-            const response = await axios.post(route('career-advisor.export'), {
+            const response = await axios.post('/career-advisor/export', {
                 contextId: conversationHistory.contextId,
                 format,
                 serviceId: selectedService.id
-            }, {
-                responseType: 'blob'
-            });
+            }, { responseType: 'blob' });
 
             const url = window.URL.createObjectURL(new Blob([response.data]));
             const link = document.createElement('a');
@@ -206,13 +170,17 @@ export default function Index({ auth, userInfo }: PageProps) {
             window.URL.revokeObjectURL(url);
 
             toast({
-                title: "Succès",
-                description: "Document exporté avec succès",
+                title: language === 'fr' ? "Succès" : "Success",
+                description: language === 'fr' ?
+                    "Document exporté avec succès" :
+                    "Document exported successfully",
             });
         } catch (error) {
             toast({
-                title: "Erreur export",
-                description: "Échec de l'export du document",
+                title: language === 'fr' ? "Erreur export" : "Export error",
+                description: language === 'fr' ?
+                    "Échec de l'export du document" :
+                    "Failed to export document",
                 variant: "destructive",
             });
         }
@@ -221,12 +189,11 @@ export default function Index({ auth, userInfo }: PageProps) {
     return (
         <AuthenticatedLayout user={auth.user}>
             <div className="container mx-auto p-4 space-y-8">
-                {/* Header */}
                 <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
                     <div className="flex items-center gap-2">
                         <Brain className="h-6 w-6 text-amber-500" />
                         <h2 className="text-xl font-bold bg-gradient-to-r from-amber-500 to-purple-500 bg-clip-text text-transparent">
-                            Assistant Guidy
+                            {language === 'fr' ? 'Assistant Guidy' : 'Guidy Assistant'}
                         </h2>
                     </div>
                     <div className="flex items-center gap-4">
@@ -243,8 +210,6 @@ export default function Index({ auth, userInfo }: PageProps) {
                             <Progress
                                 value={(tokensUsed/TOKEN_LIMIT) * 100}
                                 className="w-32 bg-amber-100"
-                                //@ts-ignore
-                                indicatorClassName="bg-gradient-to-r from-amber-500 to-purple-500"
                             />
                             <div className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-amber-500/10 to-purple-500/10 rounded-lg">
                                 <Wallet className="text-amber-500" />
@@ -254,7 +219,6 @@ export default function Index({ auth, userInfo }: PageProps) {
                     </div>
                 </div>
 
-                {/* Services Grid */}
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                     {SERVICES.map(service => (
                         <ServiceCard
@@ -266,7 +230,6 @@ export default function Index({ auth, userInfo }: PageProps) {
                     ))}
                 </div>
 
-                {/* Chat Card */}
                 <Card className="border-amber-100">
                     <div className="p-6 border-b border-amber-100">
                         <div className="flex items-center justify-between">
@@ -296,7 +259,6 @@ export default function Index({ auth, userInfo }: PageProps) {
                         </div>
                     </div>
 
-                    {/* Chat Area */}
                     <div className="p-6">
                         <ScrollArea className="h-[500px] pr-4 mb-6" ref={scrollRef}>
                             <AnimatePresence>
@@ -306,7 +268,6 @@ export default function Index({ auth, userInfo }: PageProps) {
                             </AnimatePresence>
                         </ScrollArea>
 
-                        {/* Message Input Form */}
                         <form onSubmit={handleSubmit} className="space-y-4">
                             <Textarea
                                 value={data.question}
@@ -317,7 +278,8 @@ export default function Index({ auth, userInfo }: PageProps) {
                             <div className="flex items-center justify-between">
                                 <div className="flex items-center gap-2 text-sm text-gray-500">
                                     <Clock className="h-4 w-4" />
-                                    {MAX_HISTORY - conversationHistory.messages.length} questions restantes
+                                    {maxHistory - conversationHistory.messages.length}
+                                    {language === 'fr' ? ' questions restantes' : ' questions remaining'}
                                 </div>
                                 <Button
                                     type="submit"
@@ -327,10 +289,10 @@ export default function Index({ auth, userInfo }: PageProps) {
                                     {isLoading ? (
                                         <div className="flex items-center gap-2">
                                             <Loader className="h-4 w-4 animate-spin" />
-                                            Traitement...
+                                            {language === 'fr' ? 'Traitement...' : 'Processing...'}
                                         </div>
                                     ) : (
-                                        'Envoyer'
+                                        language === 'fr' ? 'Envoyer' : 'Send'
                                     )}
                                 </Button>
                             </div>
@@ -338,7 +300,6 @@ export default function Index({ auth, userInfo }: PageProps) {
                     </div>
                 </Card>
 
-                {/* Conversation History */}
                 <AnimatePresence>
                     {conversationHistory.messages.length > 0 && (
                         <motion.div
@@ -351,7 +312,9 @@ export default function Index({ auth, userInfo }: PageProps) {
                                 <CardHeader>
                                     <CardTitle className="flex items-center text-amber-500">
                                         <Sparkles className="mr-2 h-5 w-5" />
-                                        Historique de la conversation
+                                        {language === 'fr' ?
+                                            'Historique de la conversation' :
+                                            'Conversation History'}
                                     </CardTitle>
                                 </CardHeader>
                                 <CardContent>
@@ -366,11 +329,15 @@ export default function Index({ auth, userInfo }: PageProps) {
                                                 }`}
                                             >
                                                 <p className="font-semibold mb-2">
-                                                    {message.role === 'user' ? 'Vous' : 'Assistant'}
+                                                    {message.role === 'user' ?
+                                                        (language === 'fr' ? 'Vous' : 'You') :
+                                                        'Assistant'}
                                                 </p>
                                                 <p className="text-gray-700">{message.content}</p>
                                                 <p className="text-xs text-gray-500 mt-2">
-                                                    {new Date(message.timestamp).toLocaleString()}
+                                                    {new Date(message.timestamp).toLocaleString(
+                                                        language === 'fr' ? 'fr-FR' : 'en-US'
+                                                    )}
                                                 </p>
                                             </div>
                                         ))}

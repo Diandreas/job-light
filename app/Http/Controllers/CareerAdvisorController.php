@@ -4,17 +4,21 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use App\Models\ChatHistory;
+use App\Models\DocumentExport;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use HelgeSverre\Mistral\Mistral;
 use HelgeSverre\Mistral\Enums\Model;
 use HelgeSverre\Mistral\Enums\Role;
 use Inertia\Inertia;
+use PhpOffice\PhpWord\PhpWord;
+use PhpOffice\PhpWord\IOFactory;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class CareerAdvisorController extends Controller
 {
     protected $mistral;
-    protected $maxHistory = 3;
+    protected $maxHistory = 10;
 
     public function __construct()
     {
@@ -37,61 +41,44 @@ class CareerAdvisorController extends Controller
             ] : null
         ]);
     }
-    public function export(Request $request)
+
+    private function getModelConfigForService($serviceId)
     {
-        try {
-            $validated = $request->validate([
-                'contextId' => 'required|string',
-                'format' => 'required|string|in:pdf,docx',
-                'serviceId' => 'required|string'
-            ]);
+        $configs = [
+            'interview-prep' => [
+                'model' => 'mistral-small-latest',
+                'maxTokens' => 500,
+                'temperature' => 0.8,
+                'maxHistory' => 10
+            ],
+            'cover-letter' => [
+                'model' => 'mistral-large-latest',
+                'maxTokens' => 2000,
+                'temperature' => 0.7,
+                'maxHistory' => 3
+            ],
+            'career-advice' => [
+                'model' => 'mistral-medium-latest',
+                'maxTokens' => 1000,
+                'temperature' => 0.7,
+                'maxHistory' => 3
+            ],
+            'resume-review' => [
+                'model' => 'mistral-medium-latest',
+                'maxTokens' => 1000,
+                'temperature' => 0.7,
+                'maxHistory' => 3
+            ]
+        ];
 
-            // Récupérer l'historique de chat
-            $chatHistory = ChatHistory::where('context_id', $validated['contextId'])
-                ->where('user_id', auth()->id())
-                ->firstOrFail();
-
-            $messages = json_decode($chatHistory->messages, true);
-
-            // Construire le contenu du document
-            $content = "";
-            foreach ($messages as $message) {
-                $content .= ($message['role'] === 'user' ? "Question: " : "Réponse: ") . "\n";
-                $content .= $message['content'] . "\n\n";
-            }
-
-            if ($validated['format'] === 'pdf') {
-                $pdf = Pdf::loadView('exports.chat', [
-                    'content' => $content,
-                    'title' => 'Historique de conversation'
-                ]);
-
-                return $pdf->download('conversation.pdf');
-            } else {
-                // Pour le format DOCX, utilisez PhpWord
-                $phpWord = new \PhpOffice\PhpWord\PhpWord();
-                $section = $phpWord->addSection();
-
-                $section->addTitle('Historique de conversation', 1);
-                $section->addText($content);
-
-                $objWriter = \PhpOffice\PhpWord\IOFactory::createWriter($phpWord, 'Word2007');
-
-                $temp_file = tempnam(sys_get_temp_dir(), 'chat_');
-                $objWriter->save($temp_file);
-
-                return response()->download($temp_file, 'conversation.docx')
-                    ->deleteFileAfterSend(true);
-            }
-        } catch (\Exception $e) {
-            Log::error('Export error: ' . $e->getMessage());
-            return response()->json(['error' => 'Une erreur est survenue lors de l\'export'], 500);
-        }
+        return $configs[$serviceId] ?? $configs['career-advice'];
     }
+
+
+
     public function chat(Request $request)
     {
         try {
-            // Valider la requête
             $validated = $request->validate([
                 'message' => 'required|string',
                 'contextId' => 'required|string',
@@ -102,15 +89,15 @@ class CareerAdvisorController extends Controller
 
             $user = auth()->user();
             $userInfo = $this->getUserRelevantInfo($user);
+            $config = $this->getModelConfigForService($validated['serviceId']);
 
-            // Préparer les messages
-            $messages = [];
-            $messages[] = [
-                'role' => Role::system->value,
-                'content' => $this->getSystemPrompt($validated['language'])
+            $messages = [
+                [
+                    'role' => Role::system->value,
+                    'content' => $this->getSystemPrompt($validated['language'], $validated['serviceId'])
+                ]
             ];
 
-            // Ajouter l'historique si présent
             if (!empty($validated['history'])) {
                 foreach ($validated['history'] as $msg) {
                     $messages[] = [
@@ -120,7 +107,6 @@ class CareerAdvisorController extends Controller
                 }
             }
 
-            // Ajouter le message actuel
             $messages[] = [
                 'role' => Role::user->value,
                 'content' => $this->buildPrompt(
@@ -131,24 +117,23 @@ class CareerAdvisorController extends Controller
                 )
             ];
 
-            // Appeler l'API Mistral
             $response = $this->mistral->chat()->create(
                 messages: $messages,
-                model: Model::large->value,
-                temperature: 0.7,
-                maxTokens: 1000,
+                model: $config['model'],
+                temperature: $config['temperature'],
+                maxTokens: $config['maxTokens'],
                 safeMode: true
             );
 
             $dto = $response->dto();
             $aiResponse = $dto->choices[0]->message->content;
 
-            // Sauvegarder l'historique
             $this->saveHistory(
                 $user->id,
                 $validated['contextId'],
                 $validated['message'],
-                $aiResponse
+                $aiResponse,
+                $config['maxHistory']
             );
 
             return response()->json([
@@ -159,50 +144,135 @@ class CareerAdvisorController extends Controller
         } catch (\Exception $e) {
             Log::error('Career advisor error: ' . $e->getMessage(), [
                 'user_id' => auth()->id(),
-                'error' => $e->getMessage(),
                 'trace' => $e->getTraceAsString()
             ]);
-
             return response()->json([
                 'error' => 'Une erreur est survenue lors du traitement de votre demande'
             ], 500);
         }
     }
 
-    private function getSystemPrompt($language)
+    public function export(Request $request)
+    {
+        try {
+            $validated = $request->validate([
+                'contextId' => 'required|string',
+                'format' => 'required|string|in:pdf,docx',
+                'serviceId' => 'required|string'
+            ]);
+
+            $chatHistory = ChatHistory::where('context_id', $validated['contextId'])
+                ->where('user_id', auth()->id())
+                ->firstOrFail();
+
+            $messages = json_decode($chatHistory->messages, true);
+            $content = $this->formatContent($messages, $validated['serviceId']);
+
+            $fileName = 'document-' . time();
+            $filePath = "exports/{$fileName}.{$validated['format']}";
+
+            if ($validated['format'] === 'pdf') {
+                $pdf = PDF::loadView('exports.chat', [
+                    'content' => $content,
+                    'title' => $this->getExportTitle($validated['serviceId'])
+                ]);
+                Storage::put($filePath, $pdf->output());
+            } else {
+                $phpWord = new PhpWord();
+                $section = $phpWord->addSection();
+
+                $section->addTitle($this->getExportTitle($validated['serviceId']), 1);
+
+                foreach ($content as $item) {
+                    $section->addText(
+                        $item['role'] === 'user' ? 'Question:' : 'Réponse:',
+                        ['bold' => true],
+                        ['spacingAfter' => 0]
+                    );
+                    $section->addText(
+                        $item['content'],
+                        [],
+                        ['spacingAfter' => 200]
+                    );
+                }
+
+                $objWriter = IOFactory::createWriter($phpWord, 'Word2007');
+                $objWriter->save(storage_path("app/public/{$filePath}"));
+            }
+
+            DocumentExport::create([
+                'user_id' => auth()->id(),
+                'chat_history_id' => $chatHistory->id,
+                'format' => $validated['format'],
+                'file_path' => $filePath
+            ]);
+
+            return response()->download(
+                storage_path("app/public/{$filePath}"),
+                "document.{$validated['format']}"
+            )->deleteFileAfterSend();
+
+        } catch (\Exception $e) {
+            Log::error('Export error: ' . $e->getMessage());
+            return response()->json(['error' => 'Une erreur est survenue lors de l\'export'], 500);
+        }
+    }
+
+    private function getSystemPrompt($language, $serviceId)
     {
         $prompts = [
-            'fr' => "Vous êtes un conseiller professionnel expert. Votre rôle est d'aider les utilisateurs dans leur développement de carrière.
-                    Répondez de manière claire, structurée et bienveillante en français.
-                    Donnez des conseils pratiques et applicables.",
-            'en' => "You are an expert career advisor. Your role is to help users in their career development.
-                    Respond clearly, in a structured and supportive way in English.
-                    Provide practical and actionable advice."
+            'interview-prep' => [
+                'fr' => "Vous êtes un recruteur expérimenté conduisant un entretien d'embauche.
+                        Posez des questions pertinentes et donnez des retours constructifs.
+                        Gardez un ton professionnel mais conversationnel.
+                        Adaptez vos questions en fonction des réponses précédentes.
+                        Maximum 10 échanges pour simuler un véritable entretien.",
+                'en' => "You are an experienced recruiter conducting a job interview.
+                        Ask relevant questions and provide constructive feedback.
+                        Keep a professional but conversational tone.
+                        Adapt your questions based on previous answers.
+                        Maximum 10 exchanges to simulate a real interview."
+            ],
+            'cover-letter' => [
+                'fr' => "Vous êtes un expert en rédaction de lettres de motivation.
+                        Créez des contenus personnalisés, persuasifs et professionnels.
+                        Mettez en valeur les compétences pertinentes et l'adéquation avec le poste.
+                        Adaptez le style et le ton au secteur d'activité.",
+                'en' => "You are an expert in writing cover letters.
+                        Create personalized, persuasive, and professional content.
+                        Highlight relevant skills and job fit.
+                        Adapt style and tone to the industry."
+            ],
+            'resume-review' => [
+                'fr' => "Vous êtes un expert en optimisation de CV.
+                        Analysez le CV et suggérez des améliorations concrètes.
+                        Concentrez-vous sur la mise en valeur des compétences clés.
+                        Donnez des exemples spécifiques.",
+                'en' => "You are an expert in resume optimization.
+                        Analyze the resume and suggest concrete improvements.
+                        Focus on highlighting key skills.
+                        Provide specific examples."
+            ],
+            'default' => [
+                'fr' => "Vous êtes un conseiller professionnel expert.
+                        Donnez des conseils pratiques et applicables.
+                        Adaptez vos recommandations au profil et au secteur.",
+                'en' => "You are an expert career advisor.
+                        Provide practical and actionable advice.
+                        Adapt recommendations to profile and industry."
+            ]
         ];
 
-        return $prompts[$language];
+        return $prompts[$serviceId][$language] ?? $prompts['default'][$language];
     }
 
     private function buildPrompt($message, $language, $serviceId, $userInfo)
     {
-        $prompts = [
-            'career-advice' => [
-                'fr' => "Conseils de carrière pour le profil suivant :",
-                'en' => "Career advice for the following profile:"
-            ],
-            'interview-prep' => [
-                'fr' => "Préparation d'entretien pour le profil suivant :",
-                'en' => "Interview preparation for the following profile:"
-            ]
-        ];
-
-        $basePrompt = $prompts[$serviceId][$language] ?? $prompts['career-advice'][$language];
-        $profileInfo = json_encode($userInfo, JSON_PRETTY_PRINT);
-
-        return "{$basePrompt}\n\nProfil:\n{$profileInfo}\n\nQuestion: {$message}";
+        $context = json_encode($userInfo, JSON_PRETTY_PRINT);
+        return "Profil :\n{$context}\n\nMessage : {$message}";
     }
 
-    private function saveHistory($userId, $contextId, $userMessage, $aiResponse)
+    private function saveHistory($userId, $contextId, $userMessage, $aiResponse, $maxHistory = 3)
     {
         try {
             $chatHistory = ChatHistory::firstOrNew([
@@ -222,8 +292,7 @@ class CareerAdvisorController extends Controller
                 'timestamp' => now()->toIso8601String()
             ];
 
-            $messages = array_slice($messages, -($this->maxHistory * 2));
-
+            $messages = array_slice($messages, -($maxHistory * 2));
             $chatHistory->messages = json_encode($messages);
             $chatHistory->save();
         } catch (\Exception $e) {
@@ -252,72 +321,24 @@ class CareerAdvisorController extends Controller
         ];
     }
 
-
-
-    private function generatePdf($messages, $serviceId)
+    private function getExportTitle($serviceId)
     {
-        $content = $this->formatContent($messages, $serviceId);
-
-        $pdf = PDF::loadView('exports.chat', [
-            'content' => $content,
-            'title' => 'Document généré par Assistant Guidy',
-            'date' => now()->format('d/m/Y H:i')
-        ]);
-
-        return $pdf->download('document-guidy.pdf');
-    }
-
-    private function generateDocx($messages, $serviceId)
-    {
-        $phpWord = new PhpWord();
-        $section = $phpWord->addSection();
-
-        // Add title
-        $section->addText(
-            'Document généré par Assistant Guidy',
-            ['bold' => true, 'size' => 16],
-            ['alignment' => 'center', 'spaceAfter' => 400]
-        );
-
-        // Add date
-        $section->addText(
-            'Date: ' . now()->format('d/m/Y H:i'),
-            ['size' => 10],
-            ['alignment' => 'right', 'spaceAfter' => 400]
-        );
-
-        foreach ($messages as $message) {
-            $section->addText(
-                ($message['role'] === 'user' ? 'Question:' : 'Réponse:'),
-                ['bold' => true],
-                ['spaceAfter' => 0]
-            );
-            $section->addText(
-                $message['content'],
-                [],
-                ['spaceAfter' => 200]
-            );
-        }
-
-        $filename = storage_path('app/public/temp/' . uniqid() . '.docx');
-        $objWriter = IOFactory::createWriter($phpWord, 'Word2007');
-        $objWriter->save($filename);
-
-        return response()->download($filename)->deleteFileAfterSend(true);
+        return [
+            'interview-prep' => 'Simulation d\'entretien',
+            'cover-letter' => 'Lettre de motivation',
+            'resume-review' => 'Analyse de CV',
+            'default' => 'Conseil carrière'
+        ][$serviceId] ?? 'Document Guidy';
     }
 
     private function formatContent($messages, $serviceId)
     {
-        $content = [];
-
-        foreach ($messages as $message) {
-            $content[] = [
+        return array_map(function($message) {
+            return [
                 'role' => $message['role'],
                 'content' => $message['content'],
                 'timestamp' => $message['timestamp'] ?? now()->toDateTimeString()
             ];
-        }
-
-        return $content;
+        }, $messages);
     }
 }

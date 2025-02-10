@@ -37,7 +37,7 @@ Route::get('/', function () {
 Route::prefix('career-advisor')->name('career-advisor.')->middleware(['auth'])->group(function () {
     Route::get('/', [CareerAdvisorController::class, 'index'])->name('index');
     Route::post('/chat', [CareerAdvisorController::class, 'chat'])->name('chat');
-    Route::post('/export', [CareerAdvisorController::class, 'export'])->name('export');
+//    Route::post('/export', [CareerAdvisorController::class, 'export'])->name('export');
 });
 
 // Chat History Routes
@@ -52,6 +52,8 @@ Route::prefix('api')->middleware(['auth'])->group(function () {
     Route::delete('/exports/{export}', [DocumentExportController::class, 'destroy']);
 });
 Route::middleware(['auth'])->group(function () {
+    Route::post('/career-advisor/export', [CareerAdvisorController::class, 'export'])
+        ->name('career-advisor.export');
     Route::post('/api/process-question-cost', [PaymentController::class, 'processQuestionCost']);
     Route::get('/api/check-download-status/{modelId}', [PaymentController::class, 'checkDownloadStatus']);
         Route::post('/api/update-wallet', [PaymentController::class, 'updateWallet']);

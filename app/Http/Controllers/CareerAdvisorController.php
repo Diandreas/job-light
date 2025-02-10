@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Log;
 use HelgeSverre\Mistral\Mistral;
 use HelgeSverre\Mistral\Enums\Model;
 use HelgeSverre\Mistral\Enums\Role;
+use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 use PhpOffice\PhpWord\PhpWord;
 use PhpOffice\PhpWord\IOFactory;
@@ -154,6 +155,9 @@ class CareerAdvisorController extends Controller
 
     public function export(Request $request)
     {
+        // Log de départ
+        Log::channel('daily')->info('Export started', ['request' => $request->all()]);
+
         try {
             $validated = $request->validate([
                 'contextId' => 'required|string',
@@ -161,63 +165,33 @@ class CareerAdvisorController extends Controller
                 'serviceId' => 'required|string'
             ]);
 
-            $chatHistory = ChatHistory::where('context_id', $validated['contextId'])
-                ->where('user_id', auth()->id())
-                ->firstOrFail();
+            Log::channel('daily')->info('Validation passed', $validated);
 
-            $messages = json_decode($chatHistory->messages, true);
-            $content = $this->formatContent($messages, $validated['serviceId']);
-
-            $fileName = 'document-' . time();
-            $filePath = "exports/{$fileName}.{$validated['format']}";
-
-            if ($validated['format'] === 'pdf') {
-                $pdf = PDF::loadView('exports.chat', [
-                    'content' => $content,
-                    'title' => $this->getExportTitle($validated['serviceId'])
-                ]);
-                Storage::put($filePath, $pdf->output());
-            } else {
-                $phpWord = new PhpWord();
-                $section = $phpWord->addSection();
-
-                $section->addTitle($this->getExportTitle($validated['serviceId']), 1);
-
-                foreach ($content as $item) {
-                    $section->addText(
-                        $item['role'] === 'user' ? 'Question:' : 'Réponse:',
-                        ['bold' => true],
-                        ['spacingAfter' => 0]
-                    );
-                    $section->addText(
-                        $item['content'],
-                        [],
-                        ['spacingAfter' => 200]
-                    );
-                }
-
-                $objWriter = IOFactory::createWriter($phpWord, 'Word2007');
-                $objWriter->save(storage_path("app/public/{$filePath}"));
+            // Vérifier le répertoire storage
+            $exportPath = storage_path('app/public/exports');
+            if (!file_exists($exportPath)) {
+                mkdir($exportPath, 0755, true);
             }
 
-            DocumentExport::create([
-                'user_id' => auth()->id(),
-                'chat_history_id' => $chatHistory->id,
-                'format' => $validated['format'],
-                'file_path' => $filePath
-            ]);
+            // Test écriture fichier simple
+            $testFile = $exportPath . '/test.txt';
+            file_put_contents($testFile, 'Test export');
 
-            return response()->download(
-                storage_path("app/public/{$filePath}"),
-                "document.{$validated['format']}"
-            )->deleteFileAfterSend();
+            if (!file_exists($testFile)) {
+                throw new \Exception('Cannot write to export directory');
+            }
+
+            // Reste du code...
 
         } catch (\Exception $e) {
-            Log::error('Export error: ' . $e->getMessage());
-            return response()->json(['error' => 'Une erreur est survenue lors de l\'export'], 500);
+            Log::channel('daily')->error('Export failed', [
+                'error' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine()
+            ]);
+            return response()->json(['error' => $e->getMessage()], 500);
         }
     }
-
     private function getSystemPrompt($language, $serviceId)
     {
         $prompts = [

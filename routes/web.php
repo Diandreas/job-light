@@ -74,9 +74,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     Route::delete('/experiences/{experience}/attachment', [ExperienceController::class, 'deleteAttachment'])
         ->name('experiences.attachment.delete');
-    Route::get('/dashboard', function () {
-        return Inertia::render('Dashboard');
-    })->name('dashboard');
+
 
     Route::get('/career-advisor', [CareerAdvisorController::class, 'index'])->name('career-advisor.index');
     Route::post('/career-advisor/advice', [CareerAdvisorController::class, 'getAdvice'])->name('career-advisor.advice');
@@ -145,6 +143,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     // Admin-only routes
     Route::middleware('can:access-admin')->group(function () {
+        Route::get('/dashboard', function () {
+            return Inertia::render('Dashboard');
+        })->name('dashboard');
         Route::resources([
             'experience-categories' => ExperienceCategoryController::class,
             'profession-categories' => ProfessionCategoryController::class,

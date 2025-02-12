@@ -34,10 +34,13 @@ Route::get('/', function () {
 })->name('welcome');
 
 // Career Advisor Routes
-Route::prefix('career-advisor')->name('career-advisor.')->middleware(['auth'])->group(function () {
-    Route::get('/', [CareerAdvisorController::class, 'index'])->name('index');
-    Route::post('/chat', [CareerAdvisorController::class, 'chat'])->name('chat');
-//    Route::post('/export', [CareerAdvisorController::class, 'export'])->name('export');
+Route::prefix('career-advisor')->group(function () {
+    Route::get('/', [CareerAdvisorController::class, 'index'])->name('career-advisor.index');
+    Route::get('/chats', [CareerAdvisorController::class, 'getUserChats'])->name('career-advisor.chats');
+    Route::get('/chats/{contextId}', [CareerAdvisorController::class, 'getChat'])->name('career-advisor.chat.show');
+    Route::post('/chat', [CareerAdvisorController::class, 'chat'])->name('career-advisor.chat');
+    Route::post('/export', [CareerAdvisorController::class, 'export'])->name('career-advisor.export');
+    Route::delete('/chats/{contextId}', [CareerAdvisorController::class, 'destroyChat'])->name('career-advisor.destroy');
 });
 
 // Chat History Routes

@@ -135,6 +135,7 @@ export default function Authenticated({ user, header, children }: PropsWithChild
         </div>
     );
 
+    // @ts-ignore
     return (
         <div className="min-h-screen bg-gradient-to-br from-amber-50/50 to-purple-50/50 dark:from-gray-900 dark:to-gray-800">
             <nav className="sticky top-0 z-50 bg-white/80 dark:bg-gray-900/90 backdrop-blur-md shadow-sm border-b border-amber-100 dark:border-gray-700">
@@ -186,6 +187,7 @@ export default function Authenticated({ user, header, children }: PropsWithChild
                                         </div>
                                     </Button>
                                 </Dropdown.Trigger>
+                                {/*@ts-ignore*/}
                                 <Dropdown.Content className="bg-white dark:bg-gray-900 dark:border-gray-700">
                                     <Dropdown.Link href={route('profile.edit')} className="text-gray-700 dark:text-gray-100 hover:bg-amber-50 dark:hover:bg-amber-500/20">
                                         Mon Profil

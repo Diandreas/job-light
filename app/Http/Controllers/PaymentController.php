@@ -2,12 +2,29 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Competence;
+use App\Models\ExperienceCategory;
+use App\Models\Hobby;
+use App\Models\Profession;
 use App\Models\User;
 use App\Models\Payment;
 use Illuminate\Http\Request;
+use Inertia\Inertia;
 
 class PaymentController extends Controller
 {
+
+    public function index()
+    {
+        $user = auth()->user();
+
+        $cvInformation = $this->getCommonCvInformation($user);
+
+
+        return Inertia::render('CvInfos/Index', [
+
+        ]);
+    }
     public function updateWallet(Request $request)
     {
         $user = User::findOrFail($request->user_id);

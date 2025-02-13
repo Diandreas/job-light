@@ -152,6 +152,7 @@ export default function Authenticated({ user, header, children }: PropsWithChild
 
                         <div className="hidden md:flex md:items-center md:gap-6">
                             {mainMenuItems.map((item, index) => (
+                                // @ts-ignore
                                 (!item.adminOnly || user.UserType === 1) && (
                                     <Link
                                         key={index}
@@ -223,6 +224,7 @@ export default function Authenticated({ user, header, children }: PropsWithChild
                     </SheetHeader>
                     <div className="mt-8 flex flex-col gap-4">
                         {mainMenuItems.map((item, index) => (
+                            // @ts-ignore
                             (!item.adminOnly || user.UserType === 1) && (
                                 <NavButton key={index} item={item} />
                             )

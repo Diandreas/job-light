@@ -16,14 +16,7 @@ class PaymentController extends Controller
 
     public function index()
     {
-        $user = auth()->user();
-
-        $cvInformation = $this->getCommonCvInformation($user);
-
-
-        return Inertia::render('CvInfos/Index', [
-
-        ]);
+       return Inertia::render('Payment/Index');
     }
     public function updateWallet(Request $request)
     {

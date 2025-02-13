@@ -1,8 +1,8 @@
-
 import { useState, PropsWithChildren, ReactNode } from 'react';
 import { Link, usePage } from '@inertiajs/react';
 import { User } from '@/types';
 import { Toaster } from "@/Components/ui/toaster";
+import { ThemeToggle } from '@/Components/ThemeToggle';
 import {
     Folder, Star, Eye, Menu, X, Brain, Layout,
     ChevronRight, Sparkles, LucideIcon
@@ -13,8 +13,6 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/Components/ui/sh
 import { Button } from '@/Components/ui/button';
 import { cn } from "@/lib/utils";
 import { motion, AnimatePresence } from 'framer-motion';
-// import {Props} from "@headlessui/react/dist/types";
-
 
 interface MenuItem {
     name: string;
@@ -75,9 +73,6 @@ export default function Authenticated({ user, header, children }: PropsWithChild
         }
     ];
 
-
-
-
     const NavButton = ({ item }: { item: MenuItem }) => (
         <motion.div
             whileHover={{ scale: 1.02 }}
@@ -90,7 +85,7 @@ export default function Authenticated({ user, header, children }: PropsWithChild
                     "flex items-center gap-3 px-4 py-3 rounded-lg transition-all",
                     item.active
                         ? "bg-gradient-to-r from-amber-500 to-purple-500 text-white shadow-md"
-                        : "text-gray-700 hover:bg-amber-50"
+                        : "text-gray-700 dark:text-gray-200 hover:bg-amber-50 dark:hover:bg-amber-500/10"
                 )}
             >
                 <item.icon className="h-5 w-5" />
@@ -107,18 +102,18 @@ export default function Authenticated({ user, header, children }: PropsWithChild
     );
 
     const MobileNav = () => (
-        <div className="sticky top-16 z-30 md:hidden bg-white/80 backdrop-blur-md border-b border-amber-100">
+        <div className="sticky top-16 z-30 md:hidden bg-white/80 dark:bg-gray-900/80 backdrop-blur-md border-b border-amber-100 dark:border-gray-800">
             <div className="max-w-7xl mx-auto px-4 py-2">
                 <Button
                     variant="ghost"
                     onClick={() => setIsNavOpen(!isNavOpen)}
-                    className="w-full flex items-center justify-between p-2 hover:bg-amber-50 rounded-lg"
+                    className="w-full flex items-center justify-between p-2 hover:bg-amber-50 dark:hover:bg-amber-500/10 rounded-lg"
                 >
                     <div className="flex items-center gap-2">
                         <Folder className="h-5 w-5 text-amber-500" />
-                        <span>Navigation CV</span>
+                        <span className="dark:text-gray-200">Navigation CV</span>
                     </div>
-                    <ChevronRight className={`h-5 w-5 transition-transform ${isNavOpen ? 'rotate-90' : ''}`} />
+                    <ChevronRight className={`h-5 w-5 transition-transform dark:text-gray-200 ${isNavOpen ? 'rotate-90' : ''}`} />
                 </Button>
                 <AnimatePresence>
                     {isNavOpen && (
@@ -140,8 +135,8 @@ export default function Authenticated({ user, header, children }: PropsWithChild
     );
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-amber-50/50 to-purple-50/50">
-            <nav className="sticky top-0 z-50 bg-white/80 backdrop-blur-md shadow-sm border-b border-amber-100">
+        <div className="min-h-screen bg-gradient-to-br from-amber-50/50 to-purple-50/50 dark:from-gray-900 dark:to-gray-800">
+            <nav className="sticky top-0 z-50 bg-white/80 dark:bg-gray-900/80 backdrop-blur-md shadow-sm border-b border-amber-100 dark:border-gray-800">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6">
                     <div className="flex h-16 items-center justify-between">
                         <div className="flex items-center gap-4">
@@ -159,12 +154,11 @@ export default function Authenticated({ user, header, children }: PropsWithChild
                                     <Link
                                         key={index}
                                         href={item.href}
-
                                         className={cn(
                                             "text-sm font-medium transition-all px-4 py-2 rounded-full",
                                             item.active
                                                 ? "bg-gradient-to-r from-amber-500 to-purple-500 text-white shadow-md"
-                                                : "hover:bg-amber-50"
+                                                : "hover:bg-amber-50 dark:hover:bg-amber-500/10 dark:text-gray-200"
                                         )}
                                     >
                                         <div className="flex items-center gap-2">
@@ -177,6 +171,7 @@ export default function Authenticated({ user, header, children }: PropsWithChild
                         </div>
 
                         <div className="flex items-center gap-4">
+                            <ThemeToggle />
                             <Dropdown>
                                 <Dropdown.Trigger>
                                     <Button variant="ghost" className="gap-2">
@@ -186,13 +181,15 @@ export default function Authenticated({ user, header, children }: PropsWithChild
                                                     {user.name.charAt(0).toUpperCase()}
                                                 </span>
                                             </div>
-                                            <span className="hidden sm:block">{user.name}</span>
+                                            <span className="hidden sm:block dark:text-gray-200">{user.name}</span>
                                         </div>
                                     </Button>
                                 </Dropdown.Trigger>
-                                <Dropdown.Content>
-                                    <Dropdown.Link href={route('profile.edit')}>Mon Profil</Dropdown.Link>
-                                    <Dropdown.Link href={route('logout')} method="post" as="button">
+                                <Dropdown.Content className="dark:bg-gray-900 dark:border-gray-800">
+                                    <Dropdown.Link href={route('profile.edit')} className="dark:text-gray-200 dark:hover:bg-amber-500/10">
+                                        Mon Profil
+                                    </Dropdown.Link>
+                                    <Dropdown.Link href={route('logout')} method="post" as="button" className="dark:text-gray-200 dark:hover:bg-amber-500/10">
                                         Déconnexion
                                     </Dropdown.Link>
                                 </Dropdown.Content>
@@ -204,7 +201,7 @@ export default function Authenticated({ user, header, children }: PropsWithChild
                                 className="md:hidden"
                                 onClick={() => setIsMobileMenuOpen(true)}
                             >
-                                <Menu className="h-5 w-5" />
+                                <Menu className="h-5 w-5 dark:text-gray-200" />
                             </Button>
                         </div>
                     </div>
@@ -212,7 +209,7 @@ export default function Authenticated({ user, header, children }: PropsWithChild
             </nav>
 
             <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
-                <SheetContent side="right" className="bg-white w-[300px]">
+                <SheetContent side="right" className="bg-white dark:bg-gray-900 w-[300px]">
                     <SheetHeader>
                         <SheetTitle className="flex items-center gap-2">
                             <Sparkles className="h-5 w-5 text-amber-500" />
@@ -234,7 +231,7 @@ export default function Authenticated({ user, header, children }: PropsWithChild
             {showNav && <MobileNav />}
 
             {header && (
-                <header className="bg-white/80 backdrop-blur-md border-b border-amber-100">
+                <header className="bg-white/80 dark:bg-gray-900/80 backdrop-blur-md border-b border-amber-100 dark:border-gray-800">
                     <div className="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
                         {header}
                     </div>
@@ -243,7 +240,7 @@ export default function Authenticated({ user, header, children }: PropsWithChild
 
             <div className="flex">
                 {showNav && (
-                    <aside className="hidden md:block w-64 bg-white/80 backdrop-blur-md border-r border-amber-100 min-h-screen">
+                    <aside className="hidden md:block w-64 bg-white/80 dark:bg-gray-900/80 backdrop-blur-md border-r border-amber-100 dark:border-gray-800 min-h-screen">
                         <div className="sticky top-20 p-4">
                             <div className="mb-6">
                                 <h2 className="text-lg font-semibold bg-gradient-to-r from-amber-500 to-purple-500 text-transparent bg-clip-text">
@@ -259,7 +256,7 @@ export default function Authenticated({ user, header, children }: PropsWithChild
                     </aside>
                 )}
 
-                <main className="flex-1 p-4 sm:p-6">
+                <main className="flex-1 p-4 sm:p-6 dark:text-gray-200">
                     {children}
                 </main>
             </div>

@@ -30,6 +30,7 @@ class User extends Authenticatable
         'github',
         'linkedin',
         'address',
+        'full_profession',
         'phone_number',
         'username',
         'photo',

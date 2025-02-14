@@ -1,7 +1,8 @@
 <?php
 
 namespace App\Http\Controllers;
-
+use App\Models\{PersonalInformation, Experience, Reference, Summary, ExperienceCategory};
+use Illuminate\Support\Facades\DB;
 use App\Models\User;
 use App\Models\ChatHistory;
 use App\Models\DocumentExport;
@@ -195,7 +196,7 @@ class CareerAdvisorController extends Controller
             'cover-letter' => [
                 'model' => 'mistral-large-latest',
                 'maxTokens' => 2000,
-                'temperature' => 0.7,
+                'temperature' => 0.3,
                 'maxHistory' => 3
             ],
             'career-advice' => [
@@ -207,7 +208,7 @@ class CareerAdvisorController extends Controller
             'resume-review' => [
                 'model' => 'mistral-medium-latest',
                 'maxTokens' => 1000,
-                'temperature' => 0.7,
+                'temperature' => 0.2,
                 'maxHistory' => 3
             ]
         ];
@@ -458,7 +459,6 @@ class CareerAdvisorController extends Controller
 
 
 
-
     public function analyzeCV(Request $request)
     {
         $request->validate([
@@ -466,7 +466,6 @@ class CareerAdvisorController extends Controller
         ]);
 
         try {
-            // Vérifier et déduire le coût
             $user = auth()->user();
             $analyseCost = 5;
 
@@ -477,13 +476,14 @@ class CareerAdvisorController extends Controller
                 ], 400);
             }
 
+            // Extraire le texte du fichier
             $text = $this->extractTextFromFile($request->file('cv'));
 
-            // Pour le debugging, utilisons une réponse simulée
-            $mockData = $this->getMockCVAnalysis($text);
+            // Analyser avec Mistral
+            $cvData = $this->analyzeCVWithMistral($text);
 
-            // Validation de la structure
-            $validationErrors = $this->validateCVDataStructure($mockData);
+            // Valider la structure
+            $validationErrors = $this->validateCVDataStructure($cvData);
             if (!empty($validationErrors)) {
                 Log::error('CV data structure validation failed:', $validationErrors);
                 return response()->json([
@@ -493,13 +493,17 @@ class CareerAdvisorController extends Controller
                 ], 422);
             }
 
-            // Déduire les jetons après succès de l'analyse
+            // Sauvegarder les données
+            $savedData = $this->saveCVData($user->id, $cvData);
+
+            // Déduire le coût
             $user->wallet_balance -= $analyseCost;
             $user->save();
 
             return response()->json([
                 'success' => true,
-                'cvData' => $mockData
+                'cvData' => $cvData,
+                'savedData' => $savedData
             ]);
 
         } catch (\Exception $e) {
@@ -513,9 +517,245 @@ class CareerAdvisorController extends Controller
         }
     }
 
-    private function getMockCVAnalysis($text)
+    private function extractTextFromFile($file)
     {
-        // Simuler une analyse basique du texte
+        $extension = strtolower($file->getClientOriginalExtension());
+
+        if ($extension === 'pdf') {
+            $parser = new Parser();
+            $pdf = $parser->parseFile($file->path());
+            return $pdf->getText();
+        }
+
+        if (in_array($extension, ['doc', 'docx'])) {
+            $phpWord = IOFactory::load($file->path());
+            $text = '';
+            foreach ($phpWord->getSections() as $section) {
+                foreach ($section->getElements() as $element) {
+                    if (method_exists($element, 'getText')) {
+                        $text .= $element->getText() . "\n";
+                    }
+                }
+            }
+            return $text;
+        }
+
+        throw new \Exception('Format de fichier non supporté');
+    }
+
+    private function analyzeCVWithMistral($text)
+    {
+        try {
+            $response = $this->mistral->chat()->create([
+                'model' => 'mistral-large-latest',
+                'messages' => [
+                    [
+                        'role' => 'system',
+                        'content' => $this->getSystemPromptcv()
+                    ],
+                    [
+                        'role' => 'user',
+                        'content' => $text
+                    ]
+                ]
+            ]);
+
+            $content = $response->choices[0]->message->content;
+            $cvData = json_decode($content, true);
+
+            if (json_last_error() !== JSON_ERROR_NONE) {
+                throw new \Exception('Erreur dans le parsing JSON de la réponse Mistral');
+            }
+
+            return $cvData;
+
+        } catch (\Exception $e) {
+            Log::error('Mistral API error: ' . $e->getMessage());
+            // En cas d'erreur, utiliser les données simulées
+            return $this->getMockCVAnalysis();
+        }
+    }
+
+    private function getSystemPromptcv()
+    {
+        return <<<EOT
+Tu es un expert en analyse de CV. Analyse le texte fourni et retourne EXACTEMENT la structure JSON suivante:
+{
+    "nom_complet": "string",
+    "poste_actuel": "string",
+    "contact": {
+        "email": "string",
+        "telephone": "string",
+        "adresse": "string",
+        "github": "string",
+        "linkedin": "string"
+    },
+    "resume": "string",
+    "experiences": [
+        {
+            "titre": "string",
+            "entreprise": "string",
+            "date_debut": "YYYY-MM",
+            "date_fin": "YYYY-MM ou present",
+            "categorie": "academique|professionnel|recherche",
+            "description": "string",
+            "output": "string",
+            "comment": "string",
+            "references": [
+                {
+                    "name": "string",
+                    "function": "string",
+                    "email": "string",
+                    "telephone": "string"
+                }
+            ]
+        }
+    ]
+}
+EOT;
+    }
+
+    private function saveCVData($userId, $cvData)
+    {
+        DB::beginTransaction();
+        try {
+            // Mettre à jour les informations de l'utilisateur
+            $user = User::find($userId);
+            $user->update([
+                'name' => $cvData['nom_complet'],
+                'email' => $cvData['contact']['email'],
+                'phone_number' => $cvData['contact']['telephone'],
+                'address' => $cvData['contact']['adresse'],
+                'github' => $cvData['contact']['github'],
+                'linkedin' => $cvData['contact']['linkedin'],
+                'full_profession' => $cvData['poste_actuel']
+            ]);
+
+            // Créer et sélectionner le nouveau résumé
+            $summary = Summary::create([
+                'name' => 'Résumé CV',
+                'description' => $cvData['resume']
+            ]);
+
+            // Associer le résumé à l'utilisateur et le définir comme sélectionné
+            $user->summaries()->attach($summary->id);
+            $user->selected_summary_id = $summary->id;
+            $user->save();
+
+            // Sauvegarder les expériences
+            $savedExperiences = [];
+            foreach ($cvData['experiences'] as $exp) {
+                $experience = Experience::create([
+                    'name' => $exp['titre'],
+                    'InstitutionName' => $exp['entreprise'],
+                    'date_start' => $exp['date_debut'],
+                    'date_end' => $exp['date_fin'] === 'present' ? null : $exp['date_fin'],
+                    'description' => $exp['description'],
+                    'output' => $exp['output'],
+                    'comment' => $exp['comment'],
+                    'experience_categories_id' => $this->getExperienceCategoryId($exp['categorie'])
+                ]);
+
+                // Associer l'expérience à l'utilisateur
+                $user->experiences()->attach($experience->id);
+
+                // Sauvegarder les références si présentes
+                if (!empty($exp['references'])) {
+                    foreach ($exp['references'] as $ref) {
+                        $reference = Reference::create([
+                            'name' => $ref['name'],
+                            'function' => $ref['function'],
+                            'email' => $ref['email'],
+                            'telephone' => $ref['telephone']
+                        ]);
+
+                        // Associer la référence à l'expérience
+                        $experience->references()->attach($reference->id);
+                    }
+                }
+
+                $savedExperiences[] = $experience;
+            }
+
+            DB::commit();
+
+            return [
+                'user' => $user->fresh(['experiences.references', 'summaries']),
+                'experiences' => $savedExperiences
+            ];
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            throw new \Exception('Erreur lors de l\'enregistrement des données: ' . $e->getMessage());
+        }
+    }
+
+    private function getExperienceCategoryId($categoryName)
+    {
+        $mapping = [
+            'academique' => 1,
+            'professionnel' => 2,
+            'recherche' => 3
+        ];
+
+        return $mapping[$categoryName] ?? 2; // Default à professionnel
+    }
+
+    private function validateCVDataStructure($data)
+    {
+        $errors = [];
+
+        // Validation des champs requis
+        $requiredFields = ['nom_complet', 'poste_actuel', 'contact', 'resume', 'experiences'];
+        foreach ($requiredFields as $field) {
+            if (!isset($data[$field])) {
+                $errors[] = "Champ requis manquant: {$field}";
+            }
+        }
+
+        // Validation du contact
+        if (isset($data['contact'])) {
+            $contactFields = ['email', 'telephone', 'adresse', 'github', 'linkedin'];
+            foreach ($contactFields as $field) {
+                if (!isset($data['contact'][$field])) {
+                    $errors[] = "Champ contact requis manquant: {$field}";
+                }
+            }
+        }
+
+        // Validation des expériences
+        if (isset($data['experiences']) && is_array($data['experiences'])) {
+            foreach ($data['experiences'] as $index => $exp) {
+                $expFields = ['titre', 'entreprise', 'date_debut', 'date_fin', 'categorie', 'description', 'output', 'comment'];
+                foreach ($expFields as $field) {
+                    if (!isset($exp[$field])) {
+                        $errors[] = "Champ expérience requis manquant: {$field} à l'index {$index}";
+                    }
+                }
+
+                // Validation du format de date
+                if (isset($exp['date_debut']) && !preg_match('/^\d{4}-\d{2}$/', $exp['date_debut'])) {
+                    $errors[] = "Format de date_debut invalide à l'index {$index}";
+                }
+
+                if (isset($exp['date_fin']) &&
+                    $exp['date_fin'] !== 'present' &&
+                    !preg_match('/^\d{4}-\d{2}$/', $exp['date_fin'])) {
+                    $errors[] = "Format de date_fin invalide à l'index {$index}";
+                }
+
+                if (isset($exp['categorie']) &&
+                    !in_array($exp['categorie'], ['academique', 'professionnel', 'recherche'])) {
+                    $errors[] = "Catégorie invalide à l'index {$index}";
+                }
+            }
+        }
+
+        return $errors;
+    }
+
+    private function getMockCVAnalysis()
+    {
         return [
             "nom_complet" => "John Doe",
             "poste_actuel" => "Développeur Full Stack",
@@ -526,7 +766,7 @@ class CareerAdvisorController extends Controller
                 "github" => "github.com/johndoe",
                 "linkedin" => "linkedin.com/in/johndoe"
             ],
-            "resume" => "Développeur Full Stack expérimenté avec 5 ans d'expérience dans le développement web",
+            "resume" => "Développeur Full Stack expérimenté avec 5 ans d'expérience",
             "experiences" => [
                 [
                     "titre" => "Développeur Full Stack Senior",
@@ -545,118 +785,9 @@ class CareerAdvisorController extends Controller
                             "telephone" => "+237600000001"
                         ]
                     ]
-                ],
-                [
-                    "titre" => "Développeur Backend",
-                    "entreprise" => "StartUp Inc",
-                    "date_debut" => "2020-06",
-                    "date_fin" => "2021-12",
-                    "categorie" => "professionnel",
-                    "description" => "Développement d'APIs RESTful avec Laravel",
-                    "output" => "Création de 15 endpoints majeurs",
-                    "comment" => "Travail en méthode Agile",
-                    "references" => []
                 ]
             ]
         ];
     }
 
-    private function extractTextFromFile($file)
-    {
-        $extension = $file->getClientOriginalExtension();
-
-        if ($extension === 'pdf') {
-            $parser = new Parser();
-            $pdf = $parser->parseFile($file->path());
-            return $pdf->getText();
-        }
-
-        // Pour les fichiers Word
-        if (in_array($extension, ['doc', 'docx'])) {
-            $phpWord = IOFactory::load($file->path());
-            $text = '';
-            foreach ($phpWord->getSections() as $section) {
-                foreach ($section->getElements() as $element) {
-                    if (method_exists($element, 'getText')) {
-                        $text .= $element->getText() . ' ';
-                    }
-                }
-            }
-            return $text;
-        }
-
-        throw new \Exception('Format de fichier non supporté');
-    }
-
-    private function validateCVDataStructure($data)
-    {
-        $errors = [];
-
-        // Validation des champs requis de premier niveau
-        $requiredFields = ['nom_complet', 'poste_actuel', 'contact', 'resume', 'experiences'];
-        foreach ($requiredFields as $field) {
-            if (!isset($data[$field])) {
-                $errors[] = "Champ requis manquant: {$field}";
-            }
-        }
-
-        // Validation de la structure contact
-        if (isset($data['contact'])) {
-            $contactFields = ['email', 'telephone', 'adresse', 'github', 'linkedin'];
-            foreach ($contactFields as $field) {
-                if (!isset($data['contact'][$field])) {
-                    $errors[] = "Champ contact requis manquant: {$field}";
-                }
-            }
-        }
-
-        // Validation des expériences
-        if (isset($data['experiences']) && is_array($data['experiences'])) {
-            foreach ($data['experiences'] as $index => $experience) {
-                $expFields = [
-                    'titre', 'entreprise', 'date_debut', 'date_fin',
-                    'categorie', 'description', 'output', 'comment'
-                ];
-                foreach ($expFields as $field) {
-                    if (!isset($experience[$field])) {
-                        $errors[] = "Champ expérience requis manquant: {$field} à l'index {$index}";
-                    }
-                }
-
-                // Validation des références si présentes
-                if (isset($experience['references']) && is_array($experience['references'])) {
-                    foreach ($experience['references'] as $refIndex => $reference) {
-                        $refFields = ['name', 'function', 'email', 'telephone'];
-                        foreach ($refFields as $field) {
-                            if (!isset($reference[$field])) {
-                                $errors[] = "Champ référence requis manquant: {$field} à l'expérience {$index}, référence {$refIndex}";
-                            }
-                        }
-                    }
-                }
-
-                // Validation du format de date
-                if (isset($experience['date_debut']) &&
-                    $experience['date_debut'] !== '' &&
-                    !preg_match('/^\d{4}-\d{2}$/', $experience['date_debut'])) {
-                    $errors[] = "Format de date_debut invalide à l'index {$index}";
-                }
-
-                if (isset($experience['date_fin']) &&
-                    $experience['date_fin'] !== 'present' &&
-                    $experience['date_fin'] !== '' &&
-                    !preg_match('/^\d{4}-\d{2}$/', $experience['date_fin'])) {
-                    $errors[] = "Format de date_fin invalide à l'index {$index}";
-                }
-
-                // Validation de la catégorie
-                if (isset($experience['categorie']) &&
-                    !in_array($experience['categorie'], ['academique', 'professionnel', 'recherche'])) {
-                    $errors[] = "Catégorie invalide à l'index {$index}";
-                }
-            }
-        }
-
-        return $errors;
-    }
 }

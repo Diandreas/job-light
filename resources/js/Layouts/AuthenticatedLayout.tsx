@@ -5,7 +5,7 @@ import { Toaster } from "@/Components/ui/toaster";
 import { ThemeToggle } from '@/Components/ThemeToggle';
 import {
     Folder, Star, Eye, Menu, X, Brain, Layout,
-    ChevronRight, Sparkles, LucideIcon
+    ChevronRight, Sparkles, LucideIcon, Coins
 } from 'lucide-react';
 import Dropdown from '@/Components/Dropdown';
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/Components/ui/sheet";
@@ -71,6 +71,21 @@ export default function Authenticated({ user, header, children }: PropsWithChild
         }
     ];
 
+    const TokenDisplay = () => {
+        // Convertir le solde en nombre entier
+        const tokenBalance = Math.floor(user.wallet_balance);
+
+        return (
+            <Link
+                href={route('payment.index')}
+                className="flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-amber-500 to-purple-500 text-white hover:from-amber-600 hover:to-purple-600 transition-all shadow-md group"
+            >
+                <Coins className="h-4 w-4 group-hover:animate-bounce" />
+                <span className="font-medium">{tokenBalance}</span>
+            </Link>
+        );
+    };
+
     const NavButton = ({ item }: { item: MenuItem }) => (
         <motion.div
             whileHover={{ scale: 1.02 }}
@@ -135,7 +150,6 @@ export default function Authenticated({ user, header, children }: PropsWithChild
         </div>
     );
 
-    // @ts-ignore
     return (
         <div className="min-h-screen bg-gradient-to-br from-amber-50/50 to-purple-50/50 dark:from-gray-900 dark:to-gray-800">
             <nav className="sticky top-0 z-50 bg-white/80 dark:bg-gray-900/90 backdrop-blur-md shadow-sm border-b border-amber-100 dark:border-gray-700">
@@ -151,8 +165,8 @@ export default function Authenticated({ user, header, children }: PropsWithChild
                         </div>
 
                         <div className="hidden md:flex md:items-center md:gap-6">
+                            <TokenDisplay />
                             {mainMenuItems.map((item, index) => (
-                                // @ts-ignore
                                 (!item.adminOnly || user.UserType === 1) && (
                                     <Link
                                         key={index}
@@ -174,6 +188,9 @@ export default function Authenticated({ user, header, children }: PropsWithChild
                         </div>
 
                         <div className="flex items-center gap-4">
+                            <div className="md:hidden">
+                                <TokenDisplay />
+                            </div>
                             <ThemeToggle />
                             <Dropdown>
                                 <Dropdown.Trigger>
@@ -188,7 +205,6 @@ export default function Authenticated({ user, header, children }: PropsWithChild
                                         </div>
                                     </Button>
                                 </Dropdown.Trigger>
-                                {/*@ts-ignore*/}
                                 <Dropdown.Content className="bg-white dark:bg-gray-900 dark:border-gray-700">
                                     <Dropdown.Link href={route('profile.edit')} className="text-gray-700 dark:text-gray-100 hover:bg-amber-50 dark:hover:bg-amber-500/20">
                                         Mon Profil
@@ -224,7 +240,6 @@ export default function Authenticated({ user, header, children }: PropsWithChild
                     </SheetHeader>
                     <div className="mt-8 flex flex-col gap-4">
                         {mainMenuItems.map((item, index) => (
-                            // @ts-ignore
                             (!item.adminOnly || user.UserType === 1) && (
                                 <NavButton key={index} item={item} />
                             )

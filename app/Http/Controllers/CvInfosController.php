@@ -234,4 +234,17 @@ class CvInfosController extends Controller
 
         return $pdf->download('cv.pdf');
     }
+
+
+
+
+
+
+
+
+
+
+
+
+
 }

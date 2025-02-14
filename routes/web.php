@@ -33,6 +33,11 @@ Route::get('/', function () {
     return Inertia::render('Welcome');
 })->name('welcome');
 
+Route::post('/api/cv/analyze', [CareerAdvisorController::class, 'analyzeCV'])
+    ->name('cv.analyze')
+    ->middleware(['auth']);
+
+
 Route::get('/payment', [PaymentController::class, 'index'])->name('payment.index');
 // Career Advisor Routes
 Route::prefix('career-advisor')->group(function () {

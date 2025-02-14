@@ -4,15 +4,18 @@ import { motion, AnimatePresence } from 'framer-motion';
 import {
     User, FileText, Briefcase, Code, GraduationCap, Heart,
     ChevronRight, ChevronLeft, Mail, Phone, MapPin, Linkedin,
-    Github, PencilIcon, Sparkles, CircleChevronRight, Star, Camera, Upload
+    Github, PencilIcon, Sparkles, CircleChevronRight, Star,
+    Camera, Upload, FileUp, Bot, AlertCircle
 } from 'lucide-react';
 import axios from 'axios';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
-import { Card, CardHeader, CardTitle, CardContent } from "@/Components/ui/card";
+import { Card, CardHeader, CardTitle, CardContent, CardDescription } from "@/Components/ui/card";
 import { Button } from "@/Components/ui/button";
 import { useToast } from '@/Components/ui/use-toast';
 import { ScrollArea } from "@/Components/ui/scroll-area";
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "@/Components/ui/sheet";
+import { Progress } from "@/Components/ui/progress";
+import { Alert, AlertDescription } from "@/Components/ui/alert";
 import { Separator } from "@/Components/ui/separator";
 
 import PersonalInformationEdit from './PersonalInformation/Edit';
@@ -23,6 +26,7 @@ import ExperienceManager from "@/Components/ExperienceManager";
 import SummaryManager from '@/Components/SummaryManager';
 import ReactCrop, { centerCrop, makeAspectCrop } from 'react-image-crop';
 import 'react-image-crop/dist/ReactCrop.css';
+import CVAnalyzer from "@/Components/ai/CVAnalyzer";
 
 const SIDEBAR_ITEMS = [
     { id: 'personalInfo', label: 'Informations Personnelles', icon: User, color: 'text-amber-500' },
@@ -40,6 +44,7 @@ const PERSONAL_INFO_FIELDS = [
     { label: "LinkedIn", key: "linkedin", icon: Linkedin },
     { label: "GitHub", key: "github", icon: Github }
 ];
+
 
 const PersonalInfoCard = ({ item, onEdit, updateCvInformation }) => {
     const [isUploading, setIsUploading] = useState(false);
@@ -272,14 +277,14 @@ const PersonalInfoCard = ({ item, onEdit, updateCvInformation }) => {
     );
 };
 
-// Remaining components stay the same
+
 const ProgressIndicator = ({ percentage }) => (
     <div className="flex items-center gap-4">
         <div className="text-right">
-            <p className="text-sm text-gray-500">Progression</p>
-            <p className="text-xl font-bold text-amber-500">{percentage}%</p>
+            <p className="text-sm text-gray-500 dark:text-gray-400">Progression</p>
+            <p className="text-xl font-bold text-amber-500 dark:text-amber-400">{percentage}%</p>
         </div>
-        <div className="h-12 w-12 rounded-full bg-gradient-to-r from-amber-500 to-purple-500 flex items-center justify-center">
+        <div className="h-12 w-12 rounded-full bg-gradient-to-r from-amber-500 to-purple-500 dark:from-amber-400 dark:to-purple-400 flex items-center justify-center">
             <span className="text-white font-bold">{percentage}%</span>
         </div>
     </div>
@@ -289,7 +294,9 @@ const SidebarButton = ({ item, isActive, isComplete, onClick }) => (
     <button
         onClick={onClick}
         className={`w-full flex items-center justify-center md:justify-between p-2 md:p-3 rounded-lg transition-all ${
-            isActive ? 'bg-gradient-to-r from-amber-500 to-purple-500 text-white shadow-lg' : 'hover:bg-amber-50'
+            isActive
+                ? 'bg-gradient-to-r from-amber-500 to-purple-500 dark:from-amber-400 dark:to-purple-400 text-white shadow-lg'
+                : 'hover:bg-amber-50 dark:hover:bg-amber-900/50'
         }`}
     >
         <div className="flex items-center gap-3">
@@ -304,12 +311,12 @@ const SidebarButton = ({ item, isActive, isComplete, onClick }) => (
 );
 
 const SectionNavigation = ({ currentSection, nextSection, prevSection, canProgress, onNavigate }) => (
-    <div className="flex flex-col md:flex-row justify-between items-center mt-8 pt-6 border-t">
+    <div className="flex flex-col md:flex-row justify-between items-center mt-8 pt-6 border-t border-amber-100 dark:border-amber-800">
         {prevSection && (
             <Button
                 variant="outline"
                 onClick={() => onNavigate(prevSection.id)}
-                className="flex items-center gap-2 w-full md:w-auto mb-2 md:mb-0 border-amber-200 hover:bg-amber-50"
+                className="flex items-center gap-2 w-full md:w-auto mb-2 md:mb-0 border-amber-200 dark:border-amber-800 hover:bg-amber-50 dark:hover:bg-amber-900/50"
             >
                 <ChevronLeft className="w-4 h-4" />
                 {prevSection.label}
@@ -319,7 +326,7 @@ const SectionNavigation = ({ currentSection, nextSection, prevSection, canProgre
             <Button
                 onClick={() => onNavigate(nextSection.id)}
                 disabled={!canProgress}
-                className="flex items-center gap-2 w-full md:w-auto ml-auto bg-gradient-to-r from-amber-500 to-purple-500 hover:from-amber-600 hover:to-purple-600 text-white"
+                className="flex items-center gap-2 w-full md:w-auto ml-auto bg-gradient-to-r from-amber-500 to-purple-500 hover:from-amber-600 hover:to-purple-600 dark:from-amber-400 dark:to-purple-400 dark:hover:from-amber-500 dark:hover:to-purple-500 text-white"
             >
                 {nextSection.label}
                 <ChevronRight className="w-4 h-4" />
@@ -338,17 +345,14 @@ export default function CvInterface({ auth, cvInformation: initialCvInformation 
         setCvInformation(prev => {
             const newState = { ...prev };
 
-            // Gestion spéciale pour les résumés
             if (section === 'summaries') {
                 newState.summaries = data;
-                // Mettre à jour aussi allsummaries si nécessaire
                 if (Array.isArray(data) && data.length > 0) {
                     const existingIds = new Set(newState.allsummaries.map(s => s.id));
                     data.forEach(summary => {
                         if (!existingIds.has(summary.id)) {
                             newState.allsummaries.push(summary);
                         } else {
-                            // Mettre à jour le résumé existant dans allsummaries
                             const index = newState.allsummaries.findIndex(s => s.id === summary.id);
                             if (index !== -1) {
                                 newState.allsummaries[index] = summary;
@@ -363,6 +367,52 @@ export default function CvInterface({ auth, cvInformation: initialCvInformation 
             return newState;
         });
     }, []);
+
+    const handleCVAnalysis = (cvData) => {
+        // Mise à jour des informations personnelles
+        updateCvInformation('personalInformation', {
+            ...cvInformation.personalInformation,
+            firstName: cvData.nom_complet,
+            email: cvData.contact.email,
+            phone: cvData.contact.telephone,
+            address: cvData.contact.adresse,
+            github: cvData.contact.github,
+            linkedin: cvData.contact.linkedin,
+            profession: cvData.poste_actuel
+        });
+
+        // Mise à jour du résumé
+        if (cvData.resume) {
+            const newSummary = {
+                id: Date.now(),
+                name: "Résumé importé",
+                description: cvData.resume
+            };
+            updateCvInformation('summaries', [newSummary]);
+        }
+
+        // Mise à jour des expériences
+        const formattedExperiences = cvData.experiences.map(exp => ({
+            id: Date.now() + Math.random(),
+            name: exp.titre,
+            InstitutionName: exp.entreprise,
+            date_start: exp.date_debut + '-01',
+            date_end: exp.date_fin === 'present' ? null : exp.date_fin + '-01',
+            description: exp.description,
+            output: exp.output,
+            comment: exp.comment,
+            experience_categories_id: exp.categorie === 'academique' ? '2' :
+                exp.categorie === 'recherche' ? '3' : '1',
+            references: exp.references || []
+        }));
+
+        updateCvInformation('experiences', formattedExperiences);
+
+        toast({
+            title: "CV importé avec succès",
+            description: "Les sections ont été mises à jour automatiquement"
+        });
+    };
 
     const completionStatus = {
         personalInfo: Boolean(cvInformation.personalInformation?.firstName),
@@ -385,7 +435,7 @@ export default function CvInterface({ auth, cvInformation: initialCvInformation 
         setIsEditing(false);
         toast({
             title: "Mise à jour réussie",
-            description: "Vos informations ont été enregistrées avec succès."
+            description: "Vos informations ont été enregistrées avec succès"
         });
     };
 
@@ -409,9 +459,7 @@ export default function CvInterface({ auth, cvInformation: initialCvInformation 
                     auth={auth}
                     summaries={cvInformation.allsummaries}
                     selectedSummary={cvInformation.summaries}
-                    onUpdate={(summaries) => {
-                        updateCvInformation('summaries', summaries);
-                    }}
+                    onUpdate={(summaries) => updateCvInformation('summaries', summaries)}
                 />
             ),
             experience: (
@@ -458,17 +506,17 @@ export default function CvInterface({ auth, cvInformation: initialCvInformation 
         <AuthenticatedLayout user={auth.user}>
             <Head title="CV Professionnel" />
 
-            <div className="min-h-screen bg-gradient-to-b from-amber-50/50 to-purple-50/50">
+            <div className="min-h-screen bg-gradient-to-b from-amber-50/50 to-purple-50/50 dark:from-gray-900 dark:to-gray-800">
                 <div className="container mx-auto py-6 px-4">
                     <div className="flex justify-between items-center mb-8">
                         <div className="flex items-center gap-3">
-                            <Sparkles className="h-8 w-8 text-amber-500" />
-                            <h2 className="font-bold text-2xl bg-gradient-to-r from-amber-500 to-purple-500 text-transparent bg-clip-text">
+                            <Sparkles className="h-8 w-8 text-amber-500 dark:text-amber-400" />
+                            <h2 className="font-bold text-2xl bg-gradient-to-r from-amber-500 to-purple-500 dark:from-amber-400 dark:to-purple-400 text-transparent bg-clip-text">
                                 Mon CV Guidy
                             </h2>
                         </div>
                         <Link href={route('userCvModels.index')}>
-                            <Button className="bg-gradient-to-r from-amber-500 to-purple-500 hover:from-amber-600 hover:to-purple-600 text-white">
+                            <Button className="bg-gradient-to-r from-amber-500 to-purple-500 hover:from-amber-600 hover:to-purple-600 dark:from-amber-400 dark:to-purple-400 dark:hover:from-amber-500 dark:hover:to-purple-500 text-white">
                                 <Star className="mr-2 h-4 w-4" />
                                 Choisir un design
                                 <CircleChevronRight className="ml-2 h-4 w-4" />
@@ -476,32 +524,38 @@ export default function CvInterface({ auth, cvInformation: initialCvInformation 
                         </Link>
                     </div>
 
-                    <Card className="shadow-xl border border-amber-100">
-                        <CardHeader className="bg-white border-b border-amber-100">
+                    <Card className="shadow-xl border border-amber-100 dark:border-amber-800">
+                        <CardHeader className="bg-white dark:bg-gray-900 border-b border-amber-100 dark:border-amber-800">
                             <div className="flex flex-col md:flex-row justify-between items-center">
                                 <div>
-                                    <CardTitle className="text-2xl font-bold bg-gradient-to-r from-amber-500 to-purple-500 text-transparent bg-clip-text">
+                                    <CardTitle className="text-2xl font-bold bg-gradient-to-r from-amber-500 to-purple-500 dark:from-amber-400 dark:to-purple-400 text-transparent bg-clip-text">
                                         Créez votre CV professionnel
                                     </CardTitle>
-                                    <p className="text-gray-500 mt-1">
+                                    <p className="text-gray-500 dark:text-gray-400 mt-1">
                                         Complétez votre profil pour un CV qui vous ressemble
                                     </p>
                                 </div>
                                 <ProgressIndicator percentage={getCompletionPercentage()} />
                             </div>
 
-                            <div className="mt-4 h-2 bg-gray-100 rounded-full overflow-hidden">
+                            <div className="mt-4 h-2 bg-gray-100 dark:bg-gray-800 rounded-full overflow-hidden">
                                 <motion.div
-                                    className="h-full bg-gradient-to-r from-amber-500 to-purple-500"
+                                    className="h-full bg-gradient-to-r from-amber-500 to-purple-500 dark:from-amber-400 dark:to-purple-400"
                                     initial={{ width: 0 }}
                                     animate={{ width: `${getCompletionPercentage()}%` }}
                                     transition={{ duration: 0.5 }}
                                 />
                             </div>
+
+                            <CVAnalyzer
+                                walletBalance={auth.user.wallet_balance}
+                                onAnalysisComplete={handleCVAnalysis}
+                                className="mb-6"
+                            />
                         </CardHeader>
 
                         <div className="flex flex-row min-h-[600px]">
-                            <div className="w-14 md:w-64 flex-shrink-0 border-r border-amber-100 bg-white/50 transition-all duration-300">
+                            <div className="w-14 md:w-64 flex-shrink-0 border-r border-amber-100 dark:border-amber-800 bg-white/50 dark:bg-gray-900/50 transition-all duration-300">
                                 <ScrollArea className="h-full py-2">
                                     <nav className="sticky top-0 p-2 md:p-4 space-y-1 md:space-y-3">
                                         {SIDEBAR_ITEMS.map(item => (
@@ -544,11 +598,15 @@ export default function CvInterface({ auth, cvInformation: initialCvInformation 
 
                     <div className="mt-8 text-center">
                         <Link href={route('userCvModels.index')}>
-                            <Button className="bg-gradient-to-r from-amber-500 to-purple-500 hover:from-amber-600 hover:to-purple-600 text-white p-6 rounded-xl shadow-lg group">
+                            <Button className="bg-gradient-to-r from-amber-500 to-purple-500 hover:from-amber-600 hover:to-purple-600 dark:from-amber-400 dark:to-purple-400 dark:hover:from-amber-500 dark:hover:to-purple-500 text-white p-6 rounded-xl shadow-lg group">
                                 <div className="flex flex-col items-center gap-2">
                                     <Sparkles className="h-6 w-6 group-hover:animate-spin" />
-                                    <span className="text-lg font-medium">Donnez vie à votre CV avec nos designs professionnels</span>
-                                    <span className="text-sm opacity-90">Choisissez parmi nos modèles premium</span>
+                                    <span className="text-lg font-medium">
+                                        Donnez vie à votre CV avec nos designs professionnels
+                                    </span>
+                                    <span className="text-sm opacity-90">
+                                        Choisissez parmi nos modèles premium
+                                    </span>
                                 </div>
                             </Button>
                         </Link>

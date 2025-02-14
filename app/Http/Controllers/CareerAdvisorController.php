@@ -458,7 +458,6 @@ class CareerAdvisorController extends Controller
 
 
 
-
     public function analyzeCV(Request $request)
     {
         $request->validate([
@@ -479,32 +478,47 @@ class CareerAdvisorController extends Controller
             // Extraire le texte du fichier
             $text = $this->extractTextFromFile($request->file('cv'));
 
-            // Analyser avec Mistral
-            $cvData = $this->analyzeCVWithMistral($text);
+            Log::info('Début analyse CV', ['text_length' => strlen($text)]);
 
-            // Valider la structure
-            $validationErrors = $this->validateCVDataStructure($cvData);
-            if (!empty($validationErrors)) {
-                Log::error('CV data structure validation failed:', $validationErrors);
+            try {
+                // Analyser avec Mistral
+                $cvData = $this->analyzeCVWithMistral($text);
+
+                // Valider la structure
+                $validationErrors = $this->validateCVDataStructure($cvData);
+                if (!empty($validationErrors)) {
+                    Log::error('CV data structure validation failed:', $validationErrors);
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'La structure des données extraites est invalide',
+                        'errors' => $validationErrors
+                    ], 422);
+                }
+
+                // Sauvegarder les données
+                $savedData = $this->saveCVData($user->id, $cvData);
+
+                // Déduire le coût seulement après succès
+                $user->wallet_balance -= $analyseCost;
+                $user->save();
+
+                return response()->json([
+                    'success' => true,
+                    'cvData' => $cvData,
+                    'savedData' => $savedData
+                ]);
+
+            } catch (\Exception $e) {
+                Log::error('Erreur d\'analyse Mistral', [
+                    'error' => $e->getMessage(),
+                    'trace' => $e->getTraceAsString()
+                ]);
+
                 return response()->json([
                     'success' => false,
-                    'message' => 'La structure des données extraites est invalide',
-                    'errors' => $validationErrors
-                ], 422);
+                    'message' => 'Erreur lors de l\'analyse du CV: ' . $e->getMessage()
+                ], 500);
             }
-
-            // Sauvegarder les données
-            $savedData = $this->saveCVData($user->id, $cvData);
-
-            // Déduire le coût
-            $user->wallet_balance -= $analyseCost;
-            $user->save();
-
-            return response()->json([
-                'success' => true,
-                'cvData' => $cvData,
-                'savedData' => $savedData
-            ]);
 
         } catch (\Exception $e) {
             Log::error('CV analysis error: ' . $e->getMessage(), [
@@ -512,10 +526,12 @@ class CareerAdvisorController extends Controller
             ]);
             return response()->json([
                 'success' => false,
-                'message' => 'Erreur lors de l\'analyse du CV: ' . $e->getMessage()
+                'message' => 'Erreur lors du traitement du fichier: ' . $e->getMessage()
             ], 500);
         }
     }
+
+
 
     private function extractTextFromFile($file)
     {
@@ -557,64 +573,147 @@ class CareerAdvisorController extends Controller
                         'role' => 'user',
                         'content' => $text
                     ]
-                ]
+                ],
+                'temperature' => 0.2,
+                'max_tokens' => 2000
             ]);
 
-            $content = $response->choices[0]->message->content;
+            // Vérifier si nous avons une réponse valide
+            if (!method_exists($response, 'dto')) {
+                throw new \Exception('Réponse Mistral invalide: pas de méthode dto');
+            }
+
+            $dto = $response->dto();
+
+            if (!isset($dto->choices) || empty($dto->choices)) {
+                throw new \Exception('Réponse Mistral invalide: pas de choices');
+            }
+
+            // Récupérer le contenu de la réponse
+            $content = $dto->choices[0]->message->content;
+
+            // Nettoyer la réponse
+            $content = trim($content);
+
+            // S'assurer que nous commençons par un objet JSON
+            if (substr($content, 0, 1) !== '{') {
+                $start = strpos($content, '{');
+                if ($start === false) {
+                    throw new \Exception('Aucun objet JSON trouvé dans la réponse');
+                }
+                $content = substr($content, $start);
+            }
+
+            // Trouver la fin de l'objet JSON
+            $end = strrpos($content, '}');
+            if ($end === false) {
+                throw new \Exception('Fin de l\'objet JSON non trouvée');
+            }
+            $content = substr($content, 0, $end + 1);
+
+            Log::info('Contenu Mistral avant decode:', ['content' => $content]);
+
+            // Décoder le JSON
             $cvData = json_decode($content, true);
 
             if (json_last_error() !== JSON_ERROR_NONE) {
-                throw new \Exception('Erreur dans le parsing JSON de la réponse Mistral');
+                Log::error('Erreur JSON decode:', [
+                    'error' => json_last_error_msg(),
+                    'content' => $content
+                ]);
+                throw new \Exception('Erreur de parsing JSON: ' . json_last_error_msg());
+            }
+
+            // Validation supplémentaire de la structure
+            if (!$this->validateBasicStructure($cvData)) {
+                throw new \Exception('Structure de données invalide dans la réponse');
             }
 
             return $cvData;
 
         } catch (\Exception $e) {
-            Log::error('Mistral API error: ' . $e->getMessage());
-            // En cas d'erreur, utiliser les données simulées
-            return $this->getMockCVAnalysis();
+            Log::error('Erreur Mistral API:', [
+                'message' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+            throw $e;
         }
+    }
+
+    private function validateBasicStructure($data)
+    {
+        $requiredFields = ['nom_complet', 'poste_actuel', 'contact', 'resume', 'experiences'];
+
+        foreach ($requiredFields as $field) {
+            if (!isset($data[$field])) {
+                Log::error('Champ manquant dans la réponse:', ['field' => $field]);
+                return false;
+            }
+        }
+
+        if (!is_array($data['contact']) || !is_array($data['experiences'])) {
+            Log::error('Format invalide pour contact ou experiences');
+            return false;
+        }
+
+        $contactFields = ['email', 'telephone', 'adresse', 'github', 'linkedin'];
+        foreach ($contactFields as $field) {
+            if (!isset($data['contact'][$field])) {
+                Log::error('Champ contact manquant:', ['field' => $field]);
+                return false;
+            }
+        }
+
+        return true;
     }
 
     private function getSystemPromptcv()
     {
         return <<<EOT
-Tu es un expert en analyse de CV. Analyse le texte fourni et retourne EXACTEMENT la structure JSON suivante:
+Tu es un expert en analyse de CV. IMPORTANT: Tu dois analyser le texte fourni et retourner UNIQUEMENT un objet JSON valide suivant EXACTEMENT cette structure, sans texte avant ou après:
 {
-    "nom_complet": "string",
-    "poste_actuel": "string",
+    "nom_complet": "string (nom et prénom du candidat)",
+    "poste_actuel": "string (poste actuel ou dernier poste occupé)",
     "contact": {
-        "email": "string",
-        "telephone": "string",
-        "adresse": "string",
-        "github": "string",
-        "linkedin": "string"
+        "email": "string (email professionnel)",
+        "telephone": "string (format international)",
+        "adresse": "string (adresse complète)",
+        "github": "string (URL du profil Github ou chaine vide)",
+        "linkedin": "string (URL du profil LinkedIn ou chaine vide)"
     },
-    "resume": "string",
+    "resume": "string (résumé professionnel de 200 mots maximum)",
     "experiences": [
         {
-            "titre": "string",
-            "entreprise": "string",
-            "date_debut": "YYYY-MM",
-            "date_fin": "YYYY-MM ou present",
-            "categorie": "academique|professionnel|recherche",
-            "description": "string",
-            "output": "string",
-            "comment": "string",
+            "titre": "string (intitulé du poste)",
+            "entreprise": "string (nom de l'entreprise)",
+            "date_debut": "string (format YYYY-MM uniquement)",
+            "date_fin": "string (format YYYY-MM ou 'present')",
+            "categorie": "string (uniquement: academique, professionnel, ou recherche)",
+            "description": "string (description des responsabilités)",
+            "output": "string (résultats/réalisations)",
+            "comment": "string (informations additionnelles)",
             "references": [
                 {
-                    "name": "string",
-                    "function": "string",
-                    "email": "string",
-                    "telephone": "string"
+                    "name": "string (nom complet)",
+                    "function": "string (poste/fonction)",
+                    "email": "string (email professionnel)",
+                    "telephone": "string (format international)"
                 }
             ]
         }
     ]
 }
+
+RÈGLES IMPORTANTES:
+1. Retourne UNIQUEMENT l'objet JSON, sans aucun texte avant ou après
+2. Utilise EXACTEMENT les noms de champs spécifiés
+3. Pour les dates, utilise UNIQUEMENT le format YYYY-MM (exemple: 2023-01)
+4. Pour les catégories, utilise UNIQUEMENT: academique, professionnel, ou recherche
+5. Si une information est manquante, utilise une chaîne vide ""
+6. Les tableaux peuvent être vides mais doivent toujours être présents
+7. Tous les champs sont obligatoires, même vides
 EOT;
     }
-
     private function saveCVData($userId, $cvData)
     {
         DB::beginTransaction();
@@ -628,7 +727,7 @@ EOT;
                 'address' => $cvData['contact']['adresse'],
                 'github' => $cvData['contact']['github'],
                 'linkedin' => $cvData['contact']['linkedin'],
-                'full_profession' => $cvData['poste_actuel']
+//                'full_profession' => $cvData['poste_actuel']
             ]);
 
             // Créer et sélectionner le nouveau résumé
@@ -645,11 +744,15 @@ EOT;
             // Sauvegarder les expériences
             $savedExperiences = [];
             foreach ($cvData['experiences'] as $exp) {
+                // Formater correctement les dates
+                $dateStart = $this->formatDate($exp['date_debut']);
+                $dateEnd = $exp['date_fin'] === 'present' ? null : $this->formatDate($exp['date_fin']);
+
                 $experience = Experience::create([
                     'name' => $exp['titre'],
                     'InstitutionName' => $exp['entreprise'],
-                    'date_start' => $exp['date_debut'],
-                    'date_end' => $exp['date_fin'] === 'present' ? null : $exp['date_fin'],
+                    'date_start' => $dateStart,
+                    'date_end' => $dateEnd,
                     'description' => $exp['description'],
                     'output' => $exp['output'],
                     'comment' => $exp['comment'],
@@ -688,6 +791,28 @@ EOT;
             DB::rollBack();
             throw new \Exception('Erreur lors de l\'enregistrement des données: ' . $e->getMessage());
         }
+    }
+
+    /**
+     * Formater la date du format YYYY-MM au format YYYY-MM-DD
+     */
+    private function formatDate($date)
+    {
+        if (empty($date)) {
+            return null;
+        }
+
+        // Si la date est déjà au format YYYY-MM-DD, la retourner telle quelle
+        if (preg_match('/^\d{4}-\d{2}-\d{2}$/', $date)) {
+            return $date;
+        }
+
+        // Pour le format YYYY-MM, ajouter le premier jour du mois
+        if (preg_match('/^\d{4}-\d{2}$/', $date)) {
+            return $date . '-01';
+        }
+
+        throw new \Exception("Format de date invalide: $date");
     }
 
     private function getExperienceCategoryId($categoryName)

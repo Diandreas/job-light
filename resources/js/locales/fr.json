@@ -207,6 +207,46 @@
             "title": "Aperçu du CV",
             "loading": "Chargement de l'aperçu..."
         }
+    },
+
+
+    "career_advisor": {
+        "title": "Assistant de carrière",
+        "header": {
+            "balance": "Solde",
+            "history": "Historique"
+        },
+        "messages": {
+            "empty": "Veuillez entrer votre message",
+            "insufficient_balance": "Solde insuffisant",
+            "recharge_needed": "Veuillez recharger votre compte",
+            "error": "Une erreur est survenue",
+            "processing_error": "Erreur lors du traitement",
+            "export_success": "Document exporté avec succès",
+            "export_error": "L'exportation a échoué"
+        },
+        "chat": {
+            "send": "Envoyer",
+            "sending": "Envoi en cours...",
+            "questions_remaining": "{{count}} questions restantes",
+            "actions": {
+                "delete": {
+                    "title": "Supprimer la conversation ?",
+                    "description": "Cette action est irréversible. La conversation sera définitivement supprimée.",
+                    "confirm": "Supprimer",
+                    "cancel": "Annuler"
+                },
+                "export": {
+                    "pdf": "Exporter en PDF",
+                    "docx": "Exporter en DOCX"
+                }
+            }
+        },
+        "history": {
+            "title": "Historique des conversations",
+            "empty": "Aucune conversation",
+            "created_at": "Créé le {{date}}"
+        }
     }
 
 

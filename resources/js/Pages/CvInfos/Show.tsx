@@ -9,7 +9,7 @@ import {
     ArrowLeft, Printer, Wallet, Eye, Star,
     Download, Coins, AlertCircle, ArrowUpRight
 } from 'lucide-react';
-import {toast, useToast} from "@/Components/ui/use-toast";
+import { useToast } from "@/Components/ui/use-toast";
 import { Progress } from "@/Components/ui/progress";
 import { Alert, AlertDescription } from "@/Components/ui/alert";
 import axios from 'axios';
@@ -99,6 +99,44 @@ export default function Show({ auth, cvInformation, selectedCvModel }) {
 
         checkDownloadStatus();
     }, [selectedCvModel?.id]);
+
+    const handlePrint = async () => {
+        if (!canAccessFeatures && !hasDownloaded) {
+            return toast({
+                title: t('cv_preview.wallet.insufficient_access.title'),
+                description: t('cv_preview.wallet.insufficient_tokens'),
+                variant: 'destructive'
+            });
+        }
+
+        if (!hasDownloaded) {
+            try {
+                await axios.post('/api/process-download', {
+                    user_id: auth.user.id,
+                    model_id: selectedCvModel?.id,
+                    price: selectedCvModel?.price
+                });
+                setWalletBalance(prev => prev - (selectedCvModel?.price || 0));
+                setHasDownloaded(true);
+            } catch (error) {
+                return toast({
+                    title: t('common.error'),
+                    description: t('common.error'),
+                    variant: 'destructive'
+                });
+            }
+        }
+
+        const printUrl = route('cv.preview', {
+            id: selectedCvModel?.id,
+            print: true
+        });
+        window.open(printUrl, '_blank');
+
+        setTimeout(() => {
+            window.location.reload();
+        }, 2000);
+    };
 
     if (!selectedCvModel) {
         return (
@@ -217,7 +255,8 @@ export default function Show({ auth, cvInformation, selectedCvModel }) {
                                         <motion.div
                                             animate={{ rotate: 360 }}
                                             transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-                                            className="w-8 h-8 border-4 border-amber-500 dark:border-amber-400 rounded-full border-t-transparent"/>
+                                            className="w-8 h-8 border-4 border-amber-500 dark:border-amber-400 rounded-full border-t-transparent"
+                                        />
                                     </div>
                                 )}
                                 <iframe
@@ -234,23 +273,3 @@ export default function Show({ auth, cvInformation, selectedCvModel }) {
         </AuthenticatedLayout>
     );
 }
-
-// Fonction handlePrint à ajouter
-const handlePrint = async () => {
-    setIsLoading(true);
-    try {
-        const iframe = document.querySelector('iframe');
-        if (iframe) {
-            iframe.contentWindow.print();
-        }
-    } catch (error) {
-        console.error('Error printing:', error);
-        toast({
-            title: t('common.error'),
-            description: t('common.error'),
-            variant: 'destructive'
-        });
-    } finally {
-        setIsLoading(false);
-    }
-};

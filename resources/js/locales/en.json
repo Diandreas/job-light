@@ -204,13 +204,54 @@
             "title": "CV Preview",
             "loading": "Loading preview..."
         }
+    },
+
+
+
+
+
+
+
+
+
+    "career_advisor": {
+        "title": "Career Assistant",
+        "header": {
+            "balance": "Balance",
+            "history": "History"
+        },
+        "messages": {
+            "empty": "Please enter your message",
+            "insufficient_balance": "Insufficient balance",
+            "recharge_needed": "Please recharge your account",
+            "error": "An error occurred",
+            "processing_error": "Processing error",
+            "export_success": "Document exported successfully",
+            "export_error": "Export failed"
+        },
+        "chat": {
+            "send": "Send",
+            "sending": "Sending...",
+            "questions_remaining": "{{count}} questions remaining",
+            "actions": {
+                "delete": {
+                    "title": "Delete conversation?",
+                    "description": "This action cannot be undone. The conversation will be permanently deleted.",
+                    "confirm": "Delete",
+                    "cancel": "Cancel"
+                },
+                "export": {
+                    "pdf": "Export as PDF",
+                    "docx": "Export as DOCX"
+                }
+            }
+        },
+        "history": {
+            "title": "Conversation History",
+            "empty": "No conversations",
+            "created_at": "Created on {{date}}"
+        }
     }
-
-
-
-
-
-
 
 
 }

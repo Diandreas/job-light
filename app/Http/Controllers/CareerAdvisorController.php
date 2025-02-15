@@ -478,22 +478,9 @@ class CareerAdvisorController extends Controller
             // Extraire le texte du fichier
             $text = $this->extractTextFromFile($request->file('cv'));
 
-            Log::info('Début analyse CV', ['text_length' => strlen($text)]);
-
+            // Analyser avec Mistral - utiliser try/catch comme dans la méthode chat
             try {
-                // Analyser avec Mistral
                 $cvData = $this->analyzeCVWithMistral($text);
-
-                // Valider la structure
-                $validationErrors = $this->validateCVDataStructure($cvData);
-                if (!empty($validationErrors)) {
-                    Log::error('CV data structure validation failed:', $validationErrors);
-                    return response()->json([
-                        'success' => false,
-                        'message' => 'La structure des données extraites est invalide',
-                        'errors' => $validationErrors
-                    ], 422);
-                }
 
                 // Sauvegarder les données
                 $savedData = $this->saveCVData($user->id, $cvData);
@@ -509,11 +496,10 @@ class CareerAdvisorController extends Controller
                 ]);
 
             } catch (\Exception $e) {
-                Log::error('Erreur d\'analyse Mistral', [
-                    'error' => $e->getMessage(),
+                Log::error('CV analysis error: ' . $e->getMessage(), [
+                    'user_id' => auth()->id(),
                     'trace' => $e->getTraceAsString()
                 ]);
-
                 return response()->json([
                     'success' => false,
                     'message' => 'Erreur lors de l\'analyse du CV: ' . $e->getMessage()
@@ -521,9 +507,7 @@ class CareerAdvisorController extends Controller
             }
 
         } catch (\Exception $e) {
-            Log::error('CV analysis error: ' . $e->getMessage(), [
-                'trace' => $e->getTraceAsString()
-            ]);
+            Log::error('File processing error: ' . $e->getMessage());
             return response()->json([
                 'success' => false,
                 'message' => 'Erreur lors du traitement du fichier: ' . $e->getMessage()
@@ -562,109 +546,112 @@ class CareerAdvisorController extends Controller
     private function analyzeCVWithMistral($text)
     {
         try {
-            $response = $this->mistral->chat()->create([
-                'model' => 'mistral-large-latest',
-                'messages' => [
-                    [
-                        'role' => 'system',
-                        'content' => $this->getSystemPromptcv()
-                    ],
-                    [
-                        'role' => 'user',
-                        'content' => $text
-                    ]
-                ],
-                'temperature' => 0.2,
-                'max_tokens' => 2000
+            Log::info('Début de l\'analyse CV avec Mistral', [
+                'text_length' => strlen($text),
+                'text_preview' => substr($text, 0, 200) . '...'
             ]);
 
-            // Vérifier si nous avons une réponse valide
-            if (!method_exists($response, 'dto')) {
-                throw new \Exception('Réponse Mistral invalide: pas de méthode dto');
-            }
+            // Récupérer et logger le prompt système
+            $systemPrompt = $this->getSystemPromptcv();
+            Log::info('Prompt système:', ['prompt' => $systemPrompt]);
 
+            // Préparer la requête Mistral
+            $messages = [
+                [
+                    'role' => Role::system->value,
+                    'content' => $systemPrompt
+                ],
+                [
+                    'role' => Role::user->value,
+                    'content' => $text
+                ]
+            ];
+
+            Log::info('Envoi de la requête à Mistral', [
+                'model' => 'mistral-large-latest',
+                'messages_count' => count($messages),
+                'temperature' => 0.2
+            ]);
+
+            // Faire l'appel à Mistral
+            $response = $this->mistral->chat()->create(
+                messages: $messages,
+                model: 'mistral-large-latest',
+                temperature: 0.2,
+                maxTokens: 2000,
+                safeMode: true
+            );
+
+            Log::info('Réponse reçue de Mistral', [
+                'response_class' => get_class($response),
+                'has_dto' => method_exists($response, 'dto')
+            ]);
+
+            // Obtenir le DTO
             $dto = $response->dto();
+            Log::info('DTO obtenu', [
+                'dto_class' => get_class($dto),
+                'has_choices' => isset($dto->choices),
+                'choices_count' => isset($dto->choices) ? count($dto->choices) : 0
+            ]);
 
-            if (!isset($dto->choices) || empty($dto->choices)) {
-                throw new \Exception('Réponse Mistral invalide: pas de choices');
-            }
-
-            // Récupérer le contenu de la réponse
+            // Récupérer le contenu
             $content = $dto->choices[0]->message->content;
+            Log::info('Contenu brut de la réponse:', [
+                'content' => $content
+            ]);
 
-            // Nettoyer la réponse
+            // Nettoyer le contenu si nécessaire
             $content = trim($content);
-
-            // S'assurer que nous commençons par un objet JSON
             if (substr($content, 0, 1) !== '{') {
                 $start = strpos($content, '{');
-                if ($start === false) {
-                    throw new \Exception('Aucun objet JSON trouvé dans la réponse');
+                if ($start !== false) {
+                    $content = substr($content, $start);
+                    Log::info('Contenu nettoyé (début):', [
+                        'content' => substr($content, 0, 200) . '...'
+                    ]);
                 }
-                $content = substr($content, $start);
             }
 
-            // Trouver la fin de l'objet JSON
             $end = strrpos($content, '}');
-            if ($end === false) {
-                throw new \Exception('Fin de l\'objet JSON non trouvée');
-            }
-            $content = substr($content, 0, $end + 1);
-
-            Log::info('Contenu Mistral avant decode:', ['content' => $content]);
-
-            // Décoder le JSON
-            $cvData = json_decode($content, true);
-
-            if (json_last_error() !== JSON_ERROR_NONE) {
-                Log::error('Erreur JSON decode:', [
-                    'error' => json_last_error_msg(),
-                    'content' => $content
+            if ($end !== false) {
+                $content = substr($content, 0, $end + 1);
+                Log::info('Contenu nettoyé (fin):', [
+                    'content' => substr($content, -200)
                 ]);
-                throw new \Exception('Erreur de parsing JSON: ' . json_last_error_msg());
             }
 
-            // Validation supplémentaire de la structure
-            if (!$this->validateBasicStructure($cvData)) {
-                throw new \Exception('Structure de données invalide dans la réponse');
+            // Tenter le décodage JSON
+            $cvData = json_decode($content, true);
+            $jsonError = json_last_error();
+            Log::info('Tentative de décodage JSON', [
+                'success' => $jsonError === JSON_ERROR_NONE,
+                'error_code' => $jsonError,
+                'error_message' => json_last_error_msg()
+            ]);
+
+            if ($jsonError !== JSON_ERROR_NONE) {
+                throw new \Exception('Erreur dans le parsing JSON de la réponse Mistral: ' . json_last_error_msg());
             }
+
+            // Valider la structure
+            Log::info('Structure des données:', [
+                'keys' => array_keys($cvData),
+                'has_contact' => isset($cvData['contact']),
+                'has_experiences' => isset($cvData['experiences']),
+                'experiences_count' => isset($cvData['experiences']) ? count($cvData['experiences']) : 0
+            ]);
 
             return $cvData;
 
         } catch (\Exception $e) {
-            Log::error('Erreur Mistral API:', [
+            Log::error('Erreur dans analyzeCVWithMistral:', [
                 'message' => $e->getMessage(),
+                'class' => get_class($e),
                 'trace' => $e->getTraceAsString()
             ]);
             throw $e;
         }
-    }
-
-    private function validateBasicStructure($data)
-    {
-        $requiredFields = ['nom_complet', 'poste_actuel', 'contact', 'resume', 'experiences'];
-
-        foreach ($requiredFields as $field) {
-            if (!isset($data[$field])) {
-                Log::error('Champ manquant dans la réponse:', ['field' => $field]);
-                return false;
-            }
-        }
-
-        if (!is_array($data['contact']) || !is_array($data['experiences'])) {
-            Log::error('Format invalide pour contact ou experiences');
-            return false;
-        }
-
-        $contactFields = ['email', 'telephone', 'adresse', 'github', 'linkedin'];
-        foreach ($contactFields as $field) {
-            if (!isset($data['contact'][$field])) {
-                Log::error('Champ contact manquant:', ['field' => $field]);
-                return false;
-            }
-        }
-
-        return true;
     }
 
     private function getSystemPromptcv()
@@ -818,8 +805,8 @@ EOT;
     private function getExperienceCategoryId($categoryName)
     {
         $mapping = [
-            'academique' => 1,
-            'professionnel' => 2,
+            'academique' => 2,
+            'professionnel' => 1,
             'recherche' => 3
         ];
 

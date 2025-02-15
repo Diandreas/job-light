@@ -1,0 +1,126 @@
+{
+    "brand": "Guidy",
+    "menu": {
+        "title": "Guidy Menu",
+        "admin": "Administration",
+        "createCV": "Create CV",
+        "assistant": "Guidy Assistant",
+        "dashboard": "Dashboard",
+        "profile": "My Profile"
+    },
+    "cv": {
+        "navigation": "CV Navigation",
+        "edit": "Edit CV",
+        "premium": "Premium Designs",
+        "preview": "Preview & Export",
+        "download": "Download",
+        "template": "Templates",
+        "save": "Save",
+        "continue": "Continue"
+    },
+    "profile": {
+        "edit": "Edit Profile",
+        "settings": "Settings",
+        "preferences": "Preferences",
+        "account": "Account",
+        "security": "Security"
+    },
+    "theme": {
+        "toggle": "Toggle Theme",
+        "light": "Light Mode",
+        "dark": "Dark Mode",
+        "system": "System"
+    },
+    "language": {
+        "change": "Change Language",
+        "en": "English",
+        "fr": "French"
+    },
+    "auth": {
+        "logout": "Logout",
+        "login": "Login",
+        "register": "Register"
+    },
+    "common": {
+        "search": "Search",
+        "loading": "Loading",
+        "error": "Error",
+        "success": "Success",
+        "cancel": "Cancel",
+        "save": "Save",
+        "edit": "Edit",
+        "delete": "Delete",
+        "back": "Back",
+        "next": "Next"
+    },
+    "wallet": {
+        "balance": "Balance",
+        "tokens": "Tokens",
+        "add": "Add Tokens",
+        "insufficient": "Insufficient Balance"
+    },
+    "notifications": {
+        "title": "Notifications",
+        "empty": "No notifications",
+        "markAllRead": "Mark all as read",
+        "new": "New"
+    },
+    "cv": {
+        "interface": {
+            "title": "My Guidy CV",
+            "subtitle": "Complete your profile for a CV that represents you",
+            "progress": "Progress",
+            "chooseDesign": "Choose design",
+            "premiumDesigns": "Bring your CV to life with our professional designs",
+            "premiumSubtitle": "Choose from our premium templates",
+            "sections": {
+                "personalInfo": "Personal Information",
+                "summary": "Summary",
+                "experience": "Experience",
+                "competence": "Skills",
+                "education": "Education",
+                "hobbies": "Interests"
+            },
+            "personal": {
+                "title": "Personal Information",
+                "edit": "Edit",
+                "photo": {
+                    "upload": "Add photo",
+                    "edit": "Edit photo",
+                    "crop": "Adjust photo",
+                    "cropDescription": "Crop your photo to fit the square format",
+                    "save": "Save",
+                    "cancel": "Cancel",
+                    "success": "Photo updated successfully",
+                    "error": "Error updating photo",
+                    "sizeError": "File too large (max 5MB)"
+                },
+                "fields": {
+                    "email": "Email",
+                    "phone": "Phone",
+                    "address": "Address",
+                    "linkedin": "LinkedIn",
+                    "github": "GitHub",
+                    "notSpecified": "Not specified"
+                }
+            },
+            "navigation": {
+                "back": "Back",
+                "next": "Next",
+                "save": "Save",
+                "cancel": "Cancel"
+            },
+            "ai": {
+                "analyzer": {
+                    "title": "CV Analyzer",
+                    "subtitle": "Import your existing CV for automatic conversion",
+                    "upload": "Import CV",
+                    "analyzing": "Analyzing...",
+                    "success": "CV imported successfully",
+                    "error": "Error analyzing CV",
+                    "insufficient": "Insufficient balance"
+                }
+            }
+        }
+    }
+}

@@ -1,0 +1,127 @@
+{
+    "brand": "Guidy",
+    "menu": {
+        "title": "Menu Guidy",
+        "admin": "Administration",
+        "createCV": "Créer mon CV",
+        "assistant": "Assistant Guidy",
+        "dashboard": "Tableau de bord",
+        "profile": "Mon Profil"
+    },
+    "cv": {
+        "navigation": "Navigation CV",
+        "edit": "Éditer mon CV",
+        "premium": "Designs Premium",
+        "preview": "Aperçu & Export",
+        "download": "Télécharger",
+        "template": "Modèles",
+        "save": "Enregistrer",
+        "continue": "Continuer"
+    },
+    "profile": {
+        "edit": "Modifier le profil",
+        "settings": "Paramètres",
+        "preferences": "Préférences",
+        "account": "Compte",
+        "security": "Sécurité"
+    },
+    "theme": {
+        "toggle": "Changer le thème",
+        "light": "Mode clair",
+        "dark": "Mode sombre",
+        "system": "Système"
+    },
+    "language": {
+        "change": "Changer la langue",
+        "en": "Anglais",
+        "fr": "Français"
+    },
+    "auth": {
+        "logout": "Déconnexion",
+        "login": "Connexion",
+        "register": "Inscription"
+    },
+    "common": {
+        "search": "Rechercher",
+        "loading": "Chargement",
+        "error": "Erreur",
+        "success": "Succès",
+        "cancel": "Annuler",
+        "save": "Enregistrer",
+        "edit": "Modifier",
+        "delete": "Supprimer",
+        "back": "Retour",
+        "next": "Suivant"
+    },
+    "wallet": {
+        "balance": "Solde",
+        "tokens": "Jetons",
+        "add": "Ajouter des jetons",
+        "insufficient": "Solde insuffisant"
+    },
+    "notifications": {
+        "title": "Notifications",
+        "empty": "Aucune notification",
+        "markAllRead": "Tout marquer comme lu",
+        "new": "Nouveau"
+    },
+
+    "cv": {
+        "interface": {
+            "title": "Mon CV Guidy",
+            "subtitle": "Complétez votre profil pour un CV qui vous ressemble",
+            "progress": "Progression",
+            "chooseDesign": "Choisir un design",
+            "premiumDesigns": "Donnez vie à votre CV avec nos designs professionnels",
+            "premiumSubtitle": "Choisissez parmi nos modèles premium",
+            "sections": {
+                "personalInfo": "Informations Personnelles",
+                "summary": "Résumé",
+                "experience": "Expériences",
+                "competence": "Compétences",
+                "education": "Formation",
+                "hobbies": "Centres d'Intérêt"
+            },
+            "personal": {
+                "title": "Informations Personnelles",
+                "edit": "Modifier",
+                "photo": {
+                    "upload": "Ajouter une photo",
+                    "edit": "Modifier la photo",
+                    "crop": "Ajuster la photo",
+                    "cropDescription": "Rognez votre photo pour l'adapter au format carré",
+                    "save": "Enregistrer",
+                    "cancel": "Annuler",
+                    "success": "Photo mise à jour avec succès",
+                    "error": "Erreur lors de la mise à jour de la photo",
+                    "sizeError": "Fichier trop volumineux (max 5MB)"
+                },
+                "fields": {
+                    "email": "Email",
+                    "phone": "Téléphone",
+                    "address": "Adresse",
+                    "linkedin": "LinkedIn",
+                    "github": "GitHub",
+                    "notSpecified": "Non spécifié"
+                }
+            },
+            "navigation": {
+                "back": "Retour",
+                "next": "Suivant",
+                "save": "Enregistrer",
+                "cancel": "Annuler"
+            },
+            "ai": {
+                "analyzer": {
+                    "title": "Analyseur de CV",
+                    "subtitle": "Importez votre CV existant pour le convertir automatiquement",
+                    "upload": "Importer un CV",
+                    "analyzing": "Analyse en cours...",
+                    "success": "CV importé avec succès",
+                    "error": "Erreur lors de l'analyse",
+                    "insufficient": "Solde insuffisant"
+                }
+            }
+        }
+    }
+}

@@ -561,6 +561,7 @@ const ExperienceManager: React.FC<Props> = ({ auth, experiences: initialExperien
     const handleTemplateSelection = (type: 'academic' | 'internship' | 'volunteer') => {
         const template = generatePredefinedExperience(type);
         if (template) {
+
             setData(prev => ({
                 ...prev,
                 ...template

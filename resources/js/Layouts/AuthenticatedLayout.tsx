@@ -1,11 +1,13 @@
 import { useState, PropsWithChildren } from 'react';
 import { Link, usePage } from '@inertiajs/react';
+import { useTranslation } from 'react-i18next';
 import { User } from '@/types';
 import { Toaster } from "@/Components/ui/toaster";
 import { ThemeToggle } from '@/Components/ThemeToggle';
 import {
     Folder, Star, Eye, Menu, X, Brain, Layout,
-    ChevronRight, Sparkles, LucideIcon, Coins
+    ChevronRight, Sparkles, LucideIcon, Coins,
+    Globe
 } from 'lucide-react';
 import Dropdown from '@/Components/Dropdown';
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/Components/ui/sheet";
@@ -21,21 +23,78 @@ interface MenuItem {
     adminOnly?: boolean;
 }
 
-const getCvSideMenuItems = () => [
+const LanguageSelector = () => {
+    const { t, i18n } = useTranslation();
+
+    return (
+        <Dropdown>
+            <Dropdown.Trigger>
+                <Button
+                    variant="ghost"
+                    size="sm"
+                    className="flex items-center gap-2 hover:bg-amber-50 dark:hover:bg-amber-500/20"
+                >
+                    <Globe className="h-5 w-5 text-amber-500 dark:text-amber-400" />
+                    <span className="font-medium">{i18n.language === 'fr' ? 'FR' : 'EN'}</span>
+                </Button>
+            </Dropdown.Trigger>
+            <Dropdown.Content>
+                <div className="bg-white dark:bg-gray-900 rounded-lg w-32">
+                    <button
+                        onClick={() => i18n.changeLanguage('fr')}
+                        className={cn(
+                            "w-full flex items-center gap-2 px-3 py-2 text-sm rounded-md transition-colors",
+                            i18n.language === 'fr'
+                                ? "bg-gradient-to-r from-amber-500 to-purple-500 text-white"
+                                : "text-gray-700 dark:text-gray-100 hover:bg-amber-50 dark:hover:bg-amber-500/20"
+                        )}
+                    >
+                        <span className="font-medium">Français</span>
+                        {i18n.language === 'fr' && (
+                            <motion.div
+                                layoutId="activeLang"
+                                className="ml-auto w-2 h-2 rounded-full bg-white"
+                            />
+                        )}
+                    </button>
+                    <button
+                        onClick={() => i18n.changeLanguage('en')}
+                        className={cn(
+                            "w-full flex items-center gap-2 px-3 py-2 text-sm rounded-md transition-colors",
+                            i18n.language === 'en'
+                                ? "bg-gradient-to-r from-amber-500 to-purple-500 text-white"
+                                : "text-gray-700 dark:text-gray-100 hover:bg-amber-50 dark:hover:bg-amber-500/20"
+                        )}
+                    >
+                        <span className="font-medium">English</span>
+                        {i18n.language === 'en' && (
+                            <motion.div
+                                layoutId="activeLang"
+                                className="ml-auto w-2 h-2 rounded-full bg-white"
+                            />
+                        )}
+                    </button>
+                </div>
+            </Dropdown.Content>
+        </Dropdown>
+    );
+};
+
+const getCvSideMenuItems = (t: (key: string) => string) => [
     {
-        name: "Éditer mon CV",
+        name: t('cv.edit'),
         href: route('cv-infos.index'),
         icon: Folder,
         active: route().current('cv-infos.index')
     },
     {
-        name: "Designs Premium",
+        name: t('cv.premium'),
         href: route('userCvModels.index'),
         icon: Star,
         active: route().current('userCvModels.index')
     },
     {
-        name: "Aperçu & Export",
+        name: t('cv.preview'),
         href: '/cv-infos/show',
         icon: Eye,
         active: route().current('cv-infos.show')
@@ -43,28 +102,29 @@ const getCvSideMenuItems = () => [
 ];
 
 export default function Authenticated({ user, header, children }: PropsWithChildren<{ user: User, header?: React.ReactNode }>) {
+    const { t, i18n } = useTranslation();
     const { url } = usePage();
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const [isNavOpen, setIsNavOpen] = useState(false);
     const showNav = ['cv-infos.show', 'cv-infos.index', 'userCvModels.index'].includes(route().current());
-    const cvSideMenuItems = getCvSideMenuItems();
+    const cvSideMenuItems = getCvSideMenuItems(t);
 
     const mainMenuItems: MenuItem[] = [
         {
-            name: "Administration",
+            name: t('menu.admin'),
             href: route('dashboard'),
             icon: Layout,
             active: route().current('dashboard'),
             adminOnly: true
         },
         {
-            name: "Créer mon CV",
+            name: t('menu.createCV'),
             href: route('cv-infos.index'),
             icon: Folder,
             active: route().current('cv-infos.index')
         },
         {
-            name: "Assistant Guidy",
+            name: t('menu.assistant'),
             href: route('career-advisor.index'),
             icon: Brain,
             active: route().current('career-advisor.index')
@@ -72,9 +132,7 @@ export default function Authenticated({ user, header, children }: PropsWithChild
     ];
 
     const TokenDisplay = () => {
-        // Convertir le solde en nombre entier
         const tokenBalance = Math.floor(user.wallet_balance);
-
         return (
             <Link
                 href={route('payment.index')}
@@ -127,7 +185,7 @@ export default function Authenticated({ user, header, children }: PropsWithChild
                 >
                     <div className="flex items-center gap-2">
                         <Folder className="h-5 w-5 text-amber-500 dark:text-amber-400" />
-                        <span className="text-gray-700 dark:text-gray-100">Navigation CV</span>
+                        <span className="text-gray-700 dark:text-gray-100">{t('cv.navigation')}</span>
                     </div>
                     <ChevronRight className={`h-5 w-5 text-gray-700 dark:text-gray-100 transition-transform ${isNavOpen ? 'rotate-90' : ''}`} />
                 </Button>
@@ -159,7 +217,7 @@ export default function Authenticated({ user, header, children }: PropsWithChild
                             <Link href="/" className="flex items-center gap-2">
                                 <Sparkles className="h-6 w-6 text-amber-500 dark:text-amber-400" />
                                 <span className="font-bold text-2xl bg-gradient-to-r from-amber-500 to-purple-500 dark:from-amber-400 dark:to-purple-400 text-transparent bg-clip-text">
-                                    Guidy
+                                    {t('brand')}
                                 </span>
                             </Link>
                         </div>
@@ -168,23 +226,10 @@ export default function Authenticated({ user, header, children }: PropsWithChild
                             <TokenDisplay />
                             {mainMenuItems.map((item, index) => (
                                 (!item.adminOnly || user.UserType === 1) && (
-                                    <Link
-                                        key={index}
-                                        href={item.href}
-                                        className={cn(
-                                            "text-sm font-medium transition-all px-4 py-2 rounded-full",
-                                            item.active
-                                                ? "bg-gradient-to-r from-amber-500 to-purple-500 dark:from-amber-400 dark:to-purple-400 text-white shadow-md"
-                                                : "text-gray-700 dark:text-gray-100 hover:bg-amber-50 dark:hover:bg-amber-500/20"
-                                        )}
-                                    >
-                                        <div className="flex items-center gap-2">
-                                            <item.icon className="h-4 w-4" />
-                                            {item.name}
-                                        </div>
-                                    </Link>
+                                    <NavButton key={index} item={item} />
                                 )
                             ))}
+                            <LanguageSelector />
                         </div>
 
                         <div className="flex items-center gap-4">
@@ -207,10 +252,10 @@ export default function Authenticated({ user, header, children }: PropsWithChild
                                 </Dropdown.Trigger>
                                 <Dropdown.Content className="bg-white dark:bg-gray-900 dark:border-gray-700">
                                     <Dropdown.Link href={route('profile.edit')} className="text-gray-700 dark:text-gray-100 hover:bg-amber-50 dark:hover:bg-amber-500/20">
-                                        Mon Profil
+                                        {t('profile.edit')}
                                     </Dropdown.Link>
                                     <Dropdown.Link href={route('logout')} method="post" as="button" className="text-gray-700 dark:text-gray-100 hover:bg-amber-50 dark:hover:bg-amber-500/20">
-                                        Déconnexion
+                                        {t('auth.logout')}
                                     </Dropdown.Link>
                                 </Dropdown.Content>
                             </Dropdown>
@@ -234,7 +279,7 @@ export default function Authenticated({ user, header, children }: PropsWithChild
                         <SheetTitle className="flex items-center gap-2">
                             <Sparkles className="h-5 w-5 text-amber-500 dark:text-amber-400" />
                             <span className="bg-gradient-to-r from-amber-500 to-purple-500 dark:from-amber-400 dark:to-purple-400 text-transparent bg-clip-text">
-                                Menu Guidy
+                                {t('menu.title')}
                             </span>
                         </SheetTitle>
                     </SheetHeader>
@@ -244,6 +289,9 @@ export default function Authenticated({ user, header, children }: PropsWithChild
                                 <NavButton key={index} item={item} />
                             )
                         ))}
+                        <div className="px-4">
+                            <LanguageSelector />
+                        </div>
                     </div>
                 </SheetContent>
             </Sheet>
@@ -280,6 +328,20 @@ export default function Authenticated({ user, header, children }: PropsWithChild
                     {children}
                 </main>
             </div>
+
+            <footer className="mt-auto py-4 border-t border-amber-100 dark:border-gray-700">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 flex flex-col sm:flex-row justify-between items-center gap-4">
+                    <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
+                        <Sparkles className="h-4 w-4 text-amber-500 dark:text-amber-400" />
+                        <span>© {new Date().getFullYear()} {t('brand')}</span>
+                    </div>
+                    <div className="flex items-center gap-4">
+                        <div className="md:hidden">
+                            <LanguageSelector />
+                        </div>
+                    </div>
+                </div>
+            </footer>
 
             <Toaster />
         </div>

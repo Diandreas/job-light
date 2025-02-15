@@ -16,7 +16,29 @@
             "chooseDesign": "Choose design",
             "premiumDesigns": "Bring your CV to life with our professional designs",
             "premiumSubtitle": "Choose from our premium templates",
+            "welcome": {
+                "title": "Welcome to your CV space",
+                "subtitle": "Create a professional CV in a few steps",
+                "complete": "completed"
+            },
+            "import": {
+                "button": "Import CV",
+                "pdf": "Import PDF",
+                "word": "Import Word",
+                "ai": "AI Analysis (5 tokens)",
+                "success": "Import successful",
+                "successDetail": "Your CV has been successfully imported",
+                "error": "Import error",
+                "errorDetail": "An error occurred during import",
+                "insufficient": "Insufficient balance for AI analysis"
+            },
+            "update": {
+                "success": "Update successful",
+                "successDetail": "Your information has been saved successfully"
+            },
             "sections": {
+                "title": "Create your professional CV",
+                "description": "Complete each section for a comprehensive CV",
                 "personalInfo": "Personal Information",
                 "summary": "Summary",
                 "experience": "Experience",
@@ -33,8 +55,10 @@
                     "crop": "Adjust photo",
                     "cropDescription": "Crop your photo to fit the square format",
                     "save": "Save",
+                    "saving": "Saving...",
                     "cancel": "Cancel",
                     "success": "Photo updated successfully",
+                    "successDetail": "Your profile photo has been updated",
                     "error": "Error updating photo",
                     "sizeError": "File too large (max 5MB)"
                 },
@@ -60,9 +84,14 @@
                     "upload": "Import CV",
                     "analyzing": "Analyzing...",
                     "success": "CV imported successfully",
+                    "successDesc": "Sections have been automatically updated",
                     "error": "Error analyzing CV",
                     "insufficient": "Insufficient balance"
                 }
+            },
+            "cta": {
+                "title": "Bring your CV to life with our premium designs",
+                "subtitle": "Choose from our premium templates"
             }
         },
         "navigation": "CV Navigation",
@@ -120,6 +149,40 @@
         "empty": "No notifications",
         "markAllRead": "Mark all as read",
         "new": "New"
+    },
+    "cv_models": {
+        "title": "CV Models Collection",
+        "back": "Back",
+        "export_cv": "Export CV",
+        "search_placeholder": "Search...",
+        "active_models": {
+            "title": "My Active Models",
+            "limit": "{{current}}/{{max}} models"
+        },
+        "discover_models": "Discover Our Models",
+        "empty_state": {
+            "title": "No Active Models",
+            "description": "Select a model from available models below."
+        },
+        "model_card": {
+            "active": "Active",
+            "use_model": "Use This Model",
+            "active_model": "Active Model",
+            "add_to_catalog": "Add to Catalog"
+        },
+        "notifications": {
+            "model_added": "Model added to your collection",
+            "model_activated": "Your model has been successfully activated",
+            "max_models_reached": "You cannot add more than {{max}} models",
+            "error": "An error occurred"
+        }
     }
+
+
+
+
+
+
+
 
 }

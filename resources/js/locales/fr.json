@@ -16,7 +16,29 @@
             "chooseDesign": "Choisir un design",
             "premiumDesigns": "Donnez vie à votre CV avec nos designs professionnels",
             "premiumSubtitle": "Choisissez parmi nos modèles premium",
+            "welcome": {
+                "title": "Bienvenue sur votre espace CV",
+                "subtitle": "Créez un CV professionnel en quelques étapes",
+                "complete": "complété"
+            },
+            "import": {
+                "button": "Importer un CV",
+                "pdf": "Importer un PDF",
+                "word": "Importer un Word",
+                "ai": "Analyse IA (5 jetons)",
+                "success": "Import réussi",
+                "successDetail": "Votre CV a été importé avec succès",
+                "error": "Erreur d'importation",
+                "errorDetail": "Une erreur est survenue lors de l'importation",
+                "insufficient": "Solde insuffisant pour l'analyse IA"
+            },
+            "update": {
+                "success": "Mise à jour réussie",
+                "successDetail": "Vos informations ont été enregistrées avec succès"
+            },
             "sections": {
+                "title": "Créez votre CV professionnel",
+                "description": "Complétez chaque section pour un CV complet",
                 "personalInfo": "Informations Personnelles",
                 "summary": "Résumé",
                 "experience": "Expériences",
@@ -33,8 +55,10 @@
                     "crop": "Ajuster la photo",
                     "cropDescription": "Rognez votre photo pour l'adapter au format carré",
                     "save": "Enregistrer",
+                    "saving": "Enregistrement...",
                     "cancel": "Annuler",
                     "success": "Photo mise à jour avec succès",
+                    "successDetail": "Votre photo de profil a été mise à jour",
                     "error": "Erreur lors de la mise à jour de la photo",
                     "sizeError": "Fichier trop volumineux (max 5MB)"
                 },
@@ -60,9 +84,14 @@
                     "upload": "Importer un CV",
                     "analyzing": "Analyse en cours...",
                     "success": "CV importé avec succès",
+                    "successDesc": "Les sections ont été mises à jour automatiquement",
                     "error": "Erreur lors de l'analyse",
                     "insufficient": "Solde insuffisant"
                 }
+            },
+            "cta": {
+                "title": "Donnez vie à votre CV avec nos designs premium",
+                "subtitle": "Choisissez parmi nos modèles premium"
             }
         },
         "navigation": "Navigation CV",
@@ -73,6 +102,7 @@
         "template": "Modèles",
         "save": "Enregistrer",
         "continue": "Continuer"
+
     },
     "profile": {
         "edit": "Modifier le profil",
@@ -120,6 +150,38 @@
         "empty": "Aucune notification",
         "markAllRead": "Tout marquer comme lu",
         "new": "Nouveau"
+    },
+
+
+
+    "cv_models": {
+        "title": "Collection de Modèles de CV",
+        "back": "Retour",
+        "export_cv": "Exporter CV",
+        "search_placeholder": "Rechercher...",
+        "active_models": {
+            "title": "Mes Modèles Actifs",
+            "limit": "{{current}}/{{max}} modèles"
+        },
+        "discover_models": "Découvrez Nos Modèles",
+        "empty_state": {
+            "title": "Aucun Modèle Actif",
+            "description": "Sélectionnez un modèle parmi les modèles disponibles ci-dessous."
+        },
+        "model_card": {
+            "active": "Actif",
+            "use_model": "Utiliser ce modèle",
+            "active_model": "Modèle actif",
+            "add_to_catalog": "Ajouter au catalogue"
+        },
+        "notifications": {
+            "model_added": "Modèle ajouté à votre collection",
+            "model_activated": "Votre modèle a été activé avec succès",
+            "max_models_reached": "Vous ne pouvez pas ajouter plus de {{max}} modèles",
+            "error": "Une erreur est survenue"
+        }
     }
+
+
 
 }

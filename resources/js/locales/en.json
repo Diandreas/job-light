@@ -9,63 +9,6 @@
         "profile": "My Profile"
     },
     "cv": {
-        "navigation": "CV Navigation",
-        "edit": "Edit CV",
-        "premium": "Premium Designs",
-        "preview": "Preview & Export",
-        "download": "Download",
-        "template": "Templates",
-        "save": "Save",
-        "continue": "Continue"
-    },
-    "profile": {
-        "edit": "Edit Profile",
-        "settings": "Settings",
-        "preferences": "Preferences",
-        "account": "Account",
-        "security": "Security"
-    },
-    "theme": {
-        "toggle": "Toggle Theme",
-        "light": "Light Mode",
-        "dark": "Dark Mode",
-        "system": "System"
-    },
-    "language": {
-        "change": "Change Language",
-        "en": "English",
-        "fr": "French"
-    },
-    "auth": {
-        "logout": "Logout",
-        "login": "Login",
-        "register": "Register"
-    },
-    "common": {
-        "search": "Search",
-        "loading": "Loading",
-        "error": "Error",
-        "success": "Success",
-        "cancel": "Cancel",
-        "save": "Save",
-        "edit": "Edit",
-        "delete": "Delete",
-        "back": "Back",
-        "next": "Next"
-    },
-    "wallet": {
-        "balance": "Balance",
-        "tokens": "Tokens",
-        "add": "Add Tokens",
-        "insufficient": "Insufficient Balance"
-    },
-    "notifications": {
-        "title": "Notifications",
-        "empty": "No notifications",
-        "markAllRead": "Mark all as read",
-        "new": "New"
-    },
-    "cv": {
         "interface": {
             "title": "My Guidy CV",
             "subtitle": "Complete your profile for a CV that represents you",
@@ -121,6 +64,62 @@
                     "insufficient": "Insufficient balance"
                 }
             }
-        }
+        },
+        "navigation": "CV Navigation",
+        "edit": "Edit CV",
+        "premium": "Premium Designs",
+        "preview": "Preview & Export",
+        "download": "Download",
+        "template": "Templates",
+        "save": "Save",
+        "continue": "Continue"
+    },
+    "profile": {
+        "edit": "Edit Profile",
+        "settings": "Settings",
+        "preferences": "Preferences",
+        "account": "Account",
+        "security": "Security"
+    },
+    "theme": {
+        "toggle": "Toggle Theme",
+        "light": "Light Mode",
+        "dark": "Dark Mode",
+        "system": "System"
+    },
+    "language": {
+        "change": "Change Language",
+        "en": "English",
+        "fr": "French"
+    },
+    "auth": {
+        "logout": "Logout",
+        "login": "Login",
+        "register": "Register"
+    },
+    "common": {
+        "search": "Search",
+        "loading": "Loading",
+        "error": "Error",
+        "success": "Success",
+        "cancel": "Cancel",
+        "save": "Save",
+        "edit": "Edit",
+        "delete": "Delete",
+        "back": "Back",
+        "next": "Next"
+    },
+    "wallet": {
+        "balance": "Balance",
+        "tokens": "Tokens",
+        "add": "Add Tokens",
+        "insufficient": "Insufficient Balance"
+    },
+    "notifications": {
+        "title": "Notifications",
+        "empty": "No notifications",
+        "markAllRead": "Mark all as read",
+        "new": "New"
     }
+
 }

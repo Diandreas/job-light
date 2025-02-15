@@ -9,64 +9,6 @@
         "profile": "Mon Profil"
     },
     "cv": {
-        "navigation": "Navigation CV",
-        "edit": "Éditer mon CV",
-        "premium": "Designs Premium",
-        "preview": "Aperçu & Export",
-        "download": "Télécharger",
-        "template": "Modèles",
-        "save": "Enregistrer",
-        "continue": "Continuer"
-    },
-    "profile": {
-        "edit": "Modifier le profil",
-        "settings": "Paramètres",
-        "preferences": "Préférences",
-        "account": "Compte",
-        "security": "Sécurité"
-    },
-    "theme": {
-        "toggle": "Changer le thème",
-        "light": "Mode clair",
-        "dark": "Mode sombre",
-        "system": "Système"
-    },
-    "language": {
-        "change": "Changer la langue",
-        "en": "Anglais",
-        "fr": "Français"
-    },
-    "auth": {
-        "logout": "Déconnexion",
-        "login": "Connexion",
-        "register": "Inscription"
-    },
-    "common": {
-        "search": "Rechercher",
-        "loading": "Chargement",
-        "error": "Erreur",
-        "success": "Succès",
-        "cancel": "Annuler",
-        "save": "Enregistrer",
-        "edit": "Modifier",
-        "delete": "Supprimer",
-        "back": "Retour",
-        "next": "Suivant"
-    },
-    "wallet": {
-        "balance": "Solde",
-        "tokens": "Jetons",
-        "add": "Ajouter des jetons",
-        "insufficient": "Solde insuffisant"
-    },
-    "notifications": {
-        "title": "Notifications",
-        "empty": "Aucune notification",
-        "markAllRead": "Tout marquer comme lu",
-        "new": "Nouveau"
-    },
-
-    "cv": {
         "interface": {
             "title": "Mon CV Guidy",
             "subtitle": "Complétez votre profil pour un CV qui vous ressemble",
@@ -122,6 +64,62 @@
                     "insufficient": "Solde insuffisant"
                 }
             }
-        }
+        },
+        "navigation": "Navigation CV",
+        "edit": "Éditer mon CV",
+        "premium": "Designs Premium",
+        "preview": "Aperçu & Export",
+        "download": "Télécharger",
+        "template": "Modèles",
+        "save": "Enregistrer",
+        "continue": "Continuer"
+    },
+    "profile": {
+        "edit": "Modifier le profil",
+        "settings": "Paramètres",
+        "preferences": "Préférences",
+        "account": "Compte",
+        "security": "Sécurité"
+    },
+    "theme": {
+        "toggle": "Changer le thème",
+        "light": "Mode clair",
+        "dark": "Mode sombre",
+        "system": "Système"
+    },
+    "language": {
+        "change": "Changer la langue",
+        "en": "Anglais",
+        "fr": "Français"
+    },
+    "auth": {
+        "logout": "Déconnexion",
+        "login": "Connexion",
+        "register": "Inscription"
+    },
+    "common": {
+        "search": "Rechercher",
+        "loading": "Chargement",
+        "error": "Erreur",
+        "success": "Succès",
+        "cancel": "Annuler",
+        "save": "Enregistrer",
+        "edit": "Modifier",
+        "delete": "Supprimer",
+        "back": "Retour",
+        "next": "Suivant"
+    },
+    "wallet": {
+        "balance": "Solde",
+        "tokens": "Jetons",
+        "add": "Ajouter des jetons",
+        "insufficient": "Solde insuffisant"
+    },
+    "notifications": {
+        "title": "Notifications",
+        "empty": "Aucune notification",
+        "markAllRead": "Tout marquer comme lu",
+        "new": "Nouveau"
     }
+
 }

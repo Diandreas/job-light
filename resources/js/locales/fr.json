@@ -180,6 +180,33 @@
             "max_models_reached": "Vous ne pouvez pas ajouter plus de {{max}} modèles",
             "error": "Une erreur est survenue"
         }
+    },
+
+
+    "cv_preview": {
+        "title": "CV Professionnel",
+        "export": {
+            "title": "Exporter Mon CV",
+            "selected_model": "Modèle sélectionné: {{name}}",
+            "back_to_models": "Retour aux modèles",
+            "print": "Imprimer",
+            "printing": "Impression..."
+        },
+        "wallet": {
+            "current_balance": "Solde actuel",
+            "model_price": "Prix du modèle",
+            "insufficient_tokens": "Vous n'avez pas assez de jetons pour utiliser ce modèle. Veuillez recharger votre compte.",
+            "recharge_tokens": "Recharger mes jetons"
+        },
+        "no_model": {
+            "title": "Sélection requise",
+            "message": "Veuillez sélectionner un modèle de CV dans la section \"Mes designs\" avant de continuer.",
+            "action": "Choisir un modèle"
+        },
+        "preview": {
+            "title": "Aperçu du CV",
+            "loading": "Chargement de l'aperçu..."
+        }
     }
 
 

@@ -1,33 +1,82 @@
 import React, { useState, useEffect } from 'react';
-import NotchPay from 'notchpay.js';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useTranslation } from 'react-i18next';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Card, CardHeader, CardTitle, CardContent } from "@/Components/ui/card";
 import { Head, Link } from '@inertiajs/react';
 import { Button } from "@/Components/ui/button";
-import { ArrowLeft, Printer, Wallet, Eye, Star, Download } from 'lucide-react';
-import { useToast } from "@/Components/ui/use-toast";
+import {
+    ArrowLeft, Printer, Wallet, Eye, Star,
+    Download, Coins, AlertCircle, ArrowUpRight
+} from 'lucide-react';
+import {toast, useToast} from "@/Components/ui/use-toast";
 import { Progress } from "@/Components/ui/progress";
+import { Alert, AlertDescription } from "@/Components/ui/alert";
 import axios from 'axios';
 
-const notchpay = NotchPay(import.meta.env.VITE_NOTCHPAY_PUBLIC_KEY);
+const InfoCard = ({ icon: Icon, title, value, type = "default" }) => {
+    const styles = {
+        default: "bg-gradient-to-br from-amber-50 to-amber-100/50 dark:from-amber-500/10 dark:to-amber-500/5",
+        warning: "bg-gradient-to-br from-red-50 to-red-100/50 dark:from-red-500/10 dark:to-red-500/5",
+        success: "bg-gradient-to-br from-emerald-50 to-emerald-100/50 dark:from-emerald-500/10 dark:to-emerald-500/5"
+    };
 
-const InfoCard = ({ icon: Icon, title, value, bgColor = "bg-amber-50" }) => (
-    <motion.div
-        whileHover={{ scale: 1.02 }}
-        className={`${bgColor} p-4 rounded-lg flex items-center gap-3`}
-    >
-        <div className="p-2 bg-white rounded-lg">
-            <Icon className="w-5 h-5 text-amber-500" />
-        </div>
-        <div>
-            <p className="text-sm text-gray-500">{title}</p>
-            <p className="font-semibold">{value}</p>
-        </div>
-    </motion.div>
-);
+    const iconStyles = {
+        default: "text-amber-500 dark:text-amber-400",
+        warning: "text-red-500 dark:text-red-400",
+        success: "text-emerald-500 dark:text-emerald-400"
+    };
+
+    return (
+        <motion.div
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+            className={`${styles[type]} p-4 rounded-xl border border-transparent dark:border-gray-800 backdrop-blur-sm flex items-center gap-3 transition-all`}
+        >
+            <div className="p-2 bg-white dark:bg-gray-900 rounded-lg border border-gray-100 dark:border-gray-800">
+                <Icon className={`w-5 h-5 ${iconStyles[type]}`} />
+            </div>
+            <div>
+                <p className="text-sm text-gray-500 dark:text-gray-400">{title}</p>
+                <p className="font-semibold text-gray-900 dark:text-gray-100">{value}</p>
+            </div>
+        </motion.div>
+    );
+};
+
+const NoModelSelected = ({ user }) => {
+    const { t } = useTranslation();
+
+    return (
+        <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="w-full p-6"
+        >
+            <Card className="border-amber-100 dark:border-gray-800 bg-white/50 dark:bg-gray-900/50 backdrop-blur-sm">
+                <CardContent className="p-6">
+                    <div className="text-center space-y-4">
+                        <div className="w-16 h-16 mx-auto rounded-full bg-amber-50 dark:bg-amber-500/10 flex items-center justify-center">
+                            <Star className="w-8 h-8 text-amber-500 dark:text-amber-400" />
+                        </div>
+                        <p className="text-lg text-gray-600 dark:text-gray-300">
+                            {t('cv_preview.no_model.message')}
+                        </p>
+                        <Link href={route('userCvModels.index')}>
+                            <Button className="bg-gradient-to-r from-amber-500 to-purple-500 hover:from-amber-600 hover:to-purple-600 dark:from-amber-400 dark:to-purple-400">
+                                <Star className="w-4 h-4 mr-2" />
+                                {t('cv_preview.no_model.action')}
+                            </Button>
+                        </Link>
+                    </div>
+                </CardContent>
+            </Card>
+        </motion.div>
+    );
+};
 
 export default function Show({ auth, cvInformation, selectedCvModel }) {
+    const { t } = useTranslation();
     const { toast } = useToast();
     const [isLoading, setIsLoading] = useState(false);
     const [walletBalance, setWalletBalance] = useState(auth.user.wallet_balance);
@@ -51,151 +100,73 @@ export default function Show({ auth, cvInformation, selectedCvModel }) {
         checkDownloadStatus();
     }, [selectedCvModel?.id]);
 
-    const handlePayment = async () => {
-        try {
-            setIsProcessing(true);
-            const payment = await notchpay.payments.initializePayment({
-                currency: "XAF",
-                amount: selectedCvModel?.price.toString(),
-                email: auth.user.email,
-                phone: auth.user.phone || '',
-                reference: `cv_${selectedCvModel?.id}_${auth.user.id}`,
-                description: `Paiement pour le modèle CV ${selectedCvModel?.name}`,
-                meta: {
-                    user_id: auth.user.id,
-                    model_id: selectedCvModel?.id
-                }
-            });
-
-            if (payment.authorization_url) {
-                window.location.href = payment.authorization_url;
-            }
-        } catch (error) {
-            console.error('Payment error:', error);
-            toast({
-                title: "Erreur",
-                description: "Une erreur est survenue lors du paiement",
-                variant: "destructive",
-            });
-        } finally {
-            setIsProcessing(false);
-        }
-    };
-
-    const handlePrint = async () => {
-        if (!canAccessFeatures && !hasDownloaded) {
-            return toast({
-                title: "Accès restreint",
-                description: "Veuillez effectuer le paiement pour accéder à cette fonctionnalité",
-                variant: "destructive",
-            });
-        }
-
-        if (!hasDownloaded) {
-            try {
-                await axios.post('/api/process-download', {
-                    user_id: auth.user.id,
-                    model_id: selectedCvModel?.id,
-                    price: selectedCvModel?.price
-                });
-                setWalletBalance(prev => prev - (selectedCvModel?.price || 0));
-                setHasDownloaded(true);
-            } catch (error) {
-                return toast({
-                    title: "Erreur",
-                    description: "Erreur lors du traitement",
-                    variant: "destructive",
-                });
-            }
-        }
-
-        const printUrl = route('cv.preview', {
-            id: selectedCvModel?.id,
-            print: true
-        });
-        window.open(printUrl, '_blank');
-
-        setTimeout(() => {
-            window.location.reload();
-        }, 2000);
-    };
-
-
     if (!selectedCvModel) {
         return (
             <AuthenticatedLayout user={auth.user}>
-                <Head title="CV Professionnel"/>
-                <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    className="w-full p-6"
-                >
-                    <Card className="border-amber-100">
-                        <CardContent className="p-6">
-                            <div className="text-center space-y-4">
-                                <Star className="w-12 h-12 text-amber-500 mx-auto" />
-                                <p className="text-lg text-gray-600">
-                                    Veuillez sélectionner un modèle de CV dans la section "Mes designs" avant de continuer.
-                                </p>
-                                <Link href={route('userCvModels.index')}>
-                                    <Button className="bg-gradient-to-r from-amber-500 to-purple-500 hover:from-amber-600 hover:to-purple-600">
-                                        Choisir un modèle
-                                    </Button>
-                                </Link>
-                            </div>
-                        </CardContent>
-                    </Card>
-                </motion.div>
+                <Head title={t('cv_preview.title')} />
+                <NoModelSelected user={auth.user} />
             </AuthenticatedLayout>
         );
     }
 
     return (
         <AuthenticatedLayout user={auth.user}>
-            <Head title="CV Professionnel" />
+            <Head title={t('cv_preview.title')} />
             <div className="w-full p-4 md:p-6 space-y-6">
                 <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.5 }}
                 >
-                    <Card className="border-amber-100">
-                        <CardHeader className="border-b border-amber-100">
+                    <Card className="border-amber-100 dark:border-gray-800 bg-white/50 dark:bg-gray-900/50 backdrop-blur-sm">
+                        <CardHeader className="border-b border-amber-100 dark:border-gray-800">
                             <div className="flex flex-col md:flex-row gap-6 items-start md:items-center justify-between">
                                 <div className="space-y-2">
-                                    <CardTitle className="text-2xl font-bold bg-gradient-to-r from-amber-500 to-purple-500 text-transparent bg-clip-text">
-                                        Exporter Mon CV
+                                    <CardTitle className="text-2xl font-bold bg-gradient-to-r from-amber-500 to-purple-500 dark:from-amber-400 dark:to-purple-400 text-transparent bg-clip-text">
+                                        {t('cv_preview.export.title')}
                                     </CardTitle>
                                     <div className="flex items-center gap-2">
-                                        <Star className="w-4 h-4 text-amber-500" />
-                                        <p className="text-sm text-gray-600">
-                                            Modèle sélectionné: {selectedCvModel.name}
+                                        <Star className="w-4 h-4 text-amber-500 dark:text-amber-400" />
+                                        <p className="text-sm text-gray-600 dark:text-gray-300">
+                                            {t('cv_preview.export.selected_model', { name: selectedCvModel.name })}
                                         </p>
                                     </div>
                                 </div>
 
                                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 w-full md:w-auto">
                                     <InfoCard
-                                        icon={Wallet}
-                                        title="Solde actuel"
-                                        value={`${walletBalance} FCFA`}
+                                        icon={Coins}
+                                        title={t('cv_preview.wallet.current_balance')}
+                                        value={walletBalance}
+                                        type={canAccessFeatures ? "success" : "warning"}
                                     />
                                     <InfoCard
                                         icon={Star}
-                                        title="Prix du modèle"
-                                        value={`${selectedCvModel.price} FCFA`}
-                                        bgColor="bg-purple-50"
+                                        title={t('cv_preview.wallet.model_price')}
+                                        value={selectedCvModel.price}
                                     />
                                 </div>
                             </div>
                         </CardHeader>
 
                         <CardContent className="p-6 space-y-6">
+                            {!canAccessFeatures && !hasDownloaded && (
+                                <Alert variant="destructive" className="bg-red-50 dark:bg-red-500/10 border-red-200 dark:border-red-500/20">
+                                    <AlertCircle className="h-4 w-4" />
+                                    <AlertDescription>
+                                        {t('cv_preview.wallet.insufficient_tokens')}
+                                    </AlertDescription>
+                                </Alert>
+                            )}
+
                             <div className="flex flex-wrap gap-4">
                                 <Link href={route('userCvModels.index')}>
-                                    <Button variant="outline" className="group border-amber-200">
+                                    <Button
+                                        variant="outline"
+                                        className="group border-amber-200 dark:border-gray-800 dark:bg-gray-900 dark:hover:bg-gray-800 dark:text-gray-100"
+                                    >
                                         <ArrowLeft className="w-4 h-4 mr-2 group-hover:-translate-x-1 transition-transform" />
-                                        Retour aux modèles
+                                        {t('cv_preview.export.back_to_models')}
                                     </Button>
                                 </Link>
 
@@ -207,23 +178,13 @@ export default function Show({ auth, cvInformation, selectedCvModel }) {
                                             exit={{ opacity: 0, scale: 0.9 }}
                                         >
                                             <Button
-                                                onClick={handlePayment}
-                                                className="bg-gradient-to-r from-amber-500 to-purple-500 hover:from-amber-600 hover:to-purple-600"
+                                                onClick={() => window.location.href = route('payment.index')}
+                                                className="bg-gradient-to-r from-amber-500 to-purple-500 hover:from-amber-600 hover:to-purple-600 dark:from-amber-400 dark:to-purple-400"
                                                 disabled={isProcessing}
                                             >
-                                                <Wallet className="mr-2 h-4 w-4" />
-                                                {isProcessing ? (
-                                                    <span className="flex items-center gap-2">
-                                                        <motion.div
-                                                            animate={{ rotate: 360 }}
-                                                            transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-                                                            className="w-4 h-4 border-2 border-white rounded-full border-t-transparent"
-                                                        />
-                                                        Traitement...
-                                                    </span>
-                                                ) : (
-                                                    `Payer ${selectedCvModel.price} FCFA`
-                                                )}
+                                                <Coins className="mr-2 h-4 w-4" />
+                                                {t('cv_preview.wallet.recharge_tokens')}
+                                                <ArrowUpRight className="ml-2 h-4 w-4" />
                                             </Button>
                                         </motion.div>
                                     ) : (
@@ -235,13 +196,12 @@ export default function Show({ auth, cvInformation, selectedCvModel }) {
                                         >
                                             <Button
                                                 onClick={handlePrint}
-                                                className="bg-gradient-to-r from-amber-500 to-purple-500 hover:from-amber-600 hover:to-purple-600"
+                                                className="bg-gradient-to-r from-amber-500 to-purple-500 hover:from-amber-600 hover:to-purple-600 dark:from-amber-400 dark:to-purple-400"
                                                 disabled={isLoading}
                                             >
                                                 <Printer className="mr-2 h-4 w-4" />
-                                                {isLoading ? 'Impression...' : 'Imprimer'}
+                                                {isLoading ? t('cv_preview.export.printing') : t('cv_preview.export.print')}
                                             </Button>
-
                                         </motion.div>
                                     )}
                                 </AnimatePresence>
@@ -250,21 +210,20 @@ export default function Show({ auth, cvInformation, selectedCvModel }) {
                             <motion.div
                                 initial={{ opacity: 0, y: 20 }}
                                 animate={{ opacity: previewLoaded ? 1 : 0, y: previewLoaded ? 0 : 20 }}
-                                className="relative rounded-xl overflow-hidden border border-amber-100 bg-white shadow-lg"
+                                className="relative rounded-xl overflow-hidden border border-amber-100 dark:border-gray-800 bg-white dark:bg-gray-900 shadow-lg"
                             >
                                 {!previewLoaded && (
-                                    <div className="absolute inset-0 flex items-center justify-center bg-white">
+                                    <div className="absolute inset-0 flex items-center justify-center bg-white dark:bg-gray-900">
                                         <motion.div
                                             animate={{ rotate: 360 }}
                                             transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-                                            className="w-8 h-8 border-4 border-amber-500 rounded-full border-t-transparent"
-                                        />
+                                            className="w-8 h-8 border-4 border-amber-500 dark:border-amber-400 rounded-full border-t-transparent"/>
                                     </div>
                                 )}
                                 <iframe
                                     src={route('cv.preview', { id: selectedCvModel.id })}
                                     className="w-full h-[800px] md:h-[600px] border-0"
-                                    title="Aperçu du CV"
+                                    title={t('cv_preview.preview.title')}
                                     onLoad={() => setPreviewLoaded(true)}
                                 />
                             </motion.div>
@@ -275,3 +234,23 @@ export default function Show({ auth, cvInformation, selectedCvModel }) {
         </AuthenticatedLayout>
     );
 }
+
+// Fonction handlePrint à ajouter
+const handlePrint = async () => {
+    setIsLoading(true);
+    try {
+        const iframe = document.querySelector('iframe');
+        if (iframe) {
+            iframe.contentWindow.print();
+        }
+    } catch (error) {
+        console.error('Error printing:', error);
+        toast({
+            title: t('common.error'),
+            description: t('common.error'),
+            variant: 'destructive'
+        });
+    } finally {
+        setIsLoading(false);
+    }
+};

@@ -176,6 +176,34 @@
             "max_models_reached": "You cannot add more than {{max}} models",
             "error": "An error occurred"
         }
+    },
+
+
+
+    "cv_preview": {
+        "title": "Professional CV",
+        "export": {
+            "title": "Export My CV",
+            "selected_model": "Selected template: {{name}}",
+            "back_to_models": "Back to templates",
+            "print": "Print",
+            "printing": "Printing..."
+        },
+        "wallet": {
+            "current_balance": "Current balance",
+            "model_price": "Template price",
+            "insufficient_tokens": "You don't have enough tokens to use this template. Please recharge your account.",
+            "recharge_tokens": "Recharge my tokens"
+        },
+        "no_model": {
+            "title": "Selection required",
+            "message": "Please select a CV template in the \"My designs\" section before continuing.",
+            "action": "Choose a template"
+        },
+        "preview": {
+            "title": "CV Preview",
+            "loading": "Loading preview..."
+        }
     }
 
 

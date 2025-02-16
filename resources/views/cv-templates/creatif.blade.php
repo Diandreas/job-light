@@ -1,11 +1,8 @@
 @extends('layouts.cv')
 
 @section('content')
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" media="all">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet" media="all">
-
     <div class="cv-container">
-        <!-- En-tête avec photo -->
+        <!-- En-tête -->
         <header class="cv-header">
             <div class="header-shape"></div>
             <div class="header-content">
@@ -17,9 +14,13 @@
                     @endif
                     <div class="name-title">
                         <h1>{{ $cvInformation['personalInformation']['firstName'] }}</h1>
-                        @if(!empty($cvInformation['professions']))
+                        @if(!empty($cvInformation['personalInformation']['full_profession']))
                             <div class="title-box">
-                                <span>{{ $cvInformation['professions'][0]['name'] }}</span>
+                                <span class="translate-this">{{ $cvInformation['personalInformation']['full_profession'] }}</span>
+                            </div>
+                        @elseif(!empty($cvInformation['professions']))
+                            <div class="title-box">
+                                <span class="translate-this">{{ $cvInformation['professions'][0]['name'] }}</span>
                             </div>
                         @endif
                     </div>
@@ -51,12 +52,12 @@
             </div>
         </header>
 
-        <!-- Résumé -->
+        <!-- À propos -->
         @if(!empty($cvInformation['summaries']))
             <section class="summary-section">
                 <div class="section-header">
                     <div class="section-icon"><i class="bi bi-person"></i></div>
-                    <h2>À propos</h2>
+                    <h2 class="translate-this">À propos</h2>
                 </div>
                 <p class="summary-content">{{ $cvInformation['summaries'][0]['description'] ?? '' }}</p>
             </section>
@@ -67,7 +68,7 @@
             <section class="experience-section">
                 <div class="section-header">
                     <div class="section-icon"><i class="bi bi-briefcase"></i></div>
-                    <h2>{{ $category }}</h2>
+                    <h2 class="translate-this">{{ $category === 'experience' ? 'Expérience professionnelle' : 'Formation' }}</h2>
                 </div>
                 <div class="timeline">
                     @foreach($experiences as $experience)
@@ -76,14 +77,17 @@
                             <div class="timeline-content">
                                 <div class="experience-header">
                                     <div class="experience-title">
-                                        <h3>{{ $experience['name'] }}</h3>
-                                        <div class="company-name">{{ $experience['InstitutionName'] }}</div>
+                                        <h3 class="translate-this">{{ $experience['name'] }}</h3>
+                                        <div class="company-name translate-this">{{ $experience['InstitutionName'] }}</div>
                                     </div>
                                     <div class="date-range">
-                                        {{ $experience['date_start'] }} - {{ $experience['date_end'] ?? 'Présent' }}
-                                        @if($experience['attachment_path'])
-                                            <i class="bi bi-paperclip"></i>
-                                        @endif
+                                        @php
+                                            $startDate = \Carbon\Carbon::parse($experience['date_start']);
+                                            $endDate = !empty($experience['date_end']) ? \Carbon\Carbon::parse($experience['date_end']) : now();
+                                            $startFormat = $startDate->format('M Y');
+                                            $endFormat = !empty($experience['date_end']) ? $endDate->format('M Y') : 'Présent';
+                                        @endphp
+                                        {{ $startFormat }} - {{ $endFormat }}
                                     </div>
                                 </div>
                                 <p class="experience-description">{{ $experience['description'] }}</p>
@@ -106,11 +110,11 @@
                 <section class="skills-section">
                     <div class="section-header">
                         <div class="section-icon"><i class="bi bi-gear"></i></div>
-                        <h2>Compétences</h2>
+                        <h2 class="translate-this">Compétences</h2>
                     </div>
                     <div class="skills-grid">
                         @foreach($cvInformation['competences'] as $competence)
-                            <div class="skill-tag">{{ $competence['name'] }}</div>
+                            <div class="skill-tag translate-this">{{ $competence['name'] }}</div>
                         @endforeach
                     </div>
                 </section>
@@ -120,11 +124,11 @@
                 <section class="hobbies-section">
                     <div class="section-header">
                         <div class="section-icon"><i class="bi bi-heart"></i></div>
-                        <h2>Centres d'intérêt</h2>
+                        <h2 class="translate-this">Centres d'intérêt</h2>
                     </div>
                     <div class="hobbies-grid">
                         @foreach($cvInformation['hobbies'] as $hobby)
-                            <div class="hobby-tag">{{ $hobby['name'] }}</div>
+                            <div class="hobby-tag translate-this">{{ $hobby['name'] }}</div>
                         @endforeach
                     </div>
                 </section>
@@ -133,32 +137,22 @@
     </div>
 
     <style>
-        /* Variables CSS */
-        :root {
-            --primary: #2196F3;
-            --primary-dark: #1976D2;
-            --text: #2c3e50;
-            --text-light: #718096;
-            --gradient: linear-gradient(135deg, var(--primary), var(--primary-dark));
-        }
-
-        /* Base */
         .cv-container {
             width: 210mm;
             min-height: 297mm;
-            margin: 0;
-            padding: 0;
+            margin: 0 auto;
             background: white;
+            box-shadow: 0 3px 6px rgba(0,0,0,0.16);
             font-family: 'Poppins', system-ui, sans-serif;
-            font-size: 9pt;
-            line-height: 1.4;
+            font-size: 8pt;
+            line-height: 1.3;
             color: var(--text);
         }
 
-        /* En-tête */
+        /* En-tête styles */
         .cv-header {
             position: relative;
-            padding: 15mm 12mm;
+            padding: 8mm 12mm;
             color: white;
         }
 
@@ -169,7 +163,7 @@
             right: 0;
             bottom: 0;
             background: var(--gradient);
-            clip-path: polygon(0 0, 100% 0, 100% 85%, 0 100%);
+            clip-path: polygon(0 0, 100% 0, 100% 80%, 0 95%);
             z-index: 1;
         }
 
@@ -181,7 +175,7 @@
         .profile-info {
             display: flex;
             gap: 10mm;
-            margin-bottom: 8mm;
+            margin-bottom: 6mm;
         }
 
         .profile-photo {
@@ -199,26 +193,26 @@
         }
 
         .name-title h1 {
-            font-size: 16pt;
+            font-size: 14pt;
             font-weight: 600;
             margin: 0;
-            line-height: 1.2;
+            line-height: 1.1;
         }
 
         .title-box {
             display: inline-block;
             background: rgba(255,255,255,0.2);
-            padding: 1.5mm 4mm;
+            padding: 1mm 3mm;
             border-radius: 4mm;
-            font-size: 9pt;
-            margin-top: 2mm;
+            font-size: 8pt;
+            margin-top: 1.5mm;
         }
 
         .contact-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
-            gap: 3mm;
-            font-size: 8.5pt;
+            gap: 2mm;
+            font-size: 7.5pt;
         }
 
         .contact-item {
@@ -228,16 +222,16 @@
             color: white;
         }
 
-        /* Sections */
+        /* Sections styles */
         section {
-            padding: 3mm 12mm;
+            padding: 2mm 12mm;
         }
 
         .section-header {
             display: flex;
             align-items: center;
-            gap: 3mm;
-            margin-bottom: 3mm;
+            gap: 2mm;
+            margin-bottom: 2mm;
         }
 
         .section-icon {
@@ -253,17 +247,17 @@
         }
 
         h2 {
-            font-size: 11pt;
+            font-size: 10pt;
             color: var(--primary-dark);
             margin: 0;
-            padding-bottom: 1mm;
+            padding-bottom: 0.8mm;
             border-bottom: 0.3mm solid var(--primary);
         }
 
-        /* Timeline */
+        /* Timeline styles */
         .timeline {
             position: relative;
-            padding-left: 5mm;
+            padding-left: 4mm;
         }
 
         .timeline::before {
@@ -278,15 +272,15 @@
 
         .timeline-item {
             position: relative;
-            margin-bottom: 4mm;
+            margin-bottom: 3mm;
         }
 
         .timeline-dot {
             position: absolute;
-            left: -2.5mm;
+            left: -2mm;
             top: 2mm;
-            width: 2mm;
-            height: 2mm;
+            width: 1.5mm;
+            height: 1.5mm;
             background: var(--primary);
             border-radius: 50%;
             transform: translateX(-50%);
@@ -295,104 +289,172 @@
         .experience-header {
             display: flex;
             justify-content: space-between;
+            align-items: flex-start;
             margin-bottom: 1mm;
         }
 
         .experience-title h3 {
-            font-size: 10pt;
+            font-size: 9pt;
             font-weight: 600;
             margin: 0;
             color: var(--text);
         }
 
         .company-name {
-            font-size: 9pt;
+            font-size: 8pt;
             color: var(--primary);
-            margin-top: 0.5mm;
+            margin-top: 0.3mm;
         }
 
         .date-range {
-            font-size: 8pt;
+            font-size: 7.5pt;
             color: var(--text-light);
+            display: flex;
+            align-items: center;
+            gap: 1mm;
+            white-space: nowrap;
         }
 
         .experience-description {
-            font-size: 9pt;
-            margin: 2mm 0;
+            font-size: 8pt;
+            margin: 1.5mm 0;
             color: var(--text);
+            line-height: 1.4;
         }
 
         .achievement {
             display: flex;
             align-items: center;
             gap: 2mm;
-            font-size: 8.5pt;
+            font-size: 7.5pt;
             color: var(--text-light);
-            margin-top: 2mm;
+            margin-top: 1.5mm;
         }
 
-        /* Skills & Hobbies */
+        /* Skills & Interests grids */
+        .skills-interests {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4mm;
+            padding: 0 12mm;
+            margin-top: 3mm;
+            margin-bottom: 3mm;
+        }
+
         .skills-grid, .hobbies-grid {
             display: flex;
             flex-wrap: wrap;
-            gap: 2mm;
+            gap: 1.5mm;
         }
 
         .skill-tag, .hobby-tag {
             background: #f8fafc;
-            padding: 1.5mm 3mm;
+            padding: 1mm 2mm;
             border-radius: 3mm;
-            font-size: 8.5pt;
+            font-size: 7.5pt;
             color: var(--text);
+            border: 0.2mm solid rgba(0,0,0,0.05);
+            transition: background-color 0.3s;
         }
 
-        /* Print Optimization */
-        @media print {
-            @page {
-                size: A4;
-                margin: 0;
-            }
+        .skill-tag:hover, .hobby-tag:hover {
+            background: #f1f5f9;
+        }
 
-            html, body {
-                width: 210mm;
-                height: 297mm;
-                margin: 0;
-                padding: 0;
+        /* Summary section specific styles */
+        .summary-section {
+            margin-top: 3mm;
+        }
+
+        .summary-content {
+            font-size: 8pt;
+            line-height: 1.5;
+            color: var(--text);
+            margin: 2mm 0;
+        }
+
+        /* Print optimization */
+        @media print {
+            * {
+                print-color-adjust: exact !important;
+                -webkit-print-color-adjust: exact !important;
             }
 
             .cv-container {
-                width: 210mm;
-                min-height: 297mm;
                 margin: 0;
                 padding: 0;
-                print-color-adjust: exact;
-                -webkit-print-color-adjust: exact;
+                box-shadow: none;
             }
 
             .header-shape,
-            .cv-header,
-            .section-icon,
-            .profile-photo {
-                print-color-adjust: exact;
-                -webkit-print-color-adjust: exact;
+            .section-icon {
+                background: var(--gradient) !important;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
             }
 
             section {
-                page-break-inside: avoid;
-            }
-
-
-
-            h2 {
-                page-break-after: avoid;
+                break-inside: avoid;
             }
 
             .timeline-item {
-                page-break-inside: avoid;
+                break-inside: avoid;
+            }
+
+            .page-break-spacer {
+                height: 12mm;
+                width: 100%;
+                display: block;
+                page-break-after: always;
+                visibility: hidden;
+            }
+
+            .floating-button,
+            #google_translate_element {
+                display: none !important;
+            }
+        }
+
+        /* Translations styling */
+        .translate-this {
+            transition: color 0.3s;
+        }
+
+        .translate-this.translating {
+            color: var(--primary);
+        }
+
+        /* Mobile responsiveness */
+        @media screen and (max-width: 768px) {
+            body {
+                padding: 10px;
+            }
+
+            .cv-container {
+                width: 100%;
+                min-height: auto;
+            }
+
+            .profile-info {
+                flex-direction: column;
+                align-items: center;
+                text-align: center;
+            }
+
+            .contact-grid {
+                grid-template-columns: 1fr;
             }
 
             .skills-interests {
-                page-break-inside: avoid;
+                grid-template-columns: 1fr;
+            }
+
+            .experience-header {
+                flex-direction: column;
+            }
+
+            .date-range {
+                margin-top: 1mm;
             }
         }
     </style>

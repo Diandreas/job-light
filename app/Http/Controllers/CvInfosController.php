@@ -76,17 +76,57 @@ class CvInfosController extends Controller
 
         Log::info('=== Photo Upload Ended ===');
     }
+    public function previewCv($id)
+    {
+        $user = Auth::user();
+        if (!$user) abort(403, 'Unauthorized');
 
+        $cvModel = CvModel::findOrFail($id);
+        $cvInformation = $this->getCommonCvInformation($user);
+        $groupedData = $this->groupExperiencesByCategory($cvInformation['experiences']);
+
+        return view("cv-templates." . $cvModel->viewPath, [
+            'cvInformation' => $cvInformation,
+            'experiencesByCategory' => $groupedData['experiences'],
+            'categoryTranslations' => $groupedData['translations'],
+            'showPrintButton' => request()->has('print'),
+            'cvModel' => $cvModel  // Ajout de la variable cvModel
+        ]);
+    }
+
+    public function downloadPdf($id)
+    {
+        $user = Auth::user();
+        if (!$user) abort(403, 'Unauthorized');
+
+        $cvModel = CvModel::findOrFail($id);
+        if ($user->selected_cv_model_id !== $cvModel->id) {
+            abort(403, 'Unauthorized');
+        }
+
+        $cvInformation = $this->getCommonCvInformation($user);
+        $groupedData = $this->groupExperiencesByCategory($cvInformation['experiences']);
+
+        $pdf = PDF::loadView("cv-templates." . $cvModel->viewPath, [
+            'cvInformation' => $cvInformation,
+            'experiencesByCategory' => $groupedData['experiences'],
+            'categoryTranslations' => $groupedData['translations'],
+            'cvModel' => $cvModel  // Ajout de la variable cvModel
+        ]);
+
+        return $pdf->download('cv.pdf');
+    }
     private function getCommonCvInformation($user)
     {
         // Récupérer les expériences avec leurs références
         $experiences = $user->experiences()
-            ->with('references') // Charger la relation references
+            ->with('references')
             ->join('experience_categories', 'experiences.experience_categories_id', '=', 'experience_categories.id')
             ->leftJoin('attachments', 'experiences.attachment_id', '=', 'attachments.id')
             ->select([
                 'experiences.*',
                 'experience_categories.name as category_name',
+                'experience_categories.name_en as category_name_en', // Ajout du nom en anglais
                 DB::raw('COALESCE(attachments.name, NULL) as attachment_name'),
                 DB::raw('CASE WHEN attachments.path IS NOT NULL THEN CONCAT("/storage/", attachments.path) ELSE NULL END as attachment_path'),
                 DB::raw('COALESCE(attachments.format, NULL) as attachment_format'),
@@ -98,7 +138,6 @@ class CvInfosController extends Controller
         // Transformer les expériences pour inclure les références
         $experiencesWithReferences = $experiences->map(function ($experience) {
             $experienceArray = $experience->toArray();
-            // Ajouter les références à chaque expérience
             $experienceArray['references'] = $experience->references->map(function ($reference) {
                 return [
                     'id' => $reference->id,
@@ -126,11 +165,29 @@ class CvInfosController extends Controller
                 'address' => $user->address,
                 'phone' => $user->phone_number,
                 'photo' => $user->photo ? Storage::url($user->photo) : null,
+                'full_profession' => $user->full_profession,
             ],
         ];
 
         return $baseInfo;
     }
+
+    private function groupExperiencesByCategory($experiences)
+    {
+        // Grouper par catégorie avec support de traduction
+        $grouped = collect($experiences)->groupBy(function ($experience) {
+            return $experience['category_name']; // Utiliser le nom français comme clé
+        })->toArray();
+
+        // Préparer les traductions des catégories
+        $categoryTranslations = collect($experiences)->pluck('category_name_en', 'category_name')->unique()->toArray();
+
+        return [
+            'experiences' => $grouped,
+            'translations' => $categoryTranslations
+        ];
+    }
+
 
     public function index()
     {
@@ -191,48 +248,6 @@ class CvInfosController extends Controller
             'message' => 'Personal information updated successfully',
             'editMode' => false
         ]);
-    }
-
-    private function groupExperiencesByCategory($experiences)
-    {
-        return collect($experiences)->groupBy('category_name')->toArray();
-    }
-
-    public function previewCv($id)
-    {
-        $user = Auth::user();
-        if (!$user) abort(403, 'Unauthorized');
-
-        $cvModel = CvModel::findOrFail($id);
-        $cvInformation = $this->getCommonCvInformation($user);
-        $experiencesByCategory = $this->groupExperiencesByCategory($cvInformation['experiences']);
-
-        return view("cv-templates." . $cvModel->viewPath, [
-            'cvInformation' => $cvInformation,
-            'experiencesByCategory' => $experiencesByCategory,
-            'showPrintButton' => request()->has('print')
-        ]);
-    }
-
-    public function downloadPdf($id)
-    {
-        $user = Auth::user();
-        if (!$user) abort(403, 'Unauthorized');
-
-        $cvModel = CvModel::findOrFail($id);
-        if ($user->selected_cv_model_id !== $cvModel->id) {
-            abort(403, 'Unauthorized');
-        }
-
-        $cvInformation = $this->getCommonCvInformation($user);
-        $experiencesByCategory = $this->groupExperiencesByCategory($cvInformation['experiences']);
-
-        $pdf = PDF::loadView("cv-templates." . $cvModel->viewPath, [
-            'cvInformation' => $cvInformation,
-            'experiencesByCategory' => $experiencesByCategory
-        ]);
-
-        return $pdf->download('cv.pdf');
     }
 
 

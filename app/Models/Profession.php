@@ -13,7 +13,8 @@ class Profession extends Model
     protected $fillable = [
         'name',
         'description',
-        'category_id'
+        'category_id',
+        'name_en'
     ];
 
     public function category()

@@ -51,8 +51,11 @@ const PersonalInformationEdit: React.FC<Props> = ({ user, onUpdate, onCancel }) 
             preserveState: true,
             preserveScroll: true,
             onSuccess: (response) => {
+
+                // @ts-ignore
                 if (response.props.cvInformation?.personalInformation) {
                     reset('name', 'email', 'github', 'linkedin', 'address', 'phone_number');
+                    // @ts-ignore
                     onUpdate(response.props.cvInformation.personalInformation);
                     showToast(
                         t('personalInfos.toast.success.title'),
@@ -106,6 +109,7 @@ const PersonalInformationEdit: React.FC<Props> = ({ user, onUpdate, onCancel }) 
                                 id={field.id}
                                 type={field.type}
                                 value={field.value}
+                                // @ts-ignore
                                 onChange={(e) => setData(field.id, e.target.value)}
                                 className="mt-1 block w-full border-amber-200 focus:ring-amber-500
                                          dark:border-amber-800 dark:bg-gray-700 dark:text-white

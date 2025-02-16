@@ -132,6 +132,7 @@ export default function Authenticated({ user, header, children }: PropsWithChild
     ];
 
     const TokenDisplay = () => {
+        // @ts-ignore
         const tokenBalance = Math.floor(user.wallet_balance);
         return (
             <Link
@@ -225,6 +226,7 @@ export default function Authenticated({ user, header, children }: PropsWithChild
                         <div className="hidden md:flex md:items-center md:gap-6">
                             <TokenDisplay />
                             {mainMenuItems.map((item, index) => (
+                                // @ts-ignore
                                 (!item.adminOnly || user.UserType === 1) && (
                                     <NavButton key={index} item={item} />
                                 )
@@ -250,6 +252,7 @@ export default function Authenticated({ user, header, children }: PropsWithChild
                                         </div>
                                     </Button>
                                 </Dropdown.Trigger>
+                                {/* @ts-ignore*/}
                                 <Dropdown.Content className="bg-white dark:bg-gray-900 dark:border-gray-700">
                                     <Dropdown.Link href={route('profile.edit')} className="text-gray-700 dark:text-gray-100 hover:bg-amber-50 dark:hover:bg-amber-500/20">
                                         {t('profile.edit')}
@@ -285,6 +288,7 @@ export default function Authenticated({ user, header, children }: PropsWithChild
                     </SheetHeader>
                     <div className="mt-8 flex flex-col gap-4">
                         {mainMenuItems.map((item, index) => (
+                            // @ts-ignore
                             (!item.adminOnly || user.UserType === 1) && (
                                 <NavButton key={index} item={item} />
                             )

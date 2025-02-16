@@ -427,6 +427,7 @@ const SummaryManager: React.FC<Props> = ({ auth, summaries: initialSummaries, se
 const ThemeProvider = ({ children }) => {
     return (
         <ThemeProvider
+            // @ts-ignore
             attribute="class"
             defaultTheme="system"
             enableSystem

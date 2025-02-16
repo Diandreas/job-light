@@ -317,5 +317,232 @@
             },
             "generic": "An error occurred."
         }
+    },
+
+    "professions": {
+        "title": "My Education",
+        "description": "Indicate your academic or professional background",
+        "card": {
+            "title": "Manage my education",
+            "description": "Select your education or enter it manually"
+        },
+        "tabs": {
+            "select": "Choose from list",
+            "manual": "Manual entry"
+        },
+        "search": {
+            "placeholder": "Search for education..."
+        },
+        "select": {
+            "placeholder": "Select education"
+        },
+        "manual": {
+            "placeholder": "Enter your education..."
+        },
+        "current": {
+            "title": "Current Job title"
+        },
+        "actions": {
+            "select": "Select",
+            "save": "Save"
+        },
+        "success": {
+            "updated": {
+                "title": "Education updated",
+                "description": "You are now registered as {{profession}}."
+            },
+            "manual": {
+                "title": "Education updated",
+                "description": "Your custom education has been saved."
+            }
+        },
+        "errors": {
+            "select": {
+                "title": "Error",
+                "description": "Please select an education"
+            },
+            "manual": {
+                "title": "Error",
+                "description": "Please enter your education"
+            },
+            "adding": {
+                "title": "Error"
+            },
+            "generic": "An error occurred."}},
+    "competences": {
+        "title": "My Skills",
+        "description": "Highlight your professional strengths",
+        "card": {
+            "title": "Manage my skills",
+            "description": "Add skills that match your profile"
+        },
+        "select": {
+            "placeholder": "Select a skill"
+        },
+        "search": {
+            "placeholder": "Search skills..."
+        },
+        "list": {
+            "title": "Your skills ({{count}})",
+            "empty": "No skills selected. Add your first skills!"
+        },
+        "actions": {
+            "add": "Add"
+        },
+        "success": {
+            "added": {
+                "title": "Skill added",
+                "description": "{{name}} has been added to your profile."
+            },
+            "removed": {
+                "title": "Skill removed",
+                "description": "The skill has been removed from your profile."
+            }
+        },
+        "errors": {
+            "select": {
+                "title": "Error",
+                "description": "Please select a skill"
+            },
+            "adding": {
+                "title": "Error"
+            },
+            "removing": {
+                "title": "Error"
+            },
+            "generic": "An error occurred."
+        }
+    },
+    "experiences": {
+        "title": "My Experiences",
+        "description": "Share your academic experiences, internships, and engagements",
+        "tabs": {
+            "list": "List of Experiences",
+            "attachments": "Attachments"
+        },
+        "actions": {
+            "add": "Add an Experience",
+            "update": "Update",
+            "save": "Save",
+            "cancel": "Cancel",
+            "delete": "Delete",
+            "preview": "Preview",
+            "edit": "Edit"
+        },
+        "filters": {
+            "all": "All",
+            "search": "Search for an experience..."
+        },
+        "categories": {
+            "professional": "Professional",
+            "academic": "Academic",
+            "volunteer": "Volunteering"
+        },
+        "form": {
+            "title": {
+                "new": "New Experience",
+                "edit": "Edit Experience"
+            },
+            "description": {
+                "new": "Add a new experience to your profile",
+                "edit": "Edit the details of your experience"
+            },
+            "templates": {
+                "title": "Experience Templates",
+                "description": "Select a template to get started quickly",
+                "academic": "Academic Training",
+                "internship": "Professional Internship",
+                "volunteer": "Volunteer Experience"
+            },
+            "fields": {
+                "name": {
+                    "label": "Title",
+                    "placeholder": "E.g., Library Internship..."
+                },
+                "institution": {
+                    "label": "Institution",
+                    "placeholder": "Name of the institution or organization"
+                },
+                "dates": {
+                    "start": "Start Date",
+                    "end": "End Date",
+                    "ongoing": "Leave blank if ongoing"
+                },
+                "type": {
+                    "label": "Experience Type",
+                    "placeholder": "Select a type"
+                },
+                "description": {
+                    "label": "Description",
+                    "placeholder": "Describe your responsibilities, tasks, and learnings..."
+                },
+                "output": {
+                    "label": "Outcome/Achievement",
+                    "placeholder": "E.g., Skills acquired, certificate obtained..."
+                },
+                "comment": {
+                    "label": "Additional Comment",
+                    "placeholder": "Other relevant information..."
+                }
+            },
+            "references": {
+                "title": "References",
+                "add": "Add a Reference",
+                "fields": {
+                    "name": {
+                        "label": "Name",
+                        "placeholder": "Reference name"
+                    },
+                    "function": {
+                        "label": "Function",
+                        "placeholder": "Reference function"
+                    },
+                    "email": {
+                        "label": "Email",
+                        "placeholder": "Reference email"
+                    },
+                    "phone": {
+                        "label": "Phone",
+                        "placeholder": "Reference phone"
+                    }
+                }
+            },
+            "attachment": {
+                "title": "Attachment",
+                "maxSize": "Max 5MB",
+                "delete": "Delete File",
+                "current": "Current File:",
+                "formats": "Accepted Formats: PDF, DOC, DOCX (Certificates, attestations...)",
+                "dropzone": "Drop your file here or click to select"
+            }
+        },
+        "empty": {
+            "experiences": "Start by adding your first experience!",
+            "search": "No experience matches your search",
+            "attachments": "No attachments available. Add documents to your experiences!"
+        },
+        "attachments": {
+            "stats": {
+                "used": "Used Space",
+                "files": "Files",
+                "available": "Available Space"
+            }
+        },
+        "success": {
+            "created": "Experience created successfully",
+            "updated": "Experience updated successfully",
+            "deleted": "Experience deleted successfully",
+            "attachment": {
+                "deleted": "Attachment deleted successfully"
+            }
+        },
+        "errors": {
+            "generic": "An error occurred",
+            "delete": "Error while deleting",
+            "attachment": {
+                "delete": "Unable to delete attachment"
+            }
+        }
     }
+
 }

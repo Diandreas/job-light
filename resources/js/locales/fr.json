@@ -305,5 +305,236 @@
             },
             "generic": "Une erreur est survenue."
         }
+    },
+
+    "professions": {
+        "title": "Ma Formation",
+        "description": "Indiquez votre parcours académique ou professionnel",
+        "card": {
+            "title": "Gérer ma formation",
+            "description": "Sélectionnez votre formation ou saisissez-la manuellement"
+        },
+        "tabs": {
+            "select": "Choisir dans la liste",
+            "manual": "Saisie manuelle"
+        },
+        "search": {
+            "placeholder": "Rechercher une formation..."
+        },
+        "select": {
+            "placeholder": "Sélectionner une formation"
+        },
+        "manual": {
+            "placeholder": "Saisissez votre formation..."
+        },
+        "current": {
+            "title": "Formation actuelle"
+        },
+        "actions": {
+            "select": "Sélectionner",
+            "save": "Enregistrer"
+        },
+        "success": {
+            "updated": {
+                "title": "Formation mise à jour",
+                "description": "Vous êtes maintenant enregistré en tant que {{profession}}."
+            },
+            "manual": {
+                "title": "Formation mise à jour",
+                "description": "Votre formation personnalisée a été enregistrée."
+            }
+        },
+        "errors": {
+            "select": {
+                "title": "Erreur",
+                "description": "Veuillez sélectionner une formation"
+            },
+            "manual": {
+                "title": "Erreur",
+                "description": "Veuillez saisir votre formation"
+            },
+            "adding": {
+                "title": "Erreur"
+            },
+            "generic": "Une erreur est survenue."
+        }
+    },
+
+
+    "competences": {
+        "title": "Mes Compétences",
+        "description": "Mettez en avant vos atouts professionnels",
+        "card": {
+            "title": "Gérer mes compétences",
+            "description": "Ajoutez les compétences qui correspondent à votre profil"
+        },
+        "select": {
+            "placeholder": "Sélectionner une compétence"
+        },
+        "search": {
+            "placeholder": "Rechercher des compétences..."
+        },
+        "list": {
+            "title": "Vos compétences ({{count}})",
+            "empty": "Aucune compétence sélectionnée. Ajoutez vos premières compétences !"
+        },
+        "actions": {
+            "add": "Ajouter"
+        },
+        "success": {
+            "added": {
+                "title": "Compétence ajoutée",
+                "description": "{{name}} a été ajoutée à votre profil."
+            },
+            "removed": {
+                "title": "Compétence retirée",
+                "description": "La compétence a été retirée de votre profil."
+            }
+        },
+        "errors": {
+            "select": {
+                "title": "Erreur",
+                "description": "Veuillez sélectionner une compétence"
+            },
+            "adding": {
+                "title": "Erreur"
+            },
+            "removing": {
+                "title": "Erreur"
+            },
+            "generic": "Une erreur est survenue."
+        }
+    },
+
+    "experiences": {
+        "title": "Mes Expériences",
+        "description": "Partagez vos expériences académiques, stages et engagements",
+        "tabs": {
+            "list": "Liste des expériences",
+            "attachments": "Pièces jointes"
+        },
+        "actions": {
+            "add": "Ajouter une expérience",
+            "update": "Mettre à jour",
+            "save": "Enregistrer",
+            "cancel": "Annuler",
+            "delete": "Supprimer",
+            "preview": "Aperçu",
+            "edit": "Modifier"
+        },
+        "filters": {
+            "all": "Toutes",
+            "search": "Rechercher une expérience..."
+        },
+        "categories": {
+            "professional": "Professionnel",
+            "academic": "Académique",
+            "volunteer": "Bénévolat"
+        },
+        "form": {
+            "title": {
+                "new": "Nouvelle expérience",
+                "edit": "Modifier l'expérience"
+            },
+            "description": {
+                "new": "Ajoutez une nouvelle expérience à votre profil",
+                "edit": "Modifiez les détails de votre expérience"
+            },
+            "templates": {
+                "title": "Modèles d'expérience",
+                "description": "Sélectionnez un modèle pour démarrer rapidement",
+                "academic": "Formation Académique",
+                "internship": "Stage Professionnel",
+                "volunteer": "Expérience Bénévole"
+            },
+            "fields": {
+                "name": {
+                    "label": "Intitulé",
+                    "placeholder": "Ex: Stage en bibliothèque..."
+                },
+                "institution": {
+                    "label": "Établissement",
+                    "placeholder": "Nom de l'établissement ou de l'organisation"
+                },
+                "dates": {
+                    "start": "Date de début",
+                    "end": "Date de fin",
+                    "ongoing": "Laissez vide si en cours"
+                },
+                "type": {
+                    "label": "Type d'expérience",
+                    "placeholder": "Sélectionnez un type"
+                },
+                "description": {
+                    "label": "Description",
+                    "placeholder": "Décrivez vos responsabilités, tâches et apprentissages..."
+                },
+                "output": {
+                    "label": "Résultat/Réalisation",
+                    "placeholder": "Ex: Compétences acquises, certificat obtenu..."
+                },
+                "comment": {
+                    "label": "Commentaire additionnel",
+                    "placeholder": "Autres informations pertinentes..."
+                }
+            },
+            "references": {
+                "title": "Références",
+                "add": "Ajouter une référence",
+                "fields": {
+                    "name": {
+                        "label": "Nom",
+                        "placeholder": "Nom de la référence"
+                    },
+                    "function": {
+                        "label": "Fonction",
+                        "placeholder": "Fonction de la référence"
+                    },
+                    "email": {
+                        "label": "Email",
+                        "placeholder": "Email de la référence"
+                    },
+                    "phone": {
+                        "label": "Téléphone",
+                        "placeholder": "Téléphone de la référence"
+                    }
+                }
+            },
+            "attachment": {
+                "title": "Pièce jointe",
+                "maxSize": "Max 5MB",
+                "delete": "Supprimer le fichier",
+                "current": "Fichier actuel:",
+                "formats": "Formats acceptés: PDF, DOC, DOCX (Certificats, attestations...)",
+                "dropzone": "Déposez votre fichier ici ou cliquez pour sélectionner"
+            }
+        },
+        "empty": {
+            "experiences": "Commencez par ajouter votre première expérience !",
+            "search": "Aucune expérience ne correspond à votre recherche",
+            "attachments": "Aucune pièce jointe disponible. Ajoutez des documents à vos expériences !"
+        },
+        "attachments": {
+            "stats": {
+                "used": "Espace utilisé",
+                "files": "Fichiers",
+                "available": "Espace disponible"
+            }
+        },
+        "success": {
+            "created": "Expérience créée avec succès",
+            "updated": "Expérience mise à jour avec succès",
+            "deleted": "Expérience supprimée avec succès",
+            "attachment": {
+                "deleted": "Pièce jointe supprimée avec succès"
+            }
+        },
+        "errors": {
+            "generic": "Une erreur est survenue",
+            "delete": "Erreur lors de la suppression",
+            "attachment": {
+                "delete": "Impossible de supprimer la pièce jointe"
+            }
+        }
     }
 }

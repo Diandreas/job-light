@@ -40,6 +40,7 @@ import { Badge } from "@/Components/ui/badge";
 import { ScrollArea } from "@/Components/ui/scroll-area";
 import { motion, AnimatePresence } from 'framer-motion';
 import axios from "axios";
+import { useTranslation } from 'react-i18next';
 
 // Interfaces
 interface Reference {
@@ -98,6 +99,7 @@ const formatBytes = (bytes: number | undefined): string => {
 
     return `${formattedValue} ${sizes[sizeIndex]}`;
 };
+
 // experienceData.ts
 export const experienceData = {
     academic: {
@@ -283,6 +285,7 @@ export const generatePredefinedExperience = (type: 'academic' | 'internship' | '
 };
 
 const ExperienceManager: React.FC<Props> = ({ auth, experiences: initialExperiences, categories, onUpdate }) => {
+    const { t } = useTranslation();
     // États
     const [experiences, setExperiences] = useState<Experience[]>(initialExperiences);
     const [filteredExperiences, setFilteredExperiences] = useState<Experience[]>(initialExperiences);
@@ -361,9 +364,8 @@ const ExperienceManager: React.FC<Props> = ({ auth, experiences: initialExperien
         }
         setFilteredExperiences(filtered);
     }, [searchTerm, experiences, selectedCategory]);
+
     // Fonctions de gestion
-
-
     const handleEdit = (experience: Experience) => {
         // @ts-ignore
         setData({
@@ -386,13 +388,13 @@ const ExperienceManager: React.FC<Props> = ({ auth, experiences: initialExperien
             calculateAttachmentStats(); // Recalculer les statistiques
 
             toast({
-                title: "Succès",
-                description: "L'expérience a été supprimée.",
+                title: t('experiences.success.deleted'),
+                description: t('experiences.success.deleted'),
             });
         } catch (error) {
             toast({
-                title: "Erreur",
-                description: "La suppression a échoué.",
+                title: t('experiences.errors.generic'),
+                description: t('experiences.errors.delete'),
                 variant: "destructive",
             });
         }
@@ -421,8 +423,8 @@ const ExperienceManager: React.FC<Props> = ({ auth, experiences: initialExperien
                 calculateAttachmentStats();
 
                 toast({
-                    title: "Succès",
-                    description: "La pièce jointe a été supprimée avec succès.",
+                    title: t('experiences.success.attachment.deleted'),
+                    description: t('experiences.success.attachment.deleted'),
                 });
 
                 // Si nous sommes dans le formulaire d'édition, mettre à jour l'état du formulaire
@@ -439,7 +441,7 @@ const ExperienceManager: React.FC<Props> = ({ auth, experiences: initialExperien
             console.error('Erreur lors de la suppression:', error);
 
             // Message d'erreur plus détaillé
-            let errorMessage = "Impossible de supprimer la pièce jointe. ";
+            let errorMessage = t('experiences.errors.attachment.delete');
             if (error.response?.data?.message) {
                 errorMessage += error.response.data.message;
             } else if (error.message) {
@@ -447,7 +449,7 @@ const ExperienceManager: React.FC<Props> = ({ auth, experiences: initialExperien
             }
 
             toast({
-                title: "Erreur",
+                title: t('experiences.errors.generic'),
                 description: errorMessage,
                 variant: "destructive",
             });
@@ -505,21 +507,21 @@ const ExperienceManager: React.FC<Props> = ({ auth, experiences: initialExperien
             calculateAttachmentStats(); // Recalculer les statistiques
 
             toast({
-                title: data.id ? "Expérience mise à jour" : "Expérience créée",
-                description: "L'opération a été effectuée avec succès.",
+                title: data.id ? t('experiences.success.updated') : t('experiences.success.created'),
+                description: data.id ? t('experiences.success.updated') : t('experiences.success.created'),
             });
 
             resetForm();
         } catch (error: any) {
             console.error('Erreur complète:', error);
 
-            let errorMessage = "Une erreur est survenue lors de la sauvegarde. ";
+            let errorMessage = t('experiences.errors.generic');
             if (error.response?.data?.message) {
                 errorMessage += error.response.data.message;
             }
 
             toast({
-                title: "Erreur",
+                title: t('experiences.errors.generic'),
                 description: errorMessage,
                 variant: "destructive",
             });
@@ -531,8 +533,8 @@ const ExperienceManager: React.FC<Props> = ({ auth, experiences: initialExperien
     const handlePreviewPDF = (attachmentUrl?: string) => {
         if (!attachmentUrl) {
             toast({
-                title: 'Pas de fichier',
-                description: 'Aucune pièce jointe disponible.',
+                title: t('experiences.errors.generic'),
+                description: t('experiences.empty.attachments'),
                 variant: 'destructive',
             });
             return;
@@ -567,8 +569,8 @@ const ExperienceManager: React.FC<Props> = ({ auth, experiences: initialExperien
                 ...template
             }));
             toast({
-                title: "Modèle appliqué",
-                description: "Vous pouvez maintenant personnaliser les informations.",
+                title: t('experiences.form.templates.title'),
+                description: t('experiences.form.templates.description'),
             });
         }
     };
@@ -581,7 +583,7 @@ const ExperienceManager: React.FC<Props> = ({ auth, experiences: initialExperien
             experience_categories_id: type === 'academic' ? '2' : type === 'internship' ? '1' : '3',
             date_start: `${currentYear - 1}-09-01`,
             date_end: type === 'academic' ? `${currentYear}-06-30` : `${currentYear}-12-31`,
-            comment: "Une expérience enrichissante qui m'a permis de développer mes compétences",
+            comment: t('experiences.form.templates.description'),
         };
 
         switch(type) {
@@ -591,7 +593,7 @@ const ExperienceManager: React.FC<Props> = ({ auth, experiences: initialExperien
                     name: getRandomItem(data.names),
                     InstitutionName: getRandomItem(data.institutions),
                     description: getRandomItem(data.descriptions),
-                    output: "Formation complétée avec succès",
+                    output: t('experiences.form.templates.academic'),
                 };
             case 'internship':
                 return {
@@ -615,6 +617,7 @@ const ExperienceManager: React.FC<Props> = ({ auth, experiences: initialExperien
     const getRandomItem = <T,>(array: T[]): T => {
         return array[Math.floor(Math.random() * array.length)];
     };
+
     // Composant Card pour l'expérience
     const ExperienceCard: React.FC<{ experience: Experience }> = ({ experience: exp }) => {
         const getCategoryIcon = (categoryId: string) => {
@@ -633,15 +636,15 @@ const ExperienceManager: React.FC<Props> = ({ auth, experiences: initialExperien
                 exit={{ opacity: 0, y: -20 }}
                 transition={{ duration: 0.2 }}
             >
-                <Card className="border-amber-100 hover:shadow-md transition-shadow">
+                <Card className="border-amber-100 dark:border-gray-600 shadow-md dark:bg-gray-700">
                     <CardContent className="p-4 sm:p-6">
                         <div className="flex flex-col sm:flex-row justify-between items-start gap-4">
                             <div className="flex-1">
                                 <div className="flex items-center gap-2 flex-wrap">
-                                    <h3 className="text-lg font-semibold">{exp.name}</h3>
+                                    <h3 className="text-lg font-semibold text-gray-200 dark:text-white">{exp.name}</h3>
                                     <Badge
                                         variant="secondary"
-                                        className="bg-gradient-to-r from-amber-100 to-purple-100 flex items-center gap-1"
+                                        className="bg-gradient-to-r from-amber-100 to-purple-100 dark:from-amber-900/40 dark:to-purple-900/40 flex items-center gap-1"
                                     >
                                         {getCategoryIcon(exp.experience_categories_id)}
                                         {categories.find(c => c.id === parseInt(exp.experience_categories_id))?.name}
@@ -650,14 +653,14 @@ const ExperienceManager: React.FC<Props> = ({ auth, experiences: initialExperien
 
                                 <div className="flex items-center text-sm text-muted-foreground mt-1">
                                     <Building2 className="w-4 h-4 mr-2 text-amber-500" />
-                                    <span>{exp.InstitutionName}</span>
+                                    <span className="text-gray-300 dark:text-gray-200">{exp.InstitutionName}</span>
                                 </div>
 
                                 <div className="flex items-center text-sm text-muted-foreground mt-1">
                                     <BookOpen className="w-4 h-4 mr-2 text-purple-500" />
-                                    <span>
+                                    <span className="text-gray-300 dark:text-gray-200">
                                         {new Date(exp.date_start).toLocaleDateString('fr-FR')} -
-                                        {exp.date_end ? new Date(exp.date_end).toLocaleDateString('fr-FR') : 'Présent'}
+                                        {exp.date_end ? new Date(exp.date_end).toLocaleDateString('fr-FR') : t('experiences.tabs.ongoing')}
                                     </span>
                                 </div>
 
@@ -678,7 +681,7 @@ const ExperienceManager: React.FC<Props> = ({ auth, experiences: initialExperien
                                         variant="ghost"
                                         size="sm"
                                         onClick={() => handlePreviewPDF(exp.attachment_path)}
-                                        className="hover:bg-amber-50"
+                                        className="hover:bg-amber-50 dark:hover:bg-gray-600"
                                     >
                                         <Eye className="w-4 h-4 text-amber-500" />
                                     </Button>
@@ -687,7 +690,7 @@ const ExperienceManager: React.FC<Props> = ({ auth, experiences: initialExperien
                                     variant="ghost"
                                     size="sm"
                                     onClick={() => handleEdit(exp)}
-                                    className="hover:bg-purple-50"
+                                    className="hover:bg-purple-50 dark:hover:bg-gray-600"
                                 >
                                     <Edit className="w-4 h-4 text-purple-500" />
                                 </Button>
@@ -695,7 +698,7 @@ const ExperienceManager: React.FC<Props> = ({ auth, experiences: initialExperien
                                     variant="ghost"
                                     size="sm"
                                     onClick={() => handleDelete(exp.id)}
-                                    className="hover:bg-red-50"
+                                    className="hover:bg-red-50 dark:hover:bg-gray-600"
                                 >
                                     <Trash2 className="w-4 h-4 text-red-500" />
                                 </Button>
@@ -703,27 +706,27 @@ const ExperienceManager: React.FC<Props> = ({ auth, experiences: initialExperien
                         </div>
 
                         <div className="mt-4 space-y-3">
-                            <p className="text-sm text-gray-600">{exp.description}</p>
+                            <p className="text-sm text-gray-400 dark:text-gray-300">{exp.description}</p>
 
                             {exp.output && (
                                 <div className="bg-gradient-to-r from-amber-50 to-purple-50 p-3 rounded-md">
                                     <div className="flex items-center gap-2 mb-1">
                                         <Award className="w-4 h-4 text-amber-500" />
-                                        <p className="text-sm font-medium text-gray-700">Résultat obtenu:</p>
+                                        <p className="text-sm font-medium text-gray-700 dark:text-gray-200">{t('experiences.form.fields.output.label')}:</p>
                                     </div>
-                                    <p className="text-sm text-gray-600">{exp.output}</p>
+                                    <p className="text-sm text-gray-400 dark:text-gray-300">{exp.output}</p>
                                 </div>
                             )}
                         </div>
 
                         {exp.references && exp.references.length > 0 && (
                             <div className="mt-4">
-                                <h4 className="text-sm font-semibold mb-2">Références</h4>
+                                <h4 className="text-sm font-semibold mb-2 text-gray-200 dark:text-white">{t('experiences.form.references.title')}</h4>
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
                                     {exp.references.map((ref, index) => (
-                                        <div key={index} className="text-sm bg-gray-50 p-2 rounded-md">
-                                            <p className="font-medium">{ref.name}</p>
-                                            <p className="text-gray-600">{ref.function}</p>
+                                        <div key={index} className="text-sm bg-gray-600 dark:bg-gray-800 p-2 rounded-md">
+                                            <p className="font-medium text-gray-200 dark:text-white">{ref.name}</p>
+                                            <p className="text-gray-400 dark:text-gray-300">{ref.function}</p>
                                             {ref.email && (
                                                 <p className="text-gray-500 text-xs">{ref.email}</p>
                                             )}
@@ -745,14 +748,14 @@ const ExperienceManager: React.FC<Props> = ({ auth, experiences: initialExperien
     const AttachmentStatistics: React.FC<{ summary: AttachmentSummary }> = ({ summary }) => {
         return (
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <Card className="bg-gradient-to-r from-amber-50 to-purple-50 border-none">
+                <Card className="bg-gradient-to-r from-amber-50 to-purple-50 border-none dark:bg-gray-700">
                     <CardContent className="p-4">
                         <div className="flex items-center justify-between">
                             <div>
-                                <p className="text-sm font-medium text-gray-500">
-                                    Espace utilisé
+                                <p className="text-sm font-medium text-gray-500 dark:text-gray-300">
+                                    {t('experiences.attachments.stats.used')}
                                 </p>
-                                <h3 className="text-2xl font-bold text-gray-900">
+                                <h3 className="text-2xl font-bold text-gray-900 dark:text-white">
                                     {formatBytes(Number(summary.total_size))}
                                 </h3>
                             </div>
@@ -761,14 +764,14 @@ const ExperienceManager: React.FC<Props> = ({ auth, experiences: initialExperien
                     </CardContent>
                 </Card>
 
-                <Card className="bg-gradient-to-r from-amber-50 to-purple-50 border-none">
+                <Card className="bg-gradient-to-r from-amber-50 to-purple-50 border-none dark:bg-gray-700">
                     <CardContent className="p-4">
                         <div className="flex items-center justify-between">
                             <div>
-                                <p className="text-sm font-medium text-gray-500">
-                                    Fichiers
+                                <p className="text-sm font-medium text-gray-500 dark:text-gray-300">
+                                    {t('experiences.attachments.stats.files')}
                                 </p>
-                                <h3 className="text-2xl font-bold text-gray-900">
+                                <h3 className="text-2xl font-bold text-gray-900 dark:text-white">
                                     {summary.files_count}
                                 </h3>
                             </div>
@@ -777,14 +780,14 @@ const ExperienceManager: React.FC<Props> = ({ auth, experiences: initialExperien
                     </CardContent>
                 </Card>
 
-                <Card className="bg-gradient-to-r from-amber-50 to-purple-50 border-none">
+                <Card className="bg-gradient-to-r from-amber-50 to-purple-50 border-none dark:bg-gray-700">
                     <CardContent className="p-4">
                         <div className="flex items-center justify-between">
                             <div>
-                                <p className="text-sm font-medium text-gray-500">
-                                    Espace disponible
+                                <p className="text-sm font-medium text-gray-500 dark:text-gray-300">
+                                    {t('experiences.attachments.stats.available')}
                                 </p>
-                                <h3 className="text-2xl font-bold text-gray-900">
+                                <h3 className="text-2xl font-bold text-gray-900 dark:text-white">
                                     {formatBytes(Math.max(0, summary.max_size - summary.total_size))}
                                 </h3>
                             </div>
@@ -794,14 +797,16 @@ const ExperienceManager: React.FC<Props> = ({ auth, experiences: initialExperien
                 </Card>
             </div>
         );
-    };// Rendu principal
+    };
+
+    // Rendu principal
     return (
         <div className="space-y-6">
             <div className="flex flex-col md:flex-row justify-between items-center gap-4">
                 <div>
-                    <h2 className="text-2xl font-bold text-gray-800">Mes Expériences</h2>
-                    <p className="text-gray-500">
-                        Partagez vos expériences académiques, stages et engagements
+                    <h2 className="text-2xl font-bold text-gray-200 dark:text-white">{t('experiences.title')}</h2>
+                    <p className="text-gray-400 dark:text-gray-300">
+                        {t('experiences.description')}
                     </p>
                 </div>
             </div>
@@ -810,16 +815,16 @@ const ExperienceManager: React.FC<Props> = ({ auth, experiences: initialExperien
                 <TabsList className="grid w-full grid-cols-2 mb-4">
                     <TabsTrigger value="experiences" className="flex items-center gap-2">
                         <PencilRuler className="w-4 h-4" />
-                        Liste des expériences
+                        {t('experiences.tabs.list')}
                     </TabsTrigger>
                     <TabsTrigger value="attachments" className="flex items-center gap-2">
                         <FileText className="w-4 h-4" />
-                        Pièces jointes {attachmentSummary.files_count > 0 && `(${attachmentSummary.files_count})`}
+                        {t('experiences.tabs.attachments')} {attachmentSummary.files_count > 0 && `(${attachmentSummary.files_count})`}
                     </TabsTrigger>
                 </TabsList>
 
                 <TabsContent value="experiences">
-                    <Card className="border-amber-100">
+                    <Card className="border-amber-100 dark:border-gray-600">
                         <CardContent className="p-4">
                             <div className="flex flex-col md:flex-row gap-4">
                                 <div className="flex-1">
@@ -827,19 +832,19 @@ const ExperienceManager: React.FC<Props> = ({ auth, experiences: initialExperien
                                         <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-amber-500" />
                                         <Input
                                             type="text"
-                                            placeholder="Rechercher une expérience..."
+                                            placeholder={t('experiences.filters.search')}
                                             value={searchTerm}
                                             onChange={(e) => setSearchTerm(e.target.value)}
-                                            className="pl-10 border-amber-200 focus:ring-amber-500"
+                                            className="pl-10 border-amber-200 dark:border-gray-600 focus:ring-amber-500 dark:focus:ring-amber-400"
                                         />
                                     </div>
                                 </div>
                                 <Button
                                     onClick={() => setIsFormOpen(true)}
-                                    className="bg-gradient-to-r from-amber-500 to-purple-500 hover:from-amber-600 hover:to-purple-600 text-white"
+                                    className="bg-gradient-to-r from-amber-500 to-purple-500 dark:from-amber-400 dark:to-purple-400 hover:from-amber-600 hover:to-purple-600 text-white"
                                 >
                                     <Plus className="w-4 h-4 mr-2" />
-                                    Ajouter une expérience
+                                    {t('experiences.actions.add')}
                                 </Button>
                             </div>
 
@@ -848,10 +853,10 @@ const ExperienceManager: React.FC<Props> = ({ auth, experiences: initialExperien
                                     variant={selectedCategory === 'all' ? "default" : "ghost"}
                                     size="sm"
                                     onClick={() => setSelectedCategory('all')}
-                                    className={selectedCategory === 'all' ? 'bg-gradient-to-r from-amber-500 to-purple-500 text-white' : ''}
+                                    className={selectedCategory === 'all' ? 'bg-gradient-to-r from-amber-500 to-purple-500 dark:from-amber-400 dark:to-purple-400 text-white' : 'dark:hover:bg-gray-600'}
                                 >
                                     <PencilRuler className="w-4 h-4 mr-2" />
-                                    Toutes
+                                    {t('experiences.filters.all')}
                                 </Button>
                                 {categories.map((cat) => (
                                     <Button
@@ -859,7 +864,7 @@ const ExperienceManager: React.FC<Props> = ({ auth, experiences: initialExperien
                                         variant={selectedCategory === cat.id.toString() ? "default" : "ghost"}
                                         size="sm"
                                         onClick={() => setSelectedCategory(cat.id.toString())}
-                                        className={selectedCategory === cat.id.toString() ? 'bg-gradient-to-r from-amber-500 to-purple-500 text-white' : ''}
+                                        className={selectedCategory === cat.id.toString() ? 'bg-gradient-to-r from-amber-500 to-purple-500 dark:from-amber-400 dark:to-purple-400 text-white' : 'dark:hover:bg-gray-600'}
                                     >
                                         {cat.id === 1 && <Briefcase className="w-4 h-4 mr-2" />}
                                         {cat.id === 2 && <GraduationCap className="w-4 h-4 mr-2" />}
@@ -884,14 +889,14 @@ const ExperienceManager: React.FC<Props> = ({ auth, experiences: initialExperien
                                         animate={{ opacity: 1 }}
                                         exit={{ opacity: 0 }}
                                     >
-                                        <Card className="border-amber-100">
+                                        <Card className="border-amber-100 dark:border-gray-600">
                                             <CardContent className="p-12 text-center">
                                                 <div className="flex flex-col items-center gap-2">
                                                     <PencilRuler className="w-12 h-12 text-amber-500" />
-                                                    <p className="text-gray-500">
+                                                    <p className="text-gray-400 dark:text-gray-300">
                                                         {searchTerm
-                                                            ? "Aucune expérience ne correspond à votre recherche"
-                                                            : "Commencez par ajouter votre première expérience !"
+                                                            ? t('experiences.empty.search')
+                                                            : t('experiences.empty.experiences')
                                                         }
                                                     </p>
                                                 </div>
@@ -905,7 +910,7 @@ const ExperienceManager: React.FC<Props> = ({ auth, experiences: initialExperien
                 </TabsContent>
 
                 <TabsContent value="attachments">
-                    <Card className="border-amber-100">
+                    <Card className="border-amber-100 dark:border-gray-600">
                         <CardContent className="p-6">
                             <div className="space-y-6">
                                 <AttachmentStatistics summary={attachmentSummary} />
@@ -922,12 +927,12 @@ const ExperienceManager: React.FC<Props> = ({ auth, experiences: initialExperien
                                                     exit={{ opacity: 0, y: -20 }}
                                                     transition={{ duration: 0.2 }}
                                                 >
-                                                    <Card className="hover:shadow-md transition-all">
+                                                    <Card className="hover:shadow-md transition-all dark:bg-gray-700">
                                                         <CardContent className="p-4">
                                                             <div className="flex items-center justify-between">
                                                                 <div className="flex-1">
-                                                                    <h4 className="font-semibold">{exp.name}</h4>
-                                                                    <p className="text-sm text-gray-500">{exp.InstitutionName}</p>
+                                                                    <h4 className="font-semibold text-gray-200 dark:text-white">{exp.name}</h4>
+                                                                    <p className="text-sm text-gray-400 dark:text-gray-300">{exp.InstitutionName}</p>
                                                                     {exp.attachment_size && (
                                                                         <Badge
                                                                             variant="outline"
@@ -942,7 +947,7 @@ const ExperienceManager: React.FC<Props> = ({ auth, experiences: initialExperien
                                                                         variant="ghost"
                                                                         size="sm"
                                                                         onClick={() => handlePreviewPDF(exp.attachment_path)}
-                                                                        className="hover:bg-amber-50"
+                                                                        className="hover:bg-amber-50 dark:hover:bg-gray-600"
                                                                     >
                                                                         <Eye className="w-4 h-4 text-amber-500" />
                                                                     </Button>
@@ -950,7 +955,7 @@ const ExperienceManager: React.FC<Props> = ({ auth, experiences: initialExperien
                                                                         variant="ghost"
                                                                         size="sm"
                                                                         onClick={() => handleEdit(exp)}
-                                                                        className="hover:bg-purple-50"
+                                                                        className="hover:bg-purple-50 dark:hover:bg-gray-600"
                                                                     >
                                                                         <Edit className="w-4 h-4 text-purple-500" />
                                                                     </Button>
@@ -966,8 +971,8 @@ const ExperienceManager: React.FC<Props> = ({ auth, experiences: initialExperien
                                         <Card>
                                             <CardContent className="p-12 text-center">
                                                 <FileText className="w-12 h-12 text-amber-500 mx-auto mb-4" />
-                                                <p className="text-gray-500">
-                                                    Aucune pièce jointe disponible. Ajoutez des documents à vos expériences !
+                                                <p className="text-gray-400 dark:text-gray-300">
+                                                    {t('experiences.empty.attachments')}
                                                 </p>
                                             </CardContent>
                                         </Card>
@@ -980,23 +985,23 @@ const ExperienceManager: React.FC<Props> = ({ auth, experiences: initialExperien
             </Tabs>
 
             <Sheet open={isFormOpen} onOpenChange={setIsFormOpen}>
-                <SheetContent side="right" className="w-full sm:max-w-xl overflow-y-auto">
+                <SheetContent side="right" className="w-full sm:max-w-xl overflow-y-auto dark:bg-gray-800">
                     <SheetHeader>
                         <SheetTitle className="flex items-center gap-2">
                             <PencilRuler className="w-5 h-5 text-amber-500" />
-                            {data.id ? "Modifier l'expérience" : 'Nouvelle expérience'}
+                            {data.id ? t('experiences.form.title.edit') : t('experiences.form.title.new')}
                         </SheetTitle>
                         <SheetDescription>
-                            {data.id ? "Modifiez les détails de votre expérience" : "Ajoutez une nouvelle expérience à votre profil"}
+                            {data.id ? t('experiences.form.description.edit') : t('experiences.form.description.new')}
                         </SheetDescription>
                     </SheetHeader>
 
                     <form onSubmit={handleSubmit} className="space-y-6 pt-6">
-                        <Card className="border-amber-100">
+                        <Card className="border-amber-100 dark:border-gray-600">
                             <CardHeader>
-                                <CardTitle className="text-base">Modèles d'expérience</CardTitle>
+                                <CardTitle className="text-base text-gray-200 dark:text-white">{t('experiences.form.templates.title')}</CardTitle>
                                 <CardDescription>
-                                    Sélectionnez un modèle pour démarrer rapidement
+                                    {t('experiences.form.templates.description')}
                                 </CardDescription>
                             </CardHeader>
                             <CardContent className="grid grid-cols-1 gap-2">
@@ -1004,52 +1009,52 @@ const ExperienceManager: React.FC<Props> = ({ auth, experiences: initialExperien
                                     type="button"
                                     variant="outline"
                                     onClick={() => handleTemplateSelection('academic')}
-                                    className="justify-start border-amber-200 hover:bg-amber-50"
+                                    className="justify-start border-amber-200 dark:border-gray-600 hover:bg-amber-50 dark:hover:bg-gray-700"
                                 >
                                     <GraduationCap className="w-4 h-4 mr-2 text-amber-500" />
-                                    Formation Académique
+                                    {t('experiences.form.templates.academic')}
                                 </Button>
                                 <Button
                                     type="button"
                                     variant="outline"
                                     onClick={() => handleTemplateSelection('internship')}
-                                    className="justify-start border-amber-200 hover:bg-amber-50"
+                                    className="justify-start border-amber-200 dark:border-gray-600 hover:bg-amber-50 dark:hover:bg-gray-700"
                                 >
                                     <Briefcase className="w-4 h-4 mr-2 text-purple-500" />
-                                    Stage Professionnel
+                                    {t('experiences.form.templates.internship')}
                                 </Button>
                                 <Button
                                     type="button"
                                     variant="outline"
                                     onClick={() => handleTemplateSelection('volunteer')}
-                                    className="justify-start border-amber-200 hover:bg-amber-50"
+                                    className="justify-start border-amber-200 dark:border-gray-600 hover:bg-amber-50 dark:hover:bg-gray-700"
                                 >
                                     <Users className="w-4 h-4 mr-2 text-amber-500" />
-                                    Expérience Bénévole
+                                    {t('experiences.form.templates.volunteer')}
                                 </Button>
                             </CardContent>
                         </Card>
 
                         <div className="grid grid-cols-2 gap-4">
                             <div className="space-y-2">
-                                <Label htmlFor="name">Intitulé</Label>
+                                <Label htmlFor="name" className="text-gray-200 dark:text-white">{t('experiences.form.fields.name.label')}</Label>
                                 <Input
                                     id="name"
                                     value={data.name}
                                     onChange={(e) => setData('name', e.target.value)}
-                                    placeholder="Ex: Stage en bibliothèque..."
-                                    className="border-amber-200 focus:ring-amber-500"
+                                    placeholder={t('experiences.form.fields.name.placeholder')}
+                                    className="border-amber-200 dark:border-gray-600 focus:ring-amber-500 dark:focus:ring-amber-400"
                                 />
                                 {errors.name && <p className="text-sm text-red-500">{errors.name}</p>}
                             </div>
                             <div className="space-y-2">
-                                <Label htmlFor="InstitutionName">Établissement</Label>
+                                <Label htmlFor="InstitutionName" className="text-gray-200 dark:text-white">{t('experiences.form.fields.institution.label')}</Label>
                                 <Input
                                     id="InstitutionName"
                                     value={data.InstitutionName}
                                     onChange={(e) => setData('InstitutionName', e.target.value)}
-                                    placeholder="Nom de l'établissement ou de l'organisation"
-                                    className="border-amber-200 focus:ring-amber-500"
+                                    placeholder={t('experiences.form.fields.institution.placeholder')}
+                                    className="border-amber-200 dark:border-gray-600 focus:ring-amber-500 dark:focus:ring-amber-400"
                                 />
                                 {errors.InstitutionName && (
                                     <p className="text-sm text-red-500">{errors.InstitutionName}</p>
@@ -1059,40 +1064,40 @@ const ExperienceManager: React.FC<Props> = ({ auth, experiences: initialExperien
 
                         <div className="grid grid-cols-2 gap-4">
                             <div className="space-y-2">
-                                <Label htmlFor="date_start">Date de début</Label>
+                                <Label htmlFor="date_start" className="text-gray-200 dark:text-white">{t('experiences.form.fields.dates.start')}</Label>
                                 <Input
                                     id="date_start"
                                     type="date"
                                     value={data.date_start}
                                     onChange={(e) => setData('date_start', e.target.value)}
-                                    className="border-amber-200 focus:ring-amber-500"
+                                    className="border-amber-200 dark:border-gray-600 focus:ring-amber-500 dark:focus:ring-amber-400"
                                 />
                                 {errors.date_start && (
                                     <p className="text-sm text-red-500">{errors.date_start}</p>
                                 )}
                             </div>
                             <div className="space-y-2">
-                                <Label htmlFor="date_end">Date de fin</Label>
+                                <Label htmlFor="date_end" className="text-gray-200 dark:text-white">{t('experiences.form.fields.dates.end')}</Label>
                                 <Input
                                     id="date_end"
                                     type="date"
                                     value={data.date_end || ''}
                                     onChange={(e) => setData('date_end', e.target.value)}
-                                    className="border-amber-200 focus:ring-amber-500"
+                                    className="border-amber-200 dark:border-gray-600 focus:ring-amber-500 dark:focus:ring-amber-400"
                                 />
-                                <p className="text-xs text-gray-500">Laissez vide si en cours</p>
+                                <p className="text-xs text-gray-400 dark:text-gray-300">{t('experiences.form.fields.dates.ongoing')}</p>
                                 {errors.date_end && <p className="text-sm text-red-500">{errors.date_end}</p>}
                             </div>
                         </div>
 
                         <div className="space-y-2">
-                            <Label htmlFor="experience_categories_id">Type d'expérience</Label>
+                            <Label htmlFor="experience_categories_id" className="text-gray-200 dark:text-white">{t('experiences.form.fields.type.label')}</Label>
                             <Select
                                 value={data.experience_categories_id}
                                 onValueChange={(value) => setData('experience_categories_id', value)}
                             >
-                                <SelectTrigger className="border-amber-200 focus:ring-amber-500">
-                                    <SelectValue placeholder="Sélectionnez un type" />
+                                <SelectTrigger className="border-amber-200 dark:border-gray-600 focus:ring-amber-500 dark:focus:ring-amber-400">
+                                    <SelectValue placeholder={t('experiences.form.fields.type.placeholder')} />
                                 </SelectTrigger>
                                 <SelectContent>
                                     {categories.map((cat) => (
@@ -1113,14 +1118,14 @@ const ExperienceManager: React.FC<Props> = ({ auth, experiences: initialExperien
                         </div>
 
                         <div className="space-y-2">
-                            <Label htmlFor="description">Description</Label>
+                            <Label htmlFor="description" className="text-gray-200 dark:text-white">{t('experiences.form.fields.description.label')}</Label>
                             <Textarea
                                 id="description"
                                 value={data.description}
                                 onChange={(e) => setData('description', e.target.value)}
-                                placeholder="Décrivez vos responsabilités, tâches et apprentissages..."
+                                placeholder={t('experiences.form.fields.description.placeholder')}
                                 rows={4}
-                                className="border-amber-200 focus:ring-amber-500"
+                                className="border-amber-200 dark:border-gray-600 focus:ring-amber-500 dark:focus:ring-amber-400"
                             />
                             {errors.description && (
                                 <p className="text-sm text-red-500">{errors.description}</p>
@@ -1128,25 +1133,25 @@ const ExperienceManager: React.FC<Props> = ({ auth, experiences: initialExperien
                         </div>
 
                         <div className="space-y-2">
-                            <Label htmlFor="output">Résultat/Réalisation</Label>
+                            <Label htmlFor="output" className="text-gray-200 dark:text-white">{t('experiences.form.fields.output.label')}</Label>
                             <Input
                                 id="output"
                                 value={data.output}
                                 onChange={(e) => setData('output', e.target.value)}
-                                placeholder="Ex: Compétences acquises, certificat obtenu..."
-                                className="border-amber-200 focus:ring-amber-500"
+                                placeholder={t('experiences.form.fields.output.placeholder')}
+                                className="border-amber-200 dark:border-gray-600 focus:ring-amber-500 dark:focus:ring-amber-400"
                             />
                             {errors.output && <p className="text-sm text-red-500">{errors.output}</p>}
                         </div>
 
                         <div className="space-y-2">
-                            <Label htmlFor="comment">Commentaire additionnel</Label>
+                            <Label htmlFor="comment" className="text-gray-200 dark:text-white">{t('experiences.form.fields.comment.label')}</Label>
                             <Textarea
                                 id="comment"
                                 value={data.comment}
                                 onChange={(e) => setData('comment', e.target.value)}
-                                placeholder="Autres informations pertinentes..."
-                                className="border-amber-200 focus:ring-amber-500"
+                                placeholder={t('experiences.form.fields.comment.placeholder')}
+                                className="border-amber-200 dark:border-gray-600 focus:ring-amber-500 dark:focus:ring-amber-400"
                             />
                             {errors.comment && <p className="text-sm text-red-500">{errors.comment}</p>}
                         </div>
@@ -1154,7 +1159,7 @@ const ExperienceManager: React.FC<Props> = ({ auth, experiences: initialExperien
                         {/* Section des références */}
                         <div className="space-y-4">
                             <div className="flex justify-between items-center">
-                                <Label>Références</Label>
+                                <Label className="text-gray-200 dark:text-white">{t('experiences.form.references.title')}</Label>
                                 <Button
                                     type="button"
                                     variant="outline"
@@ -1163,15 +1168,15 @@ const ExperienceManager: React.FC<Props> = ({ auth, experiences: initialExperien
                                         references.push({ name: '', function: '', email: '', telephone: '' });
                                         setData('references', references);
                                     }}
-                                    className="border-amber-200 hover:bg-amber-50"
+                                    className="border-amber-200 dark:border-gray-600 hover:bg-amber-50 dark:hover:bg-gray-700"
                                 >
                                     <Plus className="w-4 h-4 mr-2" />
-                                    Ajouter une référence
+                                    {t('experiences.form.references.add')}
                                 </Button>
                             </div>
 
                             {data.references?.map((reference, index) => (
-                                <Card key={index} className="border-amber-100">
+                                <Card key={index} className="border-amber-100 dark:border-gray-600">
                                     <CardContent className="p-4 space-y-4">
                                         <div className="flex justify-end">
                                             <Button
@@ -1183,14 +1188,14 @@ const ExperienceManager: React.FC<Props> = ({ auth, experiences: initialExperien
                                                     references.splice(index, 1);
                                                     setData('references', references);
                                                 }}
-                                                className="hover:bg-red-50"
+                                                className="hover:bg-red-50 dark:hover:bg-gray-600"
                                             >
                                                 <Trash2 className="w-4 h-4 text-red-500" />
                                             </Button>
                                         </div>
                                         <div className="grid grid-cols-2 gap-4">
                                             <div className="space-y-2">
-                                                <Label>Nom</Label>
+                                                <Label className="text-gray-200 dark:text-white">{t('experiences.form.references.fields.name.label')}</Label>
                                                 <Input
                                                     value={reference.name}
                                                     onChange={(e) => {
@@ -1201,12 +1206,12 @@ const ExperienceManager: React.FC<Props> = ({ auth, experiences: initialExperien
                                                         };
                                                         setData('references', references);
                                                     }}
-                                                    className="border-amber-200 focus:ring-amber-500"
-                                                    placeholder="Nom de la référence"
+                                                    className="border-amber-200 dark:border-gray-600 focus:ring-amber-500 dark:focus:ring-amber-400"
+                                                    placeholder={t('experiences.form.references.fields.name.placeholder')}
                                                 />
                                             </div>
                                             <div className="space-y-2">
-                                                <Label>Fonction</Label>
+                                                <Label className="text-gray-200 dark:text-white">{t('experiences.form.references.fields.function.label')}</Label>
                                                 <Input
                                                     value={reference.function}
                                                     onChange={(e) => {
@@ -1217,12 +1222,12 @@ const ExperienceManager: React.FC<Props> = ({ auth, experiences: initialExperien
                                                         };
                                                         setData('references', references);
                                                     }}
-                                                    className="border-amber-200 focus:ring-amber-500"
-                                                    placeholder="Fonction de la référence"
+                                                    className="border-amber-200 dark:border-gray-600 focus:ring-amber-500 dark:focus:ring-amber-400"
+                                                    placeholder={t('experiences.form.references.fields.function.placeholder')}
                                                 />
                                             </div>
                                             <div className="space-y-2">
-                                                <Label>Email</Label>
+                                                <Label className="text-gray-200 dark:text-white">{t('experiences.form.references.fields.email.label')}</Label>
                                                 <Input
                                                     type="email"
                                                     value={reference.email}
@@ -1234,12 +1239,12 @@ const ExperienceManager: React.FC<Props> = ({ auth, experiences: initialExperien
                                                         };
                                                         setData('references', references);
                                                     }}
-                                                    className="border-amber-200 focus:ring-amber-500"
-                                                    placeholder="Email de la référence"
+                                                    className="border-amber-200 dark:border-gray-600 focus:ring-amber-500 dark:focus:ring-amber-400"
+                                                    placeholder={t('experiences.form.references.fields.email.placeholder')}
                                                 />
                                             </div>
                                             <div className="space-y-2">
-                                                <Label>Téléphone</Label>
+                                                <Label className="text-gray-200 dark:text-white">{t('experiences.form.references.fields.phone.label')}</Label>
                                                 <Input
                                                     value={reference.telephone}
                                                     onChange={(e) => {
@@ -1250,8 +1255,8 @@ const ExperienceManager: React.FC<Props> = ({ auth, experiences: initialExperien
                                                         };
                                                         setData('references', references);
                                                     }}
-                                                    className="border-amber-200 focus:ring-amber-500"
-                                                    placeholder="Téléphone de la référence"
+                                                    className="border-amber-200 dark:border-gray-600 focus:ring-amber-500 dark:focus:ring-amber-400"
+                                                    placeholder={t('experiences.form.references.fields.phone.placeholder')}
                                                 />
                                             </div>
                                         </div>
@@ -1264,12 +1269,12 @@ const ExperienceManager: React.FC<Props> = ({ auth, experiences: initialExperien
                             <Label>
                                 <div className="flex items-center justify-between">
                                     <div className="flex items-center gap-2">
-                                        <span>Pièce jointe</span>
+                                        <span className="text-gray-200 dark:text-white">{t('experiences.form.attachment.title')}</span>
                                         <Badge
                                             variant="secondary"
-                                            className="bg-gradient-to-r from-amber-100 to-purple-100"
+                                            className="bg-gradient-to-r from-amber-100 to-purple-100 dark:from-amber-900/40 dark:to-purple-900/40"
                                         >
-                                            Max 5MB
+                                            {t('experiences.form.attachment.maxSize')}
                                         </Badge>
                                     </div>
                                     {data.attachment_path && (
@@ -1278,10 +1283,10 @@ const ExperienceManager: React.FC<Props> = ({ auth, experiences: initialExperien
                                             variant="ghost"
                                             size="sm"
                                             onClick={() => handleDeleteAttachment(data.id)}
-                                            className="hover:bg-red-50"
+                                            className="hover:bg-red-50 dark:hover:bg-gray-600"
                                         >
                                             <Trash2 className="w-4 h-4 text-red-500" />
-                                            Supprimer le fichier
+                                            {t('experiences.form.attachment.delete')}
                                         </Button>
                                     )}
                                 </div>
@@ -1297,45 +1302,45 @@ const ExperienceManager: React.FC<Props> = ({ auth, experiences: initialExperien
                                     }
                                     setData('attachment', file);
                                 }}
-                                className="border-amber-200 focus:ring-amber-500 cursor-pointer"
+                                className="border-amber-200 dark:border-gray-600 focus:ring-amber-500 dark:focus:ring-amber-400 cursor-pointer"
                                 accept=".pdf,.doc,.docx"
                             />
                             {data.attachment_path && (
                                 <div className="flex items-center gap-2 mt-2">
                                     <FileText className="w-4 h-4 text-amber-500" />
-                                    <span className="text-sm text-gray-600">
-                                        Fichier actuel: {data.attachment_path.split('/').pop()}
+                                    <span className="text-sm text-gray-400 dark:text-gray-300">
+                                        {t('experiences.form.attachment.current')} {data.attachment_path.split('/').pop()}
                                     </span>
                                 </div>
                             )}
                             {errors.attachment && (
                                 <p className="text-sm text-red-500">{errors.attachment}</p>
                             )}
-                            <p className="text-xs text-gray-500">
-                                Formats acceptés: PDF, DOC, DOCX (Certificats, attestations...)
+                            <p className="text-xs text-gray-400 dark:text-gray-300">
+                                {t('experiences.form.attachment.formats')}
                             </p>
                         </div>
 
-                        <div className="flex justify-between gap-2 sticky bottom-0 bg-white pt-4 border-t">
+                        <div className="flex justify-between gap-2 sticky bottom-0 bg-white dark:bg-gray-900 pt-4 border-t">
                             <Button
                                 type="submit"
                                 disabled={isLoading}
-                                className="bg-gradient-to-r from-amber-500 to-purple-500 hover:from-amber-600 hover:to-purple-600 text-white"
+                                className="bg-gradient-to-r from-amber-500 to-purple-500 dark:from-amber-400 dark:to-purple-400 hover:from-amber-600 hover:to-purple-600 text-white"
                             >
                                 {isLoading ? (
                                     <div className="flex items-center gap-2">
                                         <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                                        Chargement...
+                                        {t('experiences.actions.save')}...
                                     </div>
-                                ) : data.id ? 'Mettre à jour' : 'Enregistrer'}
+                                ) : data.id ? t('experiences.actions.update') : t('experiences.actions.save')}
                             </Button>
                             <Button
                                 type="button"
                                 variant="outline"
                                 onClick={resetForm}
-                                className="border-amber-200 hover:bg-amber-50"
+                                className="border-amber-200 dark:border-gray-600 hover:bg-amber-50 dark:hover:bg-gray-700"
                             >
-                                Annuler
+                                {t('experiences.actions.cancel')}
                             </Button>
                         </div>
                     </form>

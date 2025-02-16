@@ -9,6 +9,7 @@ import { useToast } from '@/Components/ui/use-toast';
 import { ScrollArea } from "@/Components/ui/scroll-area";
 import axios from 'axios';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useTranslation } from 'react-i18next';
 
 interface Hobby {
     id: number;
@@ -23,6 +24,7 @@ interface Props {
 }
 
 const HobbyManager: React.FC<Props> = ({ auth, availableHobbies, initialUserHobbies, onUpdate }) => {
+    const { t } = useTranslation();
     const [selectedHobbyId, setSelectedHobbyId] = useState<number | null>(null);
     const [userHobbies, setUserHobbies] = useState<Hobby[]>(initialUserHobbies);
     const [searchTerm, setSearchTerm] = useState('');
@@ -50,8 +52,8 @@ const HobbyManager: React.FC<Props> = ({ auth, availableHobbies, initialUserHobb
     const handleAddHobby = async () => {
         if (!selectedHobbyId) {
             toast({
-                title: "Erreur",
-                description: "Veuillez sélectionner un centre d'intérêt",
+                title: t('hobbies.errors.selectHobby.title'),
+                description: t('hobbies.errors.selectHobby.description'),
                 variant: 'destructive'
             });
             return;
@@ -70,14 +72,14 @@ const HobbyManager: React.FC<Props> = ({ auth, availableHobbies, initialUserHobb
                 onUpdate(updatedHobbies);
                 setSelectedHobbyId(null);
                 toast({
-                    title: "Centre d'intérêt ajouté",
-                    description: `${newHobby.name} a été ajouté à votre profil.`
+                    title: t('hobbies.success.added.title'),
+                    description: t('hobbies.success.added.description', { hobby: newHobby.name })
                 });
             }
         } catch (error) {
             toast({
-                title: "Erreur",
-                description: error.response?.data?.message || "Une erreur est survenue.",
+                title: t('hobbies.errors.adding.title'),
+                description: error.response?.data?.message || t('hobbies.errors.generic'),
                 variant: 'destructive'
             });
         }
@@ -90,13 +92,13 @@ const HobbyManager: React.FC<Props> = ({ auth, availableHobbies, initialUserHobb
             setUserHobbies(updatedHobbies);
             onUpdate(updatedHobbies);
             toast({
-                title: "Centre d'intérêt retiré",
-                description: "L'élément a été retiré de votre profil."
+                title: t('hobbies.success.removed.title'),
+                description: t('hobbies.success.removed.description')
             });
         } catch (error) {
             toast({
-                title: "Erreur",
-                description: error.response?.data?.message || "Une erreur est survenue.",
+                title: t('hobbies.errors.removing.title'),
+                description: error.response?.data?.message || t('hobbies.errors.generic'),
                 variant: 'destructive'
             });
         }
@@ -106,21 +108,21 @@ const HobbyManager: React.FC<Props> = ({ auth, availableHobbies, initialUserHobb
         <div className="space-y-6">
             <div className="flex flex-col md:flex-row justify-between items-center gap-4">
                 <div>
-                    <h2 className="text-2xl font-bold text-gray-800">Centres d'intérêt</h2>
-                    <p className="text-gray-500">Personnalisez votre profil avec vos passions</p>
+                    <h2 className="text-2xl font-bold dark:text-white">{t('hobbies.title')}</h2>
+                    <p className="text-gray-500 dark:text-gray-400">{t('hobbies.description')}</p>
                 </div>
             </div>
 
-            <Card className="border-amber-100 shadow-md">
+            <Card className="border-amber-100 dark:border-amber-900/50 shadow-md dark:shadow-amber-900/10">
                 <CardHeader>
                     <CardTitle className="text-lg font-semibold">
                         <div className="flex items-center gap-2">
-                            <Heart className="w-5 h-5 text-amber-500" />
-                            Gérer mes centres d'intérêt
+                            <Heart className="w-5 h-5 text-amber-500 dark:text-amber-400" />
+                            {t('hobbies.card.title')}
                         </div>
                     </CardTitle>
-                    <CardDescription>
-                        Ajoutez les activités qui vous passionnent
+                    <CardDescription className="dark:text-gray-400">
+                        {t('hobbies.card.description')}
                     </CardDescription>
                 </CardHeader>
 
@@ -131,10 +133,10 @@ const HobbyManager: React.FC<Props> = ({ auth, availableHobbies, initialUserHobb
                                 value={selectedHobbyId?.toString() || ''}
                                 onValueChange={(value) => setSelectedHobbyId(parseInt(value))}
                             >
-                                <SelectTrigger className="border-amber-200 focus:ring-amber-500">
-                                    <SelectValue placeholder="Sélectionner un centre d'intérêt" />
+                                <SelectTrigger className="border-amber-200 dark:border-amber-800 focus:ring-amber-500 dark:focus:ring-amber-400 dark:bg-gray-900">
+                                    <SelectValue placeholder={t('hobbies.select.placeholder')} />
                                 </SelectTrigger>
-                                <SelectContent>
+                                <SelectContent className="dark:bg-gray-900">
                                     {filteredHobbies.map((hobby) => (
                                         <SelectItem key={hobby.id} value={hobby.id.toString()}>
                                             {hobby.name}
@@ -145,29 +147,29 @@ const HobbyManager: React.FC<Props> = ({ auth, availableHobbies, initialUserHobb
                         </div>
                         <Button
                             onClick={handleAddHobby}
-                            className="bg-gradient-to-r from-amber-500 to-purple-500 hover:from-amber-600 hover:to-purple-600 text-white"
+                            className="bg-gradient-to-r from-amber-500 to-purple-500 hover:from-amber-600 hover:to-purple-600 text-white dark:from-amber-400 dark:to-purple-400 dark:hover:from-amber-500 dark:hover:to-purple-500"
                         >
                             <Plus className="w-4 h-4 mr-2" />
-                            Ajouter
+                            {t('hobbies.actions.add')}
                         </Button>
                     </div>
 
                     <div className="relative">
-                        <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 text-amber-500" />
+                        <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 text-amber-500 dark:text-amber-400" />
                         <Input
                             type="text"
-                            placeholder="Rechercher des centres d'intérêt..."
+                            placeholder={t('hobbies.search.placeholder')}
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
-                            className="pl-10 border-amber-200 focus:ring-amber-500"
+                            className="pl-10 border-amber-200 dark:border-amber-800 focus:ring-amber-500 dark:focus:ring-amber-400 dark:bg-gray-900"
                         />
                     </div>
 
                     <div>
                         <div className="flex items-center gap-2 mb-4">
-                            <Sparkles className="w-5 h-5 text-amber-500" />
-                            <h3 className="text-lg font-semibold text-gray-800">
-                                Vos centres d'intérêt ({sortedUserHobbies.length})
+                            <Sparkles className="w-5 h-5 text-amber-500 dark:text-amber-400" />
+                            <h3 className="text-lg font-semibold dark:text-white">
+                                {t('hobbies.list.title', { count: sortedUserHobbies.length })}
                             </h3>
                         </div>
 
@@ -184,14 +186,16 @@ const HobbyManager: React.FC<Props> = ({ auth, availableHobbies, initialUserHobb
                                         >
                                             <Badge
                                                 variant="secondary"
-                                                className="bg-gradient-to-r from-amber-100 to-purple-100 hover:from-amber-200 hover:to-purple-200 text-gray-800 flex items-center gap-2 py-2 pl-3 pr-2"
+                                                className="bg-gradient-to-r from-amber-100 to-purple-100 hover:from-amber-200 hover:to-purple-200
+                                                         dark:from-amber-900/40 dark:to-purple-900/40 dark:hover:from-amber-900/60 dark:hover:to-purple-900/60
+                                                         text-gray-800 dark:text-gray-200 flex items-center gap-2 py-2 pl-3 pr-2"
                                             >
                                                 <span>{hobby.name}</span>
                                                 <Button
                                                     variant="ghost"
                                                     size="sm"
                                                     onClick={() => handleRemoveHobby(hobby.id)}
-                                                    className="h-5 w-5 p-0 hover:bg-red-100 hover:text-red-500"
+                                                    className="h-5 w-5 p-0 hover:bg-red-100 hover:text-red-500 dark:hover:bg-red-900/30 dark:hover:text-red-400"
                                                 >
                                                     <X className="h-3 w-3" />
                                                 </Button>
@@ -201,8 +205,8 @@ const HobbyManager: React.FC<Props> = ({ auth, availableHobbies, initialUserHobb
                                 </AnimatePresence>
 
                                 {sortedUserHobbies.length === 0 && (
-                                    <p className="text-gray-500 text-sm italic w-full text-center py-4">
-                                        Ajoutez vos premiers centres d'intérêt pour personnaliser votre profil !
+                                    <p className="text-gray-500 dark:text-gray-400 text-sm italic w-full text-center py-4">
+                                        {t('hobbies.list.empty')}
                                     </p>
                                 )}
                             </div>

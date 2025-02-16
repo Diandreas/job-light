@@ -1,4 +1,3 @@
-// resources/js/Components/ai/constants.ts
 import { Brain, FileText, MessageSquare, PenTool } from 'lucide-react';
 import { Service } from '@/types/career-advisor';
 
@@ -47,9 +46,9 @@ export const SERVICES: Service[] = [
     {
         id: 'career-advice',
         icon: Brain,
-        title: 'Conseil Carrière',
-        description: 'Conseils personnalisés pour votre développement',
-        cost: 100,
+        title: 'services.career_advice.title',  // Clé de traduction
+        description: 'services.career_advice.description',  // Clé de traduction
+        cost: 3,
         category: 'advice',
         formats: ['conversation'],
         defaultPrompt: DEFAULT_PROMPTS['career-advice']
@@ -57,9 +56,9 @@ export const SERVICES: Service[] = [
     {
         id: 'cover-letter',
         icon: FileText,
-        title: 'Lettre de Motivation',
-        description: 'Lettre de motivation personnalisée',
-        cost: 200,
+        title: 'services.cover_letter.title',  // Clé de traduction
+        description: 'services.cover_letter.description',  // Clé de traduction
+        cost: 5,
         category: 'document',
         formats: ['docx', 'pdf'],
         defaultPrompt: DEFAULT_PROMPTS['cover-letter']
@@ -67,9 +66,9 @@ export const SERVICES: Service[] = [
     {
         id: 'interview-prep',
         icon: MessageSquare,
-        title: 'Préparation Entretien',
-        description: 'Simulation d\'entretien interactive',
-        cost: 150,
+        title: 'services.interview_prep.title',  // Clé de traduction
+        description: 'services.interview_prep.description',  // Clé de traduction
+        cost: 5,
         category: 'interactive',
         formats: ['conversation'],
         defaultPrompt: DEFAULT_PROMPTS['interview-prep']
@@ -77,9 +76,9 @@ export const SERVICES: Service[] = [
     {
         id: 'resume-review',
         icon: PenTool,
-        title: 'Analyse CV',
-        description: 'Suggestions d\'amélioration pour votre CV',
-        cost: 180,
+        title: 'services.resume_review.title',  // Clé de traduction
+        description: 'services.resume_review.description',  // Clé de traduction
+        cost: 4,
         category: 'advice',
         formats: ['conversation'],
         defaultPrompt: DEFAULT_PROMPTS['resume-review']

@@ -6,7 +6,7 @@ import {
     User, FileText, Briefcase, Code, GraduationCap, Heart,
     ChevronRight, ChevronLeft, Mail, Phone, MapPin, Linkedin,
     Github, PencilIcon, Sparkles, CircleChevronRight, Star,
-    Camera, Upload, FileUp, Bot, AlertCircle, X, Plus
+    Camera, Upload, FileUp, Bot, AlertCircle, X, Plus, Menu, Coins
 } from 'lucide-react';
 import axios from 'axios';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
@@ -25,7 +25,6 @@ import {
     DropdownMenuTrigger,
 } from "@/Components/ui/dropdown-menu";
 
-// Import des composants existants
 import PersonalInformationEdit from './PersonalInformation/Edit';
 import CompetenceManager from '@/Components/CompetenceManager';
 import HobbyManager from '@/Components/HobbyManager';
@@ -52,19 +51,18 @@ const PERSONAL_INFO_FIELDS = [
     { label: "GitHub", key: "github", icon: Github }
 ];
 
-// Composant Welcome Card
 const WelcomeCard = ({ percentage, onImport }) => {
     const { t } = useTranslation();
 
     return (
-        <Card className="bg-gradient-to-r from-amber-50 to-purple-50 dark:from-gray-800 dark:to-gray-900 border-none mb-6">
-            <CardContent className="p-6">
-                <div className="flex flex-col md:flex-row items-center justify-between gap-6">
-                    <div className="space-y-2">
-                        <h3 className="text-xl font-semibold text-gray-800 dark:text-white">
+        <Card className="bg-gradient-to-r from-amber-50 to-purple-50 dark:from-gray-800 dark:to-gray-900 border-none mb-4 md:mb-6">
+            <CardContent className="p-4 md:p-6">
+                <div className="flex flex-col md:flex-row items-center justify-between gap-4 md:gap-6">
+                    <div className="space-y-2 w-full md:w-auto">
+                        <h3 className="text-lg md:text-xl font-semibold text-gray-800 dark:text-white">
                             {t('cv.interface.welcome.title')}
                         </h3>
-                        <p className="text-gray-600 dark:text-gray-300">
+                        <p className="text-sm md:text-base text-gray-600 dark:text-gray-300">
                             {t('cv.interface.welcome.subtitle')}
                         </p>
                         <div className="flex items-center gap-4">
@@ -76,24 +74,24 @@ const WelcomeCard = ({ percentage, onImport }) => {
                     </div>
                     <DropdownMenu>
                         <DropdownMenuTrigger asChild>
-                            <Button variant="outline" className="border-amber-200 dark:border-amber-800 hover:bg-amber-50 dark:hover:bg-amber-900/50">
+                            <Button variant="outline" className="w-full md:w-auto border-amber-200 dark:border-amber-800 hover:bg-amber-50 dark:hover:bg-amber-900/50">
                                 <FileUp className="w-4 h-4 mr-2" />
                                 {t('cv.interface.import.button')}
                             </Button>
                         </DropdownMenuTrigger>
-                        <DropdownMenuContent>
+                        <DropdownMenuContent align="end">
                             <DropdownMenuItem onClick={() => onImport('pdf')} className="cursor-pointer">
                                 <FileText className="w-4 h-4 mr-2" />
-                                {t('cv.interface.import.pdf')}
+                                {t('cv.interface.import.pdf')}( - 5 <Coins/>)
                             </DropdownMenuItem>
                             <DropdownMenuItem onClick={() => onImport('docx')} className="cursor-pointer">
                                 <FileText className="w-4 h-4 mr-2" />
-                                {t('cv.interface.import.word')}
+                                {t('cv.interface.import.word')}( - 5 <Coins/>)
                             </DropdownMenuItem>
-                            <DropdownMenuItem onClick={() => onImport('ai')} className="cursor-pointer">
-                                <Bot className="w-4 h-4 mr-2" />
-                                {t('cv.interface.import.ai')}
-                            </DropdownMenuItem>
+                            {/*<DropdownMenuItem onClick={() => onImport('ai')} className="cursor-pointer">*/}
+                            {/*    <Bot className="w-4 h-4 mr-2" />*/}
+                            {/*    {t('cv.interface.import.ai')}*/}
+                            {/*</DropdownMenuItem>*/}
                         </DropdownMenuContent>
                     </DropdownMenu>
                 </div>
@@ -102,7 +100,6 @@ const WelcomeCard = ({ percentage, onImport }) => {
     );
 };
 
-// Composant PersonalInfoCard
 const PersonalInfoCard = ({ item, onEdit, updateCvInformation }) => {
     const [isUploading, setIsUploading] = useState(false);
     const [isOpen, setIsOpen] = useState(false);
@@ -164,7 +161,6 @@ const PersonalInfoCard = ({ item, onEdit, updateCvInformation }) => {
             setIsUploading(true);
             const croppedImage = await getCroppedImg();
             const formData = new FormData();
-            //@ts-ignore
             formData.append('photo', croppedImage, 'profile.jpg');
 
             const response = await axios.post(route('personal-information.update-photo'), formData, {
@@ -211,19 +207,18 @@ const PersonalInfoCard = ({ item, onEdit, updateCvInformation }) => {
             width,
             height
         );
-        //@ts-ignore
         setCrop(crop);
     };
 
     return (
-        <div className="space-y-6">
-            <div className="flex flex-col md:flex-row justify-between items-center">
-                <h2 className="text-2xl font-bold text-gray-800 dark:text-white">
+        <div className="space-y-4 md:space-y-6">
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                <h2 className="text-xl md:text-2xl font-bold text-gray-800 dark:text-white">
                     {t('cv.interface.personal.title')}
                 </h2>
                 <Button
                     onClick={onEdit}
-                    className="bg-gradient-to-r from-amber-500 to-purple-500 hover:from-amber-600 hover:to-purple-600 dark:from-amber-400 dark:to-purple-400 text-white mt-4 md:mt-0"
+                    className="w-full md:w-auto bg-gradient-to-r from-amber-500 to-purple-500 hover:from-amber-600 hover:to-purple-600 dark:from-amber-400 dark:to-purple-400 text-white"
                 >
                     <PencilIcon className="h-4 w-4 mr-2" />
                     {t('cv.interface.personal.edit')}
@@ -231,7 +226,7 @@ const PersonalInfoCard = ({ item, onEdit, updateCvInformation }) => {
             </div>
 
             <Card>
-                <CardContent className="p-6 space-y-6">
+                <CardContent className="p-4 md:p-6 space-y-4 md:space-y-6">
                     <div className="flex flex-col md:flex-row items-center gap-4 border-b border-amber-100 dark:border-amber-800 pb-4">
                         <div className="relative h-20 w-20">
                             {item.photo ? (
@@ -257,24 +252,26 @@ const PersonalInfoCard = ({ item, onEdit, updateCvInformation }) => {
                             </label>
                         </div>
                         <div>
-                            <h3 className="text-2xl font-bold text-gray-900 dark:text-white">
+                            <h3 className="text-xl md:text-2xl font-bold text-gray-900 dark:text-white text-center md:text-left">
                                 {item.firstName}
                             </h3>
-                            <p className="text-gray-500 dark:text-gray-400 text-lg">
+                            <p className="text-gray-500 dark:text-gray-400 text-base md:text-lg text-center md:text-left">
                                 {item.profession || t('cv.interface.personal.fields.notSpecified')}
                             </p>
                         </div>
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-8">
                         {PERSONAL_INFO_FIELDS.map(({ label, key, icon: Icon }) => (
                             <div key={label} className="flex items-start gap-3">
                                 <div className="mt-1">
                                     <Icon className="h-5 w-5 text-amber-500" />
                                 </div>
                                 <div className="flex-1">
-                                    <p className="text-sm text-gray-500 dark:text-gray-400 font-medium">{t(`cv.interface.personal.fields.${key}`)}</p>
-                                    <p className="text-gray-900 dark:text-white font-medium">
+                                    <p className="text-sm text-gray-500 dark:text-gray-400 font-medium">
+                                        {t(`cv.interface.personal.fields.${key}`)}
+                                    </p>
+                                    <p className="text-gray-900 dark:text-white font-medium break-all">
                                         {item[key] || t('cv.interface.personal.fields.notSpecified')}
                                     </p>
                                 </div>
@@ -312,8 +309,7 @@ const PersonalInfoCard = ({ item, onEdit, updateCvInformation }) => {
                                         className="max-w-full h-auto"
                                         onLoad={onImageLoad}
                                     />
-                                </ReactCrop>
-                            )}
+                                </ReactCrop>)}
                         </div>
                     </ScrollArea>
 
@@ -335,47 +331,46 @@ const PersonalInfoCard = ({ item, onEdit, updateCvInformation }) => {
     );
 };
 
-// Composant SidebarButton
-const SidebarButton = ({ item, isActive, isComplete, onClick }) => {
+const SidebarButton = ({ item, isActive, isComplete, onClick, isMobile }) => {
     const activeClass = "bg-gradient-to-r from-amber-500 to-purple-500 dark:from-amber-400 dark:to-purple-400 text-white shadow-lg";
-    const inactiveClass = "hover:bg-amber-50 dark:hover:bg-amber-900/50 text-gray-700 dark:text-gray-300";
+    const inactiveClass = "hover:bg-amber-50 dark:hover:bg-gray-800 text-gray-700 dark:text-gray-200";
 
     return (
         <motion.button
             onClick={onClick}
-            className={`w-full flex items-center justify-between p-3 rounded-lg transition-all ${isActive ? activeClass : inactiveClass}`}
+            className={`flex items-center justify-between p-3 rounded-lg transition-all ${isActive ? activeClass : inactiveClass} ${isMobile ? 'w-12' : 'w-full'}`}
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
         >
             <div className="flex items-center gap-3">
                 <item.icon className={`h-5 w-5 ${isActive ? 'text-white' : item.color}`} />
-                <span className="font-medium">{item.label}</span>
+                {!isMobile && <span className="font-medium">{item.label}</span>}
             </div>
-            <div className="flex items-center gap-2">
-                {isComplete && (
-                    <motion.div
-                        initial={{ scale: 0 }}
-                        animate={{ scale: 1 }}
-                        className="w-2 h-2 rounded-full bg-green-400"
-                    />
-                )}
-                <ChevronRight className={`h-4 w-4 ${isActive ? 'text-white' : 'text-gray-400'}`} />
-            </div>
+            {!isMobile && (
+                <div className="flex items-center gap-2">
+                    {isComplete && (
+                        <motion.div
+                            initial={{ scale: 0 }}
+                            animate={{ scale: 1 }}
+                            className="w-2 h-2 rounded-full bg-green-400"
+                        />
+                    )}
+                    <ChevronRight className={`h-4 w-4 ${isActive ? 'text-white' : 'text-gray-400'}`} />
+                </div>
+            )}
         </motion.button>
     );
-};
-
-// Composant SectionNavigation
+}
 const SectionNavigation = ({ currentSection, nextSection, prevSection, canProgress, onNavigate }) => {
     const { t } = useTranslation();
 
     return (
-        <div className="flex flex-col md:flex-row justify-between items-center mt-8 pt-6 border-t border-amber-100 dark:border-amber-800">
+        <div className="flex flex-col md:flex-row justify-between items-center gap-4 mt-6 pt-4 border-t border-amber-100 dark:border-amber-800">
             {prevSection && (
                 <Button
                     variant="outline"
                     onClick={() => onNavigate(prevSection.id)}
-                    className="flex items-center gap-2 w-full md:w-auto mb-2 md:mb-0 border-amber-200 dark:border-amber-800"
+                    className="w-full md:w-auto flex items-center gap-2 border-amber-200 dark:border-amber-800"
                 >
                     <ChevronLeft className="w-4 h-4" />
                     {prevSection.label}
@@ -385,7 +380,7 @@ const SectionNavigation = ({ currentSection, nextSection, prevSection, canProgre
                 <Button
                     onClick={() => onNavigate(nextSection.id)}
                     disabled={!canProgress}
-                    className="flex items-center gap-2 w-full md:w-auto ml-auto bg-gradient-to-r from-amber-500 to-purple-500 hover:from-amber-600 hover:to-purple-600 dark:from-amber-400 dark:to-purple-400 text-white"
+                    className="w-full md:w-auto flex items-center gap-2 bg-gradient-to-r from-amber-500 to-purple-500 hover:from-amber-600 hover:to-purple-600 dark:from-amber-400 dark:to-purple-400 text-white"
                 >
                     {nextSection.label}
                     <ChevronRight className="w-4 h-4" />
@@ -395,19 +390,18 @@ const SectionNavigation = ({ currentSection, nextSection, prevSection, canProgre
     );
 };
 
-// Composant Principal
 export default function CvInterface({ auth, cvInformation: initialCvInformation }) {
     const { t } = useTranslation();
     const [activeSection, setActiveSection] = useState('personalInfo');
     const [cvInformation, setCvInformation] = useState(initialCvInformation);
     const [isEditing, setIsEditing] = useState(false);
     const [isImporting, setIsImporting] = useState(false);
+    const [isSidebarOpen, setIsSidebarOpen] = useState(false);
     const { toast } = useToast();
 
     const updateCvInformation = useCallback((section, data) => {
         setCvInformation(prev => {
             const newState = { ...prev };
-
             if (section === 'summaries') {
                 newState.summaries = data;
                 if (Array.isArray(data) && data.length > 0) {
@@ -426,59 +420,9 @@ export default function CvInterface({ auth, cvInformation: initialCvInformation 
             } else {
                 newState[section] = Array.isArray(data) ? [...data] : { ...data };
             }
-
             return newState;
         });
     }, []);
-
-    const handleImport = async (type) => {
-        if (type === 'ai' && auth.user.wallet_balance < 5) {
-            toast({
-                title: t('cv.interface.import.error'),
-                description: t('cv.interface.import.insufficient'),
-                variant: "destructive"
-            });
-            return;
-        }
-
-        const input = document.createElement('input');
-        input.type = 'file';
-        input.accept = type === 'pdf' ? '.pdf' : '.docx';
-
-        input.onchange = async (e) => {
-            const file = e.target.files?.[0];
-            if (!file) return;
-
-            try {
-                setIsImporting(true);
-                const formData = new FormData();
-                formData.append('cv', file);
-
-                const response = await axios.post(
-                    type === 'ai' ? '/api/analyze-cv' : '/api/import-cv',
-                    formData
-                );
-
-                if (response.data.success) {
-                    updateCvInformation(response.data.cvData);
-                    toast({
-                        title: t('cv.interface.import.success'),
-                        description: t('cv.interface.import.successDetail')
-                    });
-                }
-            } catch (error) {
-                toast({
-                    title: t('cv.interface.import.error'),
-                    description: error.response?.data?.message || t('cv.interface.import.errorDetail'),
-                    variant: "destructive"
-                });
-            } finally {
-                setIsImporting(false);
-            }
-        };
-
-        input.click();
-    };
 
     const completionStatus = {
         personalInfo: Boolean(cvInformation.personalInformation?.firstName),
@@ -568,22 +512,71 @@ export default function CvInterface({ auth, cvInformation: initialCvInformation 
     const nextSection = SIDEBAR_ITEMS[currentSectionIndex + 1];
     const prevSection = SIDEBAR_ITEMS[currentSectionIndex - 1];
 
+    const handleImport = async (type) => {
+        if (type === 'ai' && auth.user.wallet_balance < 5) {
+            toast({
+                title: t('cv.interface.import.error'),
+                description: t('cv.interface.import.insufficient'),
+                variant: "destructive"
+            });
+            return;
+        }
+
+        const input = document.createElement('input');
+        input.type = 'file';
+        input.accept = type === 'pdf' ? '.pdf' : '.docx';
+
+        input.onchange = async (e) => {
+            const file = e.target.files?.[0];
+            if (!file) return;
+
+            try {
+                setIsImporting(true);
+                const formData = new FormData();
+                formData.append('cv', file);
+
+                const response = await axios.post(
+                    type === 'ai' ? '/api/analyze-cv' : '/api/import-cv',
+                    formData
+                );
+
+                if (response.data.success) {
+                    updateCvInformation(response.data.cvData);
+                    toast({
+                        title: t('cv.interface.import.success'),
+                        description: t('cv.interface.import.successDetail')
+                    });
+                }
+            } catch (error) {
+                toast({
+                    title: t('cv.interface.import.error'),
+                    description: error.response?.data?.message || t('cv.interface.import.errorDetail'),
+                    variant: "destructive"
+                });
+            } finally {
+                setIsImporting(false);
+            }
+        };
+
+        input.click();
+    };
+
     return (
         <AuthenticatedLayout user={auth.user}>
             <Head title={t('cv.interface.title')} />
 
             <div className="min-h-screen bg-gradient-to-b from-amber-50/50 to-purple-50/50 dark:from-gray-900 dark:to-gray-800">
-                <div className="container mx-auto py-6 px-4">
-                    {/* Header avec titre et bouton de design */}
-                    <div className="flex justify-between items-center mb-8">
-                        <div className="flex items-center gap-3">
-                            <Sparkles className="h-8 w-8 text-amber-500 dark:text-amber-400" />
-                            <h2 className="font-bold text-2xl bg-gradient-to-r from-amber-500 to-purple-500 dark:from-amber-400 dark:to-purple-400 text-transparent bg-clip-text">
+                <div className="container mx-auto py-4 px-4 md:py-6">
+                    {/* Header with improved mobile layout */}
+                    <div className="flex justify-between items-center mb-6 md:mb-8">
+                        <div className="flex items-center gap-2 md:gap-3">
+                            <Sparkles className="h-6 w-6 md:h-8 md:w-8 text-amber-500 dark:text-amber-400" />
+                            <h2 className="font-bold text-xl md:text-2xl bg-gradient-to-r from-amber-500 to-purple-500 dark:from-amber-400 dark:to-purple-400 text-transparent bg-clip-text">
                                 {t('cv.interface.title')}
                             </h2>
                         </div>
                         <Link href={route('userCvModels.index')}>
-                            <Button className="bg-gradient-to-r from-amber-500 to-purple-500 hover:from-amber-600 hover:to-purple-600 dark:from-amber-400 dark:to-purple-400 text-white">
+                            <Button className="hidden md:flex bg-gradient-to-r from-amber-500 to-purple-500 hover:from-amber-600 hover:to-purple-600 dark:from-amber-400 dark:to-purple-400 text-white">
                                 <Star className="mr-2 h-4 w-4" />
                                 {t('cv.interface.chooseDesign')}
                                 <CircleChevronRight className="ml-2 h-4 w-4" />
@@ -591,21 +584,19 @@ export default function CvInterface({ auth, cvInformation: initialCvInformation 
                         </Link>
                     </div>
 
-                    {/* Welcome Card avec la progression */}
                     <WelcomeCard
                         percentage={getCompletionPercentage()}
                         onImport={handleImport}
                     />
 
-                    {/* Interface principale */}
                     <Card className="shadow-xl border border-amber-100 dark:border-amber-800">
-                        <CardHeader className="bg-white dark:bg-gray-900 border-b border-amber-100 dark:border-amber-800">
-                            <div className="flex flex-col md:flex-row justify-between items-center">
+                        <CardHeader className="bg-white dark:bg-gray-900 border-b border-amber-100 dark:border-amber-800 p-4 md:p-6">
+                            <div className="flex items-center justify-between">
                                 <div>
-                                    <CardTitle className="text-2xl font-bold bg-gradient-to-r from-amber-500 to-purple-500 dark:from-amber-400 dark:to-purple-400 text-transparent bg-clip-text">
+                                    <CardTitle className="text-xl md:text-2xl font-bold bg-gradient-to-r from-amber-500 to-purple-500 dark:from-amber-400 dark:to-purple-400 text-transparent bg-clip-text">
                                         {t('cv.interface.sections.title')}
                                     </CardTitle>
-                                    <p className="text-gray-500 dark:text-gray-400 mt-1">
+                                    <p className="text-sm md:text-base text-gray-500 dark:text-gray-400 mt-1">
                                         {t('cv.interface.sections.description')}
                                     </p>
                                 </div>
@@ -613,10 +604,10 @@ export default function CvInterface({ auth, cvInformation: initialCvInformation 
                         </CardHeader>
 
                         <div className="flex flex-row min-h-[600px]">
-                            {/* Sidebar avec navigation */}
-                            <div className="w-14 md:w-64 flex-shrink-0 border-r border-amber-100 dark:border-amber-800 bg-white/50 dark:bg-gray-900/50 transition-all duration-300">
+                            {/* Sidebar Desktop */}
+                            <div className="hidden md:block w-64 flex-shrink-0 border-r border-amber-100 dark:border-amber-800 bg-white/50 dark:bg-gray-900/50">
                                 <ScrollArea className="h-full py-2">
-                                    <nav className="sticky top-0 p-2 md:p-4 space-y-1 md:space-y-3">
+                                    <nav className="sticky top-0 p-4 space-y-3">
                                         {SIDEBAR_ITEMS.map(item => (
                                             <SidebarButton
                                                 key={item.id}
@@ -624,14 +615,33 @@ export default function CvInterface({ auth, cvInformation: initialCvInformation 
                                                 isActive={activeSection === item.id}
                                                 isComplete={completionStatus[item.id]}
                                                 onClick={() => setActiveSection(item.id)}
+                                                isMobile={false}
                                             />
                                         ))}
                                     </nav>
                                 </ScrollArea>
                             </div>
 
-                            {/* Contenu principal avec animations */}
-                            <div className="flex-grow p-4 md:p-6 overflow-x-hidden">
+                            {/* Sidebar Mobile (Icon Only) */}
+                            <div className="md:hidden w-14 flex-shrink-0 border-r border-amber-100 dark:border-amber-800 bg-white/50 dark:bg-gray-900/50">
+                                <ScrollArea className="h-full py-2">
+                                    <nav className="sticky top-0 p-2 space-y-2">
+                                        {SIDEBAR_ITEMS.map(item => (
+                                            <SidebarButton
+                                                key={item.id}
+                                                item={item}
+                                                isActive={activeSection === item.id}
+                                                isComplete={completionStatus[item.id]}
+                                                onClick={() => setActiveSection(item.id)}
+                                                isMobile={true}
+                                            />
+                                        ))}
+                                    </nav>
+                                </ScrollArea>
+                            </div>
+
+                            {/* Main content */}
+                            <div className="flex-grow p-4 md:p-6 overflow-x-hidden bg-white dark:bg-gray-900">
                                 <AnimatePresence mode="wait">
                                     <motion.div
                                         key={activeSection}
@@ -656,24 +666,25 @@ export default function CvInterface({ auth, cvInformation: initialCvInformation 
                         </div>
                     </Card>
 
-                    {/* Call-to-action */}
-                    <div className="mt-8 text-center">
+                    {/* Call-to-action with improved mobile responsiveness */}
+                    <div className="mt-6 md:mt-8 text-center">
                         <Link href={route('userCvModels.index')}>
-                            <Button className="bg-gradient-to-r from-amber-500 to-purple-500 hover:from-amber-600 hover:to-purple-600 dark:from-amber-400 dark:to-purple-400 text-white p-6 rounded-xl shadow-lg group">
+                            <Button className="w-full md:w-auto bg-gradient-to-r from-amber-500 to-purple-500 hover:from-amber-600 hover:to-purple-600 dark:from-amber-400 dark:to-purple-400 text-white p-4 md:p-6 rounded-xl shadow-lg group">
                                 <div className="flex flex-col items-center gap-2">
-                                    <Sparkles className="h-6 w-6 group-hover:animate-spin" />
-                                    <span className="text-lg font-medium">
+                                    <Sparkles className="h-5 w-5 md:h-6 md:w-6 group-hover:animate-spin" />
+                                    <span className="text-base md:text-lg font-medium">
                                         {t('cv.interface.cta.title')}
                                     </span>
-                                    <span className="text-sm opacity-90">
+                                    <span className="text-xs md:text-sm opacity-90">
                                         {t('cv.interface.cta.subtitle')}
                                     </span>
                                 </div>
                             </Button>
                         </Link>
                     </div>
+
                 </div>
             </div>
         </AuthenticatedLayout>
-    );
+);
 }

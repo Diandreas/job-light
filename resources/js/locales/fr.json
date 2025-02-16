@@ -3,7 +3,7 @@
     "menu": {
         "title": "Menu Guidy",
         "admin": "Administration",
-        "createCV": "Créer mon CV",
+        "createCV": "Créer un CV",
         "assistant": "Assistant Guidy",
         "dashboard": "Tableau de bord",
         "profile": "Mon Profil"
@@ -11,59 +11,59 @@
     "cv": {
         "interface": {
             "title": "Mon CV Guidy",
-            "subtitle": "Complétez votre profil pour un CV qui vous ressemble",
+            "subtitle": "Complétez votre profil pour un CV qui vous représente",
             "progress": "Progression",
             "chooseDesign": "Choisir un design",
             "premiumDesigns": "Donnez vie à votre CV avec nos designs professionnels",
             "premiumSubtitle": "Choisissez parmi nos modèles premium",
             "welcome": {
-                "title": "Bienvenue sur votre espace CV",
+                "title": "Bienvenue dans votre espace CV",
                 "subtitle": "Créez un CV professionnel en quelques étapes",
-                "complete": "complété"
+                "complete": "terminé"
             },
             "import": {
-                "button": "Importer un CV",
-                "pdf": "Importer un PDF",
-                "word": "Importer un Word",
+                "button": "Importer CV",
+                "pdf": "Importer PDF",
+                "word": "Importer Word",
                 "ai": "Analyse IA (5 jetons)",
                 "success": "Import réussi",
                 "successDetail": "Votre CV a été importé avec succès",
-                "error": "Erreur d'importation",
-                "errorDetail": "Une erreur est survenue lors de l'importation",
+                "error": "Erreur d'import",
+                "errorDetail": "Une erreur s'est produite lors de l'import",
                 "insufficient": "Solde insuffisant pour l'analyse IA"
             },
             "update": {
                 "success": "Mise à jour réussie",
-                "successDetail": "Vos informations ont été enregistrées avec succès"
+                "successDetail": "Vos informations ont été sauvegardées avec succès"
             },
             "sections": {
                 "title": "Créez votre CV professionnel",
                 "description": "Complétez chaque section pour un CV complet",
-                "personalInfo": "Informations Personnelles",
+                "personalInfo": "Informations personnelles",
                 "summary": "Résumé",
-                "experience": "Expériences",
+                "experience": "Expérience",
                 "competence": "Compétences",
                 "education": "Formation",
-                "hobbies": "Centres d'Intérêt"
+                "hobbies": "Centres d'intérêt"
             },
             "personal": {
-                "title": "Informations Personnelles",
+                "title": "Informations personnelles",
                 "edit": "Modifier",
                 "photo": {
                     "upload": "Ajouter une photo",
                     "edit": "Modifier la photo",
                     "crop": "Ajuster la photo",
-                    "cropDescription": "Rognez votre photo pour l'adapter au format carré",
+                    "cropDescription": "Recadrez votre photo au format carré",
                     "save": "Enregistrer",
                     "saving": "Enregistrement...",
                     "cancel": "Annuler",
                     "success": "Photo mise à jour avec succès",
                     "successDetail": "Votre photo de profil a été mise à jour",
-                    "error": "Erreur lors de la mise à jour de la photo",
-                    "sizeError": "Fichier trop volumineux (max 5MB)"
+                    "error": "Erreur de mise à jour de la photo",
+                    "sizeError": "Fichier trop volumineux (max 5 Mo)"
                 },
                 "fields": {
-                    "email": "Email",
+                    "email": "E-mail",
                     "phone": "Téléphone",
                     "address": "Adresse",
                     "linkedin": "LinkedIn",
@@ -80,12 +80,12 @@
             "ai": {
                 "analyzer": {
                     "title": "Analyseur de CV",
-                    "subtitle": "Importez votre CV existant pour le convertir automatiquement",
-                    "upload": "Importer un CV",
+                    "subtitle": "Importez votre CV existant pour une conversion automatique",
+                    "upload": "Importer CV",
                     "analyzing": "Analyse en cours...",
                     "success": "CV importé avec succès",
-                    "successDesc": "Les sections ont été mises à jour automatiquement",
-                    "error": "Erreur lors de l'analyse",
+                    "successDesc": "Les sections ont été automatiquement mises à jour",
+                    "error": "Erreur d'analyse du CV",
                     "insufficient": "Solde insuffisant"
                 }
             },
@@ -95,14 +95,13 @@
             }
         },
         "navigation": "Navigation CV",
-        "edit": "Éditer mon CV",
+        "edit": "Modifier CV",
         "premium": "Designs Premium",
-        "preview": "Aperçu & Export",
+        "preview": "Aperçu et Export",
         "download": "Télécharger",
         "template": "Modèles",
         "save": "Enregistrer",
         "continue": "Continuer"
-
     },
     "profile": {
         "edit": "Modifier le profil",
@@ -112,20 +111,20 @@
         "security": "Sécurité"
     },
     "theme": {
-        "toggle": "Changer le thème",
-        "light": "Mode clair",
-        "dark": "Mode sombre",
+        "toggle": "Changer de thème",
+        "light": "Mode Clair",
+        "dark": "Mode Sombre",
         "system": "Système"
     },
     "language": {
-        "change": "Changer la langue",
+        "change": "Changer de langue",
         "en": "Anglais",
         "fr": "Français"
     },
     "auth": {
         "logout": "Déconnexion",
         "login": "Connexion",
-        "register": "Inscription"
+        "register": "S'inscrire"
     },
     "common": {
         "search": "Rechercher",
@@ -151,9 +150,6 @@
         "markAllRead": "Tout marquer comme lu",
         "new": "Nouveau"
     },
-
-
-
     "cv_models": {
         "title": "Collection de Modèles de CV",
         "back": "Retour",
@@ -163,34 +159,32 @@
             "title": "Mes Modèles Actifs",
             "limit": "{{current}}/{{max}} modèles"
         },
-        "discover_models": "Découvrez Nos Modèles",
+        "discover_models": "Découvrir nos Modèles",
         "empty_state": {
             "title": "Aucun Modèle Actif",
             "description": "Sélectionnez un modèle parmi les modèles disponibles ci-dessous."
         },
         "model_card": {
             "active": "Actif",
-            "use_model": "Utiliser ce modèle",
-            "active_model": "Modèle actif",
-            "add_to_catalog": "Ajouter au catalogue"
+            "use_model": "Utiliser ce Modèle",
+            "active_model": "Modèle Actif",
+            "add_to_catalog": "Ajouter au Catalogue"
         },
         "notifications": {
             "model_added": "Modèle ajouté à votre collection",
             "model_activated": "Votre modèle a été activé avec succès",
             "max_models_reached": "Vous ne pouvez pas ajouter plus de {{max}} modèles",
-            "error": "Une erreur est survenue"
+            "error": "Une erreur s'est produite"
         }
     },
-
-
     "cv_preview": {
         "title": "CV Professionnel",
         "export": {
-            "title": "Exporter Mon CV",
-            "selected_model": "Modèle sélectionné: {{name}}",
+            "title": "Exporter mon CV",
+            "selected_model": "Modèle sélectionné : {{name}}",
             "back_to_models": "Retour aux modèles",
             "print": "Imprimer",
-            "printing": "Impression..."
+            "printing": "Impression en cours..."
         },
         "wallet": {
             "current_balance": "Solde actuel",
@@ -204,26 +198,24 @@
             "action": "Choisir un modèle"
         },
         "preview": {
-            "title": "Aperçu du CV",
+            "title": "Aperçu CV",
             "loading": "Chargement de l'aperçu..."
         }
     },
-
-
     "career_advisor": {
-        "title": "Assistant de carrière",
+        "title": "Assistant de Carrière",
         "header": {
             "balance": "Solde",
             "history": "Historique"
         },
         "messages": {
-            "empty": "Veuillez entrer votre message",
+            "empty": "Veuillez saisir votre message",
             "insufficient_balance": "Solde insuffisant",
             "recharge_needed": "Veuillez recharger votre compte",
-            "error": "Une erreur est survenue",
-            "processing_error": "Erreur lors du traitement",
+            "error": "Une erreur s'est produite",
+            "processing_error": "Erreur de traitement",
             "export_success": "Document exporté avec succès",
-            "export_error": "L'exportation a échoué"
+            "export_error": "Échec de l'exportation"
         },
         "chat": {
             "send": "Envoyer",
@@ -232,7 +224,7 @@
             "actions": {
                 "delete": {
                     "title": "Supprimer la conversation ?",
-                    "description": "Cette action est irréversible. La conversation sera définitivement supprimée.",
+                    "description": "Cette action ne peut pas être annulée. La conversation sera définitivement supprimée.",
                     "confirm": "Supprimer",
                     "cancel": "Annuler"
                 },
@@ -247,8 +239,71 @@
             "empty": "Aucune conversation",
             "created_at": "Créé le {{date}}"
         }
+    },
+    "services": {
+        "career_advice": {
+            "title": "Conseil de Carrière",
+            "description": "Conseils personnalisés de développement de carrière"
+        },
+        "cover_letter": {
+            "title": "Lettre de Motivation",
+            "description": "Lettre de motivation personnalisée"
+        },
+        "interview_prep": {
+            "title": "Préparation à l'Entretien",
+            "description": "Simulation interactive d'entretien"
+        },
+        "resume_review": {
+            "title": "Révision de CV",
+            "description": "Suggestions d'amélioration de CV"
+        }
+    },
+
+    "hobbies": {
+        "title": "Centres d'intérêt",
+        "description": "Personnalisez votre profil avec vos passions",
+        "card": {
+            "title": "Gérer mes centres d'intérêt",
+            "description": "Ajoutez les activités qui vous passionnent"
+        },
+        "select": {
+            "placeholder": "Sélectionner un centre d'intérêt"
+        },
+        "search": {
+            "placeholder": "Rechercher des centres d'intérêt..."
+        },
+        "list": {
+            "title": "Vos centres d'intérêt ({{count}})",
+            "empty": "Ajoutez vos premiers centres d'intérêt pour personnaliser votre profil !"
+        },
+        "actions": {
+            "add": "Ajouter"
+        },
+        "mobile": {
+            "openDrawer": "Gérer mes centres d'intérêt"
+        },
+        "success": {
+            "added": {
+                "title": "Centre d'intérêt ajouté",
+                "description": "{{hobby}} a été ajouté à votre profil."
+            },
+            "removed": {
+                "title": "Centre d'intérêt retiré",
+                "description": "L'élément a été retiré de votre profil."
+            }
+        },
+        "errors": {
+            "selectHobby": {
+                "title": "Erreur",
+                "description": "Veuillez sélectionner un centre d'intérêt"
+            },
+            "adding": {
+                "title": "Erreur"
+            },
+            "removing": {
+                "title": "Erreur"
+            },
+            "generic": "Une erreur est survenue."
+        }
     }
-
-
-
 }

@@ -251,7 +251,71 @@
             "empty": "No conversations",
             "created_at": "Created on {{date}}"
         }
+    },
+
+    "services": {
+        "career_advice": {
+            "title": "Career Advice",
+            "description": "Personalized career development advice"
+        },
+        "cover_letter": {
+            "title": "Cover Letter",
+            "description": "Customized cover letter"
+        },
+        "interview_prep": {
+            "title": "Interview Prep",
+            "description": "Interactive interview simulation"
+        },
+        "resume_review": {
+            "title": "Resume Review",
+            "description": "Resume improvement suggestions"
+        }
+    },
+    "hobbies": {
+        "title": "Interests",
+        "description": "Customize your profile with your passions",
+        "card": {
+            "title": "Manage my interests",
+            "description": "Add activities you're passionate about"
+        },
+        "select": {
+            "placeholder": "Select an interest"
+        },
+        "search": {
+            "placeholder": "Search interests..."
+        },
+        "list": {
+            "title": "Your interests ({{count}})",
+            "empty": "Add your first interests to personalize your profile!"
+        },
+        "actions": {
+            "add": "Add"
+        },
+        "mobile": {
+            "openDrawer": "Manage my interests"
+        },
+        "success": {
+            "added": {
+                "title": "Interest added",
+                "description": "{{hobby}} has been added to your profile."
+            },
+            "removed": {
+                "title": "Interest removed",
+                "description": "The item has been removed from your profile."
+            }
+        },
+        "errors": {
+            "selectHobby": {
+                "title": "Error",
+                "description": "Please select an interest"
+            },
+            "adding": {
+                "title": "Error"
+            },
+            "removing": {
+                "title": "Error"
+            },
+            "generic": "An error occurred."
+        }
     }
-
-
 }

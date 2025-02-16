@@ -1,6 +1,34 @@
 @extends('layouts.cv')
 
 @section('content')
+    @php
+        $currentLang = $_COOKIE['i18nextLng'] ?? 'fr';
+        $translations = [
+            'fr' => [
+                'about' => 'À propos',
+                'skills' => 'Compétences',
+                'interests' => "Centres d'intérêt",
+                'present' => 'Présent',
+                'experience' => 'Expérience professionnelle',
+                'education' => 'Formation',
+                'print' => 'Imprimer CV'
+            ],
+            'en' => [
+                'about' => 'About',
+                'skills' => 'Skills',
+                'interests' => 'Interests',
+                'present' => 'Present',
+                'experience' => 'Professional Experience',
+                'education' => 'Education',
+                'print' => 'Print CV'
+            ]
+        ];
+
+        function t($key, $lang, $translations) {
+            return $translations[$lang][$key] ?? $key;
+        }
+    @endphp
+
     <div class="cv-container">
         <!-- En-tête -->
         <header class="cv-header">
@@ -9,18 +37,18 @@
                 <div class="profile-info">
                     @if($cvInformation['personalInformation']['photo'])
                         <div class="profile-photo">
-                            <img src="{{ $cvInformation['personalInformation']['photo'] }}" alt="Photo de profil">
+                            <img src="{{ $cvInformation['personalInformation']['photo'] }}" alt="Profile photo">
                         </div>
                     @endif
                     <div class="name-title">
                         <h1>{{ $cvInformation['personalInformation']['firstName'] }}</h1>
                         @if(!empty($cvInformation['personalInformation']['full_profession']))
                             <div class="title-box">
-                                <span class="translate-this">{{ $cvInformation['personalInformation']['full_profession'] }}</span>
+                                <span>{{ $cvInformation['personalInformation']['full_profession'] }}</span>
                             </div>
                         @elseif(!empty($cvInformation['professions']))
                             <div class="title-box">
-                                <span class="translate-this">{{ $cvInformation['professions'][0]['name'] }}</span>
+                                <span>{{ $cvInformation['professions'][0]['name'] }}</span>
                             </div>
                         @endif
                     </div>
@@ -52,12 +80,12 @@
             </div>
         </header>
 
-        <!-- À propos -->
+        <!-- Résumé -->
         @if(!empty($cvInformation['summaries']))
             <section class="summary-section">
                 <div class="section-header">
                     <div class="section-icon"><i class="bi bi-person"></i></div>
-                    <h2 class="translate-this">À propos</h2>
+                    <h2>{{ t('about', $currentLang, $translations) }}</h2>
                 </div>
                 <p class="summary-content">{{ $cvInformation['summaries'][0]['description'] ?? '' }}</p>
             </section>
@@ -68,7 +96,7 @@
             <section class="experience-section">
                 <div class="section-header">
                     <div class="section-icon"><i class="bi bi-briefcase"></i></div>
-                    <h2 class="translate-this">{{ $category === 'experience' ? 'Expérience professionnelle' : 'Formation' }}</h2>
+                    <h2>{{ t($category, $currentLang, $translations) }}</h2>
                 </div>
                 <div class="timeline">
                     @foreach($experiences as $experience)
@@ -77,17 +105,22 @@
                             <div class="timeline-content">
                                 <div class="experience-header">
                                     <div class="experience-title">
-                                        <h3 class="translate-this">{{ $experience['name'] }}</h3>
-                                        <div class="company-name translate-this">{{ $experience['InstitutionName'] }}</div>
+                                        <h3>{{ $experience['name'] }}</h3>
+                                        <div class="company-name">{{ $experience['InstitutionName'] }}</div>
                                     </div>
                                     <div class="date-range">
                                         @php
                                             $startDate = \Carbon\Carbon::parse($experience['date_start']);
                                             $endDate = !empty($experience['date_end']) ? \Carbon\Carbon::parse($experience['date_end']) : now();
-                                            $startFormat = $startDate->format('M Y');
-                                            $endFormat = !empty($experience['date_end']) ? $endDate->format('M Y') : 'Présent';
+
+                                            setlocale(LC_TIME, $currentLang == 'fr' ? 'fr_FR.utf8' : 'en_US.utf8');
+                                            $startFormat = $startDate->translatedFormat('M Y');
+                                            $endFormat = !empty($experience['date_end']) ? $endDate->translatedFormat('M Y') : t('present', $currentLang, $translations);
                                         @endphp
                                         {{ $startFormat }} - {{ $endFormat }}
+                                        @if($experience['attachment_path'])
+                                            <i class="bi bi-paperclip"></i>
+                                        @endif
                                     </div>
                                 </div>
                                 <p class="experience-description">{{ $experience['description'] }}</p>
@@ -110,11 +143,11 @@
                 <section class="skills-section">
                     <div class="section-header">
                         <div class="section-icon"><i class="bi bi-gear"></i></div>
-                        <h2 class="translate-this">Compétences</h2>
+                        <h2>{{ t('skills', $currentLang, $translations) }}</h2>
                     </div>
                     <div class="skills-grid">
                         @foreach($cvInformation['competences'] as $competence)
-                            <div class="skill-tag translate-this">{{ $competence['name'] }}</div>
+                            <div class="skill-tag">{{ $competence['name'] }}</div>
                         @endforeach
                     </div>
                 </section>
@@ -124,11 +157,11 @@
                 <section class="hobbies-section">
                     <div class="section-header">
                         <div class="section-icon"><i class="bi bi-heart"></i></div>
-                        <h2 class="translate-this">Centres d'intérêt</h2>
+                        <h2>{{ t('interests', $currentLang, $translations) }}</h2>
                     </div>
                     <div class="hobbies-grid">
                         @foreach($cvInformation['hobbies'] as $hobby)
-                            <div class="hobby-tag translate-this">{{ $hobby['name'] }}</div>
+                            <div class="hobby-tag">{{ $hobby['name'] }}</div>
                         @endforeach
                     </div>
                 </section>
@@ -137,6 +170,15 @@
     </div>
 
     <style>
+        /* Variables CSS */
+        :root {
+            --primary: #2196F3;
+            --primary-dark: #1976D2;
+            --text: #2c3e50;
+            --text-light: #718096;
+            --gradient: linear-gradient(135deg, var(--primary), var(--primary-dark));
+        }
+
         .cv-container {
             width: 210mm;
             min-height: 297mm;
@@ -149,7 +191,7 @@
             color: var(--text);
         }
 
-        /* En-tête styles */
+        /* En-tête */
         .cv-header {
             position: relative;
             padding: 8mm 12mm;
@@ -222,7 +264,7 @@
             color: white;
         }
 
-        /* Sections styles */
+        /* Sections */
         section {
             padding: 2mm 12mm;
         }
@@ -254,7 +296,7 @@
             border-bottom: 0.3mm solid var(--primary);
         }
 
-        /* Timeline styles */
+        /* Timeline */
         .timeline {
             position: relative;
             padding-left: 4mm;
@@ -319,7 +361,6 @@
             font-size: 8pt;
             margin: 1.5mm 0;
             color: var(--text);
-            line-height: 1.4;
         }
 
         .achievement {
@@ -331,14 +372,13 @@
             margin-top: 1.5mm;
         }
 
-        /* Skills & Interests grids */
+        /* Skills & Interests */
         .skills-interests {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 4mm;
             padding: 0 12mm;
             margin-top: 3mm;
-            margin-bottom: 3mm;
         }
 
         .skills-grid, .hobbies-grid {
@@ -354,26 +394,9 @@
             font-size: 7.5pt;
             color: var(--text);
             border: 0.2mm solid rgba(0,0,0,0.05);
-            transition: background-color 0.3s;
         }
 
-        .skill-tag:hover, .hobby-tag:hover {
-            background: #f1f5f9;
-        }
-
-        /* Summary section specific styles */
-        .summary-section {
-            margin-top: 3mm;
-        }
-
-        .summary-content {
-            font-size: 8pt;
-            line-height: 1.5;
-            color: var(--text);
-            margin: 2mm 0;
-        }
-
-        /* Print optimization */
+        /* Optimisation impression */
         @media print {
             * {
                 print-color-adjust: exact !important;
@@ -386,13 +409,13 @@
                 box-shadow: none;
             }
 
+            /* Force le rendu des dégradés et couleurs */
             .header-shape,
             .section-icon {
                 background: var(--gradient) !important;
-                -webkit-print-color-adjust: exact !important;
-                print-color-adjust: exact !important;
             }
 
+            /* Éviter les sauts de page indésirables */
             section {
                 break-inside: avoid;
             }
@@ -401,60 +424,13 @@
                 break-inside: avoid;
             }
 
+            /* Spacer pour les marges de page suivantes */
             .page-break-spacer {
                 height: 12mm;
                 width: 100%;
                 display: block;
                 page-break-after: always;
                 visibility: hidden;
-            }
-
-            .floating-button,
-            #google_translate_element {
-                display: none !important;
-            }
-        }
-
-        /* Translations styling */
-        .translate-this {
-            transition: color 0.3s;
-        }
-
-        .translate-this.translating {
-            color: var(--primary);
-        }
-
-        /* Mobile responsiveness */
-        @media screen and (max-width: 768px) {
-            body {
-                padding: 10px;
-            }
-
-            .cv-container {
-                width: 100%;
-                min-height: auto;
-            }
-
-            .profile-info {
-                flex-direction: column;
-                align-items: center;
-                text-align: center;
-            }
-
-            .contact-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .skills-interests {
-                grid-template-columns: 1fr;
-            }
-
-            .experience-header {
-                flex-direction: column;
-            }
-
-            .date-range {
-                margin-top: 1mm;
             }
         }
     </style>

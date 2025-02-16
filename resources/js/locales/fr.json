@@ -445,12 +445,17 @@
                 "description": "Sélectionnez un modèle pour démarrer rapidement",
                 "academic": "Formation Académique",
                 "internship": "Stage Professionnel",
-                "volunteer": "Expérience Bénévole"
+                "volunteer": "Expérience Bénévole",
+                "defaultComment": "Cette expérience m'a permis de développer de nouvelles compétences",
+                "default": {
+                    "name": "Formation en Développement Web",
+                    "description": "Programme intensif combinant théorie et pratique"
+                }
             },
             "fields": {
                 "name": {
                     "label": "Intitulé",
-                    "placeholder": "Ex: Stage en bibliothèque..."
+                    "placeholder": "Ex: Stage en développement web..."
                 },
                 "institution": {
                     "label": "Établissement",
@@ -459,7 +464,8 @@
                 "dates": {
                     "start": "Date de début",
                     "end": "Date de fin",
-                    "ongoing": "Laissez vide si en cours"
+                    "ongoing": "Laissez vide si en cours",
+                    "present": "Présent"
                 },
                 "type": {
                     "label": "Type d'expérience",
@@ -472,15 +478,17 @@
                 "output": {
                     "label": "Résultat/Réalisation",
                     "placeholder": "Ex: Compétences acquises, certificat obtenu..."
-                },
-                "comment": {
-                    "label": "Commentaire additionnel",
-                    "placeholder": "Autres informations pertinentes..."
                 }
             },
             "references": {
                 "title": "Références",
                 "add": "Ajouter une référence",
+                "default": {
+                    "name": "Jean Dupont",
+                    "function": "Responsable Technique",
+                    "email": "contact@example.com",
+                    "phone": "+33 1 23 45 67 89"
+                },
                 "fields": {
                     "name": {
                         "label": "Nom",
@@ -505,8 +513,7 @@
                 "maxSize": "Max 5MB",
                 "delete": "Supprimer le fichier",
                 "current": "Fichier actuel:",
-                "formats": "Formats acceptés: PDF, DOC, DOCX (Certificats, attestations...)",
-                "dropzone": "Déposez votre fichier ici ou cliquez pour sélectionner"
+                "formats": "Formats acceptés: PDF, DOC, DOCX (Certificats, attestations...)"
             }
         },
         "empty": {
@@ -527,14 +534,119 @@
             "deleted": "Expérience supprimée avec succès",
             "attachment": {
                 "deleted": "Pièce jointe supprimée avec succès"
+            },
+            "template": {
+                "applied": "Modèle appliqué",
+                "description": "Vous pouvez maintenant personnaliser les informations"
             }
         },
         "errors": {
+            "title": "Erreur",
             "generic": "Une erreur est survenue",
             "delete": "Erreur lors de la suppression",
+            "save": "Erreur lors de la sauvegarde",
             "attachment": {
-                "delete": "Impossible de supprimer la pièce jointe"
+                "delete": "Impossible de supprimer la pièce jointe",
+                "noFile": "Pas de fichier",
+                "noFileDescription": "Aucune pièce jointe disponible"
+            }
+        },
+        "references": {
+            "title": "Références"
+
+        },
+        "output": {
+            "title": "Résultat obtenu"
+
+        }
+    },
+
+    "summaries": {
+        "title": "Mes Résumés",
+        "subtitle": "Gérez vos résumés professionnels",
+        "new": "Nouveau résumé",
+        "edit": "Modifier le résumé",
+        "search": "Rechercher un résumé...",
+        "noResults": "Aucun résumé ne correspond à votre recherche.",
+        "createFirst": "Créez votre premier résumé professionnel !",
+        "delete": {
+            "title": "Supprimer le résumé",
+            "description": "Êtes-vous sûr de vouloir supprimer ce résumé ? Cette action est irréversible.",
+            "confirm": "Supprimer",
+            "cancel": "Annuler"
+        }
+    },
+    "form": {
+        "jobTitle": "Titre du poste",
+        "jobTitlePlaceholder": "Ex : Commercial, Assistant administratif...",
+        "description": "Description",
+        "descriptionPlaceholder": "Décrivez votre profil...",
+        "save": "Enregistrer",
+        "cancel": "Annuler",
+        "update": "Modifier"
+    },
+    "templates": {
+        "title": "Choisir un modèle",
+        "subtitle": "Commencez avec un modèle prédéfini ou créez le vôtre",
+        "student": {
+            "name": "Étudiant",
+            "description": "Jeune diplômé motivé, à l'écoute et dynamique. Formation académique solide avec une première expérience via des stages et projets étudiants. Maîtrise des outils informatiques et capacité d'apprentissage rapide."
+        },
+        "archivist": {
+            "name": "Assistant Archiviste",
+            "description": "Passionné par l'organisation et la préservation des documents. Méthodique et rigoureux, avec une bonne maîtrise des outils numériques. Capable de travailler en autonomie et en équipe."
+        },
+        "beginner": {
+            "name": "Premier Emploi",
+            "description": "Bachelier enthousiaste et polyvalent, prêt à mettre en pratique mes connaissances. Forte capacité d'adaptation et volonté d'apprendre. Maîtrise des outils bureautiques de base."
+        }
+    },
+    "actions": {
+        "select": "Sélectionner",
+        "selected": "Sélectionné",
+        "edit": "Modifier",
+        "delete": "Supprimer"
+    },
+    "toast": {
+        "success": {
+            "created": "Résumé créé avec succès",
+            "updated": "Résumé mis à jour avec succès",
+            "deleted": "Résumé supprimé avec succès",
+            "selected": "Résumé sélectionné avec succès"
+        },
+        "error": {
+            "create": "Impossible de créer le résumé",
+            "update": "Impossible de mettre à jour le résumé",
+            "delete": "Impossible de supprimer le résumé",
+            "select": "Impossible de sélectionner le résumé"
+        }
+    },
+
+    "personalInfos": {
+        "editTitle": "Modifier informations personnelles",
+        "form": {
+            "name": "Nom",
+            "email": "Email",
+            "github": "GitHub",
+            "linkedin": "LinkedIn",
+            "address": "Adresse",
+            "phoneNumber": "Numéro de téléphone"
+        },
+        "actions": {
+            "save": "Enregistrer les modifications",
+            "cancel": "Annuler"
+        },
+        "toast": {
+            "success": {
+                "title": "Succès",
+                "updated": "Informations personnelles mises à jour"
+            },
+            "error": {
+                "title": "Erreur",
+                "userDataNotFound": "Données utilisateur non trouvées",
+                "updateFailed": "La mise à jour a échoué"
             }
         }
     }
+
 }

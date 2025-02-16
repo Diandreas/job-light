@@ -415,13 +415,21 @@
     },
     "experiences": {
         "title": "My Experiences",
-        "description": "Share your academic experiences, internships, and engagements",
+        "description": "Share your academic experiences, internships and commitments",
         "tabs": {
-            "list": "List of Experiences",
+            "list": "Experiences list",
             "attachments": "Attachments"
         },
+        "experiences": {
+            "references": {
+                "title": "References"
+            },
+            "output": {
+                "title": "Achievement"
+            }
+        },
         "actions": {
-            "add": "Add an Experience",
+            "add": "Add experience",
             "update": "Update",
             "save": "Save",
             "cancel": "Cancel",
@@ -436,58 +444,66 @@
         "categories": {
             "professional": "Professional",
             "academic": "Academic",
-            "volunteer": "Volunteering"
+            "volunteer": "Volunteer"
         },
         "form": {
             "title": {
-                "new": "New Experience",
-                "edit": "Edit Experience"
+                "new": "New experience",
+                "edit": "Edit experience"
             },
             "description": {
                 "new": "Add a new experience to your profile",
-                "edit": "Edit the details of your experience"
+                "edit": "Modify your experience details"
             },
             "templates": {
-                "title": "Experience Templates",
+                "title": "Experience templates",
                 "description": "Select a template to get started quickly",
                 "academic": "Academic Training",
                 "internship": "Professional Internship",
-                "volunteer": "Volunteer Experience"
+                "volunteer": "Volunteer Experience",
+                "defaultComment": "This experience allowed me to develop new skills",
+                "default": {
+                    "name": "Web Development Training",
+                    "description": "Intensive program combining theory and practice"
+                }
             },
             "fields": {
                 "name": {
                     "label": "Title",
-                    "placeholder": "E.g., Library Internship..."
+                    "placeholder": "Ex: Web development internship..."
                 },
                 "institution": {
                     "label": "Institution",
-                    "placeholder": "Name of the institution or organization"
+                    "placeholder": "Name of institution or organization"
                 },
                 "dates": {
-                    "start": "Start Date",
-                    "end": "End Date",
-                    "ongoing": "Leave blank if ongoing"
+                    "start": "Start date",
+                    "end": "End date",
+                    "ongoing": "Leave empty if ongoing",
+                    "present": "Present"
                 },
                 "type": {
-                    "label": "Experience Type",
+                    "label": "Experience type",
                     "placeholder": "Select a type"
                 },
                 "description": {
                     "label": "Description",
-                    "placeholder": "Describe your responsibilities, tasks, and learnings..."
+                    "placeholder": "Describe your responsibilities, tasks and learnings..."
                 },
                 "output": {
-                    "label": "Outcome/Achievement",
-                    "placeholder": "E.g., Skills acquired, certificate obtained..."
-                },
-                "comment": {
-                    "label": "Additional Comment",
-                    "placeholder": "Other relevant information..."
+                    "label": "Result/Achievement",
+                    "placeholder": "Ex: Skills acquired, certificate obtained..."
                 }
             },
             "references": {
                 "title": "References",
-                "add": "Add a Reference",
+                "add": "Add reference",
+                "default": {
+                    "name": "John Smith",
+                    "function": "Technical Manager",
+                    "email": "contact@example.com",
+                    "phone": "+1 234 567 8900"
+                },
                 "fields": {
                     "name": {
                         "label": "Name",
@@ -510,10 +526,9 @@
             "attachment": {
                 "title": "Attachment",
                 "maxSize": "Max 5MB",
-                "delete": "Delete File",
-                "current": "Current File:",
-                "formats": "Accepted Formats: PDF, DOC, DOCX (Certificates, attestations...)",
-                "dropzone": "Drop your file here or click to select"
+                "delete": "Delete file",
+                "current": "Current file:",
+                "formats": "Accepted formats: PDF, DOC, DOCX (Certificates, attestations...)"
             }
         },
         "empty": {
@@ -523,9 +538,9 @@
         },
         "attachments": {
             "stats": {
-                "used": "Used Space",
+                "used": "Space used",
                 "files": "Files",
-                "available": "Available Space"
+                "available": "Available space"
             }
         },
         "success": {
@@ -534,15 +549,109 @@
             "deleted": "Experience deleted successfully",
             "attachment": {
                 "deleted": "Attachment deleted successfully"
+            },
+            "template": {
+                "applied": "Template applied",
+                "description": "You can now customize the information"
             }
         },
         "errors": {
+            "title": "Error",
             "generic": "An error occurred",
             "delete": "Error while deleting",
+            "save": "Error while saving",
             "attachment": {
-                "delete": "Unable to delete attachment"
+                "delete": "Unable to delete attachment",
+                "noFile": "No file",
+                "noFileDescription": "No attachment available"
+            }
+        }
+    },
+
+    "summaries": {
+        "title": "My Summaries",
+        "subtitle": "Manage your professional summaries",
+        "new": "New Summary",
+        "edit": "Edit Summary",
+        "search": "Search summaries...",
+        "noResults": "No summaries match your search.",
+        "createFirst": "Create your first professional summary!",
+        "delete": {
+            "title": "Delete Summary",
+            "description": "Are you sure you want to delete this summary? This action cannot be undone.",
+            "confirm": "Delete",
+            "cancel": "Cancel"
+        }
+    },
+    "form": {
+        "jobTitle": "Job Title",
+        "jobTitlePlaceholder": "Ex: Sales Representative, Administrative Assistant...",
+        "description": "Description",
+        "descriptionPlaceholder": "Describe your profile...",
+        "save": "Save",
+        "cancel": "Cancel",
+        "update": "Update"
+    },
+    "templates": {
+        "title": "Choose a Template",
+        "subtitle": "Start with a pre-made template or create your own",
+        "student": {
+            "name": "Student",
+            "description": "Motivated recent graduate with strong academic background and initial experience through internships and student projects. Proficient in computer tools with quick learning ability."
+        },
+        "archivist": {
+            "name": "Assistant Archivist",
+            "description": "Passionate about document organization and preservation. Methodical and rigorous, with good digital tool proficiency. Able to work independently and in teams."
+        },
+        "beginner": {
+            "name": "First Job",
+            "description": "Enthusiastic and versatile high school graduate ready to put knowledge into practice. Strong adaptability and willingness to learn. Proficient in basic office tools."
+        }
+    },
+    "actions": {
+        "select": "Select",
+        "selected": "Selected",
+        "edit": "Edit",
+        "delete": "Delete"
+    },
+    "toast": {
+        "success": {
+            "created": "Summary created successfully",
+            "updated": "Summary updated successfully",
+            "deleted": "Summary deleted successfully",
+            "selected": "Summary selected successfully"
+        },
+        "error": {
+            "create": "Unable to create summary",
+            "update": "Unable to update summary",
+            "delete": "Unable to delete summary",
+            "select": "Unable to select summary"
+        }
+    },
+    "personalInfos": {
+        "editTitle": "Edit Personal Information",
+        "form": {
+            "name": "Name",
+            "email": "Email",
+            "github": "GitHub",
+            "linkedin": "LinkedIn",
+            "address": "Address",
+            "phoneNumber": "Phone Number"
+        },
+        "actions": {
+            "save": "Save Changes",
+            "cancel": "Cancel"
+        },
+        "toast": {
+            "success": {
+                "title": "Success",
+                "updated": "Personal information updated successfully"
+            },
+            "error": {
+                "title": "Error",
+                "userDataNotFound": "User data not found",
+                "updateFailed": "Update failed"
             }
         }
     }
-
 }

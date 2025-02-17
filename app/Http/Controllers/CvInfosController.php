@@ -100,10 +100,6 @@ class CvInfosController extends Controller
         if (!$user) abort(403, 'Unauthorized');
 
         $cvModel = CvModel::findOrFail($id);
-        if ($user->selected_cv_model_id !== $cvModel->id) {
-            abort(403, 'Unauthorized');
-        }
-
         $cvInformation = $this->getCommonCvInformation($user);
         $groupedData = $this->groupExperiencesByCategory($cvInformation['experiences']);
 
@@ -111,10 +107,25 @@ class CvInfosController extends Controller
             'cvInformation' => $cvInformation,
             'experiencesByCategory' => $groupedData['experiences'],
             'categoryTranslations' => $groupedData['translations'],
-            'cvModel' => $cvModel  // Ajout de la variable cvModel
+            'showPrintButton' => false,
+            'cvModel' => $cvModel
         ]);
 
-        return $pdf->download('cv.pdf');
+        // Configuration pour DomPDF
+        $pdf->setPaper('A4', 'portrait');
+        $pdf->setOptions([
+            'isRemoteEnabled' => true,
+            'isHtml5ParserEnabled' => true,
+            'isPhpEnabled' => true,
+            'dpi' => 150,
+            'defaultFont' => 'dejavu sans'
+        ]);
+
+        // Générer un nom de fichier significatif
+        $filename = Str::slug($user->name) . '-cv-' . date('Y-m-d') . '.pdf';
+
+        // Retourner le PDF comme téléchargement
+        return $pdf->download($filename);
     }
     private function getCommonCvInformation($user)
     {

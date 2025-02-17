@@ -79,6 +79,7 @@ export default function Show({ auth, cvInformation, selectedCvModel }) {
     const { t } = useTranslation();
     const { toast } = useToast();
     const [isLoading, setIsLoading] = useState(false);
+    const [isDownloading, setIsDownloading] = useState(false);
     const [walletBalance, setWalletBalance] = useState(auth.user.wallet_balance);
     const [hasDownloaded, setHasDownloaded] = useState(false);
     const [isProcessing, setIsProcessing] = useState(false);
@@ -100,6 +101,65 @@ export default function Show({ auth, cvInformation, selectedCvModel }) {
         checkDownloadStatus();
     }, [selectedCvModel?.id]);
 
+    const handleDownload = async () => {
+        if (!canAccessFeatures && !hasDownloaded) {
+            return toast({
+                title: t('cv_preview.wallet.insufficient_access.title'),
+                description: t('cv_preview.wallet.insufficient_tokens'),
+                variant: 'destructive'
+            });
+        }
+
+        setIsDownloading(true);
+
+        try {
+            if (!hasDownloaded) {
+                await axios.post('/api/process-download', {
+                    user_id: auth.user.id,
+                    model_id: selectedCvModel?.id,
+                    price: selectedCvModel?.price
+                });
+                setWalletBalance(prev => prev - (selectedCvModel?.price || 0));
+                setHasDownloaded(true);
+            }
+
+            // Faire la requête de téléchargement avec Axios
+            const response = await axios.get(route('cv.download', selectedCvModel?.id), {
+                responseType: 'blob' // Important pour les fichiers
+            });
+
+            // Créer un URL pour le blob
+            const blob = new Blob([response.data], { type: 'application/pdf' });
+            const url = window.URL.createObjectURL(blob);
+
+            // Créer un lien temporaire et déclencher le téléchargement
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `CV-${auth.user.name}.pdf`; // Nom du fichier à télécharger
+            document.body.appendChild(link);
+            link.click();
+
+            // Nettoyer
+            window.URL.revokeObjectURL(url);
+            document.body.removeChild(link);
+
+            toast({
+                title: t('cv_preview.export.download_success'),
+                description: t('cv_preview.export.download_success_description'),
+                variant: 'success'
+            });
+        } catch (error) {
+            console.error('Download error:', error);
+            toast({
+                title: t('common.error'),
+                description: t('cv_preview.export.download_error'),
+                variant: 'destructive'
+            });
+        } finally {
+            setIsDownloading(false);
+        }
+    };
+
     const handlePrint = async () => {
         if (!canAccessFeatures && !hasDownloaded) {
             return toast({
@@ -108,6 +168,8 @@ export default function Show({ auth, cvInformation, selectedCvModel }) {
                 variant: 'destructive'
             });
         }
+
+        setIsLoading(true);
 
         if (!hasDownloaded) {
             try {
@@ -119,6 +181,7 @@ export default function Show({ auth, cvInformation, selectedCvModel }) {
                 setWalletBalance(prev => prev - (selectedCvModel?.price || 0));
                 setHasDownloaded(true);
             } catch (error) {
+                setIsLoading(false);
                 return toast({
                     title: t('common.error'),
                     description: t('common.error'),
@@ -134,6 +197,7 @@ export default function Show({ auth, cvInformation, selectedCvModel }) {
         window.open(printUrl, '_blank');
 
         setTimeout(() => {
+            setIsLoading(false);
             window.location.reload();
         }, 2000);
     };
@@ -239,6 +303,14 @@ export default function Show({ auth, cvInformation, selectedCvModel }) {
                                             >
                                                 <Printer className="mr-2 h-4 w-4" />
                                                 {isLoading ? t('cv_preview.export.printing') : t('cv_preview.export.print')}
+                                            </Button>
+                                            <Button
+                                                onClick={handleDownload}
+                                                className="bg-gradient-to-r from-amber-500 to-purple-500 hover:from-amber-600 hover:to-purple-600 dark:from-amber-400 dark:to-purple-400"
+                                                disabled={isDownloading}
+                                            >
+                                                <Download className="mr-2 h-4 w-4" />
+                                                {isDownloading ? t('cv_preview.export.downloading') : t('cv_preview.export.download')}
                                             </Button>
                                         </motion.div>
                                     )}

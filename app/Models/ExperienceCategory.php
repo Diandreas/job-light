@@ -10,6 +10,7 @@ class ExperienceCategory extends Model
 
     protected $fillable = [
         'name',
+        'name_en',
         'description',
         'ranking',
     ];

@@ -14,6 +14,7 @@ import { useTranslation } from 'react-i18next';
 interface Hobby {
     id: number;
     name: string;
+    name_en: string;
 }
 
 interface Props {
@@ -23,8 +24,15 @@ interface Props {
     onUpdate: (hobbies: Hobby[]) => void;
 }
 
+const getLocalizedName = (hobby: Hobby, currentLanguage: string): string => {
+    if (currentLanguage === 'en' && hobby.name_en) {
+        return hobby.name_en;
+    }
+    return hobby.name;
+};
+
 const HobbyManager: React.FC<Props> = ({ auth, availableHobbies, initialUserHobbies, onUpdate }) => {
-    const { t } = useTranslation();
+    const { t, i18n } = useTranslation();
     const [selectedHobbyId, setSelectedHobbyId] = useState<number | null>(null);
     const [userHobbies, setUserHobbies] = useState<Hobby[]>(initialUserHobbies);
     const [searchTerm, setSearchTerm] = useState('');
@@ -37,17 +45,23 @@ const HobbyManager: React.FC<Props> = ({ auth, availableHobbies, initialUserHobb
     const filteredHobbies = useMemo(() => {
         return availableHobbies
             .filter(hobby =>
-                hobby.name.toLowerCase().includes(searchTerm.toLowerCase()) &&
+                getLocalizedName(hobby, i18n.language)
+                    .toLowerCase()
+                    .includes(searchTerm.toLowerCase()) &&
                 !userHobbies.some(userHobby => userHobby.id === hobby.id)
             )
-            .sort((a, b) => a.name.localeCompare(b.name, 'fr', { sensitivity: 'base' }));
-    }, [availableHobbies, userHobbies, searchTerm]);
+            .sort((a, b) =>
+                getLocalizedName(a, i18n.language)
+                    .localeCompare(getLocalizedName(b, i18n.language))
+            );
+    }, [availableHobbies, userHobbies, searchTerm, i18n.language]);
 
     const sortedUserHobbies = useMemo(() => {
         return [...userHobbies].sort((a, b) =>
-            a.name.localeCompare(b.name, 'fr', { sensitivity: 'base' })
+            getLocalizedName(a, i18n.language)
+                .localeCompare(getLocalizedName(b, i18n.language))
         );
-    }, [userHobbies]);
+    }, [userHobbies, i18n.language]);
 
     const handleAddHobby = async () => {
         if (!selectedHobbyId) {
@@ -73,7 +87,9 @@ const HobbyManager: React.FC<Props> = ({ auth, availableHobbies, initialUserHobb
                 setSelectedHobbyId(null);
                 toast({
                     title: t('hobbies.success.added.title'),
-                    description: t('hobbies.success.added.description', { hobby: newHobby.name })
+                    description: t('hobbies.success.added.description', {
+                        hobby: getLocalizedName(newHobby, i18n.language)
+                    })
                 });
             }
         } catch (error) {
@@ -139,7 +155,7 @@ const HobbyManager: React.FC<Props> = ({ auth, availableHobbies, initialUserHobb
                                 <SelectContent className="dark:bg-gray-900">
                                     {filteredHobbies.map((hobby) => (
                                         <SelectItem key={hobby.id} value={hobby.id.toString()}>
-                                            {hobby.name}
+                                            {getLocalizedName(hobby, i18n.language)}
                                         </SelectItem>
                                     ))}
                                 </SelectContent>
@@ -190,7 +206,7 @@ const HobbyManager: React.FC<Props> = ({ auth, availableHobbies, initialUserHobb
                                                          dark:from-amber-900/40 dark:to-purple-900/40 dark:hover:from-amber-900/60 dark:hover:to-purple-900/60
                                                          text-gray-800 dark:text-gray-200 flex items-center gap-2 py-2 pl-3 pr-2"
                                             >
-                                                <span>{hobby.name}</span>
+                                                <span>{getLocalizedName(hobby, i18n.language)}</span>
                                                 <Button
                                                     variant="ghost"
                                                     size="sm"

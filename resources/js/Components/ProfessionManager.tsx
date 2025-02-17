@@ -15,6 +15,7 @@ import { useTranslation } from 'react-i18next';
 interface Profession {
     id: number;
     name: string;
+    name_en: string;
     description: string;
 }
 
@@ -25,8 +26,15 @@ interface Props {
     onUpdate: (profession: Profession | null, fullProfession?: string) => void;
 }
 
+const getLocalizedName = (profession: Profession, currentLanguage: string): string => {
+    if (currentLanguage === 'en' && profession.name_en) {
+        return profession.name_en;
+    }
+    return profession.name;
+};
+
 const ProfessionManager: React.FC<Props> = ({ auth, availableProfessions, initialUserProfession, onUpdate }) => {
-    const { t } = useTranslation();
+    const { t, i18n } = useTranslation();
     const [selectedProfessionId, setSelectedProfessionId] = useState<number | null>(initialUserProfession?.id || null);
     const [userProfession, setUserProfession] = useState<Profession | null>(initialUserProfession);
     const [searchTerm, setSearchTerm] = useState('');
@@ -42,10 +50,15 @@ const ProfessionManager: React.FC<Props> = ({ auth, availableProfessions, initia
     const filteredProfessions = useMemo(() => {
         return availableProfessions
             .filter(profession =>
-                profession.name.toLowerCase().includes(searchTerm.toLowerCase())
+                getLocalizedName(profession, i18n.language)
+                    .toLowerCase()
+                    .includes(searchTerm.toLowerCase())
             )
-            .sort((a, b) => a.name.localeCompare(b.name, 'fr', { sensitivity: 'base' }));
-    }, [availableProfessions, searchTerm]);
+            .sort((a, b) =>
+                getLocalizedName(a, i18n.language)
+                    .localeCompare(getLocalizedName(b, i18n.language))
+            );
+    }, [availableProfessions, searchTerm, i18n.language]);
 
     const handleSelectProfession = async () => {
         if (!selectedProfessionId) {
@@ -61,7 +74,7 @@ const ProfessionManager: React.FC<Props> = ({ auth, availableProfessions, initia
             await axios.post('/user-professions', {
                 user_id: auth.user.id,
                 profession_id: selectedProfessionId,
-                full_profession: null // Reset manual profession when selecting from list
+                full_profession: null
             });
 
             const newProfession = availableProfessions.find(p => p.id === selectedProfessionId);
@@ -71,7 +84,9 @@ const ProfessionManager: React.FC<Props> = ({ auth, availableProfessions, initia
                 onUpdate(newProfession);
                 toast({
                     title: t('professions.success.updated.title'),
-                    description: t('professions.success.updated.description', { profession: newProfession.name })
+                    description: t('professions.success.updated.description', {
+                        profession: getLocalizedName(newProfession, i18n.language)
+                    })
                 });
             }
         } catch (error) {
@@ -175,7 +190,7 @@ const ProfessionManager: React.FC<Props> = ({ auth, availableProfessions, initia
                                         <SelectContent>
                                             {filteredProfessions.map((profession) => (
                                                 <SelectItem key={profession.id} value={profession.id.toString()}>
-                                                    {profession.name}
+                                                    {getLocalizedName(profession, i18n.language)}
                                                 </SelectItem>
                                             ))}
                                         </SelectContent>
@@ -231,7 +246,7 @@ const ProfessionManager: React.FC<Props> = ({ auth, availableProfessions, initia
                                         variant="secondary"
                                         className="bg-white dark:bg-gray-800 px-3 py-1.5 text-base dark:text-white"
                                     >
-                                        {userProfession ? userProfession.name : manualProfession}
+                                        {userProfession ? getLocalizedName(userProfession, i18n.language) : manualProfession}
                                     </Badge>
                                     {userProfession && (
                                         <p className="text-sm text-gray-600 dark:text-gray-400">

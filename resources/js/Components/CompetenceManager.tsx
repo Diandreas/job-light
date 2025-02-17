@@ -14,6 +14,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 interface Competence {
     id: number;
     name: string;
+    name_en: string;
     description: string;
 }
 
@@ -24,8 +25,15 @@ interface Props {
     onUpdate: (competences: Competence[]) => void;
 }
 
+const getLocalizedName = (competence: Competence, currentLanguage: string): string => {
+    if (currentLanguage === 'en' && competence.name_en) {
+        return competence.name_en;
+    }
+    return competence.name;
+};
+
 const CompetenceManager: React.FC<Props> = ({ auth, availableCompetences, initialUserCompetences, onUpdate }) => {
-    const { t } = useTranslation();
+    const { t, i18n } = useTranslation();
     const [selectedCompetenceId, setSelectedCompetenceId] = useState<number | null>(null);
     const [userCompetences, setUserCompetences] = useState<Competence[]>(initialUserCompetences);
     const [searchTerm, setSearchTerm] = useState('');
@@ -41,17 +49,23 @@ const CompetenceManager: React.FC<Props> = ({ auth, availableCompetences, initia
 
         return availableCompetences
             .filter(competence =>
-                competence.name.toLowerCase().includes(lowercaseSearchTerm) &&
+                getLocalizedName(competence, i18n.language)
+                    .toLowerCase()
+                    .includes(lowercaseSearchTerm) &&
                 !userCompetenceIds.has(competence.id)
             )
-            .sort((a, b) => a.name.localeCompare(b.name, 'fr', { sensitivity: 'base' }));
-    }, [availableCompetences, userCompetences, searchTerm]);
+            .sort((a, b) =>
+                getLocalizedName(a, i18n.language)
+                    .localeCompare(getLocalizedName(b, i18n.language))
+            );
+    }, [availableCompetences, userCompetences, searchTerm, i18n.language]);
 
     const sortedUserCompetences = useMemo(() => {
         return [...userCompetences].sort((a, b) =>
-            a.name.localeCompare(b.name, 'fr', { sensitivity: 'base' })
+            getLocalizedName(a, i18n.language)
+                .localeCompare(getLocalizedName(b, i18n.language))
         );
-    }, [userCompetences]);
+    }, [userCompetences, i18n.language]);
 
     const handleAddCompetence = useCallback(async () => {
         if (!selectedCompetenceId) {
@@ -77,7 +91,9 @@ const CompetenceManager: React.FC<Props> = ({ auth, availableCompetences, initia
                 setSelectedCompetenceId(null);
                 toast({
                     title: t('competences.success.added.title'),
-                    description: t('competences.success.added.description', { name: newCompetence.name }),
+                    description: t('competences.success.added.description', {
+                        name: getLocalizedName(newCompetence, i18n.language)
+                    }),
                 });
             }
         } catch (error) {
@@ -87,7 +103,7 @@ const CompetenceManager: React.FC<Props> = ({ auth, availableCompetences, initia
                 variant: "destructive",
             });
         }
-    }, [selectedCompetenceId, auth.user.id, availableCompetences, userCompetences, onUpdate, toast, t]);
+    }, [selectedCompetenceId, auth.user.id, availableCompetences, userCompetences, onUpdate, toast, t, i18n.language]);
 
     const handleRemoveCompetence = useCallback(async (competenceId: number) => {
         try {
@@ -146,7 +162,7 @@ const CompetenceManager: React.FC<Props> = ({ auth, availableCompetences, initia
                                 <SelectContent className="dark:bg-gray-900">
                                     {filteredAvailableCompetences.map((competence) => (
                                         <SelectItem key={competence.id} value={competence.id.toString()}>
-                                            {competence.name}
+                                            {getLocalizedName(competence, i18n.language)}
                                         </SelectItem>
                                     ))}
                                 </SelectContent>
@@ -199,7 +215,7 @@ const CompetenceManager: React.FC<Props> = ({ auth, availableCompetences, initia
                                                          text-gray-800 dark:text-gray-200
                                                          flex items-center gap-2 py-2 pl-3 pr-2"
                                             >
-                                                <span>{competence.name}</span>
+                                                <span>{getLocalizedName(competence, i18n.language)}</span>
                                                 <Button
                                                     variant="ghost"
                                                     size="sm"

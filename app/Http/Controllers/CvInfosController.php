@@ -126,7 +126,7 @@ class CvInfosController extends Controller
             ->select([
                 'experiences.*',
                 'experience_categories.name as category_name',
-                'experience_categories.name_en as category_name_en', // Ajout du nom en anglais
+                'experience_categories.name_en as category_name_en',
                 DB::raw('COALESCE(attachments.name, NULL) as attachment_name'),
                 DB::raw('CASE WHEN attachments.path IS NOT NULL THEN CONCAT("/storage/", attachments.path) ELSE NULL END as attachment_path'),
                 DB::raw('COALESCE(attachments.format, NULL) as attachment_format'),
@@ -151,10 +151,10 @@ class CvInfosController extends Controller
         })->toArray();
 
         $baseInfo = [
-            'hobbies' => $user->hobbies()->get()->toArray(),
-            'competences' => $user->competences()->get()->toArray(),
+            'hobbies' => $user->hobbies()->select(['id', 'name', 'name_en'])->get()->toArray(),
+            'competences' => $user->competences()->select(['id', 'name', 'name_en', 'description'])->get()->toArray(),
             'experiences' => $experiencesWithReferences,
-            'professions' => $user->profession()->take(2)->get()->toArray(),
+            'professions' => $user->profession()->select(['id', 'name', 'name_en', 'description', 'category_id'])->take(2)->get()->toArray(),
             'summaries' => $user->selected_summary ? [$user->selected_summary->toArray()] : [],
             'personalInformation' => [
                 'id' => $user->id,
@@ -170,6 +170,27 @@ class CvInfosController extends Controller
         ];
 
         return $baseInfo;
+    }
+
+    public function index()
+    {
+        $user = auth()->user();
+
+        $cvInformation = $this->getCommonCvInformation($user);
+        $cvInformation = array_merge($cvInformation, [
+            'availableCompetences' => Competence::select(['id', 'name', 'name_en', 'description'])->get()->toArray(),
+            'availableHobbies' => Hobby::select(['id', 'name', 'name_en'])->get()->toArray(),
+            'availableProfessions' => Profession::select(['id', 'name', 'name_en', 'description', 'category_id'])->get()->toArray(),
+            'availableSummaries' => $user->summary()->get()->toArray(),
+            'myProfession' => $user->profession?->toArray(),
+            'experienceCategories' => ExperienceCategory::all()->toArray(),
+            'allsummaries' => $user->summaries()->get()->toArray(),
+        ]);
+
+        return Inertia::render('CvInfos/Index', [
+            'cvInformation' => $cvInformation,
+            'translations' => trans('*'),
+        ]);
     }
 
     private function groupExperiencesByCategory($experiences)
@@ -189,26 +210,7 @@ class CvInfosController extends Controller
     }
 
 
-    public function index()
-    {
-        $user = auth()->user();
 
-        $cvInformation = $this->getCommonCvInformation($user);
-        $cvInformation = array_merge($cvInformation, [
-            'availableCompetences' => Competence::all()->toArray(),
-            'availableHobbies' => Hobby::all()->toArray(),
-            'availableProfessions' => Profession::all()->toArray(),
-            'availableSummaries' => $user->summary()->get()->toArray(),
-            'myProfession' => $user->profession?->toArray(),
-            'experienceCategories' => ExperienceCategory::all()->toArray(),
-            'allsummaries' => $user->summaries()->get()->toArray(),
-        ]);
-
-        return Inertia::render('CvInfos/Index', [
-            'cvInformation' => $cvInformation,
-            'translations' => trans('*'),
-        ]);
-    }
 
     public function show()
     {

@@ -103,6 +103,7 @@ class CvInfosController extends Controller
         $cvInformation = $this->getCommonCvInformation($user);
         $groupedData = $this->groupExperiencesByCategory($cvInformation['experiences']);
 
+        // Configurer DomPDF
         $pdf = PDF::loadView("cv-templates." . $cvModel->viewPath, [
             'cvInformation' => $cvInformation,
             'experiencesByCategory' => $groupedData['experiences'],
@@ -111,20 +112,21 @@ class CvInfosController extends Controller
             'cvModel' => $cvModel
         ]);
 
-        // Configuration pour DomPDF
-        $pdf->setPaper('A4', 'portrait');
-        $pdf->setOptions([
-            'isRemoteEnabled' => true,
-            'isHtml5ParserEnabled' => true,
+        // Définir les options spécifiques
+        $pdf->setOption([
+            'defaultFont' => 'dejavu sans',
+            'dpi' => 96,
+            'defaultPaperSize' => 'a4',
+            'defaultMediaType' => 'print',
+            'enableCss' => true,
+            'fontHeightRatio' => 1,
+            'isFontSubsettingEnabled' => true,
             'isPhpEnabled' => true,
-            'dpi' => 150,
-            'defaultFont' => 'dejavu sans'
+            'isHtml5ParserEnabled' => true,
+            'isRemoteEnabled' => true
         ]);
 
-        // Générer un nom de fichier significatif
-        $filename = Str::slug($user->name) . '-cv-' . date('Y-m-d') . '.pdf';
-
-        // Retourner le PDF comme téléchargement
+        $filename = Str::slug($user->name) . '-cv.pdf';
         return $pdf->download($filename);
     }
     private function getCommonCvInformation($user)

@@ -22,6 +22,28 @@ use Inertia\Inertia;
 
 class CvInfosController extends Controller
 {
+    public function previewCv($id)
+    {
+        $user = Auth::user();
+        if (!$user) abort(403, 'Unauthorized');
+
+        // Récupérer la langue depuis la requête
+        $locale = request()->get('locale', app()->getLocale());
+        app()->setLocale($locale);
+
+        $cvModel = CvModel::findOrFail($id);
+        $cvInformation = $this->getCommonCvInformation($user);
+        $groupedData = $this->groupExperiencesByCategory($cvInformation['experiences']);
+
+        return view("cv-templates." . $cvModel->viewPath, [
+            'cvInformation' => $cvInformation,
+            'experiencesByCategory' => $groupedData['experiences'],
+            'categoryTranslations' => $groupedData['translations'],
+            'showPrintButton' => request()->has('print'),
+            'cvModel' => $cvModel,
+            'currentLocale' => $locale // Nouvelle variable
+        ]);
+    }
     public function updatePhoto(Request $request)
     {
         Log::info('=== Photo Upload Started ===');
@@ -75,23 +97,6 @@ class CvInfosController extends Controller
         }
 
         Log::info('=== Photo Upload Ended ===');
-    }
-    public function previewCv($id)
-    {
-        $user = Auth::user();
-        if (!$user) abort(403, 'Unauthorized');
-
-        $cvModel = CvModel::findOrFail($id);
-        $cvInformation = $this->getCommonCvInformation($user);
-        $groupedData = $this->groupExperiencesByCategory($cvInformation['experiences']);
-
-        return view("cv-templates." . $cvModel->viewPath, [
-            'cvInformation' => $cvInformation,
-            'experiencesByCategory' => $groupedData['experiences'],
-            'categoryTranslations' => $groupedData['translations'],
-            'showPrintButton' => request()->has('print'),
-            'cvModel' => $cvModel  // Ajout de la variable cvModel
-        ]);
     }
 
     public function downloadPdf($id)
@@ -213,16 +218,20 @@ class CvInfosController extends Controller
             return $experience['category_name']; // Utiliser le nom français comme clé
         })->toArray();
 
-        // Préparer les traductions des catégories
-        $categoryTranslations = collect($experiences)->pluck('category_name_en', 'category_name')->unique()->toArray();
+        // Modifions la structure des traductions
+        $categoryTranslations = [];
+        foreach ($experiences as $experience) {
+            $categoryTranslations[$experience['category_name']] = [
+                'name_fr' => $experience['category_name'],
+                'name_en' => $experience['category_name_en']
+            ];
+        }
 
         return [
             'experiences' => $grouped,
             'translations' => $categoryTranslations
         ];
     }
-
-
 
 
     public function show()

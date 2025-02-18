@@ -184,6 +184,7 @@
         "title": "Professional CV",
         "export": {
             "download": "Download your CV",
+            "downloading": "Downloading in progress",
             "title": "Export My CV",
             "selected_model": "Selected template: {{name}}",
             "back_to_models": "Back to templates",

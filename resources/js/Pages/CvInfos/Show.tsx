@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
@@ -76,8 +76,9 @@ const NoModelSelected = ({ user }) => {
 };
 
 export default function Show({ auth, cvInformation, selectedCvModel }) {
-    const { t } = useTranslation();
+    const { t, i18n } = useTranslation();
     const { toast } = useToast();
+    const iframeRef = useRef(null);
     const [isLoading, setIsLoading] = useState(false);
     const [isDownloading, setIsDownloading] = useState(false);
     const [walletBalance, setWalletBalance] = useState(auth.user.wallet_balance);
@@ -101,6 +102,18 @@ export default function Show({ auth, cvInformation, selectedCvModel }) {
         checkDownloadStatus();
     }, [selectedCvModel?.id]);
 
+    // Écouter les changements de langue
+    useEffect(() => {
+        if (iframeRef.current && selectedCvModel?.id) {
+            setPreviewLoaded(false);
+            const previewUrl = route('cv.preview', {
+                id: selectedCvModel.id,
+                locale: i18n.language
+            });
+            iframeRef.current.src = previewUrl;
+        }
+    }, [i18n.language, selectedCvModel?.id]);
+
     const handleDownload = async () => {
         if (!canAccessFeatures && !hasDownloaded) {
             return toast({
@@ -123,23 +136,18 @@ export default function Show({ auth, cvInformation, selectedCvModel }) {
                 setHasDownloaded(true);
             }
 
-            // Faire la requête de téléchargement avec Axios
             const response = await axios.get(route('cv.download', selectedCvModel?.id), {
-                responseType: 'blob' // Important pour les fichiers
+                responseType: 'blob',
+                params: { locale: i18n.language }
             });
 
-            // Créer un URL pour le blob
             const blob = new Blob([response.data], { type: 'application/pdf' });
             const url = window.URL.createObjectURL(blob);
-
-            // Créer un lien temporaire et déclencher le téléchargement
             const link = document.createElement('a');
             link.href = url;
-            link.download = `CV-${auth.user.name}.pdf`; // Nom du fichier à télécharger
+            link.download = `CV-${auth.user.name}.pdf`;
             document.body.appendChild(link);
             link.click();
-
-            // Nettoyer
             window.URL.revokeObjectURL(url);
             document.body.removeChild(link);
 
@@ -192,13 +200,13 @@ export default function Show({ auth, cvInformation, selectedCvModel }) {
 
         const printUrl = route('cv.preview', {
             id: selectedCvModel?.id,
-            print: true
+            print: true,
+            locale: i18n.language
         });
         window.open(printUrl, '_blank');
 
         setTimeout(() => {
             setIsLoading(false);
-            window.location.reload();
         }, 2000);
     };
 
@@ -332,10 +340,15 @@ export default function Show({ auth, cvInformation, selectedCvModel }) {
                                     </div>
                                 )}
                                 <iframe
-                                    src={route('cv.preview', { id: selectedCvModel.id })}
+                                    ref={iframeRef}
+                                    src={route('cv.preview', {
+                                        id: selectedCvModel?.id,
+                                        locale: i18n.language
+                                    })}
                                     className="w-full h-[800px] md:h-[600px] border-0"
                                     title={t('cv_preview.preview.title')}
                                     onLoad={() => setPreviewLoaded(true)}
+                                    key={i18n.language}
                                 />
                             </motion.div>
                         </CardContent>

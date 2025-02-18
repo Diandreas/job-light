@@ -181,6 +181,8 @@
         "title": "CV Professionnel",
         "export": {
             "download": "Télécharger le CV",
+            "downloading": "Téléchargent en cours",
+
             "title": "Exporter mon CV",
             "selected_model": "Modèle sélectionné : {{name}}",
             "back_to_models": "Retour aux modèles",

@@ -1,299 +1,340 @@
 @extends('layouts.cv')
 
 @section('content')
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" media="all">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet" media="all">
-
-    <div class="cv-container">
-        <header class="header-section">
-            <div class="header-content">
-                <div class="profile-section">
-                    @if($cvInformation['personalInformation']['photo'])
-                        <div class="profile-photo">
-                            <img src="{{ $cvInformation['personalInformation']['photo'] }}" alt="Photo de profil">
-                        </div>
-                    @endif
-                    <div class="name-section">
-                        <h1>{{ $cvInformation['personalInformation']['firstName'] }}</h1>
-                        @if(!empty($cvInformation['professions']))
-                            <div class="title-tag">{{ $cvInformation['professions'][0]['name'] ?? '' }}</div>
-                        @endif
-                    </div>
-                </div>
-                <div class="contact-section">
-                    <div class="contact-pill">
-                        <i class="bi bi-envelope"></i>{{ $cvInformation['personalInformation']['email'] }}
-                    </div>
-                    @if($cvInformation['personalInformation']['phone'])
-                        <div class="contact-pill">
-                            <i class="bi bi-telephone"></i>{{ $cvInformation['personalInformation']['phone'] }}
-                        </div>
-                    @endif
-                    @if($cvInformation['personalInformation']['address'])
-                        <div class="contact-pill">
-                            <i class="bi bi-geo-alt"></i>{{ $cvInformation['personalInformation']['address'] }}
-                        </div>
-                    @endif
-                    @if($cvInformation['personalInformation']['linkedin'])
-                        <div class="contact-pill">
-                            <i class="bi bi-linkedin"></i>{{ $cvInformation['personalInformation']['linkedin'] }}
-                        </div>
-                    @endif
-                </div>
-            </div>
-        </header>
-
-        @if(!empty($cvInformation['summaries']))
-            <section class="summary-section">
-                <p>{{ $cvInformation['summaries'][0]['description'] ?? '' }}</p>
-            </section>
-        @endif
-
-        @foreach($experiencesByCategory as $category => $experiences)
-            <section class="experience-section">
-                <h2>{{ $category }}</h2>
-                @foreach($experiences as $experience)
-                    <div class="experience">
-                        <div class="experience-header">
-                            <div class="experience-title">
-                                <h3>{{ $experience['name'] }}</h3>
-                                <p class="company">{{ $experience['InstitutionName'] }}</p>
-                            </div>
-                            <div class="date-tag">
-                                {{ $experience['date_start'] }} - {{ $experience['date_end'] ?? 'Présent' }}
-                                @if($experience['attachment_path'])
-                                    <i class="bi bi-paperclip" style="margin-left:3pt;"></i>
-                                @endif
-                            </div>
-                        </div>
-                        <p class="experience-description">{{ $experience['description'] }}</p>
-                        @if($experience['output'])
-                            <p class="experience-output">{{ $experience['output'] }}</p>
-                        @endif
-                    </div>
-                @endforeach
-            </section>
-        @endforeach
-
-        <div class="skills-interests">
-            @if(!empty($cvInformation['competences']))
-                <section class="skills-section">
-                    <h2>Compétences</h2>
-                    <div class="tags-container">
-                        @foreach($cvInformation['competences'] as $competence)
-                            <span class="tag">{{ $competence['name'] }}</span>
-                        @endforeach
-                    </div>
-                </section>
-            @endif
-
-            @if(!empty($cvInformation['hobbies']))
-                <section class="hobbies-section">
-                    <h2>Centres d'intérêt</h2>
-                    <div class="tags-container">
-                        @foreach($cvInformation['hobbies'] as $hobby)
-                            <span class="tag">{{ $hobby['name'] }}</span>
-                        @endforeach
-                    </div>
-                </section>
-            @endif
-        </div>
-    </div>
-
+    <!DOCTYPE html>
+<html lang="{{ $currentLocale }}">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ $cvInformation['personalInformation']['firstName'] ?? 'CV' }} - CV</title>
     <style>
-        :root {
-            --primary-color: #2196F3;
-            --primary-dark: #1976D2;
-            --text-color: #2c3e50;
-            --text-light: #718096;
-            --border-color: #e2e8f0;
-            --tag-bg: #f7fafc;
+        @page {
+            margin: 0;
+            padding: 0;
+            size: A4;
+        }
+
+        body {
+            font-family: 'DejaVu Sans', sans-serif;
+            line-height: 1.2;
+            font-size: 9pt;
+            color: #2C3E50;
+            margin: 0;
+            padding: 0;
+            background-color: #FFFFFF;
         }
 
         .cv-container {
-            width: 210mm;
-            min-height: 297mm;
-            margin: 0;
+            width: 190mm;
+            padding: 12mm 15mm;
+        }
+
+        /* Tables Reset */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        td {
+            vertical-align: top;
             padding: 0;
-            background: white;
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-            font-size: 9pt;
-            line-height: 1.3;
-            color: var(--text-color);
         }
 
-        .header-section {
-            background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
-            color: white;
-            padding: 8mm;
+        /* Header Styling */
+        .header-table {
+            margin-bottom: 8mm;
         }
 
-        .profile-section {
-            display: flex;
-            align-items: center;
-            gap: 8mm;
-            margin-bottom: 4mm;
+        .profile-td {
+            width: 65%;
+            padding-right: 5mm;
         }
 
-        .profile-photo {
-            width: 25mm;
-            height: 25mm;
-            border-radius: 50%;
-            border: 0.5mm solid rgba(255,255,255,0.2);
+        .contact-td {
+            background-color: #F8F9FA;
+            padding: 3mm;
+            border-radius: 2mm;
+        }
+
+        .photo-td {
+            width: 30mm;
+            padding-left: 3mm;
+        }
+
+        .name {
+            font-size: 24pt;
+            font-weight: 700;
+            color: #1ABC9C;
+            margin-bottom: 2mm;
+            letter-spacing: -0.5pt;
+        }
+
+        .profession {
+            font-size: 12pt;
+            color: #34495E;
+            margin-bottom: 3mm;
+        }
+
+        .contact-item {
+            font-size: 8pt;
+            margin-bottom: 1.5mm;
+            color: #7F8C8D;
+            white-space: nowrap;
+        }
+
+        .contact-icon {
+            color: #1ABC9C;
+            margin-right: 1mm;
+        }
+
+        /* Photo Styling */
+        .photo-container {
+            width: 30mm;
+            height: 30mm;
             overflow: hidden;
+            border-radius: 2mm;
+            border: 0.5mm solid #1ABC9C;
         }
 
-        .profile-photo img {
+        .photo-container img {
             width: 100%;
             height: 100%;
             object-fit: cover;
         }
 
-        h1 {
-            font-size: 16pt;
-            font-weight: 600;
-            margin: 0;
+        /* Section Styling */
+        .section {
+            margin-bottom: 5mm;
         }
 
-        .title-tag {
-            display: inline-block;
-            background: rgba(255,255,255,0.2);
-            padding: 1mm 3mm;
-            border-radius: 3mm;
-            font-size: 9pt;
-            margin-top: 1mm;
-        }
-
-        .contact-section {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 2mm;
-        }
-
-        .contact-pill {
-            display: flex;
-            align-items: center;
-            gap: 1mm;
-            background: rgba(255,255,255,0.1);
-            padding: 1mm 3mm;
-            border-radius: 3mm;
-            font-size: 8pt;
-        }
-
-        section {
-            padding: 3mm 8mm;
-        }
-
-        .summary-section {
-            font-size: 9pt;
-            color: var(--text-light);
-            padding-bottom: 2mm;
-        }
-
-        h2 {
+        .section-title {
             font-size: 11pt;
-            font-weight: 600;
-            color: var(--primary-color);
-            margin: 2mm 0;
+            font-weight: bold;
+            color: #1ABC9C;
+            text-transform: uppercase;
+            margin-bottom: 2mm;
             padding-bottom: 1mm;
-            border-bottom: 0.5mm solid var(--primary-color);
+            border-bottom: 0.3mm solid #E8EAED;
         }
 
-        .experience {
+        /* Summary Section */
+        .summary {
+            font-size: 9pt;
+            color: #34495E;
+            line-height: 1.4;
+            text-align: justify;
+            margin-bottom: 4mm;
+        }
+
+        /* Experience Styling */
+        .experience-table {
+            width: 100%;
             margin-bottom: 3mm;
+            page-break-inside: avoid;
         }
 
-        .experience:last-child {
-            margin-bottom: 0;
+        .date-td {
+            width: 20mm;
+            padding-right: 3mm;
         }
 
-        .experience-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            margin-bottom: 1mm;
+        .date-box {
+            background-color: #F8F9FA;
+            border-left: 0.5mm solid #1ABC9C;
+            padding: 1.5mm 2mm;
+            font-size: 7.5pt;
+            color: #7F8C8D;
+            text-align: left;
+            line-height: 1.2;
         }
 
-        .experience-title h3 {
-            font-size: 10pt;
+        .duration {
+            font-size: 7pt;
+            color: #95A5A6;
+            margin-top: 0.5mm;
+        }
+
+        .company-td {
+            width: 35mm;
+            padding-right: 3mm;
+        }
+
+        .company-name {
+            color: #1ABC9C;
             font-weight: 600;
-            margin: 0;
+            font-size: 8.5pt;
+            line-height: 1.3;
         }
 
-        .company {
-            color: var(--text-light);
-            font-size: 8pt;
-            margin: 0.5mm 0;
+        .content-td {
+            padding-right: 2mm;
         }
 
-        .date-tag {
-            font-size: 8pt;
-            color: var(--text-light);
+        .experience-title {
+            font-weight: bold;
+            color: #2C3E50;
+            margin-bottom: 1mm;
+            font-size: 9pt;
         }
 
         .experience-description {
-            margin: 1mm 0;
-            font-size: 9pt;
+            font-size: 8.5pt;
+            color: #34495E;
+            text-align: justify;
+            line-height: 1.3;
         }
 
-        .experience-output {
-            font-style: italic;
-            color: var(--text-light);
+        /* Skills and Hobbies */
+        .skills-hobbies-table {
+            width: 100%;
+        }
+
+        .skills-td {
+            width: 50%;
+            padding-right: 3mm;
+        }
+
+        .hobbies-td {
+            width: 50%;
+            padding-left: 3mm;
+        }
+
+        .skill-item, .hobby-item {
+            display: inline-block;
+            background-color: #F8F9FA;
+            padding: 1mm 2mm;
+            margin: 0 1mm 1mm 0;
+            border-radius: 1mm;
             font-size: 8pt;
-            margin-top: 1mm;
+            color: #34495E;
         }
 
-        .tags-container {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 2mm;
-        }
-
-        .tag {
-            background: var(--tag-bg);
-            padding: 1mm 3mm;
-            border-radius: 2mm;
-            font-size: 8pt;
-        }
-
-        @media print {
-            @page {
-                size: A4;
-                margin: 0;
-            }
-
-            html, body {
-                width: 210mm;
-                height: 297mm;
-                margin: 0;
-                padding: 0;
-            }
-
-            .cv-container {
-                width: 210mm;
-                min-height: 297mm;
-                margin: 0;
-                padding: 0;
-                -webkit-print-color-adjust: exact !important;
-                print-color-adjust: exact !important;
-            }
-
-            .header-section {
-                -webkit-print-color-adjust: exact !important;
-                print-color-adjust: exact !important;
-            }
-
-            section {
-                page-break-inside: avoid;
-            }
-
-            h2 {
-                page-break-after: avoid;
-            }
-
-            .experience {
-                page-break-inside: avoid;
-            }
+        .skill-item:before, .hobby-item:before {
+            content: "•";
+            color: #1ABC9C;
+            margin-right: 1mm;
         }
     </style>
+</head>
+<body>
+<div class="cv-container">
+    <!-- Header Section -->
+    <table class="header-table">
+        <tr>
+            <td class="profile-td">
+                <div class="name">{{ $cvInformation['personalInformation']['firstName'] }}</div>
+                <div class="profession">
+                    {{ $currentLocale === 'fr' ? $cvInformation['professions'][0]['name'] : $cvInformation['professions'][0]['name_en'] }}
+                </div>
+            </td>
+            <td class="contact-td">
+                @if($cvInformation['personalInformation']['email'])
+                    <div class="contact-item">
+                        <span class="contact-icon">✉</span> {{ $cvInformation['personalInformation']['email'] }}
+                    </div>
+                @endif
+                @if($cvInformation['personalInformation']['phone'])
+                    <div class="contact-item">
+                        <span class="contact-icon">☎</span> {{ $cvInformation['personalInformation']['phone'] }}
+                    </div>
+                @endif
+                @if($cvInformation['personalInformation']['address'])
+                    <div class="contact-item">
+                        <span class="contact-icon">⌂</span> {{ $cvInformation['personalInformation']['address'] }}
+                    </div>
+                @endif
+                @if($cvInformation['personalInformation']['linkedin'])
+                    <div class="contact-item">
+                        <span class="contact-icon">∞</span> {{ $cvInformation['personalInformation']['linkedin'] }}
+                    </div>
+                @endif
+            </td>
+            @if($cvInformation['personalInformation']['photo'])
+                <td class="photo-td">
+                    <div class="photo-container">
+                        <img src="data:image/jpeg;base64,{{ base64_encode(file_get_contents(public_path('storage/' . str_replace('/storage/', '', $cvInformation['personalInformation']['photo'])))) }}"
+                             alt="Profile">
+                    </div>
+                </td>
+            @endif
+        </tr>
+    </table>
+
+    <!-- Summary Section -->
+    @if(!empty($cvInformation['summaries']))
+        <div class="section">
+            <div class="summary">
+                {{ $cvInformation['summaries'][0]['description'] ?? '' }}
+            </div>
+        </div>
+    @endif
+
+    <!-- Experience Sections -->
+    @foreach($experiencesByCategory as $category => $experiences)
+        <div class="section">
+            <div class="section-title">
+                @if($currentLocale === 'fr')
+                    {{ $category }}
+                @else
+                    {{ $categoryTranslations[$category]['name_en'] ?? $category }}
+                @endif
+            </div>
+            @foreach($experiences as $experience)
+                <table class="experience-table">
+                    <tr>
+                        <td class="date-td">
+                            <div class="date-box">
+                                {{ \Carbon\Carbon::parse($experience['date_start'])->locale($currentLocale)->isoFormat('MMM YYYY') }}
+                                -
+                                @if($experience['date_end'])
+                                    {{ \Carbon\Carbon::parse($experience['date_end'])->locale($currentLocale)->isoFormat('MMM YYYY') }}
+                                @else
+                                    {{ $currentLocale === 'fr' ? 'Présent' : 'Present' }}
+
+                                @endif
+                            </div>
+                        </td>
+                        <td class="company-td">
+                            <div class="company-name">{{ $experience['InstitutionName'] }}</div>
+                        </td>
+                        <td class="content-td">
+                            <div class="experience-title">{{ $experience['name'] }}</div>
+                            <div class="experience-description">
+                                {{ $experience['description'] }}
+                                @if($experience['output'])
+                                    <br>{{ $experience['output'] }}
+                                @endif
+                            </div>
+                        </td>
+                    </tr>
+                </table>
+            @endforeach
+        </div>
+    @endforeach
+
+    <!-- Skills and Hobbies -->
+    <table class="skills-hobbies-table">
+        <tr>
+            @if(!empty($cvInformation['competences']))
+                <td class="skills-td">
+                    <div class="section-title">{{ $currentLocale === 'fr' ? 'Compétences' : 'Skills' }}</div>
+                    @foreach($cvInformation['competences'] as $competence)
+                        <span class="skill-item">{{ $currentLocale === 'fr' ? $competence['name'] : $competence['name_en'] }}</span>
+                    @endforeach
+                </td>
+            @endif
+
+            @if(!empty($cvInformation['hobbies']))
+                <td class="hobbies-td">
+                    <div class="section-title">{{ $currentLocale === 'fr' ? 'Centres d\'intérêt' : 'Hobbies' }}</div>
+                    @foreach($cvInformation['hobbies'] as $hobby)
+                        <span class="hobby-item">{{ $currentLocale === 'fr' ? $hobby['name'] : $hobby['name_en'] }}</span>
+                    @endforeach
+                </td>
+            @endif
+        </tr>
+    </table>
+</div>
+</body>
+</html>
 @endsection

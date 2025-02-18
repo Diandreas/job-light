@@ -1,413 +1,308 @@
 @extends('layouts.cv')
 
-@section('title', 'CV - {{ $cvInformation["personalInformation"]["firstName"] }}')
-
 @section('content')
-    <div class="cv-container">
-        <header class="cv-header">
-            <div class="header-content">
-                @if($cvInformation['personalInformation']['photo'])
-                    <div class="profile-photo">
-                        <img src="{{ $cvInformation['personalInformation']['photo'] }}" alt="Photo de profil" class="profile-image">
-                    </div>
-                @endif
-                <div class="header-text">
-                    <h1>{{ $cvInformation['personalInformation']['firstName'] }}</h1>
-                    <h2>{{ $cvInformation['professions'][0]['name'] }}</h2>
-                    <div class="contact-info">
-                        <p><i class="fas fa-envelope"></i> {{ $cvInformation['personalInformation']['email'] }}</p>
-                        @if($cvInformation['personalInformation']['phone'])
-                            <p><i class="fas fa-phone"></i> {{ $cvInformation['personalInformation']['phone'] }}</p>
-                        @endif
-                        @if($cvInformation['personalInformation']['address'])
-                            <p><i class="fas fa-map-marker-alt"></i> {{ $cvInformation['personalInformation']['address'] }}</p>
-                        @endif
-                        @if($cvInformation['personalInformation']['linkedin'])
-                            <p><i class="fab fa-linkedin"></i> {{ $cvInformation['personalInformation']['linkedin'] }}</p>
-                        @endif
-                        @if($cvInformation['personalInformation']['github'])
-                            <p><i class="fab fa-github"></i> {{ $cvInformation['personalInformation']['github'] }}</p>
-                        @endif
-                    </div>
-                </div>
-            </div>
-        </header>
-
-        <main class="cv-main">
-            <div class="content-primary">
-                @if(!empty($cvInformation['summaries']))
-                    <section class="summary">
-                        <h2><i class="fas fa-user-circle"></i> Résumé</h2>
-                        @foreach($cvInformation['summaries'] as $summary)
-                            <p>{{ $summary['description'] }}</p>
-                        @endforeach
-                    </section>
-                @endif
-
-                <section class="experiences">
-                    @foreach($experiencesByCategory as $category => $experiences)
-                        <div class="experience-category">
-                            <h2><i class="fas fa-briefcase"></i> {{ $category }}</h2>
-                            @foreach($experiences as $experience)
-                                <div class="experience-item">
-                                    <h3>{{ $experience['name'] }}</h3>
-                                    <div class="experience-header">
-                                        <p class="institution"><i class="fas fa-building"></i> {{ $experience['InstitutionName'] }}</p>
-                                        <p class="dates"><i class="fas fa-calendar-alt"></i>
-                                            {{ \Carbon\Carbon::parse($experience['date_start'])->format('M Y') }} -
-                                            {{ $experience['date_end'] ? \Carbon\Carbon::parse($experience['date_end'])->format('M Y') : 'Present' }}
-                                        </p>
-                                    </div>
-                                    <div class="experience-content">
-                                        <p class="description">{{ $experience['description'] }}</p>
-                                        @if($experience['output'])
-                                            <p class="achievements"><i class="fas fa-star"></i> {{ $experience['output'] }}</p>
-                                        @endif
-
-                                        @if(!empty($experience['references']))
-                                            <div class="references">
-                                                <h4><i class="fas fa-user-check"></i> Références</h4>
-                                                <div class="references-grid">
-                                                    @foreach($experience['references'] as $reference)
-                                                        <div class="reference-item">
-                                                            <h5>{{ $reference['name'] }}</h5>
-                                                            <p class="reference-role">{{ $reference['function'] }}</p>
-                                                            @if($reference['email'])
-                                                                <p class="reference-contact">
-                                                                    <i class="fas fa-envelope"></i> {{ $reference['email'] }}
-                                                                </p>
-                                                            @endif
-                                                            @if($reference['telephone'])
-                                                                <p class="reference-contact">
-                                                                    <i class="fas fa-phone"></i> {{ $reference['telephone'] }}
-                                                                </p>
-                                                            @endif
-                                                        </div>
-                                                    @endforeach
-                                                </div>
-                                            </div>
-                                        @endif
-
-                                        @if($experience['attachment_path'])
-                                            <div class="attachment-indicator">
-                                                <i class="fas fa-paperclip"></i> Document justificatif disponible
-                                            </div>
-                                        @endif
-                                    </div>
-                                </div>
-                            @endforeach
-                        </div>
-                    @endforeach
-                </section>
-            </div>
-
-            <aside class="sidebar">
-                @if(!empty($cvInformation['competences']))
-                    <section class="competences">
-                        <h2><i class="fas fa-code"></i> Compétences</h2>
-                        <div class="skills-grid">
-                            @foreach($cvInformation['competences'] as $competence)
-                                <div class="skill-item">
-                                    <span class="skill-name">{{ $competence['name'] }}</span>
-                                </div>
-                            @endforeach
-                        </div>
-                    </section>
-                @endif
-
-                @if(!empty($cvInformation['hobbies']))
-                    <section class="hobbies">
-                        <h2><i class="fas fa-heart"></i> Centres d'intérêt</h2>
-                        <div class="hobbies-grid">
-                            @foreach($cvInformation['hobbies'] as $hobby)
-                                <div class="hobby-item">
-                                    <span class="hobby-name">{{ $hobby['name'] }}</span>
-                                </div>
-                            @endforeach
-                        </div>
-                    </section>
-                @endif
-            </aside>
-        </main>
-    </div>
-@endsection
-
-@section('styles')
+    <!DOCTYPE html>
+<html lang="{{ $currentLocale }}">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ $cvInformation['personalInformation']['firstName'] ?? 'CV' }} - CV</title>
     <style>
-        :root {
-            --primary-color: #2d3748;
-            --secondary-color: #4a5568;
-            --accent-color: #3182ce;
-            --background-light: #f7fafc;
-            --border-color: #e2e8f0;
-            --shadow-color: rgba(0, 0, 0, 0.1);
+        @page { margin: 8mm; size: A4; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'DejaVu Sans', sans-serif;
+            line-height: 1.15;
+            font-size: 9pt;
+            color: #2d3748;
+            background: #fff;
         }
 
         .cv-container {
-            max-width: 1200px;
+            width: 190mm;
             margin: 0 auto;
-            padding: 2rem;
-            font-family: 'Arial', sans-serif;
-            color: var(--primary-color);
+            padding: 8mm;
             background: white;
         }
 
-        /* Header Styles */
-        .cv-header {
-            margin-bottom: 2rem;
-        }
-
+        /* Header moderne avec accent de couleur */
         .header-content {
-            display: flex;
-            align-items: center;
-            gap: 2rem;
+            position: relative;
+            min-height: 24mm;
+            margin-bottom: 3mm;
+            background: #4299e1;
+            border-radius: 3mm;
+            padding: 3mm;
+            color: white;
         }
 
         .profile-photo {
-            width: 150px;
-            height: 150px;
-            border-radius: 50%;
+            position: absolute;
+            top: 3mm;
+            left: 3mm;
+            width: 22mm;
+            height: 22mm;
+            border-radius: 2mm;
             overflow: hidden;
-            border: 3px solid var(--accent-color);
-            flex-shrink: 0;
+            border: 0.4mm solid rgba(255, 255, 255, 0.3);
         }
 
-        .profile-image {
+        .profile-photo img {
             width: 100%;
             height: 100%;
             object-fit: cover;
         }
 
         .header-text {
-            flex-grow: 1;
+            margin-left: 26mm;
         }
 
-        .header-text h1 {
-            font-size: 2.5rem;
-            margin: 0 0 0.5rem 0;
-            color: var(--primary-color);
+        h1 {
+            font-size: 14pt;
+            color: white;
+            margin-bottom: 1mm;
+            line-height: 1.1;
         }
 
-        .header-text h2 {
-            font-size: 1.5rem;
-            color: var(--secondary-color);
-            margin: 0 0 1rem 0;
+        h2.profession {
+            font-size: 10pt;
+            color: rgba(255, 255, 255, 0.9);
+            margin-bottom: 2mm;
             font-weight: normal;
         }
 
         .contact-info {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 0.5rem;
-        }
-
-        .contact-info p {
             display: flex;
+            flex-wrap: wrap;
+            gap: 2mm;
+            margin-top: 2mm;
+        }
+
+        .contact-item {
+            display: inline-flex;
             align-items: center;
-            gap: 0.5rem;
-            margin: 0;
-            font-size: 0.9rem;
+            font-size: 8pt;
+            color: white;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 0.8mm 1.5mm;
+            border-radius: 1mm;
         }
 
-        .contact-info i {
-            color: var(--accent-color);
-            width: 20px;
-        }
-
-        /* Main Layout */
-        .cv-main {
-            display: grid;
-            grid-template-columns: 7fr 3fr;
-            gap: 2rem;
-        }
-
-        /* Sections */
+        /* Sections avec style moderne */
         section {
-            margin-bottom: 2rem;
+            margin-bottom: 3mm;
+            background: white;
         }
 
         h2 {
-            font-size: 1.5rem;
-            color: var(--primary-color);
-            margin: 0 0 1rem 0;
-            padding-bottom: 0.5rem;
-            border-bottom: 2px solid var(--accent-color);
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
+            font-size: 11pt;
+            color: #4299e1;
+            margin-bottom: 2mm;
+            padding-bottom: 1mm;
+            border-bottom: 0.3mm solid #e2e8f0;
         }
 
-        h2 i {
-            color: var(--accent-color);
-        }
-
-        /* Experience Items */
         .experience-item {
-            margin-bottom: 1.5rem;
-            padding: 1rem;
-            background: var(--background-light);
-            border-radius: 8px;
-            box-shadow: 0 2px 4px var(--shadow-color);
+            margin-bottom: 2.5mm;
+            padding: 2mm;
+            border-radius: 1.5mm;
+            background: #f7fafc;
         }
 
-        .experience-item h3 {
-            font-size: 1.2rem;
-            margin: 0 0 0.5rem 0;
-            color: var(--accent-color);
+        .experience-header table {
+            width: 100%;
+            border-collapse: collapse;
         }
 
-        .experience-header {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 1rem;
-            font-size: 0.9rem;
-            color: var(--secondary-color);
+        .title-company {
+            width: 75%;
         }
 
-        .experience-content {
-            font-size: 0.95rem;
+        .title-company h3 {
+            font-size: 9.5pt;
+            color: #2d3748;
+            margin-bottom: 0.5mm;
+            font-weight: bold;
         }
 
-        .achievements {
-            margin-top: 0.5rem;
-            padding-left: 1rem;
-            border-left: 2px solid var(--accent-color);
+        .company {
+            font-size: 8pt;
+            color: #4a5568;
         }
 
-        /* References */
-        .references {
-            margin-top: 1rem;
-            padding-top: 1rem;
-            border-top: 1px dashed var(--border-color);
+        .date {
+            text-align: right;
+            font-size: 8pt;
+            color: #4299e1;
+            width: 25%;
+            font-weight: 500;
         }
 
-        .references h4 {
-            font-size: 1rem;
-            margin: 0 0 0.5rem 0;
-            color: var(--secondary-color);
+        .description {
+            font-size: 8pt;
+            line-height: 1.3;
+            color: #4a5568;
+            margin-top: 1mm;
         }
 
-        .references-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 1rem;
-        }
-
-        .reference-item {
-            padding: 0.75rem;
-            background: white;
-            border-radius: 4px;
-            font-size: 0.85rem;
-        }
-
-        .reference-item h5 {
-            margin: 0 0 0.25rem 0;
-            color: var(--primary-color);
-        }
-
-        .reference-role {
-            color: var(--secondary-color);
-            margin: 0 0 0.5rem 0;
-        }
-
-        .reference-contact {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            margin: 0.25rem 0;
-            color: var(--secondary-color);
-        }
-
-        /* Attachment Indicator */
-        .attachment-indicator {
-            margin-top: 0.75rem;
-            font-size: 0.85rem;
-            color: var(--accent-color);
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        /* Sidebar */
-        .sidebar section {
-            background: var(--background-light);
-            padding: 1.5rem;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px var(--shadow-color);
-        }
-
-        .skills-grid, .hobbies-grid {
+        /* Skills et Hobbies avec style moderne */
+        .skills-list, .hobbies-list {
             display: flex;
             flex-wrap: wrap;
-            gap: 0.5rem;
-        }
-
-        .skill-item, .hobby-item {
-            background: white;
-            padding: 0.5rem 1rem;
-            border-radius: 20px;
-            font-size: 0.9rem;
-            box-shadow: 0 1px 2px var(--shadow-color);
+            gap: 1.2mm;
+            margin-top: 2mm;
         }
 
         .skill-item {
-            border-left: 3px solid var(--accent-color);
+            display: inline-block;
+            background: #ebf8ff;
+            padding: 1mm 2mm;
+            border-radius: 1mm;
+            font-size: 8pt;
+            color: #4299e1;
+            border: 0.2mm solid #bee3f8;
         }
 
-        /* Print Styles */
+        .hobby-item {
+            display: inline-block;
+            background: #f0fff4;
+            padding: 1mm 2mm;
+            border-radius: 1mm;
+            font-size: 8pt;
+            color: #38a169;
+            border: 0.2mm solid #c6f6d5;
+        }
+
+        .professional-summary {
+            background: #ebf8ff;
+            padding: 2.5mm;
+            border-radius: 2mm;
+            margin-bottom: 3mm;
+            border-left: 1mm solid #4299e1;
+        }
+
+        .professional-summary .description {
+            color: #2c5282;
+        }
+
         @media print {
-            .cv-container {
+            body {
+                margin: 0;
                 padding: 0;
-                max-width: none;
+                width: 210mm;
+                height: 297mm;
             }
-
-            .experience-item, .sidebar section {
+            .cv-container {
+                margin: 0 auto;
                 box-shadow: none;
-                border: 1px solid var(--border-color);
             }
-
-            .profile-photo {
-                print-color-adjust: exact;
-                -webkit-print-color-adjust: exact;
-            }
-
-            section {
-                break-inside: avoid;
-            }
-        }
-
-        /* Responsive Design */
-        @media screen and (max-width: 768px) {
-            .cv-main {
-                grid-template-columns: 1fr;
-            }
-
-            .header-content {
-                flex-direction: column;
-                text-align: center;
-            }
-
-            .contact-info {
-                grid-template-columns: 1fr;
-            }
-
-            .contact-info p {
-                justify-content: center;
-            }
-
-            .experience-header {
-                flex-direction: column;
-                text-align: center;
-                gap: 0.5rem;
-            }
-
-            .references-grid {
-                grid-template-columns: 1fr;
-            }
+            section { page-break-inside: avoid; }
         }
     </style>
-@endsection
+</head>
+<body>
+<div class="cv-container">
+    <div class="header-content">
+        @if($cvInformation['personalInformation']['photo'])
+            <div class="profile-photo">
+                <img src="data:image/jpeg;base64,{{ base64_encode(file_get_contents(public_path('storage/' . str_replace('/storage/', '', $cvInformation['personalInformation']['photo'])))) }}"
+                     alt="{{ $currentLocale === 'fr' ? 'Photo de profil' : 'Profile photo' }}">
+            </div>
+        @endif
+        <div class="header-text">
+            <h1>{{ $cvInformation['personalInformation']['firstName'] }}</h1>
+            <h2 class="profession">
+                {{ $currentLocale === 'fr' ? $cvInformation['professions'][0]['name'] : $cvInformation['professions'][0]['name_en'] }}
+            </h2>
+            <div class="contact-info">
+                @if($cvInformation['personalInformation']['email'])
+                    <span class="contact-item">📧 {{ $cvInformation['personalInformation']['email'] }}</span>
+                @endif
+                @if($cvInformation['personalInformation']['phone'])
+                    <span class="contact-item">📱 {{ $cvInformation['personalInformation']['phone'] }}</span>
+                @endif
+                @if($cvInformation['personalInformation']['address'])
+                    <span class="contact-item">📍 {{ $cvInformation['personalInformation']['address'] }}</span>
+                @endif
+                @if($cvInformation['personalInformation']['linkedin'])
+                    <span class="contact-item">🔗 {{ $cvInformation['personalInformation']['linkedin'] }}</span>
+                @endif
+            </div>
+        </div>
+    </div>
 
-@section('scripts')
-    <script src="https://kit.fontawesome.com/your-font-awesome-kit.js" crossorigin="anonymous"></script>
+    @if(!empty($cvInformation['summaries']))
+        <section class="professional-summary">
+            <h2>{{ $currentLocale === 'fr' ? 'Résumé Professionnel' : 'Professional Summary' }}</h2>
+            <p class="description">{{ $cvInformation['summaries'][0]['description'] ?? '' }}</p>
+        </section>
+    @endif
+
+    @foreach($experiencesByCategory as $category => $experiences)
+        <section class="experience-section">
+            <h2>
+                @if($currentLocale === 'fr')
+                    {{ $category }}
+                @else
+                    {{ $categoryTranslations[$category]['name_en'] ?? $category }}
+                @endif
+            </h2>
+            @foreach($experiences as $experience)
+                <div class="experience-item">
+                    <div class="experience-header">
+                        <table>
+                            <tr>
+                                <td class="title-company">
+                                    <h3>{{ $experience['name'] }}</h3>
+                                    <div class="company">{{ $experience['InstitutionName'] }}</div>
+                                </td>
+                                <td class="date">
+                                    {{ \Carbon\Carbon::parse($experience['date_start'])->locale($currentLocale)->isoFormat('MMM YYYY') }} -
+                                    @if($experience['date_end'])
+                                        {{ \Carbon\Carbon::parse($experience['date_end'])->locale($currentLocale)->isoFormat('MMM YYYY') }}
+                                    @else
+                                        {{ $currentLocale === 'fr' ? 'Présent' : 'Present' }}
+                                    @endif
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                    <p class="description">{{ $experience['description'] }}</p>
+                    @if($experience['output'])
+                        <p class="description">{{ $experience['output'] }}</p>
+                    @endif
+                </div>
+            @endforeach
+        </section>
+    @endforeach
+
+    @if(!empty($cvInformation['competences']))
+        <section class="skills-section">
+            <h2>{{ $currentLocale === 'fr' ? 'Compétences' : 'Skills' }}</h2>
+            <div class="skills-list">
+                @foreach($cvInformation['competences'] as $competence)
+                    <span class="skill-item">
+                        {{ $currentLocale === 'fr' ? $competence['name'] : $competence['name_en'] }}
+                    </span>
+                @endforeach
+            </div>
+        </section>
+    @endif
+
+    @if(!empty($cvInformation['hobbies']))
+        <section class="hobbies-section">
+            <h2>{{ $currentLocale === 'fr' ? 'Centres d\'intérêt' : 'Hobbies & Interests' }}</h2>
+            <div class="hobbies-list">
+                @foreach($cvInformation['hobbies'] as $hobby)
+                    <span class="hobby-item">
+                        {{ $currentLocale === 'fr' ? $hobby['name'] : $hobby['name_en'] }}
+                    </span>
+                @endforeach
+            </div>
+        </section>
+    @endif
+</div>
+</body>
+</html>
 @endsection

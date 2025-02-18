@@ -180,6 +180,7 @@
     "cv_preview": {
         "title": "CV Professionnel",
         "export": {
+            "download": "Télécharger le CV",
             "title": "Exporter mon CV",
             "selected_model": "Modèle sélectionné : {{name}}",
             "back_to_models": "Retour aux modèles",

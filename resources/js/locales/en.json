@@ -183,6 +183,7 @@
     "cv_preview": {
         "title": "Professional CV",
         "export": {
+            "download": "Download your CV",
             "title": "Export My CV",
             "selected_model": "Selected template: {{name}}",
             "back_to_models": "Back to templates",
@@ -654,4 +655,6 @@
             }
         }
     }
+
+
 }

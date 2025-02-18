@@ -1,613 +1,456 @@
 @extends('layouts.cv')
 
 @section('content')
-    <div class="cv-container">
-        <!-- En-tête professionnel avec photo -->
-        <header class="cv-header">
-            <div class="header-content">
-                @if($cvInformation['personalInformation']['photo'])
-                    <div class="profile-photo">
-                        <img src="{{ $cvInformation['personalInformation']['photo'] }}" alt="Profile Photo">
-                    </div>
-                @endif
-                <div class="header-text">
-                    <div class="name-title">
-                        <h1>{{ $cvInformation['personalInformation']['firstName'] }}</h1>
-                        <h2>{{ $cvInformation['professions'][0]['name']}}</h2>
-                    </div>
-                    <div class="contact-info">
-                        <div class="contact-item">
-                            <i class="bi bi-envelope"></i>
-                            {{ $cvInformation['personalInformation']['email'] }}
-                        </div>
-                        <div class="contact-item">
-                            <i class="bi bi-telephone"></i>
-                            {{ $cvInformation['personalInformation']['phone'] }}
-                        </div>
-                        <div class="contact-item">
-                            <i class="bi bi-geo-alt"></i>
-                            {{ $cvInformation['personalInformation']['address'] }}
-                        </div>
-                        @if($cvInformation['personalInformation']['linkedin'])
-                            <div class="contact-item">
-                                <i class="bi bi-linkedin"></i>
-                                {{ $cvInformation['personalInformation']['linkedin'] }}
-                            </div>
-                        @endif
-                        @if($cvInformation['personalInformation']['github'])
-                            <div class="contact-item">
-                                <i class="bi bi-github"></i>
-                                {{ $cvInformation['personalInformation']['github'] }}
-                            </div>
-                        @endif
-                    </div>
-                </div>
-            </div>
-        </header>
-
-        <!-- Professional Summary -->
-        @if(!empty($cvInformation['summaries']))
-            <section class="summary-section">
-                <h2>Professional Summary</h2>
-                <div class="content">
-                    {{ $cvInformation['summaries'][0]['description'] ?? '' }}
-                </div>
-            </section>
-        @endif
-
-        <!-- Core Competencies -->
-        @if(!empty($cvInformation['competences']))
-            <section class="competencies-section">
-                <h2>Core Competencies</h2>
-                <div class="competencies-grid">
-                    @foreach($cvInformation['competences'] as $competence)
-                        <div class="competency-item">
-                            <i class="bi bi-check2-circle"></i>
-                            {{ $competence['name'] }}
-                        </div>
-                    @endforeach
-                </div>
-            </section>
-        @endif
-
-        <!-- Professional Experience -->
-        @foreach($experiencesByCategory as $category => $experiences)
-            <section class="experience-section">
-                <h2>{{ $category }}</h2>
-                @foreach($experiences as $experience)
-                    <div class="experience-item">
-                        <div class="experience-header">
-                            <div class="position-company">
-                                <h3>{{ $experience['name'] }}</h3>
-                                <div class="company">{{ $experience['InstitutionName'] }}</div>
-                            </div>
-                            <div class="date-location">
-                                <div class="date">
-                                    {{ \Carbon\Carbon::parse($experience['date_start'])->format('M Y') }} -
-                                    {{ $experience['date_end'] ? \Carbon\Carbon::parse($experience['date_end'])->format('M Y') : 'Present' }}
-                                </div>
-                                @if(isset($experience['location']))
-                                    <div class="location">{{ $experience['location'] }}</div>
-                                @endif
-                            </div>
-                        </div>
-                        <div class="experience-content">
-                            <div class="responsibilities">
-                                <p>{{ $experience['description'] }}</p>
-                            </div>
-                            @if($experience['output'])
-                                <div class="accomplishments">
-                                    <h4>Key Accomplishments:</h4>
-                                    <ul>
-                                        <li>{{ $experience['output'] }}</li>
-                                    </ul>
-                                </div>
-                            @endif
-                            @if(!empty($experience['references']))
-                                <div class="experience-references">
-                                    <h4>References:</h4>
-                                    <div class="references-grid">
-                                        @foreach($experience['references'] as $reference)
-                                            <div class="reference-item">
-                                                <div class="reference-header">
-                                                    <h5>{{ $reference['name'] }}</h5>
-                                                    <div class="reference-title">{{ $reference['function'] }}</div>
-                                                </div>
-                                                <div class="reference-contact">
-                                                    @if($reference['email'])
-                                                        <div class="reference-detail">
-                                                            <i class="bi bi-envelope"></i>
-                                                            {{ $reference['email'] }}
-                                                        </div>
-                                                    @endif
-                                                    @if($reference['telephone'])
-                                                        <div class="reference-detail">
-                                                            <i class="bi bi-telephone"></i>
-                                                            {{ $reference['telephone'] }}
-                                                        </div>
-                                                    @endif
-                                                </div>
-                                            </div>
-                                        @endforeach
-                                    </div>
-                                </div>
-                            @endif
-                            @if($experience['attachment_path'])
-                                <div class="attachment-section">
-                                    <i class="bi bi-paperclip"></i>
-                                    <span>Supporting Documentation Available</span>
-                                </div>
-                            @endif
-                        </div>
-                    </div>
-                @endforeach
-            </section>
-        @endforeach
-
-        <!-- Technical Skills -->
-        @if(!empty($cvInformation['competences']))
-            <section class="skills-section">
-                <h2>Technical Skills</h2>
-                <div class="skills-categories">
-                    <div class="skills-list">
-                        @foreach($cvInformation['competences'] as $competence)
-                            <span class="skill-item">{{ $competence['name'] }}</span>
-                        @endforeach
-                    </div>
-                </div>
-            </section>
-        @endif
-
-        <!-- Professional Development -->
-        @if(!empty($cvInformation['hobbies']))
-            <section class="development-section">
-                <h2>Professional Development</h2>
-                <div class="development-items">
-                    @foreach($cvInformation['hobbies'] as $hobby)
-                        <div class="development-item">
-                            <i class="bi bi-arrow-right"></i>
-                            {{ $hobby['name'] }}
-                        </div>
-                    @endforeach
-                </div>
-            </section>
-        @endif
-    </div>
-
+    <!DOCTYPE html>
+<html lang="{{ $currentLocale }}">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ $cvInformation['personalInformation']['firstName'] ?? 'CV' }} - CV</title>
     <style>
-        :root {
-            --primary-color: #2c3e50;
-            --secondary-color: #34495e;
-            --accent-color: #3498db;
-            --text-color: #333;
-            --text-light: #666;
-            --border-color: #ddd;
-            --background-light: #f8f9fa;
-            --spacing: 1.5rem;
+        @page {
+            margin: 0;
+            padding: 0;
+            size: A4;
+        }
+
+        body {
+            font-family: 'DejaVu Sans', sans-serif;
+            line-height: 1.2;
+            font-size: 9pt;
+            color: #333333;
+            margin: 0;
+            padding: 0;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        td {
+            vertical-align: top;
+            padding: 0;
         }
 
         .cv-container {
-            width: calc(210mm - 10px);
-            min-height: calc(297mm - 10px);
-            padding: var(--spacing);
-            font-family: 'Calibri', 'Arial', sans-serif;
-            color: var(--text-color);
-            line-height: 1.4;
-            background: white;
+            width: 190mm;
+            padding: 12mm;
         }
 
-        /* Header Styles with Photo */
-        .header-content {
-            display: flex;
-            gap: var(--spacing);
-            align-items: start;
-            margin-bottom: calc(var(--spacing) * 2);
+        .main-table {
+            width: 100%;
         }
 
-        .profile-photo {
-            flex-shrink: 0;
-            width: 120px;
-            height: 120px;
+        .content-col {
+            width: 75%;
+            padding-right: 6mm;
+        }
+
+        .sidebar-col {
+            width: 25%;
+        }
+
+        /* Header */
+        .header-name {
+            font-size: 18pt;
+            font-weight: bold;
+            color: #333333;
+            margin-bottom: 1mm;
+        }
+
+        .header-title {
+            font-size: 11pt;
+            color: #666666;
+            margin-bottom: 4mm;
+        }
+
+        /* Sections */
+        .section-table {
+            width: 100%;
+            margin-bottom: 3mm;
+        }
+
+        .section-icon-cell {
+            width: 6mm;
+            padding-right: 2mm;
+            padding-top: 1mm;
+        }
+
+        .section-icon {
+            width: 6mm;
+            height: 6mm;
+            background: #333333;
             border-radius: 50%;
-            overflow: hidden;
-            border: 3px solid var(--accent-color);
-            background-color: var(--background-light);
+            color: white;
+            font-size: 9pt;
+            text-align: center;
+            line-height: 6mm;
         }
 
-        .profile-photo img {
+        .section-title {
+            font-size: 11pt;
+            font-weight: bold;
+            color: #333333;
+            margin-bottom: 2mm;
+        }
+
+        .section-content {
+            text-align: justify;
+            padding-right: 2mm;
+        }
+
+        /* Timeline */
+        .timeline-table {
+            width: 100%;
+        }
+
+        .timeline-dot-cell {
+            width: 1.5mm;
+            padding-right: 2mm;
+            position: relative;
+        }
+
+        .timeline-dot {
+            width: 1.5mm;
+            height: 1.5mm;
+            background: #333333;
+            border-radius: 50%;
+            margin-top: 2.5mm;
+        }
+
+        .timeline-line {
+            position: absolute;
+            left: 0.65mm;
+            top: 4mm;
+            bottom: -3mm;
+            width: 0.2mm;
+            background: #999999;
+        }
+
+        .timeline-content {
+            padding-bottom: 3mm;
+        }
+
+        .timeline-date {
+            color: #666666;
+            font-size: 8.5pt;
+            margin-bottom: 0.5mm;
+        }
+
+        .timeline-title {
+            font-weight: bold;
+            font-size: 9.5pt;
+            margin-bottom: 0.5mm;
+        }
+
+        .timeline-company {
+            color: #666666;
+            font-style: italic;
+            font-size: 9pt;
+            margin-bottom: 1mm;
+        }
+
+        .timeline-description {
+            text-align: justify;
+            padding-left: 2mm;
+        }
+
+        .timeline-description ul {
+            margin: 0;
+            padding-left: 3mm;
+        }
+
+        .timeline-description li {
+            margin-bottom: 0.5mm;
+            text-align: justify;
+            font-size: 8.5pt;
+        }
+
+        /* Photo */
+        .photo-container {
+            width: 35mm;
+            height: 35mm;
+            margin-bottom: 4mm;
+            overflow: hidden;
+            border-radius: 1mm;
+        }
+
+        .photo-container img {
             width: 100%;
             height: 100%;
             object-fit: cover;
         }
 
-        .header-text {
-            flex-grow: 1;
+        /* Sidebar */
+        .sidebar-section {
+            margin-bottom: 4mm;
         }
 
-        .name-title h1 {
-            font-size: 2rem;
-            color: var(--primary-color);
-            margin: 0;
+        .sidebar-title-table {
+            width: 100%;
+            margin-bottom: 1.5mm;
+        }
+
+        .sidebar-icon-cell {
+            width: 5mm;
+            padding-right: 1.5mm;
+            border: none;
+        }
+
+        .sidebar-icon {
+            width: 5mm;
+            height: 5mm;
+            background: #333333;
+            border-radius: 50%;
+            color: white;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .sidebar-icon svg {
+            width: 3mm;
+            height: 3mm;
+            fill: currentColor;
+        }
+
+        .sidebar-title {
+            font-size: 10pt;
             font-weight: bold;
+            color: #333333;
         }
 
-        .name-title h2 {
-            font-size: 1.2rem;
-            color: var(--text-light);
-            margin: 0.5rem 0 1rem;
-            font-weight: normal;
-        }
-
-        .contact-info {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 0.5rem;
+        .sidebar-content {
+            padding-left: 6.5mm;
         }
 
         .contact-item {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            font-size: 0.9rem;
-        }
-
-        .contact-item i {
-            color: var(--accent-color);
-        }
-
-        /* Section Styles */
-        section {
-            margin-bottom: calc(var(--spacing) * 2);
-        }
-
-        h2 {
-            color: var(--primary-color);
-            font-size: 1.3rem;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            border-bottom: 2px solid var(--accent-color);
-            padding-bottom: 0.5rem;
-            margin-bottom: var(--spacing);
-        }
-
-        /* Core Competencies */
-        .competencies-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-            gap: 0.5rem;
-        }
-
-        .competency-item {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            padding: 0.5rem;
-        }
-
-        .competency-item i {
-            color: var(--accent-color);
-        }
-
-        /* Experience Section */
-        .experience-item {
-            margin-bottom: var(--spacing);
-            padding-bottom: var(--spacing);
-            border-bottom: 1px solid var(--border-color);
-        }
-
-        .experience-header {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 1rem;
-        }
-
-        .position-company h3 {
-            font-size: 1.1rem;
-            color: var(--secondary-color);
-            margin: 0;
-        }
-
-        .company {
-            color: var(--text-light);
-            font-size: 0.9rem;
-            margin-top: 0.2rem;
-        }
-
-        .date-location {
-            text-align: right;
-            color: var(--text-light);
-            font-size: 0.9rem;
-        }
-
-        /* Experience Content */
-        .experience-content {
-            font-size: 0.95rem;
-        }
-
-        .responsibilities {
-            margin-bottom: 1rem;
-        }
-
-        .accomplishments {
-            margin-top: 1rem;
-        }
-
-        .accomplishments h4 {
-            font-size: 1rem;
-            color: var(--secondary-color);
-            margin-bottom: 0.5rem;
-        }
-
-        .accomplishments ul {
-            margin: 0;
-            padding-left: 1.5rem;
-        }
-
-        .accomplishments li {
-            margin-bottom: 0.3rem;
-        }
-
-        /* References Styles */
-        .experience-references {
-            margin-top: var(--spacing);
-            padding-top: var(--spacing);
-            border-top: 1px dashed var(--border-color);
-        }
-
-        .references-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: var(--spacing);
-            margin-top: 0.5rem;
-        }
-
-        .reference-item {
-            background: var(--background-light);
-            padding: 1rem;
-            border-radius: 5px;
-            border-left: 3px solid var(--accent-color);
-        }
-
-        .reference-header h5 {
-            font-size: 1rem;
-            color: var(--secondary-color);
-            margin: 0;
-        }
-
-        .reference-title {
-            color: var(--text-light);
-            font-size: 0.9rem;
-            margin-top: 0.2rem;
-        }
-
-        .reference-contact {
-            margin-top: 0.5rem;
-        }
-
-        .reference-detail {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            font-size: 0.85rem;
-            color: var(--text-light);
-            margin-top: 0.3rem;
-        }
-
-        .reference-detail i {
-            color: var(--accent-color);
-        }
-
-        /* Attachment Section */
-        .attachment-section {
-            margin-top: 0.5rem;
-            padding: 0.5rem;
-            background: var(--background-light);
-            border-radius: 3px;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            font-size: 0.9rem;
-            color: var(--text-light);
-        }
-
-        .attachment-section i {
-            color: var(--accent-color);
-        }
-
-        /* Technical Skills */
-        .skills-list {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 0.5rem;
+            margin-bottom: 1mm;
+            font-size: 8.5pt;
         }
 
         .skill-item {
-            background: var(--background-light);
-            padding: 0.3rem 0.8rem;
-            border-radius: 3px;
-            font-size: 0.9rem;
-            transition: all 0.2s ease;
+            margin-bottom: 1mm;
+            font-size: 8.5pt;
+            text-align: justify;
         }
 
-        .skill-item:hover {
-            background: var(--accent-color);
-            color: white;
+        .skill-item:before {
+            content: "•";
+            margin-right: 1mm;
         }
 
-        /* Professional Development */
-        .development-items {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-            gap: 0.5rem;
-        }
-
-        .development-item {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            font-size: 0.9rem;
-            padding: 0.5rem;
-            transition: all 0.2s ease;
-        }
-
-        .development-item:hover {
-            background: var(--background-light);
-            border-radius: 3px;
-        }
-
-        .development-item i {
-            color: var(--accent-color);
-        }
-
-        /* Print Styles */
-        @media print {
-            .cv-container {
-                margin: 0;
-                padding: 15mm;
-                width: 210mm;
-                height: 297mm;
-            }
-
-            section {
-                break-inside: avoid;
-            }
-
-            .experience-item {
-                break-inside: avoid;
-            }
-
-            .reference-item {
-                break-inside: avoid;
-            }
-
-            .development-item {
-                break-/* Print Styles (continuation) */
-            @media print {
-                /* Previous print styles remain... */
-
-                .development-item {
-                    break-inside: avoid;
-                }
-
-                .references-grid {
-                    break-inside: avoid;
-                }
-
-                .skills-list {
-                    break-inside: avoid;
-                }
-
-                .competencies-grid {
-                    break-inside: avoid;
-                }
-
-                /* Ensure proper page breaks */
-                .experience-section {
-                    break-before: auto;
-                }
-
-                .references-section {
-                    break-before: auto;
-                }
-
-                /* Remove hover effects and transitions for print */
-                .skill-item,
-                .development-item {
-                    transition: none;
-                }
-
-                .skill-item:hover,
-                .development-item:hover {
-                    background: var(--background-light);
-                    color: var(--text-color);
-                }
-
-                /* Ensure proper colors for print */
-                :root {
-                    --primary-color: #000;
-                    --secondary-color: #333;
-                    --accent-color: #666;
-                    --text-color: #000;
-                    --text-light: #333;
-                    --border-color: #ccc;
-                    --background-light: #f5f5f5;
-                }
-
-                /* Adjust font sizes for better print readability */
-                .cv-container {
-                    font-size: 11pt;
-                    line-height: 1.3;
-                }
-
-                h1 { font-size: 18pt; }
-                h2 { font-size: 14pt; }
-                h3 { font-size: 12pt; }
-                h4, h5 { font-size: 11pt; }
-
-                /* Ensure proper image printing */
-                .profile-photo {
-                    print-color-adjust: exact;
-                    -webkit-print-color-adjust: exact;
-                }
-
-                /* Hide unnecessary elements for print */
-                .attachment-section {
-                    display: none;
-                }
-
-                /* Ensure proper borders and backgrounds for print */
-                .reference-item,
-                .skill-item,
-                .competency-item {
-                    border: 1px solid var(--border-color);
-                    background-color: transparent !important;
-                }
-            }
-
-            /* Responsive adjustments for small screens */
-            @media screen and (max-width: 768px) {
-                .cv-container {
-                    width: 100%;
-                    padding: 1rem;
-                }
-
-                .header-content {
-                    flex-direction: column;
-                    align-items: center;
-                    text-align: center;
-                }
-
-                .profile-photo {
-                    margin-bottom: var(--spacing);
-                }
-
-                .contact-info {
-                    grid-template-columns: 1fr;
-                    text-align: center;
-                }
-
-                .contact-item {
-                    justify-content: center;
-                }
-
-                .experience-header {
-                    flex-direction: column;
-                    text-align: center;
-                }
-
-                .date-location {
-                    text-align: center;
-                    margin-top: 0.5rem;
-                }
-
-                .references-grid {
-                    grid-template-columns: 1fr;
-                }
-
-                .development-items {
-                    grid-template-columns: 1fr;
-                }
-            }
+        /* Fix for PDF rendering */
+        * {
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
         }
     </style>
+</head>
+<body>
+<div class="cv-container">
+    <table class="main-table">
+        <tr>
+            <td class="content-col">
+                <!-- Header -->
+                <div class="header-name">{{ $cvInformation['personalInformation']['firstName'] }}</div>
+                <div class="header-title">
+                    {{ $currentLocale === 'fr' ? $cvInformation['professions'][0]['name'] : $cvInformation['professions'][0]['name_en'] }}
+                </div>
+
+                <!-- Objective Section -->
+                @if(!empty($cvInformation['summaries']))
+                    <table class="section-table">
+                        <tr>
+                            <td class="section-icon-cell">
+                                <div class="section-icon">⌖</div>
+                            </td>
+                            <td>
+                                <div class="section-title">{{ $currentLocale === 'fr' ? 'Objectif' : 'Objective' }}</div>
+                                <div class="section-content">
+                                    {{ $cvInformation['summaries'][0]['description'] ?? '' }}
+                                </div>
+                            </td>
+                        </tr>
+                    </table>
+                @endif
+
+                <!-- Experience Sections -->
+                @foreach($experiencesByCategory as $category => $experiences)
+                    <table class="section-table">
+                        <tr>
+                            <td class="section-icon-cell">
+                                <div class="section-icon">
+                                    @if(strtolower($category) == 'académique' || strtolower($category) == 'academic')
+                                        <img src="data:image/svg+xml;base64,{{ base64_encode('
+                                            <svg xmlns="http://www.w3.org/2000/svg" fill="#FFFFFF" viewBox="0 0 16 16">
+                                                <path d="M8.211 2.047a.5.5 0 0 0-.422 0l-7.5 3.5a.5.5 0 0 0 .025.917l7.5 3a.5.5 0 0 0 .372 0L14 7.14V13a1 1 0 0 0-1 1v2h3v-2a1 1 0 0 0-1-1V6.739l.686-.275a.5.5 0 0 0 .025-.917l-7.5-3.5Z"/>
+                                                <path d="M4.176 9.032a.5.5 0 0 0-.656.327l-.5 1.7a.5.5 0 0 0 .294.605l4.5 1.8a.5.5 0 0 0 .372 0l4.5-1.8a.5.5 0 0 0 .294-.605l-.5-1.7a.5.5 0 0 0-.656-.327L8 10.466 4.176 9.032Z"/>
+                                            </svg>
+                                        ') }}" alt="Academic" style="width: 60%; height: 60%;" />
+                                    @elseif(strtolower($category) == 'professionnel' || strtolower($category) == 'professional')
+                                        <img src="data:image/svg+xml;base64,{{ base64_encode('
+                                            <svg xmlns="http://www.w3.org/2000/svg" fill="#FFFFFF" viewBox="0 0 16 16">
+                                                <path d="M6.5 1A1.5 1.5 0 0 0 5 2.5V3H1.5A1.5 1.5 0 0 0 0 4.5v1.384l7.614 2.03a1.5 1.5 0 0 0 .772 0L16 5.884V4.5A1.5 1.5 0 0 0 14.5 3H11v-.5A1.5 1.5 0 0 0 9.5 1zm0 1h3a.5.5 0 0 1 .5.5V3H6v-.5a.5.5 0 0 1 .5-.5z"/>
+                                                <path d="M0 12.5A1.5 1.5 0 0 0 1.5 14h13a1.5 1.5 0 0 0 1.5-1.5V6.85L8.129 8.947a.5.5 0 0 1-.258 0L0 6.85v5.65z"/>
+                                            </svg>
+                                        ') }}" alt="Professional" style="width: 60%; height: 60%;" />
+                                    @else
+                                        <img src="data:image/svg+xml;base64,{{ base64_encode('
+                                            <svg xmlns="http://www.w3.org/2000/svg" fill="#FFFFFF" viewBox="0 0 16 16">
+                                                <path d="M9.405 1.05c-.413-1.4-2.397-1.4-2.81 0l-.1.34a1.464 1.464 0 0 1-2.105.872l-.31-.17c-1.283-.698-2.686.705-1.987 1.987l.169.311c.446.82.023 1.841-.872 2.105l-.34.1c-1.4.413-1.4 2.397 0 2.81l.34.1a1.464 1.464 0 0 1 .872 2.105l-.17.31c-.698 1.283.705 2.686 1.987 1.987l.311-.169a1.464 1.464 0 0 1 2.105.872l.1.34c.413 1.4 2.397 1.4 2.81 0l.1-.34a1.464 1.464 0 0 1 2.105-.872l.31.17c1.283.698 2.686-.705 1.987-1.987l-.169-.311a1.464 1.464 0 0 1 .872-2.105l.34-.1c1.4-.413 1.4-2.397 0-2.81l-.34-.1a1.464 1.464 0 0 1-.872-2.105l.17-.31c.698-1.283-.705-2.686-1.987-1.987l-.311.169a1.464 1.464 0 0 1-2.105-.872l-.1-.34zM8 10.93a2.929 2.929 0 1 1 0-5.86 2.929 2.929 0 0 1 0 5.858z"/>
+                                            </svg>
+                                        ') }}" alt="Other" style="width: 60%; height: 60%;" />
+                                    @endif
+                                </div>
+                            </td>
+                            <td>
+                                <div class="section-title">{{ $category }}</div>
+                                <table class="timeline-table">
+                                    @foreach($experiences as $experience)
+                                        <tr>
+                                            <td class="timeline-dot-cell">
+                                                <div class="timeline-dot"></div>
+                                                @if(!$loop->last)
+                                                    <div class="timeline-line"></div>
+                                                @endif
+                                            </td>
+                                            <td class="timeline-content">
+                                                <div class="timeline-date">
+                                                    @php
+                                                        $start = \Carbon\Carbon::parse($experience['date_start']);
+                                                        $end = $experience['date_end'] ? \Carbon\Carbon::parse($experience['date_end']) : \Carbon\Carbon::now();
+                                                        $startDate = $start->format('Y-m');
+                                                        $endDate = $experience['date_end'] ? $end->format('Y-m') : ($currentLocale === 'fr' ? 'Présent' : 'Present');
+                                                    @endphp
+                                                    {{ $startDate }} - {{ $endDate }}
+                                                </div>
+                                                <div class="timeline-title">{{ $experience['name'] }}</div>
+                                                <div class="timeline-company">{{ $experience['InstitutionName'] }}</div>
+                                                <div class="timeline-description">
+                                                    @php
+                                                        $descriptionLines = explode("\n", $experience['description']);
+                                                    @endphp
+                                                    <ul>
+                                                        @foreach($descriptionLines as $line)
+                                                            @if(trim($line))
+                                                                <li>{{ $line }}</li>
+                                                            @endif
+                                                        @endforeach
+                                                        @if($experience['output'])
+                                                            <li>{{ $experience['output'] }}</li>
+                                                        @endif
+                                                    </ul>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    @endforeach
+                                </table>
+                            </td>
+                        </tr>
+                    </table>
+                @endforeach
+            </td>
+
+            <td class="sidebar-col">
+                <!-- Photo -->
+                @if($cvInformation['personalInformation']['photo'])
+                    <div class="photo-container">
+                        <img src="data:image/jpeg;base64,{{ base64_encode(file_get_contents(public_path('storage/' . str_replace('/storage/', '', $cvInformation['personalInformation']['photo'])))) }}"
+                             alt="Profile">
+                    </div>
+                @endif
+
+                <!-- Personal Information -->
+                <div class="sidebar-section">
+                    <table class="sidebar-title-table">
+                        <tr>
+                            <td class="sidebar-icon-cell">
+                                <div class="sidebar-icon">
+                                    <img src="data:image/svg+xml;base64,{{ base64_encode('
+                                        <svg xmlns="http://www.w3.org/2000/svg" fill="#FFFFFF" viewBox="0 0 16 16">
+                                            <path d="M11 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0z"/>
+                                            <path fill-rule="evenodd" d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8zm8-7a7 7 0 0 0-5.468 11.37C3.242 11.226 4.805 10 8 10s4.757 1.225 5.468 2.37A7 7 0 0 0 8 1z"/>
+                                        </svg>
+                                    ') }}" alt="Info" style="width: 60%; height: 60%;" />
+                                </div>
+                            </td>
+                            <td class="sidebar-title">
+                                {{ $currentLocale === 'fr' ? 'Informations' : 'Information' }}
+                            </td>
+                        </tr>
+                    </table>
+                    <div class="sidebar-content">
+                        @if($cvInformation['personalInformation']['address'])
+                            <div class="contact-item">{{ $cvInformation['personalInformation']['address'] }}</div>
+                        @endif
+                        @if($cvInformation['personalInformation']['phone'])
+                            <div class="contact-item">{{ $cvInformation['personalInformation']['phone'] }}</div>
+                        @endif
+                        @if($cvInformation['personalInformation']['email'])
+                            <div class="contact-item">{{ $cvInformation['personalInformation']['email'] }}</div>
+                        @endif
+                        @if($cvInformation['personalInformation']['linkedin'])
+                            <div class="contact-item">{{ $cvInformation['personalInformation']['linkedin'] }}</div>
+                        @endif
+                    </div>
+                </div>
+
+                <!-- Skills -->
+                @if(!empty($cvInformation['competences']))
+                    <div class="sidebar-section">
+                        <table class="sidebar-title-table">
+                            <tr>
+                                <td class="sidebar-icon-cell">
+                                    <div class="sidebar-icon">
+                                        <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 16 16">
+                                            <path d="M9.162 4.047l.904.204a1.464 1.464 0 0 1 1.088 1.089l.204.904-5.707 5.707L4.243 10.545l5.707-5.707zM0 6.5 8 0l-.352.352-2.284 2.284a6.5 6.5 0 1 0 .001-.001l3.315-3.315L9.032 0 0 6.5z"/>
+                                        </svg>
+                                    </div>
+                                </td>
+                                <td class="sidebar-title">
+                                    {{ $currentLocale === 'fr' ? 'Compétences' : 'Skills' }}
+                                </td>
+                            </tr>
+                        </table>
+                        <div class="sidebar-content">
+                            @foreach($cvInformation['competences'] as $competence)
+                                <div class="skill-item">{{ $currentLocale === 'fr' ? $competence['name'] : $competence['name_en'] }}</div>
+                            @endforeach
+                        </div>
+                    </div>
+                @endif
+
+                <!-- Hobbies -->
+                @if(!empty($cvInformation['hobbies']))
+                    <div class="sidebar-section">
+                        <table class="sidebar-title-table">
+                            <tr>
+                                <td class="sidebar-icon-cell">
+                                    <div class="sidebar-icon">
+                                        <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 16 16">
+                                            <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
+                                            <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/>
+                                        </svg>
+                                    </div>
+                                </td>
+                                <td class="sidebar-title">
+                                    {{ $currentLocale === 'fr' ? 'Centres d\'intérêt' : 'Hobbies' }}
+                                </td>
+                            </tr>
+                        </table>
+                        <div class="sidebar-content">
+                            @foreach($cvInformation['hobbies'] as $hobby)
+                                <div class="skill-item">{{ $currentLocale === 'fr' ? $hobby['name'] : $hobby['name_en'] }}</div>
+                            @endforeach
+                        </div>
+                    </div>
+                @endif
+            </td>
+        </tr>
+    </table>
+</div>
+</body>
+</html>
 @endsection

@@ -8,47 +8,37 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ $cvInformation['personalInformation']['firstName'] ?? 'CV' }} - CV</title>
     <style>
-        @page {
-            margin: 10mm;
-            size: A4;
-        }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        @page { margin: 8mm; size: A4; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
 
         body {
             font-family: 'DejaVu Sans', sans-serif;
-            line-height: 1.2;
+            line-height: 1.15;
             font-size: 9pt;
             color: #333;
-            background-color: white;
         }
 
         .cv-container {
             width: 190mm;
             margin: 0 auto;
-            padding: 10mm;
-            position: relative;
+            padding: 8mm;
             background: white;
         }
 
         .header-content {
             position: relative;
-            min-height: 25mm;
-            margin-bottom: 3mm;
+            min-height: 22mm;
+            margin-bottom: 2mm;
             border-bottom: 0.3mm solid #2c3e50;
-            padding-bottom: 2mm;
+            padding-bottom: 1mm;
         }
 
         .profile-photo {
             position: absolute;
             top: 0;
             left: 0;
-            width: 25mm;
-            height: 25mm;
+            width: 22mm;
+            height: 22mm;
             border-radius: 50%;
             overflow: hidden;
         }
@@ -60,32 +50,36 @@
         }
 
         .header-text {
-            margin-left: 30mm;
-            padding-top: 1mm;
+            margin-left: 26mm;
         }
 
         h1 {
-            font-size: 14pt;
+            font-size: 13pt;
             color: #2c3e50;
-            margin-bottom: 1mm;
-            line-height: 1.2;
-            font-weight: bold;
+            margin-bottom: 0.5mm;
+            line-height: 1.1;
+        }
+
+        h2 {
+            font-size: 10pt;
+            color: #2c3e50;
+            border-bottom: 0.2mm solid #bdc3c7;
+            padding-bottom: 0.5mm;
+            margin-bottom: 1.5mm;
         }
 
         h2.profession {
-            font-size: 11pt;
+            font-size: 10pt;
             color: #34495e;
-            margin-bottom: 2mm;
+            margin-bottom: 1mm;
             border: none;
-            font-weight: normal;
         }
 
         .contact-info {
-            width: 100%;
-            margin-top: 2mm;
             display: flex;
             flex-wrap: wrap;
-            gap: 2mm;
+            gap: 1.5mm;
+            margin-top: 1mm;
         }
 
         .contact-item {
@@ -93,36 +87,15 @@
             align-items: center;
             font-size: 8pt;
             color: #34495e;
-            margin-right: 3mm;
+            margin-right: 2mm;
         }
 
-        section {
-            margin-bottom: 4mm;
-            clear: both;
-        }
-
-        h2 {
-            font-size: 11pt;
-            color: #2c3e50;
-            border-bottom: 0.2mm solid #bdc3c7;
-            padding-bottom: 1mm;
-            margin-bottom: 2mm;
-            font-weight: bold;
-        }
+        section { margin-bottom: 3mm; }
 
         .experience-item {
-            margin-bottom: 3mm;
-            padding-bottom: 2mm;
+            margin-bottom: 2mm;
+            padding-bottom: 1mm;
             border-bottom: 0.2mm dotted #bdc3c7;
-        }
-
-        .experience-item:last-child {
-            border-bottom: none;
-        }
-
-        .experience-header {
-            width: 100%;
-            margin-bottom: 1mm;
         }
 
         .experience-header table {
@@ -130,19 +103,14 @@
             border-collapse: collapse;
         }
 
-        .experience-header td {
-            vertical-align: top;
-        }
-
         .title-company {
-            width: 75%;
+            width: 80%;
         }
 
         .title-company h3 {
             font-size: 9pt;
             color: #34495e;
-            margin-bottom: 0.5mm;
-            font-weight: bold;
+            margin-bottom: 0.3mm;
         }
 
         .company {
@@ -155,29 +123,29 @@
             text-align: right;
             font-size: 8pt;
             color: #666;
-            width: 25%;
+            width: 20%;
         }
 
         .description {
             font-size: 8pt;
-            line-height: 1.4;
+            line-height: 1.3;
             text-align: justify;
-            margin: 1.5mm 0;
+            margin: 1mm 0;
             color: #444;
         }
 
         .skills-list, .hobbies-list {
-            margin-top: 2mm;
             display: flex;
             flex-wrap: wrap;
-            gap: 1.5mm;
+            gap: 1mm;
+            margin-top: 1mm;
         }
 
         .skill-item, .hobby-item {
             display: inline-block;
             background: #f5f5f5;
-            padding: 1mm 2mm;
-            border-radius: 1mm;
+            padding: 0.8mm 1.5mm;
+            border-radius: 0.8mm;
             font-size: 8pt;
             color: #444;
             border: 0.2mm solid #e0e0e0;
@@ -185,14 +153,9 @@
 
         .professional-summary {
             background: #f8f9fa;
-            padding: 2mm;
-            border-radius: 1mm;
-            margin-bottom: 4mm;
-        }
-
-        .professional-summary .description {
-            font-style: italic;
-            color: #2c3e50;
+            padding: 1.5mm;
+            border-radius: 0.8mm;
+            margin-bottom: 3mm;
         }
 
         @media print {
@@ -202,22 +165,16 @@
                 width: 210mm;
                 height: 297mm;
             }
-
             .cv-container {
                 margin: 0 auto;
                 box-shadow: none;
-                width: 190mm;
             }
-
-            section {
-                page-break-inside: avoid;
-            }
+            section { page-break-inside: avoid; }
         }
     </style>
 </head>
 <body>
 <div class="cv-container">
-    {{-- Header Section --}}
     <div class="header-content">
         @if($cvInformation['personalInformation']['photo'])
             <div class="profile-photo">
@@ -247,7 +204,6 @@
         </div>
     </div>
 
-    {{-- Professional Summary Section --}}
     @if(!empty($cvInformation['summaries']))
         <section class="professional-summary">
             <h2>{{ $currentLocale === 'fr' ? 'Résumé Professionnel' : 'Professional Summary' }}</h2>
@@ -255,7 +211,6 @@
         </section>
     @endif
 
-    {{-- Experience Sections By Category --}}
     @foreach($experiencesByCategory as $category => $experiences)
         <section class="experience-section">
             <h2>
@@ -294,7 +249,6 @@
         </section>
     @endforeach
 
-    {{-- Skills Section --}}
     @if(!empty($cvInformation['competences']))
         <section class="skills-section">
             <h2>{{ $currentLocale === 'fr' ? 'Compétences' : 'Skills' }}</h2>
@@ -308,7 +262,6 @@
         </section>
     @endif
 
-    {{-- Hobbies Section --}}
     @if(!empty($cvInformation['hobbies']))
         <section class="hobbies-section">
             <h2>{{ $currentLocale === 'fr' ? 'Centres d\'intérêt' : 'Hobbies & Interests' }}</h2>

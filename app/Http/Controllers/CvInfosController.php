@@ -107,14 +107,15 @@ class CvInfosController extends Controller
         $cvModel = CvModel::findOrFail($id);
         $cvInformation = $this->getCommonCvInformation($user);
         $groupedData = $this->groupExperiencesByCategory($cvInformation['experiences']);
-
+        $locale = request()->get('locale', app()->getLocale());
         // Configurer DomPDF
         $pdf = PDF::loadView("cv-templates." . $cvModel->viewPath, [
             'cvInformation' => $cvInformation,
             'experiencesByCategory' => $groupedData['experiences'],
             'categoryTranslations' => $groupedData['translations'],
             'showPrintButton' => false,
-            'cvModel' => $cvModel
+            'cvModel' => $cvModel,
+            'currentLocale' => $locale // Nouvelle variable
         ]);
 
         // Définir les options spécifiques

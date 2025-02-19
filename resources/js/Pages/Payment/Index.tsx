@@ -19,8 +19,7 @@ import { loadScript } from "@paypal/paypal-js";
 
 // Constantes et configurations
 const CONVERSION_RATE = 655.957; // 1 euro en FCFA
-const PAYPAL_CLIENT_ID = process.env.VITE_PAYPAL_CLIENT_ID || 'YOUR_PAYPAL_CLIENT_ID'; // Assurez-vous d'avoir configuré ceci dans .env
-
+const PAYPAL_CLIENT_ID = import.meta.env.VITE_PAYPAL_CLIENT_ID;
 function cn(...classes) {
     return classes.filter(Boolean).join(' ');
 }

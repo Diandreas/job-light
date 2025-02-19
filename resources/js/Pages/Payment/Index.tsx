@@ -10,12 +10,12 @@ import {
     Sparkles,
     CreditCard,
     Phone,
-    AlertCircle,
-    ArrowUpRight
+    AlertCircle
 } from 'lucide-react';
 import { useToast } from "@/Components/ui/use-toast";
 import { Alert, AlertDescription } from "@/Components/ui/alert";
 import { loadScript } from "@paypal/paypal-js";
+import axios from 'axios';
 
 const CONVERSION_RATE = 655.957; // 1 euro en FCFA
 const PAYPAL_CLIENT_ID = import.meta.env.VITE_PAYPAL_CLIENT_ID;
@@ -76,14 +76,23 @@ const PaymentMethodButton = ({ icon: Icon, label, onClick, selected, disabled })
 );
 
 export default function Index({ auth }) {
+    const { props } = usePage();
     const { toast } = useToast();
-    const { csrf_token } = usePage().props;
     const [processingPayment, setProcessingPayment] = useState(null);
     const [countryCode, setCountryCode] = useState(null);
     const [paypalLoaded, setPaypalLoaded] = useState(false);
     const [selectedPaymentMethod, setSelectedPaymentMethod] = useState(null);
     const [loadingCountry, setLoadingCountry] = useState(true);
     const [error, setError] = useState(null);
+
+    // Configure axios with CSRF token
+    useEffect(() => {
+        const token = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+        if (token) {
+            axios.defaults.headers.common['X-CSRF-TOKEN'] = token;
+            axios.defaults.withCredentials = true;
+        }
+    }, []);
 
     useEffect(() => {
         fetch('https://ipapi.co/json/')
@@ -106,10 +115,6 @@ export default function Index({ auth }) {
                 "client-id": PAYPAL_CLIENT_ID,
                 currency: "EUR",
                 intent: "capture",
-                "enable-funding": "paylater,venmo",
-                "disable-funding": "card",
-                "data-react-paypal-script-id": "paypal-script",
-                environment: PAYPAL_MODE
             })
                 .then(() => {
                     setPaypalLoaded(true);
@@ -123,40 +128,35 @@ export default function Index({ auth }) {
         }
     }, [selectedPaymentMethod]);
 
+    const getPrice = (priceEuros) => {
+        if (countryCode === 'CM') {
+            const priceFCFA = Math.round(priceEuros * CONVERSION_RATE);
+            return `${priceFCFA.toLocaleString()} FCFA`;
+        }
+        return `${priceEuros}€`;
+    };
+
     const handleMobileMoneyPurchase = async (pack) => {
         try {
             setProcessingPayment(pack.id);
             const priceFCFA = Math.round(pack.priceEuros * CONVERSION_RATE);
 
-            const response = await fetch('/api/notchpay/initialize', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': csrf_token
-                },
-                body: JSON.stringify({
-                    currency: "XAF",
-                    amount: priceFCFA.toString(),
-                    email: auth.user.email,
-                    phone: auth.user.phone || '',
-                    reference: `tokens_${pack.id}_${auth.user.id}`,
-                    description: `Achat de ${pack.tokens + pack.bonusTokens} jetons`,
-                    meta: {
-                        user_id: auth.user.id,
-                        tokens: pack.tokens + pack.bonusTokens,
-                        package_id: pack.id
-                    }
-                })
+            const response = await axios.post('/api/notchpay/initialize', {
+                currency: "XAF",
+                amount: priceFCFA.toString(),
+                email: auth.user.email,
+                phone: auth.user.phone || '',
+                reference: `tokens_${pack.id}_${auth.user.id}`,
+                description: `Achat de ${pack.tokens + pack.bonusTokens} jetons`,
+                meta: {
+                    user_id: auth.user.id,
+                    tokens: pack.tokens + pack.bonusTokens,
+                    package_id: pack.id
+                }
             });
 
-            if (!response.ok) {
-                throw new Error('Erreur lors de l\'initialisation du paiement');
-            }
-
-            const paymentData = await response.json();
-
-            if (paymentData.authorization_url) {
-                window.location.href = paymentData.authorization_url;
+            if (response.data.authorization_url) {
+                window.location.href = response.data.authorization_url;
             } else {
                 throw new Error('URL de paiement non reçue');
             }
@@ -198,52 +198,37 @@ export default function Index({ auth }) {
                 try {
                     const order = await actions.order.capture();
 
-                    const response = await fetch('/api/update-wallet', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'X-CSRF-TOKEN': csrf_token
-                        },
-                        body: JSON.stringify({
-                            user_id: auth.user.id,
-                            amount: pack.tokens + pack.bonusTokens,
-                            payment_reference: order.id,
-                            payment_method: 'paypal',
-                            order_data: order
-                        })
+                    const response = await axios.post('/api/update-wallet', {
+                        user_id: auth.user.id,
+                        amount: pack.tokens + pack.bonusTokens,
+                        payment_reference: order.id,
+                        payment_method: 'paypal',
+                        order_data: order
                     });
 
-                    if (!response.ok) {
-                        const errorData = await response.json();
-                        throw new Error(errorData.message || 'Erreur lors de la mise à jour du solde');
+                    if (response.data.success) {
+                        toast({
+                            title: "Paiement réussi !",
+                            description: `Vous avez reçu ${pack.tokens + pack.bonusTokens} jetons`,
+                            variant: "success",
+                        });
+
+                        setTimeout(() => {
+                            window.location.reload();
+                        }, 2000);
+                    } else {
+                        throw new Error('Erreur lors de la mise à jour du solde');
                     }
-
-                    toast({
-                        title: "Paiement réussi !",
-                        description: `Vous avez reçu ${pack.tokens + pack.bonusTokens} jetons`,
-                        variant: "success",
-                    });
-
-                    setTimeout(() => {
-                        window.location.reload();
-                    }, 2000);
                 } catch (error) {
                     console.error('Payment processing error:', error);
 
-                    // Log l'erreur
                     try {
-                        await fetch('/api/log-payment-error', {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json',
-                                'X-CSRF-TOKEN': csrf_token
-                            },
-                            body: JSON.stringify({
-                                error: error.message,
-                                userId: auth.user.id,
-                                packId: pack.id,
-                                timestamp: new Date().toISOString()
-                            })
+                        await axios.post('/api/log-payment-error', {
+                            error: error.message,
+                            userId: auth.user.id,
+                            packId: pack.id,
+                            timestamp: new Date().toISOString(),
+                            orderId: order?.id
                         });
                     } catch (logError) {
                         console.error('Error logging failed:', logError);
@@ -251,7 +236,7 @@ export default function Index({ auth }) {
 
                     toast({
                         title: "Erreur de paiement",
-                        description: "Une erreur est survenue lors de votre paiement. Notre équipe a été notifiée et vous contactera rapidement.",
+                        description: "Une erreur est survenue lors de votre paiement. Notre équipe a été notifiée.",
                         variant: "destructive",
                     });
                 }
@@ -265,14 +250,6 @@ export default function Index({ auth }) {
                 });
             }
         });
-    };
-
-    const getPrice = (priceEuros) => {
-        if (countryCode === 'CM') {
-            const priceFCFA = Math.round(priceEuros * CONVERSION_RATE);
-            return `${priceFCFA.toLocaleString()} FCFA`;
-        }
-        return `${priceEuros}€`;
     };
 
     return (

@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { Head, usePage } from '@inertiajs/react';
+import { Head, usePage, router } from '@inertiajs/react';
 import { motion } from 'framer-motion';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Card, CardContent } from "@/Components/ui/card";
 import { Button } from "@/Components/ui/button";
+import { useToast } from "@/Components/ui/use-toast";
+import { Alert, AlertDescription } from "@/Components/ui/alert";
 import {
     Coins,
     Gift,
@@ -12,17 +14,9 @@ import {
     Phone,
     AlertCircle
 } from 'lucide-react';
-import { useToast } from "@/Components/ui/use-toast";
-import { Alert, AlertDescription } from "@/Components/ui/alert";
-import axios from 'axios';
 
 const CONVERSION_RATE = 655.957;
 const PAYPAL_CLIENT_ID = import.meta.env.VITE_PAYPAL_CLIENT_ID;
-const PAYPAL_MODE =  'sandbox';
-
-function cn(...classes) {
-    return classes.filter(Boolean).join(' ');
-}
 
 const TOKEN_PACKS = [
     {
@@ -74,26 +68,22 @@ const PaymentMethodButton = ({ icon: Icon, label, onClick, selected, disabled })
     </Button>
 );
 
+function cn(...classes) {
+    return classes.filter(Boolean).join(' ');
+}
+
 export default function Index({ auth }) {
-    const { props } = usePage();
     const { toast } = useToast();
+    const [userWallet, setUserWallet] = useState(auth.user.wallet_balance);
     const [processingPayment, setProcessingPayment] = useState(null);
     const [countryCode, setCountryCode] = useState(null);
     const [paypalLoaded, setPaypalLoaded] = useState(false);
-    const [selectedPaymentMethod, setSelectedPaymentMethod] = useState(null);
+    const [selectedPaymentMethod, setSelectedPaymentMethod] = useState('paypal');
     const [loadingCountry, setLoadingCountry] = useState(true);
     const [error, setError] = useState(null);
 
-    // Configure axios with CSRF token
     useEffect(() => {
-        const token = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
-        if (token) {
-            axios.defaults.headers.common['X-CSRF-TOKEN'] = token;
-            axios.defaults.withCredentials = true;
-        }
-    }, []);
-
-    useEffect(() => {
+        // Détection du pays
         fetch('https://ipapi.co/json/')
             .then(res => res.json())
             .then(data => {
@@ -108,30 +98,46 @@ export default function Index({ auth }) {
             .finally(() => setLoadingCountry(false));
     }, []);
 
-    // Nouvelle méthode d'initialisation de PayPal
+    const updateUserWallet = async (tokenAmount) => {
+        try {
+            const newBalance = userWallet + tokenAmount;
+            setUserWallet(newBalance);
+
+            // Mise à jour du contexte d'authentification
+            auth.user.wallet_balance = newBalance;
+
+            // Mise à jour dans la base de données
+            await router.put('/profile', {
+                wallet_balance: newBalance
+            });
+
+            return true;
+        } catch (error) {
+            console.error('Failed to update wallet:', error);
+            setError("Erreur lors de la mise à jour du portefeuille");
+            return false;
+        }
+    };
+
     const initializePayPal = async () => {
         if (!PAYPAL_CLIENT_ID) {
-            setError("Configuration PayPal manquante. Contactez l'administrateur.");
+            setError("Configuration PayPal manquante");
             return;
         }
 
         try {
-            // Charger le script PayPal manuellement
             const script = document.createElement('script');
             script.src = `https://www.paypal.com/sdk/js?client-id=${PAYPAL_CLIENT_ID}&currency=EUR`;
             script.async = true;
             script.onload = () => setPaypalLoaded(true);
-            script.onerror = () => {
-                setError("Erreur lors du chargement de PayPal. Veuillez réessayer.");
-                setPaypalLoaded(false);
-            };
+            script.onerror = () => setError("Erreur lors du chargement de PayPal");
             document.body.appendChild(script);
 
             return () => {
                 document.body.removeChild(script);
             };
         } catch (err) {
-            setError("Erreur lors de l'initialisation de PayPal.");
+            setError("Erreur lors de l'initialisation de PayPal");
             console.error("PayPal initialization error:", err);
         }
     };
@@ -151,10 +157,7 @@ export default function Index({ auth }) {
     };
 
     const initializePayPalButtons = (pack) => {
-        if (!window.paypal) {
-            console.error('PayPal SDK not loaded');
-            return null;
-        }
+        if (!window.paypal) return null;
 
         return window.paypal.Buttons({
             style: {
@@ -170,8 +173,7 @@ export default function Index({ auth }) {
                             value: pack.priceEuros.toString(),
                             currency_code: "EUR"
                         },
-                        description: `${pack.tokens + pack.bonusTokens} tokens purchase`,
-                        custom_id: `tokens_${pack.id}_${auth.user.id}`
+                        description: `${pack.tokens + pack.bonusTokens} tokens purchase`
                     }]
                 });
             },
@@ -179,31 +181,24 @@ export default function Index({ auth }) {
                 try {
                     const order = await actions.order.capture();
 
-                    const response = await axios.post('/api/update-wallet', {
-                        user_id: auth.user.id,
-                        amount: pack.tokens + pack.bonusTokens,
-                        payment_data: {
-                            order_id: order.id,
-                            amount: order.purchase_units[0].amount.value,
-                            currency: order.purchase_units[0].amount.currency_code,
-                            status: order.status,
-                            create_time: order.create_time,
-                            update_time: order.update_time
-                        }
-                    });
+                    if (order.status === 'COMPLETED') {
+                        const totalTokens = pack.tokens + pack.bonusTokens;
+                        const updated = await updateUserWallet(totalTokens);
 
-                    if (response.data.success) {
-                        toast({
-                            title: "Paiement réussi !",
-                            description: `Vous avez reçu ${pack.tokens + pack.bonusTokens} jetons`,
-                        });
-                        setTimeout(() => window.location.reload(), 2000);
+                        if (updated) {
+                            toast({
+                                title: "Paiement réussi !",
+                                description: `Vous avez reçu ${totalTokens} jetons`,
+                            });
+                        } else {
+                            throw new Error('Failed to update wallet');
+                        }
                     }
                 } catch (error) {
                     console.error('Payment error:', error);
                     toast({
                         title: "Erreur de paiement",
-                        description: "Une erreur est survenue. Notre équipe a été notifiée.",
+                        description: "Une erreur est survenue lors du traitement",
                         variant: "destructive",
                     });
                 }
@@ -223,35 +218,44 @@ export default function Index({ auth }) {
         try {
             setProcessingPayment(pack.id);
             const priceFCFA = Math.round(pack.priceEuros * CONVERSION_RATE);
+            const totalTokens = pack.tokens + pack.bonusTokens;
 
             if (!auth.user.email) {
                 throw new Error('Email utilisateur requis');
             }
 
-            const response = await axios.post('/api/notchpay/initialize', {
-                currency: "XAF",
-                amount: priceFCFA.toString(),
-                email: auth.user.email,
-                phone: auth.user.phone || '',
-                reference: `tokens_${pack.id}_${auth.user.id}`,
-                description: `Achat de ${pack.tokens + pack.bonusTokens} jetons`,
-                meta: {
-                    user_id: auth.user.id,
-                    tokens: pack.tokens + pack.bonusTokens,
-                    package_id: pack.id
-                }
+            // Simulation du paiement mobile (à remplacer par votre logique réelle)
+            const response = await fetch('/api/mobile-payment/initialize', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    amount: priceFCFA,
+                    email: auth.user.email,
+                    phone: auth.user.phone || '',
+                    description: `Achat de ${totalTokens} jetons`
+                })
             });
 
-            if (response.data.authorization_url) {
-                window.location.href = response.data.authorization_url;
+            const result = await response.json();
+
+            if (result.success) {
+                const updated = await updateUserWallet(totalTokens);
+                if (updated) {
+                    toast({
+                        title: "Paiement réussi !",
+                        description: `Vous avez reçu ${totalTokens} jetons`,
+                    });
+                }
             } else {
-                throw new Error('URL de paiement non reçue');
+                throw new Error(result.message || 'Échec du paiement');
             }
         } catch (error) {
-            console.error('Payment error:', error);
+            console.error('Mobile payment error:', error);
             toast({
                 title: "Erreur de paiement",
-                description: "Une erreur est survenue lors du traitement de votre paiement.",
+                description: "Une erreur est survenue lors du paiement mobile",
                 variant: "destructive",
             });
         } finally {

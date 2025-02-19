@@ -14,12 +14,11 @@ import {
 } from 'lucide-react';
 import { useToast } from "@/Components/ui/use-toast";
 import { Alert, AlertDescription } from "@/Components/ui/alert";
-import { loadScript } from "@paypal/paypal-js";
 import axios from 'axios';
 
-const CONVERSION_RATE = 655.957; // 1 euro en FCFA
+const CONVERSION_RATE = 655.957;
 const PAYPAL_CLIENT_ID = import.meta.env.VITE_PAYPAL_CLIENT_ID;
-const PAYPAL_MODE = import.meta.env.VITE_PAYPAL_MODE || 'sandbox';
+const PAYPAL_MODE =  'sandbox';
 
 function cn(...classes) {
     return classes.filter(Boolean).join(' ');
@@ -109,23 +108,37 @@ export default function Index({ auth }) {
             .finally(() => setLoadingCountry(false));
     }, []);
 
+    // Nouvelle méthode d'initialisation de PayPal
+    const initializePayPal = async () => {
+        if (!PAYPAL_CLIENT_ID) {
+            setError("Configuration PayPal manquante. Contactez l'administrateur.");
+            return;
+        }
+
+        try {
+            // Charger le script PayPal manuellement
+            const script = document.createElement('script');
+            script.src = `https://www.paypal.com/sdk/js?client-id=${PAYPAL_CLIENT_ID}&currency=EUR`;
+            script.async = true;
+            script.onload = () => setPaypalLoaded(true);
+            script.onerror = () => {
+                setError("Erreur lors du chargement de PayPal. Veuillez réessayer.");
+                setPaypalLoaded(false);
+            };
+            document.body.appendChild(script);
+
+            return () => {
+                document.body.removeChild(script);
+            };
+        } catch (err) {
+            setError("Erreur lors de l'initialisation de PayPal.");
+            console.error("PayPal initialization error:", err);
+        }
+    };
+
     useEffect(() => {
-        if (selectedPaymentMethod === 'paypal' && PAYPAL_CLIENT_ID) {
-            loadScript({
-                //@ts-ignore
-                "client-id": PAYPAL_CLIENT_ID,
-                currency: "EUR",
-                intent: "capture",
-            })
-                .then(() => {
-                    setPaypalLoaded(true);
-                    setError(null);
-                })
-                .catch(err => {
-                    console.error("PayPal SDK failed to load", err);
-                    setError("Impossible de charger PayPal. Veuillez réessayer plus tard.");
-                    setPaypalLoaded(false);
-                });
+        if (selectedPaymentMethod === 'paypal' && !paypalLoaded) {
+            initializePayPal();
         }
     }, [selectedPaymentMethod]);
 
@@ -137,10 +150,83 @@ export default function Index({ auth }) {
         return `${priceEuros}€`;
     };
 
+    const initializePayPalButtons = (pack) => {
+        if (!window.paypal) {
+            console.error('PayPal SDK not loaded');
+            return null;
+        }
+
+        return window.paypal.Buttons({
+            style: {
+                layout: 'vertical',
+                color: 'gold',
+                shape: 'rect',
+                label: 'pay'
+            },
+            createOrder: (data, actions) => {
+                return actions.order.create({
+                    purchase_units: [{
+                        amount: {
+                            value: pack.priceEuros.toString(),
+                            currency_code: "EUR"
+                        },
+                        description: `${pack.tokens + pack.bonusTokens} tokens purchase`,
+                        custom_id: `tokens_${pack.id}_${auth.user.id}`
+                    }]
+                });
+            },
+            onApprove: async (data, actions) => {
+                try {
+                    const order = await actions.order.capture();
+
+                    const response = await axios.post('/api/update-wallet', {
+                        user_id: auth.user.id,
+                        amount: pack.tokens + pack.bonusTokens,
+                        payment_data: {
+                            order_id: order.id,
+                            amount: order.purchase_units[0].amount.value,
+                            currency: order.purchase_units[0].amount.currency_code,
+                            status: order.status,
+                            create_time: order.create_time,
+                            update_time: order.update_time
+                        }
+                    });
+
+                    if (response.data.success) {
+                        toast({
+                            title: "Paiement réussi !",
+                            description: `Vous avez reçu ${pack.tokens + pack.bonusTokens} jetons`,
+                        });
+                        setTimeout(() => window.location.reload(), 2000);
+                    }
+                } catch (error) {
+                    console.error('Payment error:', error);
+                    toast({
+                        title: "Erreur de paiement",
+                        description: "Une erreur est survenue. Notre équipe a été notifiée.",
+                        variant: "destructive",
+                    });
+                }
+            },
+            onError: (err) => {
+                console.error('PayPal error:', err);
+                toast({
+                    title: "Erreur PayPal",
+                    description: "Une erreur est survenue. Veuillez réessayer.",
+                    variant: "destructive",
+                });
+            }
+        });
+    };
+
     const handleMobileMoneyPurchase = async (pack) => {
         try {
             setProcessingPayment(pack.id);
             const priceFCFA = Math.round(pack.priceEuros * CONVERSION_RATE);
+
+            if (!auth.user.email) {
+                throw new Error('Email utilisateur requis');
+            }
 
             const response = await axios.post('/api/notchpay/initialize', {
                 currency: "XAF",
@@ -171,101 +257,6 @@ export default function Index({ auth }) {
         } finally {
             setProcessingPayment(null);
         }
-    };
-
-    const initializePayPalButtons = (pack) => {
-        if (!paypalLoaded || !window.paypal) return null;
-
-        return window.paypal.Buttons({
-            style: {
-                layout: 'vertical',
-                color: 'gold',
-                shape: 'rect',
-                label: 'pay'
-            },
-            createOrder: (data, actions) => {
-            // @ts-ignore
-                return actions.order.create({
-                    purchase_units: [{
-                        amount: {
-                            value: pack.priceEuros.toString(),
-                            currency_code: "EUR"
-                        },
-                        description: `${pack.tokens + pack.bonusTokens} tokens purchase`,
-                        custom_id: `tokens_${pack.id}_${auth.user.id}`
-                    }]
-                });
-            },
-            onApprove: async (data, actions) => {
-                let capturedOrder = null;
-
-                try {
-                    // Capturer la commande PayPal
-                    capturedOrder = await actions.order.capture();
-                    console.log("PayPal order captured:", capturedOrder);
-
-                    // Mettre à jour le wallet
-                    const response = await axios.post('/api/update-wallet', {
-                        user_id: auth.user.id,
-                        amount: pack.tokens + pack.bonusTokens,
-                        payment_reference: capturedOrder.id,
-                        payment_method: 'paypal',
-                        order_data: {
-                            id: capturedOrder.id,
-                            status: capturedOrder.status,
-                            payer: capturedOrder.payer,
-                            amount: capturedOrder.purchase_units[0].amount,
-                            create_time: capturedOrder.create_time,
-                            update_time: capturedOrder.update_time
-                        }
-                    });
-
-                    if (response.data.success) {
-                        toast({
-                            title: "Paiement réussi !",
-                            description: `Vous avez reçu ${pack.tokens + pack.bonusTokens} jetons`,
-                        });
-
-                        // Recharger la page après 2 secondes
-                        setTimeout(() => {
-                            window.location.reload();
-                        }, 2000);
-                    } else {
-                        throw new Error(response.data.message || 'Erreur lors de la mise à jour du solde');
-                    }
-                } catch (error) {
-                    console.error('Payment processing error:', error);
-
-                    // Log l'erreur
-                    try {
-                        await axios.post('/api/log-payment-error', {
-                            error: error.message,
-                            userId: auth.user.id,
-                            packId: pack.id,
-                            timestamp: new Date().toISOString(),
-                            paypalOrderId: capturedOrder?.id,
-                            paypalOrderData: capturedOrder
-                        });
-                    } catch (logError) {
-                        console.error('Error logging failed:', logError);
-                    }
-
-                    toast({
-                        title: "Erreur de paiement",
-                        description: "Une erreur est survenue lors de votre paiement. Notre équipe technique a été notifiée.",
-                        variant: "destructive",
-                    });
-                }
-            },
-            onError: (err) => {
-                console.error('PayPal error:', err);
-                toast({
-                    title: "Erreur PayPal",
-                    description: "Une erreur est survenue avec PayPal. Veuillez réessayer plus tard.",
-                    variant: "destructive",
-                });
-            }
-        });
     };
 
     return (
@@ -320,7 +311,6 @@ export default function Index({ auth }) {
                             <div className="max-w-md mx-auto mb-8">
                                 <div className="flex gap-4">
                                     {countryCode === 'CM' && (
-                                        // @ts-ignore
                                         <PaymentMethodButton
                                             icon={Phone}
                                             label="Mobile Money"
@@ -328,7 +318,6 @@ export default function Index({ auth }) {
                                             selected={selectedPaymentMethod === 'mobile'}
                                         />
                                     )}
-                                    {/*@ts-ignore*/}
                                     <PaymentMethodButton
                                         icon={CreditCard}
                                         label="PayPal"

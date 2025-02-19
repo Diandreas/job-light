@@ -102,7 +102,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     // Experiences
     Route::resource('experiences', ExperienceController::class)->except(['show']);
-
+    Route::put('/api/wallet/update', [PaymentController::class, 'update'])
+        ->name('wallet.update');
     // User Hobbies
     Route::get('/user-hobbies', [UserHobbyController::class, 'index'])->name('user-hobbies.index');
     Route::get('/user-hobbies/create', [UserHobbyController::class, 'create'])->name('user-hobbies.create');

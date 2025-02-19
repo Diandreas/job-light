@@ -101,24 +101,33 @@ export default function Index({ auth }) {
     const updateUserWallet = async (tokenAmount) => {
         try {
             const newBalance = userWallet + tokenAmount;
-            setUserWallet(newBalance);
 
-            // Mise à jour du contexte d'authentification
-            auth.user.wallet_balance = newBalance;
-
-            // Mise à jour dans la base de données
-            await router.put('/profile', {
-                wallet_balance: newBalance
+            const response = await fetch('/api/wallet/update', {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                },
+                body: JSON.stringify({
+                    wallet_balance: newBalance
+                })
             });
 
-            return true;
+            const data = await response.json();
+
+            if (data.success) {
+                setUserWallet(newBalance);
+                auth.user.wallet_balance = newBalance;
+                return true;
+            } else {
+                throw new Error(data.message || 'Erreur lors de la mise à jour du solde');
+            }
         } catch (error) {
             console.error('Failed to update wallet:', error);
             setError("Erreur lors de la mise à jour du portefeuille");
             return false;
         }
     };
-
     const initializePayPal = async () => {
         if (!PAYPAL_CLIENT_ID) {
             setError("Configuration PayPal manquante");
@@ -157,8 +166,9 @@ export default function Index({ auth }) {
     };
 
     const initializePayPalButtons = (pack) => {
+        // @ts-ignore
         if (!window.paypal) return null;
-
+        // @ts-ignore
         return window.paypal.Buttons({
             style: {
                 layout: 'vertical',
@@ -315,6 +325,7 @@ export default function Index({ auth }) {
                             <div className="max-w-md mx-auto mb-8">
                                 <div className="flex gap-4">
                                     {countryCode === 'CM' && (
+                                        // @ts-ignore
                                         <PaymentMethodButton
                                             icon={Phone}
                                             label="Mobile Money"
@@ -322,6 +333,7 @@ export default function Index({ auth }) {
                                             selected={selectedPaymentMethod === 'mobile'}
                                         />
                                     )}
+                                    {/* @ts-ignore*/}
                                     <PaymentMethodButton
                                         icon={CreditCard}
                                         label="PayPal"

@@ -144,7 +144,61 @@ class PaymentController extends Controller
             ], 500);
         }
     }
+    public function update(Request $request)
+    {
+        Log::info('Début update wallet_balance', [
+            'user_id' => $request->user()->id,
+            'current_balance' => $request->user()->wallet_balance,
+            'new_balance' => $request->wallet_balance
+        ]);
 
+        try {
+            DB::beginTransaction();
+
+            $validated = $request->validate([
+                'wallet_balance' => 'required|integer|min:0',
+            ]);
+
+            $user = User::lockForUpdate()->find($request->user()->id);
+
+            if (!$user) {
+                Log::error('Utilisateur non trouvé lors de la mise à jour du solde', [
+                    'user_id' => $request->user()->id
+                ]);
+                throw new \Exception('User not found');
+            }
+
+            $oldBalance = $user->wallet_balance;
+            $user->wallet_balance = $validated['wallet_balance'];
+            $user->save();
+
+            Log::info('Solde mis à jour avec succès', [
+                'user_id' => $user->id,
+                'old_balance' => $oldBalance,
+                'new_balance' => $user->wallet_balance
+            ]);
+
+            DB::commit();
+
+            return response()->json([
+                'success' => true,
+                'new_balance' => $user->wallet_balance
+            ]);
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('Erreur lors de la mise à jour du solde', [
+                'error' => $e->getMessage(),
+                'user_id' => $request->user()->id,
+                'requested_balance' => $request->wallet_balance
+            ]);
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Une erreur est survenue lors de la mise à jour du solde'
+            ], 500);
+        }
+    }
     public function logPaymentError(Request $request)
     {
         Log::error('Erreur de paiement client', [

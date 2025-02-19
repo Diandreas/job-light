@@ -2,7 +2,11 @@
     <IfModule mod_negotiation.c>
         Options -MultiViews -Indexes
     </IfModule>
-
+    <IfModule mod_headers.c>
+        Header set Content-Security-Policy "default-src 'self'; script-src 'self' https://*.paypal.com https://*.paypalobjects.com; frame-src 'self' https://*.paypal.com https://www.sandbox.paypal.com; img-src 'self' https: data:; style-src 'self' https://*.paypal.com; connect-src 'self' https://*.paypal.com https://www.sandbox.paypal.com;"
+        Header set X-Content-Type-Options "nosniff"
+        Header set X-Frame-Options "SAMEORIGIN"
+    </IfModule>
     RewriteEngine On
 
     # Handle Authorization Header

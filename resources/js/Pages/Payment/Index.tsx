@@ -195,16 +195,23 @@ export default function Index({ auth }) {
                 });
             },
             onApprove: async (data, actions) => {
-                try {
-                    const order = await actions.order.capture();
+                let capturedOrder = null;
 
+                try {
+                    // Capturer d'abord la commande PayPal
+                    capturedOrder = await actions.order.capture();
+                    console.log("PayPal order captured:", capturedOrder);
+
+                    // Ensuite mettre à jour le wallet
                     const response = await axios.post('/api/update-wallet', {
                         user_id: auth.user.id,
                         amount: pack.tokens + pack.bonusTokens,
-                        payment_reference: order.id,
+                        payment_reference: capturedOrder.id,
                         payment_method: 'paypal',
-                        order_data: order
+                        order_data: capturedOrder
                     });
+
+                    console.log("Wallet update response:", response.data);
 
                     if (response.data.success) {
                         toast({
@@ -217,18 +224,20 @@ export default function Index({ auth }) {
                             window.location.reload();
                         }, 2000);
                     } else {
-                        throw new Error('Erreur lors de la mise à jour du solde');
+                        throw new Error(response.data.message || 'Erreur lors de la mise à jour du solde');
                     }
                 } catch (error) {
                     console.error('Payment processing error:', error);
 
+                    // Log l'erreur avec les détails
                     try {
                         await axios.post('/api/log-payment-error', {
                             error: error.message,
                             userId: auth.user.id,
                             packId: pack.id,
                             timestamp: new Date().toISOString(),
-                            orderId: order?.id
+                            paypalOrderId: capturedOrder?.id,
+                            paypalOrder: capturedOrder
                         });
                     } catch (logError) {
                         console.error('Error logging failed:', logError);
@@ -236,7 +245,7 @@ export default function Index({ auth }) {
 
                     toast({
                         title: "Erreur de paiement",
-                        description: "Une erreur est survenue lors de votre paiement. Notre équipe a été notifiée.",
+                        description: "Une erreur est survenue lors de votre paiement. Notre équipe technique a été notifiée et vous contactera si nécessaire.",
                         variant: "destructive",
                     });
                 }

@@ -15,40 +15,47 @@ use Inertia\Inertia;
 class PaymentController extends Controller
 {
 // PaymentController.php
-
-    // app/Http/Controllers/PaymentController.php
-
     public function updateWallet(Request $request)
     {
         try {
+            Log::info('Payment request received:', $request->all());
+
             $validated = $request->validate([
-                'user_id' => 'required|exists:users,id',
-                'amount' => 'required|integer|min:1',
+                'user_id' => 'required|integer',
+                'amount' => 'required|integer',
                 'payment_reference' => 'required|string',
                 'payment_method' => 'required|string',
                 'order_data' => 'required|array'
             ]);
 
-            \DB::beginTransaction();
+            DB::beginTransaction();
 
             $user = User::findOrFail($request->user_id);
 
-            // Créer l'enregistrement de paiement
+            // Vérifier si le paiement existe déjà
+            $existingPayment = Payment::where('transaction_id', $request->payment_reference)->first();
+            if ($existingPayment) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Payment already processed'
+                ], 400);
+            }
+
+            // Créer le paiement
             $payment = Payment::create([
                 'user_id' => $user->id,
                 'amount' => $request->amount,
-                'model_id' => null, // Si nécessaire
                 'reference' => $request->payment_reference,
                 'status' => 'completed',
                 'payment_method' => $request->payment_method,
                 'transaction_id' => $request->payment_reference
             ]);
 
-            // Mettre à jour le solde de l'utilisateur
-            $user->wallet_balance += $request->amount;
+            // Mettre à jour le solde
+            $user->wallet_balance = $user->wallet_balance + $request->amount;
             $user->save();
 
-            \DB::commit();
+            DB::commit();
 
             return response()->json([
                 'success' => true,
@@ -57,16 +64,16 @@ class PaymentController extends Controller
             ]);
 
         } catch (\Exception $e) {
-            \DB::rollBack();
-            \Log::error('Payment update failed', [
+            DB::rollBack();
+            Log::error('Payment update failed', [
                 'error' => $e->getMessage(),
-                'user_id' => $request->user_id ?? null,
-                'payment_data' => $request->all()
+                'trace' => $e->getTraceAsString(),
+                'request_data' => $request->all()
             ]);
 
             return response()->json([
                 'success' => false,
-                'message' => $e->getMessage()
+                'message' => 'An error occurred while processing the payment'
             ], 500);
         }
     }

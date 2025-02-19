@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Head, usePage } from '@inertiajs/react';
 import { motion } from 'framer-motion';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
@@ -198,20 +198,25 @@ export default function Index({ auth }) {
                 let capturedOrder = null;
 
                 try {
-                    // Capturer d'abord la commande PayPal
+                    // Capturer la commande PayPal
                     capturedOrder = await actions.order.capture();
                     console.log("PayPal order captured:", capturedOrder);
 
-                    // Ensuite mettre à jour le wallet
+                    // Mettre à jour le wallet
                     const response = await axios.post('/api/update-wallet', {
                         user_id: auth.user.id,
                         amount: pack.tokens + pack.bonusTokens,
                         payment_reference: capturedOrder.id,
                         payment_method: 'paypal',
-                        order_data: capturedOrder
+                        order_data: {
+                            id: capturedOrder.id,
+                            status: capturedOrder.status,
+                            payer: capturedOrder.payer,
+                            amount: capturedOrder.purchase_units[0].amount,
+                            create_time: capturedOrder.create_time,
+                            update_time: capturedOrder.update_time
+                        }
                     });
-
-                    console.log("Wallet update response:", response.data);
 
                     if (response.data.success) {
                         toast({
@@ -220,6 +225,7 @@ export default function Index({ auth }) {
                             variant: "success",
                         });
 
+                        // Recharger la page après 2 secondes
                         setTimeout(() => {
                             window.location.reload();
                         }, 2000);
@@ -229,7 +235,7 @@ export default function Index({ auth }) {
                 } catch (error) {
                     console.error('Payment processing error:', error);
 
-                    // Log l'erreur avec les détails
+                    // Log l'erreur
                     try {
                         await axios.post('/api/log-payment-error', {
                             error: error.message,
@@ -237,7 +243,7 @@ export default function Index({ auth }) {
                             packId: pack.id,
                             timestamp: new Date().toISOString(),
                             paypalOrderId: capturedOrder?.id,
-                            paypalOrder: capturedOrder
+                            paypalOrderData: capturedOrder
                         });
                     } catch (logError) {
                         console.error('Error logging failed:', logError);
@@ -245,7 +251,7 @@ export default function Index({ auth }) {
 
                     toast({
                         title: "Erreur de paiement",
-                        description: "Une erreur est survenue lors de votre paiement. Notre équipe technique a été notifiée et vous contactera si nécessaire.",
+                        description: "Une erreur est survenue lors de votre paiement. Notre équipe technique a été notifiée.",
                         variant: "destructive",
                     });
                 }

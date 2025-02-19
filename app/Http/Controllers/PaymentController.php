@@ -18,57 +18,53 @@ class PaymentController extends Controller
     public function updateWallet(Request $request)
     {
         try {
-            Log::info('Payment request received:', $request->all());
+            DB::beginTransaction();
 
             $validated = $request->validate([
-                'user_id' => 'required|integer',
-                'amount' => 'required|integer',
-                'payment_reference' => 'required|string',
-                'payment_method' => 'required|string',
-                'order_data' => 'required|array'
+                'user_id' => 'required|exists:users,id',
+                'amount' => 'required|integer|min:1',
+                'payment_data' => 'required|array'
             ]);
-
-            DB::beginTransaction();
 
             $user = User::findOrFail($request->user_id);
 
-            // Vérifier si le paiement existe déjà
-            $existingPayment = Payment::where('transaction_id', $request->payment_reference)->first();
+            // Vérifier si le paiement n'a pas déjà été traité
+            $existingPayment = Payment::where('transaction_id', $request->payment_data['order_id'])->first();
             if ($existingPayment) {
+                DB::rollBack();
                 return response()->json([
                     'success' => false,
                     'message' => 'Payment already processed'
-                ], 400);
+                ]);
             }
 
-            // Créer le paiement
+            // Créer l'enregistrement de paiement
             $payment = Payment::create([
                 'user_id' => $user->id,
-                'amount' => $request->amount,
-                'reference' => $request->payment_reference,
+                'amount' => $request->payment_data['amount'],
+                'transaction_id' => $request->payment_data['order_id'],
                 'status' => 'completed',
-                'payment_method' => $request->payment_method,
-                'transaction_id' => $request->payment_reference
+                'payment_method' => 'paypal',
+                'metadata' => $request->payment_data
             ]);
 
             // Mettre à jour le solde
-            $user->wallet_balance = $user->wallet_balance + $request->amount;
+            $user->wallet_balance += $request->amount;
             $user->save();
 
             DB::commit();
 
             return response()->json([
                 'success' => true,
-                'message' => 'Wallet updated successfully',
                 'new_balance' => $user->wallet_balance
             ]);
 
         } catch (\Exception $e) {
             DB::rollBack();
-            Log::error('Payment update failed', [
+            Log::error('Payment processing failed', [
                 'error' => $e->getMessage(),
-                'trace' => $e->getTraceAsString(),
-                'request_data' => $request->all()
+                'user_id' => $request->user_id ?? null,
+                'data' => $request->all()
             ]);
 
             return response()->json([

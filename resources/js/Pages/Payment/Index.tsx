@@ -112,6 +112,7 @@ export default function Index({ auth }) {
     useEffect(() => {
         if (selectedPaymentMethod === 'paypal' && PAYPAL_CLIENT_ID) {
             loadScript({
+                //@ts-ignore
                 "client-id": PAYPAL_CLIENT_ID,
                 currency: "EUR",
                 intent: "capture",
@@ -183,6 +184,7 @@ export default function Index({ auth }) {
                 label: 'pay'
             },
             createOrder: (data, actions) => {
+            // @ts-ignore
                 return actions.order.create({
                     purchase_units: [{
                         amount: {
@@ -222,7 +224,6 @@ export default function Index({ auth }) {
                         toast({
                             title: "Paiement réussi !",
                             description: `Vous avez reçu ${pack.tokens + pack.bonusTokens} jetons`,
-                            variant: "success",
                         });
 
                         // Recharger la page après 2 secondes
@@ -319,6 +320,7 @@ export default function Index({ auth }) {
                             <div className="max-w-md mx-auto mb-8">
                                 <div className="flex gap-4">
                                     {countryCode === 'CM' && (
+                                        // @ts-ignore
                                         <PaymentMethodButton
                                             icon={Phone}
                                             label="Mobile Money"
@@ -326,6 +328,7 @@ export default function Index({ auth }) {
                                             selected={selectedPaymentMethod === 'mobile'}
                                         />
                                     )}
+                                    {/*@ts-ignore*/}
                                     <PaymentMethodButton
                                         icon={CreditCard}
                                         label="PayPal"

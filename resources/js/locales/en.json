@@ -121,11 +121,7 @@
         "en": "English",
         "fr": "French"
     },
-    "auth": {
-        "logout": "Logout",
-        "login": "Login",
-        "register": "Register"
-    },
+
     "common": {
         "search": "Search",
         "loading": "Loading",
@@ -211,7 +207,54 @@
 
 
 
+    "auth": {
+        "register": {
+            "value" : "Register",
+            "title": "Create your account",
+            "subtitle": "Join us and start creating your professional CV",
+            "name": {
+                "label": "Full name",
+                "placeholder": "Enter your name"
+            },
+            "email": {
+                "label": "Email",
+                "placeholder": "your@email.com"
+            },
+            "password": {
+                "label": "Password",
+                "placeholder": "Your password",
+                "confirm": "Confirm password",
+                "confirm_placeholder": "Confirm your password",
+                "strength": {
+                    "label": "Strength",
+                    "weak": "Weak",
+                    "medium": "Medium",
+                    "good": "Good",
+                    "strong": "Strong"
+                }
+            },
+            "already_registered": "Already registered?",
+            "button": {
+                "submit": "Register",
+                "processing": "Registering..."
+            }
+        },
+        "logout": "Logout",
 
+        "login": {
+            "value" : "login",
+            "title": "Welcome back!",
+            "subtitle": "Sign in to access your personal space",
+            "email": "Your email",
+            "password": "Your password",
+            "remember": "Remember me",
+            "button": "Sign in",
+            "processing": "Signing in...",
+            "forgotPassword": "Forgot password?",
+            "createAccount": "Create account"
+        }
+
+    },
 
 
 

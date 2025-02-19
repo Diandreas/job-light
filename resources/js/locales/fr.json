@@ -121,11 +121,7 @@
         "en": "Anglais",
         "fr": "Français"
     },
-    "auth": {
-        "logout": "Déconnexion",
-        "login": "Connexion",
-        "register": "S'inscrire"
-    },
+
     "common": {
         "search": "Rechercher",
         "loading": "Chargement",
@@ -175,6 +171,55 @@
             "model_activated": "Votre modèle a été activé avec succès",
             "max_models_reached": "Vous ne pouvez pas ajouter plus de {{max}} modèles",
             "error": "Une erreur s'est produite"
+        }
+    },
+
+
+    "auth": {
+        "register": {
+            "value" : "S'enregistrer",
+            "title": "Créer votre compte",
+            "subtitle": "Rejoignez-nous et commencez à créer votre CV professionnel",
+            "name": {
+                "label": "Nom complet",
+                "placeholder": "Entrez votre nom"
+            },
+            "email": {
+                "label": "Email",
+                "placeholder": "votre@email.com"
+            },
+            "password": {
+                "label": "Mot de passe",
+                "placeholder": "Votre mot de passe",
+                "confirm": "Confirmer le mot de passe",
+                "confirm_placeholder": "Confirmez le mot de passe",
+                "strength": {
+                    "label": "Force",
+                    "weak": "Faible",
+                    "medium": "Moyen",
+                    "good": "Bon",
+                    "strong": "Fort"
+                }
+            },
+            "already_registered": "Déjà inscrit ?",
+            "button": {
+                "submit": "S'inscrire",
+                "processing": "Inscription..."
+            }
+        },
+
+        "logout": "Déconnexion",
+        "login": {
+            "value" : "Connexion",
+            "title": "Bon retour parmi nous!",
+            "subtitle": "Connectez-vous pour accéder à votre espace personnel",
+            "email": "Votre email",
+            "password": "Votre mot de passe",
+            "remember": "Se souvenir de moi",
+            "button": "Se connecter",
+            "processing": "Connexion...",
+            "forgotPassword": "Mot de passe oublié?",
+            "createAccount": "Créer un compte"
         }
     },
     "cv_preview": {

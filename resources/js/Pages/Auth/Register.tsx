@@ -6,12 +6,14 @@ import { Button } from "@/Components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader } from "@/Components/ui/card";
 import { Input } from "@/Components/ui/input";
 import { Label } from "@/Components/ui/label";
+import { useTranslation } from 'react-i18next';
 import {
     UserPlus, Mail, Lock, User, ArrowRight, CheckCircle,
     XCircle, Eye, EyeOff, Loader2
 } from 'lucide-react';
 
-export default function Register({ professions }) {
+export default function Register() {
+    const { t } = useTranslation();
     const { data, setData, post, processing, errors } = useForm({
         name: '',
         email: '',
@@ -22,10 +24,20 @@ export default function Register({ professions }) {
     const [passwordStrength, setPasswordStrength] = useState(0);
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-    const [currentStep, setCurrentStep] = useState(0);
 
-    const strengthColors = ['bg-red-500', 'bg-yellow-500', 'bg-blue-500', 'bg-green-500'];
-    const strengthLabels = ['Faible', 'Moyen', 'Bon', 'Fort'];
+    const strengthColors = [
+        'bg-red-500 dark:bg-red-600',
+        'bg-yellow-500 dark:bg-yellow-600',
+        'bg-blue-500 dark:bg-blue-600',
+        'bg-green-500 dark:bg-green-600'
+    ];
+
+    const strengthLabels = [
+        t('auth.register.password.strength.weak'),
+        t('auth.register.password.strength.medium'),
+        t('auth.register.password.strength.good'),
+        t('auth.register.password.strength.strong')
+    ];
 
     const submit = (e) => {
         e.preventDefault();
@@ -44,7 +56,7 @@ export default function Register({ professions }) {
 
     const InputIcon = ({ icon: Icon, error }) => (
         <div className={`absolute left-3 top-1/2 -translate-y-1/2 transition-colors ${
-            error ? 'text-red-500' : 'text-gray-400'
+            error ? 'text-red-500 dark:text-red-400' : 'text-gray-400 dark:text-gray-500'
         }`}>
             <Icon className="w-5 h-5" />
         </div>
@@ -52,15 +64,15 @@ export default function Register({ professions }) {
 
     return (
         <GuestLayout>
-            <Head title="Register" />
+            <Head title={t('auth.register.title')} />
 
             <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5 }}
             >
-                <Card className="border-amber-100">
-                    <CardHeader className=" text-center pb-6">
+                <Card className="border-amber-100 dark:border-gray-700 dark:bg-gray-800">
+                    <CardHeader className="text-center pb-6">
                         <motion.div
                             initial={{ scale: 0 }}
                             animate={{ scale: 1 }}
@@ -70,10 +82,10 @@ export default function Register({ professions }) {
                             <UserPlus className="w-8 h-8 text-white" />
                         </motion.div>
                         <h2 className="text-2xl font-bold bg-gradient-to-r from-amber-500 to-purple-500 bg-clip-text text-transparent">
-                            Créer votre compte
+                            {t('auth.register.title')}
                         </h2>
-                        <p className="text-gray-500 text-sm">
-                            Rejoignez-nous et commencez à créer votre CV professionnel
+                        <p className="text-gray-500 dark:text-gray-400 text-sm">
+                            {t('auth.register.subtitle')}
                         </p>
                     </CardHeader>
 
@@ -86,19 +98,21 @@ export default function Register({ professions }) {
                                 transition={{ delay: 0.3 }}
                                 className="space-y-2"
                             >
-                                <Label htmlFor="name" className="text-gray-700">Nom complet</Label>
+                                <Label htmlFor="name" className="text-gray-700 dark:text-gray-300">
+                                    {t('auth.register.name.label')}
+                                </Label>
                                 <div className="relative">
                                     <InputIcon icon={User} error={errors.name} />
                                     <Input
                                         id="name"
                                         value={data.name}
                                         onChange={(e) => setData('name', e.target.value)}
-                                        className={`pl-10 bg-white/50 ${
+                                        className={`pl-10 bg-white/50 dark:bg-gray-900/50 ${
                                             errors.name
-                                                ? 'border-red-500 focus:border-red-500'
-                                                : 'border-amber-100 focus:border-amber-500'
+                                                ? 'border-red-500 focus:border-red-500 dark:border-red-400 dark:focus:border-red-400'
+                                                : 'border-amber-100 focus:border-amber-500 dark:border-gray-700 dark:focus:border-amber-400'
                                         }`}
-                                        placeholder="Entrez votre nom"
+                                        placeholder={t('auth.register.name.placeholder')}
                                     />
                                 </div>
                                 <AnimatePresence>
@@ -107,7 +121,7 @@ export default function Register({ professions }) {
                                             initial={{ opacity: 0, y: -10 }}
                                             animate={{ opacity: 1, y: 0 }}
                                             exit={{ opacity: 0, y: -10 }}
-                                            className="text-sm text-red-500 flex items-center gap-1"
+                                            className="text-sm text-red-500 dark:text-red-400 flex items-center gap-1"
                                         >
                                             <XCircle className="w-4 h-4" />
                                             {errors.name}
@@ -123,7 +137,9 @@ export default function Register({ professions }) {
                                 transition={{ delay: 0.4 }}
                                 className="space-y-2"
                             >
-                                <Label htmlFor="email" className="text-gray-700">Email</Label>
+                                <Label htmlFor="email" className="text-gray-700 dark:text-gray-300">
+                                    {t('auth.register.email.label')}
+                                </Label>
                                 <div className="relative">
                                     <InputIcon icon={Mail} error={errors.email} />
                                     <Input
@@ -131,12 +147,12 @@ export default function Register({ professions }) {
                                         type="email"
                                         value={data.email}
                                         onChange={(e) => setData('email', e.target.value)}
-                                        className={`pl-10 bg-white/50 ${
+                                        className={`pl-10 bg-white/50 dark:bg-gray-900/50 ${
                                             errors.email
-                                                ? 'border-red-500 focus:border-red-500'
-                                                : 'border-amber-100 focus:border-amber-500'
+                                                ? 'border-red-500 focus:border-red-500 dark:border-red-400 dark:focus:border-red-400'
+                                                : 'border-amber-100 focus:border-amber-500 dark:border-gray-700 dark:focus:border-amber-400'
                                         }`}
-                                        placeholder="votre@email.com"
+                                        placeholder={t('auth.register.email.placeholder')}
                                     />
                                 </div>
                                 <AnimatePresence>
@@ -145,7 +161,7 @@ export default function Register({ professions }) {
                                             initial={{ opacity: 0, y: -10 }}
                                             animate={{ opacity: 1, y: 0 }}
                                             exit={{ opacity: 0, y: -10 }}
-                                            className="text-sm text-red-500 flex items-center gap-1"
+                                            className="text-sm text-red-500 dark:text-red-400 flex items-center gap-1"
                                         >
                                             <XCircle className="w-4 h-4" />
                                             {errors.email}
@@ -163,7 +179,9 @@ export default function Register({ professions }) {
                             >
                                 {/* Password */}
                                 <div className="space-y-2">
-                                    <Label htmlFor="password" className="text-gray-700">Mot de passe</Label>
+                                    <Label htmlFor="password" className="text-gray-700 dark:text-gray-300">
+                                        {t('auth.register.password.label')}
+                                    </Label>
                                     <div className="relative">
                                         <InputIcon icon={Lock} error={errors.password} />
                                         <Input
@@ -174,17 +192,17 @@ export default function Register({ professions }) {
                                                 setData('password', e.target.value);
                                                 checkPasswordStrength(e.target.value);
                                             }}
-                                            className={`pl-10 pr-10 bg-white/50 ${
+                                            className={`pl-10 pr-10 bg-white/50 dark:bg-gray-900/50 ${
                                                 errors.password
-                                                    ? 'border-red-500 focus:border-red-500'
-                                                    : 'border-amber-100 focus:border-amber-500'
+                                                    ? 'border-red-500 focus:border-red-500 dark:border-red-400 dark:focus:border-red-400'
+                                                    : 'border-amber-100 focus:border-amber-500 dark:border-gray-700 dark:focus:border-amber-400'
                                             }`}
-                                            placeholder="Votre mot de passe"
+                                            placeholder={t('auth.register.password.placeholder')}
                                         />
                                         <button
                                             type="button"
                                             onClick={() => setShowPassword(!showPassword)}
-                                            className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                                            className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300"
                                         >
                                             {showPassword ? (
                                                 <EyeOff className="w-5 h-5" />
@@ -196,7 +214,7 @@ export default function Register({ professions }) {
 
                                     {/* Password Strength Indicator */}
                                     <div className="space-y-1">
-                                        <div className="h-1 w-full bg-gray-100 rounded-full overflow-hidden">
+                                        <div className="h-1 w-full bg-gray-100 dark:bg-gray-700 rounded-full overflow-hidden">
                                             <motion.div
                                                 initial={{ width: 0 }}
                                                 animate={{ width: `${passwordStrength * 25}%` }}
@@ -204,19 +222,33 @@ export default function Register({ professions }) {
                                                 transition={{ duration: 0.3 }}
                                             />
                                         </div>
-                                        <p className="text-xs text-gray-500 flex items-center gap-1">
-                                            Force: {strengthLabels[passwordStrength]}
+                                        <p className="text-xs text-gray-500 dark:text-gray-400 flex items-center gap-1">
+                                            {t('auth.register.password.strength.label')}: {strengthLabels[passwordStrength]}
                                             {passwordStrength === 3 && (
-                                                <CheckCircle className="w-3 h-3 text-green-500" />
+                                                <CheckCircle className="w-3 h-3 text-green-500 dark:text-green-400" />
                                             )}
                                         </p>
                                     </div>
+
+                                    <AnimatePresence>
+                                        {errors.password && (
+                                            <motion.p
+                                                initial={{ opacity: 0, y: -10 }}
+                                                animate={{ opacity: 1, y: 0 }}
+                                                exit={{ opacity: 0, y: -10 }}
+                                                className="text-sm text-red-500 dark:text-red-400 flex items-center gap-1"
+                                            >
+                                                <XCircle className="w-4 h-4" />
+                                                {errors.password}
+                                            </motion.p>
+                                        )}
+                                    </AnimatePresence>
                                 </div>
 
                                 {/* Confirm Password */}
                                 <div className="space-y-2">
-                                    <Label htmlFor="password_confirmation" className="text-gray-700">
-                                        Confirmer le mot de passe
+                                    <Label htmlFor="password_confirmation" className="text-gray-700 dark:text-gray-300">
+                                        {t('auth.register.password.confirm')}
                                     </Label>
                                     <div className="relative">
                                         <InputIcon icon={Lock} error={errors.password_confirmation} />
@@ -225,17 +257,17 @@ export default function Register({ professions }) {
                                             type={showConfirmPassword ? 'text' : 'password'}
                                             value={data.password_confirmation}
                                             onChange={(e) => setData('password_confirmation', e.target.value)}
-                                            className={`pl-10 pr-10 bg-white/50 ${
+                                            className={`pl-10 pr-10 bg-white/50 dark:bg-gray-900/50 ${
                                                 errors.password_confirmation
-                                                    ? 'border-red-500 focus:border-red-500'
-                                                    : 'border-amber-100 focus:border-amber-500'
+                                                    ? 'border-red-500 focus:border-red-500 dark:border-red-400 dark:focus:border-red-400'
+                                                    : 'border-amber-100 focus:border-amber-500 dark:border-gray-700 dark:focus:border-amber-400'
                                             }`}
-                                            placeholder="Confirmez le mot de passe"
+                                            placeholder={t('auth.register.password.confirm_placeholder')}
                                         />
                                         <button
                                             type="button"
                                             onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                                            className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                                            className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300"
                                         >
                                             {showConfirmPassword ? (
                                                 <EyeOff className="w-5 h-5" />
@@ -250,7 +282,7 @@ export default function Register({ professions }) {
                                                 initial={{ opacity: 0, y: -10 }}
                                                 animate={{ opacity: 1, y: 0 }}
                                                 exit={{ opacity: 0, y: -10 }}
-                                                className="text-sm text-red-500 flex items-center gap-1"
+                                                className="text-sm text-red-500 dark:text-red-400 flex items-center gap-1"
                                             >
                                                 <XCircle className="w-4 h-4" />
                                                 {errors.password_confirmation}
@@ -265,14 +297,14 @@ export default function Register({ professions }) {
                     <CardFooter className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-6">
                         <Link
                             href={route('login')}
-                            className="text-gray-600 hover:text-amber-500 flex items-center gap-2 text-sm"
+                            className="text-gray-600 dark:text-gray-400 hover:text-amber-500 dark:hover:text-amber-400 flex items-center gap-2 text-sm"
                         >
-                            Déjà inscrit ?
+                            {t('auth.register.already_registered')}
                         </Link>
                         <Button
                             onClick={submit}
                             disabled={processing}
-                            className="w-full sm:w-auto bg-gradient-to-r from-amber-500 to-purple-500 hover:from-amber-600 hover:to-purple-600"
+                            className="w-full sm:w-auto bg-gradient-to-r from-amber-500 to-purple-500 hover:from-amber-600 hover:to-purple-600 dark:from-amber-400 dark:to-purple-400 dark:hover:from-amber-500 dark:hover:to-purple-500"
                         >
                             {processing ? (
                                 <motion.div
@@ -281,14 +313,14 @@ export default function Register({ professions }) {
                                     className="flex items-center gap-2"
                                 >
                                     <Loader2 className="w-4 h-4 animate-spin" />
-                                    Inscription...
+                                    {t('auth.register.button.processing')}
                                 </motion.div>
                             ) : (
                                 <motion.div
                                     whileHover={{ x: 5 }}
                                     className="flex items-center gap-2"
                                 >
-                                    S'inscrire
+                                    {t('auth.register.button.submit')}
                                     <ArrowRight className="w-4 h-4" />
                                 </motion.div>
                             )}

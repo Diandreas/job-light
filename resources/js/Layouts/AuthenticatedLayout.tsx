@@ -1,5 +1,5 @@
 import { useState, PropsWithChildren } from 'react';
-import { Link, usePage } from '@inertiajs/react';
+import {Head, Link, usePage} from '@inertiajs/react';
 import { useTranslation } from 'react-i18next';
 import { User } from '@/types';
 import { Toaster } from "@/Components/ui/toaster";
@@ -209,7 +209,10 @@ export default function Authenticated({ user, header, children }: PropsWithChild
         </div>
     );
 
-    return (
+    return (<>
+        <Head>
+            <link rel="icon" type="image/png" href="/ai.png" />
+        </Head>
         <div className="min-h-screen bg-gradient-to-br from-amber-50/50 to-purple-50/50 dark:from-gray-900 dark:to-gray-800">
             <nav className="sticky top-0 z-50 bg-white/80 dark:bg-gray-900/90 backdrop-blur-md shadow-sm border-b border-amber-100 dark:border-gray-700">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6">
@@ -254,10 +257,10 @@ export default function Authenticated({ user, header, children }: PropsWithChild
                                 </Dropdown.Trigger>
                                 {/* @ts-ignore*/}
                                 <Dropdown.Content className="bg-white dark:bg-gray-900 dark:border-gray-700">
-                                    <Dropdown.Link href={route('profile.edit')} className="text-gray-700 dark:text-gray-100 hover:bg-amber-50 dark:hover:bg-amber-500/20">
+                                    <Dropdown.Link href={route('profile.edit')} className="text-gray-700 dark:text-gray-900 hover:bg-amber-50 dark:hover:bg-amber-500/20">
                                         {t('profile.edit')}
                                     </Dropdown.Link>
-                                    <Dropdown.Link href={route('logout')} method="post" as="button" className="text-gray-700 dark:text-gray-100 hover:bg-amber-50 dark:hover:bg-amber-500/20">
+                                    <Dropdown.Link href={route('logout')} method="post" as="button" className="text-gray-700 dark:text-gray-900 hover:bg-amber-50 dark:hover:bg-amber-500/20">
                                         {t('auth.logout')}
                                     </Dropdown.Link>
                                 </Dropdown.Content>
@@ -349,5 +352,6 @@ export default function Authenticated({ user, header, children }: PropsWithChild
 
             <Toaster />
         </div>
+        </>
     );
 }

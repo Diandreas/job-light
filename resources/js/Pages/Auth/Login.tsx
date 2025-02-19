@@ -7,8 +7,10 @@ import { Input } from "@/Components/ui/input";
 import { Button } from "@/Components/ui/button";
 import { Checkbox } from "@/Components/ui/checkbox";
 import { Alert, AlertDescription } from "@/Components/ui/alert";
+import { useTranslation } from 'react-i18next';
 
 export default function Login({ status, canResetPassword }: { status?: string, canResetPassword: boolean }) {
+    const { t } = useTranslation();
     const { data, setData, post, processing, errors, reset } = useForm({
         email: '',
         password: '',
@@ -28,7 +30,7 @@ export default function Login({ status, canResetPassword }: { status?: string, c
 
     return (
         <GuestLayout>
-            <Head title="Log in" />
+            <Head title={t('auth.login.button')} />
 
             <motion.div
                 initial={{ opacity: 0, y: 20 }}
@@ -47,10 +49,10 @@ export default function Login({ status, canResetPassword }: { status?: string, c
                         <LogIn className="w-8 h-8 text-white" />
                     </motion.div>
                     <h2 className="text-2xl font-bold bg-gradient-to-r from-amber-500 to-purple-500 bg-clip-text text-transparent">
-                        Bon retour parmi nous!
+                        {t('auth.login.title')}
                     </h2>
                     <p className="text-gray-500 text-sm">
-                        Connectez-vous pour accéder à votre espace personnel
+                        {t('auth.login.subtitle')}
                     </p>
                 </div>
 
@@ -72,7 +74,7 @@ export default function Login({ status, canResetPassword }: { status?: string, c
                             <Mail className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5" />
                             <Input
                                 type="email"
-                                placeholder="Votre email"
+                                placeholder={t('auth.login.email')}
                                 value={data.email}
                                 onChange={e => setData('email', e.target.value)}
                                 className="pl-10 bg-white/50 border-amber-100 focus:border-amber-500 focus:ring-amber-500"
@@ -100,7 +102,7 @@ export default function Login({ status, canResetPassword }: { status?: string, c
                             <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5" />
                             <Input
                                 type="password"
-                                placeholder="Votre mot de passe"
+                                placeholder={t('auth.login.password')}
                                 value={data.password}
                                 onChange={e => setData('password', e.target.value)}
                                 className="pl-10 bg-white/50 border-amber-100 focus:border-amber-500 focus:ring-amber-500"
@@ -133,7 +135,7 @@ export default function Login({ status, canResetPassword }: { status?: string, c
                             htmlFor="remember"
                             className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
                         >
-                            Se souvenir de moi
+                            {t('auth.login.remember')}
                         </label>
                     </motion.div>
 
@@ -154,7 +156,7 @@ export default function Login({ status, canResetPassword }: { status?: string, c
                                 className="flex items-center justify-center gap-2"
                             >
                                 <Sparkles className="w-5 h-5" />
-                                {processing ? 'Connexion...' : 'Se connecter'}
+                                {processing ? t('auth.login.processing') : t('auth.login.button')}
                             </motion.div>
                         </Button>
 
@@ -165,7 +167,7 @@ export default function Login({ status, canResetPassword }: { status?: string, c
                                     className="text-gray-600 hover:text-amber-500 flex items-center gap-2"
                                 >
                                     <KeyRound className="w-4 h-4" />
-                                    Mot de passe oublié?
+                                    {t('auth.login.forgotPassword')}
                                 </Link>
                             )}
 
@@ -174,7 +176,7 @@ export default function Login({ status, canResetPassword }: { status?: string, c
                                 className="text-gray-600 hover:text-amber-500 flex items-center gap-2"
                             >
                                 <UserPlus className="w-4 h-4" />
-                                Créer un compte
+                                {t('auth.login.createAccount')}
                             </Link>
                         </div>
                     </motion.div>

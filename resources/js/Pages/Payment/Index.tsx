@@ -1,31 +1,22 @@
-import { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Head } from '@inertiajs/react';
 import { motion } from 'framer-motion';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Card, CardContent } from "@/Components/ui/card";
 import { Button } from "@/Components/ui/button";
-import { Coins, Gift, Sparkles } from 'lucide-react';
-import NotchPay from 'notchpay.js';
+import { Coins, Gift, Sparkles, CreditCard, Phone, AlertCircle } from 'lucide-react';
 import { useToast } from "@/Components/ui/use-toast";
+import { Alert, AlertDescription } from "@/Components/ui/alert";
+import { loadScript } from "@paypal/paypal-js";
 
-function cn(...classes: (string | boolean | undefined | null)[]): string {
+const CONVERSION_RATE = 655.957; // 1 euro en FCFA
+const PAYPAL_CLIENT_ID = import.meta.env.VITE_PAYPAL_CLIENT_ID;
+
+function cn(...classes) {
     return classes.filter(Boolean).join(' ');
 }
 
-const notchpay = NotchPay(import.meta.env.VITE_NOTCHPAY_PUBLIC_KEY);
-
-interface TokenPack {
-    id: string;
-    tokens: number;
-    bonusTokens: number;
-    priceEuros: number;
-    mostPopular?: boolean;
-    color: string;
-}
-
-const CONVERSION_RATE = 655.957; // 1 euro en FCFA
-
-const TOKEN_PACKS: TokenPack[] = [
+const TOKEN_PACKS = [
     {
         id: 'starter',
         tokens: 10,
@@ -57,31 +48,98 @@ const TOKEN_PACKS: TokenPack[] = [
     }
 ];
 
+const PaymentMethodButton = ({ icon: Icon, label, onClick, selected, disabled }) => (
+    <Button
+        variant="outline"
+        className={cn(
+            "flex items-center gap-2 w-full p-4 border-2 transition-all",
+            selected ? "border-amber-500 bg-amber-50 dark:bg-amber-500/10" : "border-gray-200 dark:border-gray-800",
+            disabled ? "opacity-50 cursor-not-allowed" : "hover:border-amber-500"
+        )}
+        onClick={onClick}
+        disabled={disabled}
+    >
+        <Icon className={cn("w-5 h-5", selected ? "text-amber-500" : "text-gray-500")} />
+        <span className={selected ? "text-amber-700 dark:text-amber-300" : "text-gray-700 dark:text-gray-300"}>
+            {label}
+        </span>
+    </Button>
+);
+
 export default function Index({ auth }) {
     const { toast } = useToast();
-    const [processingPayment, setProcessingPayment] = useState<string | null>(null);
+    const [processingPayment, setProcessingPayment] = useState(null);
+    const [countryCode, setCountryCode] = useState('US');
+    const [paypalLoaded, setPaypalLoaded] = useState(false);
+    const [selectedPaymentMethod, setSelectedPaymentMethod] = useState(null);
+    const [loadingCountry, setLoadingCountry] = useState(true);
+    const [error, setError] = useState(null);
 
-    const handlePurchase = async (pack: TokenPack) => {
+    useEffect(() => {
+        // Detect user's country
+        fetch('https://ipapi.co/json/')
+            .then(res => res.json())
+            .then(data => {
+                setCountryCode(data.country_code);
+                setSelectedPaymentMethod(data.country_code === 'CM' ? 'mobile' : 'paypal');
+            })
+            .catch(() => {
+                setError("Impossible de détecter votre pays. Les prix seront affichés en Euros.");
+                setSelectedPaymentMethod('paypal');
+            })
+            .finally(() => setLoadingCountry(false));
+    }, []);
+
+    useEffect(() => {
+        if (selectedPaymentMethod === 'paypal') {
+            loadScript({
+                "client-id": PAYPAL_CLIENT_ID,
+                currency: countryCode === 'CM' ? 'XAF' : 'EUR'
+            })
+                .then(() => setPaypalLoaded(true))
+                .catch(err => {
+                    console.error("PayPal SDK failed to load", err);
+                    setError("Impossible de charger PayPal. Veuillez réessayer plus tard.");
+                });
+        }
+    }, [selectedPaymentMethod, countryCode]);
+
+    const getPrice = (priceEuros) => {
+        if (countryCode === 'CM') {
+            const priceFCFA = Math.round(priceEuros * CONVERSION_RATE);
+            return `${priceFCFA.toLocaleString()} FCFA`;
+        }
+        return `${priceEuros}€`;
+    };
+
+    const handleMobileMoneyPurchase = async (pack) => {
         try {
             setProcessingPayment(pack.id);
             const priceFCFA = Math.round(pack.priceEuros * CONVERSION_RATE);
 
-            const payment = await notchpay.payments.initializePayment({
-                currency: "XAF",
-                amount: priceFCFA.toString(),
-                email: auth.user.email,
-                phone: auth.user.phone || '',
-                reference: `tokens_${pack.id}_${auth.user.id}`,
-                description: `Achat de ${pack.tokens + pack.bonusTokens} jetons`,
-                meta: {
-                    user_id: auth.user.id,
-                    tokens: pack.tokens + pack.bonusTokens,
-                    package_id: pack.id
-                }
+            const payment = await fetch('/api/notchpay/initialize', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    currency: "XAF",
+                    amount: priceFCFA.toString(),
+                    email: auth.user.email,
+                    phone: auth.user.phone || '',
+                    reference: `tokens_${pack.id}_${auth.user.id}`,
+                    description: `Achat de ${pack.tokens + pack.bonusTokens} jetons`,
+                    meta: {
+                        user_id: auth.user.id,
+                        tokens: pack.tokens + pack.bonusTokens,
+                        package_id: pack.id
+                    }
+                })
             });
 
-            if (payment.authorization_url) {
-                window.location.href = payment.authorization_url;
+            const paymentData = await payment.json();
+            if (paymentData.authorization_url) {
+                window.location.href = paymentData.authorization_url;
             }
         } catch (error) {
             console.error('Payment error:', error);
@@ -93,6 +151,66 @@ export default function Index({ auth }) {
         } finally {
             setProcessingPayment(null);
         }
+    };
+
+    const initializePayPalButtons = (pack) => {
+        if (!paypalLoaded) return;
+
+        const price = countryCode === 'CM' ?
+            Math.round(pack.priceEuros * CONVERSION_RATE) :
+            pack.priceEuros;
+
+        return window.paypal.Buttons({
+            style: {
+                layout: 'vertical',
+                color: 'gold',
+                shape: 'rect',
+                label: 'pay'
+            },
+            createOrder: (data, actions) => {
+                return actions.order.create({
+                    purchase_units: [{
+                        amount: {
+                            value: price.toString(),
+                            currency_code: countryCode === 'CM' ? 'XAF' : 'EUR'
+                        },
+                        description: `${pack.tokens + pack.bonusTokens} tokens purchase`
+                    }]
+                });
+            },
+            onApprove: async (data, actions) => {
+                const order = await actions.order.capture();
+
+                try {
+                    // Update user's token balance
+                    await fetch('/api/update-wallet', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            user_id: auth.user.id,
+                            amount: pack.tokens + pack.bonusTokens
+                        })
+                    });
+
+                    toast({
+                        title: "Paiement réussi",
+                        description: `Vous avez reçu ${pack.tokens + pack.bonusTokens} jetons`,
+                        variant: "success",
+                    });
+
+                    // Refresh the page after successful payment
+                    window.location.reload();
+                } catch (error) {
+                    toast({
+                        title: "Erreur",
+                        description: "Le paiement a réussi mais une erreur est survenue lors de la mise à jour de votre solde. Notre équipe a été notifiée.",
+                        variant: "destructive",
+                    });
+                }
+            }
+        });
     };
 
     return (
@@ -116,20 +234,53 @@ export default function Index({ auth }) {
                                 </span>
                             </h1>
                             <p className="text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
-                                À partir de 1€ seulement pour 10 jetons ! Profitez de bonus plus importants sur les plus gros packs.
+                                À partir de {countryCode === 'CM' ? '655 FCFA' : '1€'} seulement !
+                                Profitez de bonus plus importants sur les plus gros packs.
                             </p>
                         </motion.div>
 
                         <div className="flex flex-wrap justify-center gap-4 mb-8">
                             <div className="flex items-center gap-2 px-4 py-2 bg-amber-100 dark:bg-amber-900/50 rounded-full">
                                 <Gift className="w-5 h-5 text-amber-500" />
-                                <span className="text-amber-700 dark:text-amber-300">Jusqu'à 100 jetons bonus</span>
+                                <span className="text-amber-700 dark:text-amber-300">
+                                    Jusqu'à 100 jetons bonus
+                                </span>
                             </div>
                             <div className="flex items-center gap-2 px-4 py-2 bg-purple-100 dark:bg-purple-900/50 rounded-full">
                                 <Sparkles className="w-5 h-5 text-purple-500" />
-                                <span className="text-purple-700 dark:text-purple-300">Paiement sécurisé</span>
+                                <span className="text-purple-700 dark:text-purple-300">
+                                    Paiement sécurisé
+                                </span>
                             </div>
                         </div>
+
+                        {error && (
+                            <Alert variant="destructive" className="max-w-2xl mx-auto mb-8">
+                                <AlertCircle className="h-4 w-4" />
+                                <AlertDescription>{error}</AlertDescription>
+                            </Alert>
+                        )}
+
+                        {!loadingCountry && (
+                            <div className="max-w-md mx-auto mb-8">
+                                <div className="flex gap-4">
+                                    {countryCode === 'CM' && (
+                                        <PaymentMethodButton
+                                            icon={Phone}
+                                            label="Mobile Money"
+                                            onClick={() => setSelectedPaymentMethod('mobile')}
+                                            selected={selectedPaymentMethod === 'mobile'}
+                                        />
+                                    )}
+                                    <PaymentMethodButton
+                                        icon={CreditCard}
+                                        label="PayPal"
+                                        onClick={() => setSelectedPaymentMethod('paypal')}
+                                        selected={selectedPaymentMethod === 'paypal'}
+                                    />
+                                </div>
+                            </div>
+                        )}
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -162,9 +313,8 @@ export default function Index({ auth }) {
                                                 <Coins className="w-8 h-8 text-white" />
                                             </div>
                                             <div className="flex items-baseline gap-2">
-                                                <span className="text-3xl font-bold">{pack.priceEuros}€</span>
-                                                <span className="text-sm text-gray-500">
-                                                    ({Math.round(pack.priceEuros * CONVERSION_RATE).toLocaleString()} FCFA)
+                                                <span className="text-3xl font-bold">
+                                                    {getPrice(pack.priceEuros)}
                                                 </span>
                                             </div>
                                         </div>
@@ -185,29 +335,52 @@ export default function Index({ auth }) {
                                                     Total : {pack.tokens + pack.bonusTokens} jetons
                                                 </div>
                                             )}
-                                            <div className="text-sm text-gray-500 dark:text-gray-400">
-                                                Prix unitaire : {(pack.priceEuros / (pack.tokens + pack.bonusTokens) * 10).toFixed(2)}€ / 10 jetons
-                                            </div>
                                         </div>
 
-                                        <Button
-                                            onClick={() => handlePurchase(pack)}
-                                            disabled={processingPayment === pack.id}
-                                            className={cn(
-                                                "w-full bg-gradient-to-r shadow-lg",
-                                                pack.color
-                                            )}
-                                        >
-                                            {processingPayment === pack.id ? (
-                                                <motion.div
-                                                    animate={{ rotate: 360 }}
-                                                    transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-                                                    className="w-4 h-4 border-2 border-white rounded-full border-t-transparent"
-                                                />
-                                            ) : (
-                                                "Acheter"
-                                            )}
-                                        </Button>
+                                        {selectedPaymentMethod === 'mobile' ? (
+                                            <Button
+                                                onClick={() => handleMobileMoneyPurchase(pack)}
+                                                disabled={processingPayment === pack.id}
+                                                className={cn(
+                                                    "w-full bg-gradient-to-r shadow-lg",
+                                                    pack.color)}
+                                            >
+                                                {processingPayment === pack.id ? (
+                                                    <motion.div
+                                                        animate={{ rotate: 360 }}
+                                                        transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                                                        className="w-4 h-4 border-2 border-white rounded-full border-t-transparent"
+                                                    />
+                                                ) : (
+                                                    <>
+                                                        <Phone className="w-4 h-4 mr-2" />
+                                                        Payer avec Mobile Money
+                                                    </>
+                                                )}
+                                            </Button>
+                                        ) : (
+                                            <div className="space-y-4">
+                                                {paypalLoaded && (
+                                                    <div
+                                                        id={`paypal-button-${pack.id}`}
+                                                        ref={el => {
+                                                            if (el && !el.hasChildNodes()) {
+                                                                initializePayPalButtons(pack).render(el);
+                                                            }
+                                                        }}
+                                                    />
+                                                )}
+                                                {!paypalLoaded && (
+                                                    <div className="flex items-center justify-center h-12">
+                                                        <motion.div
+                                                            animate={{ rotate: 360 }}
+                                                            transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                                                            className="w-4 h-4 border-2 border-amber-500 rounded-full border-t-transparent"
+                                                        />
+                                                    </div>
+                                                )}
+                                            </div>
+                                        )}
                                     </CardContent>
                                 </Card>
                             </motion.div>
@@ -216,7 +389,11 @@ export default function Index({ auth }) {
 
                     <div className="mt-12 text-center text-sm text-gray-500 dark:text-gray-400">
                         <p>Les jetons achetés sont immédiatement disponibles sur votre compte après le paiement.</p>
-                        <p>Les prix sont affichés en Euros et convertis en FCFA au moment du paiement.</p>
+                        <p className="mt-2">
+                            {countryCode === 'CM'
+                                ? "Les prix sont affichés en FCFA. Le paiement mobile est disponible via Orange Money et MTN Mobile Money."
+                                : "Les prix sont affichés en Euros. Le paiement est sécurisé via PayPal."}
+                        </p>
                     </div>
                 </div>
             </div>

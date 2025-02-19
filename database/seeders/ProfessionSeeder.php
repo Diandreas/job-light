@@ -9,650 +9,168 @@ class ProfessionSeeder extends Seeder
 {
     public function run()
     {
-        $categories = [
-            'Forces armées' => [
-                'description' => 'Professions militaires et de défense',
-                'subcategories' => [
-                    'Officiers des forces armées' => [
-                        'professions' => [
-                            'Colonel',
-                            'Commandant',
-                            'Capitaine',
-                            'Lieutenant',
-                            'Général de brigade'
-                        ]
-                    ],
-                    'Sous-officiers des forces armées' => [
-                        'professions' => [
-                            'Sergent-chef',
-                            'Adjudant',
-                            'Major',
-                            'Sergent',
-                            'Adjudant-chef'
-                        ]
-                    ],
-                    'Autres membres des forces armées' => [
-                        'professions' => [
-                            'Soldat de première classe',
-                            'Caporal',
-                            'Caporal-chef',
-                            'Militaire du rang',
-                            'Agent de sécurité militaire'
-                        ]
-                    ]
-                ]
-            ],
-            'Direction et Cadres' => [
-                'description' => 'Dirigeants, cadres supérieurs et membres de l\'exécutif',
-                'subcategories' => [
-                    'Dirigeants d\'entreprise' => [
-                        'professions' => [
-                            'PDG',
-                            'Directeur général',
-                            'Gérant de société',
-                            'Président du conseil d\'administration',
-                            'Fondateur de startup'
-                        ]
-                    ],
-                    'Cadres de direction' => [
-                        'professions' => [
-                            'Directeur financier',
-                            'Directeur commercial',
-                            'DRH',
-                            'Directeur marketing',
-                            'Directeur des opérations',
-                            'Directeur technique'
-                        ]
-                    ],
-                    'Législateurs et hauts fonctionnaires' => [
-                        'professions' => [
-                            'Député',
-                            'Sénateur',
-                            'Maire',
-                            'Préfet',
-                            'Ambassadeur',
-                            'Consul'
-                        ]
-                    ]
-                ]
-            ],
-            'Professions intellectuelles' => [
-                'description' => 'Professions intellectuelles et scientifiques',
-                'subcategories' => [
-                    'Sciences et ingénierie' => [
-                        'professions' => [
-                            'Physicien',
-                            'Chimiste',
-                            'Biologiste',
-                            'Ingénieur civil',
-                            'Ingénieur mécanique',
-                            'Ingénieur électrique',
-                            'Mathématicien',
-                            'Astronome'
-                        ]
-                    ],
-                    'Santé' => [
-                        'professions' => [
-                            'Médecin généraliste',
-                            'Chirurgien',
-                            'Pharmacien',
-                            'Dentiste',
-                            'Psychiatre',
-                            'Cardiologue',
-                            'Pédiatre',
-                            'Anesthésiste'
-                        ]
-                    ],
-                    'Enseignement' => [
-                        'professions' => [
-                            'Professeur des universités',
-                            'Professeur des écoles',
-                            'Chercheur',
-                            'Formateur professionnel',
-                            'Professeur de lycée',
-                            'Maître de conférences'
-                        ]
-                    ],
-                    'Finance et gestion' => [
-                        'professions' => [
-                            'Analyste financier',
-                            'Contrôleur de gestion',
-                            'Expert-comptable',
-                            'Actuaire',
-                            'Gestionnaire de portefeuille',
-                            'Auditeur financier'
-                        ]
-                    ],
-                    'Technologies de l\'information' => [
-                        'professions' => [
-                            'Architecte système',
-                            'Ingénieur DevOps',
-                            'Administrateur réseau',
-                            'Chef de projet IT',
-                            'Architecte logiciel',
-                            'Expert en sécurité informatique'
-                        ]
-                    ],
-                    'Juridique et social' => [
-                        'professions' => [
-                            'Avocat',
-                            'Notaire',
-                            'Juge',
-                            'Juriste d\'entreprise',
-                            'Conseiller juridique',
-                            'Huissier de justice'
-                        ]
-                    ],
-                    'Culture et création' => [
-                        'professions' => [
-                            'Architecte',
-                            'Conservateur de musée',
-                            'Directeur artistique',
-                            'Commissaire d\'exposition',
-                            'Critique d\'art',
-                            'Restaurateur d\'œuvres d\'art'
-                        ]
-                    ]
-                ]
-            ],
-            'Professions intermédiaires' => [
-                'description' => 'Techniciens et professions intermédiaires',
-                'subcategories' => [
-                    'Sciences et ingénierie' => [
-                        'professions' => [
-                            'Technicien de laboratoire',
-                            'Technicien en maintenance industrielle',
-                            'Dessinateur industriel',
-                            'Technicien qualité',
-                            'Technicien en métrologie'
-                        ]
-                    ],
-                    'Santé' => [
-                        'professions' => [
-                            'Infirmier',
-                            'Kinésithérapeute',
-                            'Orthophoniste',
-                            'Sage-femme',
-                            'Podologue',
-                            'Ergothérapeute'
-                        ]
-                    ],
-                    'Affaires et administration' => [
-                        'professions' => [
-                            'Assistant de direction',
-                            'Chargé de clientèle',
-                            'Responsable administratif',
-                            'Gestionnaire de paie',
-                            'Assistant commercial'
-                        ]
-                    ],
-                    'Services juridiques et sociaux' => [
-                        'professions' => [
-                            'Assistant juridique',
-                            'Médiateur social',
-                            'Conseiller en insertion',
-                            'Délégué à la tutelle',
-                            'Assistant social'
-                        ]
-                    ],
-                    'Culture et communication' => [
-                        'professions' => [
-                            'Animateur culturel',
-                            'Technicien audiovisuel',
-                            'Assistant de production',
-                            'Régisseur de spectacle',
-                            'Documentaliste'
-                        ]
-                    ]
-                ]
-            ],
-            'Employés administratifs' => [
-                'description' => 'Employés de type administratif',
-                'subcategories' => [
-                    'Employés de bureau' => [
-                        'professions' => [
-                            'Secrétaire',
-                            'Agent administratif',
-                            'Standardiste',
-                            'Employé de bureau',
-                            'Assistant administratif'
-                        ]
-                    ],
-                    'Service à la clientèle' => [
-                        'professions' => [
-                            'Conseiller clientèle',
-                            'Chargé d\'accueil',
-                            'Téléconseiller',
-                            'Agent de service client',
-                            'Hôte d\'accueil'
-                        ]
-                    ],
-                    'Comptabilité et finance' => [
-                        'professions' => [
-                            'Aide-comptable',
-                            'Agent comptable',
-                            'Employé de facturation',
-                            'Assistant comptable',
-                            'Caissier'
-                        ]
-                    ],
-                    'Stockage et logistique' => [
-                        'professions' => [
-                            'Magasinier',
-                            'Gestionnaire de stock',
-                            'Agent logistique',
-                            'Préparateur de commandes',
-                            'Agent d\'expédition'
-                        ]
-                    ]
-                ]
-            ],
-            'Services et vente' => [
-                'description' => 'Personnel des services et vendeurs',
-                'subcategories' => [
-                    'Services personnels' => [
-                        'professions' => [
-                            'Coiffeur',
-                            'Esthéticien',
-                            'Masseur',
-                            'Conseiller en image',
-                            'Agent de voyage'
-                        ]
-                    ],
-                    'Vente' => [
-                        'professions' => [
-                            'Vendeur',
-                            'Commercial',
-                            'Responsable de boutique',
-                            'Merchandiser',
-                            'Représentant commercial'
-                        ]
-                    ],
-                    'Soins aux personnes' => [
-                        'professions' => [
-                            'Aide-soignant',
-                            'Auxiliaire de vie',
-                            'Assistant maternel',
-                            'Accompagnant éducatif',
-                            'Aide à domicile'
-                        ]
-                    ],
-                    'Protection et sécurité' => [
-                        'professions' => [
-                            'Agent de sécurité',
-                            'Surveillant',
-                            'Agent de surveillance',
-                            'Gardien',
-                            'Maître-chien'
-                        ]
-                    ]
-                ]
-            ],
-            'Agriculture et pêche' => [
-                'description' => 'Agriculteurs et ouvriers qualifiés de l\'agriculture',
-                'subcategories' => [
-                    'Agriculture commerciale' => [
-                        'professions' => [
-                            'Agriculteur',
-                            'Maraîcher',
-                            'Viticulteur',
-                            'Horticulteur',
-                            'Céréalier'
-                        ]
-                    ],
-                    'Élevage' => [
-                        'professions' => [
-                            'Éleveur bovin',
-                            'Éleveur ovin',
-                            'Aviculteur',
-                            'Apiculteur',
-                            'Pisciculteur'
-                        ]
-                    ],
-                    'Sylviculture' => [
-                        'professions' => [
-                            'Bûcheron',
-                            'Sylviculteur',
-                            'Agent forestier',
-                            'Élagueur',
-                            'Technicien forestier'
-                        ]
-                    ],
-                    'Pêche et aquaculture' => [
-                        'professions' => [
-                            'Pêcheur',
-                            'Marin-pêcheur',
-                            'Aquaculteur',
-                            'Conchyliculteur',
-                            'Patron de pêche'
-                        ]
-                    ]
-                ]
-            ],
-            'Métiers qualifiés' => [
-                'description' => 'Métiers qualifiés de l\'industrie et de l\'artisanat',
-                'subcategories' => [
-                    'Bâtiment' => [
-                        'professions' => [
-                            'Maçon',
-                            'Plombier',
-                            'Carreleur',
-                            'Couvreur',
-                            'Peintre en bâtiment',
-                            'Charpentier'
-                        ]
-                    ],
-                    'Métallurgie' => [
-                        'professions' => [
-                            'Soudeur',
-                            'Chaudronnier',
-                            'Forgeron',
-                            'Métallier',
-                            'Ferronnier'
-                        ]
-                    ],
-                    'Artisanat' => [
-                        'professions' => [
-                            'Ébéniste',
-                            'Bijoutier',
-                            'Céramiste',
-                            'Tapissier',
-                            'Relieur'
-                        ]
-                    ],
-                    'Électricité et électronique' => [
-                        'professions' => [
-                            'Électricien',
-                            'Électronicien',
-                            'Installateur domotique',
-                            'Technicien de maintenance',
-                            'Bobiner'
-                        ]
-                    ],
-                    'Alimentation' => [
-                        'professions' => [
-                            'Boulanger',
-                            'Pâtissier',
-                            'Boucher',
-                            'Charcutier',
-                            'Chocolatier'
-                        ]
-                    ],
-                    'Bois' => [
-                        'professions' => [
-                            'Menuisier',
-                            'Agenceur',
-                            'Tonnelier',
-                            'Sculpteur sur bois',
-                            'Marqueteur'
-                        ]
-                    ],
-                    'Textile' => [
-                        'professions' => [
-                            'Couturier',
-                            'Tailleur',
-                            'Brodeur',
-                            'Tisseur',
-                            'Modéliste'
-                        ]
-                    ]
-                ]
-            ],
-            'Opérateurs et assembleurs' => [
-                'description' => 'Conducteurs d\'installations et de machines',
-                'subcategories' => [
-                    'Opérateurs d\'installations fixes' => [
-                        'professions' => [
-                            'Opérateur de production',
-                            'Conducteur de machine',
-                            'Opérateur de centrale',
-                            'Pilote d\'installation',
-                            'Opérateur chimique'
-                        ]
-                    ],
-                    'Assembleurs' => [
-                        'professions' => [
-                            'Monteur',
-                            'Assembleur électronique',
-                            'Assembleur automobile',
-                            'Monteur en aéronautique',
-                            'Assembleur de précision'
-                        ]
-                    ],
-                    'Conducteurs de véhicules' => [
-                        'professions' => [
-                            'Chauffeur poids lourd',
-                            'Conducteur de bus',
-                            'Chauffeur-livreur',
-                            'Conducteur d\'engins',
-                            'Taxi'
-                        ]
-                    ]
-                ]
-            ],
-            'Professions élémentaires' => [
-                'description' => 'Professions élémentaires',
-                'subcategories' => [
-                    'Nettoyage et aide aux ménages' => [
-                        'professions' => [
-                            'Agent d\'entretien',
-                            'Femme de ménage',
-                            'Agent de propreté',
-                            'Concierge',
-                            'Agent de nettoyage'
-                        ]
-                    ],
-                    'Manœuvres' => [
-                        'professions' => ['Manutentionnaire',
-                            'Ouvrier du bâtiment',
-                            'Docker',
-                            'Manœuvre agricole',
-                            'Aide-maçon'
-                        ]
-                    ],
-                    'Assistants de préparation alimentaire' => [
-                        'professions' => [
-                            'Commis de cuisine',
-                            'Aide-cuisinier',
-                            'Plongeur en restauration',
-                            'Préparateur en restauration rapide',
-                            'Employé polyvalent de restauration'
-                        ]
-                    ]
-                ]
-            ],
-            'Économie numérique' => [
-                'description' => 'Nouvelles professions de l\'économie numérique',
-                'subcategories' => [
-                    'Développement logiciel' => [
-                        'professions' => [
-                            'Développeur full-stack',
-                            'Développeur mobile',
-                            'Développeur front-end',
-                            'Développeur back-end',
-                            'Architecte logiciel',
-                            'Lead développeur'
-                        ]
-                    ],
-                    'Data et IA' => [
-                        'professions' => [
-                            'Data Scientist',
-                            'Data Engineer',
-                            'Data Analyst',
-                            'Machine Learning Engineer',
-                            'Ingénieur IA',
-                            'Data Architect'
-                        ]
-                    ],
-                    'Cybersécurité' => [
-                        'professions' => [
-                            'Expert en cybersécurité',
-                            'Pentester',
-                            'Analyste SOC',
-                            'Ingénieur sécurité réseau',
-                            'Consultant en sécurité informatique',
-                            'Responsable RSSI'
-                        ]
-                    ],
-                    'Marketing digital' => [
-                        'professions' => [
-                            'Community Manager',
-                            'Growth Hacker',
-                            'SEO Manager',
-                            'Content Manager',
-                            'Traffic Manager',
-                            'Social Media Manager'
-                        ]
-                    ]
-                ]
-            ],
-            'Économie verte' => [
-                'description' => 'Métiers de la transition écologique',
-                'subcategories' => [
-                    'Énergies renouvelables' => [
-                        'professions' => [
-                            'Ingénieur en énergies renouvelables',
-                            'Installateur de panneaux solaires',
-                            'Technicien éolien',
-                            'Chef de projet EnR',
-                            'Expert en efficacité énergétique',
-                            'Conseiller en énergie'
-                        ]
-                    ],
-                    'Économie circulaire' => [
-                        'professions' => [
-                            'Responsable valorisation déchets',
-                            'Expert en recyclage',
-                            'Consultant en économie circulaire',
-                            'Chargé de projet économie circulaire',
-                            'Responsable développement durable',
-                            'Expert en éco-conception'
-                        ]
-                    ],
-                    'Protection de l\'environnement' => [
-                        'professions' => [
-                            'Ingénieur environnement',
-                            'Écologue',
-                            'Chargé d\'études environnementales',
-                            'Garde forestier',
-                            'Technicien de l\'environnement',
-                            'Consultant environnemental'
-                        ]
-                    ]
-                ]
-            ],
-            'Industries créatives' => [
-                'description' => 'Métiers de la création et du divertissement',
-                'subcategories' => [
-                    'Arts et spectacles' => [
-                        'professions' => [
-                            'Artiste peintre',
-                            'Musicien',
-                            'Comédien',
-                            'Danseur',
-                            'Metteur en scène',
-                            'Chorégraphe'
-                        ]
-                    ],
-                    'Design' => [
-                        'professions' => [
-                            'Designer graphique',
-                            'Designer UX/UI',
-                            'Designer produit',
-                            'Designer d\'intérieur',
-                            'Designer industriel',
-                            'Motion designer'
-                        ]
-                    ],
-                    'Médias' => [
-                        'professions' => [
-                            'Journaliste',
-                            'Réalisateur',
-                            'Producteur',
-                            'Monteur vidéo',
-                            'Photographe',
-                            'Rédacteur en chef'
-                        ]
-                    ],
-                    'Jeux vidéo' => [
-                        'professions' => [
-                            'Game Designer',
-                            'Level Designer',
-                            'Character Artist',
-                            'Développeur de jeux',
-                            'Testeur de jeux vidéo',
-                            'Sound Designer'
-                        ]
-                    ]
-                ]
-            ],
-            'Recherche et innovation' => [
-                'description' => 'Métiers de la recherche et développement',
-                'subcategories' => [
-                    'Recherche fondamentale' => [
-                        'professions' => [
-                            'Chercheur en physique',
-                            'Chercheur en biologie',
-                            'Chercheur en mathématiques',
-                            'Chercheur en sciences sociales',
-                            'Chercheur en neurosciences',
-                            'Chercheur en chimie'
-                        ]
-                    ],
-                    'R&D industrielle' => [
-                        'professions' => [
-                            'Ingénieur R&D',
-                            'Chef de projet innovation',
-                            'Responsable laboratoire R&D',
-                            'Ingénieur développement produit',
-                            'Expert en propriété intellectuelle',
-                            'Ingénieur process'
-                        ]
-                    ],
-                    'Innovation sociale' => [
-                        'professions' => [
-                            'Designer de services',
-                            'Facilitateur d\'innovation',
-                            'Expert en innovation sociale',
-                            'Chargé de projet ESS',
-                            'Consultant en innovation participative',
-                            'Coordinateur de tiers-lieu'
-                        ]
-                    ]
-                ]
-            ]
+        $professions = [
+            ['name' => 'Développeur logiciel', 'name_en' => 'Software Developer'],
+            ['name' => 'Ingénieur en informatique', 'name_en' => 'Computer Engineer'],
+            ['name' => 'Analyste de données', 'name_en' => 'Data Analyst'],
+            ['name' => 'Gestionnaire de projet', 'name_en' => 'Project Manager'],
+            ['name' => 'Spécialiste en marketing digital', 'name_en' => 'Digital Marketing Specialist'],
+            ['name' => 'Designer graphique', 'name_en' => 'Graphic Designer'],
+            ['name' => 'Consultant en management', 'name_en' => 'Management Consultant'],
+            ['name' => 'Comptable', 'name_en' => 'Accountant'],
+            ['name' => 'Analyste financier', 'name_en' => 'Financial Analyst'],
+            ['name' => 'Responsable des ressources humaines', 'name_en' => 'Human Resources Manager'],
+            ['name' => 'Ingénieur civil', 'name_en' => 'Civil Engineer'],
+            ['name' => 'Architecte', 'name_en' => 'Architect'],
+            ['name' => 'Infirmier', 'name_en' => 'Nurse'],
+            ['name' => 'Médecin généraliste', 'name_en' => 'General Practitioner'],
+            ['name' => 'Pharmacien', 'name_en' => 'Pharmacist'],
+            ['name' => 'Enseignant', 'name_en' => 'Teacher'],
+            ['name' => 'Professeur d\'université', 'name_en' => 'University Professor'],
+            ['name' => 'Avocat', 'name_en' => 'Lawyer'],
+            ['name' => 'Journaliste', 'name_en' => 'Journalist'],
+            ['name' => 'Éditeur', 'name_en' => 'Editor'],
+            ['name' => 'Traducteur', 'name_en' => 'Translator'],
+            ['name' => 'Ingénieur mécanique', 'name_en' => 'Mechanical Engineer'],
+            ['name' => 'Ingénieur électrique', 'name_en' => 'Electrical Engineer'],
+            ['name' => 'Technicien de laboratoire', 'name_en' => 'Laboratory Technician'],
+            ['name' => 'Biologiste', 'name_en' => 'Biologist'],
+            ['name' => 'Chimiste', 'name_en' => 'Chemist'],
+            ['name' => 'Physicien', 'name_en' => 'Physicist'],
+            ['name' => 'Géologue', 'name_en' => 'Geologist'],
+            ['name' => 'Météorologue', 'name_en' => 'Meteorologist'],
+            ['name' => 'Astronome', 'name_en' => 'Astronomer'],
+            ['name' => 'Mathématicien', 'name_en' => 'Mathematician'],
+            ['name' => 'Statisticien', 'name_en' => 'Statistician'],
+            ['name' => 'Actuaire', 'name_en' => 'Actuary'],
+            ['name' => 'Vétérinaire', 'name_en' => 'Veterinarian'],
+            ['name' => 'Dentiste', 'name_en' => 'Dentist'],
+            ['name' => 'Physiothérapeute', 'name_en' => 'Physiotherapist'],
+            ['name' => 'Psychologue', 'name_en' => 'Psychologist'],
+            ['name' => 'Sociologue', 'name_en' => 'Sociologist'],
+            ['name' => 'Anthropologue', 'name_en' => 'Anthropologist'],
+            ['name' => 'Archéologue', 'name_en' => 'Archaeologist'],
+            ['name' => 'Historien', 'name_en' => 'Historian'],
+            ['name' => 'Économiste', 'name_en' => 'Economist'],
+            ['name' => 'Urbaniste', 'name_en' => 'Urban Planner'],
+            ['name' => 'Ingénieur en environnement', 'name_en' => 'Environmental Engineer'],
+            ['name' => 'Spécialiste en énergies renouvelables', 'name_en' => 'Renewable Energy Specialist'],
+            ['name' => 'Ingénieur en télécommunications', 'name_en' => 'Telecommunications Engineer'],
+            ['name' => 'Développeur web', 'name_en' => 'Web Developer'],
+            ['name' => 'Administrateur de bases de données', 'name_en' => 'Database Administrator'],
+            ['name' => 'Spécialiste en cybersécurité', 'name_en' => 'Cybersecurity Specialist'],
+            ['name' => 'Analyste de systèmes d\'information', 'name_en' => 'Information Systems Analyst'],
+            ['name' => 'Ingénieur DevOps', 'name_en' => 'DevOps Engineer'],
+            ['name' => 'Développeur mobile', 'name_en' => 'Mobile Developer'],
+            ['name' => 'Spécialiste en intelligence artificielle', 'name_en' => 'AI Specialist'],
+            ['name' => 'Data scientist', 'name_en' => 'Data Scientist'],
+            ['name' => 'Ingénieur en machine learning', 'name_en' => 'Machine Learning Engineer'],
+            ['name' => 'Spécialiste en réalité augmentée', 'name_en' => 'Augmented Reality Specialist'],
+            ['name' => 'Développeur de jeux vidéo', 'name_en' => 'Game Developer'],
+            ['name' => 'Product manager', 'name_en' => 'Product Manager'],
+            ['name' => 'Chef de produit', 'name_en' => 'Product Lead'],
+            ['name' => 'Responsable de la communication', 'name_en' => 'Communications Manager'],
+            ['name' => 'Community manager', 'name_en' => 'Community Manager'],
+            ['name' => 'Spécialiste en relations publiques', 'name_en' => 'Public Relations Specialist'],
+            ['name' => 'Rédacteur de contenu', 'name_en' => 'Content Writer'],
+            ['name' => 'Copywriter', 'name_en' => 'Copywriter'],
+            ['name' => 'Photographe', 'name_en' => 'Photographer'],
+            ['name' => 'Vidéaste', 'name_en' => 'Videographer'],
+            ['name' => 'Monteur vidéo', 'name_en' => 'Video Editor'],
+            ['name' => 'Animateur 3D', 'name_en' => '3D Animator'],
+            ['name' => 'Designer UX/UI', 'name_en' => 'UX/UI Designer'],
+            ['name' => 'Ergonome', 'name_en' => 'Ergonomist'],
+            ['name' => 'Consultant en accessibilité', 'name_en' => 'Accessibility Consultant'],
+            ['name' => 'Formateur', 'name_en' => 'Trainer'],
+            ['name' => 'Coach professionnel', 'name_en' => 'Professional Coach'],
+            ['name' => 'Consultant en recrutement', 'name_en' => 'Recruitment Consultant'],
+            ['name' => 'Chasseur de têtes', 'name_en' => 'Headhunter'],
+            ['name' => 'Responsable de la formation', 'name_en' => 'Training Manager'],
+            ['name' => 'Spécialiste en développement organisationnel', 'name_en' => 'Organizational Development Specialist'],
+            ['name' => 'Consultant en gestion du changement', 'name_en' => 'Change Management Consultant'],
+            ['name' => 'Auditeur interne', 'name_en' => 'Internal Auditor'],
+            ['name' => 'Contrôleur de gestion', 'name_en' => 'Management Controller'],
+            ['name' => 'Directeur administratif et financier', 'name_en' => 'Chief Financial Officer'],
+            ['name' => 'Trésorier', 'name_en' => 'Treasurer'],
+            ['name' => 'Analyste de crédit', 'name_en' => 'Credit Analyst'],
+            ['name' => 'Gestionnaire de risques', 'name_en' => 'Risk Manager'],
+            ['name' => 'Courtier en assurances', 'name_en' => 'Insurance Broker'],
+            ['name' => 'Agent immobilier', 'name_en' => 'Real Estate Agent'],
+            ['name' => 'Promoteur immobilier', 'name_en' => 'Real Estate Developer'],
+            ['name' => 'Gestionnaire de biens immobiliers', 'name_en' => 'Property Manager'],
+            ['name' => 'Ingénieur en bâtiment', 'name_en' => 'Building Engineer'],
+            ['name' => 'Technicien en génie civil', 'name_en' => 'Civil Engineering Technician'],
+            ['name' => 'Ingénieur en structure', 'name_en' => 'Structural Engineer'],
+            ['name' => 'Ingénieur en génie climatique', 'name_en' => 'HVAC Engineer'],
+            ['name' => 'Ingénieur en génie électrique', 'name_en' => 'Electrical Engineer'],
+            ['name' => 'Technicien en maintenance industrielle', 'name_en' => 'Industrial Maintenance Technician'],
+            ['name' => 'Responsable de la qualité', 'name_en' => 'Quality Manager'],
+            ['name' => 'Auditeur qualité', 'name_en' => 'Quality Auditor'],
+            ['name' => 'Responsable de la sécurité', 'name_en' => 'Safety Manager'],
+            ['name' => 'Ingénieur en prévention des risques', 'name_en' => 'Risk Prevention Engineer'],
+            ['name' => 'Technicien en hygiène et sécurité', 'name_en' => 'Health and Safety Technician'],
+            ['name' => 'Responsable environnement', 'name_en' => 'Environmental Manager'],
+            ['name' => 'Ingénieur en traitement des eaux', 'name_en' => 'Water Treatment Engineer'],
+            ['name' => 'Ingénieur en gestion des déchets', 'name_en' => 'Waste Management Engineer'],
+            ['name' => 'Technicien en environnement', 'name_en' => 'Environmental Technician'],
+            ['name' => 'Responsable de la logistique', 'name_en' => 'Logistics Manager'],
+            ['name' => 'Gestionnaire des approvisionnements', 'name_en' => 'Procurement Manager'],
+            ['name' => 'Responsable des achats', 'name_en' => 'Purchasing Manager'],
+            ['name' => 'Gestionnaire de la chaîne d\'approvisionnement', 'name_en' => 'Supply Chain Manager'],
+            ['name' => 'Analyste de la chaîne d\'approvisionnement', 'name_en' => 'Supply Chain Analyst'],
+            ['name' => 'Responsable des opérations', 'name_en' => 'Operations Manager'],
+            ['name' => 'Chef d\'équipe', 'name_en' => 'Team Leader'],
+            ['name' => 'Superviseur de production', 'name_en' => 'Production Supervisor'],
+            ['name' => 'Responsable de la maintenance', 'name_en' => 'Maintenance Manager'],
+            ['name' => 'Technicien de maintenance', 'name_en' => 'Maintenance Technician'],
+            ['name' => 'Ingénieur de production', 'name_en' => 'Production Engineer'],
+            ['name' => 'Responsable de la planification', 'name_en' => 'Planning Manager'],
+            ['name' => 'Planificateur de production', 'name_en' => 'Production Planner'],
+            ['name' => 'Responsable de la gestion des stocks', 'name_en' => 'Inventory Manager'],
+            ['name' => 'Gestionnaire d\'entrepôt', 'name_en' => 'Warehouse Manager'],
+            ['name' => 'Responsable du transport', 'name_en' => 'Transport Manager'],
+            ['name' => 'Coordinateur logistique', 'name_en' => 'Logistics Coordinator'],
+            ['name' => 'Responsable des expéditions', 'name_en' => 'Shipping Manager'],
+            ['name' => 'Responsable des importations/exportations', 'name_en' => 'Import/Export Manager'],
+            ['name' => 'Responsable de la conformité', 'name_en' => 'Compliance Manager'],
+            ['name' => 'Juriste d\'entreprise', 'name_en' => 'Corporate Lawyer'],
+            ['name' => 'Spécialiste en propriété intellectuelle', 'name_en' => 'Intellectual Property Specialist'],
+            ['name' => 'Consultant en droit du travail', 'name_en' => 'Labor Law Consultant'],
+            ['name' => 'Médiateur', 'name_en' => 'Mediator'],
+            ['name' => 'Responsable de la protection des données', 'name_en' => 'Data Protection Officer'],
+            ['name' => 'Délégué à la protection des données', 'name_en' => 'Data Protection Delegate'],
+            ['name' => 'Responsable de la conformité réglementaire', 'name_en' => 'Regulatory Compliance Manager'],
+            ['name' => 'Responsable de la gestion des risques', 'name_en' => 'Risk Management Manager'],
+            ['name' => 'Analyste de la conformité', 'name_en' => 'Compliance Analyst'],
+            ['name' => 'Responsable de la qualité de l\'air', 'name_en' => 'Air Quality Manager'],
+            ['name' => 'Ingénieur en acoustique', 'name_en' => 'Acoustic Engineer'],
+            ['name' => 'Ingénieur en éclairage', 'name_en' => 'Lighting Engineer'],
+            ['name' => 'Technicien en énergie', 'name_en' => 'Energy Technician'],
+            ['name' => 'Responsable de l\'efficacité énergétique', 'name_en' => 'Energy Efficiency Manager'],
+            ['name' => 'Ingénieur en énergie', 'name_en' => 'Energy Engineer'],
+            ['name' => 'Responsable de la gestion de l\'énergie', 'name_en' => 'Energy Management Manager'],
+            ['name' => 'Ingénieur en génie thermique', 'name_en' => 'Thermal Engineer'],
+            ['name' => 'Technicien en chauffage, ventilation et climatisation', 'name_en' => 'HVAC Technician'],
+            ['name' => 'Ingénieur en génie frigorifique', 'name_en' => 'Refrigeration Engineer'],
+            ['name' => 'Technicien en froid industriel', 'name_en' => 'Industrial Refrigeration Technician'],
+            ['name' => 'Ingénieur en génie des procédés', 'name_en' => 'Process Engineer'],
+            ['name' => 'Technicien en génie des procédés', 'name_en' => 'Process Engineering Technician'],
+            ['name' => 'Ingénieur en automatisation', 'name_en' => 'Automation Engineer'],
+            ['name' => 'Technicien en automatisation', 'name_en' => 'Automation Technician'],
+            ['name' => 'Ingénieur en robotique', 'name_en' => 'Robotics Engineer'],
+            ['name' => 'Technicien en robotique', 'name_en' => 'Robotics Technician'],
+            ['name' => 'Ingénieur en génie industriel', 'name_en' => 'Industrial Engineer']
         ];
 
-        // Code d'insertion
-        foreach ($categories as $categoryName => $categoryData) {
-            $mainCategoryId = DB::table('profession_categories')->insertGetId([
-                'name' => $categoryName,
-                'description' => $categoryData['description'],
+        foreach ($professions as $profession) {
+            DB::table('professions')->insert([
+                'name' => $profession['name'],
+                'name_en' => $profession['name_en'],
+                'description' => "Professionnel dans le domaine de {$profession['name']}",
+                'category_id' => 1, // Assurez-vous que cette catégorie existe dans votre base de données
                 'created_at' => now(),
                 'updated_at' => now()
             ]);
-
-            foreach ($categoryData['subcategories'] as $subCategoryName => $subCategoryData) {
-                $subCategoryId = DB::table('profession_categories')->insertGetId([
-                    'name' => $subCategoryName,
-                    'description' => "Sous-catégorie de {$categoryName}",
-                    'parent_id' => $mainCategoryId,
-                    'created_at' => now(),
-                    'updated_at' => now()
-                ]);
-
-                if (isset($subCategoryData['professions'])) {
-                    foreach ($subCategoryData['professions'] as $profession) {
-                        DB::table('professions')->insert([
-                            'name' => $profession,
-                            'description' => "Professionnel en {$subCategoryName}",
-                            'category_id' => $subCategoryId,
-                            'created_at' => now(),
-                            'updated_at' => now()
-                        ]);
-                    }
-                }
-            }
         }
     }
 }

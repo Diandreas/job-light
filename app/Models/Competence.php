@@ -11,6 +11,7 @@ class Competence extends Model
 
     protected $fillable = [
         'name',
+        'name_en',
         'description'
     ];
 

@@ -10,6 +10,7 @@ class Hobby extends Model
 {
     protected $fillable = [
         'name',
+        'name_en'
     ];
 
     public static function rules($id = null)

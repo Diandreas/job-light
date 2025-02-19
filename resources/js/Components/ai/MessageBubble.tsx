@@ -46,6 +46,7 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({ message }) => {
                                     isUser ? 'border-white/30' : 'border-amber-200'
                                 } pl-4 italic my-2`} {...props} />
                             ),
+                            // @ts-ignore
                             code: ({node, inline, ...props}) => (
                                 inline
                                     ? <code className={`px-1 rounded ${

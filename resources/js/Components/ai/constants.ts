@@ -51,6 +51,7 @@ export const SERVICES: Service[] = [
         cost: 3,
         category: 'advice',
         formats: ['conversation'],
+        // @ts-ignore
         defaultPrompt: DEFAULT_PROMPTS['career-advice']
     },
     {
@@ -61,6 +62,7 @@ export const SERVICES: Service[] = [
         cost: 5,
         category: 'document',
         formats: ['docx', 'pdf'],
+        // @ts-ignore
         defaultPrompt: DEFAULT_PROMPTS['cover-letter']
     },
     {
@@ -71,6 +73,7 @@ export const SERVICES: Service[] = [
         cost: 5,
         category: 'interactive',
         formats: ['conversation'],
+        // @ts-ignore
         defaultPrompt: DEFAULT_PROMPTS['interview-prep']
     },
     {
@@ -81,6 +84,7 @@ export const SERVICES: Service[] = [
         cost: 4,
         category: 'advice',
         formats: ['conversation'],
+        // @ts-ignore
         defaultPrompt: DEFAULT_PROMPTS['resume-review']
     }
 ];

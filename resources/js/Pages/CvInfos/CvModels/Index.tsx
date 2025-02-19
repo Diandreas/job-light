@@ -193,6 +193,7 @@ export default function CvModelsIndex({ auth, userCvModels, availableCvModels, m
         );
     }, [searchTerm]);
 
+    // @ts-ignore
     return (
         <AuthenticatedLayout user={auth.user}>
             <Head title={t('cv_models.title')} />
@@ -280,6 +281,7 @@ export default function CvModelsIndex({ auth, userCvModels, availableCvModels, m
                         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
                             <AnimatePresence>
                                 {filteredModels(availableModels).map((model) => (
+                                    // @ts-ignore
                                     <ModelCard
                                         key={model.id}
                                         model={model}

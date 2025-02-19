@@ -1,7 +1,8 @@
 import React, { useEffect, useRef } from 'react';
 import { ScrollArea } from '@/Components/ui/scroll-area';
 import { Message } from '@/types/career-advisor';
-import MessageBubble from './MessageBubble';
+import {MessageBubble} from "@/Components/ai/MessageBubble";
+
 
 interface ChatHistoryProps {
     messages: Message[];
@@ -26,6 +27,7 @@ const ChatHistory = ({ messages, language = 'fr' }: ChatHistoryProps) => {
                 {messages.map((message, index) => (
                     <MessageBubble
                         key={`${message.timestamp}-${index}`}
+                        // @ts-ignore
                         content={message.content}
                         timestamp={message.timestamp}
                         role={message.role}

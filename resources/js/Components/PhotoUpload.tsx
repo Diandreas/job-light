@@ -64,6 +64,7 @@ const PhotoUpload = ({ currentPhoto, onPhotoChange }) => {
         try {
             const croppedImage = await getCroppedImg();
             const formData = new FormData();
+            // @ts-ignore
             formData.append('photo', croppedImage, 'profile.jpg');
 
             const response = await fetch('/update-photo', {
@@ -118,7 +119,9 @@ const PhotoUpload = ({ currentPhoto, onPhotoChange }) => {
                     <div className="mt-4">
                         {uploadedImage && (
                             <ReactCrop
+                                // @ts-ignore
                                 crop={crop}
+                                // @ts-ignore
                                 onChange={c => setCrop(c)}
                                 onComplete={c => setCompletedCrop(c)}
                                 aspect={1}

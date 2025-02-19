@@ -14,6 +14,9 @@ import { Progress } from "@/Components/ui/progress";
 import { Alert, AlertDescription } from "@/Components/ui/alert";
 import axios from 'axios';
 
+// Liste des modèles sans bouton de téléchargement
+const MODELS_WITHOUT_DOWNLOAD = [10];
+
 const InfoCard = ({ icon: Icon, title, value, type = "default" }) => {
     const styles = {
         default: "bg-gradient-to-br from-amber-50 to-amber-100/50 dark:from-amber-500/10 dark:to-amber-500/5",
@@ -87,6 +90,7 @@ export default function Show({ auth, cvInformation, selectedCvModel }) {
     const [previewLoaded, setPreviewLoaded] = useState(false);
 
     const canAccessFeatures = walletBalance >= (selectedCvModel?.price || 0);
+    const isDownloadAllowed = selectedCvModel && !MODELS_WITHOUT_DOWNLOAD.includes(selectedCvModel.id);
 
     useEffect(() => {
         const checkDownloadStatus = async () => {
@@ -102,7 +106,6 @@ export default function Show({ auth, cvInformation, selectedCvModel }) {
         checkDownloadStatus();
     }, [selectedCvModel?.id]);
 
-    // Écouter les changements de langue
     useEffect(() => {
         if (iframeRef.current && selectedCvModel?.id) {
             setPreviewLoaded(false);
@@ -115,6 +118,14 @@ export default function Show({ auth, cvInformation, selectedCvModel }) {
     }, [i18n.language, selectedCvModel?.id]);
 
     const handleDownload = async () => {
+        if (!isDownloadAllowed) {
+            return toast({
+                title: t('common.error'),
+                description: t('cv_preview.export.download_not_allowed'),
+                variant: 'destructive'
+            });
+        }
+
         if (!canAccessFeatures && !hasDownloaded) {
             return toast({
                 title: t('cv_preview.wallet.insufficient_access.title'),
@@ -154,6 +165,7 @@ export default function Show({ auth, cvInformation, selectedCvModel }) {
             toast({
                 title: t('cv_preview.export.download_success'),
                 description: t('cv_preview.export.download_success_description'),
+                //@ts-ignore
                 variant: 'success'
             });
         } catch (error) {
@@ -312,14 +324,16 @@ export default function Show({ auth, cvInformation, selectedCvModel }) {
                                                 <Printer className="mr-2 h-4 w-4" />
                                                 {isLoading ? t('cv_preview.export.printing') : t('cv_preview.export.print')}
                                             </Button>
-                                            <Button
-                                                onClick={handleDownload}
-                                                className="bg-gradient-to-r from-amber-500 to-purple-500 hover:from-amber-600 hover:to-purple-600 dark:from-amber-400 dark:to-purple-400"
-                                                disabled={isDownloading}
-                                            >
-                                                <Download className="mr-2 h-4 w-4" />
-                                                {isDownloading ? t('cv_preview.export.downloading') : t('cv_preview.export.download')}
-                                            </Button>
+                                            {isDownloadAllowed && (
+                                                <Button
+                                                    onClick={handleDownload}
+                                                    className="bg-gradient-to-r from-amber-500 to-purple-500 hover:from-amber-600 hover:to-purple-600 dark:from-amber-400 dark:to-purple-400"
+                                                    disabled={isDownloading}
+                                                >
+                                                    <Download className="mr-2 h-4 w-4" />
+                                                    {isDownloading ? t('cv_preview.export.downloading') : t('cv_preview.export.download')}
+                                                </Button>
+                                            )}
                                         </motion.div>
                                     )}
                                 </AnimatePresence>

@@ -108,7 +108,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/user-hobbies/create', [UserHobbyController::class, 'create'])->name('user-hobbies.create');
     Route::post('/user-hobbies', [UserHobbyController::class, 'store'])->name('user-hobbies.store');
     Route::delete('/user-hobbies/{user_id}/{hobby_id}', [UserHobbyController::class, 'destroy'])->name('user-hobbies.destroy');
-
+    Route::post('/api/log-payment-error', [PaymentController::class, 'logPaymentError'])
+        ->name('payment.log-error')
+        ->middleware('auth');
     // User Competences
 //    Route::resource('user-competences', UserCompetenceController::class)->except(['edit', 'update', 'show']);
 

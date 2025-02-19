@@ -9,41 +9,77 @@ use App\Models\Profession;
 use App\Models\User;
 use App\Models\Payment;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Inertia\Inertia;
 
 class PaymentController extends Controller
 {
+// PaymentController.php
 
-    public function index()
-    {
-       return Inertia::render('Payment/Index');
-    }
     public function updateWallet(Request $request)
     {
         try {
+            $validated = $request->validate([
+                'user_id' => 'required|exists:users,id',
+                'amount' => 'required|numeric|min:1',
+                'payment_reference' => 'required|string',
+                'payment_method' => 'required|string',
+                'order_data' => 'required|array'
+            ]);
+
+            DB::beginTransaction();
+
             $user = User::findOrFail($request->user_id);
+
+            // Créer l'enregistrement de paiement
             $payment = Payment::create([
                 'user_id' => $user->id,
                 'amount' => $request->amount,
                 'reference' => $request->payment_reference,
                 'payment_method' => $request->payment_method,
-                'status' => 'completed'
+                'status' => 'completed',
+                'metadata' => $request->order_data
             ]);
 
+            // Mettre à jour le solde de l'utilisateur
             $user->wallet_balance += $request->amount;
             $user->save();
 
+            DB::commit();
+
             return response()->json([
                 'success' => true,
-                'balance' => $user->wallet_balance
+                'balance' => $user->wallet_balance,
+                'payment_id' => $payment->id
             ]);
+
         } catch (\Exception $e) {
-            \Log::error('Wallet update error: ' . $e->getMessage());
+            DB::rollBack();
+
+            // Log l'erreur
+            Log::error('Payment update failed', [
+                'error' => $e->getMessage(),
+                'user_id' => $request->user_id ?? null,
+                'payment_data' => $request->all()
+            ]);
+
             return response()->json([
-                'error' => 'Failed to update wallet'
+                'error' => 'Une erreur est survenue lors du traitement du paiement',
+                'message' => $e->getMessage()
             ], 500);
         }
     }
+
+    public function logPaymentError(Request $request)
+    {
+        Log::error('Payment processing error', $request->all());
+        return response()->json(['status' => 'logged']);
+    }
+    public function index()
+    {
+       return Inertia::render('Payment/Index');
+    }
+
 
     public function processQuestionCost(Request $request)
     {

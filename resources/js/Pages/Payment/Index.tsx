@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Head } from '@inertiajs/react';
+import { Head, usePage } from '@inertiajs/react';
 import { motion } from 'framer-motion';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Card, CardContent } from "@/Components/ui/card";
@@ -17,9 +17,10 @@ import { useToast } from "@/Components/ui/use-toast";
 import { Alert, AlertDescription } from "@/Components/ui/alert";
 import { loadScript } from "@paypal/paypal-js";
 
-// Constantes et configurations
 const CONVERSION_RATE = 655.957; // 1 euro en FCFA
 const PAYPAL_CLIENT_ID = import.meta.env.VITE_PAYPAL_CLIENT_ID;
+const PAYPAL_MODE = import.meta.env.VITE_PAYPAL_MODE || 'sandbox';
+
 function cn(...classes) {
     return classes.filter(Boolean).join(' ');
 }
@@ -56,7 +57,6 @@ const TOKEN_PACKS = [
     }
 ];
 
-// Composant pour les boutons de méthode de paiement
 const PaymentMethodButton = ({ icon: Icon, label, onClick, selected, disabled }) => (
     <Button
         variant="outline"
@@ -77,6 +77,7 @@ const PaymentMethodButton = ({ icon: Icon, label, onClick, selected, disabled })
 
 export default function Index({ auth }) {
     const { toast } = useToast();
+    const { csrf_token } = usePage().props;
     const [processingPayment, setProcessingPayment] = useState(null);
     const [countryCode, setCountryCode] = useState(null);
     const [paypalLoaded, setPaypalLoaded] = useState(false);
@@ -84,7 +85,6 @@ export default function Index({ auth }) {
     const [loadingCountry, setLoadingCountry] = useState(true);
     const [error, setError] = useState(null);
 
-    // Détection du pays
     useEffect(() => {
         fetch('https://ipapi.co/json/')
             .then(res => res.json())
@@ -100,29 +100,28 @@ export default function Index({ auth }) {
             .finally(() => setLoadingCountry(false));
     }, []);
 
-    // Initialisation de PayPal
     useEffect(() => {
         if (selectedPaymentMethod === 'paypal' && PAYPAL_CLIENT_ID) {
             loadScript({
                 "client-id": PAYPAL_CLIENT_ID,
                 currency: "EUR",
-                intent: "capture"
+                intent: "capture",
+                "enable-funding": "paylater,venmo",
+                "disable-funding": "card",
+                "data-react-paypal-script-id": "paypal-script",
+                environment: PAYPAL_MODE
             })
-                .then(() => setPaypalLoaded(true))
+                .then(() => {
+                    setPaypalLoaded(true);
+                    setError(null);
+                })
                 .catch(err => {
                     console.error("PayPal SDK failed to load", err);
                     setError("Impossible de charger PayPal. Veuillez réessayer plus tard.");
+                    setPaypalLoaded(false);
                 });
         }
     }, [selectedPaymentMethod]);
-
-    const getPrice = (priceEuros) => {
-        if (countryCode === 'CM') {
-            const priceFCFA = Math.round(priceEuros * CONVERSION_RATE);
-            return `${priceFCFA.toLocaleString()} FCFA`;
-        }
-        return `${priceEuros}€`;
-    };
 
     const handleMobileMoneyPurchase = async (pack) => {
         try {
@@ -133,7 +132,7 @@ export default function Index({ auth }) {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                    'X-CSRF-TOKEN': csrf_token
                 },
                 body: JSON.stringify({
                     currency: "XAF",
@@ -151,7 +150,7 @@ export default function Index({ auth }) {
             });
 
             if (!response.ok) {
-                throw new Error('Erreur lors de l\'initialisation du paiement');
+                throw new Error('Erreur lors de l'initialisation du paiement');
             }
 
             const paymentData = await response.json();
@@ -203,18 +202,20 @@ export default function Index({ auth }) {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
-                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                            'X-CSRF-TOKEN': csrf_token
                         },
                         body: JSON.stringify({
                             user_id: auth.user.id,
                             amount: pack.tokens + pack.bonusTokens,
                             payment_reference: order.id,
-                            payment_method: 'paypal'
+                            payment_method: 'paypal',
+                            order_data: order
                         })
                     });
 
                     if (!response.ok) {
-                        throw new Error('Erreur lors de la mise à jour du solde');
+                        const errorData = await response.json();
+                        throw new Error(errorData.message || 'Erreur lors de la mise à jour du solde');
                     }
 
                     toast({
@@ -228,9 +229,29 @@ export default function Index({ auth }) {
                     }, 2000);
                 } catch (error) {
                     console.error('Payment processing error:', error);
+
+                    // Log l'erreur
+                    try {
+                        await fetch('/api/log-payment-error', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRF-TOKEN': csrf_token
+                            },
+                            body: JSON.stringify({
+                                error: error.message,
+                                userId: auth.user.id,
+                                packId: pack.id,
+                                timestamp: new Date().toISOString()
+                            })
+                        });
+                    } catch (logError) {
+                        console.error('Error logging failed:', logError);
+                    }
+
                     toast({
-                        title: "Erreur",
-                        description: "Une erreur est survenue lors du traitement de votre paiement. Notre équipe a été notifiée.",
+                        title: "Erreur de paiement",
+                        description: "Une erreur est survenue lors de votre paiement. Notre équipe a été notifiée et vous contactera rapidement.",
                         variant: "destructive",
                     });
                 }
@@ -244,6 +265,14 @@ export default function Index({ auth }) {
                 });
             }
         });
+    };
+
+    const getPrice = (priceEuros) => {
+        if (countryCode === 'CM') {
+            const priceFCFA = Math.round(priceEuros * CONVERSION_RATE);
+            return `${priceFCFA.toLocaleString()} FCFA`;
+        }
+        return `${priceEuros}€`;
     };
 
     return (

@@ -9,6 +9,7 @@ use App\Models\Profession;
 use App\Models\User;
 use App\Models\Payment;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Inertia\Inertia;
 

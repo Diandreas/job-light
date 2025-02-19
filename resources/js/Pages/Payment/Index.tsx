@@ -1,10 +1,18 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Head } from '@inertiajs/react';
 import { motion } from 'framer-motion';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Card, CardContent } from "@/Components/ui/card";
 import { Button } from "@/Components/ui/button";
-import { Coins, Gift, Sparkles, CreditCard, Phone, AlertCircle } from 'lucide-react';
+import {
+    Coins,
+    Gift,
+    Sparkles,
+    CreditCard,
+    Phone,
+    AlertCircle,
+    ArrowUpRight
+} from 'lucide-react';
 import { useToast } from "@/Components/ui/use-toast";
 import { Alert, AlertDescription } from "@/Components/ui/alert";
 import { loadScript } from "@paypal/paypal-js";
@@ -69,14 +77,13 @@ const PaymentMethodButton = ({ icon: Icon, label, onClick, selected, disabled })
 export default function Index({ auth }) {
     const { toast } = useToast();
     const [processingPayment, setProcessingPayment] = useState(null);
-    const [countryCode, setCountryCode] = useState('US');
+    const [countryCode, setCountryCode] = useState(null);
     const [paypalLoaded, setPaypalLoaded] = useState(false);
     const [selectedPaymentMethod, setSelectedPaymentMethod] = useState(null);
     const [loadingCountry, setLoadingCountry] = useState(true);
     const [error, setError] = useState(null);
 
     useEffect(() => {
-        // Detect user's country
         fetch('https://ipapi.co/json/')
             .then(res => res.json())
             .then(data => {
@@ -86,6 +93,7 @@ export default function Index({ auth }) {
             .catch(() => {
                 setError("Impossible de détecter votre pays. Les prix seront affichés en Euros.");
                 setSelectedPaymentMethod('paypal');
+                setCountryCode('FR'); // Default to EUR pricing
             })
             .finally(() => setLoadingCountry(false));
     }, []);
@@ -95,7 +103,8 @@ export default function Index({ auth }) {
             loadScript({
                 //@ts-ignore
                 "client-id": PAYPAL_CLIENT_ID,
-                currency: countryCode === 'CM' ? 'XAF' : 'EUR'
+                currency: "EUR",
+                components: "buttons"
             })
                 .then(() => setPaypalLoaded(true))
                 .catch(err => {
@@ -103,7 +112,7 @@ export default function Index({ auth }) {
                     setError("Impossible de charger PayPal. Veuillez réessayer plus tard.");
                 });
         }
-    }, [selectedPaymentMethod, countryCode]);
+    }, [selectedPaymentMethod]);
 
     const getPrice = (priceEuros) => {
         if (countryCode === 'CM') {
@@ -118,10 +127,12 @@ export default function Index({ auth }) {
             setProcessingPayment(pack.id);
             const priceFCFA = Math.round(pack.priceEuros * CONVERSION_RATE);
 
-            const payment = await fetch('/api/notchpay/initialize', {
+            const response = await fetch('/api/notchpay/initialize', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
+                    //@ts-ignore
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
                 },
                 body: JSON.stringify({
                     currency: "XAF",
@@ -138,9 +149,16 @@ export default function Index({ auth }) {
                 })
             });
 
-            const paymentData = await payment.json();
+            if (!response.ok) {
+                throw new Error('Erreur lors de l\'initialisation du paiement');
+            }
+
+            const paymentData = await response.json();
+
             if (paymentData.authorization_url) {
                 window.location.href = paymentData.authorization_url;
+            } else {
+                throw new Error('URL de paiement non reçue');
             }
         } catch (error) {
             console.error('Payment error:', error);
@@ -157,10 +175,6 @@ export default function Index({ auth }) {
     const initializePayPalButtons = (pack) => {
         if (!paypalLoaded) return;
 
-        const price = countryCode === 'CM' ?
-            Math.round(pack.priceEuros * CONVERSION_RATE) :
-            pack.priceEuros;
-
         return window.paypal.Buttons({
             style: {
                 layout: 'vertical',
@@ -171,48 +185,65 @@ export default function Index({ auth }) {
             createOrder: (data, actions) => {
                 //@ts-ignore
                 return actions.order.create({
-                    // @ts-ignore
                     purchase_units: [{
                         amount: {
-                            value: price.toString(),
-                            currency_code: countryCode === 'CM' ? 'XAF' : 'EUR'
+                            value: pack.priceEuros.toString(),
+                            currency_code: "EUR"
                         },
-                        description: `${pack.tokens + pack.bonusTokens} tokens purchase`
+                        description: `${pack.tokens + pack.bonusTokens} tokens purchase`,
+                        custom_id: `tokens_${pack.id}_${auth.user.id}`
                     }]
                 });
             },
             onApprove: async (data, actions) => {
-                const order = await actions.order.capture();
-
                 try {
-                    // Update user's token balance
-                    await fetch('/api/update-wallet', {
+                    const order = await actions.order.capture();
+
+                    const response = await fetch('/api/update-wallet', {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
+                            //@ts-ignore
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
                         },
                         body: JSON.stringify({
                             user_id: auth.user.id,
-                            amount: pack.tokens + pack.bonusTokens
+                            amount: pack.tokens + pack.bonusTokens,
+                            payment_reference: order.id,
+                            payment_method: 'paypal'
                         })
                     });
 
+                    if (!response.ok) {
+                        throw new Error('Erreur lors de la mise à jour du solde');
+                    }
+
                     toast({
-                        title: "Paiement réussi",
+                        title: "Paiement réussi !",
                         description: `Vous avez reçu ${pack.tokens + pack.bonusTokens} jetons`,
                         //@ts-ignore
                         variant: "success",
                     });
 
-                    // Refresh the page after successful payment
-                    window.location.reload();
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 2000);
                 } catch (error) {
+                    console.error('Payment processing error:', error);
                     toast({
                         title: "Erreur",
-                        description: "Le paiement a réussi mais une erreur est survenue lors de la mise à jour de votre solde. Notre équipe a été notifiée.",
+                        description: "Une erreur est survenue lors du traitement de votre paiement. Notre équipe a été notifiée.",
                         variant: "destructive",
                     });
                 }
+            },
+            onError: (err) => {
+                console.error('PayPal error:', err);
+                toast({
+                    title: "Erreur PayPal",
+                    description: "Une erreur est survenue avec PayPal. Veuillez réessayer plus tard.",
+                    variant: "destructive",
+                });
             }
         });
     };
@@ -269,7 +300,7 @@ export default function Index({ auth }) {
                             <div className="max-w-md mx-auto mb-8">
                                 <div className="flex gap-4">
                                     {countryCode === 'CM' && (
-                                        // @ts-ignore
+                                        //@ts-ignore
                                         <PaymentMethodButton
                                             icon={Phone}
                                             label="Mobile Money"
@@ -341,6 +372,9 @@ export default function Index({ auth }) {
                                                     Total : {pack.tokens + pack.bonusTokens} jetons
                                                 </div>
                                             )}
+                                            <div className="text-sm text-gray-500 dark:text-gray-400">
+                                                Prix unitaire : {(pack.priceEuros / (pack.tokens + pack.bonusTokens) * 10).toFixed(2)}€ / 10 jetons
+                                            </div>
                                         </div>
 
                                         {selectedPaymentMethod === 'mobile' ? (
@@ -349,7 +383,8 @@ export default function Index({ auth }) {
                                                 disabled={processingPayment === pack.id}
                                                 className={cn(
                                                     "w-full bg-gradient-to-r shadow-lg",
-                                                    pack.color)}
+                                                    pack.color
+                                                )}
                                             >
                                                 {processingPayment === pack.id ? (
                                                     <motion.div
@@ -366,7 +401,7 @@ export default function Index({ auth }) {
                                             </Button>
                                         ) : (
                                             <div className="space-y-4">
-                                                {paypalLoaded && (
+                                                {paypalLoaded ? (
                                                     <div
                                                         id={`paypal-button-${pack.id}`}
                                                         ref={el => {
@@ -375,8 +410,7 @@ export default function Index({ auth }) {
                                                             }
                                                         }}
                                                     />
-                                                )}
-                                                {!paypalLoaded && (
+                                                ) : (
                                                     <div className="flex items-center justify-center h-12">
                                                         <motion.div
                                                             animate={{ rotate: 360 }}
@@ -399,6 +433,9 @@ export default function Index({ auth }) {
                             {countryCode === 'CM'
                                 ? "Les prix sont affichés en FCFA. Le paiement mobile est disponible via Orange Money et MTN Mobile Money."
                                 : "Les prix sont affichés en Euros. Le paiement est sécurisé via PayPal."}
+                        </p>
+                        <p className="mt-2">
+                            En cas de problème avec votre paiement, contactez notre support client.
                         </p>
                     </div>
                 </div>

@@ -10,188 +10,312 @@ class CompetencesSeeder extends Seeder
     public function run()
     {
         $competences = [
-            'Compétences techniques IT' => [
-                'Développement Web' => [
-                    'Frameworks Frontend' => [
-                        'Angular', 'React', 'Vue.js', 'Next.js', 'Nuxt.js',
-                        'Svelte', 'jQuery', 'Bootstrap', 'Tailwind CSS',
-                        'Material UI', 'Chakra UI', 'Redux', 'Vuex',
-                        'Alpine.js', 'Ember.js', 'Backbone.js'
-                    ],
-                    'Frameworks Backend' => [
-                        'Laravel', 'Symfony', 'Django', 'Flask',
-                        'Express.js', 'NestJS', 'Spring Boot', 'CodeIgniter',
-                        'Ruby on Rails', 'ASP.NET Core', 'FastAPI',
-                        'AdonisJS', 'Strapi', 'Fastify'
-                    ],
-                    'CMS' => [
-                        'WordPress', 'Drupal', 'Joomla', 'PrestaShop',
-                        'Shopify', 'Magento', 'WooCommerce', 'OpenCart',
-                        'MODX', 'October CMS'
-                    ]
-                ],
-                'Développement Mobile' => [
-                    'React Native', 'Flutter', 'Ionic', 'Xamarin',
-                    'PhoneGap', 'Cordova', 'Kotlin', 'Swift UI',
-                    'Java Android', 'Expo'
-                ],
-                'Design et UX' => [
-                    'Photoshop', 'Illustrator', 'InDesign', 'Figma',
-                    'UX Design', 'UI Design', 'Sketch', 'Adobe XD',
-                    'After Effects', 'Premier Pro'
-                ]
-            ],
-
-            'Compétences linguistiques' => [
-                'Langues internationales' => [
-                    'Anglais', 'Français', 'Allemand', 'Espagnol',
-                    'Italien', 'Portugais', 'Néerlandais', 'Arabe'
-                ],
-                'Langues nationales camerounaises' => [
-                    'Fulfulde', 'Ewondo', 'Douala', 'Bamiléké',
-                    'Bamoun', 'Bassa', 'Gbaya'
-                ],
-                'Communication professionnelle' => [
-                    'Rédaction technique', 'Communication orale',
-                    'Présentation publique', 'Négociation',
-                    'Médiation interculturelle'
-                ]
-            ],
-
-            'Compétences comportementales' => [
-                'Leadership' => [
-                    'Gestion d\'équipe', 'Prise de décision',
-                    'Délégation', 'Motivation d\'équipe',
-                    'Résolution de conflits', 'Coaching'
-                ],
-                'Soft Skills' => [
-                    'Intelligence émotionnelle', 'Adaptabilité',
-                    'Travail en équipe', 'Gestion du stress',
-                    'Créativité', 'Pensée critique'
-                ]
-            ],
-
-            'Compétences sectorielles' => [
-                'Agriculture et Élevage' => [
-                    'Culture du cacao', 'Culture du café',
-                    'Maraîchage', 'Culture vivrière',
-                    'Aviculture', 'Pisciculture',
-                    'Élevage bovin', 'Apiculture'
-                ],
-                'Artisanat et Métiers' => [
-                    'Couture', 'Menuiserie', 'Maçonnerie',
-                    'Électricité bâtiment', 'Plomberie',
-                    'Coiffure', 'Mécanique auto'
-                ],
-                'Commerce et Services' => [
-                    'Gestion de boutique', 'Commerce en ligne',
-                    'Marketing digital local', 'Mobile Money',
-                    'Gestion des stocks', 'Service client'
-                ]
-            ],
-
-            'Compétences numériques avancées' => [
-                'Data Science' => [
-                    'Machine Learning', 'Deep Learning', 'Python scientifique',
-                    'R', 'TensorFlow', 'PyTorch', 'Scikit-learn',
-                    'Analyse de données', 'Big Data', 'Data Mining'
-                ],
-                'DevOps' => [
-                    'Docker', 'Kubernetes', 'Jenkins',
-                    'GitLab CI', 'GitHub Actions', 'AWS',
-                    'Azure', 'Google Cloud', 'Linux'
-                ],
-                'Cybersécurité' => [
-                    'Sécurité réseau', 'Cryptographie',
-                    'Pentesting', 'Sécurité web',
-                    'Forensique numérique', 'OSINT'
-                ]
-            ],
-
-            'Compétences managériales' => [
-                'Gestion de projet' => [
-                    'Méthodologie Agile', 'Scrum', 'PMP',
-                    'Prince2', 'Kanban', 'Lean Management'
-                ],
-                'Management d\'entreprise' => [
-                    'Stratégie d\'entreprise', 'Gestion financière',
-                    'Ressources humaines', 'Marketing stratégique',
-                    'Gestion des risques', 'Innovation'
-                ]
-            ],
-
-            'Compétences commerciales' => [
-                'Vente et Marketing' => [
-                    'Techniques de vente', 'Marketing digital',
-                    'SEO/SEA', 'Social Media Marketing',
-                    'CRM', 'Analyse de marché'
-                ],
-                'Service Client' => [
-                    'Support client', 'Gestion des réclamations',
-                    'Service après-vente', 'Fidélisation client'
-                ]
-            ],
-
-            'Compétences industrielles' => [
-                'Production' => [
-                    'Lean Manufacturing', 'Contrôle qualité',
-                    'Maintenance industrielle', 'GPAO',
-                    'Six Sigma', '5S'
-                ],
-                'Qualité et Sécurité' => [
-                    'ISO 9001', 'HACCP', 'QHSE',
-                    'Prévention des risques', 'Audit qualité'
-                ]
-            ],
-
-            'Développement durable' => [
-                'Environnement' => [
-                    'Gestion des déchets', 'Énergies renouvelables',
-                    'Économie circulaire', 'Protection environnementale',
-                    'Audit environnemental'
-                ],
-                'RSE' => [
-                    'Responsabilité sociale', 'Commerce équitable',
-                    'Développement communautaire', 'Impact social'
-                ]
-            ],
-
-            'Innovation et Recherche' => [
-                'R&D' => [
-                    'Innovation produit', 'Recherche appliquée',
-                    'Prototypage', 'Veille technologique'
-                ],
-                'Méthodologie' => [
-                    'Design Thinking', 'Innovation frugale',
-                    'Recherche qualitative', 'Recherche quantitative'
-                ]
-            ]
+            ['name' => 'Angular', 'name_en' => 'Angular'],
+            ['name' => 'React', 'name_en' => 'React'],
+            ['name' => 'Vue.js', 'name_en' => 'Vue.js'],
+            ['name' => 'Next.js', 'name_en' => 'Next.js'],
+            ['name' => 'Nuxt.js', 'name_en' => 'Nuxt.js'],
+            ['name' => 'Svelte', 'name_en' => 'Svelte'],
+            ['name' => 'jQuery', 'name_en' => 'jQuery'],
+            ['name' => 'Bootstrap', 'name_en' => 'Bootstrap'],
+            ['name' => 'Tailwind CSS', 'name_en' => 'Tailwind CSS'],
+            ['name' => 'Material UI', 'name_en' => 'Material UI'],
+            ['name' => 'Chakra UI', 'name_en' => 'Chakra UI'],
+            ['name' => 'Redux', 'name_en' => 'Redux'],
+            ['name' => 'Vuex', 'name_en' => 'Vuex'],
+            ['name' => 'Alpine.js', 'name_en' => 'Alpine.js'],
+            ['name' => 'Ember.js', 'name_en' => 'Ember.js'],
+            ['name' => 'Backbone.js', 'name_en' => 'Backbone.js'],
+            ['name' => 'Laravel', 'name_en' => 'Laravel'],
+            ['name' => 'Symfony', 'name_en' => 'Symfony'],
+            ['name' => 'Django', 'name_en' => 'Django'],
+            ['name' => 'Flask', 'name_en' => 'Flask'],
+            ['name' => 'Express.js', 'name_en' => 'Express.js'],
+            ['name' => 'NestJS', 'name_en' => 'NestJS'],
+            ['name' => 'Spring Boot', 'name_en' => 'Spring Boot'],
+            ['name' => 'CodeIgniter', 'name_en' => 'CodeIgniter'],
+            ['name' => 'Ruby on Rails', 'name_en' => 'Ruby on Rails'],
+            ['name' => 'ASP.NET Core', 'name_en' => 'ASP.NET Core'],
+            ['name' => 'FastAPI', 'name_en' => 'FastAPI'],
+            ['name' => 'AdonisJS', 'name_en' => 'AdonisJS'],
+            ['name' => 'Strapi', 'name_en' => 'Strapi'],
+            ['name' => 'Fastify', 'name_en' => 'Fastify'],
+            ['name' => 'WordPress', 'name_en' => 'WordPress'],
+            ['name' => 'Drupal', 'name_en' => 'Drupal'],
+            ['name' => 'Joomla', 'name_en' => 'Joomla'],
+            ['name' => 'PrestaShop', 'name_en' => 'PrestaShop'],
+            ['name' => 'Shopify', 'name_en' => 'Shopify'],
+            ['name' => 'Magento', 'name_en' => 'Magento'],
+            ['name' => 'WooCommerce', 'name_en' => 'WooCommerce'],
+            ['name' => 'OpenCart', 'name_en' => 'OpenCart'],
+            ['name' => 'MODX', 'name_en' => 'MODX'],
+            ['name' => 'October CMS', 'name_en' => 'October CMS'],
+            ['name' => 'React Native', 'name_en' => 'React Native'],
+            ['name' => 'Flutter', 'name_en' => 'Flutter'],
+            ['name' => 'Ionic', 'name_en' => 'Ionic'],
+            ['name' => 'Xamarin', 'name_en' => 'Xamarin'],
+            ['name' => 'PhoneGap', 'name_en' => 'PhoneGap'],
+            ['name' => 'Cordova', 'name_en' => 'Cordova'],
+            ['name' => 'Kotlin', 'name_en' => 'Kotlin'],
+            ['name' => 'Swift UI', 'name_en' => 'Swift UI'],
+            ['name' => 'Java Android', 'name_en' => 'Java Android'],
+            ['name' => 'Expo', 'name_en' => 'Expo'],
+            ['name' => 'Photoshop', 'name_en' => 'Photoshop'],
+            ['name' => 'Illustrator', 'name_en' => 'Illustrator'],
+            ['name' => 'InDesign', 'name_en' => 'InDesign'],
+            ['name' => 'Figma', 'name_en' => 'Figma'],
+            ['name' => 'UX Design', 'name_en' => 'UX Design'],
+            ['name' => 'UI Design', 'name_en' => 'UI Design'],
+            ['name' => 'Sketch', 'name_en' => 'Sketch'],
+            ['name' => 'Adobe XD', 'name_en' => 'Adobe XD'],
+            ['name' => 'After Effects', 'name_en' => 'After Effects'],
+            ['name' => 'Premier Pro', 'name_en' => 'Premier Pro'],
+            ['name' => 'Anglais', 'name_en' => 'English'],
+            ['name' => 'Français', 'name_en' => 'French'],
+            ['name' => 'Allemand', 'name_en' => 'German'],
+            ['name' => 'Espagnol', 'name_en' => 'Spanish'],
+            ['name' => 'Italien', 'name_en' => 'Italian'],
+            ['name' => 'Portugais', 'name_en' => 'Portuguese'],
+            ['name' => 'Néerlandais', 'name_en' => 'Dutch'],
+            ['name' => 'Arabe', 'name_en' => 'Arabic'],
+            ['name' => 'Fulfulde', 'name_en' => 'Fulfulde'],
+            ['name' => 'Ewondo', 'name_en' => 'Ewondo'],
+            ['name' => 'Douala', 'name_en' => 'Douala'],
+            ['name' => 'Bamiléké', 'name_en' => 'Bamileke'],
+            ['name' => 'Bamoun', 'name_en' => 'Bamoun'],
+            ['name' => 'Bassa', 'name_en' => 'Bassa'],
+            ['name' => 'Gbaya', 'name_en' => 'Gbaya'],
+            ['name' => 'Rédaction technique', 'name_en' => 'Technical Writing'],
+            ['name' => 'Communication orale', 'name_en' => 'Oral Communication'],
+            ['name' => 'Présentation publique', 'name_en' => 'Public Speaking'],
+            ['name' => 'Négociation', 'name_en' => 'Negotiation'],
+            ['name' => 'Médiation interculturelle', 'name_en' => 'Intercultural Mediation'],
+            ['name' => 'Gestion d\'équipe', 'name_en' => 'Team Management'],
+            ['name' => 'Prise de décision', 'name_en' => 'Decision Making'],
+            ['name' => 'Délégation', 'name_en' => 'Delegation'],
+            ['name' => 'Motivation d\'équipe', 'name_en' => 'Team Motivation'],
+            ['name' => 'Résolution de conflits', 'name_en' => 'Conflict Resolution'],
+            ['name' => 'Coaching', 'name_en' => 'Coaching'],
+            ['name' => 'Intelligence émotionnelle', 'name_en' => 'Emotional Intelligence'],
+            ['name' => 'Adaptabilité', 'name_en' => 'Adaptability'],
+            ['name' => 'Travail en équipe', 'name_en' => 'Teamwork'],
+            ['name' => 'Gestion du stress', 'name_en' => 'Stress Management'],
+            ['name' => 'Créativité', 'name_en' => 'Creativity'],
+            ['name' => 'Pensée critique', 'name_en' => 'Critical Thinking'],
+            ['name' => 'Culture du cacao', 'name_en' => 'Cocoa Farming'],
+            ['name' => 'Culture du café', 'name_en' => 'Coffee Farming'],
+            ['name' => 'Maraîchage', 'name_en' => 'Vegetable Farming'],
+            ['name' => 'Culture vivrière', 'name_en' => 'Subsistence Farming'],
+            ['name' => 'Aviculture', 'name_en' => 'Poultry Farming'],
+            ['name' => 'Pisciculture', 'name_en' => 'Fish Farming'],
+            ['name' => 'Élevage bovin', 'name_en' => 'Cattle Farming'],
+            ['name' => 'Apiculture', 'name_en' => 'Beekeeping'],
+            ['name' => 'Couture', 'name_en' => 'Sewing'],
+            ['name' => 'Menuiserie', 'name_en' => 'Carpentry'],
+            ['name' => 'Maçonnerie', 'name_en' => 'Masonry'],
+            ['name' => 'Électricité bâtiment', 'name_en' => 'Building Electricity'],
+            ['name' => 'Plomberie', 'name_en' => 'Plumbing'],
+            ['name' => 'Coiffure', 'name_en' => 'Hairdressing'],
+            ['name' => 'Mécanique auto', 'name_en' => 'Auto Mechanics'],
+            ['name' => 'Gestion de boutique', 'name_en' => 'Shop Management'],
+            ['name' => 'Commerce en ligne', 'name_en' => 'E-commerce'],
+            ['name' => 'Marketing digital local', 'name_en' => 'Local Digital Marketing'],
+            ['name' => 'Mobile Money', 'name_en' => 'Mobile Money'],
+            ['name' => 'Gestion des stocks', 'name_en' => 'Inventory Management'],
+            ['name' => 'Service client', 'name_en' => 'Customer Service'],
+            ['name' => 'Machine Learning', 'name_en' => 'Machine Learning'],
+            ['name' => 'Deep Learning', 'name_en' => 'Deep Learning'],
+            ['name' => 'Python scientifique', 'name_en' => 'Scientific Python'],
+            ['name' => 'R', 'name_en' => 'R'],
+            ['name' => 'TensorFlow', 'name_en' => 'TensorFlow'],
+            ['name' => 'PyTorch', 'name_en' => 'PyTorch'],
+            ['name' => 'Scikit-learn', 'name_en' => 'Scikit-learn'],
+            ['name' => 'Analyse de données', 'name_en' => 'Data Analysis'],
+            ['name' => 'Big Data', 'name_en' => 'Big Data'],
+            ['name' => 'Data Mining', 'name_en' => 'Data Mining'],
+            ['name' => 'Docker', 'name_en' => 'Docker'],
+            ['name' => 'Kubernetes', 'name_en' => 'Kubernetes'],
+            ['name' => 'Jenkins', 'name_en' => 'Jenkins'],
+            ['name' => 'GitLab CI', 'name_en' => 'GitLab CI'],
+            ['name' => 'GitHub Actions', 'name_en' => 'GitHub Actions'],
+            ['name' => 'AWS', 'name_en' => 'AWS'],
+            ['name' => 'Azure', 'name_en' => 'Azure'],
+            ['name' => 'Google Cloud', 'name_en' => 'Google Cloud'],
+            ['name' => 'Linux', 'name_en' => 'Linux'],
+            ['name' => 'Sécurité réseau', 'name_en' => 'Network Security'],
+            ['name' => 'Cryptographie', 'name_en' => 'Cryptography'],
+            ['name' => 'Pentesting', 'name_en' => 'Pentesting'],
+            ['name' => 'Sécurité web', 'name_en' => 'Web Security'],
+            ['name' => 'Forensique numérique', 'name_en' => 'Digital Forensics'],
+            ['name' => 'OSINT', 'name_en' => 'OSINT'],
+            ['name' => 'Méthodologie Agile', 'name_en' => 'Agile Methodology'],
+            ['name' => 'Scrum', 'name_en' => 'Scrum'],
+            ['name' => 'PMP', 'name_en' => 'PMP'],
+            ['name' => 'Prince2', 'name_en' => 'Prince2'],
+            ['name' => 'Kanban', 'name_en' => 'Kanban'],
+            ['name' => 'Lean Management', 'name_en' => 'Lean Management'],
+            ['name' => 'Stratégie d\'entreprise', 'name_en' => 'Business Strategy'],
+            ['name' => 'Gestion financière', 'name_en' => 'Financial Management'],
+            ['name' => 'Ressources humaines', 'name_en' => 'Human Resources'],
+            ['name' => 'Marketing stratégique', 'name_en' => 'Strategic Marketing'],
+            ['name' => 'Gestion des risques', 'name_en' => 'Risk Management'],
+            ['name' => 'Innovation', 'name_en' => 'Innovation'],
+            ['name' => 'Techniques de vente', 'name_en' => 'Sales Techniques'],
+            ['name' => 'Marketing digital', 'name_en' => 'Digital Marketing'],
+            ['name' => 'SEO/SEA', 'name_en' => 'SEO/SEA'],
+            ['name' => 'Social Media Marketing', 'name_en' => 'Social Media Marketing'],
+            ['name' => 'CRM', 'name_en' => 'CRM'],
+            ['name' => 'Analyse de marché', 'name_en' => 'Market Analysis'],
+            ['name' => 'Support client', 'name_en' => 'Customer Support'],
+            ['name' => 'Gestion des réclamations', 'name_en' => 'Complaint Management'],
+            ['name' => 'Service après-vente', 'name_en' => 'After-Sales Service'],
+            ['name' => 'Fidélisation client', 'name_en' => 'Customer Loyalty'],
+            ['name' => 'Lean Manufacturing', 'name_en' => 'Lean Manufacturing'],
+            ['name' => 'Contrôle qualité', 'name_en' => 'Quality Control'],
+            ['name' => 'Maintenance industrielle', 'name_en' => 'Industrial Maintenance'],
+            ['name' => 'GPAO', 'name_en' => 'GPAO'],
+            ['name' => 'Six Sigma', 'name_en' => 'Six Sigma'],
+            ['name' => '5S', 'name_en' => '5S'],
+            ['name' => 'ISO 9001', 'name_en' => 'ISO 9001'],
+            ['name' => 'HACCP', 'name_en' => 'HACCP'],
+            ['name' => 'QHSE', 'name_en' => 'QHSE'],
+            ['name' => 'Prévention des risques', 'name_en' => 'Risk Prevention'],
+            ['name' => 'Audit qualité', 'name_en' => 'Quality Audit'],
+            ['name' => 'Gestion des déchets', 'name_en' => 'Waste Management'],
+            ['name' => 'Énergies renouvelables', 'name_en' => 'Renewable Energies'],
+            ['name' => 'Économie circulaire', 'name_en' => 'Circular Economy'],
+            ['name' => 'Protection environnementale', 'name_en' => 'Environmental Protection'],
+            ['name' => 'Audit environnemental', 'name_en' => 'Environmental Audit'],
+            ['name' => 'Responsabilité sociale', 'name_en' => 'Social Responsibility'],
+            ['name' => 'Commerce équitable', 'name_en' => 'Fair Trade'],
+            ['name' => 'Développement communautaire', 'name_en' => 'Community Development'],
+            ['name' => 'Impact social', 'name_en' => 'Social Impact'],
+            ['name' => 'Innovation produit', 'name_en' => 'Product Innovation'],
+            ['name' => 'Recherche appliquée', 'name_en' => 'Applied Research'],
+            ['name' => 'Prototypage', 'name_en' => 'Prototyping'],
+            ['name' => 'Veille technologique', 'name_en' => 'Technology Watch'],
+            ['name' => 'Design Thinking', 'name_en' => 'Design Thinking'],
+            ['name' => 'Innovation frugale', 'name_en' => 'Frugal Innovation'],
+            ['name' => 'Recherche qualitative', 'name_en' => 'Qualitative Research'],
+            ['name' => 'Recherche quantitative', 'name_en' => 'Quantitative Research'],
+            ['name' => 'Aide communautaire', 'name_en' => 'Community Service'],
+            ['name' => 'Soutien scolaire', 'name_en' => 'Tutoring'],
+            ['name' => 'Protection animale', 'name_en' => 'Animal Welfare'],
+            ['name' => 'Actions environnementales', 'name_en' => 'Environmental Actions'],
+            ['name' => 'Animation jeunesse', 'name_en' => 'Youth Activities'],
+            ['name' => 'Organisation d\'événements', 'name_en' => 'Event Planning'],
+            ['name' => 'Animation culturelle', 'name_en' => 'Cultural Activities'],
+            ['name' => 'Théâtre communautaire', 'name_en' => 'Community Theater'],
+            ['name' => 'Stylisme', 'name_en' => 'Fashion Design'],
+            ['name' => 'Mode traditionnelle', 'name_en' => 'Traditional Fashion'],
+            ['name' => 'Design de mode', 'name_en' => 'Fashion Design'],
+            ['name' => 'Création de pagnes', 'name_en' => 'Traditional Cloth Making'],
+            ['name' => 'Coiffure traditionnelle', 'name_en' => 'Traditional Hairstyling'],
+            ['name' => 'Soins naturels', 'name_en' => 'Natural Beauty Care'],
+            ['name' => 'Maquillage', 'name_en' => 'Makeup'],
+            ['name' => 'Art corporel traditionnel', 'name_en' => 'Traditional Body Art'],
+            ['name' => 'Jouer d\'un instrument', 'name_en' => 'Playing an Instrument'],
+            ['name' => 'Chant', 'name_en' => 'Singing'],
+            ['name' => 'Composition musicale', 'name_en' => 'Music Composition'],
+            ['name' => 'DJ-ing', 'name_en' => 'DJ-ing'],
+            ['name' => 'Production musicale', 'name_en' => 'Music Production'],
+            ['name' => 'Chorale', 'name_en' => 'Choir'],
+            ['name' => 'Percussion traditionnelle', 'name_en' => 'Traditional Percussion'],
+            ['name' => 'Danse moderne', 'name_en' => 'Modern Dance'],
+            ['name' => 'Danse traditionnelle', 'name_en' => 'Traditional Dance'],
+            ['name' => 'Ballet', 'name_en' => 'Ballet'],
+            ['name' => 'Danse contemporaine', 'name_en' => 'Contemporary Dance'],
+            ['name' => 'Danses urbaines', 'name_en' => 'Urban Dances'],
+            ['name' => 'Peinture', 'name_en' => 'Painting'],
+            ['name' => 'Dessin', 'name_en' => 'Drawing'],
+            ['name' => 'Sculpture', 'name_en' => 'Sculpture'],
+            ['name' => 'Photographie', 'name_en' => 'Photography'],
+            ['name' => 'Art numérique', 'name_en' => 'Digital Art'],
+            ['name' => 'Artisanat traditionnel', 'name_en' => 'Traditional Crafts'],
+            ['name' => 'Poterie', 'name_en' => 'Pottery'],
+            ['name' => 'Lecture', 'name_en' => 'Reading'],
+            ['name' => 'Écriture créative', 'name_en' => 'Creative Writing'],
+            ['name' => 'Poésie', 'name_en' => 'Poetry'],
+            ['name' => 'Blog', 'name_en' => 'Blogging'],
+            ['name' => 'Journal intime', 'name_en' => 'Journaling'],
+            ['name' => 'Storytelling', 'name_en' => 'Storytelling'],
+            ['name' => 'Judo', 'name_en' => 'Judo'],
+            ['name' => 'Karaté', 'name_en' => 'Karate'],
+            ['name' => 'Taekwondo', 'name_en' => 'Taekwondo'],
+            ['name' => 'Kung-fu', 'name_en' => 'Kung Fu'],
+            ['name' => 'Aïkido', 'name_en' => 'Aikido'],
+            ['name' => 'Viet Vo Dao', 'name_en' => 'Viet Vo Dao'],
+            ['name' => 'Boxe anglaise', 'name_en' => 'Boxing'],
+            ['name' => 'Boxe chinoise (Wushu)', 'name_en' => 'Chinese Boxing (Wushu)'],
+            ['name' => 'Kick-boxing', 'name_en' => 'Kickboxing'],
+            ['name' => 'Full contact', 'name_en' => 'Full Contact'],
+            ['name' => 'MMA (Mixed Martial Arts)', 'name_en' => 'MMA (Mixed Martial Arts)'],
+            ['name' => 'Nanbudo', 'name_en' => 'Nanbudo'],
+            ['name' => 'Yoseikan Budo', 'name_en' => 'Yoseikan Budo'],
+            ['name' => 'Football', 'name_en' => 'Soccer'],
+            ['name' => 'Basketball', 'name_en' => 'Basketball'],
+            ['name' => 'Volleyball', 'name_en' => 'Volleyball'],
+            ['name' => 'Rugby', 'name_en' => 'Rugby'],
+            ['name' => 'Handball', 'name_en' => 'Handball'],
+            ['name' => 'Athlétisme', 'name_en' => 'Athletics'],
+            ['name' => 'Natation', 'name_en' => 'Swimming'],
+            ['name' => 'Tennis', 'name_en' => 'Tennis'],
+            ['name' => 'Gymnastique', 'name_en' => 'Gymnastics'],
+            ['name' => 'Musculation', 'name_en' => 'Weightlifting'],
+            ['name' => 'Course à pied', 'name_en' => 'Running'],
+            ['name' => 'Yoga', 'name_en' => 'Yoga'],
+            ['name' => 'Cyclisme', 'name_en' => 'Cycling'],
+            ['name' => 'Lutte traditionnelle', 'name_en' => 'Traditional Wrestling'],
+            ['name' => 'Course de pirogues', 'name_en' => 'Canoe Racing'],
+            ['name' => 'Jeux traditionnels africains', 'name_en' => 'Traditional African Games'],
+            ['name' => 'Jardinage urbain', 'name_en' => 'Urban Gardening'],
+            ['name' => 'Horticulture', 'name_en' => 'Horticulture'],
+            ['name' => 'Permaculture', 'name_en' => 'Permaculture'],
+            ['name' => 'Jardinage d\'intérieur', 'name_en' => 'Indoor Gardening'],
+            ['name' => 'Culture potagère', 'name_en' => 'Vegetable Gardening'],
+            ['name' => 'Randonnée', 'name_en' => 'Hiking'],
+            ['name' => 'Camping', 'name_en' => 'Camping'],
+            ['name' => 'Observation des oiseaux', 'name_en' => 'Birdwatching'],
+            ['name' => 'Pêche', 'name_en' => 'Fishing'],
+            ['name' => 'Chasse traditionnelle', 'name_en' => 'Traditional Hunting'],
+            ['name' => 'Photographie nature', 'name_en' => 'Nature Photography'],
+            ['name' => 'Création de contenu YouTube', 'name_en' => 'YouTube Content Creation'],
+            ['name' => 'Streaming', 'name_en' => 'Streaming'],
+            ['name' => 'Podcast', 'name_en' => 'Podcasting'],
+            ['name' => 'Montage vidéo', 'name_en' => 'Video Editing'],
+            ['name' => 'Animation', 'name_en' => 'Animation'],
+            ['name' => 'Philatélie', 'name_en' => 'Stamp Collecting'],
+            ['name' => 'Numismatique', 'name_en' => 'Coin Collecting'],
+            ['name' => 'Collection d\'art', 'name_en' => 'Art Collecting'],
+            ['name' => 'Collection de livres', 'name_en' => 'Book Collecting'],
+            ['name' => 'Collection d\'objets traditionnels', 'name_en' => 'Traditional Objects Collecting'],
+            ['name' => 'Échecs', 'name_en' => 'Chess'],
+            ['name' => 'Scrabble', 'name_en' => 'Scrabble'],
+            ['name' => 'Jeux de cartes traditionnels', 'name_en' => 'Traditional Card Games'],
+            ['name' => 'Awale', 'name_en' => 'Awale'],
+            ['name' => 'Jeux de stratégie africains', 'name_en' => 'African Strategy Games'],
+            ['name' => 'Méditation', 'name_en' => 'Meditation'],
+            ['name' => 'Relaxation', 'name_en' => 'Relaxation'],
+            ['name' => 'Sophrologie', 'name_en' => 'Sophrology'],
+            ['name' => 'Pratiques spirituelles traditionnelles', 'name_en' => 'Traditional Spiritual Practices'],
+            ['name' => 'Apprentissage des langues', 'name_en' => 'Language Learning'],
+            ['name' => 'Étude d\'instruments traditionnels', 'name_en' => 'Traditional Instrument Study'],
+            ['name' => 'Histoire locale', 'name_en' => 'Local History'],
+            ['name' => 'Généalogie', 'name_en' => 'Genealogy'],
+            ['name' => 'Upcycling', 'name_en' => 'Upcycling'],
+            ['name' => 'Décoration d\'intérieur', 'name_en' => 'Home Decor'],
+            ['name' => 'Rénovation', 'name_en' => 'Renovation'],
+            ['name' => 'Création de bijoux', 'name_en' => 'Jewelry Making']
         ];
 
-        foreach ($competences as $categorie => $sousCategories) {
-            foreach ($sousCategories as $sousCategorie => $competencesList) {
-                if (is_array($competencesList)) {
-                    foreach ($competencesList as $key => $value) {
-                        if (is_array($value)) {
-                            foreach ($value as $competence) {
-                                DB::table('competences')->insert([
-                                    'name' => $competence,
-                                    'description' => "$key - $sousCategorie",
-                                    'created_at' => now(),
-                                    'updated_at' => now()
-                                ]);
-                            }
-                        } else {
-                            DB::table('competences')->insert([
-                                'name' => $value,
-                                'description' => "$sousCategorie - $categorie",
-                                'created_at' => now(),
-                                'updated_at' => now()
-                            ]);
-                        }
-                    }
-                }
-            }
+        foreach ($competences as $competence) {
+            DB::table('competences')->insert([
+                'name' => $competence['name'],
+                'name_en' => $competence['name_en'],
+                'description' => "Compétence dans le domaine de {$competence['name']}",
+                'created_at' => now(),
+                'updated_at' => now()
+            ]);
         }
     }
 }

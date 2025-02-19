@@ -20,12 +20,31 @@ class PaymentController extends Controller
     }
     public function updateWallet(Request $request)
     {
-        $user = User::findOrFail($request->user_id);
-        $user->wallet_balance += $request->amount;
-        $user->save();
+        try {
+            $user = User::findOrFail($request->user_id);
+            $payment = Payment::create([
+                'user_id' => $user->id,
+                'amount' => $request->amount,
+                'reference' => $request->payment_reference,
+                'payment_method' => $request->payment_method,
+                'status' => 'completed'
+            ]);
 
-        return response()->json(['success' => true, 'balance' => $user->wallet_balance]);
+            $user->wallet_balance += $request->amount;
+            $user->save();
+
+            return response()->json([
+                'success' => true,
+                'balance' => $user->wallet_balance
+            ]);
+        } catch (\Exception $e) {
+            \Log::error('Wallet update error: ' . $e->getMessage());
+            return response()->json([
+                'error' => 'Failed to update wallet'
+            ], 500);
+        }
     }
+
     public function processQuestionCost(Request $request)
     {
         $user = User::findOrFail($request->user_id);

@@ -17,8 +17,9 @@ import { useToast } from "@/Components/ui/use-toast";
 import { Alert, AlertDescription } from "@/Components/ui/alert";
 import { loadScript } from "@paypal/paypal-js";
 
+// Constantes et configurations
 const CONVERSION_RATE = 655.957; // 1 euro en FCFA
-const PAYPAL_CLIENT_ID = import.meta.env.VITE_PAYPAL_CLIENT_ID;
+const PAYPAL_CLIENT_ID = process.env.VITE_PAYPAL_CLIENT_ID || 'YOUR_PAYPAL_CLIENT_ID'; // Assurez-vous d'avoir configuré ceci dans .env
 
 function cn(...classes) {
     return classes.filter(Boolean).join(' ');
@@ -56,6 +57,7 @@ const TOKEN_PACKS = [
     }
 ];
 
+// Composant pour les boutons de méthode de paiement
 const PaymentMethodButton = ({ icon: Icon, label, onClick, selected, disabled }) => (
     <Button
         variant="outline"
@@ -83,6 +85,7 @@ export default function Index({ auth }) {
     const [loadingCountry, setLoadingCountry] = useState(true);
     const [error, setError] = useState(null);
 
+    // Détection du pays
     useEffect(() => {
         fetch('https://ipapi.co/json/')
             .then(res => res.json())
@@ -93,18 +96,18 @@ export default function Index({ auth }) {
             .catch(() => {
                 setError("Impossible de détecter votre pays. Les prix seront affichés en Euros.");
                 setSelectedPaymentMethod('paypal');
-                setCountryCode('FR'); // Default to EUR pricing
+                setCountryCode('FR');
             })
             .finally(() => setLoadingCountry(false));
     }, []);
 
+    // Initialisation de PayPal
     useEffect(() => {
-        if (selectedPaymentMethod === 'paypal') {
+        if (selectedPaymentMethod === 'paypal' && PAYPAL_CLIENT_ID) {
             loadScript({
-                //@ts-ignore
                 "client-id": PAYPAL_CLIENT_ID,
                 currency: "EUR",
-                components: "buttons"
+                intent: "capture"
             })
                 .then(() => setPaypalLoaded(true))
                 .catch(err => {
@@ -131,7 +134,6 @@ export default function Index({ auth }) {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    //@ts-ignore
                     'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
                 },
                 body: JSON.stringify({
@@ -150,7 +152,7 @@ export default function Index({ auth }) {
             });
 
             if (!response.ok) {
-                throw new Error('Erreur lors de l\'initialisation du paiement');
+                throw new Error('Erreur lors de l'initialisation du paiement');
             }
 
             const paymentData = await response.json();
@@ -173,7 +175,7 @@ export default function Index({ auth }) {
     };
 
     const initializePayPalButtons = (pack) => {
-        if (!paypalLoaded) return;
+        if (!paypalLoaded || !window.paypal) return null;
 
         return window.paypal.Buttons({
             style: {
@@ -183,7 +185,6 @@ export default function Index({ auth }) {
                 label: 'pay'
             },
             createOrder: (data, actions) => {
-                //@ts-ignore
                 return actions.order.create({
                     purchase_units: [{
                         amount: {
@@ -203,7 +204,6 @@ export default function Index({ auth }) {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
-                            //@ts-ignore
                             'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
                         },
                         body: JSON.stringify({
@@ -221,7 +221,6 @@ export default function Index({ auth }) {
                     toast({
                         title: "Paiement réussi !",
                         description: `Vous avez reçu ${pack.tokens + pack.bonusTokens} jetons`,
-                        //@ts-ignore
                         variant: "success",
                     });
 
@@ -300,7 +299,6 @@ export default function Index({ auth }) {
                             <div className="max-w-md mx-auto mb-8">
                                 <div className="flex gap-4">
                                     {countryCode === 'CM' && (
-                                        //@ts-ignore
                                         <PaymentMethodButton
                                             icon={Phone}
                                             label="Mobile Money"
@@ -308,7 +306,6 @@ export default function Index({ auth }) {
                                             selected={selectedPaymentMethod === 'mobile'}
                                         />
                                     )}
-                                    {/*@ts-ignore*/}
                                     <PaymentMethodButton
                                         icon={CreditCard}
                                         label="PayPal"
@@ -404,9 +401,13 @@ export default function Index({ auth }) {
                                                 {paypalLoaded ? (
                                                     <div
                                                         id={`paypal-button-${pack.id}`}
+                                                        className="w-full"
                                                         ref={el => {
                                                             if (el && !el.hasChildNodes()) {
-                                                                initializePayPalButtons(pack).render(el);
+                                                                const buttons = initializePayPalButtons(pack);
+                                                                if (buttons) {
+                                                                    buttons.render(el);
+                                                                }
                                                             }
                                                         }}
                                                     />
@@ -433,9 +434,6 @@ export default function Index({ auth }) {
                             {countryCode === 'CM'
                                 ? "Les prix sont affichés en FCFA. Le paiement mobile est disponible via Orange Money et MTN Mobile Money."
                                 : "Les prix sont affichés en Euros. Le paiement est sécurisé via PayPal."}
-                        </p>
-                        <p className="mt-2">
-                            En cas de problème avec votre paiement, contactez notre support client.
                         </p>
                     </div>
                 </div>

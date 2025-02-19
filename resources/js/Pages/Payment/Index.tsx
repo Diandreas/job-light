@@ -150,7 +150,7 @@ export default function Index({ auth }) {
             });
 
             if (!response.ok) {
-                throw new Error('Erreur lors de l'initialisation du paiement');
+                throw new Error('Erreur lors de l\'initialisation du paiement');
             }
 
             const paymentData = await response.json();

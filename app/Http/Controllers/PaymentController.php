@@ -220,9 +220,27 @@ class PaymentController extends Controller
 
     public function index()
     {
-       return Inertia::render('Payment/Index');
-    }
+        $paypalConfig = [
+            'clientId' => config('paypal.client_id'),
+            'mode' => config('paypal.mode'),
+        ];
 
+        // Ajout de logging pour debug
+        Log::info('PayPal Config:', [
+            'config' => $paypalConfig,
+            'raw_client_id' => env('PAYPAL_CLIENT_ID'),
+            'config_client_id' => config('paypal.client_id'),
+        ]);
+
+        // Vérification des configurations
+        if (empty($paypalConfig['clientId'])) {
+            Log::error('PayPal client ID is missing');
+        }
+
+        return Inertia::render('Payment/Index', [
+            'paypalConfig' => $paypalConfig,
+        ]);
+    }
 
     public function processQuestionCost(Request $request)
     {

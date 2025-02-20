@@ -13,6 +13,7 @@ use App\Http\Controllers\{AddressController,
     HobbyController,
     LanguageController,
     PaymentController,
+    PayPalController,
     PersonalInformationController,
     PortfolioController,
     ProfessionCategoryController,
@@ -38,8 +39,8 @@ Route::post('/api/cv/analyze', [CareerAdvisorController::class, 'analyzeCV'])
     ->middleware(['auth']);
 
 
-Route::get('/payment', [PaymentController::class, 'index'])->name('payment.index');
-// Career Advisor Routes
+Route::post('/api/paypal/capture-payment', [PayPalController::class, 'capturePayment'])
+    ->middleware(['auth']);// Career Advisor Routes
 Route::prefix('career-advisor')->group(function () {
     Route::get('/', [CareerAdvisorController::class, 'index'])->name('career-advisor.index');
     Route::get('/chats', [CareerAdvisorController::class, 'getUserChats'])->name('career-advisor.chats');
@@ -63,13 +64,7 @@ Route::prefix('api')->middleware(['auth'])->group(function () {
 Route::middleware(['auth'])->group(function () {
     Route::post('/career-advisor/export', [CareerAdvisorController::class, 'export'])
         ->name('career-advisor.export');
-    Route::post('/api/process-question-cost', [PaymentController::class, 'processQuestionCost']);
-    Route::get('/api/check-download-status/{modelId}', [PaymentController::class, 'checkDownloadStatus']);
-        Route::post('/api/update-wallet', [PaymentController::class, 'updateWallet']);
-        Route::post('/api/process-download', [PaymentController::class, 'processDownload']);
-        Route::post('/api/notchpay/callback', [PaymentController::class, 'handleCallback']);
-        Route::get('/api/wallet/balance', [PaymentController::class, 'getBalance']);
-        Route::post('/api/notchpay/webhook', [PaymentController::class, 'webhook'])->name('notchpay.webhook');
+
         Route::get('/portfolio', [PortfolioController::class, 'index'])->name('portfolio.index');
     Route::get('/portfolio/edit', [PortfolioController::class, 'edit'])->name('portfolio.edit');
     Route::put('/portfolio', [PortfolioController::class, 'update'])->name('portfolio.update');
@@ -102,16 +97,13 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     // Experiences
     Route::resource('experiences', ExperienceController::class)->except(['show']);
-    Route::put('/api/wallet/update', [PaymentController::class, 'update'])
-        ->name('wallet.update');
+
     // User Hobbies
     Route::get('/user-hobbies', [UserHobbyController::class, 'index'])->name('user-hobbies.index');
     Route::get('/user-hobbies/create', [UserHobbyController::class, 'create'])->name('user-hobbies.create');
     Route::post('/user-hobbies', [UserHobbyController::class, 'store'])->name('user-hobbies.store');
     Route::delete('/user-hobbies/{user_id}/{hobby_id}', [UserHobbyController::class, 'destroy'])->name('user-hobbies.destroy');
-    Route::post('/api/log-payment-error', [PaymentController::class, 'logPaymentError'])
-        ->name('payment.log-error')
-        ->middleware('auth');
+
     // User Competences
 //    Route::resource('user-competences', UserCompetenceController::class)->except(['edit', 'update', 'show']);
 

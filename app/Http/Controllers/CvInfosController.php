@@ -160,37 +160,78 @@ class CvInfosController extends Controller
             $experienceArray['references'] = $experience->references->map(function ($reference) {
                 return [
                     'id' => $reference->id,
-                    'name' => $reference->name,
-                    'function' => $reference->function,
-                    'email' => $reference->email,
-                    'telephone' => $reference->telephone
+                    'name' => $reference->name ?? '',
+                    'function' => $reference->function ?? '',
+                    'email' => $reference->email ?? '',
+                    'telephone' => $reference->telephone ?? ''
                 ];
             })->toArray();
             return $experienceArray;
         })->toArray();
 
+        // Determine professions based on full_profession
+        $professions = [];
+        if (!empty($user->full_profession)) {
+            $professions = [[
+                'id' => 0,
+                'name' => $user->full_profession,
+                'name_en' => $user->full_profession,
+                'description' => null,
+                'category_id' => null
+            ]];
+        } else {
+            $professions = $user->profession()
+                ->select(['id', 'name', 'name_en', 'description', 'category_id'])
+                ->take(2)
+                ->get()
+                ->map(function($profession) {
+                    return [
+                        'id' => $profession->id,
+                        'name' => $profession->name ?? '',
+                        'name_en' => $profession->name_en ?? '',
+                        'description' => $profession->description ?? '',
+                        'category_id' => $profession->category_id
+                    ];
+                })
+                ->toArray();
+        }
+
         $baseInfo = [
-            'hobbies' => $user->hobbies()->select(['id', 'name', 'name_en'])->get()->toArray(),
-            'competences' => $user->competences()->select(['id', 'name', 'name_en', 'description'])->get()->toArray(),
+            'hobbies' => collect($user->hobbies()->select(['id', 'name', 'name_en'])->get())->map(function($hobby) {
+                return [
+                    'id' => $hobby->id,
+                    'name' => $hobby->name ?? '',
+                    'name_en' => $hobby->name_en ?? ''
+                ];
+            })->toArray(),
+
+            'competences' => collect($user->competences()->select(['id', 'name', 'name_en', 'description'])->get())->map(function($competence) {
+                return [
+                    'id' => $competence->id,
+                    'name' => $competence->name ?? '',
+                    'name_en' => $competence->name_en ?? '',
+                    'description' => $competence->description ?? ''
+                ];
+            })->toArray(),
+
             'experiences' => $experiencesWithReferences,
-            'professions' => $user->profession()->select(['id', 'name', 'name_en', 'description', 'category_id'])->take(2)->get()->toArray(),
+            'professions' => $professions,
             'summaries' => $user->selected_summary ? [$user->selected_summary->toArray()] : [],
             'personalInformation' => [
                 'id' => $user->id,
-                'firstName' => $user->name,
-                'email' => $user->email,
-                'github' => $user->github,
-                'linkedin' => $user->linkedin,
-                'address' => $user->address,
-                'phone' => $user->phone_number,
+                'firstName' => $user->name ?? '',
+                'email' => $user->email ?? '',
+                'github' => $user->github ?? '',
+                'linkedin' => $user->linkedin ?? '',
+                'address' => $user->address ?? '',
+                'phone' => $user->phone_number ?? '',
                 'photo' => $user->photo ? Storage::url($user->photo) : null,
-                'full_profession' => $user->full_profession,
+                'full_profession' => $user->full_profession ?? '',
             ],
         ];
 
         return $baseInfo;
     }
-
     public function index()
     {
         $user = auth()->user();

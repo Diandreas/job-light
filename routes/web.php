@@ -12,6 +12,7 @@ use App\Http\Controllers\{AddressController,
     ExperienceController,
     HobbyController,
     LanguageController,
+    NotchPayController,
     PaymentController,
     PayPalController,
     PersonalInformationController,
@@ -33,7 +34,9 @@ Route::get('language/{locale}', [LanguageController::class, 'switch'])->name('la
 Route::get('/', function () {
     return Inertia::render('Welcome');
 })->name('welcome');
-
+Route::get('/payment/callback', [NotchPayController::class, 'handleCallback'])->name('payment.callback');
+Route::post('/api/notchpay/initialize', [NotchPayController::class, 'initializePayment']);
+Route::post('/api/notchpay/webhook', [NotchPayController::class, 'handleWebhook']);
 Route::post('/api/cv/analyze', [CareerAdvisorController::class, 'analyzeCV'])
     ->name('cv.analyze')
     ->middleware(['auth']);

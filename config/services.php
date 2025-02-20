@@ -29,7 +29,9 @@ return [
 
     'notchpay' => [
         'public_key' => env('NOTCHPAY_PUBLIC_KEY'),
-        'secret_key' => env('NOTCHPAY_SECRET_KEY'),
+        'private_key' => env('NOTCHPAY_PRIVATE_KEY'),
+        'webhook_secret' => env('NOTCHPAY_WEBHOOK_SECRET'),
+        'callback_url' => env('NOTCHPAY_CALLBACK_URL'),
         'sandbox' => env('NOTCHPAY_SANDBOX', true),
     ],
 

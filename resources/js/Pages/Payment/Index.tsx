@@ -23,7 +23,7 @@ const TOKEN_PACKS = [
         tokens: 10,
         bonusTokens: 0,
         priceEuros: 1,
-        priceFCFA: 655,
+        priceFCFA: 600,
         color: 'from-amber-400 to-amber-600',
         popularityText: 'Pour commencer'
     },
@@ -32,7 +32,7 @@ const TOKEN_PACKS = [
         tokens: 50,
         bonusTokens: 10,
         priceEuros: 5,
-        priceFCFA: 3275,
+        priceFCFA: 3000,
         color: 'from-purple-400 to-purple-600',
         popularityText: 'Bon rapport qualité/prix'
     },
@@ -41,7 +41,7 @@ const TOKEN_PACKS = [
         tokens: 100,
         bonusTokens: 30,
         priceEuros: 10,
-        priceFCFA: 6550,
+        priceFCFA: 6000,
         mostPopular: true,
         color: 'from-blue-400 to-blue-600',
         popularityText: 'Le plus populaire'
@@ -51,7 +51,7 @@ const TOKEN_PACKS = [
         tokens: 300,
         bonusTokens: 100,
         priceEuros: 30,
-        priceFCFA: 19650,
+        priceFCFA: 18000,
         color: 'from-rose-400 to-rose-600',
         popularityText: 'Meilleure valeur'
     }

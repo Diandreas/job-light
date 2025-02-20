@@ -295,10 +295,10 @@ class NotchPayController extends Controller
     {
         // This should match your frontend TOKEN_PACKS logic
         $tokenPacks = [
-            10 => 655,
-            50 => 3275,
-            100 => 6550,
-            300 => 19650
+            10 => 600,
+            60 => 3000,
+            130 => 6000,
+            400 => 18000
         ];
 
         return $tokenPacks[$tokens] ?? ($tokens * 100); // Default to 100 XAF per token

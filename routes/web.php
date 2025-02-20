@@ -38,6 +38,7 @@ Route::post('/api/cv/analyze', [CareerAdvisorController::class, 'analyzeCV'])
     ->name('cv.analyze')
     ->middleware(['auth']);
 
+Route::get('/payment', [PaymentController::class, 'index'])->name('payment.index');
 
 Route::post('/api/paypal/capture-payment', [PayPalController::class, 'capturePayment'])
     ->middleware(['auth']);// Career Advisor Routes

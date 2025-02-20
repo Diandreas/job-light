@@ -16,8 +16,10 @@ class Payment extends Model
         'reference',
         'status',
         'payment_method',
-        'transaction_id'
+        'transaction_id',
+        'metadata'
     ];
+
 
     protected $casts = [
         'amount' => 'decimal:2',

@@ -45,8 +45,13 @@ const TOKEN_PACKS = [
     }
 ];
 
+
+import { usePage } from '@inertiajs/react';
+
 const PayPalPackButton = ({ pack, onSuccess }) => {
     const [{ isPending }] = usePayPalScriptReducer();
+    const [error, setError] = useState(null);
+    const { props } = usePage();
 
     if (isPending) {
         return (
@@ -56,46 +61,78 @@ const PayPalPackButton = ({ pack, onSuccess }) => {
         );
     }
 
+    const handlePayPalCapture = async (data, actions) => {
+        try {
+            const details = await actions.order.capture();
+
+            const response = await fetch('/api/paypal/capture-payment', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-XSRF-TOKEN': decodeURIComponent(document.cookie
+                        .split('; ')
+                        .find(row => row.startsWith('XSRF-TOKEN='))
+                        ?.split('=')[1] || ''),
+                    'Accept': 'application/json',
+                },
+                credentials: 'include', // Important for cookies
+                body: JSON.stringify({
+                    orderID: data.orderID,
+                    tokens: pack.tokens + pack.bonusTokens,
+                    paypalDetails: details
+                })
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.message || 'Payment capture failed');
+            }
+
+            const result = await response.json();
+
+            if (result.success) {
+                onSuccess(result.new_balance);
+            } else {
+                throw new Error('Payment processing failed');
+            }
+
+        } catch (err) {
+            console.error('Payment capture error:', err);
+            setError(err.message || 'An error occurred during payment processing');
+        }
+    };
+
     return (
-        <PayPalButtons
-            style={{ layout: "vertical" }}
-            createOrder={(data, actions) => {
-                // @ts-ignore
-                return actions.order.create({
-                    purchase_units: [{
-                        amount: {
-                            value: pack.priceEuros.toString(),
-                            currency_code: "EUR"
-                        },
-                        description: `${pack.tokens + pack.bonusTokens} tokens`
-                    }]
-                });
-            }}
-            onApprove={(data, actions) => {
-                return actions.order.capture().then((details) => {
-                    fetch('/api/paypal/capture-payment', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-                        },
-                        body: JSON.stringify({
-                            orderID: data.orderID,
-                            tokens: pack.tokens + pack.bonusTokens,
-                            paypalDetails: details
-                        })
-                    })
-                        .then(response => response.json())
-                        .then(data => {
-                            if (data.success) {
-                                onSuccess(data.new_balance);
-                            }
-                        });
-                });
-            }}
-        />
+        <div>
+            {error && (
+                <div className="text-red-500 text-sm mb-2 p-2 bg-red-50 rounded">
+                    {error}
+                </div>
+            )}
+            <PayPalButtons
+                style={{ layout: "vertical" }}
+                createOrder={(data, actions) => {
+                    return actions.order.create({
+                        purchase_units: [{
+                            amount: {
+                                value: pack.priceEuros.toString(),
+                                currency_code: "EUR"
+                            },
+                            description: `${pack.tokens + pack.bonusTokens} tokens`
+                        }]
+                    });
+                }}
+                onApprove={handlePayPalCapture}
+                onError={(err) => {
+                    console.error('PayPal button error:', err);
+                    setError('Payment failed. Please try again.');
+                }}
+            />
+        </div>
     );
 };
+
+
 
 function cn(...classes) {
     return classes.filter(Boolean).join(' ');

@@ -35,7 +35,8 @@ import {
     BookOpen,
     Users,
     Award,
-    PencilRuler
+    PencilRuler,
+    Menu
 } from 'lucide-react';
 import { Badge } from "@/Components/ui/badge";
 import { ScrollArea } from "@/Components/ui/scroll-area";
@@ -118,23 +119,31 @@ const experienceData = {
             "École d'Ingénierie Digitale"
         ],
         descriptions: [
-            "Programme intensif combinant théorie et pratique. Réalisation de projets concrets en utilisant les technologies les plus récentes. Développement de compétences techniques et méthodologiques avancées.",
-            "Formation approfondie axée sur les technologies émergentes. Participation à des projets innovants et acquisition d'une expertise technique pointue. Travail en équipe sur des cas réels.",
-            "Apprentissage des meilleures pratiques et méthodologies actuelles. Développement de compétences techniques et soft skills essentielles. Réalisation de projets pratiques avec des technologies modernes.",
-            "Programme complet couvrant les aspects théoriques et pratiques du domaine. Acquisition d'une expertise technique approfondie et développement de compétences transversales."
+            "Programme intensif combinant théorie et pratique. Réalisation de projets concrets en utilisant les technologies les plus récentes.",
+            "Formation approfondie axée sur les technologies émergentes. Participation à des projets innovants et acquisition d'une expertise technique pointue.",
+            "Apprentissage des meilleures pratiques et méthodologies actuelles. Développement de compétences techniques et soft skills essentielles.",
+            "Programme complet couvrant les aspects théoriques et pratiques du domaine. Acquisition d'une expertise technique approfondie."
         ]
     },
     internship: {
-        names: [/* ... votre liste existante ... */],
-        companies: [/* ... votre liste existante ... */],
-        descriptions: [/* ... votre liste existante ... */],
-        achievements: [/* ... votre liste existante ... */]
+        names: ["Stage Développeur Front-end", "Stage UX/UI Designer", "Stage DevOps", "Stage Data Analyst"],
+        companies: ["Startup Innovante", "Agence Digitale", "Entreprise Tech", "Cabinet de Conseil IT"],
+        descriptions: ["Participation au développement de nouvelles fonctionnalités pour l'application web principale.",
+            "Collaboration avec l'équipe produit pour créer des expériences utilisateur innovantes.",
+            "Amélioration des processus de déploiement et d'intégration continue."],
+        achievements: ["Développement d'un module utilisé par plus de 1000 utilisateurs",
+            "Réduction de 30% du temps de chargement des pages",
+            "Mise en place d'un nouveau système de gestion des données"]
     },
     volunteer: {
-        names: [/* ... votre liste existante ... */],
-        institutions: [/* ... votre liste existante ... */],
-        descriptions: [/* ... votre liste existante ... */],
-        outputs: [/* ... votre liste existante ... */]
+        names: ["Mentor Tech", "Organisateur d'événements tech", "Formateur bénévole", "Contributeur open source"],
+        institutions: ["Association Code Pour Tous", "Communauté Dev Local", "Meetup Tech", "Projet Open Source"],
+        descriptions: ["Animation d'ateliers d'initiation à la programmation pour les jeunes.",
+            "Organisation de hackathons et de conférences techniques.",
+            "Contribution à des projets open source dans le domaine de l'éducation."],
+        outputs: ["Formation de 20 jeunes aux bases du développement web",
+            "Organisation de 5 événements tech rassemblant plus de 200 participants",
+            "Contribution de plus de 50 commits à des projets open source"]
     }
 };
 
@@ -165,6 +174,7 @@ const generateDates = (type: 'academic' | 'internship' | 'volunteer') => {
 const getRandomItem = <T,>(array: T[]): T => {
     return array[Math.floor(Math.random() * array.length)];
 };
+
 const ExperienceManager: React.FC<Props> = ({ auth, experiences: initialExperiences, categories, onUpdate }) => {
     const { t } = useTranslation();
 
@@ -181,6 +191,7 @@ const ExperienceManager: React.FC<Props> = ({ auth, experiences: initialExperien
         max_size: 104857600, // 100MB default
         files_count: 0
     });
+    const [actionMenuOpen, setActionMenuOpen] = useState<number | null>(null);
 
     const { toast } = useToast();
 
@@ -270,7 +281,8 @@ const ExperienceManager: React.FC<Props> = ({ auth, experiences: initialExperien
                 return {
                     ...baseData,
                     name: getRandomItem(data.names),
-                    // @ts-ignore
+                    //@ts-ignore
+
                     InstitutionName: getRandomItem(data.institutions),
                     description: getRandomItem(data.descriptions),
                     output: t('experiences.form.templates.academic.defaultOutput'),
@@ -279,20 +291,24 @@ const ExperienceManager: React.FC<Props> = ({ auth, experiences: initialExperien
                 return {
                     ...baseData,
                     name: getRandomItem(data.names),
-                    // @ts-ignore
+                    //@ts-ignore
+
                     InstitutionName: getRandomItem(data.companies),
                     description: getRandomItem(data.descriptions),
-                    // @ts-ignore
+                    //@ts-ignore
+
                     output: getRandomItem(data.achievements),
                 };
             case 'volunteer':
                 return {
                     ...baseData,
                     name: getRandomItem(data.names),
-                    // @ts-ignore
+                    //@ts-ignore
+
                     InstitutionName: getRandomItem(data.institutions),
                     description: getRandomItem(data.descriptions),
-                    // @ts-ignore
+                    //@ts-ignore
+
                     output: getRandomItem(data.outputs),
                 };
         }
@@ -300,7 +316,7 @@ const ExperienceManager: React.FC<Props> = ({ auth, experiences: initialExperien
 
     // Event Handlers
     const handleEdit = (experience: Experience) => {
-        // @ts-ignore
+        //@ts-ignore
         setData({
             ...experience,
             experience_categories_id: experience.experience_categories_id.toString(),
@@ -331,6 +347,7 @@ const ExperienceManager: React.FC<Props> = ({ auth, experiences: initialExperien
             });
         }
     };
+
     const handleDeleteAttachment = async (experienceId: number) => {
         setIsLoading(true);
         try {
@@ -356,7 +373,8 @@ const ExperienceManager: React.FC<Props> = ({ auth, experiences: initialExperien
                     title: t('experiences.success.attachment.deleted'),
                     description: t('experiences.success.attachment.deletedDescription'),
                 });
-// @ts-ignore
+                //@ts-ignore
+
                 if (data.id === experienceId) {
                     setData(prev => ({
                         ...prev,
@@ -401,7 +419,8 @@ const ExperienceManager: React.FC<Props> = ({ auth, experiences: initialExperien
                     }
                 }
             });
-// @ts-ignore
+            //@ts-ignore
+
             if (data.id && !data.attachment && !data.attachment_path) {
                 formData.append('remove_attachment', '1');
             }
@@ -486,7 +505,8 @@ const ExperienceManager: React.FC<Props> = ({ auth, experiences: initialExperien
     const handleTemplateSelection = (type: 'academic' | 'internship' | 'volunteer') => {
         const template = generatePredefinedExperience(type);
         if (template) {
-            // @ts-ignore
+            //@ts-ignore
+
             setData(prev => ({
                 ...prev,
                 ...template
@@ -497,15 +517,32 @@ const ExperienceManager: React.FC<Props> = ({ auth, experiences: initialExperien
             });
         }
     };
+
     // Experience Card Component
     const ExperienceCard: React.FC<{ experience: Experience }> = ({ experience: exp }) => {
         const getCategoryIcon = (categoryId: string) => {
             switch(categoryId) {
-                case '1': return <Briefcase className="w-4 h-4" />;
-                case '2': return <GraduationCap className="w-4 h-4" />;
-                case '3': return <Users className="w-4 h-4" />;
-                default: return <Award className="w-4 h-4" />;
+                case '1': return <Briefcase className="w-3 h-3" />;
+                case '2': return <GraduationCap className="w-3 h-3" />;
+                case '3': return <Users className="w-3 h-3" />;
+                default: return <Award className="w-3 h-3" />;
             }
+        };
+
+        const toggleActionMenu = () => {
+            if (actionMenuOpen === exp.id) {
+                setActionMenuOpen(null);
+            } else {
+                setActionMenuOpen(exp.id);
+            }
+        };
+
+        // Format name for display with potential truncation
+        const formatName = (name: string) => {
+            if (name.length > 20) {
+                return name.substring(0, 20) + '...';
+            }
+            return name;
         };
 
         return (
@@ -515,97 +552,113 @@ const ExperienceManager: React.FC<Props> = ({ auth, experiences: initialExperien
                 exit={{ opacity: 0, y: -20 }}
                 transition={{ duration: 0.2 }}
             >
-                <Card className="border-amber-100 dark:border-amber-900/50 hover:shadow-md transition-shadow dark:bg-gray-800">
-                    <CardContent className="p-4 sm:p-6">
-                        <div className="flex flex-col sm:flex-row justify-between items-start gap-4">
-                            <div className="flex-1">
-                                <div className="flex items-center gap-2 flex-wrap">
-                                    <h3 className="text-lg font-semibold text-gray-800 dark:text-white">
-                                        {exp.name}
+                <Card className="border-amber-100 dark:border-amber-900/50 dark:bg-gray-800">
+                    <CardContent className="p-2">
+                        <div className="flex justify-between items-start">
+                            <div className="flex-1 min-w-0 pr-1">
+                                <div className="flex items-center flex-wrap gap-1">
+                                    <h3 className="text-sm font-semibold text-gray-800 dark:text-white truncate max-w-full">
+                                        {formatName(exp.name)}
                                     </h3>
                                     <Badge
                                         variant="secondary"
                                         className="bg-gradient-to-r from-amber-100 to-purple-100
-                                                 dark:from-amber-900/40 dark:to-purple-900/40
-                                                 dark:text-gray-100 flex items-center gap-1"
+                                                  dark:from-amber-900/40 dark:to-purple-900/40
+                                                  dark:text-gray-100 inline-flex items-center gap-1 text-[10px] px-1 h-5"
                                     >
                                         {getCategoryIcon(exp.experience_categories_id)}
-                                        {categories.find(c => c.id === parseInt(exp.experience_categories_id))?.name}
+                                        <span className="truncate max-w-12 inline-block">
+                                            {categories.find(c => c.id === parseInt(exp.experience_categories_id))?.name}
+                                        </span>
                                     </Badge>
                                 </div>
 
-                                <div className="flex items-center text-sm text-gray-600 dark:text-gray-300 mt-1">
-                                    <Building2 className="w-4 h-4 mr-2 text-amber-500 dark:text-amber-400" />
-                                    <span>{exp.InstitutionName}</span>
+                                <div className="flex items-center text-[10px] text-gray-600 dark:text-gray-300 mt-0.5">
+                                    <Building2 className="w-2.5 h-2.5 mr-0.5 flex-shrink-0 text-amber-500 dark:text-amber-400" />
+                                    <span className="truncate">{exp.InstitutionName}</span>
                                 </div>
 
-                                <div className="flex items-center text-sm text-gray-600 dark:text-gray-300 mt-1">
-                                    <BookOpen className="w-4 h-4 mr-2 text-purple-500 dark:text-purple-400" />
-                                    <span>
-                                        {new Date(exp.date_start).toLocaleDateString('fr-FR')} -
-                                        {exp.date_end ? new Date(exp.date_end).toLocaleDateString('fr-FR') : t('experiences.dates.present')}
+                                <div className="flex items-center text-[10px] text-gray-600 dark:text-gray-300 mt-0.5">
+                                    <BookOpen className="w-2.5 h-2.5 mr-0.5 flex-shrink-0 text-purple-500 dark:text-purple-400" />
+                                    <span className="whitespace-nowrap">
+                                        {new Date(exp.date_start).toLocaleDateString('fr-FR', {year: '2-digit', month: '2-digit'})} -
+                                        {exp.date_end ? new Date(exp.date_end).toLocaleDateString('fr-FR', {year: '2-digit', month: '2-digit'}) : 'actuel'}
                                     </span>
                                 </div>
 
                                 {exp.attachment_path && (
-                                    <Badge
-                                        variant="outline"
-                                        className="mt-2 bg-gradient-to-r from-amber-50 to-purple-50
-                                                 dark:from-amber-900/20 dark:to-purple-900/20
-                                                 dark:text-gray-200"
-                                    >
-                                        <FileText className="w-3 h-3 mr-1" />
+                                    <span className="inline-flex items-center mt-0.5 text-[10px] text-gray-600 dark:text-gray-300">
+                                        <FileText className="w-2.5 h-2.5 mr-0.5 text-amber-500 dark:text-amber-400" />
                                         {formatBytes(exp.attachment_size)}
-                                    </Badge>
+                                    </span>
                                 )}
                             </div>
 
-                            <div className="flex gap-2 self-end sm:self-start">
-                                {exp.attachment_path && (
-                                    <Button
-                                        variant="ghost"
-                                        size="sm"
-                                        onClick={() => handlePreviewPDF(exp.attachment_path)}
-                                        className="hover:bg-amber-50 dark:hover:bg-amber-900/20"
-                                    >
-                                        <Eye className="w-4 h-4 text-amber-500 dark:text-amber-400" />
-                                    </Button>
+                            <div className="relative">
+                                <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    onClick={toggleActionMenu}
+                                    className="h-6 w-6 p-0"
+                                >
+                                    <Menu className="w-3 h-3" />
+                                </Button>
+
+                                {actionMenuOpen === exp.id && (
+                                    <div className="absolute right-0 mt-1 bg-white dark:bg-gray-800 shadow-lg rounded-md py-1 w-28 z-10 border dark:border-gray-700">
+                                        {exp.attachment_path && (
+                                            <button
+                                                onClick={() => {
+                                                    handlePreviewPDF(exp.attachment_path);
+                                                    setActionMenuOpen(null);
+                                                }}
+                                                className="w-full text-left px-2 py-1 text-xs hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center"
+                                            >
+                                                <Eye className="w-3 h-3 mr-1 text-amber-500 dark:text-amber-400" />
+                                                Voir
+                                            </button>
+                                        )}
+                                        <button
+                                            onClick={() => {
+                                                handleEdit(exp);
+                                                setActionMenuOpen(null);
+                                            }}
+                                            className="w-full text-left px-2 py-1 text-xs hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center"
+                                        >
+                                            <Edit className="w-3 h-3 mr-1 text-purple-500 dark:text-purple-400" />
+                                            Éditer
+                                        </button>
+                                        <button
+                                            onClick={() => {
+                                                handleDelete(exp.id);
+                                                setActionMenuOpen(null);
+                                            }}
+                                            className="w-full text-left px-2 py-1 text-xs hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center text-red-500"
+                                        >
+                                            <Trash2 className="w-3 h-3 mr-1" />
+                                            Supprimer
+                                        </button>
+                                    </div>
                                 )}
-                                <Button
-                                    variant="ghost"
-                                    size="sm"
-                                    onClick={() => handleEdit(exp)}
-                                    className="hover:bg-purple-50 dark:hover:bg-purple-900/20"
-                                >
-                                    <Edit className="w-4 h-4 text-purple-500 dark:text-purple-400" />
-                                </Button>
-                                <Button
-                                    variant="ghost"
-                                    size="sm"
-                                    onClick={() => handleDelete(exp.id)}
-                                    className="hover:bg-red-50 dark:hover:bg-red-900/20"
-                                >
-                                    <Trash2 className="w-4 h-4 text-red-500 dark:text-red-400" />
-                                </Button>
                             </div>
                         </div>
 
-                        <div className="mt-4 space-y-3">
-                            <p className="text-sm text-gray-600 dark:text-gray-300">
+                        <div className="mt-1.5 space-y-1">
+                            <p className="text-[10px] text-gray-600 dark:text-gray-300 line-clamp-2">
                                 {exp.description}
                             </p>
 
                             {exp.output && (
                                 <div className="bg-gradient-to-r from-amber-50 to-purple-50
-                                              dark:from-amber-900/20 dark:to-purple-900/20
-                                              p-3 rounded-md">
-                                    <div className="flex items-center gap-2 mb-1">
-                                        <Award className="w-4 h-4 text-amber-500 dark:text-amber-400" />
-                                        <p className="text-sm font-medium text-gray-700 dark:text-gray-200">
-                                            {t('experiences.output.title')}:
+                                                dark:from-amber-900/20 dark:to-purple-900/20
+                                                p-1.5 rounded-md">
+                                    <div className="flex items-center gap-1">
+                                        <Award className="w-2.5 h-2.5 text-amber-500 dark:text-amber-400" />
+                                        <p className="text-[10px] font-medium text-gray-700 dark:text-gray-200">
+                                            Résultat:
                                         </p>
                                     </div>
-                                    <p className="text-sm text-gray-600 dark:text-gray-300">
+                                    <p className="text-[10px] text-gray-600 dark:text-gray-300 line-clamp-2 mt-0.5">
                                         {exp.output}
                                     </p>
                                 </div>
@@ -613,32 +666,34 @@ const ExperienceManager: React.FC<Props> = ({ auth, experiences: initialExperien
                         </div>
 
                         {exp.references && exp.references.length > 0 && (
-                            <div className="mt-4">
-                                <h4 className="text-sm font-semibold text-gray-800 dark:text-white mb-2">
-                                    {t('experiences.references.title')}
-                                </h4>
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
-                                    {exp.references.map((ref, index) => (
-                                        <div key={index} className="text-sm bg-gray-50 dark:bg-gray-900 p-2 rounded-md">
-                                            <p className="font-medium text-gray-800 dark:text-white">
-                                                {ref.name}
-                                            </p>
-                                            <p className="text-gray-600 dark:text-gray-300">
-                                                {ref.function}
-                                            </p>
-                                            {ref.email && (
-                                                <p className="text-gray-500 dark:text-gray-400 text-xs">
-                                                    {ref.email}
+                            <div className="mt-1.5">
+                                <details className="text-[10px]">
+                                    <summary className="font-semibold text-gray-800 dark:text-white cursor-pointer">
+                                        Références ({exp.references.length})
+                                    </summary>
+                                    <div className="mt-1 grid grid-cols-1 gap-1.5">
+                                        {exp.references.map((ref, index) => (
+                                            <div key={index} className="text-[10px] bg-gray-50 dark:bg-gray-900 p-1.5 rounded-md">
+                                                <p className="font-medium text-gray-800 dark:text-white truncate">
+                                                    {ref.name}
                                                 </p>
-                                            )}
-                                            {ref.telephone && (
-                                                <p className="text-gray-500 dark:text-gray-400 text-xs">
-                                                    {ref.telephone}
+                                                <p className="text-gray-600 dark:text-gray-300 truncate">
+                                                    {ref.function}
                                                 </p>
-                                            )}
-                                        </div>
-                                    ))}
-                                </div>
+                                                {ref.email && (
+                                                    <p className="text-gray-500 dark:text-gray-400 truncate">
+                                                        {ref.email}
+                                                    </p>
+                                                )}
+                                                {ref.telephone && (
+                                                    <p className="text-gray-500 dark:text-gray-400">
+                                                        {ref.telephone}
+                                                    </p>
+                                                )}
+                                            </div>
+                                        ))}
+                                    </div>
+                                </details>
                             </div>
                         )}
                     </CardContent>
@@ -646,54 +701,55 @@ const ExperienceManager: React.FC<Props> = ({ auth, experiences: initialExperien
             </motion.div>
         );
     };
-// Attachment Statistics Component
+
+    // Attachment Statistics Component
     const AttachmentStatistics: React.FC<{ summary: AttachmentSummary }> = ({ summary }) => {
         return (
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <Card className="bg-gradient-to-r from-amber-50 to-purple-50 dark:from-amber-900/20 dark:to-purple-900/20 border-none">
-                    <CardContent className="p-4">
-                        <div className="flex items-center justify-between">
-                            <div>
-                                <p className="text-sm font-medium text-gray-500 dark:text-gray-400">
+            <div className="flex flex-wrap gap-2">
+                <Card className="bg-gradient-to-r from-amber-50 to-purple-50 dark:from-amber-900/20 dark:to-purple-900/20 border-none flex-1 min-w-[100px]">
+                    <CardContent className="p-2">
+                        <div className="flex items-center gap-1">
+                            <FileText className="w-4 h-4 text-amber-500 dark:text-amber-400 flex-shrink-0" />
+                            <div className="min-w-0">
+                                <p className="text-[10px] font-medium text-gray-500 dark:text-gray-400 truncate">
                                     {t('experiences.attachments.stats.used')}
                                 </p>
-                                <h3 className="text-2xl font-bold text-gray-900 dark:text-white">
+                                <h3 className="text-sm font-bold text-gray-900 dark:text-white truncate">
                                     {formatBytes(Number(summary.total_size))}
                                 </h3>
                             </div>
-                            <FileText className="w-8 h-8 text-amber-500 dark:text-amber-400" />
                         </div>
                     </CardContent>
                 </Card>
 
-                <Card className="bg-gradient-to-r from-amber-50 to-purple-50 dark:from-amber-900/20 dark:to-purple-900/20 border-none">
-                    <CardContent className="p-4">
-                        <div className="flex items-center justify-between">
-                            <div>
-                                <p className="text-sm font-medium text-gray-500 dark:text-gray-400">
+                <Card className="bg-gradient-to-r from-amber-50 to-purple-50 dark:from-amber-900/20 dark:to-purple-900/20 border-none flex-1 min-w-[100px]">
+                    <CardContent className="p-2">
+                        <div className="flex items-center gap-1">
+                            <FileText className="w-4 h-4 text-purple-500 dark:text-purple-400 flex-shrink-0" />
+                            <div className="min-w-0">
+                                <p className="text-[10px] font-medium text-gray-500 dark:text-gray-400 truncate">
                                     {t('experiences.attachments.stats.files')}
                                 </p>
-                                <h3 className="text-2xl font-bold text-gray-900 dark:text-white">
+                                <h3 className="text-sm font-bold text-gray-900 dark:text-white truncate">
                                     {summary.files_count}
                                 </h3>
                             </div>
-                            <FileText className="w-8 h-8 text-purple-500 dark:text-purple-400" />
                         </div>
                     </CardContent>
                 </Card>
 
-                <Card className="bg-gradient-to-r from-amber-50 to-purple-50 dark:from-amber-900/20 dark:to-purple-900/20 border-none">
-                    <CardContent className="p-4">
-                        <div className="flex items-center justify-between">
-                            <div>
-                                <p className="text-sm font-medium text-gray-500 dark:text-gray-400">
+                <Card className="bg-gradient-to-r from-amber-50 to-purple-50 dark:from-amber-900/20 dark:to-purple-900/20 border-none flex-1 min-w-[100px]">
+                    <CardContent className="p-2">
+                        <div className="flex items-center gap-1">
+                            <FileText className="w-4 h-4 text-amber-500 dark:text-amber-400 flex-shrink-0" />
+                            <div className="min-w-0">
+                                <p className="text-[10px] font-medium text-gray-500 dark:text-gray-400 truncate">
                                     {t('experiences.attachments.stats.available')}
                                 </p>
-                                <h3 className="text-2xl font-bold text-gray-900 dark:text-white">
+                                <h3 className="text-sm font-bold text-gray-900 dark:text-white truncate">
                                     {formatBytes(Math.max(0, summary.max_size - summary.total_size))}
                                 </h3>
                             </div>
-                            <FileText className="w-8 h-8 text-amber-500 dark:text-amber-400" />
                         </div>
                     </CardContent>
                 </Card>
@@ -702,27 +758,56 @@ const ExperienceManager: React.FC<Props> = ({ auth, experiences: initialExperien
     };
 
     // Main Render
+    const [windowSize, setWindowSize] = useState({
+        width: window.innerWidth,
+        height: window.innerHeight,
+    });
+
+    useEffect(() => {
+        const handleResize = () => {
+            setWindowSize({
+                width: window.innerWidth,
+                height: window.innerHeight,
+            });
+        };
+
+        window.addEventListener('resize', handleResize);
+        return () => window.removeEventListener('resize', handleResize);
+    }, []);
+
+    const maxNameLength = windowSize.width < 600 ? 5 : 10;
     return (
-        <div className="space-y-6">
-            <div className="flex flex-col md:flex-row justify-between items-center gap-4">
+        <div className="space-y-3">
+            <div className="flex flex-col justify-between items-start gap-1">
                 <div>
-                    <h2 className="text-2xl font-bold text-gray-800 dark:text-white">
+                    <h2 className="text-lg font-bold text-gray-800 dark:text-white">
                         {t('experiences.title')}
                     </h2>
-                    <p className="text-gray-500 dark:text-gray-400">
+                    <p className="text-xs text-gray-500 dark:text-gray-400">
                         {t('experiences.description')}
                     </p>
                 </div>
+                <Button
+                    onClick={() => setIsFormOpen(true)}
+                    className="w-full sm:w-auto mt-1 bg-gradient-to-r from-amber-500 to-purple-500
+                             hover:from-amber-600 hover:to-purple-600
+                             dark:from-amber-400 dark:to-purple-400
+                             dark:hover:from-amber-500 dark:hover:to-purple-500
+                             text-white text-xs h-8 py-0"
+                >
+                    <Plus className="w-3 h-3 mr-1" />
+                    {t('experiences.actions.add')}
+                </Button>
             </div>
 
             <Tabs defaultValue="experiences" value={currentTab} onValueChange={setCurrentTab} className="w-full">
-                <TabsList className="grid w-full grid-cols-2 mb-4">
-                    <TabsTrigger value="experiences" className="flex items-center gap-2">
-                        <PencilRuler className="w-4 h-4" />
+                <TabsList className="grid w-full grid-cols-2 mb-2">
+                    <TabsTrigger value="experiences" className="flex items-center gap-1 text-[10px] py-0.5 h-7">
+                        <PencilRuler className="w-2.5 h-2.5" />
                         {t('experiences.tabs.list')}
                     </TabsTrigger>
-                    <TabsTrigger value="attachments" className="flex items-center gap-2">
-                        <FileText className="w-4 h-4" />
+                    <TabsTrigger value="attachments" className="flex items-center gap-1 text-[10px] py-0.5 h-7">
+                        <FileText className="w-2.5 h-2.5" />
                         {t('experiences.tabs.attachments')} {attachmentSummary.files_count > 0 &&
                         `(${attachmentSummary.files_count})`}
                     </TabsTrigger>
@@ -730,68 +815,55 @@ const ExperienceManager: React.FC<Props> = ({ auth, experiences: initialExperien
 
                 <TabsContent value="experiences">
                     <Card className="border-amber-100 dark:border-amber-900/50">
-                        <CardContent className="p-4">
-                            <div className="flex flex-col md:flex-row gap-4">
-                                <div className="flex-1">
-                                    <div className="relative">
-                                        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-amber-500 dark:text-amber-400" />
-                                        <Input
-                                            type="text"
-                                            placeholder={t('experiences.filters.search')}
-                                            value={searchTerm}
-                                            onChange={(e) => setSearchTerm(e.target.value)}
-                                            className="pl-10 border-amber-200 dark:border-amber-800 focus:ring-amber-500
-                                                     dark:focus:ring-amber-400 dark:bg-gray-900"
-                                        />
-                                    </div>
+                        <CardContent className="p-2">
+                            <div className="flex flex-col gap-2">
+                                <div className="relative">
+                                    <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 text-amber-500 dark:text-amber-400 w-3 h-3" />
+                                    <Input
+                                        type="text"
+                                        placeholder={t('experiences.filters.search')}
+                                        value={searchTerm}
+                                        onChange={(e) => setSearchTerm(e.target.value)}
+                                        className="pl-7 text-xs border-amber-200 dark:border-amber-800 focus:ring-amber-500
+                                                 dark:focus:ring-amber-400 dark:bg-gray-900 h-7"
+                                    />
                                 </div>
-                                <Button
-                                    onClick={() => setIsFormOpen(true)}
-                                    className="bg-gradient-to-r from-amber-500 to-purple-500
-                                             hover:from-amber-600 hover:to-purple-600
-                                             dark:from-amber-400 dark:to-purple-400
-                                             dark:hover:from-amber-500 dark:hover:to-purple-500
-                                             text-white"
-                                >
-                                    <Plus className="w-4 h-4 mr-2" />
-                                    {t('experiences.actions.add')}
-                                </Button>
                             </div>
 
-                            <div className="flex gap-2 overflow-x-auto py-4">
+                            <div className="flex gap-1 overflow-x-auto py-2 text-[10px]">
                                 <Button
-                                    variant={selectedCategory === 'all' ? "default" : "ghost"}
+                                    variant={selectedCategory === 'all' ? 'default' : 'ghost'}
                                     size="sm"
                                     onClick={() => setSelectedCategory('all')}
-                                    className={selectedCategory === 'all' ?
+                                    className={`py-0 h-6 ${selectedCategory === 'all' ?
                                         'bg-gradient-to-r from-amber-500 to-purple-500 text-white dark:from-amber-400 dark:to-purple-400' :
-                                        'dark:text-gray-300'}
+                                        'dark:text-gray-300'}`}
                                 >
-                                    <PencilRuler className="w-4 h-4 mr-2" />
-                                    {t('experiences.filters.all')}
+                                    <PencilRuler className="w-2.5 h-2.5 mr-0.5" />
+                                    Tous
                                 </Button>
                                 {categories.map((cat) => (
                                     <Button
                                         key={cat.id}
-                                        variant={selectedCategory === cat.id.toString() ? "default" : "ghost"}
+                                        variant={selectedCategory === cat.id.toString() ? 'default' : 'ghost'}
                                         size="sm"
                                         onClick={() => setSelectedCategory(cat.id.toString())}
-                                        className={selectedCategory === cat.id.toString() ?
+                                        className={`py-0 h-6 ${selectedCategory === cat.id.toString() ?
                                             'bg-gradient-to-r from-amber-500 to-purple-500 text-white dark:from-amber-400 dark:to-purple-400' :
-                                            'dark:text-gray-300'}
+                                            'dark:text-gray-300'}`}
                                     >
-                                        {cat.id === 1 && <Briefcase className="w-4 h-4 mr-2" />}
-                                        {cat.id === 2 && <GraduationCap className="w-4 h-4 mr-2" />}
-                                        {cat.id === 3 && <Users className="w-4 h-4 mr-2" />}
-                                        {cat.name}
+                                        {cat.id === 1 && <Briefcase className="w-2.5 h-2.5 mr-0.5" />}
+                                        {cat.id === 2 && <GraduationCap className="w-2.5 h-2.5 mr-0.5" />}
+                                        {cat.id === 3 && <Users className="w-2.5 h-2.5 mr-0.5" />}
+                                        {cat.name.length > maxNameLength ? cat.name.substring(0, maxNameLength - 3) + '...' : cat.name}
                                     </Button>
                                 ))}
                             </div>
                         </CardContent>
                     </Card>
 
-                    <ScrollArea className="h-[600px] pr-4 mt-4">
-                        <div className="space-y-4">
+                    <ScrollArea className="h-[calc(100vh-300px)] sm:h-[500px] pr-2 mt-3">
+                        <div className="space-y-3">
                             <AnimatePresence mode="sync">
                                 {filteredExperiences.length > 0 ? (
                                     filteredExperiences.map((exp) => (
@@ -804,10 +876,10 @@ const ExperienceManager: React.FC<Props> = ({ auth, experiences: initialExperien
                                         exit={{ opacity: 0 }}
                                     >
                                         <Card className="border-amber-100 dark:border-amber-900/50">
-                                            <CardContent className="p-12 text-center">
+                                            <CardContent className="p-6 text-center">
                                                 <div className="flex flex-col items-center gap-2">
-                                                    <PencilRuler className="w-12 h-12 text-amber-500 dark:text-amber-400" />
-                                                    <p className="text-gray-500 dark:text-gray-400">
+                                                    <PencilRuler className="w-8 h-8 text-amber-500 dark:text-amber-400" />
+                                                    <p className="text-sm text-gray-500 dark:text-gray-400">
                                                         {searchTerm
                                                             ? t('experiences.empty.search')
                                                             : t('experiences.empty.experiences')
@@ -824,11 +896,11 @@ const ExperienceManager: React.FC<Props> = ({ auth, experiences: initialExperien
                 </TabsContent>
                 <TabsContent value="attachments">
                     <Card className="border-amber-100 dark:border-amber-900/50">
-                        <CardContent className="p-6">
-                            <div className="space-y-6">
+                        <CardContent className="p-3">
+                            <div className="space-y-4">
                                 <AttachmentStatistics summary={attachmentSummary} />
 
-                                <div className="space-y-4">
+                                <div className="space-y-3">
                                     <AnimatePresence mode="sync">
                                         {experiences
                                             .filter(exp => exp.attachment_path)
@@ -840,52 +912,44 @@ const ExperienceManager: React.FC<Props> = ({ auth, experiences: initialExperien
                                                     exit={{ opacity: 0, y: -20 }}
                                                     transition={{ duration: 0.2 }}
                                                 >
-                                                    <Card className="hover:shadow-md transition-all dark:bg-gray-800">
-                                                        <CardContent className="p-4">
-                                                            <div className="flex items-center justify-between">
-                                                                <div className="flex-1">
-                                                                    <h4 className="font-semibold text-gray-800 dark:text-white">
-                                                                        {exp.name}
-                                                                    </h4>
-                                                                    <p className="text-sm text-gray-500 dark:text-gray-400">
-                                                                        {exp.InstitutionName}
+                                                    <Card className="dark:bg-gray-800">
+                                                        <CardContent className="p-2">
+                                                            <div className="flex items-center gap-2">
+                                                                <div className="flex-1 min-w-0">
+                                                                    <div className="flex items-center">
+                                                                        <FileText className="w-3 h-3 text-amber-500 dark:text-amber-400 mr-1 flex-shrink-0" />
+                                                                        <h4 className="font-semibold text-xs text-gray-800 dark:text-white truncate">
+                                                                            {exp.name.length > 15 ? exp.name.substring(0, 15) + '...' : exp.name}
+                                                                        </h4>
+                                                                    </div>
+                                                                    <p className="text-[10px] text-gray-500 dark:text-gray-400 truncate flex items-center">
+                                                                        <span className="truncate">{exp.InstitutionName}</span>
                                                                     </p>
                                                                     {exp.attachment_size && (
-                                                                        <Badge
-                                                                            variant="outline"
-                                                                            className="mt-2 bg-gradient-to-r from-amber-50 to-purple-50
-                                                                                     dark:from-amber-900/20 dark:to-purple-900/20
-                                                                                     dark:text-gray-200"
-                                                                        >
+                                                                        <span className="text-[10px] text-gray-500 dark:text-gray-400 mt-1 flex items-center">
                                                                             {formatBytes(Number(exp.attachment_size))}
-                                                                        </Badge>
+                                                                        </span>
                                                                     )}
                                                                 </div>
-                                                                <div className="flex gap-2">
-                                                                    <Button
-                                                                        variant="ghost"
-                                                                        size="sm"
+                                                                <div className="flex gap-1">
+                                                                    <button
                                                                         onClick={() => handlePreviewPDF(exp.attachment_path)}
-                                                                        className="hover:bg-amber-50 dark:hover:bg-amber-900/20"
+                                                                        className="h-5 w-5 flex items-center justify-center text-amber-500 dark:text-amber-400 hover:bg-amber-50 dark:hover:bg-amber-900/20 rounded"
                                                                     >
-                                                                        <Eye className="w-4 h-4 text-amber-500 dark:text-amber-400" />
-                                                                    </Button>
-                                                                    <Button
-                                                                        variant="ghost"
-                                                                        size="sm"
+                                                                        <Eye className="w-3 h-3" />
+                                                                    </button>
+                                                                    <button
                                                                         onClick={() => handleEdit(exp)}
-                                                                        className="hover:bg-purple-50 dark:hover:bg-purple-900/20"
+                                                                        className="h-5 w-5 flex items-center justify-center text-purple-500 dark:text-purple-400 hover:bg-purple-50 dark:hover:bg-purple-900/20 rounded"
                                                                     >
-                                                                        <Edit className="w-4 h-4 text-purple-500 dark:text-purple-400" />
-                                                                    </Button>
-                                                                    <Button
-                                                                        variant="ghost"
-                                                                        size="sm"
+                                                                        <Edit className="w-3 h-3" />
+                                                                    </button>
+                                                                    <button
                                                                         onClick={() => handleDeleteAttachment(exp.id)}
-                                                                        className="hover:bg-red-50 dark:hover:bg-red-900/20"
+                                                                        className="h-5 w-5 flex items-center justify-center text-red-500 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded"
                                                                     >
-                                                                        <Trash2 className="w-4 h-4 text-red-500 dark:text-red-400" />
-                                                                    </Button>
+                                                                        <Trash2 className="w-3 h-3" />
+                                                                    </button>
                                                                 </div>
                                                             </div>
                                                         </CardContent>
@@ -894,11 +958,12 @@ const ExperienceManager: React.FC<Props> = ({ auth, experiences: initialExperien
                                             ))}
                                     </AnimatePresence>
 
+
                                     {experiences.filter(exp => exp.attachment_path).length === 0 && (
                                         <Card className="dark:bg-gray-800">
-                                            <CardContent className="p-12 text-center">
-                                                <FileText className="w-12 h-12 text-amber-500 dark:text-amber-400 mx-auto mb-4" />
-                                                <p className="text-gray-500 dark:text-gray-400">
+                                            <CardContent className="p-6 text-center">
+                                                <FileText className="w-8 h-8 text-amber-500 dark:text-amber-400 mx-auto mb-3" />
+                                                <p className="text-sm text-gray-500 dark:text-gray-400">
                                                     {t('experiences.empty.attachments')}
                                                 </p>
                                             </CardContent>
@@ -912,37 +977,37 @@ const ExperienceManager: React.FC<Props> = ({ auth, experiences: initialExperien
             </Tabs>
 
             <Sheet open={isFormOpen} onOpenChange={setIsFormOpen}>
-                <SheetContent side="right" className="w-full sm:max-w-xl overflow-y-auto">
-                    <SheetHeader>
-                        <SheetTitle className="flex items-center gap-2 text-gray-800 dark:text-white">
-                            <PencilRuler className="w-5 h-5 text-amber-500 dark:text-amber-400" />
+                <SheetContent side="right" className="w-full max-w-md overflow-y-auto p-3 sm:p-4">
+                    <SheetHeader className="text-left pb-2">
+                        <SheetTitle className="flex items-center gap-2 text-lg text-gray-800 dark:text-white">
+                            <PencilRuler className="w-4 h-4 text-amber-500 dark:text-amber-400" />
                             {data.id ? t('experiences.form.title.edit') : t('experiences.form.title.new')}
                         </SheetTitle>
-                        <SheetDescription className="dark:text-gray-400">
+                        <SheetDescription className="text-xs dark:text-gray-400">
                             {data.id ? t('experiences.form.description.edit') : t('experiences.form.description.new')}
                         </SheetDescription>
                     </SheetHeader>
 
-                    <form onSubmit={handleSubmit} className="space-y-6 pt-6">
+                    <form onSubmit={handleSubmit} className="space-y-4 pt-3">
                         {/* Template Selection */}
                         <Card className="border-amber-100 dark:border-amber-900/50">
-                            <CardHeader>
-                                <CardTitle className="text-base dark:text-white">
+                            <CardHeader className="p-3">
+                                <CardTitle className="text-sm dark:text-white">
                                     {t('experiences.form.templates.title')}
                                 </CardTitle>
-                                <CardDescription className="dark:text-gray-400">
+                                <CardDescription className="text-xs dark:text-gray-400">
                                     {t('experiences.form.templates.description')}
                                 </CardDescription>
                             </CardHeader>
-                            <CardContent className="grid grid-cols-1 gap-2">
+                            <CardContent className="grid grid-cols-1 gap-2 p-3 pt-0">
                                 <Button
                                     type="button"
                                     variant="outline"
                                     onClick={() => handleTemplateSelection('academic')}
                                     className="justify-start border-amber-200 dark:border-amber-800 hover:bg-amber-50
-                                             dark:hover:bg-amber-900/20 dark:text-white"
+                                             dark:hover:bg-amber-900/20 dark:text-white h-8 text-xs"
                                 >
-                                    <GraduationCap className="w-4 h-4 mr-2 text-amber-500 dark:text-amber-400" />
+                                    <GraduationCap className="w-3 h-3 mr-1" />
                                     {t('experiences.form.templates.academic')}
                                 </Button>
                                 <Button
@@ -950,9 +1015,9 @@ const ExperienceManager: React.FC<Props> = ({ auth, experiences: initialExperien
                                     variant="outline"
                                     onClick={() => handleTemplateSelection('internship')}
                                     className="justify-start border-amber-200 dark:border-amber-800 hover:bg-amber-50
-                                             dark:hover:bg-amber-900/20 dark:text-white"
+                                             dark:hover:bg-amber-900/20 dark:text-white h-8 text-xs"
                                 >
-                                    <Briefcase className="w-4 h-4 mr-2 text-purple-500 dark:text-purple-400" />
+                                    <Briefcase className="w-3 h-3 mr-1" />
                                     {t('experiences.form.templates.internship')}
                                 </Button>
                                 <Button
@@ -960,53 +1025,52 @@ const ExperienceManager: React.FC<Props> = ({ auth, experiences: initialExperien
                                     variant="outline"
                                     onClick={() => handleTemplateSelection('volunteer')}
                                     className="justify-start border-amber-200 dark:border-amber-800 hover:bg-amber-50
-                                             dark:hover:bg-amber-900/20 dark:text-white"
+                                             dark:hover:bg-amber-900/20 dark:text-white h-8 text-xs"
                                 >
-                                    <Users className="w-4 h-4 mr-2 text-amber-500 dark:text-amber-400" />
+                                    <Users className="w-3 h-3 mr-1" />
                                     {t('experiences.form.templates.volunteer')}
                                 </Button>
                             </CardContent>
                         </Card>
                         {/* Basic Information Fields */}
-                        <div className="grid grid-cols-2 gap-4">
-                            <div className="space-y-2">
-                                <Label htmlFor="name" className="text-gray-700 dark:text-gray-200">
-                                    {t('experiences.form.fields.name.label')}
-                                </Label>
-                                <Input
-                                    id="name"
-                                    value={data.name}
-                                    onChange={(e) => setData('name', e.target.value)}
-                                    placeholder={t('experiences.form.fields.name.placeholder')}
-                                    className="border-amber-200 dark:border-amber-800 focus:ring-amber-500
-                                             dark:focus:ring-amber-400 dark:bg-gray-900 dark:text-white"
-                                />
-                                {errors.name && (
-                                    <p className="text-sm text-red-500 dark:text-red-400">{errors.name}</p>
-                                )}
-                            </div>
-                            <div className="space-y-2">
-                                <Label htmlFor="InstitutionName" className="text-gray-700 dark:text-gray-200">
-                                    {t('experiences.form.fields.institution.label')}
-                                </Label>
-                                <Input
-                                    id="InstitutionName"
-                                    value={data.InstitutionName}
-                                    onChange={(e) => setData('InstitutionName', e.target.value)}
-                                    placeholder={t('experiences.form.fields.institution.placeholder')}
-                                    className="border-amber-200 dark:border-amber-800 focus:ring-amber-500
-                                             dark:focus:ring-amber-400 dark:bg-gray-900 dark:text-white"
-                                />
-                                {errors.InstitutionName && (
-                                    <p className="text-sm text-red-500 dark:text-red-400">{errors.InstitutionName}</p>
-                                )}
-                            </div>
+                        <div className="space-y-2">
+                            <Label htmlFor="name" className="text-xs text-gray-700 dark:text-gray-200">
+                                {t('experiences.form.fields.name.label')}
+                            </Label>
+                            <Input
+                                id="name"
+                                value={data.name}
+                                onChange={(e) => setData('name', e.target.value)}
+                                placeholder={t('experiences.form.fields.name.placeholder')}
+                                className="border-amber-200 dark:border-amber-800 focus:ring-amber-500
+                                         dark:focus:ring-amber-400 dark:bg-gray-900 dark:text-white h-8 text-sm"
+                            />
+                            {errors.name && (
+                                <p className="text-xs text-red-500 dark:text-red-400">{errors.name}</p>
+                            )}
+                        </div>
+
+                        <div className="space-y-2">
+                            <Label htmlFor="InstitutionName" className="text-xs text-gray-700 dark:text-gray-200">
+                                {t('experiences.form.fields.institution.label')}
+                            </Label>
+                            <Input
+                                id="InstitutionName"
+                                value={data.InstitutionName}
+                                onChange={(e) => setData('InstitutionName', e.target.value)}
+                                placeholder={t('experiences.form.fields.institution.placeholder')}
+                                className="border-amber-200 dark:border-amber-800 focus:ring-amber-500
+                                         dark:focus:ring-amber-400 dark:bg-gray-900 dark:text-white h-8 text-sm"
+                            />
+                            {errors.InstitutionName && (
+                                <p className="text-xs text-red-500 dark:text-red-400">{errors.InstitutionName}</p>
+                            )}
                         </div>
 
                         {/* Dates Fields */}
-                        <div className="grid grid-cols-2 gap-4">
-                            <div className="space-y-2">
-                                <Label htmlFor="date_start" className="text-gray-700 dark:text-gray-200">
+                        <div className="grid grid-cols-2 gap-2">
+                            <div className="space-y-1">
+                                <Label htmlFor="date_start" className="text-xs text-gray-700 dark:text-gray-200">
                                     {t('experiences.form.fields.dates.start')}
                                 </Label>
                                 <Input
@@ -1015,14 +1079,14 @@ const ExperienceManager: React.FC<Props> = ({ auth, experiences: initialExperien
                                     value={data.date_start}
                                     onChange={(e) => setData('date_start', e.target.value)}
                                     className="border-amber-200 dark:border-amber-800 focus:ring-amber-500
-                                             dark:focus:ring-amber-400 dark:bg-gray-900 dark:text-white"
+                                             dark:focus:ring-amber-400 dark:bg-gray-900 dark:text-white h-8 text-sm"
                                 />
                                 {errors.date_start && (
-                                    <p className="text-sm text-red-500 dark:text-red-400">{errors.date_start}</p>
+                                    <p className="text-xs text-red-500 dark:text-red-400">{errors.date_start}</p>
                                 )}
                             </div>
-                            <div className="space-y-2">
-                                <Label htmlFor="date_end" className="text-gray-700 dark:text-gray-200">
+                            <div className="space-y-1">
+                                <Label htmlFor="date_end" className="text-xs text-gray-700 dark:text-gray-200">
                                     {t('experiences.form.fields.dates.end')}
                                 </Label>
                                 <Input
@@ -1031,20 +1095,20 @@ const ExperienceManager: React.FC<Props> = ({ auth, experiences: initialExperien
                                     value={data.date_end || ''}
                                     onChange={(e) => setData('date_end', e.target.value)}
                                     className="border-amber-200 dark:border-amber-800 focus:ring-amber-500
-                                             dark:focus:ring-amber-400 dark:bg-gray-900 dark:text-white"
+                                             dark:focus:ring-amber-400 dark:bg-gray-900 dark:text-white h-8 text-sm"
                                 />
-                                <p className="text-xs text-gray-500 dark:text-gray-400">
-                                    {t('experiences.form.fields.dates.ongoing')}
-                                </p>
                                 {errors.date_end && (
-                                    <p className="text-sm text-red-500 dark:text-red-400">{errors.date_end}</p>
+                                    <p className="text-xs text-red-500 dark:text-red-400">{errors.date_end}</p>
                                 )}
                             </div>
                         </div>
+                        <p className="text-xs text-gray-500 dark:text-gray-400 -mt-2">
+                            {t('experiences.form.fields.dates.ongoing')}
+                        </p>
 
                         {/* Experience Type Select */}
                         <div className="space-y-2">
-                            <Label htmlFor="experience_categories_id" className="text-gray-700 dark:text-gray-200">
+                            <Label htmlFor="experience_categories_id" className="text-xs text-gray-700 dark:text-gray-200">
                                 {t('experiences.form.fields.type.label')}
                             </Label>
                             <Select
@@ -1052,16 +1116,16 @@ const ExperienceManager: React.FC<Props> = ({ auth, experiences: initialExperien
                                 onValueChange={(value) => setData('experience_categories_id', value)}
                             >
                                 <SelectTrigger className="border-amber-200 dark:border-amber-800 focus:ring-amber-500
-                                                       dark:focus:ring-amber-400 dark:bg-gray-900">
+                                                       dark:focus:ring-amber-400 dark:bg-gray-900 h-8 text-sm">
                                     <SelectValue placeholder={t('experiences.form.fields.type.placeholder')} />
                                 </SelectTrigger>
                                 <SelectContent className="dark:bg-gray-900">
                                     {categories.map((cat) => (
-                                        <SelectItem key={cat.id} value={cat.id.toString()}>
+                                        <SelectItem key={cat.id} value={cat.id.toString()} className="text-sm">
                                             <div className="flex items-center gap-2">
-                                                {cat.id === 1 && <Briefcase className="w-4 h-4 text-amber-500 dark:text-amber-400" />}
-                                                {cat.id === 2 && <GraduationCap className="w-4 h-4 text-purple-500 dark:text-purple-400" />}
-                                                {cat.id === 3 && <Users className="w-4 h-4 text-amber-500 dark:text-amber-400" />}
+                                                {cat.id === 1 && <Briefcase className="w-3 h-3 text-amber-500 dark:text-amber-400" />}
+                                                {cat.id === 2 && <GraduationCap className="w-3 h-3 text-purple-500 dark:text-purple-400" />}
+                                                {cat.id === 3 && <Users className="w-3 h-3 text-amber-500 dark:text-amber-400" />}
                                                 <span className="dark:text-white">{cat.name}</span>
                                             </div>
                                         </SelectItem>
@@ -1069,7 +1133,7 @@ const ExperienceManager: React.FC<Props> = ({ auth, experiences: initialExperien
                                 </SelectContent>
                             </Select>
                             {errors.experience_categories_id && (
-                                <p className="text-sm text-red-500 dark:text-red-400">
+                                <p className="text-xs text-red-500 dark:text-red-400">
                                     {errors.experience_categories_id}
                                 </p>
                             )}
@@ -1077,7 +1141,7 @@ const ExperienceManager: React.FC<Props> = ({ auth, experiences: initialExperien
 
                         {/* Description and Results Fields */}
                         <div className="space-y-2">
-                            <Label htmlFor="description" className="text-gray-700 dark:text-gray-200">
+                            <Label htmlFor="description" className="text-xs text-gray-700 dark:text-gray-200">
                                 {t('experiences.form.fields.description.label')}
                             </Label>
                             <Textarea
@@ -1085,17 +1149,17 @@ const ExperienceManager: React.FC<Props> = ({ auth, experiences: initialExperien
                                 value={data.description}
                                 onChange={(e) => setData('description', e.target.value)}
                                 placeholder={t('experiences.form.fields.description.placeholder')}
-                                rows={4}
+                                rows={3}
                                 className="border-amber-200 dark:border-amber-800 focus:ring-amber-500
-                                         dark:focus:ring-amber-400 dark:bg-gray-900 dark:text-white"
+                                         dark:focus:ring-amber-400 dark:bg-gray-900 dark:text-white text-sm min-h-[80px]"
                             />
                             {errors.description && (
-                                <p className="text-sm text-red-500 dark:text-red-400">{errors.description}</p>
+                                <p className="text-xs text-red-500 dark:text-red-400">{errors.description}</p>
                             )}
                         </div>
 
                         <div className="space-y-2">
-                            <Label htmlFor="output" className="text-gray-700 dark:text-gray-200">
+                            <Label htmlFor="output" className="text-xs text-gray-700 dark:text-gray-200">
                                 {t('experiences.form.fields.output.label')}
                             </Label>
                             <Input
@@ -1104,38 +1168,40 @@ const ExperienceManager: React.FC<Props> = ({ auth, experiences: initialExperien
                                 onChange={(e) => setData('output', e.target.value)}
                                 placeholder={t('experiences.form.fields.output.placeholder')}
                                 className="border-amber-200 dark:border-amber-800 focus:ring-amber-500
-                                         dark:focus:ring-amber-400 dark:bg-gray-900 dark:text-white"
+                                         dark:focus:ring-amber-400 dark:bg-gray-900 dark:text-white h-8 text-sm"
                             />
                             {errors.output && (
-                                <p className="text-sm text-red-500 dark:text-red-400">{errors.output}</p>
+                                <p className="text-xs text-red-500 dark:text-red-400">{errors.output}</p>
                             )}
                         </div>
 
                         {/* Attachment Section */}
                         <div className="space-y-2">
-                            <Label className="text-gray-700 dark:text-gray-200">
+                            <Label className="text-xs text-gray-700 dark:text-gray-200">
                                 <div className="flex items-center justify-between">
-                                    <div className="flex items-center gap-2">
+                                    <div className="flex items-center gap-1">
                                         <span>{t('experiences.form.attachment.title')}</span>
                                         <Badge
                                             variant="secondary"
                                             className="bg-gradient-to-r from-amber-100 to-purple-100
-                                                     dark:from-amber-900/20 dark:to-purple-900/20"
+                                                     dark:from-amber-900/20 dark:to-purple-900/20 text-xs"
                                         >
                                             {t('experiences.form.attachment.maxSize')}
                                         </Badge>
                                     </div>
                                     {/*@ts-ignore*/}
+
                                     {data.attachment_path && (
                                         <Button
                                             type="button"
                                             variant="ghost"
                                             size="sm"
-                                            // @ts-ignore
-                                            onClick={() => handleDeleteAttachment(data.id)}
-                                            className="hover:bg-red-50 dark:hover:bg-red-900/20"
+                                            //@ts-ignore
+
+                                            onClick={() => handleDeleteAttachment(data.id as number)}
+                                            className="h-7 px-2 text-xs"
                                         >
-                                            <Trash2 className="w-4 h-4 text-red-500 dark:text-red-400" />
+                                            <Trash2 className="w-3 h-3 text-red-500 dark:text-red-400 mr-1" />
                                             {t('experiences.form.attachment.delete')}
                                         </Button>
                                     )}
@@ -1146,30 +1212,33 @@ const ExperienceManager: React.FC<Props> = ({ auth, experiences: initialExperien
                                 type="file"
                                 onChange={(e) => {
                                     const file = e.target.files?.[0] || null;
-                                    // @ts-ignore
+                                    //@ts-ignore
+
                                     if (file && data.attachment_path) {
-                                        // @ts-ignore
-                                        handleDeleteAttachment(data.id);
+                                        //@ts-ignore
+
+                                        handleDeleteAttachment(data.id as number);
                                     }
                                     setData('attachment', file);
                                 }}
                                 className="border-amber-200 dark:border-amber-800 focus:ring-amber-500
                                          dark:focus:ring-amber-400 dark:bg-gray-900 dark:text-white
-                                         cursor-pointer"
+                                         cursor-pointer text-xs py-1"
                                 accept=".pdf,.doc,.docx"
                             />
-                           {/*@ts-ignore*/}
+                            {/*@ts-ignore*/}
+
                             {data.attachment_path && (
-                                <div className="flex items-center gap-2 mt-2">
-                                    <FileText className="w-4 h-4 text-amber-500 dark:text-amber-400" />
-                                    <span className="text-sm text-gray-600 dark:text-gray-300">
+                                <div className="flex items-center gap-2 mt-1">
+                                    <FileText className="w-3 h-3 text-amber-500 dark:text-amber-400" />
+                                    <span className="text-xs text-gray-600 dark:text-gray-300 truncate">
                                         {/*@ts-ignore*/}
                                         {t('experiences.form.attachment.current')} {data.attachment_path.split('/').pop()}
                                     </span>
                                 </div>
                             )}
                             {errors.attachment && (
-                                <p className="text-sm text-red-500 dark:text-red-400">{errors.attachment}</p>
+                                <p className="text-xs text-red-500 dark:text-red-400">{errors.attachment}</p>
                             )}
                             <p className="text-xs text-gray-500 dark:text-gray-400">
                                 {t('experiences.form.attachment.formats')}
@@ -1185,11 +1254,11 @@ const ExperienceManager: React.FC<Props> = ({ auth, experiences: initialExperien
                                          hover:from-amber-600 hover:to-purple-600
                                          dark:from-amber-400 dark:to-purple-400
                                          dark:hover:from-amber-500 dark:hover:to-purple-500
-                                         text-white"
+                                         text-white h-9 text-sm"
                             >
                                 {isLoading ? (
                                     <div className="flex items-center gap-2">
-                                        <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                                        <div className="w-3 h-3 border-2 border-white border-t-transparent rounded-full animate-spin" />
                                         {t('common.loading')}
                                     </div>
                                 ) : data.id ? t('experiences.actions.update') : t('experiences.actions.save')}
@@ -1199,7 +1268,7 @@ const ExperienceManager: React.FC<Props> = ({ auth, experiences: initialExperien
                                 variant="outline"
                                 onClick={resetForm}
                                 className="border-amber-200 dark:border-amber-800 hover:bg-amber-50
-                                         dark:hover:bg-amber-900/20 dark:text-white"
+                                         dark:hover:bg-amber-900/20 dark:text-white h-9 text-sm"
                             >
                                 {t('experiences.actions.cancel')}
                             </Button>

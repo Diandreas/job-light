@@ -55,43 +55,39 @@ const WelcomeCard = ({ percentage, onImport }) => {
     const { t } = useTranslation();
 
     return (
-        <Card className="bg-gradient-to-r from-amber-50 to-purple-50 dark:from-gray-800 dark:to-gray-900 border-none mb-4 md:mb-6">
-            <CardContent className="p-4 md:p-6">
-                <div className="flex flex-col md:flex-row items-center justify-between gap-4 md:gap-6">
-                    <div className="space-y-2 w-full md:w-auto">
-                        <h3 className="text-lg md:text-xl font-semibold text-gray-800 dark:text-white">
+        <Card className="bg-gradient-to-r from-amber-50 to-purple-50 dark:from-gray-800 dark:to-gray-900 border-none mb-3 sm:mb-4">
+            <CardContent className="p-3 sm:p-4">
+                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4">
+                    <div className="space-y-1 sm:space-y-2 w-full sm:w-auto">
+                        <h3 className="text-base sm:text-lg font-semibold text-gray-800 dark:text-white">
                             {t('cv.interface.welcome.title')}
                         </h3>
-                        <p className="text-sm md:text-base text-gray-600 dark:text-gray-300">
+                        <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-300">
                             {t('cv.interface.welcome.subtitle')}
                         </p>
-                        <div className="flex items-center gap-4">
-                            <Progress value={percentage} className="w-32"/>
-                            <span className="text-sm font-medium">
+                        <div className="flex items-center gap-2 sm:gap-3">
+                            <Progress value={percentage} className="w-24 sm:w-32 h-2 sm:h-3"/>
+                            <span className="text-xs sm:text-sm font-medium">
                                 {percentage}% {t('cv.interface.welcome.complete')}
                             </span>
                         </div>
                     </div>
                     <DropdownMenu>
                         <DropdownMenuTrigger asChild>
-                            <Button variant="outline" className="w-full md:w-auto border-amber-200 dark:border-amber-800 hover:bg-amber-50 dark:hover:bg-amber-900/50">
-                                <FileUp className="w-4 h-4 mr-2" />
+                            <Button variant="outline" className="w-full sm:w-auto text-xs sm:text-sm h-7 sm:h-9 py-0 border-amber-200 dark:border-amber-800 hover:bg-amber-50 dark:hover:bg-amber-900/50">
+                                <FileUp className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
                                 {t('cv.interface.import.button')}
                             </Button>
                         </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
-                            <DropdownMenuItem onClick={() => onImport('pdf')} className="cursor-pointer">
-                                <FileText className="w-4 h-4 mr-2" />
-                                {t('cv.interface.import.pdf')}( - 5 <Coins/>)
+                        <DropdownMenuContent align="end" className="text-xs sm:text-sm">
+                            <DropdownMenuItem onClick={() => onImport('pdf')} className="cursor-pointer h-8 sm:h-10">
+                                <FileText className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
+                                {t('cv.interface.import.pdf')}( - 5 <Coins className="w-3 h-3 sm:w-4 sm:h-4"/>)
                             </DropdownMenuItem>
-                            <DropdownMenuItem onClick={() => onImport('docx')} className="cursor-pointer">
-                                <FileText className="w-4 h-4 mr-2" />
-                                {t('cv.interface.import.word')}( - 5 <Coins/>)
+                            <DropdownMenuItem onClick={() => onImport('docx')} className="cursor-pointer h-8 sm:h-10">
+                                <FileText className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
+                                {t('cv.interface.import.word')}( - 5 <Coins className="w-3 h-3 sm:w-4 sm:h-4"/>)
                             </DropdownMenuItem>
-                            {/*<DropdownMenuItem onClick={() => onImport('ai')} className="cursor-pointer">*/}
-                            {/*    <Bot className="w-4 h-4 mr-2" />*/}
-                            {/*    {t('cv.interface.import.ai')}*/}
-                            {/*</DropdownMenuItem>*/}
                         </DropdownMenuContent>
                     </DropdownMenu>
                 </div>
@@ -161,7 +157,7 @@ const PersonalInfoCard = ({ item, onEdit, updateCvInformation }) => {
             setIsUploading(true);
             const croppedImage = await getCroppedImg();
             const formData = new FormData();
-            // @ts-ignore
+            //@ts-ignore
             formData.append('photo', croppedImage, 'profile.jpg');
 
             const response = await axios.post(route('personal-information.update-photo'), formData, {
@@ -208,29 +204,29 @@ const PersonalInfoCard = ({ item, onEdit, updateCvInformation }) => {
             width,
             height
         );
-        // @ts-ignore
+        //@ts-ignore
         setCrop(crop);
     };
 
     return (
-        <div className="space-y-4 md:space-y-6">
-            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-                <h2 className="text-xl md:text-2xl font-bold text-gray-800 dark:text-white">
+        <div className="space-y-3 sm:space-y-4">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 sm:gap-4">
+                <h2 className="text-lg sm:text-xl font-bold text-gray-800 dark:text-white">
                     {t('cv.interface.personal.title')}
                 </h2>
                 <Button
                     onClick={onEdit}
-                    className="w-full md:w-auto bg-gradient-to-r from-amber-500 to-purple-500 hover:from-amber-600 hover:to-purple-600 dark:from-amber-400 dark:to-purple-400 text-white"
+                    className="w-full sm:w-auto bg-gradient-to-r from-amber-500 to-purple-500 hover:from-amber-600 hover:to-purple-600 dark:from-amber-400 dark:to-purple-400 text-white h-8 sm:h-10 text-xs sm:text-sm py-0"
                 >
-                    <PencilIcon className="h-4 w-4 mr-2" />
+                    <PencilIcon className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
                     {t('cv.interface.personal.edit')}
                 </Button>
             </div>
 
             <Card>
-                <CardContent className="p-4 md:p-6 space-y-4 md:space-y-6">
-                    <div className="flex flex-col md:flex-row items-center gap-4 border-b border-amber-100 dark:border-amber-800 pb-4">
-                        <div className="relative h-20 w-20">
+                <CardContent className="p-3 sm:p-5 space-y-3 sm:space-y-4">
+                    <div className="flex items-center gap-3 sm:gap-4 border-b border-amber-100 dark:border-amber-800 pb-3 sm:pb-4">
+                        <div className="relative h-16 w-16 sm:h-20 sm:w-20 flex-shrink-0">
                             {item.photo ? (
                                 <img
                                     src={item.photo}
@@ -239,10 +235,10 @@ const PersonalInfoCard = ({ item, onEdit, updateCvInformation }) => {
                                 />
                             ) : (
                                 <div className="h-full w-full rounded-full bg-gradient-to-r from-amber-500/10 to-purple-500/10 flex items-center justify-center">
-                                    <Camera className="h-8 w-8 text-amber-500" />
+                                    <Camera className="h-6 w-6 sm:h-8 sm:w-8 text-amber-500" />
                                 </div>
                             )}
-                            <label className="absolute bottom-0 right-0 p-1.5 bg-white dark:bg-gray-800 rounded-full shadow-lg cursor-pointer">
+                            <label className="absolute bottom-0 right-0 p-1 sm:p-1.5 bg-white dark:bg-gray-800 rounded-full shadow-lg cursor-pointer">
                                 <input
                                     type="file"
                                     className="hidden"
@@ -250,30 +246,30 @@ const PersonalInfoCard = ({ item, onEdit, updateCvInformation }) => {
                                     onChange={onSelectFile}
                                     disabled={isUploading}
                                 />
-                                <Upload className={`h-4 w-4 ${isUploading ? 'text-gray-400 animate-pulse' : 'text-amber-500'}`} />
+                                <Upload className={`h-3 w-3 sm:h-4 sm:w-4 ${isUploading ? 'text-gray-400 animate-pulse' : 'text-amber-500'}`} />
                             </label>
                         </div>
-                        <div>
-                            <h3 className="text-xl md:text-2xl font-bold text-gray-900 dark:text-white text-center md:text-left">
+                        <div className="min-w-0">
+                            <h3 className="text-base sm:text-xl font-bold text-gray-900 dark:text-white truncate">
                                 {item.firstName}
                             </h3>
-                            <p className="text-gray-500 dark:text-gray-400 text-base md:text-lg text-center md:text-left">
+                            <p className="text-gray-500 dark:text-gray-400 text-xs sm:text-sm truncate">
                                 {item.profession || t('cv.interface.personal.fields.notSpecified')}
                             </p>
                         </div>
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-8">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-4">
                         {PERSONAL_INFO_FIELDS.map(({ label, key, icon: Icon }) => (
-                            <div key={label} className="flex items-start gap-3">
-                                <div className="mt-1">
-                                    <Icon className="h-5 w-5 text-amber-500" />
+                            <div key={label} className="flex items-start gap-2 sm:gap-3">
+                                <div className="mt-0.5">
+                                    <Icon className="h-3 w-3 sm:h-5 sm:w-5 text-amber-500" />
                                 </div>
-                                <div className="flex-1">
-                                    <p className="text-sm text-gray-500 dark:text-gray-400 font-medium">
+                                <div className="flex-1 min-w-0">
+                                    <p className="text-[10px] sm:text-sm text-gray-500 dark:text-gray-400 font-medium">
                                         {t(`cv.interface.personal.fields.${key}`)}
                                     </p>
-                                    <p className="text-gray-900 dark:text-white font-medium break-all">
+                                    <p className="text-xs sm:text-base text-gray-900 dark:text-white font-medium truncate">
                                         {item[key] || t('cv.interface.personal.fields.notSpecified')}
                                     </p>
                                 </div>
@@ -284,25 +280,24 @@ const PersonalInfoCard = ({ item, onEdit, updateCvInformation }) => {
             </Card>
 
             <Sheet open={isOpen} onOpenChange={setIsOpen}>
-                <SheetContent side="right" className="w-full sm:max-w-xl">
-                    <SheetHeader>
-                        <SheetTitle>{t('cv.interface.personal.photo.crop')}</SheetTitle>
-                        <SheetDescription>
+                <SheetContent side="right" className="w-full sm:max-w-xl p-3 sm:p-4">
+                    <SheetHeader className="text-left">
+                        <SheetTitle className="text-base sm:text-lg">{t('cv.interface.personal.photo.crop')}</SheetTitle>
+                        <SheetDescription className="text-xs sm:text-sm">
                             {t('cv.interface.personal.photo.cropDescription')}
                         </SheetDescription>
                     </SheetHeader>
 
-                    <Separator className="my-4" />
+                    <Separator className="my-3 sm:my-4" />
 
-                    <ScrollArea className="h-[calc(100vh-12rem)] pr-4">
-                        <div className="space-y-4">
+                    <ScrollArea className="h-[calc(100vh-10rem)] pr-2 sm:pr-4">
+                        <div className="space-y-3 sm:space-y-4">
                             {uploadedImage && (
                                 <ReactCrop
-                                    // @ts-ignore
+                                    //@ts-ignore
                                     crop={crop}
-                                    // @ts-ignore
+                                    //@ts-ignore
                                     onChange={c => setCrop(c)}
-                                    // @ts-ignore
                                     onComplete={c => setCompletedCrop(c)}
                                     aspect={1}
                                     className="max-w-full"
@@ -318,14 +313,14 @@ const PersonalInfoCard = ({ item, onEdit, updateCvInformation }) => {
                         </div>
                     </ScrollArea>
 
-                    <div className="flex justify-end gap-2 mt-4 sticky bottom-0 bg-white dark:bg-gray-900 pt-4 border-t border-amber-100 dark:border-amber-800">
-                        <Button variant="outline" onClick={() => setIsOpen(false)}>
+                    <div className="flex justify-end gap-2 sm:gap-3 mt-3 sm:mt-4 sticky bottom-0 bg-white dark:bg-gray-900 pt-3 sm:pt-4 border-t border-amber-100 dark:border-amber-800">
+                        <Button variant="outline" onClick={() => setIsOpen(false)} className="h-8 sm:h-10 text-xs sm:text-sm">
                             {t('cv.interface.personal.photo.cancel')}
                         </Button>
                         <Button
                             onClick={handleSave}
                             disabled={!completedCrop || isUploading}
-                            className="bg-gradient-to-r from-amber-500 to-purple-500 hover:from-amber-600 hover:to-purple-600 dark:from-amber-400 dark:to-purple-400"
+                            className="bg-gradient-to-r from-amber-500 to-purple-500 hover:from-amber-600 hover:to-purple-600 dark:from-amber-400 dark:to-purple-400 h-8 sm:h-10 text-xs sm:text-sm"
                         >
                             {isUploading ? t('cv.interface.personal.photo.saving') : t('cv.interface.personal.photo.save')}
                         </Button>
@@ -343,52 +338,53 @@ const SidebarButton = ({ item, isActive, isComplete, onClick, isMobile }) => {
     return (
         <motion.button
             onClick={onClick}
-            className={`flex items-center justify-between p-3 rounded-lg transition-all ${isActive ? activeClass : inactiveClass} ${isMobile ? 'w-12' : 'w-full'}`}
+            className={`flex items-center justify-between p-2 sm:p-3 rounded-lg transition-all ${isActive ? activeClass : inactiveClass} ${isMobile ? 'w-9 sm:w-10' : 'w-full'}`}
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
         >
-            <div className="flex items-center gap-3">
-                <item.icon className={`h-5 w-5 ${isActive ? 'text-white' : item.color}`} />
-                {!isMobile && <span className="font-medium">{item.label}</span>}
+            <div className="flex items-center gap-2">
+                <item.icon className={`h-4 w-4 sm:h-5 sm:w-5 ${isActive ? 'text-white' : item.color}`} />
+                {!isMobile && <span className="font-medium text-xs sm:text-sm">{item.label}</span>}
             </div>
             {!isMobile && (
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-1 sm:gap-2">
                     {isComplete && (
                         <motion.div
                             initial={{ scale: 0 }}
                             animate={{ scale: 1 }}
-                            className="w-2 h-2 rounded-full bg-green-400"
+                            className="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-green-400"
                         />
                     )}
-                    <ChevronRight className={`h-4 w-4 ${isActive ? 'text-white' : 'text-gray-400'}`} />
+                    <ChevronRight className={`h-3 w-3 sm:h-4 sm:w-4 ${isActive ? 'text-white' : 'text-gray-400'}`} />
                 </div>
             )}
         </motion.button>
     );
 }
+
 const SectionNavigation = ({ currentSection, nextSection, prevSection, canProgress, onNavigate }) => {
     const { t } = useTranslation();
 
     return (
-        <div className="flex flex-col md:flex-row justify-between items-center gap-4 mt-6 pt-4 border-t border-amber-100 dark:border-amber-800">
+        <div className="flex justify-between items-center gap-2 sm:gap-4 mt-4 sm:mt-6 pt-3 sm:pt-4 border-t border-amber-100 dark:border-amber-800">
             {prevSection && (
                 <Button
                     variant="outline"
                     onClick={() => onNavigate(prevSection.id)}
-                    className="w-full md:w-auto flex items-center gap-2 border-amber-200 dark:border-amber-800"
+                    className="h-8 sm:h-10 text-xs sm:text-sm py-0 sm:py-2 flex items-center gap-1 sm:gap-2 border-amber-200 dark:border-amber-800"
                 >
-                    <ChevronLeft className="w-4 h-4" />
-                    {prevSection.label}
+                    <ChevronLeft className="w-3 h-3 sm:w-4 sm:h-4" />
+                    <span className="truncate max-w-[80px] sm:max-w-none">{prevSection.label}</span>
                 </Button>
             )}
             {nextSection && (
                 <Button
                     onClick={() => onNavigate(nextSection.id)}
                     disabled={!canProgress}
-                    className="w-full md:w-auto flex items-center gap-2 bg-gradient-to-r from-amber-500 to-purple-500 hover:from-amber-600 hover:to-purple-600 dark:from-amber-400 dark:to-purple-400 text-white"
+                    className="h-8 sm:h-10 text-xs sm:text-sm py-0 sm:py-2 flex items-center gap-1 sm:gap-2 bg-gradient-to-r from-amber-500 to-purple-500 hover:from-amber-600 hover:to-purple-600 dark:from-amber-400 dark:to-purple-400 text-white"
                 >
-                    {nextSection.label}
-                    <ChevronRight className="w-4 h-4" />
+                    <span className="truncate max-w-[80px] sm:max-w-none">{nextSection.label}</span>
+                    <ChevronRight className="w-3 h-3 sm:w-4 sm:h-4" />
                 </Button>
             )}
         </div>
@@ -532,7 +528,7 @@ export default function CvInterface({ auth, cvInformation: initialCvInformation 
         input.accept = type === 'pdf' ? '.pdf' : '.docx';
 
         input.onchange = async (e) => {
-            // @ts-ignore
+            //@ts-ignore
             const file = e.target.files?.[0];
             if (!file) return;
 
@@ -547,7 +543,7 @@ export default function CvInterface({ auth, cvInformation: initialCvInformation 
                 );
 
                 if (response.data.success) {
-                    // @ts-ignore
+                    //@ts-ignore
                     updateCvInformation(response.data.cvData);
                     toast({
                         title: t('cv.interface.import.success'),
@@ -573,20 +569,21 @@ export default function CvInterface({ auth, cvInformation: initialCvInformation 
             <Head title={t('cv.interface.title')} />
 
             <div className="min-h-screen bg-gradient-to-b from-amber-50/50 to-purple-50/50 dark:from-gray-900 dark:to-gray-800">
-                <div className="container mx-auto py-4 px-4 md:py-6">
-                    {/* Header with improved mobile layout */}
-                    <div className="flex justify-between items-center mb-6 md:mb-8">
-                        <div className="flex items-center gap-2 md:gap-3">
-                            <Sparkles className="h-6 w-6 md:h-8 md:w-8 text-amber-500 dark:text-amber-400" />
-                            <h2 className="font-bold text-xl md:text-2xl bg-gradient-to-r from-amber-500 to-purple-500 dark:from-amber-400 dark:to-purple-400 text-transparent bg-clip-text">
+                <div className="container mx-auto py-3 sm:py-4 px-3 sm:px-4">
+                    {/* Header responsive */}
+                    <div className="flex justify-between items-center mb-3 sm:mb-4">
+                        <div className="flex items-center gap-1.5 sm:gap-2">
+                            <Sparkles className="h-5 w-5 sm:h-6 sm:w-6 text-amber-500 dark:text-amber-400" />
+                            <h2 className="font-bold text-base sm:text-xl bg-gradient-to-r from-amber-500 to-purple-500 dark:from-amber-400 dark:to-purple-400 text-transparent bg-clip-text">
                                 {t('cv.interface.title')}
                             </h2>
                         </div>
                         <Link href={route('userCvModels.index')}>
-                            <Button className="hidden md:flex bg-gradient-to-r from-amber-500 to-purple-500 hover:from-amber-600 hover:to-purple-600 dark:from-amber-400 dark:to-purple-400 text-white">
-                                <Star className="mr-2 h-4 w-4" />
-                                {t('cv.interface.chooseDesign')}
-                                <CircleChevronRight className="ml-2 h-4 w-4" />
+                            <Button className="h-7 sm:h-9 text-xs sm:text-sm py-0 sm:py-2 bg-gradient-to-r from-amber-500 to-purple-500 hover:from-amber-600 hover:to-purple-600 dark:from-amber-400 dark:to-purple-400 text-white">
+                                <Star className="mr-1 sm:mr-2 h-3 w-3 sm:h-4 sm:w-4" />
+                                <span className="hidden sm:inline">{t('cv.interface.chooseDesign')}</span>
+                                <span className="sm:hidden">Designs</span>
+                                <CircleChevronRight className="ml-1 sm:ml-2 h-3 w-3 sm:h-4 sm:w-4" />
                             </Button>
                         </Link>
                     </div>
@@ -596,43 +593,25 @@ export default function CvInterface({ auth, cvInformation: initialCvInformation 
                         onImport={handleImport}
                     />
 
-                    <Card className="shadow-xl border border-amber-100 dark:border-amber-800">
-                        <CardHeader className="bg-white dark:bg-gray-900 border-b border-amber-100 dark:border-amber-800 p-4 md:p-6">
+                    <Card className="shadow-md border border-amber-100 dark:border-amber-800">
+                        <CardHeader className="bg-white dark:bg-gray-900 border-b border-amber-100 dark:border-amber-800 p-3 sm:p-4">
                             <div className="flex items-center justify-between">
                                 <div>
-                                    <CardTitle className="text-xl md:text-2xl font-bold bg-gradient-to-r from-amber-500 to-purple-500 dark:from-amber-400 dark:to-purple-400 text-transparent bg-clip-text">
+                                    <CardTitle className="text-base sm:text-xl font-bold bg-gradient-to-r from-amber-500 to-purple-500 dark:from-amber-400 dark:to-purple-400 text-transparent bg-clip-text">
                                         {t('cv.interface.sections.title')}
                                     </CardTitle>
-                                    <p className="text-sm md:text-base text-gray-500 dark:text-gray-400 mt-1">
+                                    <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 mt-0.5 sm:mt-1">
                                         {t('cv.interface.sections.description')}
                                     </p>
                                 </div>
                             </div>
                         </CardHeader>
 
-                        <div className="flex flex-row min-h-[600px]">
-                            {/* Sidebar Desktop */}
-                            <div className="hidden md:block w-64 flex-shrink-0 border-r border-amber-100 dark:border-amber-800 bg-white/50 dark:bg-gray-900/50">
-                                <ScrollArea className="h-full py-2">
-                                    <nav className="sticky top-0 p-4 space-y-3">
-                                        {SIDEBAR_ITEMS.map(item => (
-                                            <SidebarButton
-                                                key={item.id}
-                                                item={item}
-                                                isActive={activeSection === item.id}
-                                                isComplete={completionStatus[item.id]}
-                                                onClick={() => setActiveSection(item.id)}
-                                                isMobile={false}
-                                            />
-                                        ))}
-                                    </nav>
-                                </ScrollArea>
-                            </div>
-
-                            {/* Sidebar Mobile (Icon Only) */}
-                            <div className="md:hidden w-14 flex-shrink-0 border-r border-amber-100 dark:border-amber-800 bg-white/50 dark:bg-gray-900/50">
-                                <ScrollArea className="h-full py-2">
-                                    <nav className="sticky top-0 p-2 space-y-2">
+                        <div className="flex flex-row min-h-[500px] sm:min-h-[600px]">
+                            {/* Sidebar mobile optimisée (icônes uniquement) */}
+                            <div className="w-11 sm:w-14 md:w-16 flex-shrink-0 border-r border-amber-100 dark:border-amber-800 bg-white/50 dark:bg-gray-900/50 md:hidden">
+                                <ScrollArea className="h-full py-1.5 sm:py-2">
+                                    <nav className="sticky top-0 p-1 sm:p-1.5 space-y-1.5 sm:space-y-2">
                                         {SIDEBAR_ITEMS.map(item => (
                                             <SidebarButton
                                                 key={item.id}
@@ -647,8 +626,26 @@ export default function CvInterface({ auth, cvInformation: initialCvInformation 
                                 </ScrollArea>
                             </div>
 
-                            {/* Main content */}
-                            <div className="flex-grow p-4 md:p-6 overflow-x-hidden bg-white dark:bg-gray-900">
+                            {/* Sidebar desktop (texte + icônes) */}
+                            <div className="hidden md:block w-48 lg:w-64 flex-shrink-0 border-r border-amber-100 dark:border-amber-800 bg-white/50 dark:bg-gray-900/50">
+                                <ScrollArea className="h-full py-2 sm:py-3">
+                                    <nav className="sticky top-0 p-1.5 sm:p-3 space-y-1.5 sm:space-y-2">
+                                        {SIDEBAR_ITEMS.map(item => (
+                                            <SidebarButton
+                                                key={item.id}
+                                                item={item}
+                                                isActive={activeSection === item.id}
+                                                isComplete={completionStatus[item.id]}
+                                                onClick={() => setActiveSection(item.id)}
+                                                isMobile={false}
+                                            />
+                                        ))}
+                                    </nav>
+                                </ScrollArea>
+                            </div>
+
+                            {/* Contenu principal */}
+                            <div className="flex-grow p-3 sm:p-5 overflow-x-hidden bg-white dark:bg-gray-900">
                                 <AnimatePresence mode="wait">
                                     <motion.div
                                         key={activeSection}
@@ -656,7 +653,7 @@ export default function CvInterface({ auth, cvInformation: initialCvInformation 
                                         animate={{ opacity: 1, x: 0 }}
                                         exit={{ opacity: 0, x: -20 }}
                                         transition={{ duration: 0.3 }}
-                                        className="space-y-6"
+                                        className="space-y-3 sm:space-y-4"
                                     >
                                         {getSectionComponent(activeSection)}
 
@@ -673,25 +670,24 @@ export default function CvInterface({ auth, cvInformation: initialCvInformation 
                         </div>
                     </Card>
 
-                    {/* Call-to-action with improved mobile responsiveness */}
-                    <div className="mt-6 md:mt-8 text-center">
+                    {/* Call-to-action responsive */}
+                    <div className="mt-4 sm:mt-6 text-center">
                         <Link href={route('userCvModels.index')}>
-                            <Button className="w-full md:w-auto bg-gradient-to-r from-amber-500 to-purple-500 hover:from-amber-600 hover:to-purple-600 dark:from-amber-400 dark:to-purple-400 text-white p-4 md:p-6 rounded-xl shadow-lg group">
-                                <div className="flex flex-col items-center gap-2">
-                                    <Sparkles className="h-5 w-5 md:h-6 md:w-6 group-hover:animate-spin" />
-                                    <span className="text-base md:text-lg font-medium">
+                            <Button className="w-full bg-gradient-to-r from-amber-500 to-purple-500 hover:from-amber-600 hover:to-purple-600 dark:from-amber-400 dark:to-purple-400 text-white p-3 sm:p-4 rounded-lg shadow-md sm:shadow-lg group">
+                                <div className="flex flex-col items-center gap-1 sm:gap-2">
+                                    <Sparkles className="h-4 w-4 sm:h-5 sm:w-5 group-hover:animate-spin" />
+                                    <span className="text-sm sm:text-base font-medium">
                                         {t('cv.interface.cta.title')}
                                     </span>
-                                    <span className="text-xs md:text-sm opacity-90">
+                                    <span className="text-xs sm:text-sm opacity-90">
                                         {t('cv.interface.cta.subtitle')}
                                     </span>
                                 </div>
                             </Button>
                         </Link>
                     </div>
-
                 </div>
             </div>
         </AuthenticatedLayout>
-);
+    );
 }

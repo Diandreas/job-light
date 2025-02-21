@@ -15,10 +15,10 @@ class AdminMiddleware
      */
     public function handle(Request $request, Closure $next): Response
     {
-        if ($request->user() && $request->user()->UserType == 1) {
-            return $next($request);
+        if ($request->user() && $request->user()->UserType != 1) {
+            return redirect('/cv-infos');
         }
 
-        return redirect('/')->with('error', 'Access denied. You must be an administrator.');
+        return $next($request);
     }
 }

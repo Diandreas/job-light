@@ -76,6 +76,60 @@ class PaymentController extends Controller
             ], 500);
         }
     }
+    public function updateWallet(Request $request)
+    {
+        try {
+            $user = User::findOrFail($request->user_id);
+            $payment = Payment::create([
+                'user_id' => $user->id,
+                'amount' => $request->amount,
+                'reference' => $request->payment_reference,
+                'payment_method' => $request->payment_method,
+                'status' => 'completed'
+            ]);
+
+            $user->wallet_balance += $request->amount;
+            $user->save();
+
+            return response()->json([
+                'success' => true,
+                'balance' => $user->wallet_balance
+            ]);
+        } catch (\Exception $e) {
+            \Log::error('Wallet update error: ' . $e->getMessage());
+            return response()->json([
+                'error' => 'Failed to update wallet'
+            ], 500);
+        }
+    }
+
+    public function processQuestionCost(Request $request)
+    {
+        $user = User::findOrFail($request->user_id);
+
+        if ($user->wallet_balance < $request->cost) {
+            return response()->json(['error' => 'Solde insuffisant'], 400);
+        }
+
+        $user->wallet_balance -= $request->cost;
+        $user->save();
+
+        return response()->json(['success' => true, 'balance' => $user->wallet_balance]);
+    }
+    public function processDownload(Request $request)
+    {
+
+        $user = User::findOrFail($request->user_id);
+
+        if ($user->wallet_balance < $request->price) {
+            return response()->json(['error' => 'Solde insuffisant'], 400);
+        }
+
+        $user->wallet_balance -= $request->price;
+        $user->save();
+
+        return response()->json(['success' => true, 'balance' => $user->wallet_balance]);
+    }
 
     public function index()
     {

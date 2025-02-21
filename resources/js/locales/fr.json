@@ -257,6 +257,11 @@
             "history": "Historique"
         },
         "messages": {
+            "loading_error": "Erreur lors du chargement des conversations",
+            "chat_loading_error": "Erreur lors du chargement de la conversation",
+            "delete_success": "Conversation supprimée avec succès",
+            "delete_error": "Erreur lors de la suppression de la conversation",
+            "loading": "Chargement de la conversation...",
             "empty": "Veuillez saisir votre message",
             "insufficient_balance": "Solde insuffisant",
             "recharge_needed": "Veuillez recharger votre compte",
@@ -286,24 +291,6 @@
             "title": "Historique des conversations",
             "empty": "Aucune conversation",
             "created_at": "Créé le {{date}}"
-        }
-    },
-    "services": {
-        "career_advice": {
-            "title": "Conseil de Carrière",
-            "description": "Conseils personnalisés de développement de carrière"
-        },
-        "cover_letter": {
-            "title": "Lettre de Motivation",
-            "description": "Lettre de motivation personnalisée"
-        },
-        "interview_prep": {
-            "title": "Préparation à l'Entretien",
-            "description": "Simulation interactive d'entretien"
-        },
-        "resume_review": {
-            "title": "Révision de CV",
-            "description": "Suggestions d'amélioration de CV"
         }
     },
 
@@ -695,6 +682,44 @@
                 "updateFailed": "La mise à jour a échoué"
             }
         }
-    }
+    },
 
+    "services": {
+        "interview-prep": {
+            "title": "Préparation Entretien",
+            "description": "Simulation interactive d'entretien",
+            "placeholder": "Posez vos questions sur la préparation d'entretien..."
+        },
+        "cover-letter": {
+            "title": "Lettre de Motivation",
+            "description": "Lettre de motivation personnalisée",
+            "placeholder": "Quel type de lettre de motivation souhaitez-vous créer ?"
+        },
+        "resume-review": {
+            "title": "Analyse de CV",
+            "description": "Suggestions d'amélioration de CV",
+            "placeholder": "Partagez votre CV ou demandez des conseils spécifiques..."
+        },
+        "career-advice": {
+            "title": "Conseil Carrière",
+            "description": "Conseils personnalisés de développement de carrière",
+            "placeholder": "Quel conseil carrière souhaitez-vous ?"
+        },
+        "career_advice": {
+            "title": "Conseil de Carrière",
+            "description": "Conseils personnalisés de développement de carrière"
+        },
+        "cover_letter": {
+            "title": "Lettre de Motivation",
+            "description": "Lettre de motivation personnalisée"
+        },
+        "interview_prep": {
+            "title": "Préparation à l'Entretien",
+            "description": "Simulation interactive d'entretien"
+        },
+        "resume_review": {
+            "title": "Révision de CV",
+            "description": "Suggestions d'amélioration de CV"
+        }
+    }
 }

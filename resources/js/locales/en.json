@@ -265,7 +265,13 @@
             "balance": "Balance",
             "history": "History"
         },
+
         "messages": {
+            "loading_error": "Error loading conversations",
+            "chat_loading_error": "Error loading conversation",
+            "delete_success": "Conversation deleted successfully",
+            "delete_error": "Error deleting conversation",
+            "loading": "Loading conversation...",
             "empty": "Please enter your message",
             "insufficient_balance": "Insufficient balance",
             "recharge_needed": "Please recharge your account",
@@ -298,24 +304,7 @@
         }
     },
 
-    "services": {
-        "career_advice": {
-            "title": "Career Advice",
-            "description": "Personalized career development advice"
-        },
-        "cover_letter": {
-            "title": "Cover Letter",
-            "description": "Customized cover letter"
-        },
-        "interview_prep": {
-            "title": "Interview Prep",
-            "description": "Interactive interview simulation"
-        },
-        "resume_review": {
-            "title": "Resume Review",
-            "description": "Resume improvement suggestions"
-        }
-    },
+
     "hobbies": {
         "title": "Interests",
         "description": "Customize your profile with your passions",
@@ -698,7 +687,44 @@
                 "updateFailed": "Update failed"
             }
         }
+    },
+
+    "services": {
+        "interview-prep": {
+            "title": "Interview Preparation",
+            "description": "Interactive interview simulation",
+            "placeholder": "Ask your questions about interview preparation..."
+        },
+        "cover-letter": {
+            "title": "Cover Letter",
+            "description": "Personalized cover letter",
+            "placeholder": "What type of cover letter would you like to create?"
+        },
+        "resume-review": {
+            "title": "Resume Review",
+            "description": "Resume improvement suggestions",
+            "placeholder": "Share your resume or ask for specific advice..."
+        },
+        "career-advice": {
+            "title": "Career Advice",
+            "description": "Personalized career development advice",
+            "placeholder": "What career advice would you like?"
+        },
+        "career_advice": {
+            "title": "Career Advice",
+            "description": "Personalized career development advice"
+        },
+        "cover_letter": {
+            "title": "Cover Letter",
+            "description": "Customized cover letter"
+        },
+        "interview_prep": {
+            "title": "Interview Prep",
+            "description": "Interactive interview simulation"
+        },
+        "resume_review": {
+            "title": "Resume Review",
+            "description": "Resume improvement suggestions"
+        }
     }
-
-
 }

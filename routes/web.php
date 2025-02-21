@@ -48,7 +48,7 @@ Route::post('/api/paypal/capture-payment', [PayPalController::class, 'capturePay
 Route::prefix('career-advisor')->group(function () {
     Route::get('/', [CareerAdvisorController::class, 'index'])->name('career-advisor.index');
     Route::get('/chats', [CareerAdvisorController::class, 'getUserChats'])->name('career-advisor.chats');
-    Route::get('/chats/{contextId}', [CareerAdvisorController::class, 'getChat'])->name('career-advisor.chat.show');
+    Route::get('/chats/{contextId}', [CareerAdvisorController::class, 'show'])->name('career-advisor.chat.show');
     Route::post('/chat', [CareerAdvisorController::class, 'chat'])->name('career-advisor.chat');
     Route::post('/export', [CareerAdvisorController::class, 'export'])->name('career-advisor.export');
     Route::delete('/chats/{contextId}', [CareerAdvisorController::class, 'destroyChat'])->name('career-advisor.destroy');
@@ -68,7 +68,11 @@ Route::prefix('api')->middleware(['auth'])->group(function () {
 Route::middleware(['auth'])->group(function () {
     Route::post('/career-advisor/export', [CareerAdvisorController::class, 'export'])
         ->name('career-advisor.export');
-
+    Route::post('/api/process-question-cost', [PaymentController::class, 'processQuestionCost']);
+    Route::get('/api/check-download-status/{modelId}', [PaymentController::class, 'checkDownloadStatus']);
+    Route::post('/api/update-wallet', [PaymentController::class, 'updateWallet']);
+    Route::post('/api/process-download', [PaymentController::class, 'processDownload']);
+    Route::get('/api/wallet/balance', [PaymentController::class, 'getBalance']);
         Route::get('/portfolio', [PortfolioController::class, 'index'])->name('portfolio.index');
     Route::get('/portfolio/edit', [PortfolioController::class, 'edit'])->name('portfolio.edit');
     Route::put('/portfolio', [PortfolioController::class, 'update'])->name('portfolio.update');

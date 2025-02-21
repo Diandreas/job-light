@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Http\Controllers;
+use HelgeSverre\Mistral\Resource\Chat;
 use App\Models\{PersonalInformation, Experience, Reference, Summary, ExperienceCategory};
 use Illuminate\Support\Facades\DB;
 use App\Models\User;
@@ -27,6 +28,34 @@ class CareerAdvisorController extends Controller
     public function __construct()
     {
         $this->mistral = new Mistral(apiKey: config('mistral.api_key'));
+    }
+    public function show($contextId)
+    {
+        try {
+            // Utiliser ChatHistory au lieu de Chat
+            $chat = ChatHistory::where('context_id', $contextId)
+                ->where('user_id', auth()->id())
+                ->firstOrFail();
+
+            // Décoder les messages JSON stockés
+            $messages = json_decode($chat->messages, true) ?? [];
+
+            return response()->json([
+                'context_id' => $chat->context_id,
+                'service_id' => $chat->service_id,
+                'preview' => $this->getChatPreview($chat->messages),
+                'created_at' => $chat->created_at,
+                'messages' => $messages
+            ]);
+
+        } catch (\Exception $e) {
+            // Log l'erreur pour le debugging
+            \Log::error('Erreur lors de la récupération du chat: ' . $e->getMessage());
+
+            return response()->json([
+                'error' => 'Impossible de récupérer la conversation'
+            ], 500);
+        }
     }
 
     public function index()
@@ -657,7 +686,7 @@ class CareerAdvisorController extends Controller
     private function getSystemPromptcv()
     {
         return <<<EOT
-Tu es un expert en analyse de CV. IMPORTANT: Tu dois analyser le texte fourni et retourner UNIQUEMENT un objet JSON valide suivant EXACTEMENT cette structure, sans texte avant ou après:
+Tu es un expert en analyse de CV.tu fera en fontion de la langue que tu vas identifier , IMPORTANT: Tu dois analyser le texte fourni et retourner UNIQUEMENT un objet JSON valide suivant EXACTEMENT cette structure, sans texte avant ou après:
 {
     "nom_complet": "string (nom et prénom du candidat)",
     "poste_actuel": "string (poste actuel ou dernier poste occupé)",

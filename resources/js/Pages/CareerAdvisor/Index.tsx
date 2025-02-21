@@ -39,7 +39,6 @@ const countUserQuestions = (messages) => {
     return messages?.filter(msg => msg.role === 'user').length || 0;
 };
 
-// Composant InfoCard
 const InfoCard = ({ icon: Icon, title, value, type = "default" }) => {
     const { t } = useTranslation();
 
@@ -73,8 +72,7 @@ const InfoCard = ({ icon: Icon, title, value, type = "default" }) => {
         </motion.div>
     );
 };
-// Composant MobileServiceCard
-// Composant MobileServiceCard corrigé
+
 const MobileServiceCard = ({ service, isSelected, onClick }) => {
     const { t } = useTranslation();
 
@@ -91,17 +89,17 @@ const MobileServiceCard = ({ service, isSelected, onClick }) => {
             <service.icon className="h-5 w-5 text-amber-500 dark:text-amber-400" />
             <div className="flex-1">
                 <p className="font-medium text-gray-900 dark:text-gray-100">
-                    {t(`${service.title}`)}
+                    {t(`services.${service.id}.title`)}
                 </p>
                 <div className="flex items-center gap-1 text-sm text-amber-600 dark:text-amber-400">
                     <Coins className="h-3 w-3" />
-                    <span>{service.cost} </span>
+                    <span>{service.cost}</span>
                 </div>
             </div>
         </motion.div>
     );
 };
-// Composant ChatHistoryCard
+
 const ChatHistoryCard = ({ chat, isActive, onSelect, onDelete }) => {
     const { t } = useTranslation();
 
@@ -144,14 +142,13 @@ const ChatHistoryCard = ({ chat, isActive, onSelect, onDelete }) => {
     );
 };
 
-// Début du composant principal
 export default function Index({ auth, userInfo, chatHistories }) {
-    const { t } = useTranslation();
+    const { t, i18n } = useTranslation();
     const { toast } = useToast();
     const [isLoading, setIsLoading] = useState(false);
     const [walletBalance, setWalletBalance] = useState(auth.user.wallet_balance);
     const [selectedService, setSelectedService] = useState(SERVICES[0]);
-    const [language, setLanguage] = useState('fr');
+    const [language, setLanguage] = useState(i18n.language || 'fr');
     const [activeChat, setActiveChat] = useState(null);
     const [userChats, setUserChats] = useState(chatHistories || []);
     const [tokensUsed, setTokensUsed] = useState(0);
@@ -163,7 +160,7 @@ export default function Index({ auth, userInfo, chatHistories }) {
     const currentQuestions = countUserQuestions(activeChat?.messages);
 
     const { data, setData, processing } = useForm({
-        question: DEFAULT_PROMPTS[SERVICES[0].id][language],
+        question: '',
         contextId: activeChat?.context_id || crypto.randomUUID(),
         language: language
     });
@@ -177,6 +174,15 @@ export default function Index({ auth, userInfo, chatHistories }) {
             scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
         }
     }, [activeChat?.messages]);
+
+    useEffect(() => {
+        setLanguage(i18n.language);
+        setData('question', '');
+    }, [i18n.language]);
+
+    useEffect(() => {
+        setData('question', '');
+    }, [selectedService]);
 
     const loadUserChats = async () => {
         try {
@@ -196,7 +202,7 @@ export default function Index({ auth, userInfo, chatHistories }) {
         setSelectedService(service);
         if (!activeChat || activeChat.service_id !== service.id) {
             setActiveChat(null);
-            setData('question', DEFAULT_PROMPTS[service.id][language] || '');
+            setData('question', '');
             setData('contextId', crypto.randomUUID());
         }
     };
@@ -204,12 +210,19 @@ export default function Index({ auth, userInfo, chatHistories }) {
     const handleChatSelection = async (chat) => {
         try {
             setIsLoading(true);
-            const service = SERVICES.find(s => s.id === chat.service_id);
+            const response = await axios.get(`/career-advisor/chats/${chat.context_id}`);
+            const chatData = response.data;
+
+            const service = SERVICES.find(s => s.id === chatData.service_id);
             if (service) {
                 setSelectedService(service);
             }
-            setActiveChat(chat);
-            setData('contextId', chat.context_id);
+
+            setActiveChat({
+                ...chatData,
+                messages: chatData.messages || []
+            });
+            setData('contextId', chatData.context_id);
         } catch (error) {
             console.error('Error loading chat:', error);
             toast({
@@ -341,6 +354,7 @@ export default function Index({ auth, userInfo, chatHistories }) {
             setIsLoading(false);
         }
     };
+
     const handleExport = async (format) => {
         if (!activeChat) return;
 
@@ -484,7 +498,7 @@ export default function Index({ auth, userInfo, chatHistories }) {
                                 <div className="flex items-center gap-2">
                                     <selectedService.icon className="h-5 w-5 text-amber-500 dark:text-amber-400" />
                                     <h3 className="font-semibold text-gray-900 dark:text-gray-100">
-                                        {t(`${selectedService.title}`)}
+                                        {t(`services.${selectedService.id}.title`)}
                                     </h3>
                                     <div className="hidden sm:flex items-center gap-1 text-sm font-medium text-amber-600 dark:text-amber-400">
                                         <Coins className="h-4 w-4" />
@@ -533,7 +547,7 @@ export default function Index({ auth, userInfo, chatHistories }) {
                                 <Textarea
                                     value={data.question}
                                     onChange={e => setData('question', e.target.value)}
-                                    placeholder={DEFAULT_PROMPTS[selectedService.id][language]}
+                                    placeholder={t(`services.${selectedService.id}.placeholder`)}
                                     className="min-h-[100px] border-amber-200 dark:border-gray-700
                                     focus:border-amber-500 dark:focus:border-amber-400
                                     bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100"

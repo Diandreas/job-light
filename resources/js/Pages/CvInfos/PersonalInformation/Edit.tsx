@@ -51,7 +51,6 @@ const PersonalInformationEdit: React.FC<Props> = ({ user, onUpdate, onCancel }) 
             preserveState: true,
             preserveScroll: true,
             onSuccess: (response) => {
-
                 // @ts-ignore
                 if (response.props.cvInformation?.personalInformation) {
                     reset('name', 'email', 'github', 'linkedin', 'address', 'phone_number');
@@ -89,19 +88,19 @@ const PersonalInformationEdit: React.FC<Props> = ({ user, onUpdate, onCancel }) 
     ];
 
     return (
-        <Card className="w-full border-amber-100 dark:border-amber-800 dark:bg-gray-800 transition-colors">
-            <CardHeader>
-                <CardTitle className="text-2xl font-semibold text-gray-800 dark:text-white transition-colors">
+        <Card className="w-full max-w-md mx-auto border-amber-100 dark:border-amber-800 dark:bg-gray-800 transition-colors p-2">
+            <CardHeader className="p-3">
+                <CardTitle className="text-lg font-medium text-gray-800 dark:text-white transition-colors">
                     {t('personalInfos.editTitle')}
                 </CardTitle>
             </CardHeader>
-            <CardContent>
-                <form onSubmit={handleSubmit} className="space-y-4">
+            <CardContent className="p-3">
+                <form onSubmit={handleSubmit} className="space-y-3">
                     {formFields.map((field) => (
-                        <div key={field.id}>
+                        <div key={field.id} className="space-y-1">
                             <Label
                                 htmlFor={field.id}
-                                className="text-gray-700 dark:text-gray-300 transition-colors"
+                                className="text-sm text-gray-700 dark:text-gray-300 transition-colors"
                             >
                                 {field.label}
                             </Label>
@@ -111,23 +110,23 @@ const PersonalInformationEdit: React.FC<Props> = ({ user, onUpdate, onCancel }) 
                                 value={field.value}
                                 // @ts-ignore
                                 onChange={(e) => setData(field.id, e.target.value)}
-                                className="mt-1 block w-full border-amber-200 focus:ring-amber-500
+                                className="h-8 text-sm border-amber-200 focus:ring-1 focus:ring-amber-500
                                          dark:border-amber-800 dark:bg-gray-700 dark:text-white
                                          transition-colors"
                             />
                             {errors[field.id] && (
-                                <p className="mt-2 text-sm text-red-600 dark:text-red-400 transition-colors">
+                                <p className="text-xs text-red-600 dark:text-red-400 transition-colors">
                                     {errors[field.id]}
                                 </p>
                             )}
                         </div>
                     ))}
 
-                    <div className="flex items-center gap-2 pt-4">
+                    <div className="flex items-center gap-2 pt-3">
                         <Button
                             type="submit"
                             disabled={processing}
-                            className="bg-gradient-to-r from-amber-500 to-purple-500
+                            className="h-8 text-sm px-3 bg-gradient-to-r from-amber-500 to-purple-500
                                      hover:from-amber-600 hover:to-purple-600 text-white
                                      dark:from-amber-600 dark:to-purple-600
                                      transition-all duration-200"
@@ -138,7 +137,7 @@ const PersonalInformationEdit: React.FC<Props> = ({ user, onUpdate, onCancel }) 
                             type="button"
                             onClick={onCancel}
                             variant="outline"
-                            className="border-amber-200 hover:bg-amber-50
+                            className="h-8 text-sm px-3 border-amber-200 hover:bg-amber-50
                                      dark:border-amber-800 dark:hover:bg-gray-700
                                      dark:text-white transition-colors"
                         >

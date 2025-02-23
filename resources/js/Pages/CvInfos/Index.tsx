@@ -538,7 +538,7 @@ export default function CvInterface({ auth, cvInformation: initialCvInformation 
                 formData.append('cv', file);
 
                 const response = await axios.post(
-                    type === 'ai' ? '/api/analyze-cv' : '/api/import-cv',
+                    type === 'ai' ? '/api/analyze-cv' : '/api/analyze-cv',
                     formData
                 );
 

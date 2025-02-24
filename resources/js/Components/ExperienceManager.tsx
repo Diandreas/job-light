@@ -268,12 +268,7 @@ const ExperienceManager: React.FC<Props> = ({ auth, experiences: initialExperien
             date_start: dates.startDate,
             date_end: dates.endDate,
             comment: t('experiences.form.templates.defaultComment'),
-            references: [{
-                name: t('experiences.form.references.default.name'),
-                function: t('experiences.form.references.default.function'),
-                email: t('experiences.form.references.default.email'),
-                telephone: t('experiences.form.references.default.phone')
-            }]
+
         };
 
         switch(type) {
@@ -516,6 +511,21 @@ const ExperienceManager: React.FC<Props> = ({ auth, experiences: initialExperien
                 description: t('experiences.success.template.description'),
             });
         }
+    };
+
+    const handleAddReference = () => {
+        setData('references', [...data.references, { name: '', function: '', email: '', telephone: '' }]);
+    };
+
+    const handleRemoveReference = (index: number) => {
+        setData('references', data.references.filter((_, i) => i !== index));
+    };
+
+    const handleReferenceChange = (index: number, field: keyof Reference, value: string) => {
+        const updatedReferences = [...data.references];
+        //@ts-ignore
+        updatedReferences[index][field] = value;
+        setData('references', updatedReferences);
     };
 
     // Experience Card Component
@@ -958,7 +968,6 @@ const ExperienceManager: React.FC<Props> = ({ auth, experiences: initialExperien
                                             ))}
                                     </AnimatePresence>
 
-
                                     {experiences.filter(exp => exp.attachment_path).length === 0 && (
                                         <Card className="dark:bg-gray-800">
                                             <CardContent className="p-6 text-center">
@@ -1175,6 +1184,68 @@ const ExperienceManager: React.FC<Props> = ({ auth, experiences: initialExperien
                             )}
                         </div>
 
+                        {/* References Section */}
+                        <div className="space-y-2">
+                            <Label htmlFor="references" className="text-xs text-gray-700 dark:text-gray-200">
+                                {t('experiences.form.fields.references.label')}
+                            </Label>
+                            {data.references.map((ref, index) => (
+                                <div key={index} className="space-y-2">
+                                    <div className="flex items-center gap-2">
+                                        <Input
+                                            value={ref.name}
+                                            onChange={(e) => handleReferenceChange(index, 'name', e.target.value)}
+                                            placeholder={t('experiences.form.fields.references.name')}
+                                            className="border-amber-200 dark:border-amber-800 focus:ring-amber-500
+                                                     dark:focus:ring-amber-400 dark:bg-gray-900 dark:text-white h-8 text-sm flex-1"
+                                        />
+                                        <Input
+                                            value={ref.function}
+                                            onChange={(e) => handleReferenceChange(index, 'function', e.target.value)}
+                                            placeholder={t('experiences.form.fields.references.function')}
+                                            className="border-amber-200 dark:border-amber-800 focus:ring-amber-500
+                                                     dark:focus:ring-amber-400 dark:bg-gray-900 dark:text-white h-8 text-sm flex-1"
+                                        />
+                                        <Button
+                                            type="button"
+                                            variant="ghost"
+                                            size="sm"
+                                            onClick={() => handleRemoveReference(index)}
+                                            className="h-8 px-2 text-xs"
+                                        >
+                                            <Trash2 className="w-3 h-3 text-red-500 dark:text-red-400" />
+                                        </Button>
+                                    </div>
+                                    <div className="flex items-center gap-2">
+                                        <Input
+                                            value={ref.email}
+                                            onChange={(e) => handleReferenceChange(index, 'email', e.target.value)}
+                                            placeholder={t('experiences.form.fields.references.email')}
+                                            className="border-amber-200 dark:border-amber-800 focus:ring-amber-500
+                                                     dark:focus:ring-amber-400 dark:bg-gray-900 dark:text-white h-8 text-sm flex-1"
+                                        />
+                                        <Input
+                                            value={ref.telephone}
+                                            onChange={(e) => handleReferenceChange(index, 'telephone', e.target.value)}
+                                            placeholder={t('experiences.form.fields.references.phone')}
+                                            className="border-amber-200 dark:border-amber-800 focus:ring-amber-500
+                                                     dark:focus:ring-amber-400 dark:bg-gray-900 dark:text-white h-8 text-sm flex-1"
+                                        />
+                                    </div>
+                                </div>
+                            ))}
+                            <Button
+                                type="button"
+                                variant="outline"
+                                onClick={handleAddReference}
+                                className="border-amber-200 dark:border-amber-800 hover:bg-amber-50
+                                         dark:hover:bg-amber-900/20 dark:text-white h-8 text-xs"
+                            >
+                                <Plus className="w-3 h-3 mr-1" />
+                                {t('experiences.form.fields.references.add')}
+                            </Button>
+                        </div>
+
                         {/* Attachment Section */}
                         <div className="space-y-2">
                             <Label className="text-xs text-gray-700 dark:text-gray-200">
@@ -1186,7 +1257,7 @@ const ExperienceManager: React.FC<Props> = ({ auth, experiences: initialExperien
                                             className="bg-gradient-to-r from-amber-100 to-purple-100
                                                      dark:from-amber-900/20 dark:to-purple-900/20 text-xs"
                                         >
-                                            {t('experiences.form.attachment.maxSize')}
+                                            5 MB
                                         </Badge>
                                     </div>
                                     {/*@ts-ignore*/}
@@ -1211,20 +1282,30 @@ const ExperienceManager: React.FC<Props> = ({ auth, experiences: initialExperien
                                 id="attachment"
                                 type="file"
                                 onChange={(e) => {
-                                    const file = e.target.files?.[0] || null;
-                                    //@ts-ignore
+                                    const file = e.target.files?.[0];
+                                    if (file) {
+                                        let MAX_FILE_SIZE=5 * 1024 * 1024
+                                        if (file.size > MAX_FILE_SIZE) {
+                                            toast({
+                                                title: t('experiences.errors.attachment.tooLarge'),
+                                                description: t('experiences.errors.attachment.tooLargeDescription'),
+                                                variant: "destructive",
+                                            });
+                                        } else {
+                                            //@ts-ignore
+                                            if (data.attachment_path) {
+                                                //@ts-ignore
 
-                                    if (file && data.attachment_path) {
-                                        //@ts-ignore
-
-                                        handleDeleteAttachment(data.id as number);
+                                                handleDeleteAttachment(data.id as number);
+                                            }
+                                            setData('attachment', file);
+                                        }
                                     }
-                                    setData('attachment', file);
                                 }}
                                 className="border-amber-200 dark:border-amber-800 focus:ring-amber-500
-                                         dark:focus:ring-amber-400 dark:bg-gray-900 dark:text-white
-                                         cursor-pointer text-xs py-1"
-                                accept=".pdf,.doc,.docx"
+             dark:focus:ring-amber-400 dark:bg-gray-900 dark:text-white
+             cursor-pointer text-xs py-1"
+                                accept=".pdf,.doc,.docx,.png,.jpg"
                             />
                             {/*@ts-ignore*/}
 

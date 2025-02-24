@@ -211,7 +211,159 @@
             "loading": "Loading preview..."
         }
     },
+    "experiences": {
+        "title": "Experience Management",
+        "description": "Manage your professional, academic, and volunteer experiences",
+        "actions": {
+            "add": "Add an experience",
+            "update": "Update experience",
+            "save": "Save experience",
+            "cancel": "Cancel",
+            "delete": "Delete"
+        },
+        "filters": {
+            "search": "Search experiences..."
+        },
+        "tabs": {
+            "list": "Experiences",
+            "attachments": "Attachments"
+        },
+        "form": {
+            "references": {
+                "title": "References",
+                "add": "Add Reference",
+                "name": "Full Name",
+                "function": "Position/Role",
+                "email": "Email",
+                "phone": "Phone",
+                "placeholders": {
+                    "name": "Enter reference name",
+                    "function": "Enter position/role",
+                    "email": "Enter email address",
+                    "phone": "Enter phone number"
+                },
+                "default": {
+                    "name": "John Smith",
+                    "function": "Project Manager",
+                    "email": "john.smith@example.com",
+                    "phone": "+1 234 567 890"
+                }
+            },
+            "title": {
+                "new": "New Experience",
+                "edit": "Edit Experience"
+            },
+            "description": {
+                "new": "Add a new experience to your profile",
+                "edit": "Modify existing experience details"
+            },
+            "templates": {
+                "title": "Templates",
+                "description": "Start with a predefined template",
+                "academic": "Academic Experience",
+                "internship": "Internship Experience",
+                "volunteer": "Volunteer Experience",
+                "defaultComment": "Add any additional comments here"
+            },
+            "fields": {
+                "name": {
+                    "label": "Experience Name",
+                    "placeholder": "Enter the name of your experience"
+                },
+                "institution": {
+                    "label": "Institution Name",
+                    "placeholder": "Enter the institution or company name"
+                },
+                "dates": {
+                    "start": "Start Date",
+                    "end": "End Date",
+                    "ongoing": "Leave end date empty for ongoing experiences"
+                },
+                "type": {
+                    "label": "Experience Type",
+                    "placeholder": "Select the type of experience"
+                },
+                "description": {
+                    "label": "Description",
+                    "placeholder": "Describe your experience, responsibilities, and achievements"
+                },
+                "output": {
+                    "label": "Results",
+                    "placeholder": "What were the main outcomes or achievements?"
+                },
+                "references": {
 
+                    "title": "References",
+                    "label": "References",
+                    "add": "Add Reference",
+                    "name": "Full Name",
+                    "function": "Position/Role",
+                    "email": "Email",
+                    "phone": "Phone",
+                    "placeholders": {
+                        "name": "Enter reference name",
+                        "function": "Enter position/role",
+                        "email": "Enter email address",
+                        "phone": "Enter phone number"
+                    },
+                    "default": {
+                        "name": "John Smith",
+                        "function": "Project Manager",
+                        "email": "john.smith@example.com",
+                        "phone": "+1 234 567 890"
+                    }
+                }
+            },
+            "attachment": {
+                "title": "Attachments",
+                "maxSize": "Max 100MB",
+                "current": "Current file:",
+                "delete": "Delete file",
+                "formats": "Accepted formats: PDF, DOC, DOCX"
+            }
+        },
+        "attachments": {
+            "stats": {
+                "used": "Storage Used",
+                "files": "Total Files",
+                "available": "Available Space"
+            }
+        },
+        "empty": {
+            "experiences": "No experiences added yet",
+            "search": "No experiences match your search",
+            "attachments": "No attachments uploaded yet"
+        },
+        "success": {
+            "created": "Experience successfully created",
+            "updated": "Experience successfully updated",
+            "deleted": "Experience deleted",
+            "deletedDescription": "The experience has been permanently removed",
+            "formDescription": "Your changes have been saved",
+            "template": {
+                "applied": "Template applied",
+                "description": "The template has been applied successfully"
+            },
+            "attachment": {
+                "deleted": "Attachment deleted",
+                "deletedDescription": "The file has been removed"
+            }
+        },
+        "errors": {
+            "title": "Error",
+            "save": "Error saving experience",
+            "delete": "Error deleting experience",
+            "generic": "An unexpected error occurred",
+            "attachment": {
+                "delete": "Error deleting attachment",
+                "noFile": "No file available",
+                "noFileDescription": "There is no attachment to preview"
+            }
+        }
+    },
+    "common": {
+        "loading": "Loading..."
+    },
 
 
 
@@ -455,160 +607,9 @@
             "generic": "An error occurred."
         }
     },
-    "experiences": {
-        "title": "My Experiences",
-        "description": "Share your academic experiences, internships and commitments",
-        "tabs": {
-            "list": "Experiences list",
-            "attachments": "Attachments"
-        },
-        "experiences": {
-            "references": {
-                "title": "References"
-            },
-            "output": {
-                "title": "Achievement"
-            }
-        },
-        "actions": {
-            "add": "Add experience",
-            "update": "Update",
-            "save": "Save",
-            "cancel": "Cancel",
-            "delete": "Delete",
-            "preview": "Preview",
-            "edit": "Edit"
-        },
-        "filters": {
-            "all": "All",
-            "search": "Search for an experience..."
-        },
-        "categories": {
-            "professional": "Professional",
-            "academic": "Academic",
-            "volunteer": "Volunteer"
-        },
-        "form": {
-            "title": {
-                "new": "New experience",
-                "edit": "Edit experience"
-            },
-            "description": {
-                "new": "Add a new experience to your profile",
-                "edit": "Modify your experience details"
-            },
-            "templates": {
-                "title": "Experience templates",
-                "description": "Select a template to get started quickly",
-                "academic": "Academic Training",
-                "internship": "Professional Internship",
-                "volunteer": "Volunteer Experience",
-                "defaultComment": "This experience allowed me to develop new skills",
-                "default": {
-                    "name": "Web Development Training",
-                    "description": "Intensive program combining theory and practice"
-                }
-            },
-            "fields": {
-                "name": {
-                    "label": "Title",
-                    "placeholder": "Ex: Web development internship..."
-                },
-                "institution": {
-                    "label": "Institution",
-                    "placeholder": "Name of institution or organization"
-                },
-                "dates": {
-                    "start": "Start date",
-                    "end": "End date",
-                    "ongoing": "Leave empty if ongoing",
-                    "present": "Present"
-                },
-                "type": {
-                    "label": "Experience type",
-                    "placeholder": "Select a type"
-                },
-                "description": {
-                    "label": "Description",
-                    "placeholder": "Describe your responsibilities, tasks and learnings..."
-                },
-                "output": {
-                    "label": "Result/Achievement",
-                    "placeholder": "Ex: Skills acquired, certificate obtained..."
-                }
-            },
-            "references": {
-                "title": "References",
-                "add": "Add reference",
-                "default": {
-                    "name": "John Smith",
-                    "function": "Technical Manager",
-                    "email": "contact@example.com",
-                    "phone": "+1 234 567 8900"
-                },
-                "fields": {
-                    "name": {
-                        "label": "Name",
-                        "placeholder": "Reference name"
-                    },
-                    "function": {
-                        "label": "Function",
-                        "placeholder": "Reference function"
-                    },
-                    "email": {
-                        "label": "Email",
-                        "placeholder": "Reference email"
-                    },
-                    "phone": {
-                        "label": "Phone",
-                        "placeholder": "Reference phone"
-                    }
-                }
-            },
-            "attachment": {
-                "title": "Attachment",
-                "maxSize": "Max 5MB",
-                "delete": "Delete file",
-                "current": "Current file:",
-                "formats": "Accepted formats: PDF, DOC, DOCX (Certificates, attestations...)"
-            }
-        },
-        "empty": {
-            "experiences": "Start by adding your first experience!",
-            "search": "No experience matches your search",
-            "attachments": "No attachments available. Add documents to your experiences!"
-        },
-        "attachments": {
-            "stats": {
-                "used": "Space used",
-                "files": "Files",
-                "available": "Available space"
-            }
-        },
-        "success": {
-            "created": "Experience created successfully",
-            "updated": "Experience updated successfully",
-            "deleted": "Experience deleted successfully",
-            "attachment": {
-                "deleted": "Attachment deleted successfully"
-            },
-            "template": {
-                "applied": "Template applied",
-                "description": "You can now customize the information"
-            }
-        },
-        "errors": {
-            "title": "Error",
-            "generic": "An error occurred",
-            "delete": "Error while deleting",
-            "save": "Error while saving",
-            "attachment": {
-                "delete": "Unable to delete attachment",
-                "noFile": "No file",
-                "noFileDescription": "No attachment available"
-            }
-        }
-    },
+
+
+
 
     "summaries": {
         "title": "My Summaries",

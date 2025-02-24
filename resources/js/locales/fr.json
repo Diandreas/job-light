@@ -1,5 +1,63 @@
 {
     "brand": "Guidy",
+    "nav": {
+        "login": "Connexion",
+        "register": "Démarrer Gratuitement",
+        "start_free": "Commencer maintenant"
+    },
+    "hero": {
+        "badge": "🚀 Propulsez votre carrière avec l'IA",
+        "title": "Votre guide professionnel intelligent",
+        "description": "Créez des CVs percutants, obtenez des conseils carrière personnalisés et préparez vos entretiens avec notre assistant IA de dernière génération"
+    },
+    "features": {
+        "cv_designer": {
+            "title": "CV Designer Pro",
+            "description": "Créez des CV professionnels avec nos modèles premium et exportez en PDF haute qualité.",
+            "action": "Créer mon CV"
+        },
+        "career_advisor": {
+            "title": "Conseiller Carrière IA",
+            "description": "Obtenez des conseils personnalisés pour votre développement professionnel.",
+            "action": "Consulter l'assistant"
+        },
+        "cover_letter": {
+            "title": "Lettre de Motivation",
+            "description": "Générez des lettres de motivation impactantes adaptées à vos candidatures.",
+            "action": "Rédiger ma lettre"
+        },
+        "interview_coach": {
+            "title": "Coach Entretien",
+            "description": "Préparez vos entretiens avec notre simulation interactive intelligente.",
+            "action": "Préparer mon entretien"
+        }
+    },
+    "stats": {
+        "users": "Utilisateurs actifs",
+        "satisfaction": "% de satisfaction",
+        "cvs": "CVs générés",
+        "availability": "% de disponibilité"
+    },
+    "cta": {
+        "badge": "L'assistant qui vous guide vers le succès",
+        "button": "Débloquez votre potentiel"
+    },
+    "footer": {
+        "services": {
+            "title": "Services",
+            "resume": "Création de CV",
+            "advisor": "Conseiller Carrière",
+            "interview": "Préparation Entretien"
+        },
+        "legal": {
+            "title": "Légal",
+            "privacy": "Politique de confidentialité",
+            "terms": "Conditions d'utilisation",
+            "cookies": "Politique des cookies",
+            "mentions": "Mentions légales"
+        },
+        "copyright": "Tous droits réservés"
+    },
     "menu": {
         "title": "Menu Guidy",
         "admin": "Administration",

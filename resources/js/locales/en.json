@@ -1,5 +1,63 @@
 {
     "brand": "Guidy",
+    "nav": {
+        "login": "Login",
+        "register": "Start Free",
+        "start_free": "Start Now"
+    },
+    "hero": {
+        "badge": "🚀 Boost your career with AI",
+        "title": "Your intelligent professional guide",
+        "description": "Create impactful resumes, get personalized career advice and prepare for interviews with our next-generation AI assistant"
+    },
+    "features": {
+        "cv_designer": {
+            "title": "Pro CV Designer",
+            "description": "Create professional resumes with our premium templates and export in high quality PDF.",
+            "action": "Create my CV"
+        },
+        "career_advisor": {
+            "title": "AI Career Advisor",
+            "description": "Get personalized advice for your professional development.",
+            "action": "Consult assistant"
+        },
+        "cover_letter": {
+            "title": "Cover Letter",
+            "description": "Generate impactful cover letters tailored to your applications.",
+            "action": "Write my letter"
+        },
+        "interview_coach": {
+            "title": "Interview Coach",
+            "description": "Prepare for interviews with our intelligent interactive simulation.",
+            "action": "Prepare interview"
+        }
+    },
+    "stats": {
+        "users": "Active users",
+        "satisfaction": "% satisfaction",
+        "cvs": "CVs generated",
+        "availability": "% availability"
+    },
+    "cta": {
+        "badge": "The assistant guiding you to success",
+        "button": "Unlock your potential"
+    },
+    "footer": {
+        "services": {
+            "title": "Services",
+            "resume": "Resume Builder",
+            "advisor": "Career Advisor",
+            "interview": "Interview Prep"
+        },
+        "legal": {
+            "title": "Legal",
+            "privacy": "Privacy Policy",
+            "terms": "Terms of Service",
+            "cookies": "Cookie Policy",
+            "mentions": "Legal Notice"
+        },
+        "copyright": "All rights reserved"
+    },
     "menu": {
         "title": "Guidy Menu",
         "admin": "Administration",

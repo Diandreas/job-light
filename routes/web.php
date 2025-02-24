@@ -33,6 +33,21 @@ Route::get('language/{locale}', [LanguageController::class, 'switch'])->name('la
 Route::get('/support', function () {
     return Inertia::render('Support');
 })->name('support');
+Route::get('/privacy', function () {
+    return Inertia::render('PrivacyPolicy');
+})->name('privacy');
+
+Route::get('/terms', function () {
+    return Inertia::render('TermsOfService');
+})->name('terms');
+
+Route::get('/cookies', function () {
+    return Inertia::render('CookiePolicy');
+})->name('cookies');
+
+Route::get('/mentions-legales', function () {
+    return Inertia::render('LegalNotice');
+})->name('mentions-legales');
 Route::get('/', function () {
     return Inertia::render('Welcome');
 })->name('welcome');

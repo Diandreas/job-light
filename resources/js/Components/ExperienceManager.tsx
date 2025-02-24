@@ -1257,7 +1257,7 @@ const ExperienceManager: React.FC<Props> = ({ auth, experiences: initialExperien
                                             className="bg-gradient-to-r from-amber-100 to-purple-100
                                                      dark:from-amber-900/20 dark:to-purple-900/20 text-xs"
                                         >
-                                            5 MB
+                                            2 MB
                                         </Badge>
                                     </div>
                                     {/*@ts-ignore*/}

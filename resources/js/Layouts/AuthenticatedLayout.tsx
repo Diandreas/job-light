@@ -7,7 +7,7 @@ import { ThemeToggle } from '@/Components/ThemeToggle';
 import {
     Folder, Star, Eye, Menu, X, Brain, Layout,
     ChevronRight, ChevronLeft, Sparkles, LucideIcon, Coins,
-    Globe, Mail, Phone, MapPin, Linkedin, Github
+    Globe, Mail, Phone, MapPin, Linkedin, Github, MessageSquare
 } from 'lucide-react';
 import Dropdown from '@/Components/Dropdown';
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/Components/ui/sheet";
@@ -346,9 +346,29 @@ export default function Authenticated({ user, header, children }: PropsWithChild
                             <Sparkles className="h-3 w-3 sm:h-4 sm:w-4 text-amber-500 dark:text-amber-400" />
                             <span>© {new Date().getFullYear()} {t('brand')}</span>
                         </div>
-                        <div className="flex items-center gap-2 sm:gap-4">
+
+                        <div className="flex items-center gap-4 text-xs sm:text-sm">
                             <div className="md:hidden">
                                 <LanguageSelector />
+                            </div>
+
+                            <div className="flex items-center gap-4">
+                                <Link
+                                    href={route('support')}
+                                    className="flex items-center gap-1 text-gray-500 hover:text-amber-500 transition-colors"
+                                >
+                                    <MessageSquare className="h-3 w-3 sm:h-4 sm:w-4" />
+                                    <span>Support</span>
+                                </Link>
+
+
+                                <a
+                                    href="mailto:guidy.makeitreall@gmail.com"
+                                    className="flex items-center gap-1 text-gray-500 hover:text-amber-500 transition-colors"
+                                >
+                                    <Mail className="h-3 w-3 sm:h-4 sm:w-4" />
+                                    <span className="hidden sm:inline">Contact</span>
+                                </a>
                             </div>
                         </div>
                     </div>

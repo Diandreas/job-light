@@ -30,7 +30,9 @@ use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
 Route::get('language/{locale}', [LanguageController::class, 'switch'])->name('language.switch');
-
+Route::get('/support', function () {
+    return Inertia::render('Support');
+})->name('support');
 Route::get('/', function () {
     return Inertia::render('Welcome');
 })->name('welcome');

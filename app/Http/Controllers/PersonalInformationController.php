@@ -14,7 +14,29 @@ use Illuminate\Support\Facades\Log;
 use Inertia\Inertia;
 
 class PersonalInformationController extends Controller
+
 {
+    public function deletePhoto()
+    {
+        try {
+            $user = Auth::user();
+
+            if ($user->photo) {
+                Storage::disk('public')->delete($user->photo);
+                $user->photo = null;
+                $user->save();
+            }
+
+            return response()->json([
+                'success' => true
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to delete photo'
+            ], 500);
+        }
+    }
     public function updatePhoto(Request $request)
     {
         Log::info('=== Photo Upload Started ===');

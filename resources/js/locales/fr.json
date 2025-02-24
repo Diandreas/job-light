@@ -21,6 +21,13 @@
                 "subtitle": "Créez un CV professionnel en quelques étapes",
                 "complete": "terminé"
             },
+            "references": {
+                "manage": "Gérer les références",
+                "add": "Ajouter une référence",
+                "edit": "Modifier la référence",
+                "delete": "Supprimer la référence",
+                "confirmDelete": "Êtes-vous sûr de vouloir supprimer cette référence ?"
+            },
             "import": {
                 "button": "Importer CV",
                 "pdf": "Importer PDF",
@@ -37,6 +44,10 @@
                 "successDetail": "Vos informations ont été sauvegardées avec succès"
             },
             "sections": {
+                "status": {
+                    "complete": "Section complète",
+                    "incomplete": "Section incomplète"
+                },
                 "title": "Créez votre CV professionnel",
                 "description": "Complétez chaque section pour un CV complet",
                 "personalInfo": "Informations personnelles",
@@ -50,6 +61,14 @@
                 "title": "Informations personnelles",
                 "edit": "Modifier",
                 "photo": {
+                    "deleteSuccess": {
+                        "title": "Photo supprimée",
+                        "description": "Votre photo de profil a été supprimée"
+                    },
+                    "preview": "Aperçu de la photo",
+                    "error": {
+                        "noCrop": "Veuillez recadrer la photo avant de l'enregistrer"
+                    },
                     "upload": "Ajouter une photo",
                     "edit": "Modifier la photo",
                     "crop": "Ajuster la photo",

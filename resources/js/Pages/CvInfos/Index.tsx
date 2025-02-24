@@ -6,7 +6,7 @@ import {
     User, FileText, Briefcase, Code, GraduationCap, Heart,
     ChevronRight, ChevronLeft, Mail, Phone, MapPin, Linkedin,
     Github, PencilIcon, Sparkles, CircleChevronRight, Star,
-    Camera, Upload, FileUp, Bot, AlertCircle, X, Plus, Menu, Coins
+    Camera, Upload, FileUp, Bot, AlertCircle, X, Plus, Menu, Coins, Trash2
 } from 'lucide-react';
 import axios from 'axios';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
@@ -100,35 +100,76 @@ const PersonalInfoCard = ({ item, onEdit, updateCvInformation }) => {
     const [isUploading, setIsUploading] = useState(false);
     const [isOpen, setIsOpen] = useState(false);
     const [uploadedImage, setUploadedImage] = useState(null);
-    const [crop, setCrop] = useState({ unit: '%', width: 100, aspect: 1 });
+    const [crop, setCrop] = useState({ unit: '%', width: 90, aspect: 1 });
     const [completedCrop, setCompletedCrop] = useState(null);
     const [imageRef, setImageRef] = useState(null);
     const { toast } = useToast();
     const { t } = useTranslation();
+
+    const handleDeletePhoto = async () => {
+        try {
+            await axios.delete(route('personal-information.delete-photo'));
+            updateCvInformation('personalInformation', {
+                ...item,
+                photo: null
+            });
+            toast({
+                title: t('cv.interface.personal.photo.deleteSuccess.title'),
+                description: t('cv.interface.personal.photo.deleteSuccess.description')
+            });
+        } catch (error) {
+            toast({
+                title: t('cv.interface.personal.photo.error'),
+                variant: "destructive"
+            });
+        }
+    };
 
     const onSelectFile = (e) => {
         if (e.target.files && e.target.files.length > 0) {
             const file = e.target.files[0];
             if (file.size > 5 * 1024 * 1024) {
                 toast({
-                    title: t('cv.interface.personal.photo.sizeError.title'),
-                    description: t('cv.interface.personal.photo.sizeError.description'),
+                    title: t('cv.interface.personal.photo.sizeError'),
                     variant: "destructive"
                 });
                 return;
             }
             const reader = new FileReader();
-            reader.addEventListener('load', () => setUploadedImage(reader.result));
+            reader.addEventListener('load', () => {
+                setUploadedImage(reader.result);
+                setIsOpen(true);
+            });
             reader.readAsDataURL(file);
-            setIsOpen(true);
         }
+    };
+
+    const onImageLoad = (e) => {
+        const { naturalWidth: width, naturalHeight: height } = e.currentTarget;
+        const crop = centerCrop(
+            makeAspectCrop(
+                {
+                    unit: '%',
+                    width: 90,
+                },
+                1,
+                width,
+                height
+            ),
+            width,
+            height
+        );
+        //@ts-ignore
+        setCrop(crop);
     };
 
     const getCroppedImg = useCallback(() => {
         if (!imageRef || !completedCrop) return;
+
         const canvas = document.createElement('canvas');
         const scaleX = imageRef.naturalWidth / imageRef.width;
         const scaleY = imageRef.naturalHeight / imageRef.height;
+
         canvas.width = completedCrop.width;
         canvas.height = completedCrop.height;
         const ctx = canvas.getContext('2d');
@@ -152,12 +193,22 @@ const PersonalInfoCard = ({ item, onEdit, updateCvInformation }) => {
         });
     }, [imageRef, completedCrop]);
 
-    const handleSave = async () => {
+    const handleUpload = async () => {
+        if (!completedCrop || !imageRef) {
+            toast({
+                title: t('cv.interface.personal.photo.error.title'),
+                description: t('cv.interface.personal.photo.error.noCrop'),
+                variant: "destructive"
+            });
+            return;
+        }
+
         try {
             setIsUploading(true);
             const croppedImage = await getCroppedImg();
             const formData = new FormData();
             //@ts-ignore
+
             formData.append('photo', croppedImage, 'profile.jpg');
 
             const response = await axios.post(route('personal-information.update-photo'), formData, {
@@ -178,34 +229,14 @@ const PersonalInfoCard = ({ item, onEdit, updateCvInformation }) => {
                 });
             }
         } catch (error) {
-            console.error('Upload error:', error);
             toast({
-                title: t('cv.interface.personal.photo.error.title'),
-                description: error.response?.data?.message || t('cv.interface.personal.photo.error.description'),
+                title: t('cv.interface.personal.photo.error'),
+                description: error.response?.data?.message || t('cv.interface.personal.photo.error'),
                 variant: "destructive",
             });
         } finally {
             setIsUploading(false);
         }
-    };
-
-    const onImageLoad = (e) => {
-        const { naturalWidth: width, naturalHeight: height } = e.currentTarget;
-        const crop = centerCrop(
-            makeAspectCrop(
-                {
-                    unit: '%',
-                    width: 90,
-                },
-                1,
-                width,
-                height
-            ),
-            width,
-            height
-        );
-        //@ts-ignore
-        setCrop(crop);
     };
 
     return (
@@ -228,26 +259,45 @@ const PersonalInfoCard = ({ item, onEdit, updateCvInformation }) => {
                     <div className="flex items-center gap-3 sm:gap-4 border-b border-amber-100 dark:border-amber-800 pb-3 sm:pb-4">
                         <div className="relative h-16 w-16 sm:h-20 sm:w-20 flex-shrink-0">
                             {item.photo ? (
-                                <img
-                                    src={item.photo}
-                                    alt="Profile"
-                                    className="h-full w-full rounded-full object-cover"
-                                />
+                                <div className="group relative h-full w-full">
+                                    <img
+                                        src={item.photo}
+                                        alt="Profile"
+                                        className="h-full w-full rounded-full object-cover"
+                                    />
+                                    <div className="absolute inset-0 bg-black bg-opacity-50 rounded-full opacity-0 group-hover:opacity-100 flex items-center justify-center gap-1 transition-opacity">
+                                        <label className="cursor-pointer p-1 hover:bg-white/20 rounded-full">
+                                            <input
+                                                type="file"
+                                                className="hidden"
+                                                accept="image/*"
+                                                onChange={onSelectFile}
+                                                disabled={isUploading}
+                                            />
+                                            <Upload className="h-4 w-4 text-white" />
+                                        </label>
+                                        <button
+                                            onClick={handleDeletePhoto}
+                                            className="p-1 hover:bg-white/20 rounded-full"
+                                        >
+                                            <Trash2 className="h-4 w-4 text-white" />
+                                        </button>
+                                    </div>
+                                </div>
                             ) : (
                                 <div className="h-full w-full rounded-full bg-gradient-to-r from-amber-500/10 to-purple-500/10 flex items-center justify-center">
-                                    <Camera className="h-6 w-6 sm:h-8 sm:w-8 text-amber-500" />
+                                    <label className="cursor-pointer">
+                                        <input
+                                            type="file"
+                                            className="hidden"
+                                            accept="image/*"
+                                            onChange={onSelectFile}
+                                            disabled={isUploading}
+                                        />
+                                        <Camera className="h-6 w-6 sm:h-8 sm:w-8 text-amber-500" />
+                                    </label>
                                 </div>
                             )}
-                            <label className="absolute bottom-0 right-0 p-1 sm:p-1.5 bg-white dark:bg-gray-800 rounded-full shadow-lg cursor-pointer">
-                                <input
-                                    type="file"
-                                    className="hidden"
-                                    accept="image/*"
-                                    onChange={onSelectFile}
-                                    disabled={isUploading}
-                                />
-                                <Upload className={`h-3 w-3 sm:h-4 sm:w-4 ${isUploading ? 'text-gray-400 animate-pulse' : 'text-amber-500'}`} />
-                            </label>
                         </div>
                         <div className="min-w-0">
                             <h3 className="text-base sm:text-xl font-bold text-gray-900 dark:text-white truncate">
@@ -282,7 +332,9 @@ const PersonalInfoCard = ({ item, onEdit, updateCvInformation }) => {
             <Sheet open={isOpen} onOpenChange={setIsOpen}>
                 <SheetContent side="right" className="w-full sm:max-w-xl p-3 sm:p-4">
                     <SheetHeader className="text-left">
-                        <SheetTitle className="text-base sm:text-lg">{t('cv.interface.personal.photo.crop')}</SheetTitle>
+                        <SheetTitle className="text-base sm:text-lg">
+                            {t('cv.interface.personal.photo.crop')}
+                        </SheetTitle>
                         <SheetDescription className="text-xs sm:text-sm">
                             {t('cv.interface.personal.photo.cropDescription')}
                         </SheetDescription>
@@ -295,9 +347,13 @@ const PersonalInfoCard = ({ item, onEdit, updateCvInformation }) => {
                             {uploadedImage && (
                                 <ReactCrop
                                     //@ts-ignore
+
                                     crop={crop}
                                     //@ts-ignore
+
                                     onChange={c => setCrop(c)}
+                                    //@ts-ignore
+
                                     onComplete={c => setCompletedCrop(c)}
                                     aspect={1}
                                     className="max-w-full"
@@ -309,7 +365,8 @@ const PersonalInfoCard = ({ item, onEdit, updateCvInformation }) => {
                                         className="max-w-full h-auto"
                                         onLoad={onImageLoad}
                                     />
-                                </ReactCrop>)}
+                                </ReactCrop>
+                            )}
                         </div>
                     </ScrollArea>
 
@@ -318,7 +375,7 @@ const PersonalInfoCard = ({ item, onEdit, updateCvInformation }) => {
                             {t('cv.interface.personal.photo.cancel')}
                         </Button>
                         <Button
-                            onClick={handleSave}
+                            onClick={handleUpload}
                             disabled={!completedCrop || isUploading}
                             className="bg-gradient-to-r from-amber-500 to-purple-500 hover:from-amber-600 hover:to-purple-600 dark:from-amber-400 dark:to-purple-400 h-8 sm:h-10 text-xs sm:text-sm"
                         >
@@ -330,6 +387,7 @@ const PersonalInfoCard = ({ item, onEdit, updateCvInformation }) => {
         </div>
     );
 };
+
 
 const SidebarButton = ({ item, isActive, isComplete, onClick, isMobile }) => {
     const activeClass = "bg-gradient-to-r from-amber-500 to-purple-500 dark:from-amber-400 dark:to-purple-400 text-white shadow-lg";

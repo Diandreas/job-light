@@ -50,6 +50,10 @@
                 "title": "Personal Information",
                 "edit": "Edit",
                 "photo": {
+                    "deleteSuccess": {
+                        "title": "Photo deleted",
+                        "description": "Your profile photo has been deleted"
+                    },
                     "upload": "Add photo",
                     "edit": "Edit photo",
                     "crop": "Adjust photo",
@@ -60,7 +64,11 @@
                     "success": "Photo updated successfully",
                     "successDetail": "Your profile photo has been updated",
                     "error": "Error updating photo",
-                    "sizeError": "File too large (max 5MB)"
+                    "sizeError": "File too large (max 5MB)",
+                    "preview": "Photo preview",
+                    "error": {
+                        "noCrop": "Please crop the photo before saving"
+                    }
                 },
                 "fields": {
                     "email": "Email",

@@ -121,15 +121,10 @@ class CvInfosController extends Controller
         // Définir les options spécifiques
         $pdf->setOption([
             'defaultFont' => 'dejavu sans',
-            'dpi' => 96,
-            'defaultPaperSize' => 'a4',
+            'dpi' => 296,
             'defaultMediaType' => 'print',
             'enableCss' => true,
-            'fontHeightRatio' => 1,
-            'isFontSubsettingEnabled' => true,
-            'isPhpEnabled' => true,
-            'isHtml5ParserEnabled' => true,
-            'isRemoteEnabled' => true
+
         ]);
 
         $filename = Str::slug($user->name) . '-cv.pdf';

@@ -16,10 +16,11 @@
             --text-light: #4A4A4A;
         }
 
+        /* Seul changement critique : définir des marges dans @page */
         @page {
-            margin: 0;
-            padding: 0;
             size: A4;
+
+            margin: 12mm; /* Ceci est le changement principal */
         }
 
         body {
@@ -31,9 +32,10 @@
             padding: 0;
         }
 
+        /* Retirer le padding du conteneur pour laisser @page gérer les marges */
         .cv-container {
             width: 190mm;
-            padding: 12mm;
+
         }
 
         table {
@@ -106,6 +108,7 @@
         /* Section Styling */
         .section {
             margin-bottom: 3mm;
+            page-break-inside: avoid; /* Ajout pour éviter de couper les sections */
         }
 
         .section-title {
@@ -116,6 +119,7 @@
             margin-bottom: 1.5mm;
             border-bottom: 0.2mm solid var(--presidential-light);
             padding-bottom: 0.5mm;
+            page-break-after: avoid; /* Ajout pour garder le titre avec son contenu */
         }
 
         /* Summary Section */
@@ -231,6 +235,11 @@
             margin-top: 2mm;
             text-align: center;
             font-style: italic;
+        }
+
+        /* Classe utilitaire pour forcer un saut de page si nécessaire */
+        .page-break {
+            page-break-before: always;
         }
     </style>
 </head>

@@ -9,7 +9,8 @@
     <title>{{ $cvInformation['personalInformation']['firstName'] ?? 'CV' }} - CV</title>
     <style>
         @page {
-            margin: 0;
+            margin: 2mm ;
+
             padding: 0;
             size: A4;
         }
@@ -92,6 +93,7 @@
         }
 
         .main-section-title {
+
             font-size: 12pt;
             color: #3498db;
             text-transform: uppercase;
@@ -108,6 +110,8 @@
         }
 
         .experience-table {
+            width: 130mm;
+            page-break-inside: avoid;
             margin-bottom: 2mm;
         }
 

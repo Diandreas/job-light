@@ -26,11 +26,11 @@ import {
 } from "@/Components/ui/dropdown-menu";
 
 import PersonalInformationEdit from './PersonalInformation/Edit';
-import CompetenceManager from '@/Components/CompetenceManager';
-import HobbyManager from '@/Components/HobbyManager';
-import ProfessionManager from '@/Components/ProfessionManager';
-import ExperienceManager from "@/Components/ExperienceManager";
-import SummaryManager from '@/Components/SummaryManager';
+import CompetenceManager from '@/Components/cvPart/CompetenceManager';
+import HobbyManager from '@/Components/cvPart/HobbyManager';
+import ProfessionManager from '@/Components/cvPart/ProfessionManager';
+import ExperienceManager from "@/Components/cvPart/ExperienceManager";
+import SummaryManager from '@/Components/cvPart/SummaryManager';
 import ReactCrop, { centerCrop, makeAspectCrop } from 'react-image-crop';
 import 'react-image-crop/dist/ReactCrop.css';
 

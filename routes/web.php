@@ -173,7 +173,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     // Admin-only routes
     Route::middleware('can:access-admin')->group(function () {
-       
+
         Route::resources([
             'experience-categories' => ExperienceCategoryController::class,
             'profession-categories' => ProfessionCategoryController::class,

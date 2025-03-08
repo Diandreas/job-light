@@ -172,21 +172,19 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('/sponsorship/support', [SponsorshipController::class, 'submitSupportTicket']);
 
     // Admin-only routes
-//    Route::middleware('can:access-admin')->group(function () {
-//        Route::get('/dash', function () {
-//            return Inertia::render('welcome');
-//        })->name('dashboard');
-//        Route::resources([
-//            'experience-categories' => ExperienceCategoryController::class,
-//            'profession-categories' => ProfessionCategoryController::class,
-//            'hobbies' => HobbyController::class,
-//            'professions' => ProfessionController::class,
-//            'competences' => CompetenceController::class,
-//            'profession-missions' => ProfessionMissionController::class,
-//            'cv-models' => CvModelController::class,
-//        ]);
-//    });
-//
+    Route::middleware('can:access-admin')->group(function () {
+       
+        Route::resources([
+            'experience-categories' => ExperienceCategoryController::class,
+            'profession-categories' => ProfessionCategoryController::class,
+            'hobbies' => HobbyController::class,
+            'professions' => ProfessionController::class,
+            'competences' => CompetenceController::class,
+            'profession-missions' => ProfessionMissionController::class,
+            'cv-models' => CvModelController::class,
+        ]);
+    });
+
 
     Route::middleware(['auth'])->group(function () {
         // Ajoutez au début de votre groupe de routes authentifiées

@@ -25,12 +25,12 @@ import {
     DropdownMenuTrigger,
 } from "@/Components/ui/dropdown-menu";
 
-import PersonalInformationEdit from './PersonalInformation/Edit';
-import CompetenceManager from '@/Components/cvPart/CompetenceManager';
-import HobbyManager from '@/Components/cvPart/HobbyManager';
-import ProfessionManager from '@/Components/cvPart/ProfessionManager';
-import ExperienceManager from "@/Components/cvPart/ExperienceManager";
-import SummaryManager from '@/Components/cvPart/SummaryManager';
+import PersonalInformationEdit from '@/Pages/CvInfos/Partials/PersonnalInfosEdit';
+import CompetenceManager from '@/Pages/CvInfos/Partials/CompetenceManager';
+import HobbyManager from '@/Pages/CvInfos/Partials/HobbyManager';
+import ProfessionManager from '@/Pages/CvInfos/Partials/ProfessionManager';
+import ExperienceManager from "@/Pages/CvInfos/Partials/ExperienceManager";
+import SummaryManager from '@/Pages/CvInfos/Partials/SummaryManager';
 import ReactCrop, { centerCrop, makeAspectCrop } from 'react-image-crop';
 import 'react-image-crop/dist/ReactCrop.css';
 

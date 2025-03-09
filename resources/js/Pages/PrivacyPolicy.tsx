@@ -1,6 +1,7 @@
 import React from 'react';
 import { Head } from '@inertiajs/react';
 import { Shield, Lock, Eye, Database } from 'lucide-react';
+import GuestLayout from '@/Layouts/GuestLayout';
 
 const PrivacyPolicy = () => {
     const structuredData = {
@@ -19,7 +20,7 @@ const PrivacyPolicy = () => {
     };
 
     return (
-        <>
+        <GuestLayout>
             <Head>
                 <title>Politique de Confidentialité | Guidy - Protection de vos Données</title>
                 <meta name="description" content="Découvrez comment Guidy protège vos données personnelles. Politique de confidentialité détaillée pour la création de CV au Cameroun." />
@@ -143,7 +144,7 @@ const PrivacyPolicy = () => {
                     </div>
                 </div>
             </div>
-        </>
+        </GuestLayout>
     );
 };
 

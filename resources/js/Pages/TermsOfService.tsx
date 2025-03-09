@@ -1,7 +1,7 @@
 import React from 'react';
 import { Head } from '@inertiajs/react';
 import { FileText, CheckCircle, AlertCircle, HelpCircle } from 'lucide-react';
-
+import GuestLayout from '@/Layouts/GuestLayout';
 const TermsOfService = () => {
     const structuredData = {
         "@context": "https://schema.org",
@@ -19,7 +19,7 @@ const TermsOfService = () => {
     };
 
     return (
-        <>
+        <GuestLayout>
             <Head>
                 <title>Conditions d'Utilisation | Guidy - Création de CV au Cameroun</title>
                 <meta name="description" content="Consultez les conditions d'utilisation de Guidy. Règles et modalités d'utilisation de notre service de création de CV au Cameroun." />
@@ -184,7 +184,7 @@ const TermsOfService = () => {
                     </div>
                 </div>
             </div>
-        </>
+        </GuestLayout>
     );
 };
 

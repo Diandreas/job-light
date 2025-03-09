@@ -1,7 +1,7 @@
 import React from 'react';
 import { Head } from '@inertiajs/react';
 import { Building, Mail, Phone, Globe, Shield, UserCheck } from 'lucide-react';
-
+import GuestLayout from '@/Layouts/GuestLayout';
 const LegalNotice = () => {
     const structuredData = {
         "@context": "https://schema.org",
@@ -24,7 +24,7 @@ const LegalNotice = () => {
     };
 
     return (
-        <>
+        <GuestLayout>
             <Head>
                 <title>Mentions Légales | Guidy - Création de CV au Cameroun</title>
                 <meta name="description" content="Mentions légales de Guidy. Informations légales sur notre service de création de CV professionnel au Cameroun." />
@@ -141,7 +141,7 @@ const LegalNotice = () => {
                     </div>
                 </div>
             </div>
-        </>
+        </GuestLayout>
     );
 };
 

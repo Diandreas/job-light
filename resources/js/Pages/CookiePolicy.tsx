@@ -1,7 +1,7 @@
 import React from 'react';
 import { Head } from '@inertiajs/react';
 import { Cookie, Shield, Settings, Info } from 'lucide-react';
-
+import GuestLayout from '@/Layouts/GuestLayout';
 const CookiePolicy = () => {
     const structuredData = {
         "@context": "https://schema.org",
@@ -19,7 +19,7 @@ const CookiePolicy = () => {
     };
 
     return (
-        <>
+        <GuestLayout>
             <Head>
                 <title>Politique des Cookies | Guidy - Création de CV au Cameroun</title>
                 <meta name="description" content="Politique des cookies de Guidy. Comprendre comment nous utilisons les cookies pour améliorer votre expérience de création de CV au Cameroun." />
@@ -149,7 +149,7 @@ const CookiePolicy = () => {
                     </div>
                 </div>
             </div>
-        </>
+        </GuestLayout>
     );
 };
 

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Head, Link, useForm } from '@inertiajs/react';
 import GuestLayout from '@/Layouts/GuestLayout';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -9,21 +9,29 @@ import { Label } from "@/Components/ui/label";
 import { useTranslation } from 'react-i18next';
 import {
     UserPlus, Mail, Lock, User, ArrowRight, CheckCircle,
-    XCircle, Eye, EyeOff, Loader2
+    XCircle, Eye, EyeOff, Loader2, Gift
 } from 'lucide-react';
 
-export default function Register() {
+export default function Register({ referralCode }) {
     const { t } = useTranslation();
     const { data, setData, post, processing, errors } = useForm({
         name: '',
         email: '',
         password: '',
         password_confirmation: '',
+        referralCode: referralCode || '', // Initialize with referral code from props if available
     });
 
     const [passwordStrength, setPasswordStrength] = useState(0);
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
+    // Set referral code from props when component mounts or when referralCode prop changes
+    useEffect(() => {
+        if (referralCode) {
+            setData('referralCode', referralCode);
+        }
+    }, [referralCode]);
 
     const strengthColors = [
         'bg-red-500 dark:bg-red-600',
@@ -87,6 +95,18 @@ export default function Register() {
                         <p className="text-gray-500 dark:text-gray-400 text-sm">
                             {t('auth.register.subtitle')}
                         </p>
+
+                        {/* Display referral info banner if there's a referral code */}
+                        {referralCode && (
+                            <motion.div
+                                initial={{ opacity: 0, y: -10 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                className="mt-4 py-2 px-4 bg-amber-50 dark:bg-amber-900/20 border border-amber-100 dark:border-amber-700/30 rounded-lg flex items-center gap-2 text-amber-600 dark:text-amber-400"
+                            >
+                                <Gift className="w-4 h-4" />
+                                <span className="text-sm">Vous avez été parrainé(e) ! Des avantages vous attendent.</span>
+                            </motion.div>
+                        )}
                     </CardHeader>
 
                     <CardContent>
@@ -291,6 +311,48 @@ export default function Register() {
                                     </AnimatePresence>
                                 </div>
                             </motion.div>
+
+                            {/* Referral Code Field - Only show if no referral code was provided via URL */}
+                            {!referralCode && (
+                                <motion.div
+                                    initial={{ opacity: 0, x: -20 }}
+                                    animate={{ opacity: 1, x: 0 }}
+                                    transition={{ delay: 0.6 }}
+                                    className="space-y-2"
+                                >
+                                    <Label htmlFor="referralCode" className="text-gray-700 dark:text-gray-300 flex items-center gap-2">
+                                        <span>Code de parrainage</span>
+                                        <span className="text-xs text-gray-500 dark:text-gray-400">(optionnel)</span>
+                                    </Label>
+                                    <div className="relative">
+                                        <InputIcon icon={Gift} error={errors.referralCode} />
+                                        <Input
+                                            id="referralCode"
+                                            value={data.referralCode}
+                                            onChange={(e) => setData('referralCode', e.target.value)}
+                                            className={`pl-10 bg-white/50 dark:bg-gray-900/50 ${
+                                                errors.referralCode
+                                                    ? 'border-red-500 focus:border-red-500 dark:border-red-400 dark:focus:border-red-400'
+                                                    : 'border-amber-100 focus:border-amber-500 dark:border-gray-700 dark:focus:border-amber-400'
+                                            }`}
+                                            placeholder="Entrez un code de parrainage si vous en avez un"
+                                        />
+                                    </div>
+                                    <AnimatePresence>
+                                        {errors.referralCode && (
+                                            <motion.p
+                                                initial={{ opacity: 0, y: -10 }}
+                                                animate={{ opacity: 1, y: 0 }}
+                                                exit={{ opacity: 0, y: -10 }}
+                                                className="text-sm text-red-500 dark:text-red-400 flex items-center gap-1"
+                                            >
+                                                <XCircle className="w-4 h-4" />
+                                                {errors.referralCode}
+                                            </motion.p>
+                                        )}
+                                    </AnimatePresence>
+                                </motion.div>
+                            )}
                         </form>
                     </CardContent>
 

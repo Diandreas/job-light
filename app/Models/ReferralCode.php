@@ -9,8 +9,14 @@ class ReferralCode extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['code'];
+    protected $fillable = [
+        'user_id',
+        'code',
+    ];
 
+    /**
+     * Get the user that owns the referral code.
+     */
     public function user()
     {
         return $this->belongsTo(User::class);

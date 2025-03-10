@@ -3,13 +3,16 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Http\Controllers\SponsorshipController;
 use App\Models\Profession;
 use App\Models\User;
+use App\Models\ReferralCode;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\Rules;
 use Illuminate\Validation\ValidationException;
 use Inertia\Inertia;
@@ -20,12 +23,14 @@ class RegisteredUserController extends Controller
     /**
      * Display the registration view.
      */
-    public function create(): Response
+    public function create(Request $request): Response
     {
         $professions = Profession::all();
+        $referralCode = $request->query('ref'); // Get referral code from URL query parameter
 
         return Inertia::render('Auth/Register', [
             'professions' => $professions,
+            'referralCode' => $referralCode,
         ]);
     }
 
@@ -40,31 +45,38 @@ class RegisteredUserController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|string|lowercase|email|max:255|unique:'.User::class,
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
-//            'profession_id' => 'required|exists:professions,id', // Assurez-vous que l'ID de la profession existe dans la table des professions
-//            'surname' => 'nullable|string|max:45',
-//            'github' => 'nullable|string|max:255',
-//            'linkedin' => 'nullable|string|max:255',
-//            'address' => 'nullable|string|max:255',
-//            'phone_number' => 'nullable|string|max:255',
+            'referralCode' => 'nullable|string|exists:referral_codes,code',
         ]);
 
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
-//            'profession_id' => $request->profession_id,
-//            'surname' => $request->surname,
-//            'github' => $request->github,
-//            'linkedin' => $request->linkedin,
-//            'address' => $request->address,
-//            'phone_number' => $request->phone_number,
         ]);
 
         event(new Registered($user));
 
         Auth::login($user);
 
-        return redirect()->intended(route('cv-infos.index', absolute: false));
+        // Process referral if a valid referral code was provided
+        if ($request->referralCode) {
+            try {
+                $sponsorshipController = new SponsorshipController();
+                $sponsorshipController->processReferral($request->referralCode, $user);
 
+                Log::info('User registered with referral code', [
+                    'user_id' => $user->id,
+                    'referral_code' => $request->referralCode
+                ]);
+            } catch (\Exception $e) {
+                Log::error('Error processing referral during registration', [
+                    'error' => $e->getMessage(),
+                    'user_id' => $user->id,
+                    'referral_code' => $request->referralCode
+                ]);
+            }
+        }
+
+        return redirect()->intended(route('cv-infos.index', absolute: false));
     }
 }

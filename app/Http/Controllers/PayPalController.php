@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\DB;
 use App\Models\Payment;
+use App\Http\Controllers\SponsorshipController;
 use Exception;
 
 class PayPalController extends Controller
@@ -56,13 +57,17 @@ class PayPalController extends Controller
                 ]);
 
                 // 4. Create payment record
+                $amount = $validated['paypalDetails']['purchase_units'][0]['amount']['value'];
                 $payment = Payment::create([
                     'user_id' => $user->id,
-                    'amount' => $validated['paypalDetails']['purchase_units'][0]['amount']['value'],
+                    'amount' => $amount,
                     'transaction_id' => $validated['orderID'],
                     'status' => 'completed',
                     'payment_method' => 'paypal',
-                    'metadata' => json_encode($validated['paypalDetails'])
+                    'metadata' => json_encode([
+                        'tokens' => $validated['tokens'],
+                        'paypal_details' => $validated['paypalDetails']
+                    ])
                 ]);
 
                 Log::info('Payment record created', [
@@ -70,11 +75,19 @@ class PayPalController extends Controller
                     'transaction_id' => $payment->transaction_id
                 ]);
 
+                // 5. Process referral commission if applicable
+                $sponsorshipController = new SponsorshipController();
+                // Convert EUR to FCFA for commission calculation (approximate conversion rate)
+                $amountFCFA = $amount * 655; // Approximate EUR to FCFA conversion
+                $commissionAmount = $sponsorshipController->processReferralCommission($user, $amountFCFA);
+
                 DB::commit();
 
                 Log::info('Payment process completed successfully', [
                     'user_id' => $user->id,
-                    'payment_id' => $payment->id
+                    'payment_id' => $payment->id,
+                    'referral_commission_processed' => $commissionAmount ? true : false,
+                    'commission_amount' => $commissionAmount
                 ]);
 
                 return response()->json([

@@ -6,6 +6,9 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\DB;
 use App\Models\Payment;
+use App\Models\Referral;
+use App\Models\ReferralEarning;
+use App\Models\User;
 use Exception;
 
 class NotchPayController extends Controller
@@ -64,6 +67,9 @@ class NotchPayController extends Controller
             $payment->status = 'completed';
             $payment->save();
 
+            // Process referral commission if the user was referred
+            $this->processReferralCommission($user, $payment->amount);
+
             Log::info('Payment completed successfully', [
                 'payment_id' => $payment->id,
                 'user_id' => $user->id,
@@ -91,6 +97,7 @@ class NotchPayController extends Controller
                 ->with('error', 'Erreur lors du traitement du paiement : ' . $e->getMessage());
         }
     }
+
     public function initializePayment(Request $request)
     {
         Log::info('Starting NotchPay payment initialization', [
@@ -102,7 +109,6 @@ class NotchPayController extends Controller
             // 1. Validate request
             $validated = $request->validate([
                 'tokens' => 'required|integer|min:1',
-//                'email' => 'required|email',
             ]);
 
             $user = auth()->user();
@@ -222,6 +228,9 @@ class NotchPayController extends Controller
                 $payment->status = 'completed';
                 $payment->save();
 
+                // 6. Process referral commission if the user was referred
+                $this->processReferralCommission($user, $payment->amount);
+
                 DB::commit();
 
                 Log::info('NotchPay payment completed successfully', [
@@ -248,6 +257,78 @@ class NotchPayController extends Controller
                 'status' => 'error',
                 'message' => $e->getMessage()
             ], 500);
+        }
+    }
+
+    /**
+     * Process referral commission when a referred user makes a purchase
+     */
+    private function processReferralCommission($user, $amount)
+    {
+        try {
+            // Check if user was referred by someone
+            $referral = Referral::where('referred_id', $user->id)->first();
+
+            if (!$referral) {
+                return; // No referral found, exit
+            }
+
+            // Get the referrer
+            $referrer = User::find($referral->referrer_id);
+
+            if (!$referrer) {
+                Log::error('Referrer not found during commission processing', [
+                    'referrer_id' => $referral->referrer_id,
+                    'referred_id' => $user->id
+                ]);
+                return;
+            }
+
+            // Get referrer's level to determine commission percentage
+            $level = $referrer->referralLevel();
+
+            // Get commission rate based on level
+            $commissionRates = [
+                'ARGENT' => 0.10, // 10%
+                'OR' => 0.15,     // 15%
+                'DIAMANT' => 0.20 // 20%
+            ];
+
+            $commissionRate = $commissionRates[$level] ?? 0.10;
+
+            // Calculate commission amount
+            $commissionAmount = $amount * $commissionRate;
+
+            // Record the earning
+            $earning = ReferralEarning::create([
+                'user_id' => $referrer->id,
+                'referral_id' => $referral->id,
+                'amount' => $commissionAmount,
+                'status' => 'pending'
+            ]);
+
+            // Directly add to referrer's wallet balance (immediate payout)
+            $referrer->wallet_balance += $commissionAmount;
+            $referrer->save();
+
+            // Update earning status to paid
+            $earning->status = 'paid';
+            $earning->save();
+
+            Log::info('Referral commission processed', [
+                'referrer_id' => $referrer->id,
+                'referred_id' => $user->id,
+                'purchase_amount' => $amount,
+                'commission_rate' => $commissionRate,
+                'commission_amount' => $commissionAmount
+            ]);
+
+        } catch (Exception $e) {
+            Log::error('Error processing referral commission', [
+                'error' => $e->getMessage(),
+                'user_id' => $user->id,
+                'amount' => $amount
+            ]);
         }
     }
 

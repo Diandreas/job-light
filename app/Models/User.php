@@ -118,7 +118,7 @@ class User extends Authenticatable
 
 
     /**
-     * Obtenir le code de parrainage de l'utilisateur.
+     * Get the referral code for the user.
      */
     public function referralCode()
     {
@@ -126,7 +126,7 @@ class User extends Authenticatable
     }
 
     /**
-     * Obtenir les utilisateurs parrainés par cet utilisateur.
+     * Get the referrals made by the user.
      */
     public function referrals()
     {
@@ -134,7 +134,15 @@ class User extends Authenticatable
     }
 
     /**
-     * Obtenir les gains de parrainage de l'utilisateur.
+     * Get the referrals where this user was referred.
+     */
+    public function referredBy()
+    {
+        return $this->hasMany(Referral::class, 'referred_id');
+    }
+
+    /**
+     * Get the referral earnings for the user.
      */
     public function referralEarnings()
     {
@@ -142,90 +150,54 @@ class User extends Authenticatable
     }
 
     /**
-     * Obtenir le niveau de parrainage actuel de l'utilisateur.
+     * Get the current referral level name based on number of referrals.
      */
     public function referralLevel()
     {
         $referralCount = $this->referrals()->count();
-        return ReferralLevel::where('min_referrals', '<=', $referralCount)
-            ->orderBy('min_referrals', 'desc')
-            ->first();
+
+        if ($referralCount >= 20) {
+            return 'DIAMANT';
+        } elseif ($referralCount >= 10) {
+            return 'OR';
+        } else {
+            return 'ARGENT';
+        }
     }
 
     /**
-     * Obtenir le prochain niveau de parrainage.
+     * Get the next referral level name.
      */
     public function nextReferralLevel()
     {
         $currentLevel = $this->referralLevel();
-        return ReferralLevel::where('min_referrals', '>', $currentLevel->min_referrals)
-            ->orderBy('min_referrals', 'asc')
-            ->first();
+
+        if ($currentLevel === 'DIAMANT') {
+            return null; // Already at highest level
+        } elseif ($currentLevel === 'OR') {
+            return 'DIAMANT';
+        } else {
+            return 'OR';
+        }
     }
 
     /**
-     * Calculer la progression vers le prochain niveau de parrainage.
+     * Calculate progress towards the next level as a percentage.
      */
     public function referralProgress()
     {
+        $referralCount = $this->referrals()->count();
         $currentLevel = $this->referralLevel();
-        $nextLevel = $this->nextReferralLevel();
 
-        if (!$nextLevel) {
-            return 100; // L'utilisateur est au niveau maximum
+        if ($currentLevel === 'DIAMANT') {
+            return 100; // Already at max level
+        } elseif ($currentLevel === 'OR') {
+            // Progress from 10 (OR) to 20 (DIAMANT)
+            return min(100, (($referralCount - 10) / 10) * 100);
+        } else {
+            // Progress from 0 (ARGENT) to 10 (OR)
+            return min(100, ($referralCount / 10) * 100);
         }
-
-        $currentReferrals = $this->referrals()->count();
-        $referralsNeeded = $nextLevel->min_referrals - $currentLevel->min_referrals;
-        $referralsProgress = $currentReferrals - $currentLevel->min_referrals;
-
-        return min(($referralsProgress / $referralsNeeded) * 100, 100);
-    }
-
-    /**
-     * Générer ou récupérer le code de parrainage de l'utilisateur.
-     */
-    public function getOrCreateReferralCode()
-    {
-        if (!$this->referralCode) {
-            $this->referralCode()->create([
-                'code' => $this->generateUniqueReferralCode(),
-            ]);
-        }
-
-        return $this->referralCode->code;
-    }
-
-    /**
-     * Générer un code de parrainage unique.
-     */
-    protected function generateUniqueReferralCode()
-    {
-        do {
-            $code = strtoupper(Str::random(8));
-        } while (ReferralCode::where('code', $code)->exists());
-
-        return $code;
-    }
-
-    /**
-     * Ajouter un gain de parrainage pour l'utilisateur.
-     */
-    public function addReferralEarning($amount, $referralId)
-    {
-        return $this->referralEarnings()->create([
-            'amount' => $amount,
-            'referral_id' => $referralId,
-            'status' => 'pending',
-        ]);
-    }
-
-    /**
-     * Obtenir le total des gains de parrainage de l'utilisateur.
-     */
-    public function totalReferralEarnings()
-    {
-        return $this->referralEarnings()->where('status', 'paid')->sum('amount');
     }
     public function getRouteKeyName()
     {

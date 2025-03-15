@@ -2,13 +2,16 @@ import React from 'react';
 import { Head } from '@inertiajs/react';
 import { Shield, Lock, Eye, Database } from 'lucide-react';
 import GuestLayout from '@/Layouts/GuestLayout';
+import { useTranslation } from 'react-i18next';
 
 const PrivacyPolicy = () => {
+    const { t } = useTranslation();
+
     const structuredData = {
         "@context": "https://schema.org",
         "@type": "WebPage",
-        "name": "Politique de Confidentialité | Guidy",
-        "description": "Politique de confidentialité de Guidy - Découvrez comment nous protégeons vos données personnelles lors de la création de votre CV au Cameroun.",
+        "name": t('pages.privacyPolicy.metaTitle'),
+        "description": t('pages.privacyPolicy.metaDescription'),
         "publisher": {
             "@type": "Organization",
             "name": "Guidy",
@@ -22,11 +25,11 @@ const PrivacyPolicy = () => {
     return (
         <GuestLayout>
             <Head>
-                <title>Politique de Confidentialité | Guidy - Protection de vos Données</title>
-                <meta name="description" content="Découvrez comment Guidy protège vos données personnelles. Politique de confidentialité détaillée pour la création de CV au Cameroun." />
-                <meta name="keywords" content="politique confidentialité, protection données, sécurité CV, données personnelles, Guidy Cameroun" />
-                <meta property="og:title" content="Politique de Confidentialité | Guidy" />
-                <meta property="og:description" content="Protection de vos données personnelles chez Guidy" />
+                <title>{t('pages.privacyPolicy.metaTitle')}</title>
+                <meta name="description" content={t('pages.privacyPolicy.metaDescription')} />
+                <meta name="keywords" content={t('pages.privacyPolicy.metaKeywords')} />
+                <meta property="og:title" content={t('pages.privacyPolicy.title')} />
+                <meta property="og:description" content={t('pages.privacyPolicy.subtitle')} />
                 <meta property="og:image" content="../../public/image.png" />
                 <meta property="og:type" content="website" />
                 <link rel="canonical" href="https://guidy.com/privacy" />
@@ -39,10 +42,10 @@ const PrivacyPolicy = () => {
                 <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="text-center mb-12">
                         <h1 className="text-4xl font-bold text-gray-900 mb-4">
-                            Politique de Confidentialité
+                            {t('pages.privacyPolicy.title')}
                         </h1>
                         <p className="text-xl text-gray-600">
-                            Protection et sécurité de vos données personnelles
+                            {t('pages.privacyPolicy.subtitle')}
                         </p>
                     </div>
 
@@ -51,15 +54,29 @@ const PrivacyPolicy = () => {
                             <div className="flex items-start space-x-4">
                                 <Shield className="w-8 h-8 text-amber-500 flex-shrink-0" />
                                 <div>
-                                    <h3 className="text-lg font-semibold mb-2">Protection des Données</h3>
-                                    <p className="text-gray-600">Vos informations personnelles sont protégées selon les normes de sécurité les plus strictes.</p>
+                                    <h3 className="text-lg font-semibold mb-2">{t('pages.privacyPolicy.sections.dataProtection.title')}</h3>
+                                    <p className="text-gray-600">{t('pages.privacyPolicy.sections.dataProtection.description')}</p>
                                 </div>
                             </div>
                             <div className="flex items-start space-x-4">
                                 <Lock className="w-8 h-8 text-amber-500 flex-shrink-0" />
                                 <div>
-                                    <h3 className="text-lg font-semibold mb-2">Sécurité Garantie</h3>
-                                    <p className="text-gray-600">Toutes vos données sont cryptées et stockées de manière sécurisée.</p>
+                                    <h3 className="text-lg font-semibold mb-2">{t('pages.privacyPolicy.sections.security.title')}</h3>
+                                    <p className="text-gray-600">{t('pages.privacyPolicy.sections.security.description')}</p>
+                                </div>
+                            </div>
+                            <div className="flex items-start space-x-4">
+                                <Eye className="w-8 h-8 text-amber-500 flex-shrink-0" />
+                                <div>
+                                    <h3 className="text-lg font-semibold mb-2">{t('pages.privacyPolicy.sections.transparency.title')}</h3>
+                                    <p className="text-gray-600">{t('pages.privacyPolicy.sections.transparency.description')}</p>
+                                </div>
+                            </div>
+                            <div className="flex items-start space-x-4">
+                                <Database className="w-8 h-8 text-amber-500 flex-shrink-0" />
+                                <div>
+                                    <h3 className="text-lg font-semibold mb-2">{t('pages.privacyPolicy.sections.control.title')}</h3>
+                                    <p className="text-gray-600">{t('pages.privacyPolicy.sections.control.description')}</p>
                                 </div>
                             </div>
                         </div>

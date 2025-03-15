@@ -68,97 +68,83 @@
     },
     "cv": {
         "interface": {
-            "title": "My Guidy CV",
-            "subtitle": "Complete your profile for a CV that represents you",
-            "progress": "Progress",
-            "chooseDesign": "Choose design",
-            "premiumDesigns": "Bring your CV to life with our professional designs",
-            "premiumSubtitle": "Choose from our premium templates",
+            "title": "CV Editor",
+            "chooseDesign": "Choose a design",
+            "designs": "Designs",
             "welcome": {
-                "title": "Welcome to your CV space",
-                "subtitle": "Create a professional CV in a few steps",
+                "title": "Welcome to the CV Editor",
+                "subtitle": "Complete your profile to create a professional CV",
                 "complete": "completed"
             },
             "import": {
                 "button": "Import CV",
                 "pdf": "Import PDF",
                 "word": "Import Word",
-                "ai": "AI Analysis (5 tokens)",
                 "success": "Import successful",
                 "successDetail": "Your CV has been successfully imported",
                 "error": "Import error",
                 "errorDetail": "An error occurred during import",
-                "insufficient": "Insufficient balance for AI analysis"
+                "insufficient": "Insufficient balance"
+            },
+            "sections": {
+                "title": "CV Sections",
+                "description": "Complete all sections for a comprehensive CV"
             },
             "update": {
                 "success": "Update successful",
-                "successDetail": "Your information has been saved successfully"
-            },
-            "sections": {
-                "title": "Create your professional CV",
-                "description": "Complete each section for a comprehensive CV",
-                "personalInfo": "Personal Information",
-                "summary": "Summary",
-                "experience": "Experience",
-                "competence": "Skills",
-                "education": "Education",
-                "hobbies": "Interests"
+                "successDetail": "Your information has been successfully updated"
             },
             "personal": {
                 "title": "Personal Information",
                 "edit": "Edit",
-                "photo": {
-                    "deleteSuccess": {
-                        "title": "Photo deleted",
-                        "description": "Your profile photo has been deleted"
-                    },
-                    "upload": "Add photo",
-                    "edit": "Edit photo",
-                    "crop": "Adjust photo",
-                    "cropDescription": "Crop your photo to fit the square format",
-                    "save": "Save",
-                    "saving": "Saving...",
-                    "cancel": "Cancel",
-                    "success": "Photo updated successfully",
-                    "successDetail": "Your profile photo has been updated",
-                    "error": "Error updating photo",
-                    "sizeError": "File too large (max 5MB)",
-                    "preview": "Photo preview",
-                    "error": {
-                        "noCrop": "Please crop the photo before saving"
-                    }
-                },
                 "fields": {
+                    "notSpecified": "Not specified",
                     "email": "Email",
                     "phone": "Phone",
                     "address": "Address",
                     "linkedin": "LinkedIn",
-                    "github": "GitHub",
-                    "notSpecified": "Not specified"
-                }
-            },
-            "navigation": {
-                "back": "Back",
-                "next": "Next",
-                "save": "Save",
-                "cancel": "Cancel"
-            },
-            "ai": {
-                "analyzer": {
-                    "title": "CV Analyzer",
-                    "subtitle": "Import your existing CV for automatic conversion",
-                    "upload": "Import CV",
-                    "analyzing": "Analyzing...",
-                    "success": "CV imported successfully",
-                    "successDesc": "Sections have been automatically updated",
-                    "error": "Error analyzing CV",
-                    "insufficient": "Insufficient balance"
+                    "github": "GitHub"
+                },
+                "photo": {
+                    "crop": "Crop photo",
+                    "cropDescription": "Adjust the frame to select the part of the image to use",
+                    "save": "Save",
+                    "saving": "Saving...",
+                    "cancel": "Cancel",
+                    "success": {
+                        "title": "Photo updated",
+                        "description": "Your profile photo has been successfully updated"
+                    },
+                    "deleteSuccess": {
+                        "title": "Photo deleted",
+                        "description": "Your profile photo has been successfully deleted"
+                    },
+                    "error": {
+                        "title": "Error",
+                        "noCrop": "Please select a part of the image"
+                    },
+                    "sizeError": "The image size should not exceed 5MB"
                 }
             },
             "cta": {
-                "title": "Bring your CV to life with our premium designs",
-                "subtitle": "Choose from our premium templates"
+                "title": "Create your CV now",
+                "subtitle": "Choose from our professional designs"
             }
+        },
+        "sidebar": {
+            "personalInfo": "Personal Information",
+            "summary": "Summary",
+            "experience": "Experience",
+            "competence": "Skills",
+            "profession": "Education",
+            "hobby": "Interests"
+        },
+        "personal": {
+            "email": "Email",
+            "phone": "Phone",
+            "address": "Address",
+            "linkedin": "LinkedIn",
+            "github": "GitHub"
         },
         "navigation": "CV Navigation",
         "edit": "Edit CV",
@@ -197,7 +183,9 @@
         "edit": "Edit",
         "delete": "Delete",
         "back": "Back",
-        "next": "Next"
+        "next": "Next",
+        "manage": "Manage",
+        "generic": "An error occurred."
     },
     "wallet": {
         "balance": "Balance",
@@ -420,9 +408,6 @@
                 "noFileDescription": "There is no attachment to preview"
             }
         }
-    },
-    "common": {
-        "loading": "Loading..."
     },
     "auth": {
         "register": {
@@ -778,6 +763,418 @@
         "resume_review": {
             "title": "Resume Review",
             "description": "Resume improvement suggestions"
+        }
+    },
+    "sponsorship": {
+        "title": "Referral Program",
+        "tabs": {
+            "dashboard": "Dashboard",
+            "progress": "Progress",
+            "invitations": "Invitations",
+            "support": "Support",
+            "info": "Information"
+        },
+        "welcome": {
+            "title": "Referral Program",
+            "subtitle": "Invite your friends and earn rewards",
+            "button": "Invite now"
+        },
+        "code": {
+            "title": "Your referral code",
+            "validUntil": "Valid until",
+            "expired": "Expired",
+            "almostExpired": "Almost expired",
+            "valid": "Valid",
+            "renewal": {
+                "renewCode": "Renew Code",
+                "title": "Referral Management",
+                "description": "Manage your referral code and renew it when it expires.",
+                "tabs": {
+                    "current": "Current Code",
+                    "new": "New Code"
+                },
+                "sponsorCode": "Sponsor code",
+                "sponsor": "Sponsor",
+                "validity": "Code validity",
+                "expires": "Expires on",
+                "expired": "Expired",
+                "renewFor30Days": "Renew this code for 30 days",
+                "noSponsorYet": "You don't have a sponsor yet.",
+                "canApplyCodeInNewTab": "You can apply a referral code in the \"New Code\" tab.",
+                "noReferralCodeYet": "You don't have a referral code yet.",
+                "visitSponsorshipPage": "Visit the sponsorship page to create one.",
+                "newSponsorCode": "New referral code",
+                "enterCodePlaceholder": "Enter the referral code",
+                "validityInfo": "The code will be valid for 30 days. Your sponsor will receive a percentage of your purchases during this period.",
+                "applyCode": "Apply this code",
+                "yourCodeToShare": "Your own code to share",
+                "code": "Code",
+                "shareCodeWithFriends": "Share this code with your friends to earn commissions on their purchases!",
+                "viewAllDetails": "View all details",
+                "success": "Code renewed",
+                "successDescription": "Your referral code has been successfully renewed.",
+                "newCodeApplied": "New code applied",
+                "newCodeAppliedDescription": "The new referral code has been successfully applied.",
+                "enterCode": "Please enter a referral code.",
+                "applyError": "An error occurred while applying the code."
+            }
+        },
+        "dashboard": {
+            "yourReferrals": "Your referrals",
+            "noReferrals": "No referrals yet",
+            "inviteFriends": "Invite your friends to start earning rewards",
+            "registered": "Registered",
+            "registeredOn": "Registered on",
+            "totalReferrals": "Total referrals",
+            "totalEarnings": "Total earnings",
+            "currentLevel": "Current level"
+        }
+    },
+    "pages": {
+        "dashboard": {
+            "title": "Dashboard"
+        },
+        "privacyPolicy": {
+            "title": "Privacy Policy",
+            "subtitle": "How we protect your data",
+            "metaTitle": "Privacy Policy | Guidy",
+            "metaDescription": "Discover how Guidy protects your personal data and respects your privacy",
+            "metaKeywords": "privacy policy, data protection, privacy, data security",
+            "sections": {
+                "dataProtection": {
+                    "title": "Data Protection",
+                    "description": "We use advanced technologies to protect your personal information from unauthorized access."
+                },
+                "security": {
+                    "title": "Enhanced Security",
+                    "description": "All your data is encrypted and stored on secure servers with rigorous security protocols."
+                },
+                "transparency": {
+                    "title": "Full Transparency",
+                    "description": "We clearly explain how your data is used and keep you informed of any changes."
+                },
+                "control": {
+                    "title": "User Control",
+                    "description": "You have full control over your personal data with options to view or delete it."
+                }
+            }
+        },
+        "cookiePolicy": {
+            "title": "Cookie Policy",
+            "subtitle": "How we use cookies to improve your experience",
+            "metaTitle": "Cookie Policy | Guidy",
+            "metaDescription": "Discover how Guidy uses cookies to improve your experience on our CV creation platform.",
+            "metaKeywords": "cookies, cookie policy, trackers, user experience, privacy",
+            "lastUpdate": "Last updated:",
+            "sections": {
+                "essential": {
+                    "title": "Essential Cookies",
+                    "description": "Necessary for the website's functioning and your account security."
+                },
+                "preferences": {
+                    "title": "Preference Cookies",
+                    "description": "Improve your experience by remembering your choices."
+                },
+                "what": {
+                    "title": "What is a Cookie?",
+                    "description": "A cookie is a small text file stored on your device when you visit our site. These files allow us to:",
+                    "uses": {
+                        "preferences": "Remember your preferences",
+                        "security": "Secure your connection",
+                        "improve": "Improve our services",
+                        "analytics": "Analyze site usage"
+                    }
+                },
+                "types": {
+                    "title": "Types of Cookies Used",
+                    "essential": {
+                        "title": "Essential Cookies",
+                        "description": "Necessary for the site's functioning:",
+                        "uses": {
+                            "auth": "Authentication",
+                            "security": "Security",
+                            "session": "User session"
+                        }
+                    },
+                    "performance": {
+                        "title": "Performance Cookies",
+                        "description": "To improve user experience:",
+                        "uses": {
+                            "analytics": "Traffic analysis",
+                            "usage": "Usage statistics",
+                            "errors": "Error detection"
+                        }
+                    }
+                },
+                "management": {
+                    "title": "Cookie Management",
+                    "description": "You can control and/or delete cookies as you wish:",
+                    "options": {
+                        "browser": "Browser settings",
+                        "tools": "Cookie management tools",
+                        "privacy": "Privacy options"
+                    }
+                },
+                "impact": {
+                    "title": "Impact on User Experience",
+                    "description": "Disabling cookies may:",
+                    "effects": {
+                        "features": "Limit certain features",
+                        "experience": "Affect user experience",
+                        "login": "Require frequent reconnection"
+                    }
+                },
+                "contact": {
+                    "title": "Contact",
+                    "description": "For any questions about our cookie usage:"
+                }
+            }
+        },
+        "legalNotice": {
+            "title": "Legal Notice",
+            "subtitle": "Legal information about our company",
+            "metaTitle": "Legal Notice | Guidy",
+            "metaDescription": "Consult Guidy's legal notice with information about our company and our responsibilities.",
+            "metaKeywords": "legal notice, legal information, company, responsibilities",
+            "lastUpdate": "Last updated:",
+            "sections": {
+                "company": {
+                    "title": "Company",
+                    "description": "Legal information about our company"
+                },
+                "dataProtection": {
+                    "title": "Data Protection",
+                    "description": "Compliance with regulations"
+                },
+                "legal": {
+                    "title": "Legal Information",
+                    "description": "Guidy is a CV creation and professional assistance platform."
+                },
+                "contact": {
+                    "title": "Contact",
+                    "description": "Our contact details:"
+                },
+                "hosting": {
+                    "title": "Hosting",
+                    "description": "The Guidy website is hosted by:"
+                },
+                "intellectualProperty": {
+                    "title": "Intellectual Property",
+                    "description": "All elements of the Guidy site are protected by:",
+                    "rights": {
+                        "copyright": "Copyright law",
+                        "trademark": "Trademark law",
+                        "design": "Design law",
+                        "database": "Database law"
+                    }
+                }
+            }
+        },
+        "termsOfService": {
+            "title": "Terms of Service",
+            "subtitle": "Rules and conditions for using our services",
+            "metaTitle": "Terms of Service | Guidy",
+            "metaDescription": "Consult Guidy's terms of service for CV creation. Information on user rights and obligations.",
+            "metaKeywords": "terms of service, service terms, usage rules, user rights",
+            "lastUpdate": "Last updated:",
+            "sections": {
+                "usage": {
+                    "title": "Proper Usage",
+                    "description": "Follow our terms for an optimal experience.",
+                    "usageDescription": "When using our service, you agree to:",
+                    "items": {
+                        "accurate": "Provide accurate and truthful information",
+                        "confidentiality": "Maintain your account confidentiality",
+                        "legal": "Not use the service for illegal purposes",
+                        "intellectual": "Respect intellectual property rights"
+                    }
+                },
+                "responsibilities": {
+                    "title": "Responsibilities",
+                    "description": "Understand your rights and obligations."
+                },
+                "general": {
+                    "title": "General Terms",
+                    "description": "By accessing Guidy, you agree to be bound by these terms of use, all applicable laws and regulations. If you do not accept these terms, you should not use our service."
+                },
+                "services": {
+                    "title": "Services Offered",
+                    "description": "Guidy offers the following services:",
+                    "items": {
+                        "cv": "Professional CV creation adapted to the job market",
+                        "ai": "AI assistance for CV optimization",
+                        "letters": "Customized cover letter templates",
+                        "interview": "Job interview advice"
+                    }
+                },
+                "intellectual": {
+                    "title": "Intellectual Property",
+                    "description": "Guidy's content is protected by intellectual property rights. This includes:",
+                    "items": {
+                        "templates": "CV templates and cover letters",
+                        "content": "Website texts and images",
+                        "logo": "Logo and graphic elements",
+                        "code": "Source code and functionalities"
+                    }
+                },
+                "pricing": {
+                    "title": "Pricing and Payment",
+                    "description": "Payment terms are as follows:",
+                    "items": {
+                        "free": "Free basic version",
+                        "premium": "Clearly displayed premium rates",
+                        "payment": "Secure payments (Mobile Money, Orange Money, Paypal)",
+                        "refund": "Refund under specific conditions"
+                    }
+                },
+                "dataProtection": {
+                    "title": "Data Protection",
+                    "description": "We commit to:",
+                    "items": {
+                        "protect": "Protect your personal information",
+                        "confidentiality": "Respect the confidentiality of your data",
+                        "secure": "Secure your payment information",
+                        "sharing": "Not share your data without authorization"
+                    }
+                },
+                "modifications": {
+                    "title": "Service Modifications",
+                    "description": "Guidy reserves the right to:",
+                    "items": {
+                        "features": "Modify service features",
+                        "pricing": "Update pricing",
+                        "templates": "Improve CV templates",
+                        "market": "Adapt services to market needs"
+                    }
+                },
+                "termination": {
+                    "title": "Termination",
+                    "description": "Termination conditions:",
+                    "items": {
+                        "user": "At the user's initiative at any time",
+                        "violation": "In case of terms of use violation",
+                        "nonpayment": "For non-payment of premium services",
+                        "force": "In case of force majeure"
+                    }
+                },
+                "contact": {
+                    "title": "Contact and Support",
+                    "description": "Our team is available to help you:",
+                    "items": {
+                        "languages": "Assistance available in French and English",
+                        "support": "Technical support 7 days a week"
+                    }
+                }
+            }
+        },
+        "support": {
+            "title": "Support & Assistance",
+            "subtitle": "Our assistance service",
+            "description": "Our team is available to answer all your questions and assist you in your professional journey",
+            "badge": "🤝 We're here to help",
+            "metaTitle": "Support & Assistance | Guidy",
+            "metaDescription": "Contact Guidy's support service for any questions about CV creation or using our services.",
+            "metaKeywords": "support, assistance, help, contact, customer service",
+            "contactMethods": {
+                "whatsapp": {
+                    "title": "WhatsApp Support",
+                    "description": "Get instant help via WhatsApp",
+                    "availability": "Available 24/7"
+                },
+                "email": {
+                    "title": "Email Support",
+                    "description": "Send us a detailed message",
+                    "availability": "Response within 24h"
+                }
+            },
+            "supportHours": {
+                "title": "Support Hours",
+                "description": "Our support team is available to assist you Monday to Friday, from 9am to 6pm. For urgent requests, our WhatsApp support is accessible 24/7."
+            }
+        },
+        "dashboard": {
+            "title": "Dashboard",
+            "welcome": "Welcome to your dashboard",
+            "recentActivity": "Recent activity",
+            "quickActions": "Quick actions",
+            "statistics": "Statistics"
+        }
+    },
+    "admin": {
+        "title": "Administration",
+        "categories": {
+            "experience": "Experience Categories",
+            "professions": "Profession Categories",
+            "hobbies": "Hobbies",
+            "professionsList": "Professions",
+            "competences": "Competences",
+            "models": "CV Models"
+        },
+        "descriptions": {
+            "experience": "Create, update, and manage experience categories",
+            "professions": "Create, update, and manage profession categories",
+            "hobbies": "Create, update, and manage hobbies",
+            "professionsList": "Create, update, and manage professions",
+            "competences": "Create, update, and manage competences",
+            "models": "Create, update, and manage CV models"
+        }
+    },
+    "payment": {
+        "pageTitle": "Buy Tokens",
+        "title": "Get Tokens",
+        "subtitle": "Choose your package and preferred payment method: Mobile Money or Bank Card",
+        "tokens": "tokens",
+        "bonus": "BONUS",
+        "total": "Total",
+        "unitPrice": "Unit price",
+        "payWithMobile": "Pay with Mobile Money",
+        "processing": "Processing...",
+        "tabs": {
+            "mobileMoney": "Mobile Money",
+            "bankCard": "Bank Card"
+        },
+        "popularityText": {
+            "starter": "Get started",
+            "plus": "Good value",
+            "pro": "Most popular",
+            "ultimate": "Best value"
+        },
+        "features": {
+            "bonus": "Up to 100 bonus tokens",
+            "mobile": "MTN & Orange Money",
+            "card": "PayPal & Bank Card"
+        },
+        "importantInfo": {
+            "title": "Important Information",
+            "mobileMoney": {
+                "title": "Mobile Money",
+                "instant": "Instant payment",
+                "accepted": "MTN & Orange Money accepted",
+                "pricing": "Pricing in FCFA"
+            },
+            "bankCard": {
+                "title": "Bank Card",
+                "secure": "Secure payment via PayPal",
+                "accepted": "Visa & Mastercard accepted",
+                "pricing": "Pricing in Euros"
+            }
+        },
+        "footer": {
+            "immediate": "Purchased tokens are immediately available on your account after payment.",
+            "secure": "All payments are secure and your data is protected."
+        },
+        "success": {
+            "title": "Payment successful!",
+            "description": "Your tokens have been added to your account."
+        },
+        "errors": {
+            "default": "An error occurred",
+            "paymentFailed": "Payment error",
+            "processingError": "An error occurred during processing",
+            "initialization": "Error initializing payment",
+            "captureFailure": "Payment capture failed",
+            "processingFailure": "Payment processing failed",
+            "paypalFailed": "Payment failed. Please try again."
         }
     }
 }

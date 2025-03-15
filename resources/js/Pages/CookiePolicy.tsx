@@ -2,12 +2,16 @@ import React from 'react';
 import { Head } from '@inertiajs/react';
 import { Cookie, Shield, Settings, Info } from 'lucide-react';
 import GuestLayout from '@/Layouts/GuestLayout';
+import { useTranslation } from 'react-i18next';
+
 const CookiePolicy = () => {
+    const { t } = useTranslation();
+
     const structuredData = {
         "@context": "https://schema.org",
         "@type": "WebPage",
-        "name": "Politique des Cookies | Guidy",
-        "description": "Découvrez comment Guidy utilise les cookies pour améliorer votre expérience de création de CV au Cameroun.",
+        "name": t('pages.cookiePolicy.metaTitle'),
+        "description": t('pages.cookiePolicy.metaDescription'),
         "publisher": {
             "@type": "Organization",
             "name": "Guidy",
@@ -21,11 +25,11 @@ const CookiePolicy = () => {
     return (
         <GuestLayout>
             <Head>
-                <title>Politique des Cookies | Guidy - Création de CV au Cameroun</title>
-                <meta name="description" content="Politique des cookies de Guidy. Comprendre comment nous utilisons les cookies pour améliorer votre expérience de création de CV au Cameroun." />
-                <meta name="keywords" content="cookies, politique cookies, traceurs, confidentialité, Guidy Cameroun" />
-                <meta property="og:title" content="Politique des Cookies | Guidy" />
-                <meta property="og:description" content="Découvrez notre utilisation des cookies pour améliorer votre expérience" />
+                <title>{t('pages.cookiePolicy.metaTitle')}</title>
+                <meta name="description" content={t('pages.cookiePolicy.metaDescription')} />
+                <meta name="keywords" content={t('pages.cookiePolicy.metaKeywords')} />
+                <meta property="og:title" content={t('pages.cookiePolicy.title')} />
+                <meta property="og:description" content={t('pages.cookiePolicy.subtitle')} />
                 <meta property="og:image" content="../../public/image.png" />
                 <meta property="og:type" content="website" />
                 <link rel="canonical" href="https://guidy.com/cookies" />
@@ -38,10 +42,10 @@ const CookiePolicy = () => {
                 <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="text-center mb-12">
                         <h1 className="text-4xl font-bold text-gray-900 mb-4">
-                            Politique des Cookies
+                            {t('pages.cookiePolicy.title')}
                         </h1>
                         <p className="text-xl text-gray-600">
-                            Comment nous utilisons les cookies pour améliorer votre expérience
+                            {t('pages.cookiePolicy.subtitle')}
                         </p>
                     </div>
 
@@ -50,91 +54,90 @@ const CookiePolicy = () => {
                             <div className="flex items-start space-x-4">
                                 <Cookie className="w-8 h-8 text-amber-500 flex-shrink-0" />
                                 <div>
-                                    <h3 className="text-lg font-semibold mb-2">Cookies Essentiels</h3>
-                                    <p className="text-gray-600">Nécessaires au fonctionnement du site et à la sécurité de votre compte.</p>
+                                    <h3 className="text-lg font-semibold mb-2">{t('pages.cookiePolicy.sections.essential.title')}</h3>
+                                    <p className="text-gray-600">{t('pages.cookiePolicy.sections.essential.description')}</p>
                                 </div>
                             </div>
                             <div className="flex items-start space-x-4">
                                 <Settings className="w-8 h-8 text-amber-500 flex-shrink-0" />
                                 <div>
-                                    <h3 className="text-lg font-semibold mb-2">Cookies de Préférence</h3>
-                                    <p className="text-gray-600">Améliorent votre expérience en mémorisant vos choix.</p>
+                                    <h3 className="text-lg font-semibold mb-2">{t('pages.cookiePolicy.sections.preferences.title')}</h3>
+                                    <p className="text-gray-600">{t('pages.cookiePolicy.sections.preferences.description')}</p>
                                 </div>
                             </div>
                         </div>
 
                         <div className="space-y-8">
                             <section>
-                                <h2 className="text-2xl font-semibold mb-4">1. Qu'est-ce qu'un Cookie ?</h2>
+                                <h2 className="text-2xl font-semibold mb-4">1. {t('pages.cookiePolicy.sections.what.title')}</h2>
                                 <p className="text-gray-600 mb-4">
-                                    Un cookie est un petit fichier texte stocké sur votre appareil lors de votre visite sur notre site.
-                                    Ces fichiers nous permettent de :
+                                    {t('pages.cookiePolicy.sections.what.description')}
                                 </p>
                                 <ul className="list-disc list-inside text-gray-600 space-y-2 ml-4">
-                                    <li>Mémoriser vos préférences</li>
-                                    <li>Sécuriser votre connexion</li>
-                                    <li>Améliorer nos services</li>
-                                    <li>Analyser l'utilisation du site</li>
+                                    <li>{t('pages.cookiePolicy.sections.what.uses.preferences')}</li>
+                                    <li>{t('pages.cookiePolicy.sections.what.uses.security')}</li>
+                                    <li>{t('pages.cookiePolicy.sections.what.uses.improve')}</li>
+                                    <li>{t('pages.cookiePolicy.sections.what.uses.analytics')}</li>
                                 </ul>
                             </section>
 
                             <section>
-                                <h2 className="text-2xl font-semibold mb-4">2. Types de Cookies Utilisés</h2>
+                                <h2 className="text-2xl font-semibold mb-4">2. {t('pages.cookiePolicy.sections.types.title')}</h2>
                                 <div className="space-y-4">
                                     <div>
-                                        <h3 className="text-lg font-semibold mb-2">Cookies Essentiels</h3>
+                                        <h3 className="text-lg font-semibold mb-2">{t('pages.cookiePolicy.sections.types.essential.title')}</h3>
                                         <p className="text-gray-600">
-                                            Nécessaires au fonctionnement du site :
+                                            {t('pages.cookiePolicy.sections.types.essential.description')}
                                         </p>
                                         <ul className="list-disc list-inside text-gray-600 ml-4">
-                                            <li>Authentification</li>
-                                            <li>Sécurité</li>
-                                            <li>Session utilisateur</li>
+                                            <li>{t('pages.cookiePolicy.sections.types.essential.uses.auth')}</li>
+                                            <li>{t('pages.cookiePolicy.sections.types.essential.uses.security')}</li>
+                                            <li>{t('pages.cookiePolicy.sections.types.essential.uses.session')}</li>
                                         </ul>
                                     </div>
 
                                     <div>
-                                        <h3 className="text-lg font-semibold mb-2">Cookies de Performance</h3>
+                                        <h3 className="text-lg font-semibold mb-2">{t('pages.cookiePolicy.sections.types.performance.title')}</h3>
                                         <p className="text-gray-600">
-                                            Pour améliorer l'expérience utilisateur :
+                                            {t('pages.cookiePolicy.sections.types.performance.description')}
                                         </p>
                                         <ul className="list-disc list-inside text-gray-600 ml-4">
-                                            <li>Analyse du trafic</li>
-                                            <li>Statistiques d'utilisation</li>
-                                            <li>Détection des erreurs</li>
+                                            <li>{t('pages.cookiePolicy.sections.types.performance.uses.analytics')}</li>
+                                            <li>{t('pages.cookiePolicy.sections.types.performance.uses.usage')}</li>
+                                            <li>{t('pages.cookiePolicy.sections.types.performance.uses.errors')}</li>
                                         </ul>
                                     </div>
                                 </div>
                             </section>
 
                             <section>
-                                <h2 className="text-2xl font-semibold mb-4">3. Gestion des Cookies</h2>
+                                <h2 className="text-2xl font-semibold mb-4">3. {t('pages.cookiePolicy.sections.management.title')}</h2>
                                 <p className="text-gray-600 mb-4">
-                                    Vous pouvez contrôler et/ou supprimer les cookies comme vous le souhaitez :
+                                    {t('pages.cookiePolicy.sections.management.description')}
                                 </p>
                                 <ul className="list-disc list-inside text-gray-600 space-y-2 ml-4">
-                                    <li>Paramètres du navigateur</li>
-                                    <li>Outils de gestion des cookies</li>
-                                    <li>Options de confidentialité</li>
+                                    <li>{t('pages.cookiePolicy.sections.management.options.browser')}</li>
+                                    <li>{t('pages.cookiePolicy.sections.management.options.tools')}</li>
+                                    <li>{t('pages.cookiePolicy.sections.management.options.privacy')}</li>
                                 </ul>
                             </section>
 
                             <section>
-                                <h2 className="text-2xl font-semibold mb-4">4. Impact sur l'Expérience Utilisateur</h2>
+                                <h2 className="text-2xl font-semibold mb-4">4. {t('pages.cookiePolicy.sections.impact.title')}</h2>
                                 <p className="text-gray-600 mb-4">
-                                    La désactivation des cookies peut :
+                                    {t('pages.cookiePolicy.sections.impact.description')}
                                 </p>
                                 <ul className="list-disc list-inside text-gray-600 space-y-2 ml-4">
-                                    <li>Limiter certaines fonctionnalités</li>
-                                    <li>Affecter l'expérience utilisateur</li>
-                                    <li>Nécessiter une reconnexion fréquente</li>
+                                    <li>{t('pages.cookiePolicy.sections.impact.effects.features')}</li>
+                                    <li>{t('pages.cookiePolicy.sections.impact.effects.experience')}</li>
+                                    <li>{t('pages.cookiePolicy.sections.impact.effects.login')}</li>
                                 </ul>
                             </section>
 
                             <section>
-                                <h2 className="text-2xl font-semibold mb-4">5. Contact</h2>
+                                <h2 className="text-2xl font-semibold mb-4">5. {t('pages.cookiePolicy.sections.contact.title')}</h2>
                                 <p className="text-gray-600 mb-4">
-                                    Pour toute question sur notre utilisation des cookies :
+                                    {t('pages.cookiePolicy.sections.contact.description')}
                                 </p>
                                 <ul className="list-none text-gray-600 space-y-2">
                                     <li>Email : guidy.makeitreall@gmail.com</li>
@@ -145,7 +148,7 @@ const CookiePolicy = () => {
                     </div>
 
                     <div className="text-center text-sm text-gray-500 mb-8">
-                        Dernière mise à jour : {new Date().toLocaleDateString()}
+                        {t('pages.cookiePolicy.lastUpdate')} {new Date().toLocaleDateString()}
                     </div>
                 </div>
             </div>

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import {Head, usePage} from '@inertiajs/react';
+import { Head, usePage } from '@inertiajs/react';
 import { motion } from 'framer-motion';
 import { PayPalScriptProvider, PayPalButtons, usePayPalScriptReducer } from "@paypal/react-paypal-js";
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
@@ -7,6 +7,7 @@ import { Card, CardContent } from "@/Components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/Components/ui/tabs";
 import { useToast } from "@/Components/ui/use-toast";
 import { Alert, AlertDescription } from "@/Components/ui/alert";
+import { useTranslation } from 'react-i18next';
 import {
     Coins,
     Gift,
@@ -25,7 +26,7 @@ const TOKEN_PACKS = [
         priceEuros: 1,
         priceFCFA: 600,
         color: 'from-amber-400 to-amber-600',
-        popularityText: 'Pour commencer'
+        popularityText: 'starter'
     },
     {
         id: 'plus',
@@ -34,7 +35,7 @@ const TOKEN_PACKS = [
         priceEuros: 5,
         priceFCFA: 3000,
         color: 'from-purple-400 to-purple-600',
-        popularityText: 'Bon rapport qualité/prix'
+        popularityText: 'plus'
     },
     {
         id: 'pro',
@@ -44,7 +45,7 @@ const TOKEN_PACKS = [
         priceFCFA: 6000,
         mostPopular: true,
         color: 'from-blue-400 to-blue-600',
-        popularityText: 'Le plus populaire'
+        popularityText: 'pro'
     },
     {
         id: 'ultimate',
@@ -53,7 +54,7 @@ const TOKEN_PACKS = [
         priceEuros: 30,
         priceFCFA: 18000,
         color: 'from-rose-400 to-rose-600',
-        popularityText: 'Meilleure valeur'
+        popularityText: 'ultimate'
     }
 ];
 
@@ -71,6 +72,7 @@ const PaymentMethodsInfo = {
 const NotchPayButton = ({ pack, onSuccess }) => {
     const [loading, setLoading] = useState(false);
     const { toast } = useToast();
+    const { t } = useTranslation();
 
     const handlePayment = async () => {
         try {
@@ -96,7 +98,7 @@ const NotchPayButton = ({ pack, onSuccess }) => {
 
             if (!response.ok) {
                 const errorData = await response.json();
-                throw new Error(errorData.message || 'Une erreur est survenue');
+                throw new Error(errorData.message || t('payment.errors.default'));
             }
 
             const result = await response.json();
@@ -104,15 +106,15 @@ const NotchPayButton = ({ pack, onSuccess }) => {
             if (result.success && result.authorization_url) {
                 window.location.href = result.authorization_url;
             } else {
-                throw new Error('Erreur lors de l\'initialisation du paiement');
+                throw new Error(t('payment.errors.initialization'));
             }
 
         } catch (error) {
             console.error('Erreur de paiement:', error);
             toast({
                 variant: "destructive",
-                title: "Erreur de paiement",
-                description: error.message || 'Une erreur est survenue lors du traitement'
+                title: t('payment.errors.paymentFailed'),
+                description: error.message || t('payment.errors.processingError')
             });
         } finally {
             setLoading(false);
@@ -128,12 +130,12 @@ const NotchPayButton = ({ pack, onSuccess }) => {
             {loading ? (
                 <>
                     <Loader2 className="w-5 h-5 animate-spin" />
-                    <span>Traitement en cours...</span>
+                    <span>{t('payment.processing')}</span>
                 </>
             ) : (
                 <>
                     <Smartphone className="w-5 h-5" />
-                    <span>Payer avec Mobile Money</span>
+                    <span>{t('payment.payWithMobile')}</span>
                 </>
             )}
         </button>
@@ -143,6 +145,7 @@ const NotchPayButton = ({ pack, onSuccess }) => {
 const PayPalPackButton = ({ pack, onSuccess }) => {
     const [{ isPending }] = usePayPalScriptReducer();
     const [error, setError] = useState(null);
+    const { t } = useTranslation();
 
     const handlePayPalCapture = async (data, actions) => {
         try {
@@ -166,18 +169,18 @@ const PayPalPackButton = ({ pack, onSuccess }) => {
             });
 
             if (!response.ok) {
-                throw new Error('Échec de la capture du paiement');
+                throw new Error(t('payment.errors.captureFailure'));
             }
 
             const result = await response.json();
             if (result.success) {
                 onSuccess(result.new_balance);
             } else {
-                throw new Error('Échec du traitement du paiement');
+                throw new Error(t('payment.errors.processingFailure'));
             }
         } catch (err) {
             console.error('Erreur lors de la capture PayPal:', err);
-            setError(err.message || 'Une erreur est survenue');
+            setError(err.message || t('payment.errors.default'));
         }
     };
 
@@ -217,7 +220,7 @@ const PayPalPackButton = ({ pack, onSuccess }) => {
                 onApprove={handlePayPalCapture}
                 onError={(err) => {
                     console.error('Erreur PayPal:', err);
-                    setError('Le paiement a échoué. Veuillez réessayer.');
+                    setError(t('payment.errors.paypalFailed'));
                 }}
             />
         </div>
@@ -229,16 +232,18 @@ function cn(...classes) {
 }
 
 const PaymentTabs = ({ pack, onSuccess }) => {
+    const { t } = useTranslation();
+
     return (
         <Tabs defaultValue="mobile" className="w-full">
             <TabsList className="grid grid-cols-2 w-full">
                 <TabsTrigger value="mobile" className="flex items-center gap-2">
                     <Smartphone className="w-4 h-4" />
-                    <span>Mobile Money</span>
+                    <span>{t('payment.tabs.mobileMoney')}</span>
                 </TabsTrigger>
                 <TabsTrigger value="card" className="flex items-center gap-2">
                     <CreditCard className="w-4 h-4" />
-                    <span>Carte Bancaire</span>
+                    <span>{t('payment.tabs.bankCard')}</span>
                 </TabsTrigger>
             </TabsList>
 
@@ -285,6 +290,7 @@ const PaymentTabs = ({ pack, onSuccess }) => {
 export default function Index({ auth, paypalConfig }) {
     const { toast } = useToast();
     const [error, setError] = useState(null);
+    const { t } = useTranslation();
 
     if (!auth?.user) {
         window.location.href = '/login';
@@ -300,17 +306,15 @@ export default function Index({ auth, paypalConfig }) {
     const handlePaymentSuccess = (newBalance) => {
         auth.user.wallet_balance = newBalance;
         toast({
-            title: "Paiement réussi !",
-            description: "Vos jetons ont été ajoutés à votre compte.",
+            title: t('payment.success.title'),
+            description: t('payment.success.description'),
         });
         window.location.reload();
     };
 
-    // Flash messages from server
-
     return (
         <AuthenticatedLayout user={auth.user}>
-            <Head title="Acheter des Jetons" />
+            <Head title={t('payment.pageTitle')} />
             {/*@ts-ignore*/}
             <PayPalScriptProvider options={initialOptions}>
                 <div className="py-12">
@@ -326,11 +330,11 @@ export default function Index({ auth, paypalConfig }) {
                                 </div>
                                 <h1 className="text-4xl font-bold mb-4">
                                     <span className="bg-gradient-to-r from-amber-500 to-purple-500 text-transparent bg-clip-text">
-                                        Obtenir des Jetons
+                                        {t('payment.title')}
                                     </span>
                                 </h1>
                                 <p className="text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
-                                    Choisissez votre pack et votre méthode de paiement préférée : Mobile Money ou Carte Bancaire
+                                    {t('payment.subtitle')}
                                 </p>
                             </motion.div>
 
@@ -338,19 +342,19 @@ export default function Index({ auth, paypalConfig }) {
                                 <div className="flex items-center gap-2 px-4 py-2 bg-amber-100 dark:bg-amber-900/50 rounded-full">
                                     <Gift className="w-5 h-5 text-amber-500" />
                                     <span className="text-amber-700 dark:text-amber-300">
-                                        Jusqu'à 100 jetons bonus
+                                        {t('payment.features.bonus')}
                                     </span>
                                 </div>
                                 <div className="flex items-center gap-2 px-4 py-2 bg-purple-100 dark:bg-purple-900/50 rounded-full">
                                     <Smartphone className="w-5 h-5 text-purple-500" />
                                     <span className="text-purple-700 dark:text-purple-300">
-                                        MTN & Orange Money
+                                        {t('payment.features.mobile')}
                                     </span>
                                 </div>
                                 <div className="flex items-center gap-2 px-4 py-2 bg-blue-100 dark:bg-blue-900/50 rounded-full">
                                     <CreditCard className="w-5 h-5 text-blue-500" />
                                     <span className="text-blue-700 dark:text-blue-300">
-                                        PayPal & Carte Bancaire
+                                        {t('payment.features.card')}
                                     </span>
                                 </div>
                             </div>
@@ -379,7 +383,7 @@ export default function Index({ auth, paypalConfig }) {
                                         {pack.mostPopular && (
                                             <div className="absolute top-0 right-0">
                                                 <div className="bg-gradient-to-r from-amber-500 to-purple-500 text-white px-4 py-1 rounded-bl-lg text-sm font-medium">
-                                                    {pack.popularityText}
+                                                    {t(`payment.popularityText.${pack.popularityText}`)}
                                                 </div>
                                             </div>
                                         )}
@@ -393,19 +397,19 @@ export default function Index({ auth, paypalConfig }) {
                                                 </div>
                                                 <div className="flex items-center justify-between mb-2">
                                                     <span className="text-xl font-semibold">
-                                                        {pack.tokens} jetons
+                                                        {pack.tokens} {t('payment.tokens')}
                                                     </span>
                                                     {pack.bonusTokens > 0 && (
                                                         <span className="text-green-500 dark:text-green-400 font-medium animate-pulse">
-                                                            +{pack.bonusTokens} BONUS
+                                                            +{pack.bonusTokens} {t('payment.bonus')}
                                                         </span>
                                                     )}
                                                 </div>
                                                 <div className="text-sm text-gray-500 dark:text-gray-400">
-                                                    Total : {pack.tokens + pack.bonusTokens} jetons
+                                                    {t('payment.total')}: {pack.tokens + pack.bonusTokens} {t('payment.tokens')}
                                                 </div>
                                                 <div className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-                                                    Prix unitaire : {(pack.priceEuros / (pack.tokens + pack.bonusTokens) * 10).toFixed(2)}€ / 10 jetons
+                                                    {t('payment.unitPrice')}: {(pack.priceEuros / (pack.tokens + pack.bonusTokens) * 10).toFixed(2)}€ / 10 {t('payment.tokens')}
                                                 </div>
 
                                                 <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
@@ -423,30 +427,30 @@ export default function Index({ auth, paypalConfig }) {
 
                         <div className="mt-12 space-y-4">
                             <div className="bg-white dark:bg-gray-800 rounded-lg p-6 max-w-3xl mx-auto">
-                                <h2 className="text-lg font-semibold mb-4">Informations importantes</h2>
+                                <h2 className="text-lg font-semibold mb-4">{t('payment.importantInfo.title')}</h2>
                                 <div className="grid gap-4 md:grid-cols-2">
                                     <div className="space-y-2">
-                                        <h3 className="font-medium">Mobile Money</h3>
+                                        <h3 className="font-medium">{t('payment.importantInfo.mobileMoney.title')}</h3>
                                         <ul className="text-sm text-gray-600 dark:text-gray-300 space-y-1">
-                                            <li>• Paiement instantané</li>
-                                            <li>• MTN & Orange Money acceptés</li>
-                                            <li>• Tarification en FCFA</li>
+                                            <li>• {t('payment.importantInfo.mobileMoney.instant')}</li>
+                                            <li>• {t('payment.importantInfo.mobileMoney.accepted')}</li>
+                                            <li>• {t('payment.importantInfo.mobileMoney.pricing')}</li>
                                         </ul>
                                     </div>
                                     <div className="space-y-2">
-                                        <h3 className="font-medium">Carte Bancaire</h3>
+                                        <h3 className="font-medium">{t('payment.importantInfo.bankCard.title')}</h3>
                                         <ul className="text-sm text-gray-600 dark:text-gray-300 space-y-1">
-                                            <li>• Paiement sécurisé via PayPal</li>
-                                            <li>• Visa & Mastercard acceptés</li>
-                                            <li>• Tarification en Euros</li>
+                                            <li>• {t('payment.importantInfo.bankCard.secure')}</li>
+                                            <li>• {t('payment.importantInfo.bankCard.accepted')}</li>
+                                            <li>• {t('payment.importantInfo.bankCard.pricing')}</li>
                                         </ul>
                                     </div>
                                 </div>
                             </div>
 
                             <div className="text-center text-sm text-gray-500 dark:text-gray-400">
-                                <p>Les jetons achetés sont immédiatement disponibles sur votre compte après le paiement.</p>
-                                <p className="mt-2">Tous les paiements sont sécurisés et vos données sont protégées.</p>
+                                <p>{t('payment.footer.immediate')}</p>
+                                <p className="mt-2">{t('payment.footer.secure')}</p>
                             </div>
                         </div>
                     </div>

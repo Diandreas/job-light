@@ -275,15 +275,15 @@ export default function Authenticated({ user, header, children }: PropsWithChild
                     });
 
                     toast({
-                        title: "Code renouvelé",
-                        description: "Votre code de parrainage a été renouvelé avec succès.",
+                        title: t('sponsorship.code.renewal.success'),
+                        description: t('sponsorship.code.renewal.successDescription'),
                         variant: "default",
                     });
                 } else {
-                    setError(response.data.message || 'Une erreur est survenue.');
+                    setError(response.data.message || t('common.error.generic'));
                 }
             } catch (err) {
-                setError(err.response?.data?.message || 'Une erreur est survenue lors du renouvellement du code.');
+                setError(err.response?.data?.message || t('sponsorship.code.renewal.error'));
             } finally {
                 setIsLoading(false);
             }
@@ -292,7 +292,7 @@ export default function Authenticated({ user, header, children }: PropsWithChild
         // Appliquer un nouveau code de parrainage
         const applyNewSponsorCode = async () => {
             if (!newSponsorCode.trim()) {
-                setError('Veuillez saisir un code de parrainage.');
+                setError(t('sponsorship.code.renewal.enterCode'));
                 return;
             }
 
@@ -317,15 +317,15 @@ export default function Authenticated({ user, header, children }: PropsWithChild
                     setActiveTab('current');
 
                     toast({
-                        title: "Nouveau code appliqué",
-                        description: "Le nouveau code de parrainage a été appliqué avec succès.",
+                        title: t('sponsorship.code.renewal.newCodeApplied'),
+                        description: t('sponsorship.code.renewal.newCodeAppliedDescription'),
                         variant: "default",
                     });
                 } else {
-                    setError(response.data.message || 'Une erreur est survenue.');
+                    setError(response.data.message || t('common.error.generic'));
                 }
             } catch (err) {
-                setError(err.response?.data?.message || 'Une erreur est survenue lors de l\'application du code.');
+                setError(err.response?.data?.message || t('sponsorship.code.renewal.applyError'));
             } finally {
                 setIsLoading(false);
             }
@@ -346,7 +346,7 @@ export default function Authenticated({ user, header, children }: PropsWithChild
             if (sponsorInfo.is_expired) {
                 return (
                     <Badge variant="destructive" className="ml-2">
-                        Expiré
+                        {t('sponsorship.code.expired')}
                     </Badge>
                 );
             }
@@ -354,14 +354,14 @@ export default function Authenticated({ user, header, children }: PropsWithChild
             if (sponsorInfo.days_left <= 7) {
                 return (
                     <Badge variant="outline" className="ml-2 bg-amber-500 hover:bg-amber-600 text-white">
-                        Expire bientôt
+                        {t('sponsorship.code.almostExpired')}
                     </Badge>
                 );
             }
 
             return (
                 <Badge variant="outline" className="ml-2 bg-green-600 hover:bg-green-700 text-white">
-                    Actif
+                    {t('sponsorship.code.valid')}
                 </Badge>
             );
         };
@@ -378,10 +378,10 @@ export default function Authenticated({ user, header, children }: PropsWithChild
                 <DialogContent className="sm:max-w-md">
                     <DialogHeader>
                         <DialogTitle className="flex items-center">
-                            Gestion de Parrainage {sponsorInfo && getExpirationStatus()}
+                            {t('sponsorship.code.renewal.title')} {sponsorInfo && getExpirationStatus()}
                         </DialogTitle>
                         <DialogDescription>
-                            Gérez votre code de parrainage et renouvelez-le lorsqu'il expire.
+                            {t('sponsorship.code.renewal.description')}
                         </DialogDescription>
                     </DialogHeader>
 
@@ -393,7 +393,7 @@ export default function Authenticated({ user, header, children }: PropsWithChild
                                     : 'text-gray-500 hover:text-gray-700'}`}
                                 onClick={() => setActiveTab('current')}
                             >
-                                Code Actuel
+                                {t('sponsorship.code.renewal.tabs.current')}
                             </button>
                             <button
                                 className={`py-2 px-4 text-sm font-medium ${activeTab === 'new'
@@ -401,7 +401,7 @@ export default function Authenticated({ user, header, children }: PropsWithChild
                                     : 'text-gray-500 hover:text-gray-700'}`}
                                 onClick={() => setActiveTab('new')}
                             >
-                                Nouveau Code
+                                {t('sponsorship.code.renewal.tabs.new')}
                             </button>
                         </div>
 
@@ -414,22 +414,22 @@ export default function Authenticated({ user, header, children }: PropsWithChild
                                 ) : sponsorInfo ? (
                                     <div className="space-y-4">
                                         <div className="flex items-center justify-between">
-                                            <div className="font-medium">Code sponsor:</div>
+                                            <div className="font-medium">{t('sponsorship.code.renewal.sponsorCode')}:</div>
                                             <div className="font-bold text-lg">{sponsorInfo.sponsor_code}</div>
                                         </div>
 
                                         <div className="flex items-center justify-between text-sm">
-                                            <div className="text-gray-600">Sponsor:</div>
+                                            <div className="text-gray-600">{t('sponsorship.code.renewal.sponsor')}:</div>
                                             <div>{sponsorInfo.sponsor_name}</div>
                                         </div>
 
                                         <div className="space-y-2">
                                             <div className="flex justify-between text-sm text-gray-600 dark:text-gray-400">
-                                                <span>Validité du code</span>
+                                                <span>{t('sponsorship.code.renewal.validity')}</span>
                                                 <span>
                                                     {sponsorInfo.is_expired
-                                                        ? 'Expiré'
-                                                        : `Expire le ${sponsorInfo.expires_at}`}
+                                                        ? t('sponsorship.code.renewal.expired')
+                                                        : `${t('sponsorship.code.renewal.expires')} ${sponsorInfo.expires_at}`}
                                                 </span>
                                             </div>
                                             <Progress value={getExpirationProgress()} className="h-2" />
@@ -456,12 +456,12 @@ export default function Authenticated({ user, header, children }: PropsWithChild
                                                 {isLoading ? (
                                                     <span className="flex items-center justify-center">
                                                         <RefreshCw className="h-4 w-4 mr-2 animate-spin" />
-                                                        Chargement...
+                                                        {t('common.loading')}
                                                     </span>
                                                 ) : (
                                                     <span className="flex items-center justify-center">
                                                         <RefreshCw className="h-4 w-4 mr-2" />
-                                                        Renouveler ce code pour 30 jours
+                                                        {t('sponsorship.code.renewal.renewFor30Days')}
                                                     </span>
                                                 )}
                                             </Button>
@@ -469,16 +469,16 @@ export default function Authenticated({ user, header, children }: PropsWithChild
                                     </div>
                                 ) : ownReferralCode ? (
                                     <div className="text-center py-4">
-                                        <p>Vous n'avez pas encore de sponsor.</p>
+                                        <p>{t('sponsorship.code.renewal.noSponsorYet')}</p>
                                         <p className="text-sm text-gray-500 mt-2">
-                                            Vous pouvez appliquer un code de parrainage dans l'onglet "Nouveau Code".
+                                            {t('sponsorship.code.renewal.canApplyCodeInNewTab')}
                                         </p>
                                     </div>
                                 ) : (
                                     <div className="text-center py-4">
-                                        <p>Vous n'avez pas encore de code de parrainage.</p>
+                                        <p>{t('sponsorship.code.renewal.noReferralCodeYet')}</p>
                                         <p className="text-sm text-gray-500 mt-2">
-                                            Visitez la page de parrainage pour en créer un.
+                                            {t('sponsorship.code.renewal.visitSponsorshipPage')}
                                         </p>
                                     </div>
                                 )}
@@ -487,7 +487,7 @@ export default function Authenticated({ user, header, children }: PropsWithChild
                             <div className="space-y-4">
                                 <div>
                                     <label htmlFor="new-sponsor-code" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                                        Nouveau code de parrainage
+                                        {t('sponsorship.code.renewal.newSponsorCode')}
                                     </label>
                                     <div className="mt-1">
                                         <input
@@ -496,11 +496,11 @@ export default function Authenticated({ user, header, children }: PropsWithChild
                                             value={newSponsorCode}
                                             onChange={(e) => setNewSponsorCode(e.target.value)}
                                             className="block w-full rounded-md border-gray-300 shadow-sm focus:border-amber-500 focus:ring-amber-500 dark:bg-gray-800 dark:border-gray-700 dark:text-white sm:text-sm"
-                                            placeholder="Entrez le code de parrainage"
+                                            placeholder={t('sponsorship.code.renewal.enterCodePlaceholder')}
                                         />
                                     </div>
                                     <p className="mt-2 text-sm text-gray-500 dark:text-gray-400">
-                                        Le code sera valide pendant 30 jours. Votre sponsor recevra un pourcentage de vos achats pendant cette période.
+                                        {t('sponsorship.code.renewal.validityInfo')}
                                     </p>
                                 </div>
 
@@ -518,12 +518,12 @@ export default function Authenticated({ user, header, children }: PropsWithChild
                                     {isLoading ? (
                                         <span className="flex items-center justify-center">
                                             <RefreshCw className="h-4 w-4 mr-2 animate-spin" />
-                                            Chargement...
+                                            {t('common.loading')}
                                         </span>
                                     ) : (
                                         <span className="flex items-center justify-center">
                                             <CheckCircle className="h-4 w-4 mr-2" />
-                                            Appliquer ce code
+                                            {t('sponsorship.code.renewal.applyCode')}
                                         </span>
                                     )}
                                 </Button>
@@ -532,13 +532,13 @@ export default function Authenticated({ user, header, children }: PropsWithChild
 
                         {ownReferralCode && (
                             <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
-                                <h3 className="font-medium mb-2">Votre propre code à partager</h3>
+                                <h3 className="font-medium mb-2">{t('sponsorship.code.renewal.yourCodeToShare')}</h3>
                                 <div className="flex items-center justify-between">
-                                    <div className="font-medium">Code:</div>
+                                    <div className="font-medium">{t('sponsorship.code.renewal.code')}:</div>
                                     <div className="font-bold">{ownReferralCode.code}</div>
                                 </div>
                                 <p className="mt-2 text-sm text-gray-500 dark:text-gray-400">
-                                    Partagez ce code avec vos amis pour gagner des commissions sur leurs achats !
+                                    {t('sponsorship.code.renewal.shareCodeWithFriends')}
                                 </p>
                             </div>
                         )}
@@ -549,7 +549,7 @@ export default function Authenticated({ user, header, children }: PropsWithChild
                             variant="outline"
                             onClick={() => router.visit(route('sponsorship.index'))}
                         >
-                            Voir tous les détails
+                            {t('sponsorship.code.renewal.viewAllDetails')}
                         </Button>
                     </DialogFooter>
                 </DialogContent>
@@ -710,7 +710,7 @@ export default function Authenticated({ user, header, children }: PropsWithChild
                                 className="flex items-center gap-1 text-gray-500 hover:text-amber-500 transition-colors"
                             >
                                 <RefreshCw className="h-3 w-3 sm:h-4 sm:w-4" />
-                                <span>Renouveler Code</span>
+                                <span>{t('sponsorship.code.renewal.renewCode')}</span>
                             </button>
 
                             <a

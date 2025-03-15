@@ -66,7 +66,7 @@ const WelcomeCard = ({ percentage, onImport }) => {
                             {t('cv.interface.welcome.subtitle')}
                         </p>
                         <div className="flex items-center gap-2 sm:gap-3">
-                            <Progress value={percentage} className="w-24 sm:w-32 h-2 sm:h-3"/>
+                            <Progress value={percentage} className="w-24 sm:w-32 h-2 sm:h-3" />
                             <span className="text-xs sm:text-sm font-medium">
                                 {percentage}% {t('cv.interface.welcome.complete')}
                             </span>
@@ -82,11 +82,11 @@ const WelcomeCard = ({ percentage, onImport }) => {
                         <DropdownMenuContent align="end" className="text-xs sm:text-sm">
                             <DropdownMenuItem onClick={() => onImport('pdf')} className="cursor-pointer h-8 sm:h-10">
                                 <FileText className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
-                                {t('cv.interface.import.pdf')}( - 5 <Coins className="w-3 h-3 sm:w-4 sm:h-4"/>)
+                                {t('cv.interface.import.pdf')}( - 5 <Coins className="w-3 h-3 sm:w-4 sm:h-4" />)
                             </DropdownMenuItem>
                             <DropdownMenuItem onClick={() => onImport('docx')} className="cursor-pointer h-8 sm:h-10">
                                 <FileText className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
-                                {t('cv.interface.import.word')}( - 5 <Coins className="w-3 h-3 sm:w-4 sm:h-4"/>)
+                                {t('cv.interface.import.word')}( - 5 <Coins className="w-3 h-3 sm:w-4 sm:h-4" />)
                             </DropdownMenuItem>
                         </DropdownMenuContent>
                     </DropdownMenu>
@@ -458,6 +458,25 @@ export default function CvInterface({ auth, cvInformation: initialCvInformation 
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
     const { toast } = useToast();
 
+    // Utilisation des traductions pour les éléments de la sidebar
+    const translatedSidebarItems = [
+        { id: 'personalInfo', label: t('cv.sidebar.personalInfo'), icon: User, color: 'text-amber-500' },
+        { id: 'summary', label: t('cv.sidebar.summary'), icon: FileText, color: 'text-purple-500' },
+        { id: 'experience', label: t('cv.sidebar.experience'), icon: Briefcase, color: 'text-amber-600' },
+        { id: 'competence', label: t('cv.sidebar.competence'), icon: Code, color: 'text-purple-600' },
+        { id: 'profession', label: t('cv.sidebar.profession'), icon: GraduationCap, color: 'text-amber-500' },
+        { id: 'hobby', label: t('cv.sidebar.hobby'), icon: Heart, color: 'text-purple-500' }
+    ];
+
+    // Utilisation des traductions pour les champs d'information personnelle
+    const translatedPersonalInfoFields = [
+        { label: t('cv.personal.email'), key: "email", icon: Mail },
+        { label: t('cv.personal.phone'), key: "phone", icon: Phone },
+        { label: t('cv.personal.address'), key: "address", icon: MapPin },
+        { label: t('cv.personal.linkedin'), key: "linkedin", icon: Linkedin },
+        { label: t('cv.personal.github'), key: "github", icon: Github }
+    ];
+
     const updateCvInformation = useCallback((section, data) => {
         setCvInformation(prev => {
             const newState = { ...prev };
@@ -640,7 +659,7 @@ export default function CvInterface({ auth, cvInformation: initialCvInformation 
                             <Button className="h-7 sm:h-9 text-xs sm:text-sm py-0 sm:py-2 bg-gradient-to-r from-amber-500 to-purple-500 hover:from-amber-600 hover:to-purple-600 dark:from-amber-400 dark:to-purple-400 text-white">
                                 <Star className="mr-1 sm:mr-2 h-3 w-3 sm:h-4 sm:w-4" />
                                 <span className="hidden sm:inline">{t('cv.interface.chooseDesign')}</span>
-                                <span className="sm:hidden">Designs</span>
+                                <span className="sm:hidden">{t('cv.interface.designs')}</span>
                                 <CircleChevronRight className="ml-1 sm:ml-2 h-3 w-3 sm:h-4 sm:w-4" />
                             </Button>
                         </Link>
@@ -670,7 +689,7 @@ export default function CvInterface({ auth, cvInformation: initialCvInformation 
                             <div className="w-11 sm:w-14 md:w-16 flex-shrink-0 border-r border-amber-100 dark:border-amber-800 bg-white/50 dark:bg-gray-900/50 md:hidden">
                                 <ScrollArea className="h-full py-1.5 sm:py-2">
                                     <nav className="sticky top-0 p-1 sm:p-1.5 space-y-1.5 sm:space-y-2">
-                                        {SIDEBAR_ITEMS.map(item => (
+                                        {translatedSidebarItems.map(item => (
                                             <SidebarButton
                                                 key={item.id}
                                                 item={item}
@@ -688,7 +707,7 @@ export default function CvInterface({ auth, cvInformation: initialCvInformation 
                             <div className="hidden md:block w-48 lg:w-64 flex-shrink-0 border-r border-amber-100 dark:border-amber-800 bg-white/50 dark:bg-gray-900/50">
                                 <ScrollArea className="h-full py-2 sm:py-3">
                                     <nav className="sticky top-0 p-1.5 sm:p-3 space-y-1.5 sm:space-y-2">
-                                        {SIDEBAR_ITEMS.map(item => (
+                                        {translatedSidebarItems.map(item => (
                                             <SidebarButton
                                                 key={item.id}
                                                 item={item}

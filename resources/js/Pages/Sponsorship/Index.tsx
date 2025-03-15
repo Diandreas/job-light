@@ -9,20 +9,22 @@ import Invitation from './Partials/Invitation';
 import { Users, Link, Award, HelpCircle, Info } from 'lucide-react';
 import ProgressComponent from "./Partials/Progress";
 import Support from "@/Pages/Sponsorship/Partials/Support";
+import { useTranslation } from 'react-i18next';
 
 export default function Index({ auth, referralCode, referralCount, earnings, referrals, level, expirationInfo }) {
     const [activeTab, setActiveTab] = useState('dashboard');
+    const { t } = useTranslation();
 
     return (
         <AuthenticatedLayout user={auth.user}>
-            <Head title="Programme de Parrainage" />
+            <Head title={t('sponsorship.title')} />
 
             <div className="py-8">
                 <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
                     <div className="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                         <div className="p-6">
                             <h1 className="text-2xl font-semibold text-center mb-6 text-gray-900 dark:text-gray-100">
-                                Programme de Parrainage
+                                {t('sponsorship.title')}
                             </h1>
 
                             <Card className="border dark:border-gray-700">
@@ -39,7 +41,7 @@ export default function Index({ auth, referralCode, referralCount, earnings, ref
                                                 className="flex items-center justify-center gap-2 py-3 data-[state=active]:bg-white dark:data-[state=active]:bg-gray-800"
                                             >
                                                 <Users className="h-4 w-4" />
-                                                <span className="hidden sm:inline">Tableau de bord</span>
+                                                <span className="hidden sm:inline">{t('sponsorship.tabs.dashboard')}</span>
                                             </TabsTrigger>
 
                                             <TabsTrigger
@@ -47,7 +49,7 @@ export default function Index({ auth, referralCode, referralCount, earnings, ref
                                                 className="flex items-center justify-center gap-2 py-3 data-[state=active]:bg-white dark:data-[state=active]:bg-gray-800"
                                             >
                                                 <Link className="h-4 w-4" />
-                                                <span className="hidden sm:inline">Inviter</span>
+                                                <span className="hidden sm:inline">{t('sponsorship.tabs.invitations')}</span>
                                             </TabsTrigger>
 
                                             <TabsTrigger
@@ -55,7 +57,7 @@ export default function Index({ auth, referralCode, referralCount, earnings, ref
                                                 className="flex items-center justify-center gap-2 py-3 data-[state=active]:bg-white dark:data-[state=active]:bg-gray-800"
                                             >
                                                 <Award className="h-4 w-4" />
-                                                <span className="hidden sm:inline">Progression</span>
+                                                <span className="hidden sm:inline">{t('sponsorship.tabs.progress')}</span>
                                             </TabsTrigger>
 
                                             <TabsTrigger
@@ -63,7 +65,7 @@ export default function Index({ auth, referralCode, referralCount, earnings, ref
                                                 className="flex items-center justify-center gap-2 py-3 data-[state=active]:bg-white dark:data-[state=active]:bg-gray-800"
                                             >
                                                 <HelpCircle className="h-4 w-4" />
-                                                <span className="hidden sm:inline">Support</span>
+                                                <span className="hidden sm:inline">{t('sponsorship.tabs.support')}</span>
                                             </TabsTrigger>
 
                                             <TabsTrigger
@@ -71,7 +73,7 @@ export default function Index({ auth, referralCode, referralCount, earnings, ref
                                                 className="flex items-center justify-center gap-2 py-3 data-[state=active]:bg-white dark:data-[state=active]:bg-gray-800"
                                             >
                                                 <Info className="h-4 w-4" />
-                                                <span className="hidden sm:inline">Informations</span>
+                                                <span className="hidden sm:inline">{t('sponsorship.tabs.info')}</span>
                                             </TabsTrigger>
                                         </TabsList>
 

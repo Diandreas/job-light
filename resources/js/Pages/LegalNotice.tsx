@@ -2,12 +2,16 @@ import React from 'react';
 import { Head } from '@inertiajs/react';
 import { Building, Mail, Phone, Globe, Shield, UserCheck } from 'lucide-react';
 import GuestLayout from '@/Layouts/GuestLayout';
+import { useTranslation } from 'react-i18next';
+
 const LegalNotice = () => {
+    const { t } = useTranslation();
+
     const structuredData = {
         "@context": "https://schema.org",
         "@type": "WebPage",
-        "name": "Mentions Légales | Guidy",
-        "description": "Mentions légales de Guidy - Plateforme de création de CV professionnels au Cameroun",
+        "name": t('pages.legalNotice.metaTitle'),
+        "description": t('pages.legalNotice.metaDescription'),
         "publisher": {
             "@type": "Organization",
             "name": "Guidy",
@@ -26,11 +30,11 @@ const LegalNotice = () => {
     return (
         <GuestLayout>
             <Head>
-                <title>Mentions Légales | Guidy - Création de CV au Cameroun</title>
-                <meta name="description" content="Mentions légales de Guidy. Informations légales sur notre service de création de CV professionnel au Cameroun." />
-                <meta name="keywords" content="mentions légales, informations légales, Guidy Cameroun, création CV Cameroun, légal" />
-                <meta property="og:title" content="Mentions Légales | Guidy" />
-                <meta property="og:description" content="Informations légales sur notre service de création de CV" />
+                <title>{t('pages.legalNotice.metaTitle')}</title>
+                <meta name="description" content={t('pages.legalNotice.metaDescription')} />
+                <meta name="keywords" content={t('pages.legalNotice.metaKeywords')} />
+                <meta property="og:title" content={t('pages.legalNotice.title')} />
+                <meta property="og:description" content={t('pages.legalNotice.subtitle')} />
                 <meta property="og:image" content="../../public/image.png" />
                 <meta property="og:type" content="website" />
                 <link rel="canonical" href="https://guidy.com/mentions-legales" />
@@ -43,10 +47,10 @@ const LegalNotice = () => {
                 <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="text-center mb-12">
                         <h1 className="text-4xl font-bold text-gray-900 mb-4">
-                            Mentions Légales
+                            {t('pages.legalNotice.title')}
                         </h1>
                         <p className="text-xl text-gray-600">
-                            Informations légales sur Guidy
+                            {t('pages.legalNotice.subtitle')}
                         </p>
                     </div>
 
@@ -55,24 +59,24 @@ const LegalNotice = () => {
                             <div className="flex items-start space-x-4">
                                 <Building className="w-8 h-8 text-amber-500 flex-shrink-0" />
                                 <div>
-                                    <h3 className="text-lg font-semibold mb-2">Entreprise</h3>
-                                    <p className="text-gray-600">Informations légales sur notre société</p>
+                                    <h3 className="text-lg font-semibold mb-2">{t('pages.legalNotice.sections.company.title')}</h3>
+                                    <p className="text-gray-600">{t('pages.legalNotice.sections.company.description')}</p>
                                 </div>
                             </div>
                             <div className="flex items-start space-x-4">
                                 <Shield className="w-8 h-8 text-amber-500 flex-shrink-0" />
                                 <div>
-                                    <h3 className="text-lg font-semibold mb-2">Protection des Données</h3>
-                                    <p className="text-gray-600">Conformité avec la réglementation</p>
+                                    <h3 className="text-lg font-semibold mb-2">{t('pages.legalNotice.sections.dataProtection.title')}</h3>
+                                    <p className="text-gray-600">{t('pages.legalNotice.sections.dataProtection.description')}</p>
                                 </div>
                             </div>
                         </div>
 
                         <div className="space-y-8">
                             <section>
-                                <h2 className="text-2xl font-semibold mb-4">1. Informations Légales</h2>
+                                <h2 className="text-2xl font-semibold mb-4">1. {t('pages.legalNotice.sections.legal.title')}</h2>
                                 <p className="text-gray-600 mb-4">
-                                    Guidy est une plateforme de création de CV et d'assistance professionnelle .
+                                    {t('pages.legalNotice.sections.legal.description')}
                                 </p>
                                 {/*<ul className="list-none text-gray-600 space-y-2">*/}
                                 {/*    <li>Nom de la société : Guidy</li>*/}
@@ -83,7 +87,10 @@ const LegalNotice = () => {
                             </section>
 
                             <section>
-                                <h2 className="text-2xl font-semibold mb-4">2. Contact</h2>
+                                <h2 className="text-2xl font-semibold mb-4">2. {t('pages.legalNotice.sections.contact.title')}</h2>
+                                <p className="text-gray-600 mb-4">
+                                    {t('pages.legalNotice.sections.contact.description')}
+                                </p>
                                 <div className="space-y-4">
                                     <div className="flex items-center space-x-3">
                                         <Phone className="w-5 h-5 text-amber-500" />
@@ -97,9 +104,9 @@ const LegalNotice = () => {
                             </section>
 
                             <section>
-                                <h2 className="text-2xl font-semibold mb-4">3. Hébergement</h2>
+                                <h2 className="text-2xl font-semibold mb-4">3. {t('pages.legalNotice.sections.hosting.title')}</h2>
                                 <p className="text-gray-600 mb-4">
-                                    Le site Guidy est hébergé par :
+                                    {t('pages.legalNotice.sections.hosting.description')}
                                 </p>
                                 <ul className="list-none text-gray-600 space-y-2">
                                     <li>Nom de l'hébergeur : MIRHOSTY</li>
@@ -108,7 +115,7 @@ const LegalNotice = () => {
                             </section>
 
                             <section>
-                                <h2 className="text-2xl font-semibold mb-4">4. Protection des Données</h2>
+                                <h2 className="text-2xl font-semibold mb-4">4. {t('pages.legalNotice.sections.dataProtection.title')}</h2>
                                 <p className="text-gray-600 mb-4">
                                     Conformément à la législation camerounaise sur la protection des données personnelles :
                                 </p>
@@ -121,15 +128,15 @@ const LegalNotice = () => {
                             </section>
 
                             <section>
-                                <h2 className="text-2xl font-semibold mb-4">5. Propriété Intellectuelle</h2>
+                                <h2 className="text-2xl font-semibold mb-4">5. {t('pages.legalNotice.sections.intellectualProperty.title')}</h2>
                                 <p className="text-gray-600 mb-4">
-                                    Tous les éléments du site Guidy sont protégés par :
+                                    {t('pages.legalNotice.sections.intellectualProperty.description')}
                                 </p>
                                 <ul className="list-disc list-inside text-gray-600 space-y-2 ml-4">
-                                    <li>Le droit d'auteur</li>
-                                    <li>Le droit des marques</li>
-                                    <li>Le droit des dessins et modèles</li>
-                                    <li>Le droit des bases de données</li>
+                                    <li>{t('pages.legalNotice.sections.intellectualProperty.rights.copyright')}</li>
+                                    <li>{t('pages.legalNotice.sections.intellectualProperty.rights.trademark')}</li>
+                                    <li>{t('pages.legalNotice.sections.intellectualProperty.rights.design')}</li>
+                                    <li>{t('pages.legalNotice.sections.intellectualProperty.rights.database')}</li>
                                 </ul>
                             </section>
 
@@ -137,7 +144,7 @@ const LegalNotice = () => {
                     </div>
 
                     <div className="text-center text-sm text-gray-500 mb-8">
-                        Dernière mise à jour : {new Date().toLocaleDateString()}
+                        {t('pages.legalNotice.lastUpdate')} {new Date().toLocaleDateString()}
                     </div>
                 </div>
             </div>

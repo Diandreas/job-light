@@ -1,7 +1,8 @@
 import React from 'react';
-import { Users, DollarSign, Award, User, Calendar, CheckCircle } from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/Components/ui/card';
+import { Users, DollarSign, Award, User, Calendar, CheckCircle, CreditCard } from 'lucide-react';
+import { Card, CardContent, CardHeader, CardTitle, CardFooter } from '@/Components/ui/card';
 import { ScrollArea } from '@/Components/ui/scroll-area';
+import { Button } from '@/Components/ui/button';
 import { useTranslation } from 'react-i18next';
 
 const ReferralList = ({ referrals }) => {
@@ -75,6 +76,13 @@ const ReferralList = ({ referrals }) => {
 const Dashboard = ({ referralCount, earnings, level, referrals = [] }) => {
     const { t } = useTranslation();
 
+    const handleWithdrawal = () => {
+        const message = t('sponsorship.dashboard.withdrawalMessage', { earnings });
+        window.open(`https://wa.me/+237693427913?text=${encodeURIComponent(message)}`, '_blank');
+    };
+
+    const canWithdraw = earnings >= 5000;
+
     return (
         <div className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -95,6 +103,21 @@ const Dashboard = ({ referralCount, earnings, level, referrals = [] }) => {
                     <CardContent>
                         <div className="text-2xl font-bold text-gray-900 dark:text-gray-100">{earnings} FCFA</div>
                     </CardContent>
+                    <CardFooter>
+                        <Button
+                            onClick={handleWithdrawal}
+                            disabled={!canWithdraw}
+                            className={`w-full mt-2 ${canWithdraw ? 'bg-green-600 hover:bg-green-700' : 'bg-gray-400 cursor-not-allowed'}`}
+                        >
+                            <CreditCard className="h-4 w-4 mr-2" />
+                            {t('sponsorship.dashboard.requestWithdrawal')}
+                        </Button>
+                        {!canWithdraw && (
+                            <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                                {t('sponsorship.dashboard.withdrawalMinimum', { minimum: '5000 FCFA' })}
+                            </p>
+                        )}
+                    </CardFooter>
                 </Card>
                 <Card className="border dark:border-gray-700">
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">

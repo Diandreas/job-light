@@ -827,7 +827,22 @@
             "registeredOn": "Registered on",
             "totalReferrals": "Total referrals",
             "totalEarnings": "Total earnings",
-            "currentLevel": "Current level"
+            "currentLevel": "Current level",
+            "requestWithdrawal": "Request Withdrawal",
+            "withdrawalMinimum": "Minimum required: {{minimum}}",
+            "withdrawalMessage": "Hello, I would like to request a withdrawal of my referral earnings. My current balance is {{earnings}} FCFA. Please contact me to finalize the transaction."
+        },
+        "invitation": {
+            "emailSubject": "Join me on our CV platform",
+            "emailBody": "Hello,\n\nI invite you to use our CV creation platform. Sign up using my referral link and get benefits:\n\n{{invitationLink}}\n\nSee you soon!",
+            "whatsappText": "Join me on this amazing CV creation platform using my referral link: {{invitationLink}}",
+            "shareYourCode": "Share your code",
+            "copyCode": "Copy code",
+            "copied": "Copied!",
+            "copyLink": "Copy link",
+            "shareEmail": "Share via email",
+            "shareWhatsapp": "Share via WhatsApp",
+            "invitationLink": "Invitation link"
         }
     },
     "pages": {

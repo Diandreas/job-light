@@ -829,7 +829,22 @@
             "registeredOn": "Inscrit le",
             "totalReferrals": "Total des parrainages",
             "totalEarnings": "Gains totaux",
-            "currentLevel": "Niveau actuel"
+            "currentLevel": "Niveau actuel",
+            "requestWithdrawal": "Demander un retrait",
+            "withdrawalMinimum": "Minimum requis: {{minimum}}",
+            "withdrawalMessage": "Bonjour, je souhaite demander un retrait de mes gains de parrainage. Mon solde actuel est de {{earnings}} FCFA. Merci de me contacter pour finaliser la transaction."
+        },
+        "invitation": {
+            "emailSubject": "Rejoignez-moi sur notre plateforme de CV",
+            "emailBody": "Bonjour,\n\nJe vous invite à utiliser notre plateforme de création de CV. Inscrivez-vous en utilisant mon lien de parrainage et obtenez des avantages :\n\n{{invitationLink}}\n\nÀ bientôt !",
+            "whatsappText": "Rejoignez-moi sur cette super plateforme de création de CV en utilisant mon lien de parrainage : {{invitationLink}}",
+            "shareYourCode": "Partagez votre code",
+            "copyCode": "Copier le code",
+            "copied": "Copié !",
+            "copyLink": "Copier le lien",
+            "shareEmail": "Partager par email",
+            "shareWhatsapp": "Partager via WhatsApp",
+            "invitationLink": "Lien d'invitation"
         }
     },
     "pages": {

@@ -8,8 +8,10 @@ import { Alert, AlertDescription } from '@/Components/ui/alert';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/Components/ui/tabs';
 import { Badge } from '@/Components/ui/badge';
 import { Progress } from '@/Components/ui/progress';
+import { useTranslation } from 'react-i18next';
 
 const Invitation = ({ referralCode, expirationInfo }) => {
+    const { t } = useTranslation();
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState('');
     const [successMsg, setSuccessMsg] = useState('');
@@ -27,13 +29,13 @@ const Invitation = ({ referralCode, expirationInfo }) => {
     };
 
     const shareViaEmail = () => {
-        const subject = 'Rejoignez-moi sur notre plateforme de CV';
-        const body = `Bonjour,\n\nJe vous invite à utiliser notre plateforme de création de CV. Inscrivez-vous en utilisant mon lien de parrainage et obtenez des avantages :\n\n${invitationLink}\n\nÀ bientôt !`;
+        const subject = t('sponsorship.invitation.emailSubject');
+        const body = t('sponsorship.invitation.emailBody', { invitationLink });
         window.location.href = `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
     };
 
     const shareViaWhatsApp = () => {
-        const text = `Rejoignez-moi sur cette super plateforme de création de CV en utilisant mon lien de parrainage : ${invitationLink}`;
+        const text = t('sponsorship.invitation.whatsappText', { invitationLink });
         window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank');
     };
 

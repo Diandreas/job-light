@@ -545,12 +545,14 @@ export default function Authenticated({ user, header, children }: PropsWithChild
                     </div>
 
                     <DialogFooter className="sm:justify-between">
-                        <Button
-                            variant="outline"
-                            onClick={() => router.visit(route('sponsorship.index'))}
-                        >
-                            {t('sponsorship.code.renewal.viewAllDetails')}
-                        </Button>
+                        {ownReferralCode && (
+                            <Button
+                                variant="outline"
+                                onClick={() => router.visit(route('sponsorship.index'))}
+                            >
+                                {t('sponsorship.code.renewal.viewAllDetails')}
+                            </Button>
+                        )}
                     </DialogFooter>
                 </DialogContent>
             </Dialog>

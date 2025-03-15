@@ -35,6 +35,11 @@ class User extends Authenticatable
         'phone_number',
         'username',
         'photo',
+        'wallet_balance',
+        'UserType',
+        'sponsor_id',
+        'sponsor_code',
+        'sponsor_expires_at',
     ];
 
     /**
@@ -358,5 +363,31 @@ class User extends Authenticatable
     public function portfolioSettings()
     {
         return $this->hasOne(PortfolioSettings::class);
+    }
+
+    /**
+     * Get the sponsor of this user
+     */
+    public function sponsor()
+    {
+        return $this->belongsTo(User::class, 'sponsor_id');
+    }
+
+    /**
+     * Get all users sponsored by this user
+     */
+    public function sponsored()
+    {
+        return $this->hasMany(User::class, 'sponsor_id');
+    }
+
+    /**
+     * Checks if the user's sponsor code is still valid
+     */
+    public function hasSponsor()
+    {
+        return $this->sponsor_id 
+            && $this->sponsor_expires_at 
+            && now()->lt($this->sponsor_expires_at);
     }
 }

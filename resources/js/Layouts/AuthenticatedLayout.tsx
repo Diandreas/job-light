@@ -1,19 +1,34 @@
-import { useState, PropsWithChildren } from 'react';
-import {Head, Link, usePage} from '@inertiajs/react';
+import { useState, PropsWithChildren, useEffect } from 'react';
+import { Head, Link, usePage, router } from '@inertiajs/react';
 import { useTranslation } from 'react-i18next';
-import { User } from '@/types';
+import { User as UserType } from '@/types';
 import { Toaster } from "@/Components/ui/toaster";
 import { ThemeToggle } from '@/Components/ThemeToggle';
 import {
     Folder, Star, Eye, Menu, X, Brain, Layout,
     ChevronRight, ChevronLeft, Sparkles, LucideIcon, Coins,
-    Globe, Mail, Phone, MapPin, Linkedin, Github, MessageSquare
+    Globe, Mail, Phone, MapPin, Linkedin, Github, MessageSquare,
+    MenuIcon, ChevronDown, ChevronUp, Home, BookCopy, Award,
+    Calendar, Sun, Moon, Languages, RefreshCw, CheckCircle
 } from 'lucide-react';
 import Dropdown from '@/Components/Dropdown';
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/Components/ui/sheet";
 import { Button } from '@/Components/ui/button';
 import { cn } from "@/lib/utils";
 import { motion, AnimatePresence } from 'framer-motion';
+import { useToast } from '@/Components/ui/use-toast';
+import axios from 'axios';
+import {
+    Dialog,
+    DialogContent,
+    DialogHeader,
+    DialogTitle,
+    DialogDescription,
+    DialogFooter
+} from '@/Components/ui/dialog';
+import { Progress } from '@/Components/ui/progress';
+import { Badge } from '@/Components/ui/badge';
+import { Alert, AlertDescription } from '@/Components/ui/alert';
 
 interface MenuItem {
     name: string;
@@ -101,11 +116,12 @@ const getCvSideMenuItems = (t: (key: string) => string) => [
     }
 ];
 
-export default function Authenticated({ user, header, children }: PropsWithChildren<{ user: User, header?: React.ReactNode }>) {
+export default function Authenticated({ user, header, children }: PropsWithChildren<{ user: UserType, header?: React.ReactNode }>) {
     const { t, i18n } = useTranslation();
     const { url } = usePage();
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const [isNavOpen, setIsNavOpen] = useState(false);
+    const [isReferralDialogOpen, setIsReferralDialogOpen] = useState(false);
     const showNav = ['cv-infos.show', 'cv-infos.index', 'userCvModels.index'].includes(route().current());
     const cvSideMenuItems = getCvSideMenuItems(t);
 
@@ -213,169 +229,505 @@ export default function Authenticated({ user, header, children }: PropsWithChild
         </div>
     );
 
-    return (<>
-            <Head>
-                <link rel="icon" type="image/png" href="/ai.png" />
-            </Head>
-            <div className="min-h-screen bg-gradient-to-br from-amber-50/50 to-purple-50/50 dark:from-gray-900 dark:to-gray-800">
-                <nav className="sticky top-0 z-50 bg-white/80 dark:bg-gray-900/90 backdrop-blur-md shadow-sm border-b border-amber-100 dark:border-gray-700">
-                    <div className="mx-auto px-3 sm:px-6">
-                        <div className="flex h-12 sm:h-16 items-center justify-between">
-                            <div className="flex items-center gap-2 sm:gap-4">
-                                <Link href="/" className="flex items-center gap-1.5 sm:gap-2">
-                                    <Sparkles className="h-4 w-4 sm:h-6 sm:w-6 text-amber-500 dark:text-amber-400" />
-                                    <span className="font-bold text-base sm:text-2xl bg-gradient-to-r from-amber-500 to-purple-500 dark:from-amber-400 dark:to-purple-400 text-transparent bg-clip-text">
-                                    {t('brand')}
-                                </span>
-                                </Link>
-                            </div>
+    // Composant pour le renouvellement du code de parrainage
+    const ReferralCodeRenewal = () => {
+        const [isLoading, setIsLoading] = useState(false);
+        const [sponsorInfo, setSponsorInfo] = useState<any>(null);
+        const [ownReferralCode, setOwnReferralCode] = useState<any>(null);
+        const [newSponsorCode, setNewSponsorCode] = useState('');
+        const [error, setError] = useState('');
+        const [successMsg, setSuccessMsg] = useState('');
+        const [activeTab, setActiveTab] = useState('current'); // 'current' ou 'new'
+        const { toast } = useToast();
 
-                            <div className="hidden md:flex md:items-center md:gap-3 lg:gap-6">
-                                <TokenDisplay />
-                                {mainMenuItems.map((item, index) => (
-                                    //@ts-ignore
-                                    (!item.adminOnly || user.UserType === 1) && (
-                                        <NavButton key={index} item={item} />
-                                    )
-                                ))}
-                                <LanguageSelector />
-                            </div>
+        // Charger les informations du code de parrainage
+        const loadReferralInfo = async () => {
+            setIsLoading(true);
+            try {
+                const response = await axios.get('/sponsorship/code-info');
+                if (response.data.success) {
+                    setSponsorInfo(response.data.sponsorInfo);
+                    setOwnReferralCode(response.data.ownReferralCode);
+                }
+            } catch (err) {
+                console.error('Erreur lors du chargement des informations de parrainage', err);
+            } finally {
+                setIsLoading(false);
+            }
+        };
 
-                            <div className="flex items-center gap-2 sm:gap-4">
-                                <div className="md:hidden">
-                                    <TokenDisplay />
-                                </div>
-                                <ThemeToggle />
-                                <Dropdown>
-                                    <Dropdown.Trigger>
-                                        <Button variant="ghost" className="p-0 h-7 w-7 sm:h-8 sm:w-auto sm:p-2">
-                                            <div className="flex items-center gap-1.5 sm:gap-2">
-                                                <div className="h-6 w-6 sm:h-8 sm:w-8 rounded-full bg-gradient-to-r from-amber-500 to-purple-500 dark:from-amber-400 dark:to-purple-400 flex items-center justify-center">
-                                                <span className="text-white font-medium text-xs sm:text-sm">
-                                                    {user.name.charAt(0).toUpperCase()}
+        // Renouveler le code de parrainage actuel
+        const renewCurrentSponsorCode = async () => {
+            setIsLoading(true);
+            setError('');
+            setSuccessMsg('');
+
+            try {
+                const response = await axios.post('/sponsorship/renew-code');
+
+                if (response.data.success) {
+                    setSuccessMsg(response.data.message);
+                    setSponsorInfo({
+                        ...sponsorInfo,
+                        expires_at: response.data.expires_at,
+                        is_expired: false,
+                        days_left: 30
+                    });
+
+                    toast({
+                        title: "Code renouvelé",
+                        description: "Votre code de parrainage a été renouvelé avec succès.",
+                        variant: "default",
+                    });
+                } else {
+                    setError(response.data.message || 'Une erreur est survenue.');
+                }
+            } catch (err) {
+                setError(err.response?.data?.message || 'Une erreur est survenue lors du renouvellement du code.');
+            } finally {
+                setIsLoading(false);
+            }
+        };
+
+        // Appliquer un nouveau code de parrainage
+        const applyNewSponsorCode = async () => {
+            if (!newSponsorCode.trim()) {
+                setError('Veuillez saisir un code de parrainage.');
+                return;
+            }
+
+            setIsLoading(true);
+            setError('');
+            setSuccessMsg('');
+
+            try {
+                const response = await axios.post('/sponsorship/renew-code', {
+                    new_sponsor_code: newSponsorCode.trim()
+                });
+
+                if (response.data.success) {
+                    setSuccessMsg(response.data.message);
+                    setSponsorInfo({
+                        sponsor_code: response.data.sponsor_code,
+                        expires_at: response.data.expires_at,
+                        is_expired: false,
+                        days_left: 30
+                    });
+                    setNewSponsorCode('');
+                    setActiveTab('current');
+
+                    toast({
+                        title: "Nouveau code appliqué",
+                        description: "Le nouveau code de parrainage a été appliqué avec succès.",
+                        variant: "default",
+                    });
+                } else {
+                    setError(response.data.message || 'Une erreur est survenue.');
+                }
+            } catch (err) {
+                setError(err.response?.data?.message || 'Une erreur est survenue lors de l\'application du code.');
+            } finally {
+                setIsLoading(false);
+            }
+        };
+
+        // Calculer le pourcentage de temps restant
+        const getExpirationProgress = () => {
+            if (!sponsorInfo) return 100;
+            if (sponsorInfo.is_expired) return 0;
+            const daysLeft = Math.max(0, sponsorInfo.days_left);
+            return Math.min(100, (daysLeft / 30) * 100);
+        };
+
+        // Afficher le statut d'expiration
+        const getExpirationStatus = () => {
+            if (!sponsorInfo) return null;
+
+            if (sponsorInfo.is_expired) {
+                return (
+                    <Badge variant="destructive" className="ml-2">
+                        Expiré
+                    </Badge>
+                );
+            }
+
+            if (sponsorInfo.days_left <= 7) {
+                return (
+                    <Badge variant="outline" className="ml-2 bg-amber-500 hover:bg-amber-600 text-white">
+                        Expire bientôt
+                    </Badge>
+                );
+            }
+
+            return (
+                <Badge variant="outline" className="ml-2 bg-green-600 hover:bg-green-700 text-white">
+                    Actif
+                </Badge>
+            );
+        };
+
+        // Charger les informations au chargement du composant
+        useEffect(() => {
+            if (isReferralDialogOpen) {
+                loadReferralInfo();
+            }
+        }, [isReferralDialogOpen]);
+
+        return (
+            <Dialog open={isReferralDialogOpen} onOpenChange={setIsReferralDialogOpen}>
+                <DialogContent className="sm:max-w-md">
+                    <DialogHeader>
+                        <DialogTitle className="flex items-center">
+                            Gestion de Parrainage {sponsorInfo && getExpirationStatus()}
+                        </DialogTitle>
+                        <DialogDescription>
+                            Gérez votre code de parrainage et renouvelez-le lorsqu'il expire.
+                        </DialogDescription>
+                    </DialogHeader>
+
+                    <div className="space-y-4 py-4">
+                        <div className="flex border-b border-gray-200">
+                            <button
+                                className={`py-2 px-4 text-sm font-medium ${activeTab === 'current'
+                                    ? 'border-b-2 border-amber-500 text-amber-600'
+                                    : 'text-gray-500 hover:text-gray-700'}`}
+                                onClick={() => setActiveTab('current')}
+                            >
+                                Code Actuel
+                            </button>
+                            <button
+                                className={`py-2 px-4 text-sm font-medium ${activeTab === 'new'
+                                    ? 'border-b-2 border-amber-500 text-amber-600'
+                                    : 'text-gray-500 hover:text-gray-700'}`}
+                                onClick={() => setActiveTab('new')}
+                            >
+                                Nouveau Code
+                            </button>
+                        </div>
+
+                        {activeTab === 'current' ? (
+                            <>
+                                {isLoading ? (
+                                    <div className="flex justify-center py-6">
+                                        <RefreshCw className="h-6 w-6 animate-spin text-amber-500" />
+                                    </div>
+                                ) : sponsorInfo ? (
+                                    <div className="space-y-4">
+                                        <div className="flex items-center justify-between">
+                                            <div className="font-medium">Code sponsor:</div>
+                                            <div className="font-bold text-lg">{sponsorInfo.sponsor_code}</div>
+                                        </div>
+
+                                        <div className="flex items-center justify-between text-sm">
+                                            <div className="text-gray-600">Sponsor:</div>
+                                            <div>{sponsorInfo.sponsor_name}</div>
+                                        </div>
+
+                                        <div className="space-y-2">
+                                            <div className="flex justify-between text-sm text-gray-600 dark:text-gray-400">
+                                                <span>Validité du code</span>
+                                                <span>
+                                                    {sponsorInfo.is_expired
+                                                        ? 'Expiré'
+                                                        : `Expire le ${sponsorInfo.expires_at}`}
                                                 </span>
-                                                </div>
-                                                <span className="hidden sm:block text-gray-700 dark:text-gray-100 text-xs sm:text-sm">{user.name}</span>
                                             </div>
-                                        </Button>
-                                    </Dropdown.Trigger>
-                                    {/*@ts-ignore*/}
-                                    <Dropdown.Content className="bg-white dark:bg-gray-900 dark:border-gray-700">
-                                        <Dropdown.Link href={route('profile.edit')} className="text-gray-700 dark:text-gray-900 hover:bg-amber-50 dark:hover:bg-amber-500/20 text-xs sm:text-sm py-1.5 sm:py-2 px-2 sm:px-3">
-                                            {t('profile.edit')}
-                                        </Dropdown.Link>
-                                        <Dropdown.Link href={route('logout')} method="post" as="button" className="text-gray-700 dark:text-gray-900 hover:bg-amber-50 dark:hover:bg-amber-500/20 text-xs sm:text-sm py-1.5 sm:py-2 px-2 sm:px-3">
-                                            {t('auth.logout')}
-                                        </Dropdown.Link>
-                                    </Dropdown.Content>
-                                </Dropdown>
+                                            <Progress value={getExpirationProgress()} className="h-2" />
+                                        </div>
+
+                                        {successMsg && (
+                                            <Alert className="bg-green-50 border-green-200 text-green-800 dark:bg-green-900/20 dark:border-green-900/30 dark:text-green-300">
+                                                <AlertDescription>{successMsg}</AlertDescription>
+                                            </Alert>
+                                        )}
+
+                                        {error && (
+                                            <Alert variant="destructive">
+                                                <AlertDescription>{error}</AlertDescription>
+                                            </Alert>
+                                        )}
+
+                                        <div className="pt-4">
+                                            <Button
+                                                onClick={renewCurrentSponsorCode}
+                                                disabled={isLoading || (!sponsorInfo.is_expired && sponsorInfo.days_left > 7)}
+                                                className="w-full"
+                                            >
+                                                {isLoading ? (
+                                                    <span className="flex items-center justify-center">
+                                                        <RefreshCw className="h-4 w-4 mr-2 animate-spin" />
+                                                        Chargement...
+                                                    </span>
+                                                ) : (
+                                                    <span className="flex items-center justify-center">
+                                                        <RefreshCw className="h-4 w-4 mr-2" />
+                                                        Renouveler ce code pour 30 jours
+                                                    </span>
+                                                )}
+                                            </Button>
+                                        </div>
+                                    </div>
+                                ) : ownReferralCode ? (
+                                    <div className="text-center py-4">
+                                        <p>Vous n'avez pas encore de sponsor.</p>
+                                        <p className="text-sm text-gray-500 mt-2">
+                                            Vous pouvez appliquer un code de parrainage dans l'onglet "Nouveau Code".
+                                        </p>
+                                    </div>
+                                ) : (
+                                    <div className="text-center py-4">
+                                        <p>Vous n'avez pas encore de code de parrainage.</p>
+                                        <p className="text-sm text-gray-500 mt-2">
+                                            Visitez la page de parrainage pour en créer un.
+                                        </p>
+                                    </div>
+                                )}
+                            </>
+                        ) : (
+                            <div className="space-y-4">
+                                <div>
+                                    <label htmlFor="new-sponsor-code" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                                        Nouveau code de parrainage
+                                    </label>
+                                    <div className="mt-1">
+                                        <input
+                                            type="text"
+                                            id="new-sponsor-code"
+                                            value={newSponsorCode}
+                                            onChange={(e) => setNewSponsorCode(e.target.value)}
+                                            className="block w-full rounded-md border-gray-300 shadow-sm focus:border-amber-500 focus:ring-amber-500 dark:bg-gray-800 dark:border-gray-700 dark:text-white sm:text-sm"
+                                            placeholder="Entrez le code de parrainage"
+                                        />
+                                    </div>
+                                    <p className="mt-2 text-sm text-gray-500 dark:text-gray-400">
+                                        Le code sera valide pendant 30 jours. Votre sponsor recevra un pourcentage de vos achats pendant cette période.
+                                    </p>
+                                </div>
+
+                                {error && (
+                                    <Alert variant="destructive">
+                                        <AlertDescription>{error}</AlertDescription>
+                                    </Alert>
+                                )}
 
                                 <Button
-                                    variant="ghost"
-                                    size="sm"
-                                    className="md:hidden h-7 w-7 sm:h-8 sm:w-8 p-0"
-                                    onClick={() => setIsMobileMenuOpen(true)}
+                                    onClick={applyNewSponsorCode}
+                                    disabled={isLoading || !newSponsorCode.trim()}
+                                    className="w-full"
                                 >
-                                    <Menu className="h-4 w-4 sm:h-5 sm:w-5 text-gray-700 dark:text-gray-100" />
+                                    {isLoading ? (
+                                        <span className="flex items-center justify-center">
+                                            <RefreshCw className="h-4 w-4 mr-2 animate-spin" />
+                                            Chargement...
+                                        </span>
+                                    ) : (
+                                        <span className="flex items-center justify-center">
+                                            <CheckCircle className="h-4 w-4 mr-2" />
+                                            Appliquer ce code
+                                        </span>
+                                    )}
                                 </Button>
                             </div>
-                        </div>
-                    </div>
-                </nav>
+                        )}
 
-                <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
-                    <SheetContent side="right" className="bg-white dark:bg-gray-900 w-[250px] sm:w-[300px] border-amber-100 dark:border-gray-700 p-3 sm:p-4">
-                        <SheetHeader className="text-left">
-                            <SheetTitle className="flex items-center gap-1.5 sm:gap-2 text-base sm:text-lg">
-                                <Sparkles className="h-4 w-4 sm:h-5 sm:w-5 text-amber-500 dark:text-amber-400" />
-                                <span className="bg-gradient-to-r from-amber-500 to-purple-500 dark:from-amber-400 dark:to-purple-400 text-transparent bg-clip-text">
-                                {t('menu.title')}
-                            </span>
-                            </SheetTitle>
-                        </SheetHeader>
-                        <div className="mt-4 sm:mt-6 flex flex-col gap-2 sm:gap-3">
+                        {ownReferralCode && (
+                            <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
+                                <h3 className="font-medium mb-2">Votre propre code à partager</h3>
+                                <div className="flex items-center justify-between">
+                                    <div className="font-medium">Code:</div>
+                                    <div className="font-bold">{ownReferralCode.code}</div>
+                                </div>
+                                <p className="mt-2 text-sm text-gray-500 dark:text-gray-400">
+                                    Partagez ce code avec vos amis pour gagner des commissions sur leurs achats !
+                                </p>
+                            </div>
+                        )}
+                    </div>
+
+                    <DialogFooter className="sm:justify-between">
+                        <Button
+                            variant="outline"
+                            onClick={() => router.visit(route('sponsorship.index'))}
+                        >
+                            Voir tous les détails
+                        </Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
+        );
+    };
+
+    return (<>
+        <Head>
+            <link rel="icon" type="image/png" href="/ai.png" />
+        </Head>
+        <div className="min-h-screen bg-gradient-to-br from-amber-50/50 to-purple-50/50 dark:from-gray-900 dark:to-gray-800">
+            <nav className="sticky top-0 z-50 bg-white/80 dark:bg-gray-900/90 backdrop-blur-md shadow-sm border-b border-amber-100 dark:border-gray-700">
+                <div className="mx-auto px-3 sm:px-6">
+                    <div className="flex h-12 sm:h-16 items-center justify-between">
+                        <div className="flex items-center gap-2 sm:gap-4">
+                            <Link href="/" className="flex items-center gap-1.5 sm:gap-2">
+                                <Sparkles className="h-4 w-4 sm:h-6 sm:w-6 text-amber-500 dark:text-amber-400" />
+                                <span className="font-bold text-base sm:text-2xl bg-gradient-to-r from-amber-500 to-purple-500 dark:from-amber-400 dark:to-purple-400 text-transparent bg-clip-text">
+                                    {t('brand')}
+                                </span>
+                            </Link>
+                        </div>
+
+                        <div className="hidden md:flex md:items-center md:gap-3 lg:gap-6">
+                            <TokenDisplay />
                             {mainMenuItems.map((item, index) => (
                                 //@ts-ignore
                                 (!item.adminOnly || user.UserType === 1) && (
-                                    <NavButton key={index} item={item} compact={true} />
+                                    <NavButton key={index} item={item} />
                                 )
                             ))}
-                            <div className="px-3 sm:px-4 mt-2 sm:mt-3">
-                                <LanguageSelector />
-                            </div>
-                        </div>
-                    </SheetContent>
-                </Sheet>
-
-                {showNav && <MobileNav />}
-
-                {header && (
-                    <header className="bg-white/80 dark:bg-gray-900/90 backdrop-blur-md border-b border-amber-100 dark:border-gray-700">
-                        <div className="mx-auto py-2 sm:py-6 px-3 sm:px-6 lg:px-8">
-                            {header}
-                        </div>
-                    </header>
-                )}
-
-                <div className="flex">
-                    {showNav && (
-                        <aside className="hidden md:block w-48 sm:w-64 bg-white/80 dark:bg-gray-900/90 backdrop-blur-md border-r border-amber-100 dark:border-gray-700 min-h-screen">
-                            <div className="sticky top-16 p-3 sm:p-4">
-                                <div className="mb-3 sm:mb-6">
-                                    <h2 className="text-sm sm:text-lg font-semibold bg-gradient-to-r from-amber-500 to-purple-500 dark:from-amber-400 dark:to-purple-400 text-transparent bg-clip-text">
-                                        Navigation CV
-                                    </h2>
-                                </div>
-                                <div className="space-y-1.5 sm:space-y-2">
-                                    {cvSideMenuItems.map((item, index) => (
-                                        <NavButton key={index} item={item} compact={true} />
-                                    ))}
-                                </div>
-                            </div>
-                        </aside>
-                    )}
-
-                    <main className="flex-1 p-3 sm:p-6 text-gray-700 dark:text-gray-100">
-                        {children}
-                    </main>
-                </div>
-
-                <footer className="mt-auto py-3 sm:py-4 border-t border-amber-100 dark:border-gray-700">
-                    <div className="mx-auto px-3 sm:px-6 flex flex-col sm:flex-row justify-between items-center gap-2 sm:gap-4">
-                        <div className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm text-gray-500 dark:text-gray-400">
-                            <Sparkles className="h-3 w-3 sm:h-4 sm:w-4 text-amber-500 dark:text-amber-400" />
-                            <span>© {new Date().getFullYear()} {t('brand')}</span>
+                            <LanguageSelector />
                         </div>
 
-                        <div className="flex items-center gap-4 text-xs sm:text-sm">
+                        <div className="flex items-center gap-2 sm:gap-4">
                             <div className="md:hidden">
-                                <LanguageSelector />
+                                <TokenDisplay />
                             </div>
+                            <ThemeToggle />
+                            <Dropdown>
+                                <Dropdown.Trigger>
+                                    <Button variant="ghost" className="p-0 h-7 w-7 sm:h-8 sm:w-auto sm:p-2">
+                                        <div className="flex items-center gap-1.5 sm:gap-2">
+                                            <div className="h-6 w-6 sm:h-8 sm:w-8 rounded-full bg-gradient-to-r from-amber-500 to-purple-500 dark:from-amber-400 dark:to-purple-400 flex items-center justify-center">
+                                                <span className="text-white font-medium text-xs sm:text-sm">
+                                                    {user.name.charAt(0).toUpperCase()}
+                                                </span>
+                                            </div>
+                                            <span className="hidden sm:block text-gray-700 dark:text-gray-100 text-xs sm:text-sm">{user.name}</span>
+                                        </div>
+                                    </Button>
+                                </Dropdown.Trigger>
+                                {/*@ts-ignore*/}
+                                <Dropdown.Content className="bg-white dark:bg-gray-900 dark:border-gray-700">
+                                    <Dropdown.Link href={route('profile.edit')} className="text-gray-700 dark:text-gray-900 hover:bg-amber-50 dark:hover:bg-amber-500/20 text-xs sm:text-sm py-1.5 sm:py-2 px-2 sm:px-3">
+                                        {t('profile.edit')}
+                                    </Dropdown.Link>
+                                    <Dropdown.Link href={route('logout')} method="post" as="button" className="text-gray-700 dark:text-gray-900 hover:bg-amber-50 dark:hover:bg-amber-500/20 text-xs sm:text-sm py-1.5 sm:py-2 px-2 sm:px-3">
+                                        {t('auth.logout')}
+                                    </Dropdown.Link>
+                                </Dropdown.Content>
+                            </Dropdown>
 
-                            <div className="flex items-center gap-4">
-                                <Link
-                                    href={route('support')}
-                                    className="flex items-center gap-1 text-gray-500 hover:text-amber-500 transition-colors"
-                                >
-                                    <MessageSquare className="h-3 w-3 sm:h-4 sm:w-4" />
-                                    <span>Support</span>
-                                </Link>
-
-
-                                <a
-                                    href="mailto:guidy.makeitreall@gmail.com"
-                                    className="flex items-center gap-1 text-gray-500 hover:text-amber-500 transition-colors"
-                                >
-                                    <Mail className="h-3 w-3 sm:h-4 sm:w-4" />
-                                    <span className="hidden sm:inline">Contact</span>
-                                </a>
-                            </div>
+                            <Button
+                                variant="ghost"
+                                size="sm"
+                                className="md:hidden h-7 w-7 sm:h-8 sm:w-8 p-0"
+                                onClick={() => setIsMobileMenuOpen(true)}
+                            >
+                                <Menu className="h-4 w-4 sm:h-5 sm:w-5 text-gray-700 dark:text-gray-100" />
+                            </Button>
                         </div>
                     </div>
-                </footer>
+                </div>
+            </nav>
 
-                <Toaster />
+            <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
+                <SheetContent side="right" className="bg-white dark:bg-gray-900 w-[250px] sm:w-[300px] border-amber-100 dark:border-gray-700 p-3 sm:p-4">
+                    <SheetHeader className="text-left">
+                        <SheetTitle className="flex items-center gap-1.5 sm:gap-2 text-base sm:text-lg">
+                            <Sparkles className="h-4 w-4 sm:h-5 sm:w-5 text-amber-500 dark:text-amber-400" />
+                            <span className="bg-gradient-to-r from-amber-500 to-purple-500 dark:from-amber-400 dark:to-purple-400 text-transparent bg-clip-text">
+                                {t('menu.title')}
+                            </span>
+                        </SheetTitle>
+                    </SheetHeader>
+                    <div className="mt-4 sm:mt-6 flex flex-col gap-2 sm:gap-3">
+                        {mainMenuItems.map((item, index) => (
+                            //@ts-ignore
+                            (!item.adminOnly || user.UserType === 1) && (
+                                <NavButton key={index} item={item} compact={true} />
+                            )
+                        ))}
+                        <div className="px-3 sm:px-4 mt-2 sm:mt-3">
+                            <LanguageSelector />
+                        </div>
+                    </div>
+                </SheetContent>
+            </Sheet>
+
+            {showNav && <MobileNav />}
+
+            {header && (
+                <header className="bg-white/80 dark:bg-gray-900/90 backdrop-blur-md border-b border-amber-100 dark:border-gray-700">
+                    <div className="mx-auto py-2 sm:py-6 px-3 sm:px-6 lg:px-8">
+                        {header}
+                    </div>
+                </header>
+            )}
+
+            <div className="flex">
+                {showNav && (
+                    <aside className="hidden md:block w-48 sm:w-64 bg-white/80 dark:bg-gray-900/90 backdrop-blur-md border-r border-amber-100 dark:border-gray-700 min-h-screen">
+                        <div className="sticky top-16 p-3 sm:p-4">
+                            <div className="mb-3 sm:mb-6">
+                                <h2 className="text-sm sm:text-lg font-semibold bg-gradient-to-r from-amber-500 to-purple-500 dark:from-amber-400 dark:to-purple-400 text-transparent bg-clip-text">
+                                    Navigation CV
+                                </h2>
+                            </div>
+                            <div className="space-y-1.5 sm:space-y-2">
+                                {cvSideMenuItems.map((item, index) => (
+                                    <NavButton key={index} item={item} compact={true} />
+                                ))}
+                            </div>
+                        </div>
+                    </aside>
+                )}
+
+                <main className="flex-1 p-3 sm:p-6 text-gray-700 dark:text-gray-100">
+                    {children}
+                </main>
             </div>
-        </>
+
+            <footer className="mt-auto py-3 sm:py-4 border-t border-amber-100 dark:border-gray-700">
+                <div className="mx-auto px-3 sm:px-6 flex flex-col sm:flex-row justify-between items-center gap-2 sm:gap-4">
+                    <div className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm text-gray-500 dark:text-gray-400">
+                        <Sparkles className="h-3 w-3 sm:h-4 sm:w-4 text-amber-500 dark:text-amber-400" />
+                        <span>© {new Date().getFullYear()} {t('brand')}</span>
+                    </div>
+
+                    <div className="flex items-center gap-4 text-xs sm:text-sm">
+                        <div className="md:hidden">
+                            <LanguageSelector />
+                        </div>
+
+                        <div className="flex items-center gap-4">
+                            <Link
+                                href={route('support')}
+                                className="flex items-center gap-1 text-gray-500 hover:text-amber-500 transition-colors"
+                            >
+                                <MessageSquare className="h-3 w-3 sm:h-4 sm:w-4" />
+                                <span>Support</span>
+                            </Link>
+
+                            <button
+                                onClick={() => setIsReferralDialogOpen(true)}
+                                className="flex items-center gap-1 text-gray-500 hover:text-amber-500 transition-colors"
+                            >
+                                <RefreshCw className="h-3 w-3 sm:h-4 sm:w-4" />
+                                <span>Renouveler Code</span>
+                            </button>
+
+                            <a
+                                href="mailto:guidy.makeitreall@gmail.com"
+                                className="flex items-center gap-1 text-gray-500 hover:text-amber-500 transition-colors"
+                            >
+                                <Mail className="h-3 w-3 sm:h-4 sm:w-4" />
+                                <span className="hidden sm:inline">Contact</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </footer>
+
+            <Toaster />
+            <ReferralCodeRenewal />
+        </div>
+    </>
     );
 }

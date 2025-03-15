@@ -30,12 +30,25 @@ class SponsorshipController extends Controller
         // Calculate total earnings
         $earnings = $user->referralEarnings()->sum('amount');
 
+        // Check if code is expired or about to expire
+        $expirationInfo = null;
+        
+        if ($user->referralCode && $user->referralCode->expires_at) {
+            $expirationInfo = [
+                'expires_at' => $user->referralCode->expires_at->format('Y-m-d'),
+                'is_expired' => $user->referralCode->isExpired(),
+                'days_left' => now()->diffInDays($user->referralCode->expires_at, false),
+                'is_active' => $user->referralCode->is_active && !$user->referralCode->isExpired()
+            ];
+        }
+
         return Inertia::render('Sponsorship/Index', [
             'referralCode' => $user->referralCode->code ?? 'N/A',
             'referralCount' => $referrals->count(),
             'earnings' => $earnings,
             'referrals' => $referrals,
             'level' => $user->referralLevel(),
+            'expirationInfo' => $expirationInfo
         ]);
     }
 
@@ -98,6 +111,17 @@ class SponsorshipController extends Controller
                 Log::warning('Invalid referral code used during registration', [
                     'code' => $referralCode,
                     'new_user_id' => $newUser->id
+                ]);
+                return false;
+            }
+            
+            // Vérifier si le code est actif et non expiré
+            if (!$code->isValid()) {
+                Log::warning('Expired or inactive referral code used during registration', [
+                    'code' => $referralCode,
+                    'new_user_id' => $newUser->id,
+                    'is_active' => $code->is_active,
+                    'expires_at' => $code->expires_at,
                 ]);
                 return false;
             }
@@ -262,12 +286,134 @@ class SponsorshipController extends Controller
             $code = strtoupper(Str::random(8));
         }
 
+        // Set expiration date to one month from now
+        $expiresAt = now()->addMonth();
+
         // Create the referral code
         ReferralCode::create([
             'user_id' => $user->id,
-            'code' => $code
+            'code' => $code,
+            'expires_at' => $expiresAt,
+            'is_active' => true
         ]);
 
         return $code;
+    }
+    
+    /**
+     * Renew the referral code for a user or apply a new sponsor code
+     */
+    public function renewReferralCode(Request $request)
+    {
+        $user = $request->user();
+        $newSponsorCode = $request->input('new_sponsor_code');
+        
+        try {
+            DB::transaction(function () use ($user, $newSponsorCode) {
+                if ($newSponsorCode) {
+                    // L'utilisateur veut utiliser un nouveau code de parrainage
+                    $sponsorCode = ReferralCode::where('code', $newSponsorCode)
+                        ->where('is_active', true)
+                        ->where(function($query) {
+                            $query->whereNull('expires_at')
+                                  ->orWhere('expires_at', '>', now());
+                        })
+                        ->first();
+                    
+                    if (!$sponsorCode) {
+                        throw new \Exception('Le code de parrainage saisi est invalide ou expiré.');
+                    }
+                    
+                    if ($sponsorCode->user_id === $user->id) {
+                        throw new \Exception('Vous ne pouvez pas utiliser votre propre code de parrainage.');
+                    }
+                    
+                    // Enregistrer le nouveau sponsor
+                    $user->sponsor_id = $sponsorCode->user_id;
+                    $user->sponsor_code = $newSponsorCode;
+                    $user->sponsor_expires_at = now()->addDays(30);
+                    $user->save();
+                    
+                    // Créer ou mettre à jour l'enregistrement de référence
+                    Referral::updateOrCreate(
+                        ['referred_id' => $user->id],
+                        [
+                            'referrer_id' => $sponsorCode->user_id,
+                            'referred_at' => now()
+                        ]
+                    );
+                    
+                } else {
+                    // Renouveler le même code pour 30 jours supplémentaires
+                    $user->sponsor_expires_at = now()->addDays(30);
+                    $user->save();
+                }
+                
+                // S'assurer que le code de parrainage de l'utilisateur est toujours actif
+                if ($user->referralCode) {
+                    $user->referralCode->update([
+                        'expires_at' => now()->addMonth(),
+                        'is_active' => true
+                    ]);
+                }
+            });
+            
+            return response()->json([
+                'success' => true,
+                'message' => $newSponsorCode 
+                    ? 'Nouveau code de parrainage appliqué avec succès.'
+                    : 'Code de parrainage renouvelé avec succès.',
+                'expires_at' => $user->sponsor_expires_at ? $user->sponsor_expires_at->format('Y-m-d H:i:s') : null,
+                'sponsor_code' => $user->sponsor_code
+            ]);
+            
+        } catch (\Exception $e) {
+            Log::error('Erreur lors du renouvellement du code de parrainage', [
+                'error' => $e->getMessage(),
+                'user_id' => $user->id
+            ]);
+            
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage() ?: 'Une erreur est survenue lors du renouvellement du code.'
+            ], 500);
+        }
+    }
+
+    /**
+     * Get referral code information for the current user
+     */
+    public function getReferralCodeInfo(Request $request)
+    {
+        $user = $request->user();
+        
+        // Vérifier si l'utilisateur a un sponsor
+        $sponsorInfo = null;
+        if ($user->sponsor_code && $user->sponsor_expires_at) {
+            $sponsorInfo = [
+                'sponsor_code' => $user->sponsor_code,
+                'expires_at' => $user->sponsor_expires_at->format('Y-m-d'),
+                'is_expired' => now()->gt($user->sponsor_expires_at),
+                'days_left' => now()->diffInDays($user->sponsor_expires_at, false),
+                'sponsor_name' => User::find($user->sponsor_id)->name ?? 'Sponsor'
+            ];
+        }
+        
+        // Vérifier si l'utilisateur a son propre code de parrainage
+        $ownReferralCode = null;
+        if ($user->referralCode) {
+            $ownReferralCode = [
+                'code' => $user->referralCode->code,
+                'expires_at' => $user->referralCode->expires_at ? $user->referralCode->expires_at->format('Y-m-d') : null,
+                'is_active' => $user->referralCode->is_active && 
+                              ($user->referralCode->expires_at ? now()->lt($user->referralCode->expires_at) : true)
+            ];
+        }
+        
+        return response()->json([
+            'success' => true,
+            'sponsorInfo' => $sponsorInfo,
+            'ownReferralCode' => $ownReferralCode
+        ]);
     }
 }

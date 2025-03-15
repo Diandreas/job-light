@@ -170,6 +170,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('/sponsorship/generate-invitation', [SponsorshipController::class, 'generateInvitation']);
     Route::get('/sponsorship/progress', [SponsorshipController::class, 'getProgress']);
     Route::post('/sponsorship/support', [SponsorshipController::class, 'submitSupportTicket']);
+    Route::post('/sponsorship/renew-code', [SponsorshipController::class, 'renewReferralCode'])->name('sponsorship.renew-code');
+    Route::get('/sponsorship/code-info', [SponsorshipController::class, 'getReferralCodeInfo'])->name('sponsorship.code-info');
 
     // Admin-only routes
     Route::middleware('can:access-admin')->group(function () {

@@ -226,13 +226,27 @@ class SponsorshipController extends Controller
      */
     private function getCommissionRate($level)
     {
-        $rates = [
-            'ARGENT' => 10,
-            'OR' => 15,
-            'DIAMANT' => 20,
-        ];
-
-        return $rates[$level] ?? 10; // Default to 10% if level not found
+        try {
+            // Chercher le niveau dans la base de données
+            $levelObj = ReferralLevel::where('name', $level)->first();
+            
+            // Si le niveau est trouvé, retourner son taux de commission
+            if ($levelObj) {
+                return $levelObj->commission_rate;
+            }
+            
+            // Sinon, utiliser les valeurs par défaut
+            $rates = [
+                'ARGENT' => 10,
+                'OR' => 15,
+                'DIAMANT' => 20,
+            ];
+            
+            return $rates[$level] ?? 10; // Default to 10% if level not found
+        } catch (\Exception $e) {
+            \Log::error('Erreur lors de la récupération du taux de commission: ' . $e->getMessage());
+            return 10; // Default to 10% in case of error
+        }
     }
 
     /**

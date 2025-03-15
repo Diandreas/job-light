@@ -24,7 +24,8 @@ use App\Http\Controllers\{AddressController,
     SummaryController,
     UserCompetenceController,
     UserHobbyController,
-    UserProfessionsController};
+    UserProfessionsController,
+    Admin\ReferralLevelController};
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -182,6 +183,14 @@ Route::middleware(['auth', 'verified'])->group(function () {
             'profession-missions' => ProfessionMissionController::class,
             'cv-models' => CvModelController::class,
         ]);
+        
+        // Routes pour la gestion des niveaux de parrainage
+        Route::resource('referral-levels', \App\Http\Controllers\Admin\ReferralLevelController::class)
+            ->names('admin.referral-levels');
+            
+        // Route pour initialiser les niveaux de parrainage
+        Route::post('/referral-levels/initialize', [\App\Http\Controllers\Admin\ReferralLevelController::class, 'initialize'])
+            ->name('admin.referral-levels.initialize');
     });
 
 

@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Str;
+use App\Models\ReferralLevel;
 
 class User extends Authenticatable
 {
@@ -154,14 +155,45 @@ class User extends Authenticatable
      */
     public function referralLevel()
     {
-        $referralCount = $this->referrals()->count();
-
-        if ($referralCount >= 20) {
-            return 'DIAMANT';
-        } elseif ($referralCount >= 10) {
-            return 'OR';
-        } else {
-            return 'ARGENT';
+        try {
+            $referralCount = $this->referrals()->count();
+            
+            // Récupérer tous les niveaux et les trier par min_referrals décroissant
+            $levels = ReferralLevel::orderBy('min_referrals', 'desc')->get();
+            
+            // Si aucun niveau n'est défini, utiliser des valeurs par défaut
+            if ($levels->isEmpty()) {
+                if ($referralCount >= 20) {
+                    return 'DIAMANT';
+                } elseif ($referralCount >= 10) {
+                    return 'OR';
+                } else {
+                    return 'ARGENT';
+                }
+            }
+            
+            // Trouver le niveau approprié
+            foreach ($levels as $level) {
+                if ($referralCount >= $level->min_referrals) {
+                    return $level->name;
+                }
+            }
+            
+            // Si aucun niveau ne correspond, utiliser le premier niveau avec le min_referrals le plus bas
+            $lowestLevel = ReferralLevel::orderBy('min_referrals', 'asc')->first();
+            return $lowestLevel ? $lowestLevel->name : 'ARGENT';
+        } catch (\Exception $e) {
+            // En cas d'erreur, utiliser les valeurs par défaut
+            \Log::error('Erreur lors de la détermination du niveau de parrainage: ' . $e->getMessage());
+            $referralCount = $this->referrals()->count();
+            
+            if ($referralCount >= 20) {
+                return 'DIAMANT';
+            } elseif ($referralCount >= 10) {
+                return 'OR';
+            } else {
+                return 'ARGENT';
+            }
         }
     }
 
@@ -170,14 +202,73 @@ class User extends Authenticatable
      */
     public function nextReferralLevel()
     {
-        $currentLevel = $this->referralLevel();
-
-        if ($currentLevel === 'DIAMANT') {
-            return null; // Already at highest level
-        } elseif ($currentLevel === 'OR') {
-            return 'DIAMANT';
-        } else {
-            return 'OR';
+        try {
+            $currentLevel = $this->referralLevel();
+            $referralCount = $this->referrals()->count();
+            
+            // Récupérer tous les niveaux et les trier par min_referrals
+            $levels = ReferralLevel::orderBy('min_referrals', 'asc')->get();
+            
+            // Si aucun niveau n'est défini, utiliser des valeurs par défaut
+            if ($levels->isEmpty()) {
+                if ($currentLevel === 'DIAMANT') {
+                    return null; // Already at highest level
+                } elseif ($currentLevel === 'OR') {
+                    return 'DIAMANT';
+                } else {
+                    return 'OR';
+                }
+            }
+            
+            // Trouver le niveau actuel et le prochain niveau
+            $currentLevelObj = null;
+            $nextLevelObj = null;
+            
+            // Trouver l'objet de niveau actuel
+            foreach ($levels as $level) {
+                if ($level->name === $currentLevel) {
+                    $currentLevelObj = $level;
+                    break;
+                }
+            }
+            
+            // S'il n'y a pas de correspondance exacte, utiliser le dernier niveau dont les referrals sont ≤ au count actuel
+            if (!$currentLevelObj) {
+                foreach ($levels as $level) {
+                    if ($referralCount >= $level->min_referrals) {
+                        $currentLevelObj = $level;
+                    } else {
+                        break;
+                    }
+                }
+            }
+            
+            // Chercher le prochain niveau
+            $foundCurrent = false;
+            foreach ($levels as $level) {
+                if ($foundCurrent) {
+                    $nextLevelObj = $level;
+                    break;
+                }
+                
+                if ($currentLevelObj && $level->id === $currentLevelObj->id) {
+                    $foundCurrent = true;
+                }
+            }
+            
+            return $nextLevelObj ? $nextLevelObj->name : null;
+        } catch (\Exception $e) {
+            // En cas d'erreur, utiliser les valeurs par défaut
+            \Log::error('Erreur lors de la détermination du prochain niveau de parrainage: ' . $e->getMessage());
+            $currentLevel = $this->referralLevel();
+            
+            if ($currentLevel === 'DIAMANT') {
+                return null; // Already at highest level
+            } elseif ($currentLevel === 'OR') {
+                return 'DIAMANT';
+            } else {
+                return 'OR';
+            }
         }
     }
 
@@ -186,17 +277,57 @@ class User extends Authenticatable
      */
     public function referralProgress()
     {
-        $referralCount = $this->referrals()->count();
-        $currentLevel = $this->referralLevel();
-
-        if ($currentLevel === 'DIAMANT') {
-            return 100; // Already at max level
-        } elseif ($currentLevel === 'OR') {
-            // Progress from 10 (OR) to 20 (DIAMANT)
-            return min(100, (($referralCount - 10) / 10) * 100);
-        } else {
-            // Progress from 0 (ARGENT) to 10 (OR)
-            return min(100, ($referralCount / 10) * 100);
+        try {
+            $referralCount = $this->referrals()->count();
+            $currentLevel = $this->referralLevel();
+            $nextLevel = $this->nextReferralLevel();
+            
+            // Si pas de niveau suivant, c'est 100%
+            if (!$nextLevel) {
+                return 100;
+            }
+            
+            // Récupérer les objets de niveau
+            $currentLevelObj = ReferralLevel::where('name', $currentLevel)->first();
+            $nextLevelObj = ReferralLevel::where('name', $nextLevel)->first();
+            
+            // Si les niveaux ne sont pas trouvés dans la base de données, utiliser la logique par défaut
+            if (!$currentLevelObj || !$nextLevelObj) {
+                if ($currentLevel === 'DIAMANT') {
+                    return 100; // Already at max level
+                } elseif ($currentLevel === 'OR') {
+                    // Progress from 10 (OR) to 20 (DIAMANT)
+                    return min(100, (($referralCount - 10) / 10) * 100);
+                } else {
+                    // Progress from 0 (ARGENT) to 10 (OR)
+                    return min(100, ($referralCount / 10) * 100);
+                }
+            }
+            
+            // Calculer la progression
+            $levelDifference = $nextLevelObj->min_referrals - $currentLevelObj->min_referrals;
+            $userProgress = $referralCount - $currentLevelObj->min_referrals;
+            
+            if ($levelDifference <= 0) {
+                return 100;
+            }
+            
+            return min(100, ($userProgress / $levelDifference) * 100);
+        } catch (\Exception $e) {
+            // En cas d'erreur, utiliser les valeurs par défaut
+            \Log::error('Erreur lors du calcul de la progression de parrainage: ' . $e->getMessage());
+            $referralCount = $this->referrals()->count();
+            $currentLevel = $this->referralLevel();
+            
+            if ($currentLevel === 'DIAMANT') {
+                return 100; // Already at max level
+            } elseif ($currentLevel === 'OR') {
+                // Progress from 10 (OR) to 20 (DIAMANT)
+                return min(100, (($referralCount - 10) / 10) * 100);
+            } else {
+                // Progress from 0 (ARGENT) to 10 (OR)
+                return min(100, ($referralCount / 10) * 100);
+            }
         }
     }
     public function getRouteKeyName()

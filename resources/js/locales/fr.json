@@ -115,7 +115,6 @@
                 "education": "Formation",
                 "hobbies": "Centres d'intérêt"
             },
-
             "personal": {
                 "title": "Informations personnelles",
                 "edit": "Modifier",
@@ -199,10 +198,9 @@
         "en": "Anglais",
         "fr": "Français"
     },
-
     "common": {
         "search": "Rechercher",
-        "loading": "Chargement",
+        "loading": "Chargement...",
         "error": "Erreur",
         "success": "Succès",
         "cancel": "Annuler",
@@ -251,11 +249,9 @@
             "error": "Une erreur s'est produite"
         }
     },
-
-
     "auth": {
         "register": {
-            "value" : "S'enregistrer",
+            "value": "S'enregistrer",
             "title": "Créer votre compte",
             "subtitle": "Rejoignez-nous et commencez à créer votre CV professionnel",
             "name": {
@@ -285,10 +281,9 @@
                 "processing": "Inscription..."
             }
         },
-
         "logout": "Déconnexion",
         "login": {
-            "value" : "Connexion",
+            "value": "Connexion",
             "title": "Bon retour parmi nous!",
             "subtitle": "Connectez-vous pour accéder à votre espace personnel",
             "email": "Votre email",
@@ -305,18 +300,24 @@
         "export": {
             "download": "Télécharger le CV",
             "downloading": "Téléchargent en cours",
-
             "title": "Exporter mon CV",
             "selected_model": "Modèle sélectionné : {{name}}",
             "back_to_models": "Retour aux modèles",
             "print": "Imprimer",
-            "printing": "Impression en cours..."
+            "printing": "Impression en cours...",
+            "download_success": "Téléchargement réussi",
+            "download_success_description": "Votre CV a été téléchargé avec succès",
+            "download_error": "Erreur lors du téléchargement",
+            "download_not_allowed": "Téléchargement non autorisé pour ce modèle"
         },
         "wallet": {
             "current_balance": "Solde actuel",
             "model_price": "Prix du modèle",
             "insufficient_tokens": "Vous n'avez pas assez de jetons pour utiliser ce modèle. Veuillez recharger votre compte.",
-            "recharge_tokens": "Recharger mes jetons"
+            "recharge_tokens": "Recharger mes jetons",
+            "insufficient_access": {
+                "title": "Accès insuffisant"
+            }
         },
         "no_model": {
             "title": "Sélection requise",
@@ -371,7 +372,6 @@
             "created_at": "Créé le {{date}}"
         }
     },
-
     "hobbies": {
         "title": "Centres d'intérêt",
         "description": "Personnalisez votre profil avec vos passions",
@@ -398,28 +398,27 @@
         "success": {
             "added": {
                 "title": "Centre d'intérêt ajouté",
-                "description": "{{hobby}} a été ajouté à votre profil."
+                "description": "{{hobby}} a été ajouté à votre profil"
             },
             "removed": {
-                "title": "Centre d'intérêt retiré",
-                "description": "L'élément a été retiré de votre profil."
+                "title": "Centre d'intérêt supprimé",
+                "description": "Ce centre d'intérêt a été retiré de votre profil"
             }
         },
         "errors": {
             "selectHobby": {
-                "title": "Erreur",
-                "description": "Veuillez sélectionner un centre d'intérêt"
+                "title": "Sélection requise",
+                "description": "Veuillez sélectionner un centre d'intérêt dans la liste"
             },
             "adding": {
-                "title": "Erreur"
+                "title": "Erreur d'ajout"
             },
             "removing": {
-                "title": "Erreur"
+                "title": "Erreur de suppression"
             },
-            "generic": "Une erreur est survenue."
+            "generic": "Une erreur s'est produite. Veuillez réessayer."
         }
     },
-
     "professions": {
         "title": "Ma Formation",
         "description": "Indiquez votre parcours académique ou professionnel",
@@ -472,8 +471,6 @@
             "generic": "Une erreur est survenue."
         }
     },
-
-
     "competences": {
         "title": "Mes Compétences",
         "description": "Mettez en avant vos atouts professionnels",
@@ -497,25 +494,25 @@
         "success": {
             "added": {
                 "title": "Compétence ajoutée",
-                "description": "{{name}} a été ajoutée à votre profil."
+                "description": "{{name}} a été ajoutée à votre profil"
             },
             "removed": {
-                "title": "Compétence retirée",
-                "description": "La compétence a été retirée de votre profil."
+                "title": "Compétence supprimée",
+                "description": "La compétence a été retirée de votre profil"
             }
         },
         "errors": {
             "select": {
-                "title": "Erreur",
-                "description": "Veuillez sélectionner une compétence"
+                "title": "Sélection requise",
+                "description": "Veuillez sélectionner une compétence dans la liste"
             },
             "adding": {
-                "title": "Erreur"
+                "title": "Erreur d'ajout"
             },
             "removing": {
-                "title": "Erreur"
+                "title": "Erreur de suppression"
             },
-            "generic": "Une erreur est survenue."
+            "generic": "Une erreur s'est produite. Veuillez réessayer."
         }
     },
     "experiences": {
@@ -555,7 +552,6 @@
             "references": {
                 "title": "Références",
                 "add": "Ajouter une Référence",
-
                 "name": "Nom Complet",
                 "function": "Poste/Rôle",
                 "email": "Email",
@@ -603,11 +599,10 @@
                     "title": "Références",
                     "label": "Références",
                     "add": "Ajouter une Référence",
-
-                        "name": "Nom Complet",
-                        "function": "Poste/Rôle",
-                        "email": "Email",
-                        "phone": "Téléphone",
+                    "name": "Nom Complet",
+                    "function": "Poste/Rôle",
+                    "email": "Email",
+                    "phone": "Téléphone",
                     "placeholders": {
                         "name": "Entrez le nom de la référence",
                         "function": "Entrez le poste/rôle",
@@ -669,10 +664,6 @@
             }
         }
     },
-    "common": {
-        "loading": "Chargement..."
-    },
-
     "summaries": {
         "title": "Mes Résumés",
         "subtitle": "Gérez vos résumés professionnels",
@@ -733,7 +724,6 @@
             "select": "Impossible de sélectionner le résumé"
         }
     },
-
     "personalInfos": {
         "editTitle": "Modifier informations personnelles",
         "form": {
@@ -760,7 +750,6 @@
             }
         }
     },
-
     "services": {
         "interview-prep": {
             "title": "Préparation Entretien",

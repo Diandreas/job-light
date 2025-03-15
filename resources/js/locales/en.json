@@ -187,10 +187,9 @@
         "en": "English",
         "fr": "French"
     },
-
     "common": {
         "search": "Search",
-        "loading": "Loading",
+        "loading": "Loading...",
         "error": "Error",
         "success": "Success",
         "cancel": "Cancel",
@@ -239,30 +238,34 @@
             "error": "An error occurred"
         }
     },
-
-
-
     "cv_preview": {
-        "title": "Professional CV",
+        "title": "Professional Resume",
         "export": {
-            "download": "Download your CV",
-            "downloading": "Downloading in progress",
-            "title": "Export My CV",
-            "selected_model": "Selected template: {{name}}",
-            "back_to_models": "Back to templates",
+            "download": "Download CV",
+            "downloading": "Downloading",
+            "title": "Export my CV",
+            "selected_model": "Selected model: {{name}}",
+            "back_to_models": "Back to models",
             "print": "Print",
-            "printing": "Printing..."
+            "printing": "Printing...",
+            "download_success": "Download successful",
+            "download_success_description": "Your CV has been downloaded successfully",
+            "download_error": "Download error",
+            "download_not_allowed": "Download not allowed for this model"
         },
         "wallet": {
             "current_balance": "Current balance",
-            "model_price": "Template price",
-            "insufficient_tokens": "You don't have enough tokens to use this template. Please recharge your account.",
-            "recharge_tokens": "Recharge my tokens"
+            "model_price": "Model price",
+            "insufficient_tokens": "You don't have enough tokens to use this model. Please recharge your account.",
+            "recharge_tokens": "Recharge my tokens",
+            "insufficient_access": {
+                "title": "Insufficient access"
+            }
         },
         "no_model": {
             "title": "Selection required",
-            "message": "Please select a CV template in the \"My designs\" section before continuing.",
-            "action": "Choose a template"
+            "message": "Please select a CV model in the \"My designs\" section before continuing.",
+            "action": "Choose a model"
         },
         "preview": {
             "title": "CV Preview",
@@ -350,7 +353,6 @@
                     "placeholder": "What were the main outcomes or achievements?"
                 },
                 "references": {
-
                     "title": "References",
                     "label": "References",
                     "add": "Add Reference",
@@ -422,12 +424,9 @@
     "common": {
         "loading": "Loading..."
     },
-
-
-
     "auth": {
         "register": {
-            "value" : "Register",
+            "value": "Register",
             "title": "Create your account",
             "subtitle": "Join us and start creating your professional CV",
             "name": {
@@ -458,9 +457,8 @@
             }
         },
         "logout": "Logout",
-
         "login": {
-            "value" : "login",
+            "value": "login",
             "title": "Welcome back!",
             "subtitle": "Sign in to access your personal space",
             "email": "Your email",
@@ -471,19 +469,13 @@
             "forgotPassword": "Forgot password?",
             "createAccount": "Create account"
         }
-
     },
-
-
-
-
     "career_advisor": {
         "title": "Career Assistant",
         "header": {
             "balance": "Balance",
             "history": "History"
         },
-
         "messages": {
             "loading_error": "Error loading conversations",
             "chat_loading_error": "Error loading conversation",
@@ -521,8 +513,6 @@
             "created_at": "Created on {{date}}"
         }
     },
-
-
     "hobbies": {
         "title": "Interests",
         "description": "Customize your profile with your passions",
@@ -549,28 +539,27 @@
         "success": {
             "added": {
                 "title": "Interest added",
-                "description": "{{hobby}} has been added to your profile."
+                "description": "{{hobby}} has been added to your profile"
             },
             "removed": {
                 "title": "Interest removed",
-                "description": "The item has been removed from your profile."
+                "description": "The item has been removed from your profile"
             }
         },
         "errors": {
             "selectHobby": {
-                "title": "Error",
-                "description": "Please select an interest"
+                "title": "Selection required",
+                "description": "Please select an interest from the list"
             },
             "adding": {
-                "title": "Error"
+                "title": "Error adding"
             },
             "removing": {
-                "title": "Error"
+                "title": "Error removing"
             },
-            "generic": "An error occurred."
+            "generic": "An error occurred. Please try again."
         }
     },
-
     "professions": {
         "title": "My Education",
         "description": "Indicate your academic or professional background",
@@ -620,7 +609,9 @@
             "adding": {
                 "title": "Error"
             },
-            "generic": "An error occurred."}},
+            "generic": "An error occurred."
+        }
+    },
     "competences": {
         "title": "My Skills",
         "description": "Highlight your professional strengths",
@@ -644,31 +635,27 @@
         "success": {
             "added": {
                 "title": "Skill added",
-                "description": "{{name}} has been added to your profile."
+                "description": "{{name}} has been added to your profile"
             },
             "removed": {
                 "title": "Skill removed",
-                "description": "The skill has been removed from your profile."
+                "description": "The skill has been removed from your profile"
             }
         },
         "errors": {
             "select": {
-                "title": "Error",
-                "description": "Please select a skill"
+                "title": "Selection required",
+                "description": "Please select a skill from the list"
             },
             "adding": {
-                "title": "Error"
+                "title": "Error adding"
             },
             "removing": {
-                "title": "Error"
+                "title": "Error removing"
             },
-            "generic": "An error occurred."
+            "generic": "An error occurred. Please try again."
         }
     },
-
-
-
-
     "summaries": {
         "title": "My Summaries",
         "subtitle": "Manage your professional summaries",
@@ -755,7 +742,6 @@
             }
         }
     },
-
     "services": {
         "interview-prep": {
             "title": "Interview Preparation",

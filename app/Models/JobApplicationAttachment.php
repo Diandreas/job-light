@@ -17,9 +17,9 @@ class JobApplicationAttachment extends Model
     ];
 
     /**
-     * Obtenir la candidature associée
+     * Obtenir la candidature associée à cette pièce jointe
      */
-    public function application(): BelongsTo
+    public function jobApplication(): BelongsTo
     {
         return $this->belongsTo(JobApplication::class, 'job_application_id');
     }

@@ -94,6 +94,19 @@ export default function Index({ auth, applications }: Props) {
         return format(new Date(dateString), 'dd MMM yyyy');
     };
 
+    const getCurrencySymbol = (currency?: string) => {
+        if (!currency) return '€';
+
+        switch (currency) {
+            case 'EUR':
+                return '€';
+            case 'XAF':
+                return 'FCFA';
+            default:
+                return '€';
+        }
+    };
+
     return (
         <AuthenticatedLayout
             user={auth.user}
@@ -206,7 +219,7 @@ export default function Index({ auth, applications }: Props) {
                                                 <div className="mt-3 text-sm">
                                                     <span className="font-medium">{t('jobApplication.proposedRate')}:</span>{' '}
                                                     <span className="text-gray-700">
-                                                        {application.proposed_rate}€
+                                                        {application.proposed_rate} {getCurrencySymbol(application.jobListing?.currency)}
                                                         {application.jobListing?.budget_type === 'hourly' && `/${t('jobListing.hour')}`}
                                                     </span>
                                                 </div>

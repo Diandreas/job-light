@@ -15,7 +15,8 @@
         "confirm": "Confirmer",
         "error": {
             "generic": "Une erreur est survenue."
-        }
+        },
+        "close": "Fermer"
     },
     "nav": {
         "login": "Connexion",
@@ -1242,6 +1243,12 @@
             "reset": "Réinitialiser",
             "selectExperience": "Sélectionner un niveau"
         },
+        "currency": {
+            "euro": "€",
+            "fcfa": "FCFA",
+            "select": "Sélectionner la devise",
+            "title": "Devise"
+        },
         "create": {
             "title": "Publier une nouvelle annonce",
             "description": "Décrivez votre projet et attirez les meilleurs talents",
@@ -1276,8 +1283,8 @@
             "budgetTypeFixed": "Prix fixe",
             "budgetTypeHourly": "Taux horaire",
             "budgetRange": "Fourchette de budget",
-            "budgetMinLabel": "Budget minimum (€)",
-            "budgetMaxLabel": "Budget maximum (€)",
+            "budgetMinLabel": "Budget minimum",
+            "budgetMaxLabel": "Budget maximum",
             "budgetMinPlaceholder": "Min",
             "budgetMaxPlaceholder": "Max",
             "tokensRequiredLabel": "Jetons requis pour postuler",
@@ -1287,20 +1294,22 @@
             "skillsLabel": "Compétences requises",
             "publishImmediately": "Publier immédiatement",
             "submit": "Soumettre",
-            "backToListings": "Retour à la liste"
+            "backToListings": "Retour à la liste",
+            "currencyLabel": "Devise",
+            "currencyPlaceholder": "Sélectionner une devise"
         },
         "show": {
-            "applications": "Candidatures",
+            "applications": "Candidatures reçues",
             "noApplications": "Aucune candidature reçue",
             "deleteJob": "Supprimer l'annonce",
             "editJob": "Modifier l'annonce",
             "closeJob": "Clôturer l'annonce",
-            "deleteConfirmTitle": "Supprimer l'annonce",
-            "deleteConfirmDescription": "Êtes-vous sûr de vouloir supprimer cette annonce ? Cette action est irréversible.",
-            "closeConfirmTitle": "Clôturer l'annonce",
-            "closeConfirmDescription": "Êtes-vous sûr de vouloir clôturer cette annonce ? Les candidats ne pourront plus postuler.",
-            "confirmDelete": "Supprimer",
-            "confirmClose": "Clôturer",
+            "deleteConfirmTitle": "Supprimer cette annonce ?",
+            "deleteConfirmDescription": "Cette action est irréversible. Toutes les candidatures associées seront également supprimées.",
+            "closeConfirmTitle": "Clôturer cette annonce ?",
+            "closeConfirmDescription": "L'annonce ne sera plus visible dans les recherches et n'acceptera plus de nouvelles candidatures.",
+            "confirmDelete": "Confirmer la suppression",
+            "confirmClose": "Confirmer la clôture",
             "confirm": "Confirmer",
             "cancel": "Annuler",
             "postedBy": "Publié par",
@@ -1321,17 +1330,34 @@
             "applications": "Candidatures",
             "noLongerAcceptingApplications": "Cette annonce n'accepte plus de candidatures",
             "backToListings": "Retour aux annonces",
-            "edit": "Modifier"
+            "edit": "Modifier",
+            "viewCvButton": "Voir le CV",
+            "candidateProfile": "Profil du candidat",
+            "viewCv": "Voir le CV",
+            "viewCvDetails": "Voir les détails du CV",
+            "previewAttachment": "Prévisualiser"
         },
         "status": {
             "draft": "Brouillon",
             "open": "Ouverte",
             "closed": "Clôturée"
-        }
+        },
+        "candidateSummary": "Résumé du candidat",
+        "candidateExperience": "Expérience professionnelle",
+        "candidateEducation": "Formation académique",
+        "candidateSkills": "Compétences"
     },
     "jobApplication": {
         "index": {
             "title": "Mes candidatures"
+        },
+        "myApplications": {
+            "title": "Mes candidatures"
+        },
+        "show": {
+            "title": "Détails de la candidature",
+            "applicationDetails": "Détails de la candidature",
+            "viewFullApplication": "Voir la candidature complète"
         },
         "create": {
             "title": "Postuler à l'annonce",
@@ -1356,7 +1382,7 @@
         "notEnoughTokens": "Vous n'avez pas assez de jetons ({{required}} requis, {{available}} disponibles)",
         "backToJob": "Retour à l'annonce",
         "appliedOn": "Postulé le",
-        "viewedOn": "Vu par le recruteur le {{date}}",
+        "viewedOn": "Vu le {date}",
         "withdraw": "Retirer ma candidature",
         "viewJob": "Voir l'annonce",
         "viewFull": "Voir la candidature complète",
@@ -1366,13 +1392,35 @@
         "unavailableListing": "Annonce non disponible",
         "rejectionNotice": "Votre candidature a été rejetée. Continuez à chercher d'autres opportunités !",
         "hiredNotice": "Félicitations ! Votre candidature a été acceptée. Le recruteur vous contactera prochainement.",
-        "notViewed": "Non vue",
-        "updateStatus": "Changer le statut",
+        "notViewed": "Non consultée",
+        "updateStatus": "Mettre à jour le statut",
         "status": {
             "pending": "En attente",
             "shortlisted": "Présélectionné(e)",
             "rejected": "Refusé(e)",
             "hired": "Accepté(e)"
-        }
+        },
+        "candidateInfo": {
+            "title": "Informations du candidat",
+            "skills": "Compétences",
+            "education": "Formation",
+            "experience": "Expérience",
+            "summary": "Résumé",
+            "cvDetails": "Détails du CV",
+            "noProfession": "Profession non spécifiée",
+            "noSummary": "Aucun résumé disponible",
+            "noSkills": "Aucune compétence listée",
+            "noExperience": "Aucune expérience professionnelle",
+            "noEducation": "Aucune formation renseignée",
+            "noLevel": "Niveau non spécifié",
+            "present": "Présent",
+            "cvSummary": "Résumé du CV",
+            "personalInfo": "Informations personnelles",
+            "viewFullCv": "Voir le CV complet",
+            "hobbies": "Loisirs",
+            "noHobbies": "Aucun loisir renseigné",
+            "viewFile": "Voir le fichier"
+        },
+        "download": "Télécharger"
     }
 }

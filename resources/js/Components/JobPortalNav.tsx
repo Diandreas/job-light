@@ -32,7 +32,7 @@ export default function JobPortalNav({ currentRoute, className }: JobPortalNavPr
             active: currentRoute === 'job-listings.create'
         },
         {
-            name: t('jobListing.myApplications.title'),
+            name: t('jobApplication.myApplications.title'),
             href: route('job-applications.index'),
             icon: FileText,
             active: currentRoute === 'job-applications.index'

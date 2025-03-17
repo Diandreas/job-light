@@ -90,16 +90,20 @@ class JobListingController extends Controller
         $validated = $request->validate([
             'title' => 'required|string|max:255',
             'description' => 'required|string',
-            'budget_min' => 'nullable|numeric|min:0',
-            'budget_max' => 'nullable|numeric|min:0|gte:budget_min',
-            'budget_type' => ['required', Rule::in(['hourly', 'fixed'])],
-            'duration' => 'nullable|string|max:100',
-            'experience_level' => ['nullable', Rule::in(['beginner', 'intermediate', 'expert'])],
+            'company_name' => 'required|string|max:255',
+            'location' => 'required|string|max:255',
+            'is_remote' => 'nullable|boolean',
+            'budget_type' => 'required|in:hourly,fixed',
+            'currency' => 'required|string|in:EUR,XAF',
+            'budget_min' => 'required|numeric|min:0',
+            'budget_max' => 'required|numeric|gte:budget_min',
+            'budget_negotiable' => 'nullable|boolean',
+            'duration' => 'nullable|string|max:50',
+            'level' => 'required|in:beginner,intermediate,expert',
+            'competences' => 'nullable|array',
+            'competences.*' => 'exists:competences,id',
             'deadline' => 'nullable|date|after:today',
             'tokens_required' => 'required|integer|min:1|max:100',
-            'skills' => 'array',
-            'skills.*.id' => 'required|exists:competences,id',
-            'skills.*.importance' => ['required', Rule::in(['required', 'preferred', 'nice_to_have'])],
         ]);
         
         try {
@@ -110,19 +114,24 @@ class JobListingController extends Controller
                 'user_id' => Auth::id(),
                 'title' => $validated['title'],
                 'description' => $validated['description'],
-                'budget_min' => $validated['budget_min'] ?? null,
-                'budget_max' => $validated['budget_max'] ?? null,
+                'company_name' => $validated['company_name'],
+                'location' => $validated['location'],
+                'is_remote' => $validated['is_remote'],
                 'budget_type' => $validated['budget_type'],
-                'duration' => $validated['duration'] ?? null,
+                'currency' => $validated['currency'],
+                'budget_min' => $validated['budget_min'],
+                'budget_max' => $validated['budget_max'],
+                'budget_negotiable' => $validated['budget_negotiable'],
+                'duration' => $validated['duration'],
+                'experience_level' => $validated['level'],
                 'status' => $request->has('publish') ? 'open' : 'draft',
-                'experience_level' => $validated['experience_level'] ?? null,
                 'deadline' => $validated['deadline'] ?? null,
                 'tokens_required' => $validated['tokens_required'],
             ]);
             
             // Associer les compétences requises
-            if (isset($validated['skills'])) {
-                foreach ($validated['skills'] as $skill) {
+            if (isset($validated['competences'])) {
+                foreach ($validated['competences'] as $skill) {
                     $jobListing->requiredSkills()->attach($skill['id'], [
                         'importance' => $skill['importance']
                     ]);
@@ -151,7 +160,15 @@ class JobListingController extends Controller
         // Récupérer les informations sur les candidatures si l'utilisateur est le créateur
         $applications = null;
         if (Auth::id() === $jobListing->user_id) {
-            $applications = $jobListing->applications()->with('applicant')->get();
+            $applications = $jobListing->applications()
+                ->with([
+                    'applicant',
+                    'applicant.experiences',
+                    'applicant.competences',
+                    'applicant.hobbies',
+                    'attachments'
+                ])
+                ->get();
         }
         
         // Vérifier si l'utilisateur actuel a déjà postulé
@@ -202,16 +219,20 @@ class JobListingController extends Controller
         $validated = $request->validate([
             'title' => 'required|string|max:255',
             'description' => 'required|string',
-            'budget_min' => 'nullable|numeric|min:0',
-            'budget_max' => 'nullable|numeric|min:0|gte:budget_min',
-            'budget_type' => ['required', Rule::in(['hourly', 'fixed'])],
-            'duration' => 'nullable|string|max:100',
-            'experience_level' => ['nullable', Rule::in(['beginner', 'intermediate', 'expert'])],
+            'company_name' => 'required|string|max:255',
+            'location' => 'required|string|max:255',
+            'is_remote' => 'nullable|boolean',
+            'budget_type' => 'required|in:hourly,fixed',
+            'currency' => 'required|string|in:EUR,XAF',
+            'budget_min' => 'required|numeric|min:0',
+            'budget_max' => 'required|numeric|gte:budget_min',
+            'budget_negotiable' => 'nullable|boolean',
+            'duration' => 'nullable|string|max:50',
+            'level' => 'required|in:beginner,intermediate,expert',
+            'competences' => 'nullable|array',
+            'competences.*' => 'exists:competences,id',
             'deadline' => 'nullable|date|after:today',
             'tokens_required' => 'required|integer|min:1|max:100',
-            'skills' => 'array',
-            'skills.*.id' => 'required|exists:competences,id',
-            'skills.*.importance' => ['required', Rule::in(['required', 'preferred', 'nice_to_have'])],
         ]);
         
         try {
@@ -221,23 +242,28 @@ class JobListingController extends Controller
             $jobListing->update([
                 'title' => $validated['title'],
                 'description' => $validated['description'],
-                'budget_min' => $validated['budget_min'] ?? null,
-                'budget_max' => $validated['budget_max'] ?? null,
+                'company_name' => $validated['company_name'],
+                'location' => $validated['location'],
+                'is_remote' => $validated['is_remote'],
                 'budget_type' => $validated['budget_type'],
-                'duration' => $validated['duration'] ?? null,
+                'currency' => $validated['currency'],
+                'budget_min' => $validated['budget_min'],
+                'budget_max' => $validated['budget_max'],
+                'budget_negotiable' => $validated['budget_negotiable'],
+                'duration' => $validated['duration'],
+                'experience_level' => $validated['level'],
                 'status' => $request->has('publish') ? 'open' : $jobListing->status,
-                'experience_level' => $validated['experience_level'] ?? null,
                 'deadline' => $validated['deadline'] ?? null,
                 'tokens_required' => $validated['tokens_required'],
             ]);
             
             // Mettre à jour les compétences requises
-            if (isset($validated['skills'])) {
+            if (isset($validated['competences'])) {
                 // Supprimer les anciennes relations
                 $jobListing->requiredSkills()->detach();
                 
                 // Ajouter les nouvelles
-                foreach ($validated['skills'] as $skill) {
+                foreach ($validated['competences'] as $skill) {
                     $jobListing->requiredSkills()->attach($skill['id'], [
                         'importance' => $skill['importance']
                     ]);

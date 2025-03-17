@@ -27,7 +27,8 @@ import {
     Tag,
     Trash2,
     User as UserIcon,
-    X
+    X,
+    Eye
 } from 'lucide-react';
 import { Badge } from '@/Components/ui/badge';
 import { Separator } from '@/Components/ui/separator';
@@ -81,7 +82,41 @@ import {
 } from '@/Components/ui/select';
 
 interface Props {
-    jobListing: JobListing & { hasApplied?: boolean };
+    jobListing: JobListing & {
+        applications?: (JobApplication & {
+            applicant?: User & {
+                summary?: { id: number; content: string };
+                experiences?: {
+                    id: number;
+                    title: string;
+                    company: string;
+                    start_date: string;
+                    end_date?: string;
+                    description: string;
+                }[];
+                competences?: {
+                    id: number;
+                    name: string;
+                    pivot?: {
+                        level?: string;
+                    };
+                }[];
+                educations?: {
+                    id: number;
+                    degree: string;
+                    institution: string;
+                    start_date: string;
+                    end_date?: string;
+                    description: string;
+                }[];
+                hobbies?: {
+                    id: number;
+                    name: string;
+                }[];
+            }
+        })[];
+        hasApplied?: boolean;
+    };
     applications?: JobApplication[];
     hasApplied: boolean;
     userTokens: number;
@@ -106,12 +141,25 @@ export default function Show({ auth, jobListing, applications, hasApplied, userT
         }
     };
 
+    const getCurrencySymbol = (currency?: string) => {
+        if (!currency) return '€';
+
+        switch (currency) {
+            case 'EUR':
+                return '€';
+            case 'XAF':
+                return 'FCFA';
+            default:
+                return '€';
+        }
+    };
+
     const formatBudget = (min?: number | null, max?: number | null, type?: string) => {
         if (!min && !max) return t('jobListing.budgetNegotiable');
 
-        const currency = '€';
-        const minDisplay = min ? `${min}${currency}` : '';
-        const maxDisplay = max ? `${max}${currency}` : '';
+        const currencySymbol = getCurrencySymbol(jobListing.currency);
+        const minDisplay = min ? `${min} ${currencySymbol}` : '';
+        const maxDisplay = max ? `${max} ${currencySymbol}` : '';
 
         if (min && max) {
             return `${minDisplay} - ${maxDisplay} ${type === 'hourly' ? `/ ${t('jobListing.hour')}` : ''}`;
@@ -443,57 +491,294 @@ export default function Show({ auth, jobListing, applications, hasApplied, userT
                                                         </div>
                                                     </AccordionTrigger>
                                                     <AccordionContent>
-                                                        <div className="space-y-3 pt-2">
-                                                            {application.proposed_rate && (
+                                                        <div className="space-y-4 pt-2">
+                                                            {/* Résumé du candidat */}
+                                                            {application.applicant?.summary ? (
                                                                 <div>
-                                                                    <div className="text-sm font-medium">{t('jobApplication.proposedRate')}</div>
-                                                                    <div className="text-amber-600 font-medium">
-                                                                        {application.proposed_rate}€ {jobListing.budget_type === 'hourly' && `/ ${t('jobListing.hour')}`}
+                                                                    <h4 className="text-sm font-medium mb-2">{t('jobListing.candidateSummary')}</h4>
+                                                                    <div className="bg-gray-50 p-3 rounded-md text-sm whitespace-pre-line">
+                                                                        {application.applicant.summary.content}
+                                                                    </div>
+                                                                </div>
+                                                            ) : (
+                                                                <div>
+                                                                    <h4 className="text-sm font-medium mb-2">{t('jobListing.candidateSummary')}</h4>
+                                                                    <div className="bg-gray-50 p-3 rounded-md text-sm text-gray-500">
+                                                                        {t('jobApplication.candidateInfo.noSummary')}
                                                                     </div>
                                                                 </div>
                                                             )}
 
-                                                            <div>
-                                                                <div className="text-sm font-medium">{t('jobApplication.coverLetter')}</div>
-                                                                <div className="text-sm mt-1 text-gray-600 line-clamp-3">
-                                                                    {application.cover_letter}
+                                                            {/* Experiences Section */}
+                                                            {application.applicant?.experiences && application.applicant.experiences.length > 0 ? (
+                                                                <div className="mb-6">
+                                                                    <h4 className="text-sm font-medium mb-2">{t('jobListing.candidateExperience')}</h4>
+                                                                    <div className="space-y-4">
+                                                                        {application.applicant.experiences.map((experience) => (
+                                                                            <div key={experience.id} className="bg-gray-50 p-3 rounded-md">
+                                                                                <div className="font-medium">{experience.title}</div>
+                                                                                <div className="text-sm text-gray-600">{experience.company}</div>
+                                                                                <div className="text-sm text-gray-500">
+                                                                                    {formatDate(experience.start_date)} - {experience.end_date ? formatDate(experience.end_date) : t('jobApplication.candidateInfo.present')}
+                                                                                </div>
+                                                                                {experience.description && (
+                                                                                    <div className="text-sm mt-2 whitespace-pre-line">{experience.description}</div>
+                                                                                )}
+                                                                            </div>
+                                                                        ))}
+                                                                    </div>
                                                                 </div>
-                                                            </div>
+                                                            ) : (
+                                                                <div className="mb-6">
+                                                                    <h4 className="text-sm font-medium mb-2">{t('jobListing.candidateExperience')}</h4>
+                                                                    <div className="text-sm text-gray-500">{t('jobApplication.candidateInfo.noExperience')}</div>
+                                                                </div>
+                                                            )}
 
-                                                            {application.attachments && application.attachments.length > 0 && (
+                                                            {/* Éducation/Formation du candidat - avec présentation améliorée */}
+                                                            {application.applicant?.educations && application.applicant.educations.length > 0 ? (
                                                                 <div>
-                                                                    <div className="text-sm font-medium">{t('jobApplication.attachments')}</div>
-                                                                    <div className="space-y-1 mt-1">
-                                                                        {application.attachments.map((attachment) => (
-                                                                            <a
-                                                                                key={attachment.id}
-                                                                                href={route('job-application-attachments.download', attachment.id)}
-                                                                                className="flex items-center text-sm text-blue-600 hover:text-blue-800 hover:underline"
-                                                                                target="_blank"
-                                                                            >
-                                                                                <FileText className="h-3 w-3 mr-1" />
-                                                                                <span className="truncate max-w-[200px]">{attachment.file_name}</span>
-                                                                                <Download className="h-3 w-3 ml-1" />
-                                                                            </a>
+                                                                    <h4 className="text-sm font-medium mb-2">{t('jobListing.candidateEducation')}</h4>
+                                                                    <div className="space-y-3">
+                                                                        {application.applicant.educations.map((education) => (
+                                                                            <div key={education.id} className="bg-gray-50 p-3 rounded-md">
+                                                                                <div className="font-medium">{education.degree}</div>
+                                                                                <div className="text-sm text-gray-600">{education.institution}</div>
+                                                                                <div className="text-xs text-gray-500">
+                                                                                    {formatDate(education.start_date)} - {education.end_date ? formatDate(education.end_date) : t('jobApplication.candidateInfo.present')}
+                                                                                </div>
+                                                                                {education.description && (
+                                                                                    <div className="text-sm mt-2 whitespace-pre-line">{education.description}</div>
+                                                                                )}
+                                                                            </div>
+                                                                        ))}
+                                                                    </div>
+                                                                </div>
+                                                            ) : (
+                                                                <div>
+                                                                    <h4 className="text-sm font-medium mb-2">{t('jobListing.candidateEducation')}</h4>
+                                                                    <div className="bg-gray-50 p-3 rounded-md text-sm text-gray-500">
+                                                                        {t('jobApplication.candidateInfo.noEducation')}
+                                                                    </div>
+                                                                </div>
+                                                            )}
+
+                                                            {/* Hobbies du candidat */}
+                                                            {application.applicant?.hobbies && application.applicant.hobbies.length > 0 ? (
+                                                                <div>
+                                                                    <h4 className="text-sm font-medium mb-2">{t('jobApplication.candidateInfo.hobbies')}</h4>
+                                                                    <div className="flex flex-wrap gap-2">
+                                                                        {application.applicant.hobbies.map((hobby) => (
+                                                                            <Badge key={hobby.id} variant="secondary">
+                                                                                {hobby.name}
+                                                                            </Badge>
+                                                                        ))}
+                                                                    </div>
+                                                                </div>
+                                                            ) : null}
+
+                                                            {/* Compétences du candidat */}
+                                                            {application.applicant?.competences && application.applicant.competences.length > 0 && (
+                                                                <div>
+                                                                    <h4 className="text-sm font-medium mb-2">{t('jobListing.candidateSkills')}</h4>
+                                                                    <div className="flex flex-wrap gap-2">
+                                                                        {application.applicant.competences.map((competence) => (
+                                                                            <Badge key={competence.id} variant="secondary">
+                                                                                {competence.name}
+                                                                                {competence.pivot?.level && (
+                                                                                    <span className="ml-1 text-xs text-gray-500">({competence.pivot.level})</span>
+                                                                                )}
+                                                                            </Badge>
                                                                         ))}
                                                                     </div>
                                                                 </div>
                                                             )}
 
-                                                            <div className="pt-1">
+                                                            {/* Taux proposé */}
+                                                            {application.proposed_rate && (
+                                                                <div>
+                                                                    <h4 className="text-sm font-medium mb-2">{t('jobApplication.proposedRate')}</h4>
+                                                                    <div className="text-amber-600 font-medium">
+                                                                        {application.proposed_rate} {getCurrencySymbol(jobListing.currency)}
+                                                                        {jobListing.budget_type === 'hourly' && ` / ${t('jobListing.hour')}`}
+                                                                    </div>
+                                                                </div>
+                                                            )}
+
+                                                            {/* Lettre de motivation */}
+                                                            <div>
+                                                                <h4 className="text-sm font-medium mb-2">{t('jobApplication.coverLetter')}</h4>
+                                                                <div className="bg-gray-50 p-3 rounded-md text-sm whitespace-pre-line">
+                                                                    {application.cover_letter}
+                                                                </div>
+                                                            </div>
+
+                                                            {/* Pièces jointes avec prévisualisation et catégorisation */}
+                                                            {application.attachments && application.attachments.length > 0 && (
+                                                                <div>
+                                                                    <h4 className="text-sm font-medium mb-2">{t('jobApplication.attachments')}</h4>
+
+                                                                    {/* Regroupement des pièces jointes par type */}
+                                                                    <div className="space-y-3">
+                                                                        {/* Documents (PDF, DOC, etc.) */}
+                                                                        {application.attachments.filter(a => a.file_type.includes('pdf') || a.file_type.includes('doc') || a.file_type.includes('txt') || a.file_type.includes('rtf')).length > 0 && (
+                                                                            <div>
+                                                                                <h5 className="text-xs font-medium text-gray-500 mb-2">Documents</h5>
+                                                                                <div className="space-y-2">
+                                                                                    {application.attachments
+                                                                                        .filter(a => a.file_type.includes('pdf') || a.file_type.includes('doc') || a.file_type.includes('txt') || a.file_type.includes('rtf'))
+                                                                                        .map((attachment) => (
+                                                                                            <div key={attachment.id} className="bg-gray-50 p-3 rounded-md">
+                                                                                                <div className="flex items-center justify-between">
+                                                                                                    <div className="flex items-start">
+                                                                                                        <FileText className="h-4 w-4 mr-2 text-blue-500" />
+                                                                                                        <div>
+                                                                                                            <div className="font-medium">{attachment.file_name}</div>
+                                                                                                            {attachment.description && (
+                                                                                                                <div className="text-sm text-gray-500">{attachment.description}</div>
+                                                                                                            )}
+                                                                                                        </div>
+                                                                                                    </div>
+                                                                                                    <div className="flex items-center space-x-2">
+                                                                                                        <Dialog>
+                                                                                                            <DialogTrigger asChild>
+                                                                                                                <Button variant="outline" size="sm">
+                                                                                                                    <Eye className="h-4 w-4 mr-1" />
+                                                                                                                    {t('jobListing.previewAttachment')}
+                                                                                                                </Button>
+                                                                                                            </DialogTrigger>
+                                                                                                            <DialogContent className="max-w-4xl h-[80vh]">
+                                                                                                                <DialogHeader>
+                                                                                                                    <DialogTitle>{attachment.file_name}</DialogTitle>
+                                                                                                                </DialogHeader>
+                                                                                                                <div className="flex-1 overflow-auto">
+                                                                                                                    <iframe
+                                                                                                                        src={`/storage/${attachment.file_path}`}
+                                                                                                                        className="w-full h-full"
+                                                                                                                        title={attachment.file_name}
+                                                                                                                    />
+                                                                                                                </div>
+                                                                                                            </DialogContent>
+                                                                                                        </Dialog>
+                                                                                                        <a
+                                                                                                            href={`/storage/${attachment.file_path}`}
+                                                                                                            download={attachment.file_name}
+                                                                                                            className="inline-flex items-center text-sm font-medium text-amber-600 hover:text-amber-800"
+                                                                                                        >
+                                                                                                            <Download className="h-4 w-4 mr-1" />
+                                                                                                            {t('jobApplication.download')}
+                                                                                                        </a>
+                                                                                                    </div>
+                                                                                                </div>
+                                                                                            </div>
+                                                                                        ))}
+                                                                                </div>
+                                                                            </div>
+                                                                        )}
+
+                                                                        {/* Images */}
+                                                                        {application.attachments.filter(a => a.file_type.includes('image')).length > 0 && (
+                                                                            <div>
+                                                                                <h5 className="text-xs font-medium text-gray-500 mb-2">Images</h5>
+                                                                                <div className="grid grid-cols-2 gap-2">
+                                                                                    {application.attachments
+                                                                                        .filter(a => a.file_type.includes('image'))
+                                                                                        .map((attachment) => (
+                                                                                            <div key={attachment.id} className="bg-gray-50 p-3 rounded-md">
+                                                                                                <div className="flex flex-col">
+                                                                                                    <div className="font-medium text-sm mb-1 truncate">{attachment.file_name}</div>
+                                                                                                    <img
+                                                                                                        src={`/storage/${attachment.file_path}`}
+                                                                                                        alt={attachment.file_name}
+                                                                                                        className="w-full h-32 object-cover rounded-md mb-2"
+                                                                                                    />
+                                                                                                    <div className="flex justify-between">
+                                                                                                        <Dialog>
+                                                                                                            <DialogTrigger asChild>
+                                                                                                                <Button variant="outline" size="sm">
+                                                                                                                    <Eye className="h-4 w-4 mr-1" />
+                                                                                                                    {t('jobListing.previewAttachment')}
+                                                                                                                </Button>
+                                                                                                            </DialogTrigger>
+                                                                                                            <DialogContent className="max-w-4xl h-[80vh]">
+                                                                                                                <DialogHeader>
+                                                                                                                    <DialogTitle>{attachment.file_name}</DialogTitle>
+                                                                                                                </DialogHeader>
+                                                                                                                <div className="flex-1 overflow-auto">
+                                                                                                                    <img
+                                                                                                                        src={`/storage/${attachment.file_path}`}
+                                                                                                                        alt={attachment.file_name}
+                                                                                                                        className="max-w-full max-h-full object-contain"
+                                                                                                                    />
+                                                                                                                </div>
+                                                                                                            </DialogContent>
+                                                                                                        </Dialog>
+                                                                                                        <a
+                                                                                                            href={`/storage/${attachment.file_path}`}
+                                                                                                            download={attachment.file_name}
+                                                                                                            className="inline-flex items-center text-sm font-medium text-amber-600 hover:text-amber-800"
+                                                                                                        >
+                                                                                                            <Download className="h-4 w-4 mr-1" />
+                                                                                                            {t('jobApplication.download')}
+                                                                                                        </a>
+                                                                                                    </div>
+                                                                                                </div>
+                                                                                            </div>
+                                                                                        ))}
+                                                                                </div>
+                                                                            </div>
+                                                                        )}
+
+                                                                        {/* Autres types de fichiers */}
+                                                                        {application.attachments.filter(a => !a.file_type.includes('pdf') && !a.file_type.includes('doc') && !a.file_type.includes('txt') && !a.file_type.includes('rtf') && !a.file_type.includes('image')).length > 0 && (
+                                                                            <div>
+                                                                                <h5 className="text-xs font-medium text-gray-500 mb-2">Autres fichiers</h5>
+                                                                                <div className="space-y-2">
+                                                                                    {application.attachments
+                                                                                        .filter(a => !a.file_type.includes('pdf') && !a.file_type.includes('doc') && !a.file_type.includes('txt') && !a.file_type.includes('rtf') && !a.file_type.includes('image'))
+                                                                                        .map((attachment) => (
+                                                                                            <div key={attachment.id} className="bg-gray-50 p-3 rounded-md">
+                                                                                                <div className="flex items-center justify-between">
+                                                                                                    <div className="flex items-start">
+                                                                                                        <FileText className="h-4 w-4 mr-2 text-gray-500" />
+                                                                                                        <div>
+                                                                                                            <div className="font-medium">{attachment.file_name}</div>
+                                                                                                            {attachment.description && (
+                                                                                                                <div className="text-sm text-gray-500">{attachment.description}</div>
+                                                                                                            )}
+                                                                                                        </div>
+                                                                                                    </div>
+                                                                                                    <a
+                                                                                                        href={`/storage/${attachment.file_path}`}
+                                                                                                        download={attachment.file_name}
+                                                                                                        className="inline-flex items-center text-sm font-medium text-amber-600 hover:text-amber-800"
+                                                                                                    >
+                                                                                                        <Download className="h-4 w-4 mr-1" />
+                                                                                                        {t('jobApplication.download')}
+                                                                                                    </a>
+                                                                                                </div>
+                                                                                            </div>
+                                                                                        ))}
+                                                                                </div>
+                                                                            </div>
+                                                                        )}
+                                                                    </div>
+                                                                </div>
+                                                            )}
+
+                                                            <Separator className="my-4" />
+
+                                                            {/* Actions */}
+                                                            <div className="flex justify-between items-center">
                                                                 <Link
                                                                     href={route('job-applications.show', application.id)}
-                                                                    className="text-amber-600 hover:text-amber-700 text-sm font-medium"
+                                                                    className="text-amber-600 hover:text-amber-800 text-sm font-medium"
                                                                 >
                                                                     {t('jobApplication.viewFull')}
                                                                 </Link>
-                                                            </div>
 
-                                                            <Separator />
-
-                                                            <div className="flex justify-between pt-1">
                                                                 <Select
-                                                                    defaultValue={application.status}
+                                                                    value={application.status}
                                                                     onValueChange={(value) => {
                                                                         router.patch(route('job-applications.update-status', application.id), {
                                                                             status: value
@@ -523,6 +808,41 @@ export default function Show({ auth, jobListing, applications, hasApplied, userT
                             </div>
                         )}
                     </div>
+
+                    {applications && applications.length > 0 && (
+                        <div className="mt-8">
+                            <h3 className="text-lg font-medium mb-4">{t('jobListing.show.applications')}</h3>
+                            <div className="space-y-4">
+                                {applications.map((application) => (
+                                    <div key={application.id} className="p-4 bg-gray-50 rounded-lg border border-gray-200">
+                                        <div className="flex justify-between items-start">
+                                            <div>
+                                                <div className="font-medium">{application.applicant?.name}</div>
+                                                <div className="text-sm text-gray-500 mt-1">
+                                                    {formatDate(application.created_at)}
+                                                </div>
+                                            </div>
+                                            <div className="flex items-center space-x-2">
+                                                {statusBadge(application.status)}
+
+                                                <Link
+                                                    href={route('job-applications.show', application.id)}
+                                                    className="inline-flex items-center text-sm font-medium text-amber-600 hover:text-amber-800"
+                                                >
+                                                    <Eye className="h-4 w-4 mr-1" />
+                                                    {t('jobApplication.show.viewFullApplication')}
+                                                </Link>
+                                            </div>
+                                        </div>
+                                        <div className="mt-3 text-sm text-gray-700 line-clamp-2">
+                                            {application.cover_letter.substring(0, 150)}
+                                            {application.cover_letter.length > 150 && '...'}
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    )}
                 </div>
             </div>
 

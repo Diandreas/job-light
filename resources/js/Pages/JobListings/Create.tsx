@@ -88,12 +88,15 @@ interface SelectedSkill extends Competence {
     importance: 'required' | 'preferred' | 'nice_to_have';
 }
 
+type Currency = 'EUR' | 'XAF';
+
 export default function Create({ auth, skills }: Props) {
     const { t, i18n } = useTranslation();
     const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined);
     const [skillSearchTerm, setSkillSearchTerm] = useState('');
     const [selectedSkills, setSelectedSkills] = useState<SelectedSkill[]>([]);
     const [skillPopoverOpen, setSkillPopoverOpen] = useState(false);
+    const [selectedCurrency, setSelectedCurrency] = useState<Currency>('EUR');
 
     const { data, setData, post, errors, processing, reset } = useForm({
         title: '',
@@ -101,6 +104,7 @@ export default function Create({ auth, skills }: Props) {
         budget_min: '',
         budget_max: '',
         budget_type: 'fixed',
+        currency: 'EUR',
         duration: '',
         experience_level: '',
         deadline: '',
@@ -155,6 +159,7 @@ export default function Create({ auth, skills }: Props) {
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
+        setData('currency', selectedCurrency);
         post(route('job-listings.store'));
     };
 
@@ -174,6 +179,10 @@ export default function Create({ auth, skills }: Props) {
             default:
                 return '';
         }
+    };
+
+    const getCurrencySymbol = () => {
+        return selectedCurrency === 'EUR' ? t('jobListing.currency.euro') : t('jobListing.currency.fcfa');
     };
 
     return (
@@ -277,6 +286,28 @@ export default function Create({ auth, skills }: Props) {
                                         {errors.experience_level && <p className="text-sm text-red-500">{errors.experience_level}</p>}
                                     </div>
 
+                                    <div className="space-y-2">
+                                        <Label htmlFor="currency">
+                                            {t('jobListing.create.currencyLabel')}
+                                        </Label>
+                                        <Select
+                                            value={selectedCurrency}
+                                            onValueChange={(value) => {
+                                                setSelectedCurrency(value as Currency);
+                                                setData('currency', value);
+                                            }}
+                                        >
+                                            <SelectTrigger id="currency" className="w-full">
+                                                <SelectValue placeholder={t('jobListing.create.currencyPlaceholder')} />
+                                            </SelectTrigger>
+                                            <SelectContent>
+                                                <SelectItem value="EUR">{t('jobListing.currency.euro')}</SelectItem>
+                                                <SelectItem value="XAF">{t('jobListing.currency.fcfa')}</SelectItem>
+                                            </SelectContent>
+                                        </Select>
+                                        {errors.currency && <p className="text-red-500 text-sm mt-1">{errors.currency}</p>}
+                                    </div>
+
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                         <div>
                                             <Label htmlFor="budget_min">
@@ -291,9 +322,9 @@ export default function Create({ auth, skills }: Props) {
                                                     value={data.budget_min}
                                                     onChange={e => setData('budget_min', e.target.value)}
                                                     placeholder={t('jobListing.create.budgetMinPlaceholder')}
-                                                    className="pl-6"
+                                                    className="pl-12"
                                                 />
-                                                <span className="absolute left-2.5 top-1/2 transform -translate-y-1/2 text-gray-500">€</span>
+                                                <span className="absolute left-2.5 top-1/2 transform -translate-y-1/2 text-gray-500">{getCurrencySymbol()}</span>
                                             </div>
                                             {errors.budget_min && <p className="text-red-500 text-sm mt-1">{errors.budget_min}</p>}
                                         </div>
@@ -311,9 +342,9 @@ export default function Create({ auth, skills }: Props) {
                                                     value={data.budget_max}
                                                     onChange={e => setData('budget_max', e.target.value)}
                                                     placeholder={t('jobListing.create.budgetMaxPlaceholder')}
-                                                    className="pl-6"
+                                                    className="pl-12"
                                                 />
-                                                <span className="absolute left-2.5 top-1/2 transform -translate-y-1/2 text-gray-500">€</span>
+                                                <span className="absolute left-2.5 top-1/2 transform -translate-y-1/2 text-gray-500">{getCurrencySymbol()}</span>
                                             </div>
                                             {errors.budget_max && <p className="text-red-500 text-sm mt-1">{errors.budget_max}</p>}
                                         </div>

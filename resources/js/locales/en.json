@@ -1242,6 +1242,12 @@
             "reset": "Reset",
             "selectExperience": "Select a level"
         },
+        "currency": {
+            "euro": "€",
+            "fcfa": "FCFA",
+            "select": "Select currency",
+            "title": "Currency"
+        },
         "create": {
             "title": "Post a new job",
             "description": "Describe your project and attract the best talent",
@@ -1276,8 +1282,8 @@
             "budgetTypeFixed": "Fixed price",
             "budgetTypeHourly": "Hourly rate",
             "budgetRange": "Budget range",
-            "budgetMinLabel": "Minimum budget (€)",
-            "budgetMaxLabel": "Maximum budget (€)",
+            "budgetMinLabel": "Minimum budget",
+            "budgetMaxLabel": "Maximum budget",
             "budgetMinPlaceholder": "Min",
             "budgetMaxPlaceholder": "Max",
             "tokensRequiredLabel": "Tokens required to apply",
@@ -1287,54 +1293,36 @@
             "skillsLabel": "Required skills",
             "publishImmediately": "Publish immediately",
             "submit": "Submit",
-            "backToListings": "Back to listings"
+            "backToListings": "Back to listings",
+            "currencyLabel": "Currency",
+            "currencyPlaceholder": "Select currency"
         },
         "show": {
-            "applications": "Applications",
-            "noApplications": "No applications received",
-            "deleteJob": "Delete job",
-            "editJob": "Edit job",
-            "closeJob": "Close job",
-            "deleteConfirmTitle": "Delete Job",
-            "deleteConfirmDescription": "Are you sure you want to delete this job? This action cannot be undone.",
-            "closeConfirmTitle": "Close Job",
-            "closeConfirmDescription": "Are you sure you want to close this job? Candidates will no longer be able to apply.",
-            "confirmDelete": "Delete",
-            "confirmClose": "Close",
-            "confirm": "Confirm",
-            "cancel": "Cancel",
-            "postedBy": "Posted by",
-            "postedOn": "Posted on",
-            "budget": "Budget",
-            "duration": "Duration",
-            "experienceLevel": "Experience level",
-            "deadline": "Deadline",
-            "applicationDeadline": "Application Deadline",
-            "applicationsUntil": "Applications accepted until",
-            "applicationsCount": "Application(s)",
-            "requiredSkills": "Required skills",
-            "requiredTokens": "Required tokens",
-            "tokensCost": "Token cost",
-            "viewsCount": "Views",
-            "jobDetails": "Job details",
-            "description": "Description",
-            "applications": "Applications",
-            "noLongerAcceptingApplications": "This job is no longer accepting applications",
-            "backToListings": "Back to listings",
-            "edit": "Edit"
+            "applications": "Received Applications",
+            "viewFullApplication": "View Full Application"
         },
-        "status": {
-            "draft": "Draft",
-            "open": "Open",
-            "closed": "Closed"
-        }
+        "previewAttachment": "Preview",
+        "confirmClose": "Confirm Closing",
+        "confirmDelete": "Confirm Deletion",
+        "deleteConfirmTitle": "Delete this job listing?",
+        "deleteConfirmDescription": "This action cannot be undone. All associated applications will also be deleted.",
+        "closeConfirmTitle": "Close this job listing?",
+        "closeConfirmDescription": "The listing will no longer be visible in searches and will not accept new applications."
     },
     "jobApplication": {
         "index": {
-            "title": "My applications"
+            "title": "My Applications"
+        },
+        "myApplications": {
+            "title": "My Applications"
+        },
+        "show": {
+            "title": "Application Details",
+            "applicationDetails": "Application Details",
+            "viewFullApplication": "View Full Application"
         },
         "create": {
-            "title": "Apply for job",
+            "title": "Apply for Job",
             "description": "Present your application and submit the necessary documents",
             "applyingFor": "You are applying for"
         },
@@ -1356,7 +1344,7 @@
         "notEnoughTokens": "You don't have enough tokens ({{required}} required, {{available}} available)",
         "backToJob": "Back to job",
         "appliedOn": "Applied on",
-        "viewedOn": "Viewed by recruiter on {{date}}",
+        "viewedOn": "Viewed on {date}",
         "withdraw": "Withdraw application",
         "viewJob": "View job",
         "viewFull": "View full application",
@@ -1367,12 +1355,35 @@
         "rejectionNotice": "Your application has been rejected. Keep looking for other opportunities!",
         "hiredNotice": "Congratulations! Your application has been accepted. The recruiter will contact you soon.",
         "notViewed": "Not viewed",
-        "updateStatus": "Update status",
+        "updateStatus": "Update Status",
         "status": {
             "pending": "Pending",
             "shortlisted": "Shortlisted",
             "rejected": "Rejected",
             "hired": "Hired"
-        }
+        },
+        "candidateInfo": {
+            "title": "Candidate Information",
+            "skills": "Skills",
+            "education": "Education",
+            "experience": "Experience",
+            "summary": "Summary",
+            "cvDetails": "CV Details",
+            "noProfession": "No profession specified",
+            "noSummary": "No summary available",
+            "noSkills": "No skills listed",
+            "noExperience": "No professional experience",
+            "noEducation": "No education listed",
+            "noLevel": "No level specified",
+            "present": "Present",
+            "cvSummary": "CV Summary",
+            "personalInfo": "Personal Information",
+            "viewFullCv": "View Full CV",
+            "hobbies": "Hobbies",
+            "noHobbies": "No hobbies listed",
+            "viewFile": "View file"
+        },
+        "download": "Download",
+        "viewFile": "View file"
     }
 }

@@ -3,6 +3,43 @@ export interface User {
     name: string;
     email: string;
     email_verified_at: string;
+    photo?: string;
+    phone_number?: string;
+    full_profession?: string;
+    github?: string;
+    linkedin?: string;
+    wallet_balance?: number;
+    summary?: {
+        id: number;
+        content: string;
+    };
+    experiences?: {
+        id: number;
+        title: string;
+        company: string;
+        start_date: string;
+        end_date?: string;
+        description: string;
+    }[];
+    competences?: {
+        id: number;
+        name: string;
+        pivot?: {
+            level?: string;
+        };
+    }[];
+    educations?: {
+        id: number;
+        degree: string;
+        institution: string;
+        start_date: string;
+        end_date?: string;
+        description: string;
+    }[];
+    hobbies?: {
+        id: number;
+        name: string;
+    }[];
 }
 
 export type PageProps<T extends Record<string, unknown> = Record<string, unknown>> = T & {
@@ -30,6 +67,7 @@ export interface JobListing {
     budget_min: number | null;
     budget_max: number | null;
     budget_type: 'hourly' | 'fixed';
+    currency?: 'EUR' | 'XAF';
     duration: string | null;
     status: 'draft' | 'open' | 'closed';
     tokens_required: number;

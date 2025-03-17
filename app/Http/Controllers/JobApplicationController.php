@@ -154,7 +154,14 @@ class JobApplicationController extends Controller
         $application->markAsViewed();
         
         return inertia('JobApplications/Show', [
-            'application' => $application->load(['attachments', 'applicant']),
+            'application' => $application->load([
+                'attachments', 
+                'applicant', 
+                'applicant.experiences',
+                'applicant.competences',
+                'applicant.hobbies',
+                'attachments'
+            ]),
             'jobListing' => $jobListing
         ]);
     }
@@ -164,50 +171,56 @@ class JobApplicationController extends Controller
      */
     public function downloadAttachment(JobApplicationAttachment $attachment)
     {
-        // Vérifier que l'utilisateur est autorisé à télécharger cette pièce jointe
-        $application = $attachment->application;
-        $jobListing = $application->jobListing;
+        // Vérifier si l'utilisateur est autorisé à télécharger la pièce jointe
+        $application = $attachment->jobApplication;
         
-        // L'utilisateur doit être soit le candidat, soit le recruteur
-        if (Auth::id() !== $application->user_id && Auth::id() !== $jobListing->user_id) {
-            return redirect()->route('job-listings.index')
+        if (!$application) {
+            return redirect()->route('job-applications.index')
+                ->with('error', 'Pièce jointe introuvable.');
+        }
+        
+        // Un recruteur peut télécharger les pièces jointes des candidatures pour ses annonces
+        // Un candidat peut télécharger ses propres pièces jointes
+        if (Auth::id() !== $application->user_id && Auth::id() !== $application->jobListing->user_id) {
+            return redirect()->route('job-applications.index')
                 ->with('error', 'Vous n\'êtes pas autorisé à télécharger cette pièce jointe.');
         }
         
-        $file = Storage::disk('public')->get($attachment->file_path);
-        return Response::make($file, 200, [
-            'Content-Type' => $attachment->file_type,
-            'Content-Disposition' => 'attachment; filename="' . $attachment->file_name . '"',
-        ]);
+        // Récupérer le fichier depuis le stockage
+        $filePath = storage_path('app/public/' . $attachment->file_path);
+        
+        if (!file_exists($filePath)) {
+            return redirect()->route('job-applications.index')
+                ->with('error', 'Le fichier demandé n\'existe pas.');
+        }
+        
+        // Télécharger le fichier
+        return Response::download($filePath, $attachment->file_name);
     }
     
     /**
-     * Mettre à jour le statut d'une candidature (par le recruteur)
+     * Mettre à jour le statut d'une candidature
      */
     public function updateStatus(Request $request, JobApplication $application)
     {
-        // Vérifier que l'utilisateur est autorisé à mettre à jour cette candidature
+        // Vérifier que l'utilisateur est autorisé à modifier cette candidature
         $jobListing = $application->jobListing;
         if (Auth::id() !== $jobListing->user_id) {
-            return redirect()->route('job-listings.index')
-                ->with('error', 'Vous n\'êtes pas autorisé à mettre à jour cette candidature.');
+            return redirect()->route('job-listings.show', $jobListing->id)
+                ->with('error', 'Vous n\'êtes pas autorisé à modifier cette candidature.');
         }
         
         $validated = $request->validate([
             'status' => 'required|in:pending,shortlisted,rejected,hired',
         ]);
         
+        // Mettre à jour le statut
         $application->update([
             'status' => $validated['status']
         ]);
         
-        // Si le candidat est embauché, fermer l'annonce
-        if ($validated['status'] === 'hired') {
-            $jobListing->update(['status' => 'closed']);
-        }
-        
-        return redirect()->route('job-applications.show', $application)
-            ->with('success', 'Le statut de la candidature a été mis à jour avec succès.');
+        return redirect()->route('job-applications.show', $application->id)
+            ->with('success', 'Le statut de la candidature a été mis à jour.');
     }
     
     /**

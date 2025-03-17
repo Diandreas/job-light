@@ -234,4 +234,23 @@ Route::middleware(['auth'])->group(function () {
     Route::delete('/job-applications/{application}', [JobApplicationController::class, 'destroy'])->name('job-applications.destroy');
 });
 
+// Routes pour les candidatures
+Route::middleware(['auth'])->group(function () {
+    // Candidatures
+    Route::get('/my-applications', [JobApplicationController::class, 'myApplications'])->name('job-applications.my-applications');
+    Route::get('/job-applications', [JobApplicationController::class, 'index'])->name('job-applications.index');
+    
+    // Route pour télécharger une pièce jointe (doit être avant les routes avec paramètres wildcard)
+    Route::get('/job-applications/attachments/{attachment}/download', [JobApplicationController::class, 'downloadAttachment'])->name('job-applications.attachments.download');
+    
+    // Routes avec paramètres wildcard
+    Route::get('/job-applications/{application}', [JobApplicationController::class, 'show'])->name('job-applications.show');
+    Route::delete('/job-applications/{application}', [JobApplicationController::class, 'destroy'])->name('job-applications.destroy');
+    Route::patch('/job-applications/{application}/status', [JobApplicationController::class, 'updateStatus'])->name('job-applications.update-status');
+    
+    // Création d'une candidature (doit être liée à une annonce)
+    Route::get('/job-listings/{jobListing}/apply', [JobApplicationController::class, 'create'])->name('job-applications.create');
+    Route::post('/job-listings/{jobListing}/apply', [JobApplicationController::class, 'store'])->name('job-applications.store');
+});
+
 require __DIR__.'/auth.php';

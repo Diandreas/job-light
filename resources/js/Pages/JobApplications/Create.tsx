@@ -240,11 +240,13 @@ export default function Create({ auth, jobListing, tokensRequired, userTokens }:
                                                     min="0"
                                                     step="0.01"
                                                 />
-                                                <span className="absolute left-2.5 top-1/2 transform -translate-y-1/2 text-gray-500">€</span>
+                                                <span className="absolute left-2.5 top-1/2 transform -translate-y-1/2 text-gray-500">
+                                                    {getCurrencySymbol(jobListing.currency)}
+                                                </span>
                                             </div>
                                             {jobListing.budget_min !== null && jobListing.budget_max !== null && (
                                                 <p className="text-xs text-gray-500 mt-1">
-                                                    {t('jobApplication.budgetRange')}: {jobListing.budget_min}€ - {jobListing.budget_max}€
+                                                    {t('jobApplication.budgetRange')}: {jobListing.budget_min} {getCurrencySymbol(jobListing.currency)} - {jobListing.budget_max} {getCurrencySymbol(jobListing.currency)}
                                                     {jobListing.budget_type === 'hourly' && ` / ${t('jobListing.hour')}`}
                                                 </p>
                                             )}
@@ -352,4 +354,17 @@ export default function Create({ auth, jobListing, tokensRequired, userTokens }:
             </div>
         </AuthenticatedLayout>
     );
-} 
+}
+
+const getCurrencySymbol = (currency?: string) => {
+    if (!currency) return '€';
+
+    switch (currency) {
+        case 'EUR':
+            return '€';
+        case 'XAF':
+            return 'FCFA';
+        default:
+            return '€';
+    }
+}; 

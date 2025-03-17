@@ -12,15 +12,19 @@ class JobListing extends Model
     protected $fillable = [
         'title',
         'description',
-        'user_id', // ID du recruteur qui a posté l'annonce
+        'company_name',
+        'location',
+        'is_remote',
+        'budget_type',
+        'currency',
         'budget_min',
         'budget_max',
-        'budget_type', // 'hourly', 'fixed'
+        'budget_negotiable',
+        'user_id', // ID du recruteur qui a posté l'annonce
+        'uuid',
         'duration', // durée estimée du projet
+        'level',
         'status', // 'open', 'closed', 'draft'
-        'tokens_required', // nombre de jetons nécessaires pour postuler
-        'experience_level', // 'beginner', 'intermediate', 'expert'
-        'deadline',
         'is_featured',
         'views_count',
     ];

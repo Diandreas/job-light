@@ -9,7 +9,8 @@ import {
     ChevronRight, ChevronLeft, Sparkles, LucideIcon, Coins,
     Globe, Mail, Phone, MapPin, Linkedin, Github, MessageSquare,
     MenuIcon, ChevronDown, ChevronUp, Home, BookCopy, Award,
-    Calendar, Sun, Moon, Languages, RefreshCw, CheckCircle
+    Calendar, Sun, Moon, Languages, RefreshCw, CheckCircle,
+    Briefcase, FileText
 } from 'lucide-react';
 import Dropdown from '@/Components/Dropdown';
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/Components/ui/sheet";
@@ -144,6 +145,23 @@ export default function Authenticated({ user, header, children }: PropsWithChild
             href: route('career-advisor.index'),
             icon: Brain,
             active: route().current('career-advisor.index')
+        },
+        {
+            name: t('menu.jobPortal'),
+            href: route('job-listings.index'),
+            icon: Briefcase,
+            active: route().current('job-listings.index') ||
+                route().current('job-listings.show') ||
+                route().current('job-listings.create') ||
+                route().current('job-listings.edit') ||
+                route().current('job-listings.my-listings')
+        },
+        {
+            name: t('menu.myApplications'),
+            href: route('job-applications.index'),
+            icon: FileText,
+            active: route().current('job-applications.index') ||
+                route().current('job-applications.show')
         }
     ];
 

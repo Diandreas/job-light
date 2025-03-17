@@ -10,6 +10,8 @@ use App\Http\Controllers\{AddressController,
     ExperienceCategoryController,
     ExperienceController,
     HobbyController,
+    JobApplicationController,
+    JobListingController,
     LanguageController,
     NotchPayController,
     PaymentController,
@@ -206,6 +208,30 @@ Route::middleware(['auth', 'verified'])->group(function () {
     });
 
 
+});
+
+// Routes pour les annonces d'emploi
+Route::middleware(['auth'])->group(function () {
+    // Annonces d'emploi
+    Route::get('/job-listings', [JobListingController::class, 'index'])->name('job-listings.index');
+    Route::get('/job-listings/create', [JobListingController::class, 'create'])->name('job-listings.create');
+    Route::post('/job-listings', [JobListingController::class, 'store'])->name('job-listings.store');
+    Route::get('/job-listings/{jobListing}', [JobListingController::class, 'show'])->name('job-listings.show');
+    Route::get('/job-listings/{jobListing}/edit', [JobListingController::class, 'edit'])->name('job-listings.edit');
+    Route::put('/job-listings/{jobListing}', [JobListingController::class, 'update'])->name('job-listings.update');
+    Route::delete('/job-listings/{jobListing}', [JobListingController::class, 'destroy'])->name('job-listings.destroy');
+    Route::patch('/job-listings/{jobListing}/close', [JobListingController::class, 'close'])->name('job-listings.close');
+    Route::get('/my-job-listings', [JobListingController::class, 'myListings'])->name('job-listings.my-listings');
+    
+    // Candidatures
+    Route::get('/job-applications', [JobApplicationController::class, 'index'])->name('job-applications.index');
+    Route::get('/job-listings/{jobListing}/apply', [JobApplicationController::class, 'create'])->name('job-applications.create');
+    Route::post('/job-listings/{jobListing}/apply', [JobApplicationController::class, 'store'])->name('job-applications.store');
+    Route::get('/job-applications/{application}', [JobApplicationController::class, 'show'])->name('job-applications.show');
+    Route::patch('/job-applications/{application}/status', [JobApplicationController::class, 'updateStatus'])->name('job-applications.update-status');
+    Route::get('/job-application-attachments/{attachment}/download', [JobApplicationController::class, 'downloadAttachment'])->name('job-application-attachments.download');
+    Route::get('/my-applications', [JobApplicationController::class, 'myApplications'])->name('job-applications.my-applications');
+    Route::delete('/job-applications/{application}', [JobApplicationController::class, 'destroy'])->name('job-applications.destroy');
 });
 
 require __DIR__.'/auth.php';

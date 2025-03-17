@@ -343,7 +343,10 @@ export default function Index({ auth, jobListings, skills, filters = {} }: Props
                                                             )}
                                                         </CardTitle>
                                                         <CardDescription>
-                                                            {job.recruiter?.name} • {formatDate(job.created_at)}
+                                                            {job.recruiter?.name && (
+                                                                <>{t('jobListing.postedBy')} {job.recruiter.name} • </>
+                                                            )}
+                                                            {formatDate(job.created_at)}
                                                         </CardDescription>
                                                     </div>
                                                     <div className="text-right">
@@ -418,7 +421,11 @@ export default function Index({ auth, jobListings, skills, filters = {} }: Props
                                                     {job.deadline && (
                                                         <div className="flex items-center">
                                                             <Calendar className="h-3 w-3 mr-1" />
-                                                            <span>{new Date(job.deadline).toLocaleDateString()}</span>
+                                                            <span>{new Date(job.deadline).toLocaleDateString(i18n.language === 'fr' ? 'fr-FR' : 'en-US', {
+                                                                year: 'numeric',
+                                                                month: 'short',
+                                                                day: 'numeric'
+                                                            })}</span>
                                                         </div>
                                                     )}
                                                     <div className="flex items-center">
@@ -445,6 +452,7 @@ export default function Index({ auth, jobListings, skills, filters = {} }: Props
                                             <PaginationItem>
                                                 <PaginationPrevious
                                                     href={`?page=${jobListings.current_page - 1}`}
+                                                    aria-label={t('common.pagination.previous')}
                                                 />
                                             </PaginationItem>
                                         )}
@@ -454,6 +462,7 @@ export default function Index({ auth, jobListings, skills, filters = {} }: Props
                                                 <PaginationLink
                                                     href={link.url || '#'}
                                                     isActive={link.active}
+                                                    aria-label={t('common.pagination.page') + ' ' + link.label}
                                                 >
                                                     {link.label}
                                                 </PaginationLink>
@@ -464,6 +473,7 @@ export default function Index({ auth, jobListings, skills, filters = {} }: Props
                                             <PaginationItem>
                                                 <PaginationNext
                                                     href={`?page=${jobListings.current_page + 1}`}
+                                                    aria-label={t('common.pagination.next')}
                                                 />
                                             </PaginationItem>
                                         )}

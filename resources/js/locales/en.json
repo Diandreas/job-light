@@ -186,8 +186,14 @@
         "delete": "Delete",
         "back": "Back",
         "next": "Next",
+        "previous": "Previous",
         "manage": "Manage",
         "confirm": "Confirm",
+        "pagination": {
+            "previous": "Previous",
+            "next": "Next",
+            "page": "Page"
+        },
         "error": {
             "generic": "An error occurred."
         }
@@ -1307,7 +1313,37 @@
         "deleteConfirmTitle": "Delete this job listing?",
         "deleteConfirmDescription": "This action cannot be undone. All associated applications will also be deleted.",
         "closeConfirmTitle": "Close this job listing?",
-        "closeConfirmDescription": "The listing will no longer be visible in searches and will not accept new applications."
+        "closeConfirmDescription": "The listing will no longer be visible in searches and will not accept new applications.",
+        "applications": "Applications",
+        "backToListings": "Back to listings",
+        "edit": "Edit",
+        "close": "Close",
+        "delete": "Delete",
+        "duration": "Duration",
+        "tokensCost": "Cost to apply",
+        "description": "Description",
+        "requiredSkills": "Required Skills",
+        "applicationDeadline": "Application Deadline",
+        "applicationsUntil": "Applications accepted until",
+        "candidateSummary": "Candidate Summary",
+        "candidateExperience": "Professional Experience",
+        "candidateEducation": "Education",
+        "candidateSkills": "Skills",
+        "noLongerAcceptingApplications": "This job is no longer accepting applications",
+        "status": {
+            "draft": "Draft",
+            "open": "Open",
+            "closed": "Closed"
+        },
+        "view": "View",
+        "postedOn": "Posted on",
+        "deadline": "Deadline",
+        "noDeadline": "No deadline",
+        "createFirst": "Create your first listing",
+        "postedBy": "Posted by",
+        "recruiter": "Recruiter",
+        "dateFormat": "MM/DD/YYYY",
+        "postedAgo": "Posted {{time}} ago"
     },
     "jobApplication": {
         "index": {
@@ -1381,9 +1417,16 @@
             "viewFullCv": "View Full CV",
             "hobbies": "Hobbies",
             "noHobbies": "No hobbies listed",
-            "viewFile": "View file"
+            "viewFile": "View file",
+            "attachments": "Attachments",
+            "description": "Description",
+            "completed": "Completed",
+            "current": "Current",
+            "relevantSkills": "Relevant Skills"
         },
         "download": "Download",
-        "viewFile": "View file"
+        "viewFile": "View file",
+        "preview": "Preview",
+        "view": "View"
     }
 }

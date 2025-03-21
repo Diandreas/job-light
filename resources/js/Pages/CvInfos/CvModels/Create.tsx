@@ -44,11 +44,13 @@ const UserHobbiesCreate = ({ auth, availableHobbies }: Props) => {
             hobby_id: selectedHobbyId, // Send the ID of the selected hobby
         })
             .then((response) => {
-                window.location.href = '/user-hobbies';
-                toast({
-                    title: 'Hobby assigned successfully',
-                    description: 'The new hobby has been assigned to the user.'
-                });
+                if (response.data.success) {
+                    window.location.href = '/user-hobbies';
+                    toast({
+                        title: 'Hobby assigned successfully',
+                        description: 'The new hobby has been assigned to the user.'
+                    });
+                }
             })
             .catch((error) => {
                 // Better error handling, display error message from the server if available
@@ -70,7 +72,7 @@ const UserHobbiesCreate = ({ auth, availableHobbies }: Props) => {
         <AuthenticatedLayout user={auth.user}>
             <Head title="Create User Hobby" />
             <div className="p-4">
-                    <h1 className="text-2xl font-semibold mb-4">Create User Hobby</h1>
+                <h1 className="text-2xl font-semibold mb-4">Create User Hobby</h1>
                 <form onSubmit={handleSubmit}>
                     <div className="mb-4">
                         <InputLabel htmlFor="hobby_id" value="Hobby" />

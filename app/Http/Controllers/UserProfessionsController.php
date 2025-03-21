@@ -68,7 +68,10 @@ class UserProfessionsController extends Controller
             ]);
         }
 
-        return redirect()->route('user-professions.index');
+        return response()->json([
+            'success' => true,
+            'message' => 'Profession assigned successfully!'
+        ]);
     }
 
     public function destroy(User $user)

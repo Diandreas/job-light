@@ -74,23 +74,25 @@ const HobbyManager: React.FC<Props> = ({ auth, availableHobbies, initialUserHobb
         }
 
         try {
-            await axios.post('/user-hobbies', {
+            const response = await axios.post('/user-hobbies', {
                 user_id: auth.user.id,
                 hobby_id: selectedHobbyId,
             });
 
-            const newHobby = availableHobbies.find(h => h.id === selectedHobbyId);
-            if (newHobby) {
-                const updatedHobbies = [...userHobbies, newHobby];
-                setUserHobbies(updatedHobbies);
-                onUpdate(updatedHobbies);
-                setSelectedHobbyId(null);
-                toast({
-                    title: t('hobbies.success.added.title'),
-                    description: t('hobbies.success.added.description', {
-                        hobby: getLocalizedName(newHobby, i18n.language)
-                    })
-                });
+            if (response.data.success) {
+                const newHobby = availableHobbies.find(h => h.id === selectedHobbyId);
+                if (newHobby) {
+                    const updatedHobbies = [...userHobbies, newHobby];
+                    setUserHobbies(updatedHobbies);
+                    onUpdate(updatedHobbies);
+                    setSelectedHobbyId(null);
+                    toast({
+                        title: t('hobbies.success.added.title'),
+                        description: t('hobbies.success.added.description', {
+                            hobby: getLocalizedName(newHobby, i18n.language)
+                        })
+                    });
+                }
             }
         } catch (error) {
             toast({

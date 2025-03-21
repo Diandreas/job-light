@@ -25,10 +25,7 @@ class AppServiceProvider extends ServiceProvider
     {
         // Définir la longueur par défaut des chaînes
         Schema::defaultStringLength(191);
-        
-        // Commenté car nécessite des privilèges administrateur
-        // DB::statement('SET SESSION sql_require_primary_key=0');
-        
+
         Route::aliasMiddleware('check.print', \App\Http\Middleware\CheckPrintAccess::class);
     }
 

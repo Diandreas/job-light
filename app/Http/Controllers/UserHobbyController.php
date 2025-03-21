@@ -41,7 +41,10 @@ class UserHobbyController extends Controller
 
         $user->hobbies()->attach($hobby);
 
-        return redirect()->route('user-hobbies.index')->with('success', 'Hobby assigned successfully!');
+        return response()->json([
+            'success' => true,
+            'message' => 'Hobby assigned successfully!'
+        ]);
     }
 
     public function destroy($user_id, $hobby_id)

@@ -71,23 +71,25 @@ const ProfessionManager: React.FC<Props> = ({ auth, availableProfessions, initia
         }
 
         try {
-            await axios.post('/user-professions', {
+            const response = await axios.post('/user-professions', {
                 user_id: auth.user.id,
                 profession_id: selectedProfessionId,
                 full_profession: null
             });
 
-            const newProfession = availableProfessions.find(p => p.id === selectedProfessionId);
-            if (newProfession) {
-                setUserProfession(newProfession);
-                setManualProfession('');
-                onUpdate(newProfession);
-                toast({
-                    title: t('professions.success.updated.title'),
-                    description: t('professions.success.updated.description', {
-                        profession: getLocalizedName(newProfession, i18n.language)
-                    })
-                });
+            if (response.data.success) {
+                const newProfession = availableProfessions.find(p => p.id === selectedProfessionId);
+                if (newProfession) {
+                    setUserProfession(newProfession);
+                    setManualProfession('');
+                    onUpdate(newProfession);
+                    toast({
+                        title: t('professions.success.updated.title'),
+                        description: t('professions.success.updated.description', {
+                            profession: getLocalizedName(newProfession, i18n.language)
+                        })
+                    });
+                }
             }
         } catch (error) {
             toast({
@@ -98,30 +100,32 @@ const ProfessionManager: React.FC<Props> = ({ auth, availableProfessions, initia
         }
     };
 
-    const handleManualProfessionSubmit = async () => {
+    const handleSaveManualProfession = async () => {
         if (!manualProfession.trim()) {
             toast({
-                title: t('professions.errors.manual.title'),
-                description: t('professions.errors.manual.description'),
+                title: t('professions.errors.empty.title'),
+                description: t('professions.errors.empty.description'),
                 variant: 'destructive'
             });
             return;
         }
 
         try {
-            await axios.post('/user-professions', {
+            const response = await axios.post('/user-professions', {
                 user_id: auth.user.id,
                 profession_id: null,
-                full_profession: manualProfession
+                full_profession: manualProfession.trim()
             });
 
-            setUserProfession(null);
-            setSelectedProfessionId(null);
-            onUpdate(null, manualProfession);
-            toast({
-                title: t('professions.success.manual.title'),
-                description: t('professions.success.manual.description')
-            });
+            if (response.data.success) {
+                setUserProfession(null);
+                setManualProfession(manualProfession.trim());
+                onUpdate(null);
+                toast({
+                    title: t('professions.success.updated.title'),
+                    description: t('professions.success.manual.description')
+                });
+            }
         } catch (error) {
             toast({
                 title: t('professions.errors.adding.title'),
@@ -215,7 +219,7 @@ const ProfessionManager: React.FC<Props> = ({ auth, availableProfessions, initia
                                     className="flex-1 border-amber-200 dark:border-amber-800 focus:ring-amber-500 dark:focus:ring-amber-400 dark:bg-gray-900"
                                 />
                                 <Button
-                                    onClick={handleManualProfessionSubmit}
+                                    onClick={handleSaveManualProfession}
                                     className="bg-gradient-to-r from-amber-500 to-purple-500 hover:from-amber-600 hover:to-purple-600 text-white dark:from-amber-400 dark:to-purple-400"
                                 >
                                     {t('professions.actions.save')}

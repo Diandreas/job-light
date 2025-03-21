@@ -66,10 +66,6 @@
             width: 30mm;
             text-align: right;
         }
-        .photo-cell {
-            width: 30mm;
-            text-align: right;
-        }
 
         .profile-photo {
             width: 30mm;
@@ -84,12 +80,46 @@
             height: 100%;
             object-fit: cover;
         }
-        .profile-photo {
-            width: 30mm;
-            height: 30mm;
-            border: 0.2mm solid #333333;
+
+        /* Language Section Styling */
+        .language-section {
+            margin-top: 4mm;
+            padding: 3mm;
+            background-color: #F8F9FA;
+            border-radius: 2mm;
+            border-left: 2mm solid #333333;
         }
 
+        .language-title {
+            color: #333333;
+            font-size: 10pt;
+            font-weight: bold;
+            margin-bottom: 2mm;
+            text-transform: uppercase;
+            letter-spacing: 0.2mm;
+        }
+
+        .language-items {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 2mm;
+        }
+
+        .language-item {
+            margin-bottom: 0;
+            font-size: 8pt;
+            color: #333333;
+            background-color: #ffffff;
+            padding: 1mm 2mm;
+            border-radius: 1mm;
+            border: 0.1mm solid #e5e5e5;
+        }
+
+        .language-level {
+            color: #666666;
+            font-weight: 600;
+            margin-left: 1mm;
+        }
 
         /* Timeline */
         .timeline-container {
@@ -244,6 +274,23 @@
     @if(!empty($cvInformation['summaries']))
         <div class="summary">
             {{ $cvInformation['summaries'][0]['description'] ?? '' }}
+        </div>
+    @endif
+
+    {{-- Section des langues --}}
+    @if(isset($cvInformation['languages']) && count($cvInformation['languages']) > 0)
+        <div class="language-section">
+            <div class="language-title">{{ $currentLocale === 'fr' ? 'Langues' : 'Languages' }}</div>
+            <div class="language-items">
+                @foreach($cvInformation['languages'] ?? [] as $language)
+                    <div class="language-item">
+                        {{ $language['name'] ?? '' }}
+                        @if(isset($language['level']))
+                            <span class="language-level">- {{ $language['level'] ?? '' }}</span>
+                        @endif
+                    </div>
+                @endforeach
+            </div>
         </div>
     @endif
 

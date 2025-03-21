@@ -94,6 +94,44 @@
             margin-bottom: 0.5mm;
         }
 
+        /* Language Section */
+        .language-section {
+            margin-top: 4mm;
+            padding: 3mm;
+            background-color: #ecf0f1;
+            border-radius: 1mm;
+        }
+        
+        .language-title {
+            font-size: 9pt;
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 2mm;
+            text-transform: uppercase;
+            letter-spacing: 0.2mm;
+        }
+        
+        .language-items {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 2mm;
+        }
+        
+        .language-item {
+            background-color: #ffffff;
+            border-radius: 0.5mm;
+            padding: 1mm 2mm;
+            font-size: 7.5pt;
+            color: #2c3e50;
+            box-shadow: 0 0.2mm 0.5mm rgba(0,0,0,0.1);
+        }
+        
+        .language-level {
+            color: #7f8c8d;
+            margin-left: 1mm;
+            font-style: italic;
+        }
+
         /* Main Content */
         .main-content {
             padding: 6mm;
@@ -322,6 +360,22 @@
             </tr>
         </table>
     </div>
+
+    @if(isset($cvInformation['languages']) && count($cvInformation['languages']) > 0)
+        <div class="language-section">
+            <div class="language-title">{{ $currentLocale === 'fr' ? 'Langues' : 'Languages' }}</div>
+            <div class="language-items">
+                @foreach($cvInformation['languages'] ?? [] as $language)
+                    <div class="language-item">
+                        {{ $language['name'] ?? '' }}
+                        @if(isset($language['level']))
+                            <span class="language-level">- {{ $language['level'] ?? '' }}</span>
+                        @endif
+                    </div>
+                @endforeach
+            </div>
+        </div>
+    @endif
 </div>
 </body>
 </html>

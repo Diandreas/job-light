@@ -214,6 +214,37 @@
             color: #1ABC9C;
             margin-right: 1mm;
         }
+
+        /* Language Section Styling */
+        .language-section {
+            margin-top: 4mm;
+            padding-top: 3mm;
+            border-top: 0.2mm solid #E0E0E0;
+        }
+
+        .language-title {
+            color: #1ABC9C;
+            font-weight: 600;
+            font-size: 9pt;
+            margin-bottom: 2mm;
+            text-transform: uppercase;
+            letter-spacing: 0.3mm;
+        }
+
+        .language-item {
+            font-size: 8pt;
+            color: #7F8C8D;
+            margin-bottom: 1.5mm;
+            padding: 1mm 0;
+            display: flex;
+            justify-content: space-between;
+            border-bottom: 0.1mm dotted #E0E0E0;
+        }
+
+        .language-level {
+            color: #1ABC9C;
+            font-weight: 600;
+        }
     </style>
 </head>
 <body>
@@ -241,6 +272,20 @@
                 @if($cvInformation['personalInformation']['address'])
                     <div class="contact-item">
                         <span class="contact-icon">⌂</span> {{ $cvInformation['personalInformation']['address'] }}
+                    </div>
+                @endif
+
+                @if(isset($cvInformation['languages']) && count($cvInformation['languages']) > 0)
+                    <div class="language-section">
+                        <div class="language-title">{{ __('Languages') }}</div>
+                        @foreach($cvInformation['languages'] ?? [] as $language)
+                            <div class="language-item">
+                                <span>{{ $language['name'] ?? '' }}</span>
+                                @if(isset($language['level']))
+                                    <span class="language-level">{{ $language['level'] ?? '' }}</span>
+                                @endif
+                            </div>
+                        @endforeach
                     </div>
                 @endif
                 @if($cvInformation['personalInformation']['linkedin'])

@@ -158,6 +158,32 @@
             margin-bottom: 3mm;
         }
 
+        /* Language section styling */
+        .languages-section {
+            margin-bottom: 3mm;
+        }
+        
+        .language-items {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 2mm;
+        }
+        
+        .language-item {
+            background-color: #f5f7fa;
+            border: 0.2mm solid #dfe4ea;
+            border-radius: 1mm;
+            padding: 1mm 2mm;
+            font-size: 8.5pt;
+            color: #2c3e50;
+        }
+        
+        .language-level {
+            color: #7f8c8d;
+            margin-left: 1mm;
+            font-style: italic;
+        }
+
         @media print {
             body {
                 margin: 0;
@@ -270,6 +296,22 @@
                     <span class="hobby-item">
                         {{ $currentLocale === 'fr' ? $hobby['name'] : $hobby['name_en'] }}
                     </span>
+                @endforeach
+            </div>
+        </section>
+    @endif
+
+    @if(!empty($cvInformation['languages']))
+        <section class="languages-section">
+            <h2>{{ $currentLocale === 'fr' ? 'Langues' : 'Languages' }}</h2>
+            <div class="language-items">
+                @foreach($cvInformation['languages'] ?? [] as $language)
+                    <div class="language-item">
+                        {{ $language['name'] ?? '' }}
+                        @if(isset($language['level']))
+                            <span class="language-level">- {{ $language['level'] ?? '' }}</span>
+                        @endif
+                    </div>
                 @endforeach
             </div>
         </section>

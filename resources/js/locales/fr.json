@@ -79,11 +79,8 @@
             "delete": "Supprimer la langue",
             "levels": {
                 "beginner": "Débutant",
-                "elementary": "Élémentaire",
                 "intermediate": "Intermédiaire",
-                "upperIntermediate": "Intermédiaire avancé",
                 "advanced": "Avancé",
-                "proficient": "Maîtrise",
                 "native": "Langue maternelle"
             },
             "success": {

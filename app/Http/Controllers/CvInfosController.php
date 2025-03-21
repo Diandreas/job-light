@@ -27,17 +27,23 @@ class CvInfosController extends Controller
     {
         $user = Auth::user();
         if (!$user) abort(403, 'Unauthorized');
-
+    
         // Récupérer la langue depuis la requête
         $locale = request()->get('locale', app()->getLocale());
         app()->setLocale($locale);
-
+    
         $cvModel = CvModel::findOrFail($id);
         $cvInformation = $this->getCommonCvInformation($user);
         $groupedData = $this->groupExperiencesByCategory($cvInformation['experiences']);
-
+        
+        // Vérifier que les données de langues sont disponibles
+        if (!isset($cvInformation['languages'])) {
+            Log::warning('Language data missing for user ID: ' . $user->id);
+            $cvInformation['languages'] = []; // Fournir un tableau vide par défaut
+        }
+    
         return view("cv-templates." . $cvModel->viewPath, [
-            'cvInformation' => $cvInformation,
+            'cvInformation' => $cvInformation, // Contient déjà 'languages'
             'experiencesByCategory' => $groupedData['experiences'],
             'categoryTranslations' => $groupedData['translations'],
             'showPrintButton' => request()->has('print'),
@@ -45,7 +51,6 @@ class CvInfosController extends Controller
             'currentLocale' => $locale
         ]);
     }
-    
     public function updatePhoto(Request $request)
     {
         Log::info('=== Photo Upload Started ===');
@@ -195,23 +200,25 @@ class CvInfosController extends Controller
         }
 
         // Récupérer les langues de l'utilisateur avec leur niveau de maîtrise
+        // Récupérer les langues de l'utilisateur avec leur niveau de maîtrise
         $languages = $user->languages()
-            ->select(['languages.id', 'languages.name', 'languages.name_en'])
-            ->withPivot('language_level')
-            ->get()
-            ->map(function($language) {
-                return [
-                    'id' => $language->id,
-                    'name' => $language->name ?? '',
-                    'name_en' => $language->name_en ?? '',
-                    'pivot' => [
-                        'user_id' => $language->pivot->user_id,
-                        'language_id' => $language->pivot->language_id,
-                        'language_level' => $language->pivot->language_level
-                    ]
-                ];
-            })
-            ->toArray();
+        ->select(['languages.id', 'languages.name', 'languages.name_en'])
+        ->withPivot('language_level')
+        ->get()
+        ->map(function($language) {
+            return [
+                'id' => $language->id,
+                'name' => $language->name ?? '',
+                'name_en' => $language->name_en ?? '',
+                'level' => $language->pivot->language_level, // Ajout de la clé 'level' directement
+                'pivot' => [
+                    'user_id' => $language->pivot->user_id,
+                    'language_id' => $language->pivot->language_id,
+                    'language_level' => $language->pivot->language_level
+                ]
+            ];
+        })
+        ->toArray();
 
         $baseInfo = [
             'hobbies' => collect($user->hobbies()->select(['id', 'name', 'name_en'])->get())->map(function($hobby) {

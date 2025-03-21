@@ -54,6 +54,45 @@
             object-fit: cover;
         }
 
+        /* Language Section */
+        .language-section {
+            margin-top: 3mm;
+            padding: 3mm;
+            background-color: rgba(255, 165, 0, 0.1);
+            border-radius: 2mm;
+            border-left: 1.5mm solid #ff9800;
+        }
+
+        .language-title {
+            color: #e67e22;
+            font-size: 10pt;
+            font-weight: bold;
+            margin-bottom: 2mm;
+            text-transform: uppercase;
+            letter-spacing: 0.2mm;
+        }
+
+        .language-items {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 2mm;
+        }
+
+        .language-item {
+            background-color: white;
+            border-radius: 1mm;
+            padding: 1mm 2mm;
+            margin-bottom: 1mm;
+            font-size: 8pt;
+            color: #34495e;
+            box-shadow: 0 0.2mm 0.5mm rgba(0,0,0,0.1);
+        }
+
+        .language-level {
+            color: #e67e22;
+            font-weight: 600;
+            margin-left: 1mm;
+        }
         .header-text {
             margin-left: 26mm;
         }
@@ -220,11 +259,25 @@
                     <span class="contact-item">📧 {{ $cvInformation['personalInformation']['email'] }}</span>
                 @endif
                 @if($cvInformation['personalInformation']['phone'])
-                    <span class="contact-item">📱 {{ $cvInformation['personalInformation']['phone'] }}</span>
+                    <div class="contact-item">☎ {{ $cvInformation['personalInformation']['phone'] }}</div>
                 @endif
-                @if($cvInformation['personalInformation']['address'])
-                    <span class="contact-item">📍 {{ $cvInformation['personalInformation']['address'] }}</span>
+
+                @if(isset($cvInformation['languages']) && count($cvInformation['languages']) > 0)
+                    <div class="language-section">
+                        <div class="language-title">{{ __('Languages') }}</div>
+                        <div class="language-items">
+                            @foreach($cvInformation['languages'] ?? [] as $language)
+                                <div class="language-item">
+                                    {{ $language['name'] ?? '' }}
+                                    @if(isset($language['level']))
+                                        <span class="language-level">- {{ $language['level'] ?? '' }}</span>
+                                    @endif
+                                </div>
+                            @endforeach
+                        </div>
+                    </div>
                 @endif
+
                 @if($cvInformation['personalInformation']['linkedin'])
                     <span class="contact-item">🔗 {{ $cvInformation['personalInformation']['linkedin'] }}</span>
                 @endif

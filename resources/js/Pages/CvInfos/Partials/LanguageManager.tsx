@@ -47,7 +47,7 @@ const getLocalizedName = (language: Language, currentLanguage: string): string =
     return language.name;
 };
 
-const LanguageManager: React.FC<Props> = ({ auth, initialLanguages = [], availableLanguages = [], onUpdate }) => {
+const LanguageManager: React.FC<Props> = ({ auth, initialLanguages, availableLanguages, onUpdate }) => {
     const [languages, setLanguages] = useState<Language[]>(initialLanguages || []);
     const [selectedLanguage, setSelectedLanguage] = useState<string>('');
     const [selectedLevel, setSelectedLevel] = useState('Débutant');
@@ -68,9 +68,6 @@ const LanguageManager: React.FC<Props> = ({ auth, initialLanguages = [], availab
     }, [languages, i18n.language]);
 
     const filteredAvailableLanguages = useMemo(() => {
-        if (!availableLanguages || !Array.isArray(availableLanguages)) return [];
-        if (!languages || !Array.isArray(languages)) return availableLanguages;
-
         return availableLanguages
             .filter(lang =>
                 !languages.some(userLang => userLang.id === lang.id) &&

@@ -142,6 +142,29 @@
             padding-top: 2mm;
             border-top: 0.1mm solid #cccccc;
         }
+
+        /* Language Section */
+        .language-section {
+            margin-top: 3mm;
+        }
+        
+        .language-title {
+            font-size: 10pt;
+            margin-bottom: 2mm;
+            font-weight: normal;
+            text-transform: uppercase;
+            letter-spacing: 0.5mm;
+        }
+        
+        .language-item {
+            font-size: 8pt;
+            margin-bottom: 1mm;
+        }
+        
+        .language-level {
+            color: #666666;
+            margin-left: 2mm;
+        }
     </style>
 </head>
 <body>
@@ -259,6 +282,27 @@
             </tr>
         </table>
     </div>
+
+    {{-- Languages Section --}}
+    @if(isset($cvInformation['languages']) && count($cvInformation['languages']) > 0)
+        <div class="language-section">
+            <div class="language-title">{{ $currentLocale === 'fr' ? 'Langues' : 'Languages' }}</div>
+            <table class="skills-table">
+                @foreach(array_chunk($cvInformation['languages'] ?? [], 2) as $row)
+                    <tr>
+                        @foreach($row as $language)
+                            <td class="skill-cell">
+                                {{ $language['name'] ?? '' }}
+                                @if(isset($language['level']))
+                                    <span class="language-level">- {{ $language['level'] ?? '' }}</span>
+                                @endif
+                            </td>
+                        @endforeach
+                    </tr>
+                @endforeach
+            </table>
+        </div>
+    @endif
 </div>
 </body>
 </html>

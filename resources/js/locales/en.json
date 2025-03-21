@@ -87,8 +87,11 @@
             "delete": "Delete language",
             "levels": {
                 "beginner": "Beginner",
+                "elementary": "Elementary",
                 "intermediate": "Intermediate",
+                "upperIntermediate": "Upper Intermediate",
                 "advanced": "Advanced",
+                "proficient": "Proficient",
                 "native": "Native"
             },
             "success": {

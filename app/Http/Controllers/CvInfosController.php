@@ -9,6 +9,7 @@ use App\Models\ExperienceCategory;
 use App\Models\Profession;
 use App\Models\Competence;
 use App\Models\Hobby;
+use App\Models\Language;
 use App\Models\Summary;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
@@ -41,9 +42,10 @@ class CvInfosController extends Controller
             'categoryTranslations' => $groupedData['translations'],
             'showPrintButton' => request()->has('print'),
             'cvModel' => $cvModel,
-            'currentLocale' => $locale // Nouvelle variable
+            'currentLocale' => $locale
         ]);
     }
+    
     public function updatePhoto(Request $request)
     {
         Log::info('=== Photo Upload Started ===');
@@ -108,6 +110,7 @@ class CvInfosController extends Controller
         $cvInformation = $this->getCommonCvInformation($user);
         $groupedData = $this->groupExperiencesByCategory($cvInformation['experiences']);
         $locale = request()->get('locale', app()->getLocale());
+        
         // Configurer DomPDF
         $pdf = PDF::loadView("cv-templates." . $cvModel->viewPath, [
             'cvInformation' => $cvInformation,
@@ -115,7 +118,7 @@ class CvInfosController extends Controller
             'categoryTranslations' => $groupedData['translations'],
             'showPrintButton' => false,
             'cvModel' => $cvModel,
-            'currentLocale' => $locale // Nouvelle variable
+            'currentLocale' => $locale
         ]);
 
         // Définir les options spécifiques
@@ -124,12 +127,12 @@ class CvInfosController extends Controller
             'dpi' => 296,
             'defaultMediaType' => 'print',
             'enableCss' => true,
-
         ]);
 
         $filename = Str::slug($user->name) . '-cv.pdf';
         return $pdf->download($filename);
     }
+    
     private function getCommonCvInformation($user)
     {
         // Récupérer les expériences avec leurs références
@@ -191,6 +194,25 @@ class CvInfosController extends Controller
                 ->toArray();
         }
 
+        // Récupérer les langues de l'utilisateur avec leur niveau de maîtrise
+        $languages = $user->languages()
+            ->select(['languages.id', 'languages.name', 'languages.name_en'])
+            ->withPivot('language_level')
+            ->get()
+            ->map(function($language) {
+                return [
+                    'id' => $language->id,
+                    'name' => $language->name ?? '',
+                    'name_en' => $language->name_en ?? '',
+                    'pivot' => [
+                        'user_id' => $language->pivot->user_id,
+                        'language_id' => $language->pivot->language_id,
+                        'language_level' => $language->pivot->language_level
+                    ]
+                ];
+            })
+            ->toArray();
+
         $baseInfo = [
             'hobbies' => collect($user->hobbies()->select(['id', 'name', 'name_en'])->get())->map(function($hobby) {
                 return [
@@ -209,6 +231,7 @@ class CvInfosController extends Controller
                 ];
             })->toArray(),
 
+            'languages' => $languages,
             'experiences' => $experiencesWithReferences,
             'professions' => $professions,
             'summaries' => $user->selected_summary ? [$user->selected_summary->toArray()] : [],
@@ -227,6 +250,7 @@ class CvInfosController extends Controller
 
         return $baseInfo;
     }
+    
     public function index()
     {
         $user = auth()->user();
@@ -240,6 +264,7 @@ class CvInfosController extends Controller
             'myProfession' => $user->profession?->toArray(),
             'experienceCategories' => ExperienceCategory::all()->toArray(),
             'allsummaries' => $user->summaries()->get()->toArray(),
+            'availableLanguages' => Language::select(['id', 'name', 'name_en'])->get()->toArray(),
         ]);
 
         return Inertia::render('CvInfos/Index', [
@@ -269,7 +294,6 @@ class CvInfosController extends Controller
             'translations' => $categoryTranslations
         ];
     }
-
 
     public function show()
     {
@@ -310,17 +334,4 @@ class CvInfosController extends Controller
             'editMode' => false
         ]);
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
 }

@@ -80,6 +80,9 @@
             "levels": {
                 "beginner": "Débutant",
                 "intermediate": "Intermédiaire",
+                "elementary": "Élémentaire",
+                "upperIntermediate": "Intermédiaire supérieur",
+                "proficient": "Compétent",
                 "advanced": "Avancé",
                 "native": "Langue maternelle"
             },

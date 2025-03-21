@@ -152,10 +152,10 @@ const generateDates = (type: 'academic' | 'internship' | 'volunteer') => {
     const currentDate = new Date();
     const currentYear = currentDate.getFullYear();
 
-    switch(type) {
+    switch (type) {
         case 'academic':
             return {
-                startDate: `${currentYear-1}-09-01`,
+                startDate: `${currentYear - 1}-09-01`,
                 endDate: `${currentYear}-06-30`
             };
         case 'internship':
@@ -165,7 +165,7 @@ const generateDates = (type: 'academic' | 'internship' | 'volunteer') => {
             };
         case 'volunteer':
             return {
-                startDate: `${currentYear-1}-01-01`,
+                startDate: `${currentYear - 1}-01-01`,
                 endDate: `${currentYear}-12-31`
             };
     }
@@ -271,7 +271,7 @@ const ExperienceManager: React.FC<Props> = ({ auth, experiences: initialExperien
 
         };
 
-        switch(type) {
+        switch (type) {
             case 'academic':
                 return {
                     ...baseData,
@@ -531,7 +531,7 @@ const ExperienceManager: React.FC<Props> = ({ auth, experiences: initialExperien
     // Experience Card Component
     const ExperienceCard: React.FC<{ experience: Experience }> = ({ experience: exp }) => {
         const getCategoryIcon = (categoryId: string) => {
-            switch(categoryId) {
+            switch (categoryId) {
                 case '1': return <Briefcase className="w-3 h-3" />;
                 case '2': return <GraduationCap className="w-3 h-3" />;
                 case '3': return <Users className="w-3 h-3" />;
@@ -549,6 +549,7 @@ const ExperienceManager: React.FC<Props> = ({ auth, experiences: initialExperien
 
         // Format name for display with potential truncation
         const formatName = (name: string) => {
+            if (!name) return '';
             if (name.length > 20) {
                 return name.substring(0, 20) + '...';
             }
@@ -591,8 +592,8 @@ const ExperienceManager: React.FC<Props> = ({ auth, experiences: initialExperien
                                 <div className="flex items-center text-[10px] text-gray-600 dark:text-gray-300 mt-0.5">
                                     <BookOpen className="w-2.5 h-2.5 mr-0.5 flex-shrink-0 text-purple-500 dark:text-purple-400" />
                                     <span className="whitespace-nowrap">
-                                        {new Date(exp.date_start).toLocaleDateString('fr-FR', {year: '2-digit', month: '2-digit'})} -
-                                        {exp.date_end ? new Date(exp.date_end).toLocaleDateString('fr-FR', {year: '2-digit', month: '2-digit'}) : 'actuel'}
+                                        {new Date(exp.date_start).toLocaleDateString('fr-FR', { year: '2-digit', month: '2-digit' })} -
+                                        {exp.date_end ? new Date(exp.date_end).toLocaleDateString('fr-FR', { year: '2-digit', month: '2-digit' }) : 'actuel'}
                                     </span>
                                 </div>
 
@@ -819,7 +820,7 @@ const ExperienceManager: React.FC<Props> = ({ auth, experiences: initialExperien
                     <TabsTrigger value="attachments" className="flex items-center gap-1 text-[10px] py-0.5 h-7">
                         <FileText className="w-2.5 h-2.5" />
                         {t('experiences.tabs.attachments')} {attachmentSummary.files_count > 0 &&
-                        `(${attachmentSummary.files_count})`}
+                            `(${attachmentSummary.files_count})`}
                     </TabsTrigger>
                 </TabsList>
 
@@ -877,10 +878,11 @@ const ExperienceManager: React.FC<Props> = ({ auth, experiences: initialExperien
                             <AnimatePresence mode="sync">
                                 {filteredExperiences.length > 0 ? (
                                     filteredExperiences.map((exp) => (
-                                        <ExperienceCard key={exp.id} experience={exp} />
+                                        <ExperienceCard key={`experience-${exp.id}`} experience={exp} />
                                     ))
                                 ) : (
                                     <motion.div
+                                        key="no-experiences"
                                         initial={{ opacity: 0 }}
                                         animate={{ opacity: 1 }}
                                         exit={{ opacity: 0 }}
@@ -916,7 +918,7 @@ const ExperienceManager: React.FC<Props> = ({ auth, experiences: initialExperien
                                             .filter(exp => exp.attachment_path)
                                             .map(exp => (
                                                 <motion.div
-                                                    key={exp.id}
+                                                    key={`attachment-${exp.id}`}
                                                     initial={{ opacity: 0, y: 20 }}
                                                     animate={{ opacity: 1, y: 0 }}
                                                     exit={{ opacity: 0, y: -20 }}
@@ -1284,7 +1286,7 @@ const ExperienceManager: React.FC<Props> = ({ auth, experiences: initialExperien
                                 onChange={(e) => {
                                     const file = e.target.files?.[0];
                                     if (file) {
-                                        let MAX_FILE_SIZE=5 * 1024 * 1024
+                                        let MAX_FILE_SIZE = 5 * 1024 * 1024
                                         if (file.size > MAX_FILE_SIZE) {
                                             toast({
                                                 title: t('experiences.errors.attachment.tooLarge'),

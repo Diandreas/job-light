@@ -256,8 +256,10 @@ class CareerAdvisorController extends Controller
                 'history' => 'array'
             ]);
 
+            // Définir 'fr' comme langue par défaut si nécessaire
+            $language = $validated['language'] ?? 'fr';
+            
             $user = auth()->user();
-            $userInfo = $this->getUserRelevantInfo($user);
             $config = $this->getModelConfigForService($validated['serviceId']);
 
             // Définir le service_id pour saveHistory
@@ -266,9 +268,22 @@ class CareerAdvisorController extends Controller
             $messages = [
                 [
                     'role' => Role::system->value,
-                    'content' => $this->getSystemPrompt($validated['language'], $validated['serviceId'])
+                    'content' => $this->getSystemPrompt($language, $validated['serviceId'])
                 ]
             ];
+
+            // Récupérer le contexte compact s'il existe
+            $chatHistory = ChatHistory::where('context_id', $validated['contextId'])
+                ->where('user_id', $user->id)
+                ->first();
+
+            $userContext = '';
+            if ($chatHistory && !empty($chatHistory->context)) {
+                $userContext = $chatHistory->context;
+            } else {
+                $userInfo = $this->getUserRelevantInfo($user);
+                $userContext = json_encode($userInfo, JSON_PRETTY_PRINT);
+            }
 
             if (!empty($validated['history'])) {
                 foreach ($validated['history'] as $msg) {
@@ -283,9 +298,9 @@ class CareerAdvisorController extends Controller
                 'role' => Role::user->value,
                 'content' => $this->buildPrompt(
                     $validated['message'],
-                    $validated['language'],
+                    $language,
                     $validated['serviceId'],
-                    $userInfo
+                    $userContext
                 )
             ];
 
@@ -329,44 +344,57 @@ class CareerAdvisorController extends Controller
 
     private function getSystemPrompt($language, $serviceId)
     {
+        $languageInstruction = [
+            'fr' => "IMPORTANT: Vous DEVEZ répondre UNIQUEMENT en français, quoi qu'il arrive.",
+            'en' => "IMPORTANT: You MUST respond ONLY in English, no matter what."
+        ][$language] ?? "IMPORTANT: Vous DEVEZ répondre UNIQUEMENT en français, quoi qu'il arrive.";
+
         $prompts = [
             'interview-prep' => [
-                'fr' => "Vous êtes un recruteur expérimenté conduisant un entretien d'embauche.
+                'fr' => "{$languageInstruction}
+                        Vous êtes un recruteur expérimenté conduisant un entretien d'embauche.
                         Posez des questions pertinentes et donnez des retours constructifs.
                         Gardez un ton professionnel mais conversationnel.
                         Adaptez vos questions en fonction des réponses précédentes.
                         Maximum 10 échanges pour simuler un véritable entretien.",
-                'en' => "You are an experienced recruiter conducting a job interview.
+                'en' => "{$languageInstruction}
+                        You are an experienced recruiter conducting a job interview.
                         Ask relevant questions and provide constructive feedback.
                         Keep a professional but conversational tone.
                         Adapt your questions based on previous answers.
                         Maximum 10 exchanges to simulate a real interview."
             ],
             'cover-letter' => [
-                'fr' => "Vous êtes un expert en rédaction de lettres de motivation.
+                'fr' => "{$languageInstruction}
+                        Vous êtes un expert en rédaction de lettres de motivation.
                         Créez des contenus personnalisés, persuasifs et professionnels.
                         Mettez en valeur les compétences pertinentes et l'adéquation avec le poste.
                         Adaptez le style et le ton au secteur d'activité.",
-                'en' => "You are an expert in writing cover letters.
+                'en' => "{$languageInstruction}
+                        You are an expert in writing cover letters.
                         Create personalized, persuasive, and professional content.
                         Highlight relevant skills and job fit.
                         Adapt style and tone to the industry."
             ],
             'resume-review' => [
-                'fr' => "Vous êtes un expert en optimisation de CV.
+                'fr' => "{$languageInstruction}
+                        Vous êtes un expert en optimisation de CV.
                         Analysez le CV et suggérez des améliorations concrètes.
                         Concentrez-vous sur la mise en valeur des compétences clés.
                         Donnez des exemples spécifiques.",
-                'en' => "You are an expert in resume optimization.
+                'en' => "{$languageInstruction}
+                        You are an expert in resume optimization.
                         Analyze the resume and suggest concrete improvements.
                         Focus on highlighting key skills.
                         Provide specific examples."
             ],
             'default' => [
-                'fr' => "Vous êtes un conseiller professionnel expert.
+                'fr' => "{$languageInstruction}
+                        Vous êtes un conseiller professionnel expert.
                         Donnez des conseils pratiques et applicables.
                         Adaptez vos recommandations au profil et au secteur.",
-                'en' => "You are an expert career advisor.
+                'en' => "{$languageInstruction}
+                        You are an expert career advisor.
                         Provide practical and actionable advice.
                         Adapt recommendations to profile and industry."
             ]
@@ -375,10 +403,9 @@ class CareerAdvisorController extends Controller
         return $prompts[$serviceId][$language] ?? $prompts['default'][$language];
     }
 
-    private function buildPrompt($message, $language, $serviceId, $userInfo)
+    private function buildPrompt($message, $language, $serviceId, $userContext)
     {
-        $context = json_encode($userInfo, JSON_PRETTY_PRINT);
-        return "Profil :\n{$context}\n\nMessage : {$message}";
+        return "Profil :\n{$userContext}\n\nMessage : {$message}";
     }
 
     private function saveHistory($userId, $contextId, $userMessage, $aiResponse, $maxHistory = 3, $tokensUsed = 0)
@@ -409,6 +436,12 @@ class CareerAdvisorController extends Controller
             // Limiter l'historique
             $messages = array_slice($messages, -($maxHistory * 2));
 
+            // Si c'est une nouvelle conversation ou si le contexte est vide, générer un nouveau contexte
+            if (!$chatHistory->exists || empty($chatHistory->context)) {
+                $user = User::find($userId);
+                $chatHistory->context = $this->generateCompactContext($user);
+            }
+
             // Remplir tous les champs requis
             $chatHistory->fill([
                 'user_id' => $userId,
@@ -436,24 +469,66 @@ class CareerAdvisorController extends Controller
         }
     }
 
+    /**
+     * Génère un résumé compact du profil de l'utilisateur pour le contexte
+     */
+    private function generateCompactContext($user)
+    {
+        $experiences = $user->experiences()
+            ->orderBy('date_start', 'desc')
+            ->take(10)
+            ->get()
+            ->map(fn($exp) => [
+                'poste' => $exp->name,
+                'entreprise' => $exp->InstitutionName,
+                'période' => $exp->date_start . ' - ' . ($exp->date_end ?? 'actuel'),
+                'description' => mb_substr($exp->description, 0, 200) . (strlen($exp->description) > 200 ? '...' : '')
+            ]);
+
+        $competences = $user->competences()
+            ->take(5)
+            ->pluck('name')
+            ->implode(', ');
+
+        $languages = $user->languages()
+            ->get()
+            ->map(fn($lang) => $lang->name . ' (' . ($lang->pivot->level ?? 'Intermédiaire') . ')')
+            ->implode(', ');
+
+        return json_encode([
+            'nom' => $user->name,
+            'profession' => $user->profession?->name ?? $user->full_profession ?? 'Non spécifié',
+            'expériences_clés' => $experiences,
+            'compétences' => $competences,
+            'langues' => $languages
+        ]);
+    }
+
     private function getUserRelevantInfo($user)
     {
         return [
             'name' => $user->name,
-            'profession' => $user->profession?->name ?? 'Non spécifié',
+            'profession' => $user->profession?->name ?? $user->full_profession ?? 'Non spécifié',
             'experiences' => $user->experiences()
                 ->orderBy('date_start', 'desc')
-                ->take(3)
+                ->take(10)
                 ->get()
                 ->map(fn($exp) => [
                     'title' => $exp->name,
                     'company' => $exp->InstitutionName,
-                    'duration' => $exp->date_start . ' - ' . ($exp->date_end ?? 'Present')
+                    'duration' => $exp->date_start . ' - ' . ($exp->date_end ?? 'Present'),
+                    'description_preview' => mb_substr($exp->description, 0, 200) . (strlen($exp->description) > 200 ? '...' : '')
                 ])->toArray(),
             'competences' => $user->competences()
-                ->take(5)
+                ->take(4)
                 ->pluck('name')
-                ->toArray()
+                ->toArray(),
+            'languages' => $user->languages()
+                ->get()
+                ->map(fn($lang) => [
+                    'name' => $lang->name,
+                    'level' => $lang->pivot->level ?? 'Intermédiaire'
+                ])->toArray()
         ];
     }
 
@@ -561,7 +636,9 @@ class CareerAdvisorController extends Controller
             $text = '';
             foreach ($phpWord->getSections() as $section) {
                 foreach ($section->getElements() as $element) {
-                    if (method_exists($element, 'getText')) {
+                    if ($element instanceof \PhpOffice\PhpWord\Element\Text) {
+                        $text .= $element->getText() . "\n";
+                    } elseif (method_exists($element, 'getText')) {
                         $text .= $element->getText() . "\n";
                     }
                 }

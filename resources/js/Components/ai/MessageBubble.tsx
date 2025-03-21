@@ -165,6 +165,8 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({ message }) => {
                                     {...props}
                                 />
                             ),
+                            // @ts-ignore
+
                             code: ({ node, inline, ...props }) => (
                                 inline
                                     ? <code
@@ -283,6 +285,8 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({ message }) => {
             </AnimatePresence>
 
             {/* Style pour l'export */}
+            {/* @ts-ignore */}
+
             <style jsx global>{`
                 .share-image-style {
                     box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);

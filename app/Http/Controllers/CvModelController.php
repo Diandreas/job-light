@@ -15,7 +15,7 @@ class CvModelController extends Controller
 {
     public function index()
     {
-        return Inertia::render('admin/CvModels/Index', [
+        return Inertia::render('Admin/CvModels/Index', [
             'cvModels' => CvModel::all(),
         ]);
     }
@@ -32,7 +32,7 @@ class CvModelController extends Controller
     }
     public function create()
     {
-        return Inertia::render('admin/CvModels/Create');
+        return Inertia::render('Admin/CvModels/Create');
     }
 
     public function store(StoreCvModelRequest $request)
@@ -275,14 +275,14 @@ BLADE;
     }
     public function show(CvModel $cvModel)
     {
-        return Inertia::render('admin/CvModels/Show', [
+        return Inertia::render('Admin/CvModels/Show', [
             'cvModel' => $cvModel,
         ]);
     }
 
     public function edit(CvModel $cvModel)
     {
-        return Inertia::render('admin/CvModels/Edit', [
+        return Inertia::render('Admin/CvModels/Edit', [
             'cvModel' => $cvModel,
         ]);
     }

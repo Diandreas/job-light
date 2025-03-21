@@ -66,12 +66,11 @@ return new class extends Migration
 
         Schema::create('cv_models', function (Blueprint $table) {
             $table->id();
-            $table->string('name', 255)->nullable();
+            $table->string('name', 191)->nullable();
             $table->string('description', 255)->nullable();
-            $table->string('viewPath', 255)->nullable()->unique();
+            $table->string('viewPath', 191)->nullable();
             $table->integer('price')->nullable();
             $table->string('previewImagePath', 255)->nullable();
-            $table->unique('name');
             $table->timestamps();
         });
 
@@ -84,8 +83,7 @@ return new class extends Migration
 
         Schema::create('hobbies', function (Blueprint $table) {
             $table->id();
-            $table->string('name', 255)->nullable();
-            $table->primary('id');
+            $table->string('name', 191)->nullable();
             $table->timestamps();
         });
 
@@ -115,7 +113,6 @@ return new class extends Migration
             $table->string('name', 45)->nullable();
             $table->string('description', 45)->nullable();
             $table->integer('ranking')->nullable();
-            $table->unique('name');
             $table->timestamps();
         });
 
@@ -163,7 +160,6 @@ return new class extends Migration
             $table->string('name', 100)->nullable();
             $table->text('description')->nullable();
             $table->foreignId('profession_id')->constrained()->onDelete('cascade');
-            $table->primary(['id', 'profession_id']);
             $table->timestamps();
         });
 

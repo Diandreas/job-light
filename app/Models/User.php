@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use App\Models\ReferralLevel;
 
@@ -189,7 +190,7 @@ class User extends Authenticatable
             return $lowestLevel ? $lowestLevel->name : 'ARGENT';
         } catch (\Exception $e) {
             // En cas d'erreur, utiliser les valeurs par défaut
-            \Log::error('Erreur lors de la détermination du niveau de parrainage: ' . $e->getMessage());
+            Log::error('Erreur lors de la détermination du niveau de parrainage: ' . $e->getMessage());
             $referralCount = $this->referrals()->count();
             
             if ($referralCount >= 20) {
@@ -264,7 +265,7 @@ class User extends Authenticatable
             return $nextLevelObj ? $nextLevelObj->name : null;
         } catch (\Exception $e) {
             // En cas d'erreur, utiliser les valeurs par défaut
-            \Log::error('Erreur lors de la détermination du prochain niveau de parrainage: ' . $e->getMessage());
+            Log::error('Erreur lors de la détermination du prochain niveau de parrainage: ' . $e->getMessage());
             $currentLevel = $this->referralLevel();
             
             if ($currentLevel === 'DIAMANT') {
@@ -320,7 +321,7 @@ class User extends Authenticatable
             return min(100, ($userProgress / $levelDifference) * 100);
         } catch (\Exception $e) {
             // En cas d'erreur, utiliser les valeurs par défaut
-            \Log::error('Erreur lors du calcul de la progression de parrainage: ' . $e->getMessage());
+            Log::error('Erreur lors du calcul de la progression de parrainage: ' . $e->getMessage());
             $referralCount = $this->referrals()->count();
             $currentLevel = $this->referralLevel();
             
@@ -389,5 +390,15 @@ class User extends Authenticatable
         return $this->sponsor_id 
             && $this->sponsor_expires_at 
             && now()->lt($this->sponsor_expires_at);
+    }
+
+    /**
+     * Get the languages associated with the user.
+     */
+    public function languages()
+    {
+        return $this->belongsToMany(language::class, 'user_languages', 'user_id', 'language_id')
+            ->withPivot('language_level')
+            ->withTimestamps();
     }
 }

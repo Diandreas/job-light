@@ -377,6 +377,7 @@ class NotchPayController extends Controller
         // This should match your frontend TOKEN_PACKS logic
         $tokenPacks = [
             10 => 600,
+            25 => 1200,
             60 => 3000,
             130 => 6000,
             400 => 18000

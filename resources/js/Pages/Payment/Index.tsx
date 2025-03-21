@@ -30,6 +30,16 @@ const TOKEN_PACKS = [
     },
     {
         id: 'plus',
+        tokens: 20,
+        bonusTokens: 5,
+        priceEuros: 2,
+        priceFCFA: 1200,
+        mostPopular: true,
+        color: 'from-rose-400 to-rose-600',
+        popularityText: 'plus'
+    },
+    {
+        id: 'pro',
         tokens: 50,
         bonusTokens: 10,
         priceEuros: 5,
@@ -38,24 +48,16 @@ const TOKEN_PACKS = [
         popularityText: 'plus'
     },
     {
-        id: 'pro',
+        id: 'ultimate',
         tokens: 100,
         bonusTokens: 30,
         priceEuros: 10,
         priceFCFA: 6000,
-        mostPopular: true,
+
         color: 'from-blue-400 to-blue-600',
-        popularityText: 'pro'
-    },
-    {
-        id: 'ultimate',
-        tokens: 300,
-        bonusTokens: 100,
-        priceEuros: 30,
-        priceFCFA: 18000,
-        color: 'from-rose-400 to-rose-600',
         popularityText: 'ultimate'
-    }
+    },
+
 ];
 
 const PaymentMethodsInfo = {
@@ -408,9 +410,9 @@ export default function Index({ auth, paypalConfig }) {
                                                 <div className="text-sm text-gray-500 dark:text-gray-400">
                                                     {t('payment.total')}: {pack.tokens + pack.bonusTokens} {t('payment.tokens')}
                                                 </div>
-                                                <div className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                                                {/* <div className="text-sm text-gray-500 dark:text-gray-400 mt-1">
                                                     {t('payment.unitPrice')}: {(pack.priceEuros / (pack.tokens + pack.bonusTokens) * 10).toFixed(2)}€ / 10 {t('payment.tokens')}
-                                                </div>
+                                                </div> */}
 
                                                 <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
                                                     <PaymentTabs

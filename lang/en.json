@@ -102,7 +102,15 @@
                 "experience": "Experience",
                 "competence": "Skills",
                 "education": "Education",
-                "hobbies": "Interests"
+                "hobbies": "Interests",
+                "languages": "Languages",
+                "languages.empty": "No languages added yet",
+                "languages.add": "Add a language",
+                "languages.select": "Select a language",
+                "languages.selectPlaceholder": "Choose a language",
+                "languages.level": "Language level",
+                "languages.levelPlaceholder": "Select a level",
+                "notFound": "Section not found"
             },
             "personal": {
                 "title": "Personal Information",
@@ -167,7 +175,61 @@
         "download": "Download",
         "template": "Templates",
         "save": "Save",
-        "continue": "Continue"
+        "continue": "Continue",
+        "sidebar": {
+            "personalInfo": "Personal Information",
+            "summary": "Summary",
+            "experience": "Experience",
+            "competence": "Skills",
+            "education": "Education",
+            "language": "Languages",
+            "hobby": "Interests",
+            "profession": "Profession"
+        },
+        "personalInfo": {
+            "title": "Personal Information",
+            "email": "Email",
+            "phone": "Phone",
+            "address": "Address",
+            "linkedin": "LinkedIn",
+            "github": "GitHub",
+            "edit": "Edit",
+            "save": "Save",
+            "cancel": "Cancel"
+        },
+        "sections": {
+            "notFound": "Section not found"
+        },
+        "languages": {
+            "title": "Languages",
+            "add": "Add language",
+            "select": "Select language",
+            "selectPlaceholder": "Choose language",
+            "level": "Level",
+            "levelPlaceholder": "Select level",
+            "empty": "No languages added",
+            "delete": "Delete",
+            "success": {
+                "added": "Language added successfully",
+                "removed": "Language removed successfully"
+            },
+            "error": {
+                "title": "Error",
+                "load": "Unable to load languages",
+                "select": "Please select a language",
+                "add": "Unable to add language",
+                "delete": "Unable to delete language"
+            },
+            "levels": {
+                "beginner": "Beginner (A1)",
+                "elementary": "Elementary (A2)",
+                "intermediate": "Intermediate (B1)",
+                "upperIntermediate": "Upper Intermediate (B2)",
+                "advanced": "Advanced (C1)",
+                "proficient": "Proficient (C2)",
+                "native": "Native"
+            }
+        }
     },
     "profile": {
         "edit": "Edit Profile",
@@ -187,7 +249,6 @@
         "en": "English",
         "fr": "French"
     },
-
     "common": {
         "search": "Search",
         "loading": "Loading",
@@ -198,7 +259,9 @@
         "edit": "Edit",
         "delete": "Delete",
         "back": "Back",
-        "next": "Next"
+        "next": "Next",
+        "add": "Add",
+        "remove": "Remove"
     },
     "wallet": {
         "balance": "Balance",
@@ -239,9 +302,6 @@
             "error": "An error occurred"
         }
     },
-
-
-
     "cv_preview": {
         "title": "Professional CV",
         "export": {
@@ -350,7 +410,6 @@
                     "placeholder": "What were the main outcomes or achievements?"
                 },
                 "references": {
-
                     "title": "References",
                     "label": "References",
                     "add": "Add Reference",
@@ -422,12 +481,9 @@
     "common": {
         "loading": "Loading..."
     },
-
-
-
     "auth": {
         "register": {
-            "value" : "Register",
+            "value": "Register",
             "title": "Create your account",
             "subtitle": "Join us and start creating your professional CV",
             "name": {
@@ -458,9 +514,8 @@
             }
         },
         "logout": "Logout",
-
         "login": {
-            "value" : "login",
+            "value": "login",
             "title": "Welcome back!",
             "subtitle": "Sign in to access your personal space",
             "email": "Your email",
@@ -471,19 +526,13 @@
             "forgotPassword": "Forgot password?",
             "createAccount": "Create account"
         }
-
     },
-
-
-
-
     "career_advisor": {
         "title": "Career Assistant",
         "header": {
             "balance": "Balance",
             "history": "History"
         },
-
         "messages": {
             "loading_error": "Error loading conversations",
             "chat_loading_error": "Error loading conversation",
@@ -521,8 +570,6 @@
             "created_at": "Created on {{date}}"
         }
     },
-
-
     "hobbies": {
         "title": "Interests",
         "description": "Customize your profile with your passions",
@@ -570,7 +617,6 @@
             "generic": "An error occurred."
         }
     },
-
     "professions": {
         "title": "My Education",
         "description": "Indicate your academic or professional background",
@@ -620,7 +666,9 @@
             "adding": {
                 "title": "Error"
             },
-            "generic": "An error occurred."}},
+            "generic": "An error occurred."
+        }
+    },
     "competences": {
         "title": "My Skills",
         "description": "Highlight your professional strengths",
@@ -665,10 +713,6 @@
             "generic": "An error occurred."
         }
     },
-
-
-
-
     "summaries": {
         "title": "My Summaries",
         "subtitle": "Manage your professional summaries",
@@ -755,7 +799,6 @@
             }
         }
     },
-
     "services": {
         "interview-prep": {
             "title": "Interview Preparation",

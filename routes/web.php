@@ -25,6 +25,7 @@ use App\Http\Controllers\{AddressController,
     UserCompetenceController,
     UserHobbyController,
     UserProfessionsController,
+    UserlanguageController,
     Admin\ReferralLevelController};
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -205,7 +206,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
         // Le reste de vos routes authentifiées...
     });
 
-
+    // Languages routes
+    Route::get('/user-languages', [UserlanguageController::class, 'index'])->name('user-languages.index');
+    Route::get('/user-languages/create', [UserlanguageController::class, 'create'])->name('user-languages.create');
+    Route::post('/user-languages', [UserlanguageController::class, 'store'])->name('user-languages.store');
+    Route::delete('/user-languages/{user_id}/{language_id}', [UserlanguageController::class, 'destroy'])->name('user-languages.destroy');
 });
 
 require __DIR__.'/auth.php';

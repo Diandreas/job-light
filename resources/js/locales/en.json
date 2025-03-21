@@ -2,24 +2,24 @@
     "brand": "Guidy",
     "nav": {
         "login": "Login",
-        "register": "Start Free",
-        "start_free": "Start Now"
+        "register": "Start for Free",
+        "start_free": "Start now"
     },
     "hero": {
         "badge": "🚀 Boost your career with AI",
         "title": "Your intelligent professional guide",
-        "description": "Create impactful resumes, get personalized career advice and prepare for interviews with our next-generation AI assistant"
+        "description": "Create impactful resumes, get personalized career advice, and prepare for interviews with our cutting-edge AI assistant"
     },
     "features": {
         "cv_designer": {
-            "title": "Pro CV Designer",
-            "description": "Create professional resumes with our premium templates and export in high quality PDF.",
+            "title": "CV Designer Pro",
+            "description": "Create professional resumes with our premium templates and export in high-quality PDF.",
             "action": "Create my CV"
         },
         "career_advisor": {
             "title": "AI Career Advisor",
             "description": "Get personalized advice for your professional development.",
-            "action": "Consult assistant"
+            "action": "Consult the assistant"
         },
         "cover_letter": {
             "title": "Cover Letter",
@@ -28,8 +28,8 @@
         },
         "interview_coach": {
             "title": "Interview Coach",
-            "description": "Prepare for interviews with our intelligent interactive simulation.",
-            "action": "Prepare interview"
+            "description": "Prepare for your interviews with our intelligent interactive simulation.",
+            "action": "Prepare my interview"
         }
     },
     "stats": {
@@ -39,40 +39,76 @@
         "availability": "% availability"
     },
     "cta": {
-        "badge": "The assistant guiding you to success",
+        "badge": "The assistant that guides you to success",
         "button": "Unlock your potential"
     },
     "footer": {
         "services": {
             "title": "Services",
-            "resume": "Resume Builder",
+            "resume": "Resume Creation",
             "advisor": "Career Advisor",
-            "interview": "Interview Prep"
+            "interview": "Interview Preparation"
         },
         "legal": {
             "title": "Legal",
             "privacy": "Privacy Policy",
-            "terms": "Terms of Service",
+            "terms": "Terms of Use",
             "cookies": "Cookie Policy",
-            "mentions": "Legal Notice"
+            "mentions": "Legal Notices"
         },
         "copyright": "All rights reserved"
     },
     "menu": {
         "title": "Guidy Menu",
         "admin": "Administration",
-        "createCV": "Create CV",
+        "createCV": "Create a CV",
         "assistant": "Guidy Assistant",
         "dashboard": "Dashboard",
         "profile": "My Profile"
     },
     "cv": {
+        "navigation": "CV Navigation",
+        "edit": "Edit CV",
+        "premium": "Premium Designs",
+        "preview": "Preview & Export",
+        "download": "Download",
+        "template": "Templates",
+        "save": "Save",
+        "continue": "Continue",
+        "languages": {
+            "title": "Languages",
+            "description": "Add languages you speak",
+            "add": "Add a language",
+            "select": "Select a language",
+            "selectPlaceholder": "Choose a language...",
+            "level": "Proficiency level",
+            "levelPlaceholder": "Select level",
+            "empty": "No languages added",
+            "delete": "Delete language",
+            "levels": {
+                "beginner": "Beginner",
+                "intermediate": "Intermediate",
+                "advanced": "Advanced",
+                "native": "Native"
+            },
+            "success": {
+                "added": "Language added successfully",
+                "removed": "Language removed successfully"
+            },
+            "error": {
+                "title": "Error",
+                "load": "Failed to load languages",
+                "select": "Please select a language",
+                "add": "Failed to add language",
+                "delete": "Failed to delete language"
+            }
+        },
         "interface": {
             "title": "CV Editor",
             "chooseDesign": "Choose a design",
             "designs": "Designs",
             "welcome": {
-                "title": "Welcome to the CV Editor",
+                "title": "Welcome to the CV editor",
                 "subtitle": "Complete your profile to create a professional CV",
                 "complete": "completed"
             },
@@ -81,7 +117,7 @@
                 "pdf": "Import PDF",
                 "word": "Import Word",
                 "success": "Import successful",
-                "successDetail": "Your CV has been successfully imported",
+                "successDetail": "Your CV has been imported successfully",
                 "error": "Import error",
                 "errorDetail": "An error occurred during import",
                 "insufficient": "Insufficient balance"
@@ -92,7 +128,7 @@
             },
             "update": {
                 "success": "Update successful",
-                "successDetail": "Your information has been successfully updated"
+                "successDetail": "Your information has been updated successfully"
             },
             "personal": {
                 "title": "Personal Information",
@@ -113,17 +149,17 @@
                     "cancel": "Cancel",
                     "success": {
                         "title": "Photo updated",
-                        "description": "Your profile photo has been successfully updated"
+                        "description": "Your profile photo has been updated successfully"
                     },
                     "deleteSuccess": {
                         "title": "Photo deleted",
-                        "description": "Your profile photo has been successfully deleted"
+                        "description": "Your profile photo has been deleted successfully"
                     },
                     "error": {
                         "title": "Error",
                         "noCrop": "Please select a part of the image"
                     },
-                    "sizeError": "The image size should not exceed 5MB"
+                    "sizeError": "Image size should not exceed 5 MB"
                 }
             },
             "cta": {
@@ -134,7 +170,8 @@
         "sidebar": {
             "personalInfo": "Personal Information",
             "summary": "Summary",
-            "experience": "Experience",
+            "experience": "Experiences",
+            "language": "Languages",
             "competence": "Skills",
             "profession": "Education",
             "hobby": "Interests"
@@ -145,31 +182,23 @@
             "address": "Address",
             "linkedin": "LinkedIn",
             "github": "GitHub"
-        },
-        "navigation": "CV Navigation",
-        "edit": "Edit CV",
-        "premium": "Premium Designs",
-        "preview": "Preview & Export",
-        "download": "Download",
-        "template": "Templates",
-        "save": "Save",
-        "continue": "Continue"
+        }
     },
     "profile": {
-        "edit": "Edit Profile",
+        "edit": "Edit profile",
         "settings": "Settings",
         "preferences": "Preferences",
         "account": "Account",
         "security": "Security"
     },
     "theme": {
-        "toggle": "Toggle Theme",
+        "toggle": "Toggle theme",
         "light": "Light Mode",
         "dark": "Dark Mode",
         "system": "System"
     },
     "language": {
-        "change": "Change Language",
+        "change": "Change language",
         "en": "English",
         "fr": "French"
     },
@@ -185,13 +214,15 @@
         "back": "Back",
         "next": "Next",
         "manage": "Manage",
-        "generic": "An error occurred."
+        "error": {
+            "generic": "An error has occurred."
+        }
     },
     "wallet": {
         "balance": "Balance",
         "tokens": "Tokens",
-        "add": "Add Tokens",
-        "insufficient": "Insufficient Balance"
+        "add": "Add tokens",
+        "insufficient": "Insufficient balance"
     },
     "notifications": {
         "title": "Notifications",
@@ -200,213 +231,30 @@
         "new": "New"
     },
     "cv_models": {
-        "title": "CV Models Collection",
+        "title": "CV Template Collection",
         "back": "Back",
         "export_cv": "Export CV",
         "search_placeholder": "Search...",
         "active_models": {
-            "title": "My Active Models",
-            "limit": "{{current}}/{{max}} models"
+            "title": "My Active Templates",
+            "limit": "{{current}}/{{max}} templates"
         },
-        "discover_models": "Discover Our Models",
+        "discover_models": "Discover our Templates",
         "empty_state": {
-            "title": "No Active Models",
-            "description": "Select a model from available models below."
+            "title": "No Active Templates",
+            "description": "Select a template from the available templates below."
         },
         "model_card": {
             "active": "Active",
-            "use_model": "Use This Model",
-            "active_model": "Active Model",
+            "use_model": "Use this Template",
+            "active_model": "Active Template",
             "add_to_catalog": "Add to Catalog"
         },
         "notifications": {
-            "model_added": "Model added to your collection",
-            "model_activated": "Your model has been successfully activated",
-            "max_models_reached": "You cannot add more than {{max}} models",
+            "model_added": "Template added to your collection",
+            "model_activated": "Your template has been activated successfully",
+            "max_models_reached": "You cannot add more than {{max}} templates",
             "error": "An error occurred"
-        }
-    },
-    "cv_preview": {
-        "title": "Professional Resume",
-        "export": {
-            "download": "Download CV",
-            "downloading": "Downloading",
-            "title": "Export my CV",
-            "selected_model": "Selected model: {{name}}",
-            "back_to_models": "Back to models",
-            "print": "Print",
-            "printing": "Printing...",
-            "download_success": "Download successful",
-            "download_success_description": "Your CV has been downloaded successfully",
-            "download_error": "Download error",
-            "download_not_allowed": "Download not allowed for this model"
-        },
-        "wallet": {
-            "current_balance": "Current balance",
-            "model_price": "Model price",
-            "insufficient_tokens": "You don't have enough tokens to use this model. Please recharge your account.",
-            "recharge_tokens": "Recharge my tokens",
-            "insufficient_access": {
-                "title": "Insufficient access"
-            }
-        },
-        "no_model": {
-            "title": "Selection required",
-            "message": "Please select a CV model in the \"My designs\" section before continuing.",
-            "action": "Choose a model"
-        },
-        "preview": {
-            "title": "CV Preview",
-            "loading": "Loading preview..."
-        }
-    },
-    "experiences": {
-        "title": "Experience Management",
-        "description": "Manage your professional, academic, and volunteer experiences",
-        "actions": {
-            "add": "Add an experience",
-            "update": "Update experience",
-            "save": "Save experience",
-            "cancel": "Cancel",
-            "delete": "Delete"
-        },
-        "filters": {
-            "search": "Search experiences..."
-        },
-        "tabs": {
-            "list": "Experiences",
-            "attachments": "Attachments"
-        },
-        "form": {
-            "references": {
-                "title": "References",
-                "add": "Add Reference",
-                "name": "Full Name",
-                "function": "Position/Role",
-                "email": "Email",
-                "phone": "Phone",
-                "placeholders": {
-                    "name": "Enter reference name",
-                    "function": "Enter position/role",
-                    "email": "Enter email address",
-                    "phone": "Enter phone number"
-                },
-                "default": {
-                    "name": "John Smith",
-                    "function": "Project Manager",
-                    "email": "john.smith@example.com",
-                    "phone": "+1 234 567 890"
-                }
-            },
-            "title": {
-                "new": "New Experience",
-                "edit": "Edit Experience"
-            },
-            "description": {
-                "new": "Add a new experience to your profile",
-                "edit": "Modify existing experience details"
-            },
-            "templates": {
-                "title": "Templates",
-                "description": "Start with a predefined template",
-                "academic": "Academic Experience",
-                "internship": "Internship Experience",
-                "volunteer": "Volunteer Experience",
-                "defaultComment": "Add any additional comments here"
-            },
-            "fields": {
-                "name": {
-                    "label": "Experience Name",
-                    "placeholder": "Enter the name of your experience"
-                },
-                "institution": {
-                    "label": "Institution Name",
-                    "placeholder": "Enter the institution or company name"
-                },
-                "dates": {
-                    "start": "Start Date",
-                    "end": "End Date",
-                    "ongoing": "Leave end date empty for ongoing experiences"
-                },
-                "type": {
-                    "label": "Experience Type",
-                    "placeholder": "Select the type of experience"
-                },
-                "description": {
-                    "label": "Description",
-                    "placeholder": "Describe your experience, responsibilities, and achievements"
-                },
-                "output": {
-                    "label": "Results",
-                    "placeholder": "What were the main outcomes or achievements?"
-                },
-                "references": {
-                    "title": "References",
-                    "label": "References",
-                    "add": "Add Reference",
-                    "name": "Full Name",
-                    "function": "Position/Role",
-                    "email": "Email",
-                    "phone": "Phone",
-                    "placeholders": {
-                        "name": "Enter reference name",
-                        "function": "Enter position/role",
-                        "email": "Enter email address",
-                        "phone": "Enter phone number"
-                    },
-                    "default": {
-                        "name": "John Smith",
-                        "function": "Project Manager",
-                        "email": "john.smith@example.com",
-                        "phone": "+1 234 567 890"
-                    }
-                }
-            },
-            "attachment": {
-                "title": "Attachments",
-                "maxSize": "Max 100MB",
-                "current": "Current file:",
-                "delete": "Delete file",
-                "formats": "Accepted formats: PDF, DOC, DOCX"
-            }
-        },
-        "attachments": {
-            "stats": {
-                "used": "Storage Used",
-                "files": "Total Files",
-                "available": "Available Space"
-            }
-        },
-        "empty": {
-            "experiences": "No experiences added yet",
-            "search": "No experiences match your search",
-            "attachments": "No attachments uploaded yet"
-        },
-        "success": {
-            "created": "Experience successfully created",
-            "updated": "Experience successfully updated",
-            "deleted": "Experience deleted",
-            "deletedDescription": "The experience has been permanently removed",
-            "formDescription": "Your changes have been saved",
-            "template": {
-                "applied": "Template applied",
-                "description": "The template has been applied successfully"
-            },
-            "attachment": {
-                "deleted": "Attachment deleted",
-                "deletedDescription": "The file has been removed"
-            }
-        },
-        "errors": {
-            "title": "Error",
-            "save": "Error saving experience",
-            "delete": "Error deleting experience",
-            "generic": "An unexpected error occurred",
-            "attachment": {
-                "delete": "Error deleting attachment",
-                "noFile": "No file available",
-                "noFileDescription": "There is no attachment to preview"
-            }
         }
     },
     "auth": {
@@ -443,16 +291,50 @@
         },
         "logout": "Logout",
         "login": {
-            "value": "login",
+            "value": "Login",
             "title": "Welcome back!",
-            "subtitle": "Sign in to access your personal space",
+            "subtitle": "Login to access your personal space",
             "email": "Your email",
             "password": "Your password",
             "remember": "Remember me",
-            "button": "Sign in",
-            "processing": "Signing in...",
+            "button": "Login",
+            "processing": "Logging in...",
             "forgotPassword": "Forgot password?",
-            "createAccount": "Create account"
+            "createAccount": "Create an account"
+        }
+    },
+    "cv_preview": {
+        "title": "Professional CV",
+        "export": {
+            "download": "Download CV",
+            "downloading": "Downloading",
+            "title": "Export my CV",
+            "selected_model": "Selected template: {{name}}",
+            "back_to_models": "Back to templates",
+            "print": "Print",
+            "printing": "Printing...",
+            "download_success": "Download successful",
+            "download_success_description": "Your CV has been downloaded successfully",
+            "download_error": "Download error",
+            "download_not_allowed": "Download not allowed for this template"
+        },
+        "wallet": {
+            "current_balance": "Current balance",
+            "model_price": "Template price",
+            "insufficient_tokens": "You don't have enough tokens to use this template. Please reload your account.",
+            "recharge_tokens": "Reload my tokens",
+            "insufficient_access": {
+                "title": "Insufficient access"
+            }
+        },
+        "no_model": {
+            "title": "Selection required",
+            "message": "Please select a CV template in the \"My designs\" section before continuing.",
+            "action": "Choose a template"
+        },
+        "preview": {
+            "title": "CV Preview",
+            "loading": "Loading preview..."
         }
     },
     "career_advisor": {
@@ -469,8 +351,8 @@
             "loading": "Loading conversation...",
             "empty": "Please enter your message",
             "insufficient_balance": "Insufficient balance",
-            "recharge_needed": "Please recharge your account",
-            "error": "An error occurred",
+            "recharge_needed": "Please reload your account",
+            "error": "An error has occurred",
             "processing_error": "Processing error",
             "export_success": "Document exported successfully",
             "export_error": "Export failed"
@@ -487,23 +369,23 @@
                     "cancel": "Cancel"
                 },
                 "export": {
-                    "pdf": "Export as PDF",
-                    "docx": "Export as DOCX"
+                    "pdf": "Export to PDF",
+                    "docx": "Export to DOCX"
                 }
             }
         },
         "history": {
-            "title": "Conversation History",
+            "title": "Conversation history",
             "empty": "No conversations",
             "created_at": "Created on {{date}}"
         }
     },
     "hobbies": {
         "title": "Interests",
-        "description": "Customize your profile with your passions",
+        "description": "Personalize your profile with your passions",
         "card": {
             "title": "Manage my interests",
-            "description": "Add activities you're passionate about"
+            "description": "Add activities you are passionate about"
         },
         "select": {
             "placeholder": "Select an interest"
@@ -528,7 +410,7 @@
             },
             "removed": {
                 "title": "Interest removed",
-                "description": "The item has been removed from your profile"
+                "description": "This interest has been removed from your profile"
             }
         },
         "errors": {
@@ -557,7 +439,7 @@
             "manual": "Manual entry"
         },
         "search": {
-            "placeholder": "Search for education..."
+            "placeholder": "Search education..."
         },
         "select": {
             "placeholder": "Select education"
@@ -566,7 +448,7 @@
             "placeholder": "Enter your education..."
         },
         "current": {
-            "title": "Current Job title"
+            "title": "Current education"
         },
         "actions": {
             "select": "Select",
@@ -594,7 +476,7 @@
             "adding": {
                 "title": "Error"
             },
-            "generic": "An error occurred."
+            "generic": "An error has occurred."
         }
     },
     "competences": {
@@ -641,24 +523,173 @@
             "generic": "An error occurred. Please try again."
         }
     },
+    "experiences": {
+        "title": "Experience Management",
+        "description": "Manage your professional, academic and volunteer experiences",
+        "actions": {
+            "add": "Add experience",
+            "update": "Update experience",
+            "save": "Save experience",
+            "cancel": "Cancel",
+            "delete": "Delete"
+        },
+        "filters": {
+            "search": "Search experiences..."
+        },
+        "tabs": {
+            "list": "Experiences",
+            "attachments": "Attachments"
+        },
+        "form": {
+            "title": {
+                "new": "New Experience",
+                "edit": "Edit Experience"
+            },
+            "description": {
+                "new": "Add a new experience to your profile",
+                "edit": "Edit the details of an existing experience"
+            },
+            "templates": {
+                "title": "Templates",
+                "description": "Start with a predefined template",
+                "academic": "Academic Experience",
+                "internship": "Internship Experience",
+                "volunteer": "Volunteer Experience",
+                "defaultComment": "Add your additional comments here"
+            },
+            "references": {
+                "title": "References",
+                "add": "Add Reference",
+                "name": "Full Name",
+                "function": "Position/Role",
+                "email": "Email",
+                "phone": "Phone",
+                "placeholders": {
+                    "name": "Enter reference name",
+                    "function": "Enter position/role",
+                    "email": "Enter email address",
+                    "phone": "Enter phone number"
+                },
+                "default": {
+                    "name": "John Smith",
+                    "function": "Project Manager",
+                    "email": "john.smith@example.com",
+                    "phone": "+1 234 567 8900"
+                }
+            },
+            "fields": {
+                "name": {
+                    "label": "Experience Name",
+                    "placeholder": "Enter the name of your experience"
+                },
+                "institution": {
+                    "label": "Institution Name",
+                    "placeholder": "Enter the name of the institution or company"
+                },
+                "dates": {
+                    "start": "Start Date",
+                    "end": "End Date",
+                    "ongoing": "Leave end date empty for ongoing experiences"
+                },
+                "type": {
+                    "label": "Experience Type",
+                    "placeholder": "Select experience type"
+                },
+                "description": {
+                    "label": "Description",
+                    "placeholder": "Describe your experience, responsibilities and achievements"
+                },
+                "output": {
+                    "label": "Results",
+                    "placeholder": "What were the main results or achievements?"
+                },
+                "references": {
+                    "title": "References",
+                    "label": "References",
+                    "add": "Add Reference",
+                    "name": "Full Name",
+                    "function": "Position/Role",
+                    "email": "Email",
+                    "phone": "Phone",
+                    "placeholders": {
+                        "name": "Enter reference name",
+                        "function": "Enter position/role",
+                        "email": "Enter email address",
+                        "phone": "Enter phone number"
+                    },
+                    "default": {
+                        "name": "John Smith",
+                        "function": "Project Manager",
+                        "email": "john.smith@example.com",
+                        "phone": "+1 234 567 8900"
+                    }
+                }
+            },
+            "attachment": {
+                "title": "Attachments",
+                "maxSize": "Max 100MB",
+                "current": "Current file:",
+                "delete": "Delete file",
+                "formats": "Accepted formats: PDF, DOC, DOCX"
+            }
+        },
+        "attachments": {
+            "stats": {
+                "used": "Space Used",
+                "files": "Total Files",
+                "available": "Available Space"
+            }
+        },
+        "empty": {
+            "experiences": "No experiences added yet",
+            "search": "No experiences match your search",
+            "attachments": "No attachments uploaded yet"
+        },
+        "success": {
+            "created": "Experience created successfully",
+            "updated": "Experience updated successfully",
+            "deleted": "Experience deleted",
+            "deletedDescription": "The experience has been permanently deleted",
+            "formDescription": "Your changes have been saved",
+            "template": {
+                "applied": "Template applied",
+                "description": "The template has been applied successfully"
+            },
+            "attachment": {
+                "deleted": "Attachment deleted",
+                "deletedDescription": "The file has been deleted"
+            }
+        },
+        "errors": {
+            "title": "Error",
+            "save": "Error saving experience",
+            "delete": "Error deleting experience",
+            "generic": "An unexpected error occurred",
+            "attachment": {
+                "delete": "Error deleting attachment",
+                "noFile": "No file available",
+                "noFileDescription": "There is no attachment to preview"
+            }
+        }
+    },
     "summaries": {
         "title": "My Summaries",
         "subtitle": "Manage your professional summaries",
-        "new": "New Summary",
-        "edit": "Edit Summary",
-        "search": "Search summaries...",
+        "new": "New summary",
+        "edit": "Edit summary",
+        "search": "Search summary...",
         "noResults": "No summaries match your search.",
         "createFirst": "Create your first professional summary!",
         "delete": {
-            "title": "Delete Summary",
-            "description": "Are you sure you want to delete this summary? This action cannot be undone.",
+            "title": "Delete summary",
+            "description": "Are you sure you want to delete this summary? This action is irreversible.",
             "confirm": "Delete",
             "cancel": "Cancel"
         }
     },
     "form": {
-        "jobTitle": "Job Title",
-        "jobTitlePlaceholder": "Ex: Sales Representative, Administrative Assistant...",
+        "jobTitle": "Job title",
+        "jobTitlePlaceholder": "E.g.: Sales Representative, Administrative Assistant...",
         "description": "Description",
         "descriptionPlaceholder": "Describe your profile...",
         "save": "Save",
@@ -666,19 +697,19 @@
         "update": "Update"
     },
     "templates": {
-        "title": "Choose a Template",
-        "subtitle": "Start with a pre-made template or create your own",
+        "title": "Choose a template",
+        "subtitle": "Start with a predefined template or create your own",
         "student": {
             "name": "Student",
-            "description": "Motivated recent graduate with strong academic background and initial experience through internships and student projects. Proficient in computer tools with quick learning ability."
+            "description": "Motivated recent graduate, attentive and dynamic. Solid academic background with initial experience through internships and student projects. Proficient with computer tools and quick learning ability."
         },
         "archivist": {
             "name": "Assistant Archivist",
-            "description": "Passionate about document organization and preservation. Methodical and rigorous, with good digital tool proficiency. Able to work independently and in teams."
+            "description": "Passionate about organizing and preserving documents. Methodical and rigorous, with good digital tool skills. Able to work independently and in a team."
         },
         "beginner": {
             "name": "First Job",
-            "description": "Enthusiastic and versatile high school graduate ready to put knowledge into practice. Strong adaptability and willingness to learn. Proficient in basic office tools."
+            "description": "Enthusiastic and versatile high school graduate, ready to put my knowledge into practice. Strong adaptability and willingness to learn. Proficient with basic office tools."
         }
     },
     "actions": {
@@ -702,23 +733,23 @@
         }
     },
     "personalInfos": {
-        "editTitle": "Edit Personal Information",
+        "editTitle": "Edit personal information",
         "form": {
             "name": "Name",
             "email": "Email",
             "github": "GitHub",
             "linkedin": "LinkedIn",
             "address": "Address",
-            "phoneNumber": "Phone Number"
+            "phoneNumber": "Phone number"
         },
         "actions": {
-            "save": "Save Changes",
+            "save": "Save changes",
             "cancel": "Cancel"
         },
         "toast": {
             "success": {
                 "title": "Success",
-                "updated": "Personal information updated successfully"
+                "updated": "Personal information updated"
             },
             "error": {
                 "title": "Error",
@@ -739,9 +770,9 @@
             "placeholder": "What type of cover letter would you like to create?"
         },
         "resume-review": {
-            "title": "Resume Review",
-            "description": "Resume improvement suggestions",
-            "placeholder": "Share your resume or ask for specific advice..."
+            "title": "Resume Analysis",
+            "description": "CV improvement suggestions",
+            "placeholder": "Share your CV or ask for specific advice..."
         },
         "career-advice": {
             "title": "Career Advice",
@@ -754,15 +785,15 @@
         },
         "cover_letter": {
             "title": "Cover Letter",
-            "description": "Customized cover letter"
+            "description": "Personalized cover letter"
         },
         "interview_prep": {
-            "title": "Interview Prep",
+            "title": "Interview Preparation",
             "description": "Interactive interview simulation"
         },
         "resume_review": {
             "title": "Resume Review",
-            "description": "Resume improvement suggestions"
+            "description": "CV improvement suggestions"
         }
     },
     "sponsorship": {
@@ -775,7 +806,7 @@
             "info": "Information"
         },
         "welcome": {
-            "title": "Referral Program",
+            "title": "Referral program",
             "subtitle": "Invite your friends and earn rewards",
             "button": "Invite now"
         },
@@ -786,6 +817,14 @@
             "almostExpired": "Almost expired",
             "valid": "Valid",
             "renewal": {
+                "title": "Renew code",
+                "loading": "Loading...",
+                "expires": "Expires on",
+                "expired": "Expired on",
+                "viewDetails": "View details",
+                "renew": "Renew",
+                "success": "Code renewed successfully",
+                "error": "Error renewing",
                 "renewCode": "Renew Code",
                 "title": "Referral Management",
                 "description": "Manage your referral code and renew it when it expires.",
@@ -802,7 +841,7 @@
                 "noSponsorYet": "You don't have a sponsor yet.",
                 "canApplyCodeInNewTab": "You can apply a referral code in the \"New Code\" tab.",
                 "noReferralCodeYet": "You don't have a referral code yet.",
-                "visitSponsorshipPage": "Visit the sponsorship page to create one.",
+                "visitSponsorshipPage": "Visit the referral page to create one.",
                 "newSponsorCode": "New referral code",
                 "enterCodePlaceholder": "Enter the referral code",
                 "validityInfo": "The code will be valid for 30 days. Your sponsor will receive a percentage of your purchases during this period.",
@@ -812,9 +851,9 @@
                 "shareCodeWithFriends": "Share this code with your friends to earn commissions on their purchases!",
                 "viewAllDetails": "View all details",
                 "success": "Code renewed",
-                "successDescription": "Your referral code has been successfully renewed.",
+                "successDescription": "Your referral code has been renewed successfully.",
                 "newCodeApplied": "New code applied",
-                "newCodeAppliedDescription": "The new referral code has been successfully applied.",
+                "newCodeAppliedDescription": "The new referral code has been applied successfully.",
                 "enterCode": "Please enter a referral code.",
                 "applyError": "An error occurred while applying the code."
             }
@@ -828,19 +867,19 @@
             "totalReferrals": "Total referrals",
             "totalEarnings": "Total earnings",
             "currentLevel": "Current level",
-            "requestWithdrawal": "Request Withdrawal",
+            "requestWithdrawal": "Request withdrawal",
             "withdrawalMinimum": "Minimum required: {{minimum}}",
             "withdrawalMessage": "Hello, I would like to request a withdrawal of my referral earnings. My current balance is {{earnings}} FCFA. Please contact me to finalize the transaction."
         },
         "invitation": {
             "emailSubject": "Join me on our CV platform",
             "emailBody": "Hello,\n\nI invite you to use our CV creation platform. Sign up using my referral link and get benefits:\n\n{{invitationLink}}\n\nSee you soon!",
-            "whatsappText": "Join me on this amazing CV creation platform using my referral link: {{invitationLink}}",
+            "whatsappText": "Join me on this great CV creation platform using my referral link: {{invitationLink}}",
             "shareYourCode": "Share your code",
             "copyCode": "Copy code",
             "copied": "Copied!",
             "copyLink": "Copy link",
-            "shareEmail": "Share via email",
+            "shareEmail": "Share by email",
             "shareWhatsapp": "Share via WhatsApp",
             "invitationLink": "Invitation link"
         }
@@ -858,14 +897,14 @@
             "sections": {
                 "dataProtection": {
                     "title": "Data Protection",
-                    "description": "We use advanced technologies to protect your personal information from unauthorized access."
+                    "description": "We use advanced technologies to protect your personal information against unauthorized access."
                 },
                 "security": {
                     "title": "Enhanced Security",
                     "description": "All your data is encrypted and stored on secure servers with rigorous security protocols."
                 },
                 "transparency": {
-                    "title": "Full Transparency",
+                    "title": "Total Transparency",
                     "description": "We clearly explain how your data is used and keep you informed of any changes."
                 },
                 "control": {
@@ -879,12 +918,12 @@
             "subtitle": "How we use cookies to improve your experience",
             "metaTitle": "Cookie Policy | Guidy",
             "metaDescription": "Discover how Guidy uses cookies to improve your experience on our CV creation platform.",
-            "metaKeywords": "cookies, cookie policy, trackers, user experience, privacy",
+            "metaKeywords": "cookies, cookie policy, trackers, privacy, user experience",
             "lastUpdate": "Last updated:",
             "sections": {
                 "essential": {
                     "title": "Essential Cookies",
-                    "description": "Necessary for the website's functioning and your account security."
+                    "description": "Necessary for the functioning of the site and the security of your account."
                 },
                 "preferences": {
                     "title": "Preference Cookies",
@@ -904,7 +943,7 @@
                     "title": "Types of Cookies Used",
                     "essential": {
                         "title": "Essential Cookies",
-                        "description": "Necessary for the site's functioning:",
+                        "description": "Necessary for the functioning of the site:",
                         "uses": {
                             "auth": "Authentication",
                             "security": "Security",
@@ -913,7 +952,7 @@
                     },
                     "performance": {
                         "title": "Performance Cookies",
-                        "description": "To improve user experience:",
+                        "description": "To improve the user experience:",
                         "uses": {
                             "analytics": "Traffic analysis",
                             "usage": "Usage statistics",
@@ -941,16 +980,16 @@
                 },
                 "contact": {
                     "title": "Contact",
-                    "description": "For any questions about our cookie usage:"
+                    "description": "For any questions about our use of cookies:"
                 }
             }
         },
         "legalNotice": {
-            "title": "Legal Notice",
+            "title": "Legal Notices",
             "subtitle": "Legal information about our company",
-            "metaTitle": "Legal Notice | Guidy",
-            "metaDescription": "Consult Guidy's legal notice with information about our company and our responsibilities.",
-            "metaKeywords": "legal notice, legal information, company, responsibilities",
+            "metaTitle": "Legal Notices | Guidy",
+            "metaDescription": "View Guidy's legal notices, information about our company and our responsibilities.",
+            "metaKeywords": "legal notices, legal information, company, responsibilities",
             "lastUpdate": "Last updated:",
             "sections": {
                 "company": {
@@ -977,29 +1016,29 @@
                     "title": "Intellectual Property",
                     "description": "All elements of the Guidy site are protected by:",
                     "rights": {
-                        "copyright": "Copyright law",
+                        "copyright": "Copyright",
                         "trademark": "Trademark law",
-                        "design": "Design law",
-                        "database": "Database law"
+                        "design": "Design rights",
+                        "database": "Database rights"
                     }
                 }
             }
         },
         "termsOfService": {
-            "title": "Terms of Service",
-            "subtitle": "Rules and conditions for using our services",
-            "metaTitle": "Terms of Service | Guidy",
-            "metaDescription": "Consult Guidy's terms of service for CV creation. Information on user rights and obligations.",
-            "metaKeywords": "terms of service, service terms, usage rules, user rights",
+            "title": "Terms of Use",
+            "subtitle": "Rules and terms for using our services",
+            "metaTitle": "Terms of Use | Guidy",
+            "metaDescription": "View Guidy's terms of use for CV creation. Information about user rights and obligations.",
+            "metaKeywords": "terms of use, terms and conditions, service terms, usage rules",
             "lastUpdate": "Last updated:",
             "sections": {
                 "usage": {
-                    "title": "Proper Usage",
+                    "title": "Proper Use",
                     "description": "Follow our terms for an optimal experience.",
-                    "usageDescription": "When using our service, you agree to:",
+                    "usageDescription": "By using our service, you agree to:",
                     "items": {
                         "accurate": "Provide accurate and truthful information",
-                        "confidentiality": "Maintain your account confidentiality",
+                        "confidentiality": "Maintain the confidentiality of your account",
                         "legal": "Not use the service for illegal purposes",
                         "intellectual": "Respect intellectual property rights"
                     }
@@ -1010,36 +1049,36 @@
                 },
                 "general": {
                     "title": "General Terms",
-                    "description": "By accessing Guidy, you agree to be bound by these terms of use, all applicable laws and regulations. If you do not accept these terms, you should not use our service."
+                    "description": "By accessing Guidy, you agree to be bound by these terms of use, all applicable laws and regulations. If you do not accept these terms, you must not use our service."
                 },
                 "services": {
                     "title": "Services Offered",
                     "description": "Guidy offers the following services:",
                     "items": {
-                        "cv": "Professional CV creation adapted to the job market",
+                        "cv": "Creation of professional CVs adapted to the job market",
                         "ai": "AI assistance for CV optimization",
                         "letters": "Customized cover letter templates",
-                        "interview": "Job interview advice"
+                        "interview": "Advice for job interviews"
                     }
                 },
                 "intellectual": {
                     "title": "Intellectual Property",
-                    "description": "Guidy's content is protected by intellectual property rights. This includes:",
+                    "description": "The content of Guidy is protected by intellectual property rights. This includes:",
                     "items": {
-                        "templates": "CV templates and cover letters",
-                        "content": "Website texts and images",
+                        "templates": "CV and cover letter templates",
+                        "content": "Site texts and images",
                         "logo": "Logo and graphic elements",
                         "code": "Source code and functionalities"
                     }
                 },
                 "pricing": {
                     "title": "Pricing and Payment",
-                    "description": "Payment terms are as follows:",
+                    "description": "The payment terms are as follows:",
                     "items": {
                         "free": "Free basic version",
                         "premium": "Clearly displayed premium rates",
                         "payment": "Secure payments (Mobile Money, Orange Money, Paypal)",
-                        "refund": "Refund under specific conditions"
+                        "refund": "Refunds according to specific conditions"
                     }
                 },
                 "dataProtection": {
@@ -1057,7 +1096,7 @@
                     "description": "Guidy reserves the right to:",
                     "items": {
                         "features": "Modify service features",
-                        "pricing": "Update pricing",
+                        "pricing": "Update prices",
                         "templates": "Improve CV templates",
                         "market": "Adapt services to market needs"
                     }
@@ -1067,7 +1106,7 @@
                     "description": "Termination conditions:",
                     "items": {
                         "user": "At the user's initiative at any time",
-                        "violation": "In case of terms of use violation",
+                        "violation": "In case of violation of terms of use",
                         "nonpayment": "For non-payment of premium services",
                         "force": "In case of force majeure"
                     }
@@ -1076,7 +1115,7 @@
                     "title": "Contact and Support",
                     "description": "Our team is available to help you:",
                     "items": {
-                        "languages": "Assistance available in French and English",
+                        "languages": "Support available in French and English",
                         "support": "Technical support 7 days a week"
                     }
                 }
@@ -1084,11 +1123,11 @@
         },
         "support": {
             "title": "Support & Assistance",
-            "subtitle": "Our assistance service",
-            "description": "Our team is available to answer all your questions and assist you in your professional journey",
-            "badge": "🤝 We're here to help",
+            "subtitle": "Our support service",
+            "description": "Our team is available to answer all your questions and accompany you in your professional journey",
+            "badge": "🤝 We're here to help you",
             "metaTitle": "Support & Assistance | Guidy",
-            "metaDescription": "Contact Guidy's support service for any questions about CV creation or using our services.",
+            "metaDescription": "Contact Guidy support service for any questions about CV creation or using our services.",
             "metaKeywords": "support, assistance, help, contact, customer service",
             "contactMethods": {
                 "whatsapp": {
@@ -1104,7 +1143,7 @@
             },
             "supportHours": {
                 "title": "Support Hours",
-                "description": "Our support team is available to assist you Monday to Friday, from 9am to 6pm. For urgent requests, our WhatsApp support is accessible 24/7."
+                "description": "Our support team is available to assist you Monday to Friday, 9am to 6pm. For urgent requests, our WhatsApp support is accessible 24/7."
             }
         },
         "dashboard": {
@@ -1120,24 +1159,24 @@
         "categories": {
             "experience": "Experience Categories",
             "professions": "Profession Categories",
-            "hobbies": "Hobbies",
+            "hobbies": "Interests",
             "professionsList": "Professions",
-            "competences": "Competences",
-            "models": "CV Models"
+            "competences": "Skills",
+            "models": "CV Templates"
         },
         "descriptions": {
-            "experience": "Create, update, and manage experience categories",
-            "professions": "Create, update, and manage profession categories",
-            "hobbies": "Create, update, and manage hobbies",
-            "professionsList": "Create, update, and manage professions",
-            "competences": "Create, update, and manage competences",
-            "models": "Create, update, and manage CV models"
+            "experience": "Create, update and manage experience categories",
+            "professions": "Create, update and manage profession categories",
+            "hobbies": "Create, update and manage interests",
+            "professionsList": "Create, update and manage professions",
+            "competences": "Create, update and manage skills",
+            "models": "Create, update and manage CV templates"
         }
     },
     "payment": {
         "pageTitle": "Buy Tokens",
         "title": "Get Tokens",
-        "subtitle": "Choose your package and preferred payment method: Mobile Money or Bank Card",
+        "subtitle": "Choose your pack and your preferred payment method: Mobile Money or Bank Card",
         "tokens": "tokens",
         "bonus": "BONUS",
         "total": "Total",
@@ -1149,8 +1188,8 @@
             "bankCard": "Bank Card"
         },
         "popularityText": {
-            "starter": "Get started",
-            "plus": "Good value",
+            "starter": "To get started",
+            "plus": "Good value for money",
             "pro": "Most popular",
             "ultimate": "Best value"
         },
@@ -1160,7 +1199,7 @@
             "card": "PayPal & Bank Card"
         },
         "importantInfo": {
-            "title": "Important Information",
+            "title": "Important information",
             "mobileMoney": {
                 "title": "Mobile Money",
                 "instant": "Instant payment",
@@ -1186,7 +1225,7 @@
             "default": "An error occurred",
             "paymentFailed": "Payment error",
             "processingError": "An error occurred during processing",
-            "initialization": "Error initializing payment",
+            "initialization": "Error during payment initialization",
             "captureFailure": "Payment capture failed",
             "processingFailure": "Payment processing failed",
             "paypalFailed": "Payment failed. Please try again."

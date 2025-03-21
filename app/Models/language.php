@@ -8,6 +8,9 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class language extends Model
 {
+    protected $table = 'languages';
+    public $timestamps = false;
+
     protected $fillable = [
         'name',
         'name_en'

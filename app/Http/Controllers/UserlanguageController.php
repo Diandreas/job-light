@@ -34,14 +34,20 @@ class UserlanguageController extends Controller
     {
         $request->validate([
             'language_id' => 'required|exists:languages,id',
+            'language_level' => 'required|string',
         ]);
 
         $user = auth()->user();
         $language = language::find($request->language_id);
 
-        $user->languages()->attach($language);
+        $user->languages()->attach($language, [
+            'language_level' => $request->language_level
+        ]);
 
-        return redirect()->route('user-languages.index')->with('success', 'language assigned successfully!');
+        return response()->json([
+            'message' => 'Language assigned successfully!',
+            'language' => $language
+        ]);
     }
 
     public function destroy($user_id, $language_id)

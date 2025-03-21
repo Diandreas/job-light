@@ -11,15 +11,16 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('language', function (Blueprint $table) {
+        Schema::create('languages', function (Blueprint $table) {
             $table->id();
             $table->string('name')->unique();
             $table->string('name_en')->unique();
         });
-        Schema::create('user_language', function (Blueprint $table) {
+        
+        Schema::create('user_languages', function (Blueprint $table) {
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
-            $table->foreignId('language_id')->constrained()->onDelete('cascade');
-            $table->string('language_level');
+            $table->foreignId('language_id')->references('id')->on('languages')->onDelete('cascade');
+            $table->string('language_level')->default('Débutant');
             $table->primary(['user_id', 'language_id']);
             $table->timestamps();
         });
@@ -31,6 +32,7 @@ return new class extends Migration
      */
     public function down(): void
     {
-        //
+        Schema::dropIfExists('user_languages');
+        Schema::dropIfExists('languages');
     }
 };

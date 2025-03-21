@@ -6,7 +6,7 @@ import {
     User, FileText, Briefcase, Code, GraduationCap, Heart,
     ChevronRight, ChevronLeft, Mail, Phone, MapPin, Linkedin,
     Github, PencilIcon, Sparkles, CircleChevronRight, Star,
-    Camera, Upload, FileUp, Bot, AlertCircle, X, Plus, Menu, Coins, Trash2
+    Camera, Upload, FileUp, Bot, AlertCircle, X, Plus, Menu, Coins, Trash2, Globe
 } from 'lucide-react';
 import axios from 'axios';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
@@ -31,6 +31,7 @@ import HobbyManager from '@/Pages/CvInfos/Partials/HobbyManager';
 import ProfessionManager from '@/Pages/CvInfos/Partials/ProfessionManager';
 import ExperienceManager from "@/Pages/CvInfos/Partials/ExperienceManager";
 import SummaryManager from '@/Pages/CvInfos/Partials/SummaryManager';
+import LanguageManager from '@/Pages/CvInfos/Partials/LanguageManager';
 import ReactCrop, { centerCrop, makeAspectCrop } from 'react-image-crop';
 import 'react-image-crop/dist/ReactCrop.css';
 
@@ -40,6 +41,7 @@ const SIDEBAR_ITEMS = [
     { id: 'experience', label: 'Expériences', icon: Briefcase, color: 'text-amber-600' },
     { id: 'competence', label: 'Compétences', icon: Code, color: 'text-purple-600' },
     { id: 'profession', label: 'Formation', icon: GraduationCap, color: 'text-amber-500' },
+    { id: 'language', label: 'Langues', icon: Globe, color: 'text-purple-600' },
     { id: 'hobby', label: "Centres d'Intérêt", icon: Heart, color: 'text-purple-500' }
 ];
 
@@ -465,6 +467,7 @@ export default function CvInterface({ auth, cvInformation: initialCvInformation 
         { id: 'experience', label: t('cv.sidebar.experience'), icon: Briefcase, color: 'text-amber-600' },
         { id: 'competence', label: t('cv.sidebar.competence'), icon: Code, color: 'text-purple-600' },
         { id: 'profession', label: t('cv.sidebar.profession'), icon: GraduationCap, color: 'text-amber-500' },
+        { id: 'language', label: t('cv.sidebar.language'), icon: Globe, color: 'text-purple-600' },
         { id: 'hobby', label: t('cv.sidebar.hobby'), icon: Heart, color: 'text-purple-500' }
     ];
 
@@ -508,6 +511,7 @@ export default function CvInterface({ auth, cvInformation: initialCvInformation 
         experience: cvInformation.experiences?.length > 0,
         competence: cvInformation.competences?.length > 0,
         profession: Boolean(cvInformation.myProfession),
+        language: cvInformation.languages?.length > 0,
         hobby: cvInformation.hobbies?.length > 0,
     };
 
@@ -528,62 +532,76 @@ export default function CvInterface({ auth, cvInformation: initialCvInformation 
     };
 
     const getSectionComponent = (sectionId) => {
-        const components = {
-            personalInfo: isEditing ? (
-                <PersonalInformationEdit
-                    user={cvInformation.personalInformation}
-                    onUpdate={handleUpdate}
-                    onCancel={handleCancel}
-                />
-            ) : (
-                <PersonalInfoCard
-                    item={cvInformation.personalInformation}
-                    onEdit={handleEdit}
-                    updateCvInformation={updateCvInformation}
-                />
-            ),
-            summary: (
-                <SummaryManager
+        switch (sectionId) {
+            case 'personalInfo':
+                return isEditing ? (
+                    <PersonalInformationEdit
+                        user={cvInformation.personalInformation}
+                        onUpdate={handleUpdate}
+                        onCancel={handleCancel}
+                    />
+                ) : (
+                    <PersonalInfoCard
+                        item={cvInformation.personalInformation}
+                        onEdit={handleEdit}
+                        updateCvInformation={updateCvInformation}
+                    />
+                );
+            case 'summary':
+                return (
+                    <SummaryManager
+                        auth={auth}
+                        summaries={cvInformation.allsummaries}
+                        selectedSummary={cvInformation.summaries}
+                        onUpdate={(summaries) => updateCvInformation('summaries', summaries)}
+                    />
+                );
+            case 'competence':
+                return (
+                    <CompetenceManager
+                        auth={auth}
+                        availableCompetences={cvInformation.availableCompetences}
+                        initialUserCompetences={cvInformation.competences}
+                        onUpdate={(competences) => updateCvInformation('competences', competences)}
+                    />
+                );
+            case 'hobby':
+                return (
+                    <HobbyManager
+                        auth={auth}
+                        availableHobbies={cvInformation.availableHobbies}
+                        initialUserHobbies={cvInformation.hobbies}
+                        onUpdate={(hobbies) => updateCvInformation('hobbies', hobbies)}
+                    />
+                );
+            case 'profession':
+                return (
+                    <ProfessionManager
+                        auth={auth}
+                        availableProfessions={cvInformation.availableProfessions}
+                        initialUserProfession={cvInformation.myProfession}
+                        onUpdate={(profession) => updateCvInformation('myProfession', profession)}
+                    />
+                );
+            case 'experience':
+                return (
+                    <ExperienceManager
+                        auth={auth}
+                        experiences={cvInformation.experiences}
+                        categories={cvInformation.experienceCategories}
+                        onUpdate={(experiences) => updateCvInformation('experiences', experiences)}
+                    />
+                );
+            case 'language':
+                return <LanguageManager
                     auth={auth}
-                    summaries={cvInformation.allsummaries}
-                    selectedSummary={cvInformation.summaries}
-                    onUpdate={(summaries) => updateCvInformation('summaries', summaries)}
-                />
-            ),
-            experience: (
-                <ExperienceManager
-                    auth={auth}
-                    experiences={cvInformation.experiences}
-                    categories={cvInformation.experienceCategories}
-                    onUpdate={(experiences) => updateCvInformation('experiences', experiences)}
-                />
-            ),
-            competence: (
-                <CompetenceManager
-                    auth={auth}
-                    availableCompetences={cvInformation.availableCompetences}
-                    initialUserCompetences={cvInformation.competences}
-                    onUpdate={(competences) => updateCvInformation('competences', competences)}
-                />
-            ),
-            profession: (
-                <ProfessionManager
-                    auth={auth}
-                    availableProfessions={cvInformation.availableProfessions}
-                    initialUserProfession={cvInformation.myProfession}
-                    onUpdate={(profession) => updateCvInformation('myProfession', profession)}
-                />
-            ),
-            hobby: (
-                <HobbyManager
-                    auth={auth}
-                    availableHobbies={cvInformation.availableHobbies}
-                    initialUserHobbies={cvInformation.hobbies}
-                    onUpdate={(hobbies) => updateCvInformation('hobbies', hobbies)}
-                />
-            ),
-        };
-        return components[sectionId];
+                    availableLanguages={cvInformation.availableLanguages}
+                    initialLanguages={cvInformation.languages || []}
+                    onUpdate={(languages) => updateCvInformation('languages', languages)}
+                />;
+            default:
+                return <div>{t('cv.sections.notFound')}</div>;
+        }
     };
 
     const currentSectionIndex = SIDEBAR_ITEMS.findIndex(item => item.id === activeSection);

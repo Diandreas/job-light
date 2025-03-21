@@ -67,6 +67,37 @@
         "profile": "Mon Profil"
     },
     "cv": {
+        "languages": {
+            "title": "Langues",
+            "description": "Ajoutez les langues que vous parlez",
+            "add": "Ajouter une langue",
+            "select": "Sélectionner une langue",
+            "selectPlaceholder": "Choisissez une langue...",
+            "level": "Niveau de compétence",
+            "levelPlaceholder": "Sélectionnez le niveau",
+            "empty": "Aucune langue ajoutée",
+            "delete": "Supprimer la langue",
+            "levels": {
+                "beginner": "Débutant",
+                "elementary": "Élémentaire",
+                "intermediate": "Intermédiaire",
+                "upperIntermediate": "Intermédiaire avancé",
+                "advanced": "Avancé",
+                "proficient": "Maîtrise",
+                "native": "Langue maternelle"
+            },
+            "success": {
+                "added": "Langue ajoutée avec succès",
+                "removed": "Langue supprimée avec succès"
+            },
+            "error": {
+                "title": "Erreur",
+                "load": "Échec du chargement des langues",
+                "select": "Veuillez sélectionner une langue",
+                "add": "Échec de l'ajout de la langue",
+                "delete": "Échec de la suppression de la langue"
+            }
+        },
         "interface": {
             "title": "Éditeur de CV",
             "chooseDesign": "Choisir un design",

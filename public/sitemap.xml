@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:xhtml="http://www.w3.org/1999/xhtml">
+    <!-- Pages principales -->
+    <url>
+        <loc>https://guidy.com/</loc>
+        <lastmod>2023-08-01</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>1.0</priority>
+        <xhtml:link rel="alternate" hreflang="fr" href="https://guidy.com/?lang=fr"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://guidy.com/?lang=en"/>
+    </url>
+
+    <!-- Pages d'authentification -->
+    <url>
+        <loc>https://guidy.com/login</loc>
+        <lastmod>2023-08-01</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.8</priority>
+        <xhtml:link rel="alternate" hreflang="fr" href="https://guidy.com/login?lang=fr"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://guidy.com/login?lang=en"/>
+    </url>
+    <url>
+        <loc>https://guidy.com/register</loc>
+        <lastmod>2023-08-01</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.8</priority>
+        <xhtml:link rel="alternate" hreflang="fr" href="https://guidy.com/register?lang=fr"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://guidy.com/register?lang=en"/>
+    </url>
+
+    <!-- Pages d'information -->
+    <url>
+        <loc>https://guidy.com/support</loc>
+        <lastmod>2023-08-01</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.7</priority>
+        <xhtml:link rel="alternate" hreflang="fr" href="https://guidy.com/support?lang=fr"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://guidy.com/support?lang=en"/>
+    </url>
+    <url>
+        <loc>https://guidy.com/privacy</loc>
+        <lastmod>2023-08-01</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.5</priority>
+        <xhtml:link rel="alternate" hreflang="fr" href="https://guidy.com/privacy?lang=fr"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://guidy.com/privacy?lang=en"/>
+    </url>
+    <url>
+        <loc>https://guidy.com/terms</loc>
+        <lastmod>2023-08-01</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.5</priority>
+        <xhtml:link rel="alternate" hreflang="fr" href="https://guidy.com/terms?lang=fr"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://guidy.com/terms?lang=en"/>
+    </url>
+    <url>
+        <loc>https://guidy.com/cookies</loc>
+        <lastmod>2023-08-01</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.5</priority>
+        <xhtml:link rel="alternate" hreflang="fr" href="https://guidy.com/cookies?lang=fr"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://guidy.com/cookies?lang=en"/>
+    </url>
+    <url>
+        <loc>https://guidy.com/mentions-legales</loc>
+        <lastmod>2023-08-01</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.5</priority>
+        <xhtml:link rel="alternate" hreflang="fr" href="https://guidy.com/mentions-legales?lang=fr"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://guidy.com/mentions-legales?lang=en"/>
+    </url>
+
+    <!-- Portfolio URLs dynamiques sont gérés par une génération automatique -->
+</urlset> 

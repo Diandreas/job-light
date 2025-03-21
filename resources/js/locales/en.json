@@ -88,6 +88,9 @@
             "levels": {
                 "beginner": "Beginner",
                 "intermediate": "Intermediate",
+                "elementary": "Elementary",
+                "upperIntermediate": "Upper Intermediate",
+                "proficient": "Proficient",
                 "advanced": "Advanced",
                 "native": "Native"
             },

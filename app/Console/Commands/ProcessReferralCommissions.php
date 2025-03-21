@@ -83,4 +83,4 @@ class ProcessReferralCommissions extends Command
 
         return Command::SUCCESS;
     }
-}
+} 

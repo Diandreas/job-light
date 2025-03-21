@@ -12,7 +12,7 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         // Création des utilisateurs de base
-        $this->call(AdminUserSeeder::class);
+        // $this->call(AdminUserSeeder::class);
 
         // Données géographiques (base)
         $this->call(CountriesSeeder::class);

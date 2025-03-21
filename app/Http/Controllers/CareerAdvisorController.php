@@ -691,7 +691,6 @@ Tu es un expert en analyse de CV.tu fera en fontion de la langue que tu vas iden
     "nom_complet": "string (nom et prénom du candidat)",
     "poste_actuel": "string (poste actuel ou dernier poste occupé)",
     "contact": {
-        "email": "string (email professionnel)",
         "telephone": "string (format international)",
         "adresse": "string (adresse complète)",
         "github": "string (URL du profil Github ou chaine vide)",
@@ -738,7 +737,6 @@ EOT;
             $user = User::find($userId);
             $user->update([
                 'name' => $cvData['nom_complet'],
-                'email' => $cvData['contact']['email'],
                 'phone_number' => $cvData['contact']['telephone'],
                 'address' => $cvData['contact']['adresse'],
                 'github' => $cvData['contact']['github'],

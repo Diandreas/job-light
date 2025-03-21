@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import { Head, Link } from '@inertiajs/react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
@@ -53,7 +53,7 @@ const PERSONAL_INFO_FIELDS = [
     { label: "GitHub", key: "github", icon: Github }
 ];
 
-const WelcomeCard = ({ percentage, onImport }) => {
+const WelcomeCard = ({ percentage, onImport, isImporting }) => {
     const { t } = useTranslation();
 
     return (
@@ -76,17 +76,26 @@ const WelcomeCard = ({ percentage, onImport }) => {
                     </div>
                     <DropdownMenu>
                         <DropdownMenuTrigger asChild>
-                            <Button variant="outline" className="w-full sm:w-auto text-xs sm:text-sm h-7 sm:h-9 py-0 border-amber-200 dark:border-amber-800 hover:bg-amber-50 dark:hover:bg-amber-900/50">
-                                <FileUp className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
-                                {t('cv.interface.import.button')}
+                            <Button variant="outline" className="w-full sm:w-auto text-xs sm:text-sm h-7 sm:h-9 py-0 border-amber-200 dark:border-amber-800 hover:bg-amber-50 dark:hover:bg-amber-900/50" disabled={isImporting}>
+                                {isImporting ? (
+                                    <>
+                                        <div className="animate-spin mr-1 sm:mr-2 w-3 h-3 sm:w-4 sm:h-4 border-2 border-amber-500 border-t-transparent rounded-full" />
+                                        {t('cv.interface.import.loading')}
+                                    </>
+                                ) : (
+                                    <>
+                                        <FileUp className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
+                                        {t('cv.interface.import.button')}
+                                    </>
+                                )}
                             </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end" className="text-xs sm:text-sm">
-                            <DropdownMenuItem onClick={() => onImport('pdf')} className="cursor-pointer h-8 sm:h-10">
+                            <DropdownMenuItem onClick={() => onImport('pdf')} className="cursor-pointer h-8 sm:h-10" disabled={isImporting}>
                                 <FileText className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
                                 {t('cv.interface.import.pdf')}( - 5 <Coins className="w-3 h-3 sm:w-4 sm:h-4" />)
                             </DropdownMenuItem>
-                            <DropdownMenuItem onClick={() => onImport('docx')} className="cursor-pointer h-8 sm:h-10">
+                            <DropdownMenuItem onClick={() => onImport('docx')} className="cursor-pointer h-8 sm:h-10" disabled={isImporting}>
                                 <FileText className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
                                 {t('cv.interface.import.word')}( - 5 <Coins className="w-3 h-3 sm:w-4 sm:h-4" />)
                             </DropdownMenuItem>
@@ -458,6 +467,7 @@ export default function CvInterface({ auth, cvInformation: initialCvInformation 
     const [isEditing, setIsEditing] = useState(false);
     const [isImporting, setIsImporting] = useState(false);
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+    const [isPageBlocked, setIsPageBlocked] = useState(false);
     const { toast } = useToast();
 
     // Utilisation des traductions pour les éléments de la sidebar
@@ -618,6 +628,8 @@ export default function CvInterface({ auth, cvInformation: initialCvInformation 
             return;
         }
 
+        if (isImporting) return; // Éviter les importations multiples
+
         const input = document.createElement('input');
         input.type = 'file';
         input.accept = type === 'pdf' ? '.pdf' : '.docx';
@@ -629,30 +641,88 @@ export default function CvInterface({ auth, cvInformation: initialCvInformation 
 
             try {
                 setIsImporting(true);
+                setIsPageBlocked(true); // Bloquer la page pendant l'importation
+
+                // Notification de début du processus
+                toast({
+                    title: "Étape 1/4",
+                    description: "Préparation du fichier..."
+                });
+
                 const formData = new FormData();
                 formData.append('cv', file);
 
-                const response = await axios.post(
-                    type === '/api/cv/analyze' ? '/api/cv/analyze' : '/api/cv/analyze',
-                    formData
-                );
+                // Notification de l'envoi du fichier
+                toast({
+                    title: "Étape 2/4",
+                    description: "Envoi du fichier au serveur..."
+                });
 
-                if (response.data.success) {
-                    //@ts-ignore
-                    updateCvInformation(response.data.cvData);
+                // Ajout d'un timeout pour permettre l'affichage de la notification
+                await new Promise(resolve => setTimeout(resolve, 500));
+
+                try {
+                    // Notification d'analyse
                     toast({
-                        title: t('cv.interface.import.success'),
-                        description: t('cv.interface.import.successDetail')
+                        title: "Étape 3/4",
+                        description: "Analyse du CV en cours..."
+                    });
+
+                    const response = await axios.post(
+                        '/api/cv/analyze',
+                        formData,
+                        {
+                            headers: {
+                                'Content-Type': 'multipart/form-data'
+                            },
+                            timeout: 60000, // Augmentation du timeout à 60s
+                        }
+                    );
+
+                    // Notification de mise à jour des données
+                    toast({
+                        title: "Étape 4/4",
+                        description: "Mise à jour des informations..."
+                    });
+
+                    if (response.data.success) {
+                        updateCvInformation('personalInformation', response.data.cvData.personalInformation || {});
+                        if (response.data.cvData.summaries) updateCvInformation('summaries', response.data.cvData.summaries);
+                        if (response.data.cvData.competences) updateCvInformation('competences', response.data.cvData.competences);
+                        if (response.data.cvData.experiences) updateCvInformation('experiences', response.data.cvData.experiences);
+                        if (response.data.cvData.languages) updateCvInformation('languages', response.data.cvData.languages);
+                        if (response.data.cvData.hobbies) updateCvInformation('hobbies', response.data.cvData.hobbies);
+                        if (response.data.cvData.myProfession) updateCvInformation('myProfession', response.data.cvData.myProfession);
+
+                        toast({
+                            title: t('cv.interface.import.success'),
+                            description: t('cv.interface.import.successDetail')
+                        });
+                    }
+                } catch (error) {
+                    console.error("Erreur détaillée:", error);
+
+                    // Afficher les informations détaillées sur l'erreur
+                    const errorMessage = error.response?.data?.message || t('cv.interface.import.errorDetail');
+                    const errorStatus = error.response?.status || "Inconnu";
+                    const errorDetails = error.response?.data?.error || "Pas de détails supplémentaires";
+
+                    toast({
+                        title: `Erreur ${errorStatus} pendant l'analyse`,
+                        description: `${errorMessage}. Détails: ${errorDetails}`,
+                        variant: "destructive"
                     });
                 }
-            } catch (error) {
+            } catch (fileError) {
+                console.error("Erreur fichier:", fileError);
                 toast({
                     title: t('cv.interface.import.error'),
-                    description: error.response?.data?.message || t('cv.interface.import.errorDetail'),
+                    description: "Erreur lors de la préparation du fichier",
                     variant: "destructive"
                 });
             } finally {
                 setIsImporting(false);
+                setIsPageBlocked(false); // Débloquer la page après l'importation
             }
         };
 
@@ -662,6 +732,18 @@ export default function CvInterface({ auth, cvInformation: initialCvInformation 
     return (
         <AuthenticatedLayout user={auth.user}>
             <Head title={t('cv.interface.title')} />
+
+            {/* Overlay qui bloque toute interaction */}
+            {isPageBlocked && (
+                <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center">
+                    <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-lg text-center">
+                        <div className="animate-spin w-8 h-8 border-4 border-amber-500 border-t-transparent rounded-full mx-auto mb-4"></div>
+                        <p className="text-gray-900 dark:text-gray-100 font-medium">
+                            {t('common.loading')}
+                        </p>
+                    </div>
+                </div>
+            )}
 
             <div className="min-h-screen bg-gradient-to-b from-amber-50/50 to-purple-50/50 dark:from-gray-900 dark:to-gray-800">
                 <div className="container mx-auto py-3 sm:py-4 px-3 sm:px-4">
@@ -686,6 +768,7 @@ export default function CvInterface({ auth, cvInformation: initialCvInformation 
                     <WelcomeCard
                         percentage={getCompletionPercentage()}
                         onImport={handleImport}
+                        isImporting={isImporting}
                     />
 
                     <Card className="shadow-md border border-amber-100 dark:border-amber-800">

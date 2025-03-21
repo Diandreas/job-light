@@ -108,6 +108,7 @@
                 "button": "Importer CV",
                 "pdf": "Importer PDF",
                 "word": "Importer Word",
+                "loading": "Importation...",
                 "success": "Import réussi",
                 "successDetail": "Votre CV a été importé avec succès",
                 "error": "Erreur d'importation",

@@ -116,6 +116,7 @@
                 "button": "Import CV",
                 "pdf": "Import PDF",
                 "word": "Import Word",
+                "loading": "Importing...",
                 "success": "Import successful",
                 "successDetail": "Your CV has been imported successfully",
                 "error": "Import error",

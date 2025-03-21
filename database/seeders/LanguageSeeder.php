@@ -13,21 +13,21 @@ class LanguageSeeder extends Seeder
     public function run(): void
     {
         $languages = [
-            ['name' => 'Français', 'name_en' => 'French', 'code' => 'fr'],
-            ['name' => 'Anglais', 'name_en' => 'English', 'code' => 'en'],
-            ['name' => 'Espagnol', 'name_en' => 'Spanish', 'code' => 'es'],
-            ['name' => 'Allemand', 'name_en' => 'German', 'code' => 'de'],
-            ['name' => 'Italien', 'name_en' => 'Italian', 'code' => 'it'],
-            ['name' => 'Portugais', 'name_en' => 'Portuguese', 'code' => 'pt'],
-            ['name' => 'Russe', 'name_en' => 'Russian', 'code' => 'ru'],
-            ['name' => 'Chinois', 'name_en' => 'Chinese', 'code' => 'zh'],
-            ['name' => 'Japonais', 'name_en' => 'Japanese', 'code' => 'ja'],
-            ['name' => 'Arabe', 'name_en' => 'Arabic', 'code' => 'ar'],
+            ['name' => 'Français', 'name_en' => 'French'],
+            ['name' => 'Anglais', 'name_en' => 'English'],
+            ['name' => 'Espagnol', 'name_en' => 'Spanish'],
+            ['name' => 'Allemand', 'name_en' => 'German'],
+            ['name' => 'Italien', 'name_en' => 'Italian'],
+            ['name' => 'Portugais', 'name_en' => 'Portuguese'],
+            ['name' => 'Russe', 'name_en' => 'Russian'],
+            ['name' => 'Chinois', 'name_en' => 'Chinese'],
+            ['name' => 'Japonais', 'name_en' => 'Japanese'],
+            ['name' => 'Arabe', 'name_en' => 'Arabic'],
         ];
 
         foreach ($languages as $language) {
             Language::updateOrCreate(
-                ['code' => $language['code']],
+                ['name' => $language['name']],
                 $language
             );
         }

@@ -26,7 +26,7 @@
 
         .cv-container {
             width: 190mm;
-            padding: 15mm;
+            padding: 10mm;
         }
 
         /* Tables Reset */
@@ -43,9 +43,9 @@
         /* Header Styling */
         .header {
             position: relative;
-            margin-bottom: 8mm;
+            margin-bottom: 6mm;
             border-bottom: 0.3mm solid #8E44AD;
-            padding-bottom: 5mm;
+            padding-bottom: 4mm;
         }
 
         .header-table {
@@ -62,31 +62,31 @@
         }
         
         .name {
-            font-size: 22pt;
+            font-size: 18pt;
             font-weight: 300;
             color: #8E44AD;
-            margin-bottom: 2mm;
-            letter-spacing: 1pt;
+            margin-bottom: 1mm;
+            letter-spacing: 0.5pt;
         }
 
         .profession {
-            font-size: 11pt;
+            font-size: 10pt;
             color: #555555;
-            margin-bottom: 5mm;
+            margin-bottom: 4mm;
             font-style: italic;
             letter-spacing: 0.5pt;
         }
 
         .contact-item {
             font-size: 8pt;
-            margin-bottom: 1.5mm;
+            margin-bottom: 1mm;
             color: #777777;
         }
 
         /* Photo Styling */
         .photo-container {
-            width: 30mm;
-            height: 30mm;
+            width: 25mm;
+            height: 25mm;
             overflow: hidden;
             border-radius: 50%;
             border: 0.5mm solid #8E44AD;
@@ -101,17 +101,17 @@
 
         /* Section Styling */
         .section {
-            margin-bottom: 6mm;
+            margin-bottom: 5mm;
             position: relative;
         }
 
         .section-title {
-            font-size: 11pt;
+            font-size: 10pt;
             font-weight: normal;
             color: #8E44AD;
             text-transform: uppercase;
-            margin-bottom: 3mm;
-            letter-spacing: 1pt;
+            margin-bottom: 2mm;
+            letter-spacing: 0.5pt;
             position: relative;
             padding-bottom: 1mm;
         }
@@ -121,7 +121,7 @@
             position: absolute;
             bottom: 0;
             left: 0;
-            width: 15mm;
+            width: 12mm;
             height: 0.3mm;
             background-color: #8E44AD;
         }
@@ -130,23 +130,23 @@
         .summary {
             font-size: 9pt;
             color: #444444;
-            line-height: 1.5;
+            line-height: 1.3;
             text-align: justify;
-            margin-bottom: 6mm;
-            padding-bottom: 6mm;
+            margin-bottom: 5mm;
+            padding-bottom: 5mm;
             border-bottom: 0.1mm solid #EEEEEE;
         }
 
         /* Experience Styling */
         .experience-table {
             width: 100%;
-            margin-bottom: 4mm;
+            margin-bottom: 3mm;
             page-break-inside: avoid;
         }
 
         .experience-left {
             width: 25%;
-            padding-right: 3mm;
+            padding-right: 2mm;
         }
 
         .experience-right {
@@ -167,16 +167,16 @@
         }
 
         .position {
-            font-size: 10pt;
+            font-size: 9pt;
             font-weight: 600;
             color: #444444;
             margin-bottom: 1mm;
         }
 
         .description {
-            font-size: 8.5pt;
+            font-size: 8pt;
             color: #555555;
-            line-height: 1.4;
+            line-height: 1.3;
             text-align: justify;
         }
 
@@ -189,10 +189,10 @@
 
         .skill-item {
             background-color: #F9F5FD;
-            padding: 1mm 3mm;
-            margin-right: 2mm;
-            margin-bottom: 2mm;
-            border-radius: 2mm;
+            padding: 1mm 2mm;
+            margin-right: 1.5mm;
+            margin-bottom: 1.5mm;
+            border-radius: 1.5mm;
             font-size: 8pt;
             color: #8E44AD;
             display: inline-block;
@@ -204,12 +204,12 @@
         }
         
         .language-title {
-            font-size: 11pt;
+            font-size: 10pt;
             font-weight: normal;
             color: #8E44AD;
             text-transform: uppercase;
-            margin-bottom: 3mm;
-            letter-spacing: 1pt;
+            margin-bottom: 2mm;
+            letter-spacing: 0.5pt;
             position: relative;
             padding-bottom: 1mm;
         }
@@ -219,7 +219,7 @@
             position: absolute;
             bottom: 0;
             left: 0;
-            width: 15mm;
+            width: 12mm;
             height: 0.3mm;
             background-color: #8E44AD;
         }
@@ -230,13 +230,13 @@
         
         .language-item {
             background-color: #F9F5FD;
-            border-radius: 1mm;
-            padding: 1mm 3mm;
+            border-radius: 1.5mm;
+            padding: 1mm 2mm;
             font-size: 8pt;
             color: #8E44AD;
             display: inline-block;
-            margin-right: 2mm;
-            margin-bottom: 2mm;
+            margin-right: 1.5mm;
+            margin-bottom: 1.5mm;
         }
         
         .language-level {
@@ -252,8 +252,8 @@
         }
 
         .hobby-item {
-            margin-right: 4mm;
-            margin-bottom: 2mm;
+            margin-right: 3mm;
+            margin-bottom: 1.5mm;
             font-size: 8pt;
             color: #555555;
             display: inline-block;
@@ -262,17 +262,17 @@
         /* Column Layout */
         .two-column-table {
             width: 100%;
-            margin-bottom: 5mm;
+            margin-bottom: 3mm;
         }
 
         .column-left-cell {
-            width: 64%;
-            padding-right: 4mm;
+            width: 65%;
+            padding-right: 3mm;
         }
 
         .column-right-cell {
-            width: 32%;
-            padding-left: 4mm;
+            width: 35%;
+            padding-left: 3mm;
             border-left: 0.1mm solid #EEEEEE;
         }
     </style>
@@ -302,19 +302,27 @@
     </div>
 
     {{-- Contact Information --}}
-    <div class="contact-info" style="margin-bottom: 6mm;">
-        @if($cvInformation['personalInformation']['email'])
-            <span class="contact-item">{{ $cvInformation['personalInformation']['email'] }}</span> &bull;
-        @endif
-        @if($cvInformation['personalInformation']['phone'])
-            <span class="contact-item">{{ $cvInformation['personalInformation']['phone'] }}</span> &bull;
-        @endif
-        @if($cvInformation['personalInformation']['address'])
-            <span class="contact-item">{{ $cvInformation['personalInformation']['address'] }}</span> &bull;
-        @endif
-        @if($cvInformation['personalInformation']['linkedin'])
-            <span class="contact-item">{{ $cvInformation['personalInformation']['linkedin'] }}</span>
-        @endif
+    <div class="contact-info" style="margin-bottom: 5mm;">
+        <table>
+            <tr>
+                <td style="width: 50%;">
+                    @if($cvInformation['personalInformation']['email'])
+                        <span class="contact-item">{{ $cvInformation['personalInformation']['email'] }}</span><br>
+                    @endif
+                    @if($cvInformation['personalInformation']['phone'])
+                        <span class="contact-item">{{ $cvInformation['personalInformation']['phone'] }}</span>
+                    @endif
+                </td>
+                <td style="width: 50%;">
+                    @if($cvInformation['personalInformation']['address'])
+                        <span class="contact-item">{{ $cvInformation['personalInformation']['address'] }}</span><br>
+                    @endif
+                    @if($cvInformation['personalInformation']['linkedin'])
+                        <span class="contact-item">{{ $cvInformation['personalInformation']['linkedin'] }}</span>
+                    @endif
+                </td>
+            </tr>
+        </table>
     </div>
 
     {{-- Summary Section --}}

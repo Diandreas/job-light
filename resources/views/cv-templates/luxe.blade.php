@@ -43,16 +43,16 @@
         /* Borders */
         .border-container {
             border: 0.5mm solid #D4AF37 !important;
-            margin: 5mm;
-            padding: 5mm;
+            margin: 4mm;
+            padding: 4mm;
             -webkit-print-color-adjust: exact !important;
             print-color-adjust: exact !important;
         }
 
         .inner-container {
             border: 0.2mm solid #D4AF37 !important;
-            margin: 3mm;
-            padding: 10mm;
+            margin: 2mm;
+            padding: 6mm;
             -webkit-print-color-adjust: exact !important;
             print-color-adjust: exact !important;
         }
@@ -60,49 +60,49 @@
         /* Header Styling */
         .header-table {
             width: 100%;
-            margin-bottom: 10mm;
+            margin-bottom: 6mm;
         }
 
         .monogram-cell {
-            width: 20%;
+            width: 18%;
             text-align: center;
         }
 
         .monogram {
-            font-size: 24pt;
+            font-size: 20pt;
             font-weight: bold;
             color: #D4AF37 !important;
-            border: 2mm solid #D4AF37 !important;
+            border: 1.5mm solid #D4AF37 !important;
             border-radius: 50%;
-            width: 20mm;
-            height: 20mm;
-            line-height: 20mm;
+            width: 15mm;
+            height: 15mm;
+            line-height: 15mm;
             margin: 0 auto;
             -webkit-print-color-adjust: exact !important;
             print-color-adjust: exact !important;
         }
 
         .name-cell {
-            width: 60%;
+            width: 64%;
             text-align: center;
         }
 
         .photo-cell {
-            width: 20%;
+            width: 18%;
             text-align: center;
         }
 
         .name {
-            font-size: 18pt;
+            font-size: 16pt;
             font-weight: normal;
             color: #111111;
             text-transform: uppercase;
-            letter-spacing: 3pt;
-            margin-bottom: 2mm;
+            letter-spacing: 2pt;
+            margin-bottom: 1.5mm;
         }
 
         .profession {
-            font-size: 10pt;
+            font-size: 9pt;
             color: #D4AF37 !important;
             text-transform: uppercase;
             letter-spacing: 1pt;
@@ -112,8 +112,8 @@
 
         /* Photo Styling */
         .photo-container {
-            width: 25mm;
-            height: 25mm;
+            width: 20mm;
+            height: 20mm;
             overflow: hidden;
             border: 0.5mm solid #D4AF37 !important;
             margin: 0 auto;
@@ -130,7 +130,7 @@
         /* Divider */
         .divider {
             border-top: 0.2mm solid #D4AF37 !important;
-            margin: 5mm 0;
+            margin: 3mm 0;
             -webkit-print-color-adjust: exact !important;
             print-color-adjust: exact !important;
         }
@@ -138,13 +138,13 @@
         /* Contact Information */
         .contact-table {
             width: 100%;
-            margin-bottom: 5mm;
+            margin-bottom: 3mm;
             text-align: center;
         }
 
         .contact-item {
             display: inline-block;
-            margin: 0 3mm;
+            margin: 0 2mm;
             font-size: 8pt;
             color: #111111;
             letter-spacing: 0.5pt;
@@ -157,16 +157,16 @@
 
         /* Section Styling */
         .section {
-            margin-bottom: 8mm;
+            margin-bottom: 5mm;
         }
 
         .section-title {
-            font-size: 11pt;
+            font-size: 10pt;
             font-weight: normal;
             color: #D4AF37 !important;
-            margin-bottom: 3mm;
+            margin-bottom: 2mm;
             text-transform: uppercase;
-            letter-spacing: 2pt;
+            letter-spacing: 1.5pt;
             text-align: center;
             -webkit-print-color-adjust: exact !important;
             print-color-adjust: exact !important;
@@ -174,18 +174,18 @@
 
         /* Summary Section */
         .summary {
-            font-size: 9pt;
+            font-size: 8.5pt;
             color: #111111;
-            line-height: 1.5;
+            line-height: 1.4;
             text-align: center;
-            margin-bottom: 5mm;
+            margin-bottom: 3mm;
             font-style: italic;
         }
 
         /* Experience Styling */
         .experience-table {
             width: 100%;
-            margin-bottom: 4mm;
+            margin-bottom: 3mm;
         }
 
         .experience-left-cell {
@@ -199,7 +199,7 @@
 
         .experience-right-cell {
             width: 70%;
-            padding-left: 3%;
+            padding-left: 2%;
         }
 
         .experience-date {
@@ -216,7 +216,7 @@
         }
 
         .experience-title {
-            font-size: 10pt;
+            font-size: 9pt;
             font-weight: normal;
             color: #111111;
             margin-bottom: 1mm;
@@ -225,14 +225,14 @@
         .experience-description {
             font-size: 8pt;
             color: #333333;
-            line-height: 1.4;
+            line-height: 1.3;
             text-align: justify;
         }
 
         /* Skills and Languages Layout */
         .two-column-table {
             width: 100%;
-            margin-bottom: 5mm;
+            margin-bottom: 3mm;
         }
 
         .column-left-cell {
@@ -250,14 +250,14 @@
 
         /* Skills Styling */
         .skill-item {
-            margin-bottom: 2mm;
+            margin-bottom: 1.5mm;
         }
 
         .skill-name {
-            font-size: 9pt;
+            font-size: 8.5pt;
             font-weight: normal;
             color: #111111;
-            margin-bottom: 1mm;
+            margin-bottom: 0.8mm;
         }
 
         .skill-bar-container {
@@ -278,22 +278,22 @@
 
         /* Language Section */
         .language-item {
-            margin-bottom: 2mm;
+            margin-bottom: 1.5mm;
             text-align: left;
         }
         
         .language-name {
-            font-size: 9pt;
+            font-size: 8.5pt;
             color: #111111;
             display: inline-block;
         }
         
         .language-level {
-            font-size: 8pt;
+            font-size: 7.5pt;
             color: #333333;
             display: inline-block;
             font-style: italic;
-            margin-left: 2mm;
+            margin-left: 1.5mm;
         }
 
         /* Hobbies Section */
@@ -303,7 +303,7 @@
 
         .hobby-item {
             display: inline-block;
-            margin: 0 2mm;
+            margin: 0 1.5mm;
             font-size: 8pt;
             color: #333333;
             font-style: italic;
@@ -314,7 +314,7 @@
             text-align: center;
             font-size: 7pt;
             color: #777777;
-            margin-top: 8mm;
+            margin-top: 4mm;
             font-style: italic;
         }
     </style>
@@ -350,18 +350,22 @@
 
             {{-- Contact Information --}}
             <div class="contact-table">
-                @if($cvInformation['personalInformation']['email'])
-                    <span class="contact-item">{{ $cvInformation['personalInformation']['email'] }}</span>
-                @endif
-                @if($cvInformation['personalInformation']['phone'])
-                    <span class="contact-item">{{ $cvInformation['personalInformation']['phone'] }}</span>
-                @endif
-                @if($cvInformation['personalInformation']['address'])
-                    <span class="contact-item">{{ $cvInformation['personalInformation']['address'] }}</span>
-                @endif
-                @if($cvInformation['personalInformation']['linkedin'])
-                    <span class="contact-item">{{ $cvInformation['personalInformation']['linkedin'] }}</span>
-                @endif
+                <table>
+                    <tr>
+                        @if($cvInformation['personalInformation']['email'])
+                            <td style="width: 25%; text-align: center;"><span class="contact-item">{{ $cvInformation['personalInformation']['email'] }}</span></td>
+                        @endif
+                        @if($cvInformation['personalInformation']['phone'])
+                            <td style="width: 25%; text-align: center;"><span class="contact-item">{{ $cvInformation['personalInformation']['phone'] }}</span></td>
+                        @endif
+                        @if($cvInformation['personalInformation']['address'])
+                            <td style="width: 25%; text-align: center;"><span class="contact-item">{{ $cvInformation['personalInformation']['address'] }}</span></td>
+                        @endif
+                        @if($cvInformation['personalInformation']['linkedin'])
+                            <td style="width: 25%; text-align: center;"><span class="contact-item">{{ $cvInformation['personalInformation']['linkedin'] }}</span></td>
+                        @endif
+                    </tr>
+                </table>
             </div>
 
             {{-- Summary Section --}}
@@ -452,7 +456,7 @@
                                 </div>
                             @endforeach
 
-                            <div style="margin-bottom: 5mm;"></div>
+                            <div style="margin-bottom: 3mm;"></div>
                         @endif
 
                         {{-- Education Section --}}

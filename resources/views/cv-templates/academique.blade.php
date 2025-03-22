@@ -26,7 +26,7 @@
 
         .cv-container {
             width: 190mm;
-            padding: 15mm;
+            padding: 10mm;
             background-color: #FFFFFF;
         }
 
@@ -43,25 +43,25 @@
 
         /* Header Styling */
         .header {
-            margin-bottom: 8mm;
+            margin-bottom: 6mm;
             text-align: center;
-            border-bottom: 1mm solid #1F497D;
-            padding-bottom: 6mm;
+            border-bottom: 0.8mm solid #1F497D;
+            padding-bottom: 4mm;
         }
 
         .name {
-            font-size: 18pt;
+            font-size: 16pt;
             font-weight: bold;
             color: #1F497D;
-            margin-bottom: 3mm;
+            margin-bottom: 2mm;
             font-family: 'DejaVu Serif', serif;
-            letter-spacing: 0.5mm;
+            letter-spacing: 0.3mm;
         }
 
         .profession {
-            font-size: 12pt;
+            font-size: 11pt;
             color: #555555;
-            margin-bottom: 4mm;
+            margin-bottom: 3mm;
             font-style: italic;
         }
 
@@ -73,19 +73,19 @@
 
         .contact-row td {
             text-align: center;
-            font-size: 9pt;
+            font-size: 8pt;
             color: #666666;
             padding: 0 2mm;
         }
 
         /* Photo Styling */
         .photo-container {
-            width: 35mm;
-            height: 35mm;
+            width: 30mm;
+            height: 30mm;
             overflow: hidden;
             border-radius: 1mm;
             border: 0.5mm solid #1F497D;
-            margin: 0 auto 4mm auto;
+            margin: 0 auto 3mm auto;
         }
 
         .photo-container img {
@@ -96,40 +96,40 @@
 
         /* Section Styling */
         .section {
-            margin-bottom: 6mm;
+            margin-bottom: 5mm;
         }
 
         .section-title {
-            font-size: 12pt;
+            font-size: 11pt;
             font-weight: bold;
             color: #1F497D;
-            margin-bottom: 3mm;
+            margin-bottom: 2mm;
             text-transform: uppercase;
             border-bottom: 0.3mm solid #1F497D;
             padding-bottom: 1mm;
-            letter-spacing: 0.3mm;
+            letter-spacing: 0.2mm;
         }
 
         /* Summary Section */
         .summary {
             font-size: 9pt;
             color: #333333;
-            line-height: 1.5;
+            line-height: 1.4;
             text-align: justify;
-            margin-bottom: 6mm;
+            margin-bottom: 4mm;
             font-style: italic;
         }
 
         /* Experience Styling */
         .experience-table {
             width: 100%;
-            margin-bottom: 5mm;
+            margin-bottom: 3mm;
             page-break-inside: avoid;
         }
 
         .exp-date-cell {
             width: 25%;
-            padding-right: 3mm;
+            padding-right: 2mm;
             font-weight: bold;
             color: #1F497D;
         }
@@ -139,40 +139,40 @@
         }
 
         .exp-title {
-            font-size: 10pt;
+            font-size: 9pt;
             font-weight: bold;
             color: #333333;
-            margin-bottom: 1mm;
+            margin-bottom: 0.5mm;
         }
 
         .exp-institution {
-            font-size: 9pt;
+            font-size: 8pt;
             font-style: italic;
             color: #666666;
-            margin-bottom: 2mm;
+            margin-bottom: 1mm;
         }
 
         .exp-description {
-            font-size: 9pt;
+            font-size: 8pt;
             color: #333333;
-            line-height: 1.4;
+            line-height: 1.3;
             text-align: justify;
         }
 
         /* Publications Styling */
         .publication-item {
-            margin-bottom: 3mm;
+            margin-bottom: 2mm;
             text-align: justify;
-            font-size: 9pt;
-            line-height: 1.4;
-            padding-left: 5mm;
-            text-indent: -5mm;
+            font-size: 8pt;
+            line-height: 1.3;
+            padding-left: 4mm;
+            text-indent: -4mm;
         }
 
         /* Skills and Languages Layout */
         .two-column-table {
             width: 100%;
-            margin-bottom: 6mm;
+            margin-bottom: 4mm;
         }
 
         .col-left-cell {
@@ -200,22 +200,22 @@
 
         .skill-name-cell {
             width: 70%;
-            padding: 2mm 0;
+            padding: 1.5mm 0;
         }
 
         .skill-level-cell {
             width: 30%;
             text-align: right;
-            padding: 2mm 0;
+            padding: 1.5mm 0;
         }
 
         .skill-name {
-            font-size: 9pt;
+            font-size: 8pt;
             color: #333333;
         }
 
         .skill-level {
-            font-size: 8pt;
+            font-size: 7pt;
             color: #1F497D;
             font-style: italic;
         }
@@ -235,22 +235,22 @@
         
         .language-name-cell {
             width: 60%;
-            padding: 2mm 0;
+            padding: 1.5mm 0;
         }
         
         .language-level-cell {
             width: 40%;
             text-align: right;
-            padding: 2mm 0;
+            padding: 1.5mm 0;
         }
         
         .language-name {
-            font-size: 9pt;
+            font-size: 8pt;
             color: #333333;
         }
         
         .language-level {
-            font-size: 8pt;
+            font-size: 7pt;
             color: #1F497D;
             font-style: italic;
         }
@@ -261,7 +261,7 @@
             color: #666666;
             font-style: italic;
             text-align: center;
-            margin-top: 8mm;
+            margin-top: 6mm;
         }
         
         .hobbies-container {
@@ -271,9 +271,9 @@
         
         .hobby-item {
             display: inline-block;
-            font-size: 8.5pt;
+            font-size: 8pt;
             color: #666666;
-            margin: 0 3mm;
+            margin: 0 2mm;
         }
     </style>
 </head>

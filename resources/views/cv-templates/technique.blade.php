@@ -25,7 +25,7 @@
         }
 
         .cv-container {
-            width: 210mm;
+            width: 190mm;
         }
 
         /* Tables Reset */
@@ -48,11 +48,12 @@
             width: 55mm;
             background-color: #263238;
             color: #ECEFF1;
+            height: 100%;
             padding: 8mm 4mm;
         }
 
         .main-content-cell {
-            width: 150mm;
+            width: 137mm;
             padding: 8mm 6mm;
         }
 

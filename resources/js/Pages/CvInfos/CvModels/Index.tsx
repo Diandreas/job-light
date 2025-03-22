@@ -1,5 +1,5 @@
-import React, { useState, useCallback } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import React, { useState, useEffect } from 'react';
+import { motion } from 'framer-motion';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Head, Link } from '@inertiajs/react';
 import { Button } from '@/Components/ui/button';
@@ -7,115 +7,267 @@ import { useToast } from '@/Components/ui/use-toast';
 import { useTranslation } from 'react-i18next';
 import {
     Search, CheckCircle, FileText, Star,
-    ArrowUpRight, AlertCircle, ChevronLeft, Sparkles, Coins
+    ChevronLeft, Sparkles, Coins, Eye,
+    PlusCircle
 } from 'lucide-react';
 import { Input } from '@/Components/ui/input';
-import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/Components/ui/sheet";
-import { ScrollArea } from '@/Components/ui/scroll-area';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/Components/ui/dialog";
+import { Badge } from "@/Components/ui/badge";
 import { Alert, AlertDescription } from "@/Components/ui/alert";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/Components/ui/tabs";
 import axios from "axios";
+
+// Animation variants
+const cardVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: {
+        opacity: 1,
+        y: 0,
+        transition: { type: "spring", stiffness: 300, damping: 24 }
+    },
+    hover: {
+        y: -5,
+        scale: 1.02,
+        transition: { type: "spring", stiffness: 400, damping: 10 }
+    }
+};
+
+const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+        opacity: 1,
+        transition: {
+            staggerChildren: 0.08,
+            delayChildren: 0.05
+        }
+    }
+};
 
 const ModelCard = ({ model, isActive, onSelect, onAdd, onPreview, loading, inCatalog }) => {
     const { t } = useTranslation();
 
     return (
         <motion.div
-            layout
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.9 }}
-            className="group relative overflow-hidden rounded-xl border transition-all border-gray-200/50 hover:border-amber-300"
+            variants={cardVariants}
+            initial="hidden"
+            animate="visible"
+            whileHover="hover"
+            className="overflow-hidden rounded-xl border bg-white shadow-sm border-gray-100 flex flex-col h-full"
         >
-            <div className="relative aspect-[9/12] mb-4 overflow-hidden rounded-lg bg-gray-100 group-hover:shadow-xl transition-all duration-300 cursor-pointer"
-                 onClick={() => onPreview(model)}>
-                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/0 to-black/0 z-10" />
+            <div
+                className="relative aspect-square sm:aspect-[3/4] overflow-hidden rounded-t-xl bg-gray-50 cursor-pointer"
+                onClick={() => onPreview(model)}
+            >
+                <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent z-10" />
                 <img
                     src={`/storage/${model.previewImagePath}`}
                     alt={model.name}
-                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                    className="w-full h-full object-cover transition-transform duration-500 hover:scale-105"
                 />
+
                 {isActive && (
-                    <motion.div
-                        initial={false}
-                        animate={{ opacity: 1 }}
-                        className="absolute top-3 right-3 z-20"
-                    >
-                        <div className="bg-gradient-to-r from-amber-500 to-purple-500 text-white px-3 py-1 rounded-full text-sm shadow-md">
-                            {t('cv_models.model_card.active')}
-                        </div>
-                    </motion.div>
-                )}
-                <div className="absolute bottom-0 left-0 right-0 p-4 z-20 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                    <div className="space-y-1">
-                        <p className="text-xs font-medium text-white/70">{model.category}</p>
-                        <h3 className="font-semibold text-lg text-white leading-tight">{model.name}</h3>
-                        {model.price > 0 && (
-                            <div className="flex items-center gap-1.5 mt-2">
-                                <Coins className="w-4 h-4 text-amber-400" />
-                                <p className="text-sm font-medium text-amber-300">
-                                    {model.price.toLocaleString()}
-                                </p>
-                            </div>
-                        )}
+                    <div className="absolute top-3 right-3 z-20">
+                        <Badge className="bg-gradient-to-r from-amber-500 to-purple-500 text-white text-xs px-2 py-0.5">
+                            {t('cv_models.active')}
+                        </Badge>
                     </div>
+                )}
+
+                <div className="absolute bottom-0 left-0 right-0 p-3 z-20">
+                    <h3 className="font-bold text-sm sm:text-base text-white line-clamp-2">{model.name}</h3>
+                    {model.price > 0 && (
+                        <div className="flex items-center gap-1.5 mt-0.5">
+                            <Coins className="w-3.5 h-3.5 text-amber-300" />
+                            <p className="text-xs sm:text-sm text-amber-200">
+                                {model.price.toLocaleString()}
+                            </p>
+                        </div>
+                    )}
                 </div>
+
+                <motion.div
+                    className="absolute inset-0 bg-black/50 z-30 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity"
+                    whileHover={{ opacity: 1 }}
+                >
+                    <Button variant="outline" size="sm" className="bg-white/20 backdrop-blur-sm text-white border-white/40 hover:bg-white/30">
+                        <Eye className="w-3.5 h-3.5 mr-1.5" />
+                        {t('cv_models.view')}
+                    </Button>
+                </motion.div>
             </div>
 
-            <div className="flex gap-2 p-4">
+            <div className="p-3 mt-auto">
                 {inCatalog ? (
                     <Button
                         variant={isActive ? "outline" : "default"}
-                        className={`w-full ${
-                            isActive
-                                ? 'border-amber-200 text-amber-700'
-                                : 'bg-gradient-to-r from-amber-500 to-purple-500 hover:from-amber-600 hover:to-purple-600 text-white'
-                        }`}
+                        className={`w-full ${isActive
+                            ? 'border-amber-200 text-amber-700 hover:bg-amber-50'
+                            : 'bg-gradient-to-r from-amber-500 to-purple-500 hover:from-amber-600 hover:to-purple-600 text-white'
+                            }`}
                         disabled={isActive || loading}
                         onClick={() => onSelect(model.id)}
                     >
-                        <div className="flex items-center gap-2">
-                            {isActive ? <CheckCircle className="w-4 h-4" /> : <Star className="w-4 h-4" />}
-                            {isActive ? t('cv_models.model_card.active_model') : t('cv_models.model_card.use_model')}
-                        </div>
+                        {isActive ? (
+                            <CheckCircle className="w-4 h-4 mr-1.5" />
+                        ) : (
+                            <Star className="w-4 h-4 mr-1.5" />
+                        )}
+                        {isActive ? t('cv_models.selected') : t('cv_models.select')}
                     </Button>
                 ) : (
-                    <Button
-                        className="w-full bg-gradient-to-r from-amber-500 to-purple-500 hover:from-amber-600 hover:to-purple-600 text-white"
-                        disabled={loading}
-                        onClick={() => onAdd(model)}
-                    >
-                        <Sparkles className="w-4 h-4 mr-2" />
-                        {t('cv_models.model_card.add_to_catalog')}
-                    </Button>
+                    <div className="flex flex-col gap-2">
+                        <Button
+                            variant={isActive ? "outline" : "default"}
+                            className={`w-full ${isActive
+                                ? 'border-amber-200 text-amber-700 hover:bg-amber-50'
+                                : 'bg-gradient-to-r from-amber-500 to-purple-500 hover:from-amber-600 hover:to-purple-600 text-white'
+                                }`}
+                            disabled={loading}
+                            onClick={() => onSelect(model.id)}
+                        >
+                            {isActive ? (
+                                <CheckCircle className="w-4 h-4 mr-1.5" />
+                            ) : (
+                                <Star className="w-4 h-4 mr-1.5" />
+                            )}
+                            {isActive ? t('cv_models.selected') : t('cv_models.use')}
+                        </Button>
+                        <Button
+                            variant="outline"
+                            className="w-full border-amber-200 text-amber-700 hover:bg-amber-50"
+                            disabled={loading}
+                            onClick={() => onAdd(model)}
+                        >
+                            <PlusCircle className="w-4 h-4 mr-1.5" />
+                            {t('cv_models.add_to_catalog')}
+                        </Button>
+                    </div>
                 )}
             </div>
         </motion.div>
     );
 };
 
-const ModelPreview = ({ model, onClose }) => {
+const ModelPreview = ({ model, onClose, onAdd, onSelect, isActive, inCatalog, loading }) => {
     const { t } = useTranslation();
 
+    if (!model) return null;
+
     return (
-        <Sheet open={Boolean(model)} onOpenChange={() => onClose(null)}>
-            <SheetContent side="right" className="w-full sm:max-w-4xl bg-white p-0">
-                <SheetHeader className="px-6 py-4 border-b">
-                    <SheetTitle className="flex items-center gap-2">
-                        <Star className="h-5 w-5 text-amber-500" />
-                        <span className="bg-gradient-to-r from-amber-500 to-purple-500 text-transparent bg-clip-text">
+        <Dialog open={Boolean(model)} onOpenChange={() => onClose(null)}>
+            <DialogContent className="max-w-md sm:max-w-2xl p-0 overflow-hidden">
+                <DialogHeader className="px-4 py-3 border-b">
+                    <DialogTitle className="flex items-center gap-2 text-base">
+                        <Star className="h-4 w-4 text-amber-500" />
+                        <span className="bg-gradient-to-r from-amber-500 to-purple-500 text-transparent bg-clip-text line-clamp-1">
                             {model?.name}
                         </span>
-                    </SheetTitle>
-                </SheetHeader>
-                <div className="p-6 h-[calc(100vh-5rem)] overflow-auto bg-gray-50">
+                        {isActive && (
+                            <Badge className="bg-gradient-to-r from-amber-500 to-purple-500 text-white text-xs">
+                                {t('cv_models.active')}
+                            </Badge>
+                        )}
+                    </DialogTitle>
+                </DialogHeader>
+
+                <div className="relative w-full aspect-square sm:aspect-[4/3] bg-gray-50">
                     <img
                         src={`/storage/${model?.previewImagePath}`}
                         alt={model?.name}
-                        className="w-full h-auto rounded-lg shadow-xl border border-gray-200"
+                        className="w-full h-full object-contain"
                     />
                 </div>
-            </SheetContent>
-        </Sheet>
+
+                <div className="p-4 bg-white">
+                    {model.price > 0 ? (
+                        <div className="flex items-center gap-2 mb-4">
+                            <Coins className="w-4 h-4 text-amber-500" />
+                            <span className="font-medium">{model.price.toLocaleString()}</span>
+                        </div>
+                    ) : (
+                        <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200 mb-4">
+                            {t('cv_models.preview.free')}
+                        </Badge>
+                    )}
+
+                    {inCatalog ? (
+                        <div className="flex flex-col sm:flex-row gap-3">
+                            <Button
+                                variant={isActive ? "outline" : "default"}
+                                className={`flex-1 ${isActive
+                                    ? 'border-amber-200 text-amber-700 hover:bg-amber-50'
+                                    : 'bg-gradient-to-r from-amber-500 to-purple-500 hover:from-amber-600 hover:to-purple-600 text-white'
+                                    }`}
+                                disabled={isActive || loading}
+                                onClick={() => {
+                                    onSelect(model.id);
+                                    onClose(null);
+                                }}
+                            >
+                                {isActive ? (
+                                    <CheckCircle className="w-4 h-4 mr-1.5" />
+                                ) : (
+                                    <Star className="w-4 h-4 mr-1.5" />
+                                )}
+                                {isActive ? t('cv_models.selected') : t('cv_models.select')}
+                            </Button>
+
+                            <Button
+                                variant="outline"
+                                onClick={() => onClose(null)}
+                                className="flex-1 sm:flex-none"
+                            >
+                                {t('common.close')}
+                            </Button>
+                        </div>
+                    ) : (
+                        <div className="flex flex-col gap-3">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                <Button
+                                    variant={isActive ? "outline" : "default"}
+                                    className={`${isActive
+                                        ? 'border-amber-200 text-amber-700 hover:bg-amber-50'
+                                        : 'bg-gradient-to-r from-amber-500 to-purple-500 hover:from-amber-600 hover:to-purple-600 text-white'
+                                        }`}
+                                    disabled={loading}
+                                    onClick={() => {
+                                        onSelect(model.id);
+                                        onClose(null);
+                                    }}
+                                >
+                                    {isActive ? (
+                                        <CheckCircle className="w-4 h-4 mr-1.5" />
+                                    ) : (
+                                        <Star className="w-4 h-4 mr-1.5" />
+                                    )}
+                                    {isActive ? t('cv_models.selected') : t('cv_models.use')}
+                                </Button>
+
+                                <Button
+                                    variant="outline"
+                                    className="border-amber-200 text-amber-700 hover:bg-amber-50"
+                                    disabled={loading}
+                                    onClick={() => {
+                                        onAdd(model);
+                                        onClose(null);
+                                    }}
+                                >
+                                    <PlusCircle className="w-4 h-4 mr-1.5" />
+                                    {t('cv_models.add_to_catalog')}
+                                </Button>
+                            </div>
+
+                            <Button
+                                variant="ghost"
+                                onClick={() => onClose(null)}
+                            >
+                                {t('common.close')}
+                            </Button>
+                        </div>
+                    )}
+                </div>
+            </DialogContent>
+        </Dialog>
     );
 };
 
@@ -128,6 +280,7 @@ export default function CvModelsIndex({ auth, userCvModels, availableCvModels, m
     const [previewModel, setPreviewModel] = useState(null);
     const [activeModels, setActiveModels] = useState(userCvModels);
     const [availableModels, setAvailableModels] = useState(availableCvModels);
+    const [currentTab, setCurrentTab] = useState('active');
 
     const handleAddModel = async (model) => {
         if (activeModels.length >= maxAllowedModels) {
@@ -163,7 +316,7 @@ export default function CvModelsIndex({ auth, userCvModels, availableCvModels, m
         }
     };
 
-    const handleSelectModel = useCallback(async (modelId) => {
+    const handleSelectModel = async (modelId) => {
         setLoading(true);
         try {
             await axios.post('/user-cv-models/select-active', {
@@ -184,121 +337,205 @@ export default function CvModelsIndex({ auth, userCvModels, availableCvModels, m
         } finally {
             setLoading(false);
         }
-    }, [auth.user.id, toast, t]);
+    };
 
-    const filteredModels = useCallback((models) => {
+    const filteredModels = (models) => {
         return models.filter(model =>
-            model.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            model.category.toLowerCase().includes(searchTerm.toLowerCase())
+            model.name.toLowerCase().includes(searchTerm.toLowerCase())
         );
-    }, [searchTerm]);
+    };
 
-    // @ts-ignore
+    const filteredActiveModels = filteredModels(activeModels);
+    const filteredAvailableModels = filteredModels(availableModels);
+
+    // Switch to the tab that has models when searching
+    useEffect(() => {
+        if (searchTerm) {
+            if (filteredActiveModels.length === 0 && filteredAvailableModels.length > 0) {
+                setCurrentTab('discover');
+            } else if (filteredActiveModels.length > 0 && filteredAvailableModels.length === 0) {
+                setCurrentTab('active');
+            }
+        }
+    }, [searchTerm, filteredActiveModels.length, filteredAvailableModels.length]);
+
+    // If a model is selected from the discover tab, show the active tab automatically
+    useEffect(() => {
+        const selectedModelInAvailable = availableModels.some(model => model.id === selectedModelId);
+        if (selectedModelInAvailable && currentTab === 'discover') {
+            toast({
+                description: t('cv_models.notifications.model_from_discover_selected')
+            });
+        }
+    }, [selectedModelId, availableModels, currentTab, toast, t]);
+
     return (
         <AuthenticatedLayout user={auth.user}>
             <Head title={t('cv_models.title')} />
 
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-                <nav className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
-                    <div className="flex items-center gap-4">
-                        <Link href={route('cv-infos.index')}>
-                            <Button variant="ghost" className="flex items-center gap-2 hover:bg-amber-50">
-                                <ChevronLeft className="w-4 h-4" />
-                                {t('cv_models.back')}
-                            </Button>
-                        </Link>
-                        <h1 className="text-2xl font-bold bg-gradient-to-r from-amber-500 to-purple-500 text-transparent bg-clip-text">
-                            {t('cv_models.title')}
-                        </h1>
-                    </div>
+            <div className="min-h-screen bg-gradient-to-b from-amber-50/30 to-white pb-16">
+                <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-3 sm:py-6">
+                    {/* Header with navigation - Compact but clear */}
+                    <header className="flex flex-col gap-3 mb-4 sm:mb-6">
+                        <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-2">
+                                <Link href={route('cv-infos.index')}>
+                                    <Button variant="ghost" size="sm" className="flex items-center gap-1 hover:bg-amber-50 h-8 px-2 sm:h-9 sm:px-3">
+                                        <ChevronLeft className="w-4 h-4" />
+                                        <span className="hidden sm:inline">{t('cv_models.back')}</span>
+                                    </Button>
+                                </Link>
+                                <h1 className="text-lg sm:text-xl font-bold bg-gradient-to-r from-amber-500 to-purple-500 text-transparent bg-clip-text">
+                                    {t('cv_models.title')}
+                                </h1>
+                            </div>
 
-                    <div className="flex items-center gap-4">
-                        <div className="relative flex-1 sm:flex-none">
-                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+                            <Link href="/cv-infos/show">
+                                <Button className="bg-gradient-to-r from-amber-500 to-purple-500 hover:from-amber-600 hover:to-purple-600 text-white h-8 sm:h-9 px-2 sm:px-3 text-sm">
+                                    <FileText className="w-4 h-4 mr-1 sm:mr-2" />
+                                    <span className="hidden sm:inline">{t('cv_models.export_cv')}</span>
+                                    <span className="sm:hidden">{t('cv_models.export')}</span>
+                                </Button>
+                            </Link>
+                        </div>
+
+                        {/* Search - Full width */}
+                        <div className="relative w-full">
+                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4" />
                             <Input
                                 type="text"
                                 placeholder={t('cv_models.search_placeholder')}
                                 value={searchTerm}
                                 onChange={(e) => setSearchTerm(e.target.value)}
-                                className="pl-10 w-full sm:w-64 border-amber-200 focus:border-amber-500"
+                                className="pl-9 w-full border-amber-100 focus:border-amber-500 bg-white"
                             />
-                        </div>
-                        <Link href="/cv-infos/show">
-                            <Button className="bg-gradient-to-r from-amber-500 to-purple-500 hover:from-amber-600 hover:to-purple-600 text-white">
-                                <FileText className="w-4 h-4 mr-2" />
-                                {t('cv_models.export_cv')}
-                            </Button>
-                        </Link>
-                    </div>
-                </nav>
-
-                <section className="space-y-6 mb-12">
-                    <header className="flex items-center justify-between">
-                        <div className="flex items-center gap-2">
-                            <CheckCircle className="text-amber-500 w-5 h-5" />
-                            <h2 className="text-xl font-semibold bg-gradient-to-r from-amber-500 to-purple-500 text-transparent bg-clip-text">
-                                {t('cv_models.active_models.title')}
-                            </h2>
-                        </div>
-                        <div className="text-sm px-3 py-1 rounded-full bg-amber-100 text-amber-700">
-                            {t('cv_models.active_models.limit', { current: activeModels.length, max: maxAllowedModels })}
                         </div>
                     </header>
 
-                    {activeModels.length === 0 ? (
-                        <Alert className="bg-amber-50 border-amber-200">
-                            <AlertCircle className="w-4 h-4 text-amber-500" />
-                            <AlertDescription className="text-amber-700">
-                                {t('cv_models.empty_state.description')}
+                    {/* Model usage stats - Simplified and responsive */}
+                    <div className="flex items-center justify-between p-2 sm:p-3 mb-3 sm:mb-5 rounded-md bg-white border border-amber-100 shadow-sm">
+                        <div className="text-xs sm:text-sm font-medium text-gray-600">
+                            {activeModels.length}/{maxAllowedModels} {t('cv_models.models')}
+                        </div>
+                        <div className="w-32 sm:w-48 h-1.5 sm:h-2 bg-gray-100 rounded-full overflow-hidden">
+                            <div
+                                className="h-full bg-gradient-to-r from-amber-400 to-purple-500"
+                                style={{ width: `${(activeModels.length / maxAllowedModels) * 100}%` }}
+                            />
+                        </div>
+                    </div>
+
+                    {/* Selected model from discover notification */}
+                    {selectedModelId && availableModels.some(model => model.id === selectedModelId) && (
+                        <Alert className="mb-3 sm:mb-5 bg-amber-50 border-amber-200">
+                            <AlertDescription className="flex items-center text-amber-700 text-sm">
+                                <CheckCircle className="w-4 h-4 text-amber-500 mr-2" />
+                                {t('cv_models.model_active_from_discover')}
                             </AlertDescription>
                         </Alert>
-                    ) : (
-                        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-                            <AnimatePresence>
-                                {filteredModels(activeModels).map((model) => (
-                                    <ModelCard
-                                        key={model.id}
-                                        model={model}
-                                        isActive={selectedModelId === model.id}
-                                        onSelect={handleSelectModel}
-                                        onAdd={handleAddModel}
-                                        onPreview={setPreviewModel}
-                                        loading={loading}
-                                        inCatalog={true}
-                                    />
-                                ))}
-                            </AnimatePresence>
-                        </div>
                     )}
-                </section>
 
-                {availableModels.length > 0 && (
-                    <section className="space-y-6">
-                        <h2 className="text-xl font-semibold bg-gradient-to-r from-amber-500 to-purple-500 text-transparent bg-clip-text flex items-center gap-2">
-                            <Sparkles className="h-5 w-5 text-amber-500" />
-                            {t('cv_models.discover_models')}
-                        </h2>
-                        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-                            <AnimatePresence>
-                                {filteredModels(availableModels).map((model) => (
-                                    // @ts-ignore
-                                    <ModelCard
-                                        key={model.id}
-                                        model={model}
-                                        onSelect={handleSelectModel}
-                                        onAdd={handleAddModel}
-                                        onPreview={setPreviewModel}
-                                        loading={loading}
-                                        inCatalog={false}
-                                    />
-                                ))}
-                            </AnimatePresence>
-                        </div>
-                    </section>
-                )}
+                    {/* Tabs for navigation */}
+                    <Tabs
+                        value={currentTab}
+                        onValueChange={setCurrentTab}
+                        className="mb-4 sm:mb-6"
+                    >
+                        <TabsList className="mb-3 sm:mb-4 bg-white border border-amber-100 w-full">
+                            <TabsTrigger
+                                value="active"
+                                className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-amber-500 data-[state=active]:to-purple-500 data-[state=active]:text-white flex-1 text-xs sm:text-sm"
+                            >
+                                <CheckCircle className="w-3.5 h-3.5 mr-1.5" />
+                                {t('cv_models.tabs.active')} ({filteredActiveModels.length})
+                            </TabsTrigger>
+                            <TabsTrigger
+                                value="discover"
+                                className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-amber-500 data-[state=active]:to-purple-500 data-[state=active]:text-white flex-1 text-xs sm:text-sm"
+                            >
+                                <Sparkles className="w-3.5 h-3.5 mr-1.5" />
+                                {t('cv_models.tabs.discover')} ({filteredAvailableModels.length})
+                            </TabsTrigger>
+                        </TabsList>
 
-                <ModelPreview model={previewModel} onClose={setPreviewModel} />
+                        <TabsContent value="active" className="mt-0 focus-visible:outline-none">
+                            {filteredActiveModels.length === 0 ? (
+                                <Alert className="bg-amber-50 border-amber-200">
+                                    <AlertDescription className="text-amber-700 text-sm">
+                                        {searchTerm
+                                            ? t('cv_models.empty_state.no_search_results')
+                                            : t('cv_models.empty_state.description')
+                                        }
+                                    </AlertDescription>
+                                </Alert>
+                            ) : (
+                                <motion.div
+                                    variants={containerVariants}
+                                    initial="hidden"
+                                    animate="visible"
+                                    className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 sm:gap-4"
+                                >
+                                    {filteredActiveModels.map((model) => (
+                                        <ModelCard
+                                            key={model.id}
+                                            model={model}
+                                            isActive={selectedModelId === model.id}
+                                            onSelect={handleSelectModel}
+                                            onAdd={handleAddModel}
+                                            onPreview={setPreviewModel}
+                                            loading={loading}
+                                            inCatalog={true}
+                                        />
+                                    ))}
+                                </motion.div>
+                            )}
+                        </TabsContent>
+
+                        <TabsContent value="discover" className="mt-0 focus-visible:outline-none">
+                            {filteredAvailableModels.length === 0 ? (
+                                <Alert className="bg-amber-50 border-amber-200">
+                                    <AlertDescription className="text-amber-700 text-sm">
+                                        {searchTerm
+                                            ? t('cv_models.empty_state.no_search_results')
+                                            : t('cv_models.empty_state.all_models_added')
+                                        }
+                                    </AlertDescription>
+                                </Alert>
+                            ) : (
+                                <motion.div
+                                    variants={containerVariants}
+                                    initial="hidden"
+                                    animate="visible"
+                                    className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 sm:gap-4"
+                                >
+                                    {filteredAvailableModels.map((model) => (
+                                        <ModelCard
+                                            key={model.id}
+                                            model={model}
+                                            isActive={selectedModelId === model.id}
+                                            onSelect={handleSelectModel}
+                                            onAdd={handleAddModel}
+                                            onPreview={setPreviewModel}
+                                            loading={loading}
+                                            inCatalog={false}
+                                        />
+                                    ))}
+                                </motion.div>
+                            )}
+                        </TabsContent>
+                    </Tabs>
+                </div>
             </div>
+
+            <ModelPreview
+                model={previewModel}
+                onClose={setPreviewModel}
+                onAdd={handleAddModel}
+                onSelect={handleSelectModel}
+                isActive={previewModel ? selectedModelId === previewModel.id : false}
+                inCatalog={previewModel ? activeModels.some(m => m.id === previewModel.id) : false}
+                loading={loading}
+            />
         </AuthenticatedLayout>
     );
 }

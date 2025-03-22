@@ -15,7 +15,7 @@ import { Alert, AlertDescription } from "@/Components/ui/alert";
 import axios from 'axios';
 
 // Liste des modèles sans bouton de téléchargement
-const MODELS_WITHOUT_DOWNLOAD = [10, 14, 12];
+const MODELS_WITHOUT_DOWNLOAD = [10, 14, 12, 19, 18];
 
 const InfoCard = ({ icon: Icon, title, value, type = "default" }) => {
     const styles = {

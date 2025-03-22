@@ -2,7 +2,7 @@
     "brand": "Guidy",
     "nav": {
         "login": "Login",
-        "register": "Start for Free",
+        "register": "Start Free",
         "start_free": "Start now"
     },
     "hero": {
@@ -218,9 +218,7 @@
         "back": "Back",
         "next": "Next",
         "manage": "Manage",
-        "error": {
-            "generic": "An error has occurred."
-        }
+        "close": "Close"
     },
     "wallet": {
         "balance": "Balance",
@@ -235,30 +233,37 @@
         "new": "New"
     },
     "cv_models": {
-        "title": "CV Template Collection",
+        "title": "CV Models Collection",
         "back": "Back",
         "export_cv": "Export CV",
+        "export": "Export",
         "search_placeholder": "Search...",
-        "active_models": {
-            "title": "My Active Templates",
-            "limit": "{{current}}/{{max}} templates"
+        "models": "models",
+        "active": "Active",
+        "selected": "Selected",
+        "select": "Select",
+        "use": "Use",
+        "view": "Preview",
+        "add_to_catalog": "Add to catalog",
+        "model_active_from_discover": "You are currently using a model from the Discover section",
+        "preview": {
+            "free": "Free"
         },
-        "discover_models": "Discover our Templates",
+        "tabs": {
+            "active": "My models",
+            "discover": "Discover"
+        },
         "empty_state": {
-            "title": "No Active Templates",
-            "description": "Select a template from the available templates below."
-        },
-        "model_card": {
-            "active": "Active",
-            "use_model": "Use this Template",
-            "active_model": "Active Template",
-            "add_to_catalog": "Add to Catalog"
+            "no_search_results": "No results match your search",
+            "description": "You don't have any active models yet. Add one from the Discover section.",
+            "all_models_added": "You have already added all available models"
         },
         "notifications": {
-            "model_added": "Template added to your collection",
-            "model_activated": "Your template has been activated successfully",
-            "max_models_reached": "You cannot add more than {{max}} templates",
-            "error": "An error occurred"
+            "model_added": "Model added to your collection",
+            "model_activated": "Your model has been successfully activated",
+            "max_models_reached": "You cannot add more than {{max}} models",
+            "error": "An error occurred",
+            "model_from_discover_selected": "Model selected from Discover section"
         }
     },
     "auth": {

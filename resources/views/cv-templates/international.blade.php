@@ -27,7 +27,7 @@
         .cv-container {
             width: 210mm;
             background-color: #FFFFFF;
-            padding: 10mm;
+            padding: 8mm;
         }
 
         /* Tables Reset */
@@ -44,9 +44,9 @@
         /* Header Section */
         .header-table {
             width: 100%;
-            margin-bottom: 5mm;
+            margin-bottom: 4mm;
             border-bottom: 0.5mm solid #333333 !important;
-            padding-bottom: 5mm;
+            padding-bottom: 4mm;
             -webkit-print-color-adjust: exact !important;
             print-color-adjust: exact !important;
         }
@@ -61,7 +61,7 @@
         }
 
         .name {
-            font-size: 16pt;
+            font-size: 15pt;
             font-weight: bold;
             color: #333333;
             margin-bottom: 1mm;
@@ -69,15 +69,15 @@
         }
 
         .profession {
-            font-size: 10pt;
+            font-size: 9.5pt;
             color: #666666;
-            margin-bottom: 3mm;
+            margin-bottom: 2mm;
         }
 
         /* Photo Styling */
         .photo-container {
             width: 30mm;
-            height: 40mm;
+            height: 35mm;
             overflow: hidden;
             border: 0.2mm solid #cccccc !important;
             float: right;
@@ -98,7 +98,7 @@
 
         .contact-item {
             margin-bottom: 1mm;
-            font-size: 9pt;
+            font-size: 8.5pt;
             color: #333333;
         }
 
@@ -111,32 +111,32 @@
         /* Main Layout */
         .main-table {
             width: 100%;
-            margin-top: 5mm;
+            margin-top: 4mm;
         }
 
         .left-column-cell {
-            width: 30%;
-            padding-right: 5mm;
+            width: 32%;
+            padding-right: 4mm;
         }
 
         .right-column-cell {
-            width: 70%;
+            width: 68%;
             border-left: 0.2mm solid #cccccc !important;
-            padding-left: 5mm;
+            padding-left: 4mm;
             -webkit-print-color-adjust: exact !important;
             print-color-adjust: exact !important;
         }
 
         /* Section Styling */
         .section {
-            margin-bottom: 6mm;
+            margin-bottom: 5mm;
         }
 
         .section-title {
-            font-size: 11pt;
+            font-size: 10pt;
             font-weight: bold;
             color: #333333;
-            margin-bottom: 3mm;
+            margin-bottom: 2mm;
             text-transform: uppercase;
             border-bottom: 0.2mm solid #cccccc !important;
             padding-bottom: 1mm;
@@ -146,17 +146,17 @@
 
         /* Summary Section */
         .summary {
-            font-size: 9pt;
+            font-size: 8.5pt;
             color: #333333;
-            line-height: 1.4;
-            margin-bottom: 4mm;
+            line-height: 1.3;
+            margin-bottom: 3mm;
             text-align: justify;
         }
 
         /* Experience Styling */
         .experience-table {
             width: 100%;
-            margin-bottom: 4mm;
+            margin-bottom: 3mm;
         }
 
         .experience-left-cell {
@@ -175,21 +175,21 @@
         }
 
         .experience-location {
-            font-size: 8pt;
+            font-size: 7.5pt;
             font-style: italic;
             color: #666666;
             margin-top: 1mm;
         }
 
         .experience-title {
-            font-size: 10pt;
+            font-size: 9pt;
             font-weight: bold;
             color: #333333;
             margin-bottom: 1mm;
         }
 
         .experience-company {
-            font-size: 9pt;
+            font-size: 8.5pt;
             color: #555555;
             margin-bottom: 1mm;
         }
@@ -197,24 +197,24 @@
         .experience-description {
             font-size: 8pt;
             color: #333333;
-            line-height: 1.4;
+            line-height: 1.3;
             text-align: justify;
         }
 
         /* Skills Styling */
         .skill-item {
-            margin-bottom: 2mm;
+            margin-bottom: 1.5mm;
         }
 
         .skill-name {
-            font-size: 9pt;
+            font-size: 8.5pt;
             font-weight: bold;
             color: #333333;
-            margin-bottom: 1mm;
+            margin-bottom: 0.5mm;
         }
 
         .skill-description {
-            font-size: 8pt;
+            font-size: 7.5pt;
             color: #555555;
         }
 
@@ -222,15 +222,15 @@
         .language-table {
             width: 100%;
             border: 0.2mm solid #cccccc !important;
-            margin-bottom: 5mm;
+            margin-bottom: 4mm;
             -webkit-print-color-adjust: exact !important;
             print-color-adjust: exact !important;
         }
         
         .language-table td, .language-table th {
-            padding: 1mm 2mm;
+            padding: 1mm 1.5mm;
             text-align: left;
-            font-size: 9pt;
+            font-size: 8.5pt;
             border-bottom: 0.1mm solid #cccccc !important;
             -webkit-print-color-adjust: exact !important;
             print-color-adjust: exact !important;
@@ -245,7 +245,7 @@
 
         /* Education Styling */
         .education-item {
-            margin-bottom: 3mm;
+            margin-bottom: 2mm;
         }
 
         .education-date {
@@ -255,10 +255,10 @@
         }
 
         .education-degree {
-            font-size: 9pt;
+            font-size: 8.5pt;
             font-weight: bold;
             color: #333333;
-            margin: 1mm 0;
+            margin: 0.5mm 0;
         }
 
         .education-institution {
@@ -276,12 +276,13 @@
 
         .hobby-item {
             display: inline-block;
-            margin-right: 2mm;
-            padding: 1mm 2mm;
-            font-size: 8pt;
+            margin-right: 1.5mm;
+            margin-bottom: 1.5mm;
+            padding: 0.8mm 1.5mm;
+            font-size: 7.5pt;
             background-color: #f5f5f5 !important;
             border: 0.1mm solid #cccccc !important;
-            border-radius: 2mm;
+            border-radius: 1.5mm;
             -webkit-print-color-adjust: exact !important;
             print-color-adjust: exact !important;
         }
@@ -291,7 +292,7 @@
             font-size: 7pt;
             color: #999999;
             text-align: center;
-            margin-top: 10mm;
+            margin-top: 6mm;
             font-style: italic;
             border-top: 0.2mm solid #cccccc !important;
             padding-top: 2mm;
@@ -302,7 +303,7 @@
         /* Multi-language Indicators */
         .lang-indicator {
             display: inline-block;
-            font-size: 7pt;
+            font-size: 6.5pt;
             font-style: italic;
             color: #666666;
             margin-left: 1mm;
@@ -326,42 +327,40 @@
                 </div>
                 
                 <table class="contact-table">
-                    @if($cvInformation['personalInformation']['email'])
-                        <tr>
-                            <td class="contact-item">
-                                <span class="contact-label">Email:</span>
-                                {{ $cvInformation['personalInformation']['email'] }}
-                            </td>
-                        </tr>
-                    @endif
-                    @if($cvInformation['personalInformation']['phone'])
-                        <tr>
-                            <td class="contact-item">
-                                <span class="contact-label">
-                                    {{ $currentLocale === 'fr' ? 'Tél:' : 'Phone:' }}
-                                </span>
-                                {{ $cvInformation['personalInformation']['phone'] }}
-                            </td>
-                        </tr>
-                    @endif
-                    @if($cvInformation['personalInformation']['address'])
-                        <tr>
-                            <td class="contact-item">
-                                <span class="contact-label">
-                                    {{ $currentLocale === 'fr' ? 'Adresse:' : 'Address:' }}
-                                </span>
-                                {{ $cvInformation['personalInformation']['address'] }}
-                            </td>
-                        </tr>
-                    @endif
-                    @if($cvInformation['personalInformation']['linkedin'])
-                        <tr>
-                            <td class="contact-item">
-                                <span class="contact-label">LinkedIn:</span>
-                                {{ $cvInformation['personalInformation']['linkedin'] }}
-                            </td>
-                        </tr>
-                    @endif
+                    <tr>
+                        <td style="width: 50%">
+                            @if($cvInformation['personalInformation']['email'])
+                                <div class="contact-item">
+                                    <span class="contact-label">Email:</span>
+                                    {{ $cvInformation['personalInformation']['email'] }}
+                                </div>
+                            @endif
+                            @if($cvInformation['personalInformation']['phone'])
+                                <div class="contact-item">
+                                    <span class="contact-label">
+                                        {{ $currentLocale === 'fr' ? 'Tél:' : 'Phone:' }}
+                                    </span>
+                                    {{ $cvInformation['personalInformation']['phone'] }}
+                                </div>
+                            @endif
+                        </td>
+                        <td style="width: 50%">
+                            @if($cvInformation['personalInformation']['address'])
+                                <div class="contact-item">
+                                    <span class="contact-label">
+                                        {{ $currentLocale === 'fr' ? 'Adresse:' : 'Address:' }}
+                                    </span>
+                                    {{ $cvInformation['personalInformation']['address'] }}
+                                </div>
+                            @endif
+                            @if($cvInformation['personalInformation']['linkedin'])
+                                <div class="contact-item">
+                                    <span class="contact-label">LinkedIn:</span>
+                                    {{ $cvInformation['personalInformation']['linkedin'] }}
+                                </div>
+                            @endif
+                        </td>
+                    </tr>
                 </table>
             </td>
             <td class="header-right-cell">

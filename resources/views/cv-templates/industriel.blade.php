@@ -42,7 +42,7 @@
 
         /* Header Styling */
         .header-bg {
-            height: 25mm;
+            height: 22mm;
             background-color: #37474F !important;
             -webkit-print-color-adjust: exact !important;
             print-color-adjust: exact !important;
@@ -51,8 +51,8 @@
 
         .header-content {
             position: relative;
-            padding: 0 10mm;
-            margin-top: -20mm;
+            padding: 0 8mm;
+            margin-top: -18mm;
         }
 
         .header-table {
@@ -69,7 +69,7 @@
         }
 
         .name {
-            font-size: 20pt;
+            font-size: 18pt;
             font-weight: bold;
             color: #FFFFFF;
             margin-bottom: 1mm;
@@ -77,21 +77,21 @@
         }
 
         .profession {
-            font-size: 11pt;
+            font-size: 10pt;
             color: #CFD8DC;
-            margin-bottom: 5mm;
+            margin-bottom: 4mm;
             font-weight: 300;
         }
 
         /* Photo Styling */
         .photo-container {
-            width: 35mm;
-            height: 35mm;
+            width: 30mm;
+            height: 30mm;
             overflow: hidden;
-            border: 2mm solid #FFFFFF;
+            border: 1.5mm solid #FFFFFF;
             box-shadow: 0 2px 5px rgba(0,0,0,0.2);
             float: right;
-            margin-top: -5mm;
+            margin-top: -4mm;
             background-color: #FFFFFF;
         }
 
@@ -107,20 +107,20 @@
             background-color: #F5F5F5 !important;
             -webkit-print-color-adjust: exact !important;
             print-color-adjust: exact !important;
-            margin-top: 6mm;
+            margin-top: 5mm;
             border-top: 0.5mm solid #FF5722;
             border-bottom: 0.5mm solid #FF5722;
         }
 
         .contact-cell {
-            padding: 2mm 10mm;
+            padding: 1.5mm 8mm;
             font-size: 8pt;
             color: #37474F;
         }
 
         .contact-item {
             display: inline-block;
-            margin-right: 5mm;
+            margin-right: 4mm;
         }
 
         .contact-icon {
@@ -132,19 +132,19 @@
         /* Main Content */
         .main-table {
             width: 100%;
-            padding: 8mm 10mm;
+            padding: 6mm 8mm;
         }
 
         .section {
-            margin-bottom: 6mm;
+            margin-bottom: 5mm;
             page-break-inside: avoid;
         }
 
         .section-title {
-            font-size: 12pt;
+            font-size: 11pt;
             font-weight: bold;
             color: #37474F;
-            margin-bottom: 3mm;
+            margin-bottom: 2.5mm;
             text-transform: uppercase;
             border-left: 1mm solid #FF5722;
             padding-left: 2mm;
@@ -154,10 +154,10 @@
         .summary {
             font-size: 9pt;
             color: #37474F;
-            line-height: 1.4;
-            margin-bottom: 6mm;
+            line-height: 1.3;
+            margin-bottom: 5mm;
             border: 0.2mm solid #EEEEEE;
-            padding: 3mm;
+            padding: 2.5mm;
             background-color: #FAFAFA !important;
             -webkit-print-color-adjust: exact !important;
             print-color-adjust: exact !important;
@@ -181,7 +181,7 @@
 
         .expertise-category-cell {
             width: 30%;
-            padding: 2mm;
+            padding: 1.5mm;
             font-weight: bold;
             color: #37474F;
             border-right: 0.2mm solid #EEEEEE;
@@ -189,7 +189,7 @@
 
         .expertise-skills-cell {
             width: 70%;
-            padding: 2mm;
+            padding: 1.5mm;
         }
 
         .skill-tag {
@@ -197,7 +197,7 @@
             background-color: #EEEEEE !important;
             -webkit-print-color-adjust: exact !important;
             print-color-adjust: exact !important;
-            padding: 0.5mm 2mm;
+            padding: 0.5mm 1.5mm;
             margin: 0.5mm 1mm 0.5mm 0;
             border-radius: 1mm;
             font-size: 8pt;
@@ -207,7 +207,7 @@
         /* Experience Styling */
         .experience-table {
             width: 100%;
-            margin-bottom: 4mm;
+            margin-bottom: 3mm;
             border: 0.2mm solid #EEEEEE;
         }
 
@@ -220,27 +220,27 @@
 
         .experience-title-cell {
             width: 70%;
-            padding: 2mm;
+            padding: 1.5mm;
         }
 
         .experience-date-cell {
             width: 30%;
             text-align: right;
-            padding: 2mm;
+            padding: 1.5mm;
         }
 
         .experience-content-cell {
-            padding: 2mm;
+            padding: 1.5mm;
         }
 
         .experience-title {
-            font-size: 10pt;
+            font-size: 9.5pt;
             font-weight: bold;
             color: #37474F;
         }
 
         .experience-company {
-            font-size: 9pt;
+            font-size: 8.5pt;
             color: #FF5722;
         }
 
@@ -252,7 +252,7 @@
         .experience-description {
             font-size: 8.5pt;
             color: #37474F;
-            line-height: 1.4;
+            line-height: 1.3;
         }
 
         /* Languages Section */
@@ -271,7 +271,7 @@
         
         .language-name-cell {
             width: 25%;
-            padding: 2mm;
+            padding: 1.5mm;
             font-weight: bold;
             color: #37474F;
             border-right: 0.2mm solid #EEEEEE;
@@ -279,7 +279,7 @@
         
         .language-level-cell {
             width: 75%;
-            padding: 2mm;
+            padding: 1.5mm;
         }
         
         .language-level-bar {
@@ -349,7 +349,7 @@
             text-align: center;
             border-top: 0.5mm solid #FF5722;
             padding: 2mm 0;
-            margin: 0 10mm;
+            margin: 0 8mm;
             font-size: 8pt;
             color: #78909C;
         }
@@ -386,18 +386,26 @@
     <table class="contact-table">
         <tr>
             <td class="contact-cell">
-                @if($cvInformation['personalInformation']['email'])
-                    <span class="contact-item"><span class="contact-icon">@</span> {{ $cvInformation['personalInformation']['email'] }}</span>
-                @endif
-                @if($cvInformation['personalInformation']['phone'])
-                    <span class="contact-item"><span class="contact-icon">✆</span> {{ $cvInformation['personalInformation']['phone'] }}</span>
-                @endif
-                @if($cvInformation['personalInformation']['address'])
-                    <span class="contact-item"><span class="contact-icon">⌂</span> {{ $cvInformation['personalInformation']['address'] }}</span>
-                @endif
-                @if($cvInformation['personalInformation']['linkedin'])
-                    <span class="contact-item"><span class="contact-icon">in</span> {{ $cvInformation['personalInformation']['linkedin'] }}</span>
-                @endif
+                <table>
+                    <tr>
+                        <td style="width: 50%">
+                            @if($cvInformation['personalInformation']['email'])
+                                <span class="contact-item"><span class="contact-icon">@</span> {{ $cvInformation['personalInformation']['email'] }}</span>
+                            @endif
+                            @if($cvInformation['personalInformation']['phone'])
+                                <span class="contact-item"><span class="contact-icon">✆</span> {{ $cvInformation['personalInformation']['phone'] }}</span>
+                            @endif
+                        </td>
+                        <td style="width: 50%">
+                            @if($cvInformation['personalInformation']['address'])
+                                <span class="contact-item"><span class="contact-icon">⌂</span> {{ $cvInformation['personalInformation']['address'] }}</span>
+                            @endif
+                            @if($cvInformation['personalInformation']['linkedin'])
+                                <span class="contact-item"><span class="contact-icon">in</span> {{ $cvInformation['personalInformation']['linkedin'] }}</span>
+                            @endif
+                        </td>
+                    </tr>
+                </table>
             </td>
         </tr>
     </table>
@@ -484,7 +492,7 @@
                                         </td>
                                     </tr>
                                     <tr>
-                                        <td class="experience-content-cell" colspan="2">
+                                        <td colspan="2" class="experience-content-cell">
                                             <div class="experience-description">
                                                 {{ $experience['description'] }}
                                                 @if($experience['output'])
@@ -504,15 +512,29 @@
                     <div class="section">
                         <div class="section-title">{{ $currentLocale === 'fr' ? 'Langues' : 'Languages' }}</div>
                         <table class="language-table">
-                            @foreach($cvInformation['languages'] ?? [] as $index => $language)
+                            @foreach($cvInformation['languages'] ?? [] as $language)
                                 <tr class="language-row">
                                     <td class="language-name-cell">{{ $language['name'] ?? '' }}</td>
                                     <td class="language-level-cell">
-                                        @if(isset($language['level']))
-                                            <div style="font-size: 8pt; color: #607D8B; margin-bottom: 1mm;">{{ $language['level'] ?? '' }}</div>
-                                        @endif
                                         <div class="language-level-bar">
-                                            <div class="language-level-value" style="width: {{ min((($index + 1) % 3 + 3) * 20, 100) }}%"></div>
+                                            @php
+                                                $levelWidth = 60; // Default percentage
+                                                
+                                                if (isset($language['level'])) {
+                                                    $level = strtolower($language['level']);
+                                                    
+                                                    if (strpos($level, 'débutant') !== false || strpos($level, 'beginner') !== false) {
+                                                        $levelWidth = 25;
+                                                    } elseif (strpos($level, 'intermédiaire') !== false || strpos($level, 'intermediate') !== false) {
+                                                        $levelWidth = 50;
+                                                    } elseif (strpos($level, 'avancé') !== false || strpos($level, 'advanced') !== false) {
+                                                        $levelWidth = 75;
+                                                    } elseif (strpos($level, 'natif') !== false || strpos($level, 'native') !== false || strpos($level, 'fluent') !== false || strpos($level, 'courant') !== false) {
+                                                        $levelWidth = 100;
+                                                    }
+                                                }
+                                            @endphp
+                                            <div class="language-level-value" style="width: {{ $levelWidth }}%"></div>
                                         </div>
                                     </td>
                                 </tr>
@@ -521,31 +543,25 @@
                     </div>
                 @endif
 
-                {{-- Education and Certifications in Two Columns --}}
-                <div class="section">
-                    <table class="cert-edu-table">
-                        <tr>
-                            {{-- Education Section --}}
+                {{-- Education and Certifications --}}
+                <table class="cert-edu-table">
+                    <tr>
+                        {{-- Education Column --}}
+                        <td class="cert-edu-left-cell">
                             @foreach($experiencesByCategory as $category => $experiences)
                                 @if($category == 'Éducation' || $category == 'Education')
-                                    <td class="cert-edu-left-cell">
+                                    <div class="section">
                                         <div class="section-title">
-                                            @if($currentLocale === 'fr')
-                                                {{ $category }}
-                                            @else
-                                                {{ $categoryTranslations[$category]['name_en'] ?? $category }}
-                                            @endif
+                                            {{ $currentLocale === 'fr' ? 'Formation' : 'Education' }}
                                         </div>
-
+                                        
                                         @foreach($experiences as $experience)
                                             <table class="edu-cert-item-table">
                                                 <tr>
                                                     <td class="edu-cert-date-cell">
-                                                        {{ \Carbon\Carbon::parse($experience['date_start'])->locale($currentLocale)->isoFormat('YYYY') }} -
+                                                        {{ \Carbon\Carbon::parse($experience['date_start'])->locale($currentLocale)->isoFormat('YYYY') }}
                                                         @if($experience['date_end'])
-                                                            {{ \Carbon\Carbon::parse($experience['date_end'])->locale($currentLocale)->isoFormat('YYYY') }}
-                                                        @else
-                                                            {{ $currentLocale === 'fr' ? 'Présent' : 'Present' }}
+                                                            - {{ \Carbon\Carbon::parse($experience['date_end'])->locale($currentLocale)->isoFormat('YYYY') }}
                                                         @endif
                                                     </td>
                                                     <td class="edu-cert-content-cell">
@@ -555,33 +571,43 @@
                                                 </tr>
                                             </table>
                                         @endforeach
-                                    </td>
+                                    </div>
                                 @endif
                             @endforeach
+                        </td>
 
-                            {{-- Hobbies Section --}}
+                        {{-- Interests and Hobbies --}}
+                        <td class="cert-edu-right-cell">
                             @if(!empty($cvInformation['hobbies']))
-                                <td class="cert-edu-right-cell">
-                                    <div class="section-title">{{ $currentLocale === 'fr' ? 'Centres d\'intérêt' : 'Interests' }}</div>
-                                    <div style="padding: 2mm; background-color: #FAFAFA !important; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; border: 0.2mm solid #EEEEEE;">
-                                        @foreach($cvInformation['hobbies'] as $index => $hobby)
-                                            <span class="skill-tag">
-                                                {{ $currentLocale === 'fr' ? $hobby['name'] : $hobby['name_en'] }}
-                                            </span>
-                                        @endforeach
+                                <div class="section">
+                                    <div class="section-title">
+                                        {{ $currentLocale === 'fr' ? 'Centres d\'intérêt' : 'Interests' }}
                                     </div>
-                                </td>
+                                    
+                                    <table class="expertise-table">
+                                        <tr class="expertise-row">
+                                            <td class="expertise-skills-cell">
+                                                @foreach($cvInformation['hobbies'] as $hobby)
+                                                    <span class="skill-tag">
+                                                        {{ $currentLocale === 'fr' ? $hobby['name'] : $hobby['name_en'] }}
+                                                    </span>
+                                                @endforeach
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </div>
                             @endif
-                        </tr>
-                    </table>
-                </div>
+                        </td>
+                    </tr>
+                </table>
             </td>
         </tr>
     </table>
 
     {{-- Footer --}}
     <div class="footer">
-        {{ $currentLocale === 'fr' ? 'Curriculum Vitae' : 'Curriculum Vitae' }} | {{ $cvInformation['personalInformation']['firstName'] }} | {{ $currentLocale === 'fr' ? 'Page 1' : 'Page 1' }}
+        {{ $currentLocale === 'fr' ? 'Curriculum Vitae Industriel | ' : 'Industrial Curriculum Vitae | ' }} 
+        {{ $cvInformation['personalInformation']['firstName'] }}
     </div>
 </div>
 </body>

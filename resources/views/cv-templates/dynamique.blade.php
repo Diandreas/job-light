@@ -44,11 +44,11 @@
         .header {
             background-color: #6B5B95 !important; /* Utilisation de la couleur principale violet/bleu */
             color: white !important;
-            padding: 10mm !important;
+            padding: 8mm !important;
             position: relative !important;
             -webkit-print-color-adjust: exact !important;
             print-color-adjust: exact !important;
-    }
+        }
         
         .header-table {
             width: 100%;
@@ -65,53 +65,47 @@
 
         .graphic-element {
             position: absolute;
-            width: 30mm;
-            height: 30mm;
+            width: 25mm;
+            height: 25mm;
             border-radius: 50%;
             background-color: rgba(255, 255, 255, 0.1);
-            right: -10mm;
-            top: -10mm;
+            right: -8mm;
+            top: -8mm;
             z-index: 1;
         }
         
         .graphic-element-2 {
             position: absolute;
-            width: 20mm;
-            height: 20mm;
+            width: 18mm;
+            height: 18mm;
             border-radius: 50%;
             background-color: rgba(255, 255, 255, 0.1);
-            left: 30mm;
-            bottom: -10mm;
+            left: 25mm;
+            bottom: -8mm;
             z-index: 1;
         }
 
         .name {
-            font-size: 22pt;
+            font-size: 20pt;
             font-weight: bold;
-            margin-bottom: 2mm;
+            margin-bottom: 1.5mm;
             letter-spacing: 0.5pt;
         }
 
         .profession {
-            font-size: 11pt;
+            font-size: 10pt;
             opacity: 0.9;
-            margin-bottom: 6mm;
+            margin-bottom: 5mm;
             font-weight: normal;
         }
 
-        .contact-info {
-            display: table;
+        .contact-table {
             width: 100%;
         }
 
-        .contact-row {
-            display: table-row;
-        }
-
         .contact-item {
-            display: table-cell;
-            padding-right: 10mm;
-            padding-bottom: 3mm;
+            padding-right: 8mm;
+            padding-bottom: 2mm;
             font-size: 8pt;
         }
 
@@ -121,11 +115,11 @@
 
         /* Photo Styling */
         .photo-container {
-            width: 35mm;
-            height: 35mm;
+            width: 32mm;
+            height: 32mm;
             overflow: hidden;
             border-radius: 50%;
-            border: 2mm solid rgba(255, 255, 255, 0.3);
+            border: 1.5mm solid rgba(255, 255, 255, 0.3);
             margin-left: auto;
         }
 
@@ -142,26 +136,26 @@
 
         .content-left-cell {
             width: 60%;
-            padding: 10mm 6mm 10mm 10mm;
+            padding: 8mm 5mm 8mm 8mm;
         }
 
         .content-right-cell {
             width: 40%;
-            padding: 10mm 10mm 10mm 6mm;
+            padding: 8mm 8mm 8mm 5mm;
             border-left: 0.3mm solid #EEEEEE;
         }
 
         /* Section Styling */
         .section {
-            margin-bottom: 8mm;
+            margin-bottom: 6mm;
             position: relative;
         }
 
         .section-title {
-            font-size: 12pt;
+            font-size: 11pt;
             font-weight: bold;
             color: #6B5B95;
-            margin-bottom: 4mm;
+            margin-bottom: 3mm;
             text-transform: uppercase;
             letter-spacing: 0.5pt;
             position: relative;
@@ -171,22 +165,22 @@
 
         .section-title::before {
             content: '';
-            width: 4mm;
-            height: 4mm;
+            width: 3.5mm;
+            height: 3.5mm;
             background-color: #FF6F61;
             border-radius: 50%;
-            margin-right: 3mm;
+            margin-right: 2.5mm;
             display: inline-block;
         }
 
         /* Summary Section */
         .summary {
-            font-size: 9pt;
+            font-size: 8.5pt;
             color: #444444;
-            line-height: 1.5;
+            line-height: 1.4;
             text-align: justify;
-            margin-bottom: 6mm;
-            padding: 4mm;
+            margin-bottom: 5mm;
+            padding: 3mm;
             background-color: #F9F9F9;
             border-radius: 2mm;
             position: relative;
@@ -197,7 +191,7 @@
             position: absolute;
             top: 0;
             left: 0;
-            width: 2mm;
+            width: 1.5mm;
             height: 100%;
             background: linear-gradient(to bottom, #6B5B95, #FF6F61);
             border-radius: 2mm 0 0 2mm;
@@ -205,8 +199,8 @@
 
         /* Experience Styling */
         .experience-item {
-            margin-bottom: 5mm;
-            padding-bottom: 5mm;
+            margin-bottom: 4mm;
+            padding-bottom: 4mm;
             border-bottom: 0.2mm dashed #EEEEEE;
             position: relative;
         }
@@ -235,48 +229,49 @@
             color: white;
             padding: 1mm 2mm;
             border-radius: 1mm;
-            font-size: 7.5pt;
+            font-size: 7pt;
             white-space: nowrap;
             display: inline-block;
         }
 
         .experience-title {
-            font-size: 10pt;
+            font-size: 9.5pt;
             font-weight: bold;
             color: #333333;
             margin-bottom: 1mm;
         }
 
         .experience-company {
-            font-size: 9pt;
+            font-size: 8.5pt;
             color: #6B5B95;
             font-style: italic;
         }
 
         .experience-description {
-            font-size: 8.5pt;
+            font-size: 8pt;
             color: #555555;
-            line-height: 1.4;
+            line-height: 1.3;
             text-align: justify;
-            padding-top: 2mm;
+            padding-top: 1.5mm;
         }
 
         /* Skills Styling */
-        .skills-container {
+        .skills-table {
             width: 100%;
+            border-collapse: collapse;
         }
 
         .skill-item {
             background-color: #F0F0F0;
-            padding: 2mm 3mm;
+            padding: 1.5mm 2.5mm;
             border-radius: 1mm;
-            font-size: 8pt;
+            font-size: 7.5pt;
             color: #333333;
-            margin-bottom: 2mm;
+            margin-bottom: 1.5mm;
             position: relative;
             overflow: hidden;
             display: inline-block;
-            margin-right: 2mm;
+            margin-right: 1.5mm;
         }
 
         .skill-item::after {
@@ -290,39 +285,42 @@
         }
 
         /* Language Section */
-        .language-items {
+        .language-table {
             width: 100%;
+            border-collapse: collapse;
         }
         
-        .language-item {
-            background-color: #F9F9F9;
-            border-radius: 1mm;
-            padding: 2mm 3mm;
-            position: relative;
-            margin-bottom: 3mm;
+        .language-row {
+            margin-bottom: 2mm;
         }
         
-        .language-name {
-            font-size: 9pt;
+        .language-name-cell {
+            font-size: 8.5pt;
             font-weight: bold;
             color: #333333;
-            margin-bottom: 1mm;
+            width: 40%;
+            padding: 1.5mm;
+        }
+        
+        .language-level-cell {
+            width: 60%;
+            padding: 1.5mm;
         }
         
         .language-level {
-            font-size: 8pt;
+            font-size: 7.5pt;
             color: #6B5B95;
             display: inline-block;
             background-color: rgba(107, 91, 149, 0.1);
             padding: 0.5mm 2mm;
             border-radius: 1mm;
+            margin-bottom: 1mm;
         }
         
         .language-bar-container {
             height: 1mm;
             background-color: #EEEEEE;
             border-radius: 0.5mm;
-            margin-top: 1.5mm;
         }
         
         .language-bar {
@@ -332,20 +330,21 @@
         }
 
         /* Hobbies Styling */
-        .hobbies-container {
+        .hobbies-table {
             width: 100%;
+            border-collapse: collapse;
         }
 
         .hobby-item {
-            font-size: 8pt;
+            font-size: 7.5pt;
             color: #555555;
             background-color: #F9F9F9;
-            padding: 2mm 3mm;
+            padding: 1.5mm 2.5mm;
             border-radius: 1mm;
             border-left: 1mm solid #FF6F61;
             display: inline-block;
-            margin-right: 2mm;
-            margin-bottom: 2mm;
+            margin-right: 1.5mm;
+            margin-bottom: 1.5mm;
         }
     </style>
 </head>
@@ -362,7 +361,7 @@
                     <div class="profession">
                         {{ $currentLocale === 'fr' ? $cvInformation['professions'][0]['name'] : $cvInformation['professions'][0]['name_en'] }}
                     </div>
-                    <table class="contact-info">
+                    <table class="contact-table">
                         <tr>
                             @if($cvInformation['personalInformation']['email'])
                                 <td class="contact-item">
@@ -464,13 +463,17 @@
                 @if(!empty($cvInformation['competences']))
                     <div class="section">
                         <div class="section-title">{{ $currentLocale === 'fr' ? 'Compétences' : 'Skills' }}</div>
-                        <div class="skills-container">
-                            @foreach($cvInformation['competences'] as $competence)
-                                <div class="skill-item">
-                                    {{ $currentLocale === 'fr' ? $competence['name'] : $competence['name_en'] }}
-                                </div>
-                            @endforeach
-                        </div>
+                        <table class="skills-table">
+                            <tr>
+                                <td>
+                                    @foreach($cvInformation['competences'] as $competence)
+                                        <div class="skill-item">
+                                            {{ $currentLocale === 'fr' ? $competence['name'] : $competence['name_en'] }}
+                                        </div>
+                                    @endforeach
+                                </td>
+                            </tr>
+                        </table>
                     </div>
                 @endif
 
@@ -478,19 +481,38 @@
                 @if(isset($cvInformation['languages']) && count($cvInformation['languages']) > 0)
                     <div class="section">
                         <div class="section-title">{{ $currentLocale === 'fr' ? 'Langues' : 'Languages' }}</div>
-                        <div class="language-items">
-                            @foreach($cvInformation['languages'] ?? [] as $index => $language)
-                                <div class="language-item">
-                                    <div class="language-name">{{ $language['name'] ?? '' }}</div>
-                                    @if(isset($language['level']))
-                                        <div class="language-level">{{ $language['level'] ?? '' }}</div>
-                                    @endif
-                                    <div class="language-bar-container">
-                                        <div class="language-bar" style="width: {{ min((($index + 1) % 3 + 3) * 20, 100) }}%"></div>
-                                    </div>
-                                </div>
+                        <table class="language-table">
+                            @foreach($cvInformation['languages'] ?? [] as $language)
+                                <tr class="language-row">
+                                    <td class="language-name-cell">{{ $language['name'] ?? '' }}</td>
+                                    <td class="language-level-cell">
+                                        @if(isset($language['level']))
+                                            <div class="language-level">{{ $language['level'] ?? '' }}</div>
+                                        @endif
+                                        <div class="language-bar-container">
+                                            @php
+                                                $levelWidth = 60; // Default percentage
+                                                
+                                                if (isset($language['level'])) {
+                                                    $level = strtolower($language['level']);
+                                                    
+                                                    if (strpos($level, 'débutant') !== false || strpos($level, 'beginner') !== false) {
+                                                        $levelWidth = 25;
+                                                    } elseif (strpos($level, 'intermédiaire') !== false || strpos($level, 'intermediate') !== false) {
+                                                        $levelWidth = 50;
+                                                    } elseif (strpos($level, 'avancé') !== false || strpos($level, 'advanced') !== false) {
+                                                        $levelWidth = 75;
+                                                    } elseif (strpos($level, 'natif') !== false || strpos($level, 'native') !== false || strpos($level, 'fluent') !== false || strpos($level, 'courant') !== false) {
+                                                        $levelWidth = 100;
+                                                    }
+                                                }
+                                            @endphp
+                                            <div class="language-bar" style="width: {{ $levelWidth }}%"></div>
+                                        </div>
+                                    </td>
+                                </tr>
                             @endforeach
-                        </div>
+                        </table>
                     </div>
                 @endif
 
@@ -498,13 +520,17 @@
                 @if(!empty($cvInformation['hobbies']))
                     <div class="section">
                         <div class="section-title">{{ $currentLocale === 'fr' ? 'Centres d\'intérêt' : 'Hobbies' }}</div>
-                        <div class="hobbies-container">
-                            @foreach($cvInformation['hobbies'] as $hobby)
-                                <div class="hobby-item">
-                                    {{ $currentLocale === 'fr' ? $hobby['name'] : $hobby['name_en'] }}
-                                </div>
-                            @endforeach
-                        </div>
+                        <table class="hobbies-table">
+                            <tr>
+                                <td>
+                                    @foreach($cvInformation['hobbies'] as $hobby)
+                                        <div class="hobby-item">
+                                            {{ $currentLocale === 'fr' ? $hobby['name'] : $hobby['name_en'] }}
+                                        </div>
+                                    @endforeach
+                                </td>
+                            </tr>
+                        </table>
                     </div>
                 @endif
             </td>

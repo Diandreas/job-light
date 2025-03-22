@@ -142,16 +142,16 @@ class SponsorshipController extends Controller
 
             // For demonstration, let's give a fixed amount for each referral signup
             // In a real application, this might be a percentage of a purchase
-            $baseAmount = 500; // FCFA
-            $commissionAmount = $baseAmount * ($commissionRate / 100);
+            // $baseAmount = 500; // FCFA
+            // $commissionAmount = $baseAmount * ($commissionRate / 100);
 
             // Create earnings record
-            ReferralEarning::create([
-                'user_id' => $code->user_id,
-                'referral_id' => $referral->id,
-                'amount' => $commissionAmount,
-                'status' => 'paid', // Setting as paid directly since we're processing immediately
-            ]);
+            // ReferralEarning::create([
+            //     'user_id' => $code->user_id,
+            //     'referral_id' => $referral->id,
+            //     'amount' => $commissionAmount,
+            //     'status' => 'paid', // Setting as paid directly since we're processing immediately
+            // ]);
 
             // Immediately award the commission to the referrer
             DB::transaction(function () use ($code, $commissionAmount) {
@@ -160,11 +160,11 @@ class SponsorshipController extends Controller
                 $referrer->save();
             });
 
-            Log::info('Referral processed successfully', [
-                'referrer_id' => $code->user_id,
-                'referred_id' => $newUser->id,
-                'commission_amount' => $commissionAmount
-            ]);
+            // Log::info('Referral processed successfully', [
+            //     'referrer_id' => $code->user_id,
+            //     'referred_id' => $newUser->id,
+            //     'commission_amount' => $commissionAmount
+            // ]);
 
             return true;
         } catch (\Exception $e) {

@@ -111,16 +111,22 @@ const ProfessionManager: React.FC<Props> = ({ auth, availableProfessions, initia
         }
 
         try {
+            console.log('Envoi de la requête pour profession manuelle:', manualProfession.trim());
+            const professionToSave = manualProfession.trim();
+
+            // Sauvegarde dans localStorage immédiatement pour éviter toute perte de données
+            localStorage.setItem('manual_profession', professionToSave);
+
             const response = await axios.post('/user-professions', {
                 user_id: auth.user.id,
                 profession_id: null,
-                full_profession: manualProfession.trim()
+                full_profession: professionToSave
             });
 
             if (response.data.success) {
                 setUserProfession(null);
-                setManualProfession(manualProfession.trim());
-                onUpdate(null);
+                setManualProfession(professionToSave);
+                onUpdate(null, professionToSave);
                 toast({
                     title: t('professions.success.updated.title'),
                     description: t('professions.success.manual.description')

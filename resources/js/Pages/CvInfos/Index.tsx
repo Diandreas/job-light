@@ -117,6 +117,12 @@ const PersonalInfoCard = ({ item, onEdit, updateCvInformation }) => {
     const { toast } = useToast();
     const { t } = useTranslation();
 
+    // Log pour déboguer les propriétés de l'item
+    useEffect(() => {
+        console.log('PersonalInfoCard - props item:', item);
+        console.log('PersonalInfoCard - profession affichée:', item.full_profession || item.profession || t('cv.interface.personal.fields.notSpecified'));
+    }, [item, t]);
+
     const handleDeletePhoto = async () => {
         try {
             await axios.delete(route('personal-information.delete-photo'));
@@ -311,11 +317,11 @@ const PersonalInfoCard = ({ item, onEdit, updateCvInformation }) => {
                             )}
                         </div>
                         <div className="min-w-0">
-                            <h3 className="text-base sm:text-xl font-bold text-gray-900 dark:text-white truncate">
+                            <h3 className="text-base sm:text-xl font-bold text-gray-900 dark:text-white break-words">
                                 {item.firstName}
                             </h3>
                             <p className="text-gray-500 dark:text-gray-400 text-xs sm:text-sm truncate">
-                                {item.profession || t('cv.interface.personal.fields.notSpecified')}
+                                {item.full_profession || localStorage.getItem('manual_profession') || item.profession || t('cv.interface.personal.fields.notSpecified')}
                             </p>
                         </div>
                     </div>
@@ -470,6 +476,35 @@ export default function CvInterface({ auth, cvInformation: initialCvInformation 
     const [isPageBlocked, setIsPageBlocked] = useState(false);
     const { toast } = useToast();
 
+    // Récupérer la profession manuelle sauvegardée au chargement
+    useEffect(() => {
+        const savedManualProfession = localStorage.getItem('manual_profession');
+        if (savedManualProfession && (!cvInformation.personalInformation.full_profession || cvInformation.personalInformation.full_profession === '')) {
+            console.log('Restauration de la profession manuelle depuis localStorage:', savedManualProfession);
+            setCvInformation(prev => ({
+                ...prev,
+                myProfession: { fullProfession: savedManualProfession },
+                personalInformation: {
+                    ...prev.personalInformation,
+                    profession: '',
+                    full_profession: savedManualProfession
+                }
+            }));
+        }
+    }, []);
+
+    // Log de débogage à chaque rendu
+    useEffect(() => {
+        console.log('État actuel:', cvInformation);
+        if (cvInformation.personalInformation) {
+            console.log('PersonalInfo profession:', cvInformation.personalInformation.profession);
+            console.log('PersonalInfo full_profession:', cvInformation.personalInformation.full_profession);
+        }
+        if (cvInformation.myProfession) {
+            console.log('myProfession:', cvInformation.myProfession);
+        }
+    }, [cvInformation]);
+
     // Utilisation des traductions pour les éléments de la sidebar
     const translatedSidebarItems = [
         { id: 'personalInfo', label: t('cv.sidebar.personalInfo'), icon: User, color: 'text-amber-500' },
@@ -491,6 +526,7 @@ export default function CvInterface({ auth, cvInformation: initialCvInformation 
     ];
 
     const updateCvInformation = useCallback((section, data) => {
+        console.log(`Mise à jour de la section ${section}:`, data);
         setCvInformation(prev => {
             const newState = { ...prev };
             if (section === 'summaries') {
@@ -511,6 +547,7 @@ export default function CvInterface({ auth, cvInformation: initialCvInformation 
             } else {
                 newState[section] = Array.isArray(data) ? [...data] : { ...data };
             }
+            console.log(`État mis à jour pour ${section}:`, newState[section]);
             return newState;
         });
     }, []);
@@ -520,7 +557,9 @@ export default function CvInterface({ auth, cvInformation: initialCvInformation 
         summary: cvInformation.summaries?.length > 0,
         experience: cvInformation.experiences?.length > 0,
         competence: cvInformation.competences?.length > 0,
-        profession: Boolean(cvInformation.myProfession),
+        profession: Boolean(cvInformation.myProfession) ||
+            Boolean(cvInformation.personalInformation?.full_profession) ||
+            Boolean(localStorage.getItem('manual_profession')),
         language: cvInformation.languages?.length > 0,
         hobby: cvInformation.hobbies?.length > 0,
     };
@@ -590,7 +629,94 @@ export default function CvInterface({ auth, cvInformation: initialCvInformation 
                         auth={auth}
                         availableProfessions={cvInformation.availableProfessions}
                         initialUserProfession={cvInformation.myProfession}
-                        onUpdate={(profession) => updateCvInformation('myProfession', profession)}
+                        onUpdate={(profession, fullProfession) => {
+                            // Utiliser un setTimeout pour s'assurer que les mises à jour sont séquentielles
+                            setTimeout(() => {
+                                if (profession) {
+                                    console.log('Sélection de profession:', profession);
+                                    // Mettre à jour les deux éléments en même temps
+                                    const updatedPersonalInfo = {
+                                        ...cvInformation.personalInformation,
+                                        profession: profession.name,
+                                        full_profession: ''
+                                    };
+                                    console.log('Mise à jour combinée avec profession:', {
+                                        myProfession: profession,
+                                        personalInformation: updatedPersonalInfo
+                                    });
+
+                                    // Mise à jour synchronisée
+                                    setCvInformation(prev => ({
+                                        ...prev,
+                                        myProfession: profession,
+                                        personalInformation: updatedPersonalInfo
+                                    }));
+
+                                    // Sauvegarder l'état sur le serveur
+                                    axios.post('/user-preferences', {
+                                        key: 'profession_state',
+                                        value: JSON.stringify({
+                                            type: 'profession',
+                                            data: profession
+                                        })
+                                    }).catch(e => console.error('Erreur lors de la sauvegarde des préférences:', e));
+
+                                } else if (fullProfession) {
+                                    console.log('Sélection de profession manuelle:', fullProfession);
+                                    // Mettre à jour les deux éléments en même temps
+                                    const updatedPersonalInfo = {
+                                        ...cvInformation.personalInformation,
+                                        profession: '',
+                                        full_profession: fullProfession
+                                    };
+                                    console.log('Mise à jour combinée avec profession manuelle:', {
+                                        myProfession: { fullProfession },
+                                        personalInformation: updatedPersonalInfo
+                                    });
+
+                                    // Mise à jour synchronisée
+                                    setCvInformation(prev => ({
+                                        ...prev,
+                                        myProfession: { fullProfession },
+                                        personalInformation: updatedPersonalInfo
+                                    }));
+
+                                    // Sauvegarder la profession manuelle dans localStorage pour récupération en cas de problème
+                                    localStorage.setItem('manual_profession', fullProfession);
+
+                                    // Sauvegarder l'état sur le serveur
+                                    axios.post('/user-preferences', {
+                                        key: 'profession_state',
+                                        value: JSON.stringify({
+                                            type: 'manual',
+                                            data: fullProfession
+                                        })
+                                    }).catch(e => console.error('Erreur lors de la sauvegarde des préférences:', e));
+                                } else {
+                                    console.log('Réinitialisation de profession');
+                                    // Mettre à jour les deux éléments en même temps
+                                    const updatedPersonalInfo = {
+                                        ...cvInformation.personalInformation,
+                                        profession: '',
+                                        full_profession: ''
+                                    };
+                                    console.log('Mise à jour combinée avec réinitialisation:', {
+                                        myProfession: null,
+                                        personalInformation: updatedPersonalInfo
+                                    });
+
+                                    // Mise à jour synchronisée
+                                    setCvInformation(prev => ({
+                                        ...prev,
+                                        myProfession: null,
+                                        personalInformation: updatedPersonalInfo
+                                    }));
+
+                                    // Nettoyer le stockage local
+                                    localStorage.removeItem('manual_profession');
+                                }
+                            }, 0);
+                        }}
                     />
                 );
             case 'experience':

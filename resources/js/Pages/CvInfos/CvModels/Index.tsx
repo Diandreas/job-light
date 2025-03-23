@@ -55,7 +55,7 @@ const ModelCard = ({ model, isActive, onSelect, onAdd, onPreview, loading, inCat
             className="overflow-hidden rounded-xl border bg-white shadow-sm border-gray-100 flex flex-col h-full"
         >
             <div
-                className="relative aspect-square sm:aspect-[3/4] overflow-hidden rounded-t-xl bg-gray-50 cursor-pointer"
+                className="relative aspect-[3/4] sm:aspect-[3/5] overflow-hidden rounded-t-xl bg-gray-50 cursor-pointer"
                 onClick={() => onPreview(model)}
             >
                 <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent z-10" />
@@ -473,7 +473,7 @@ export default function CvModelsIndex({ auth, userCvModels, availableCvModels, m
                                     variants={containerVariants}
                                     initial="hidden"
                                     animate="visible"
-                                    className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 sm:gap-4"
+                                    className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-3 gap-3 sm:gap-4"
                                 >
                                     {filteredActiveModels.map((model) => (
                                         <ModelCard
@@ -506,7 +506,7 @@ export default function CvModelsIndex({ auth, userCvModels, availableCvModels, m
                                     variants={containerVariants}
                                     initial="hidden"
                                     animate="visible"
-                                    className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 sm:gap-4"
+                                    className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-3 gap-3 sm:gap-4"
                                 >
                                     {filteredAvailableModels.map((model) => (
                                         <ModelCard

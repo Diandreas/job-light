@@ -359,7 +359,8 @@ export default function Show({ auth, cvInformation, selectedCvModel }) {
                                         id: selectedCvModel?.id,
                                         locale: i18n.language
                                     })}
-                                    className="w-full h-[800px] md:h-[600px] border-0"
+                                    className="w-full h-[900px] md:h-[1000px] lg:h-[1200px] border-0 mx-auto"
+                                    style={{ maxWidth: "100%", display: "block" }}
                                     title={t('cv_preview.preview.title')}
                                     onLoad={() => setPreviewLoaded(true)}
                                     key={i18n.language}

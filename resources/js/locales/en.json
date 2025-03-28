@@ -619,126 +619,103 @@
         }
     },
     "experiences": {
-        "title": "Experience Management",
+        "title": "Experiences",
         "description": "Manage your professional, academic and volunteer experiences",
         "actions": {
             "add": "Add experience",
-            "update": "Update experience",
-            "save": "Save experience",
+            "save": "Save",
+            "update": "Update",
             "cancel": "Cancel",
+            "view": "View",
+            "edit": "Edit",
             "delete": "Delete"
         },
-        "filters": {
-            "search": "Search experiences..."
-        },
         "tabs": {
-            "list": "Experiences",
+            "list": "List",
             "attachments": "Attachments"
+        },
+        "filters": {
+            "search": "Search experience..."
         },
         "form": {
             "title": {
-                "new": "New Experience",
-                "edit": "Edit Experience"
+                "new": "New experience",
+                "edit": "Edit experience"
             },
             "description": {
-                "new": "Add a new experience to your profile",
-                "edit": "Edit the details of an existing experience"
+                "new": "Add a new experience to your CV",
+                "edit": "Modify your experience information"
+            },
+            "tabs": {
+                "general": "General",
+                "details": "Details",
+                "references": "References"
             },
             "templates": {
                 "title": "Templates",
-                "description": "Start with a predefined template",
-                "academic": "Academic Experience",
-                "internship": "Internship Experience",
-                "volunteer": "Volunteer Experience",
-                "defaultComment": "Add your additional comments here"
-            },
-            "references": {
-                "title": "References",
-                "add": "Add Reference",
-                "name": "Full Name",
-                "function": "Position/Role",
-                "email": "Email",
-                "phone": "Phone",
-                "placeholders": {
-                    "name": "Enter reference name",
-                    "function": "Enter position/role",
-                    "email": "Enter email address",
-                    "phone": "Enter phone number"
-                },
-                "default": {
-                    "name": "John Smith",
-                    "function": "Project Manager",
-                    "email": "john.smith@example.com",
-                    "phone": "+1 234 567 8900"
-                }
+                "description": "Use a pre-filled template to save time",
+                "academic": "Academic",
+                "internship": "Internship",
+                "volunteer": "Volunteer",
+                "auto": "Auto-generate",
+                "defaultComment": "Default comment"
             },
             "fields": {
                 "name": {
-                    "label": "Experience Name",
-                    "placeholder": "Enter the name of your experience"
+                    "label": "Title",
+                    "placeholder": "Ex: Frontend Web Developer"
                 },
                 "institution": {
-                    "label": "Institution Name",
-                    "placeholder": "Enter the name of the institution or company"
+                    "label": "Institution / Company",
+                    "placeholder": "Ex: ABC Company"
                 },
                 "dates": {
-                    "start": "Start Date",
-                    "end": "End Date",
-                    "ongoing": "Leave end date empty for ongoing experiences"
+                    "start": "Start date",
+                    "end": "End date",
+                    "ongoing": "Leave empty for ongoing experience"
                 },
                 "type": {
-                    "label": "Experience Type",
-                    "placeholder": "Select experience type"
+                    "label": "Experience type",
+                    "placeholder": "Select a type"
                 },
                 "description": {
                     "label": "Description",
-                    "placeholder": "Describe your experience, responsibilities and achievements"
+                    "placeholder": "Describe your tasks, responsibilities and achievements"
                 },
                 "output": {
-                    "label": "Results",
-                    "placeholder": "What were the main results or achievements?"
+                    "label": "Result",
+                    "placeholder": "Ex: 30% traffic increase"
                 },
                 "references": {
-                    "title": "References",
                     "label": "References",
-                    "add": "Add Reference",
-                    "name": "Full Name",
-                    "function": "Position/Role",
+                    "add": "Add reference",
+                    "empty": "No references added yet",
+                    "name": "Name",
+                    "function": "Position",
                     "email": "Email",
-                    "phone": "Phone",
-                    "placeholders": {
-                        "name": "Enter reference name",
-                        "function": "Enter position/role",
-                        "email": "Enter email address",
-                        "phone": "Enter phone number"
-                    },
-                    "default": {
-                        "name": "John Smith",
-                        "function": "Project Manager",
-                        "email": "john.smith@example.com",
-                        "phone": "+1 234 567 8900"
-                    }
+                    "phone": "Phone"
                 }
             },
             "attachment": {
-                "title": "Attachments",
-                "maxSize": "Max 100MB",
+                "title": "Attachment",
+                "select": "Select file",
+                "none": "No file selected",
+                "delete": "Delete",
                 "current": "Current file:",
-                "delete": "Delete file",
-                "formats": "Accepted formats: PDF, DOC, DOCX"
+                "formats": "Accepted formats: PDF, DOC, DOCX, PNG, JPG"
             }
         },
         "attachments": {
             "stats": {
-                "used": "Space Used",
-                "files": "Total Files",
-                "available": "Available Space"
+                "used": "Used space",
+                "files": "Files",
+                "available": "Available space"
             }
         },
         "empty": {
-            "experiences": "No experiences added yet",
-            "search": "No experiences match your search",
-            "attachments": "No attachments uploaded yet"
+            "experiences": "No experiences recorded yet",
+            "search": "No results for your search",
+            "attachments": "No attachments available"
         },
         "success": {
             "created": "Experience created successfully",
@@ -795,17 +772,23 @@
         "title": "Choose a template",
         "subtitle": "Start with a predefined template or create your own",
         "student": {
-            "name": "Student",
-            "description": "Motivated recent graduate, attentive and dynamic. Solid academic background with initial experience through internships and student projects. Proficient with computer tools and quick learning ability."
+            "name": "Engineering Student Profile",
+            "description": "Professional summary for students and recent graduates highlighting academic skills."
         },
         "archivist": {
-            "name": "Assistant Archivist",
-            "description": "Passionate about organizing and preserving documents. Methodical and rigorous, with good digital tool skills. Able to work independently and in a team."
+            "name": "Archivist Documentalist Profile",
+            "description": "Summary tailored for document management and archiving professionals."
         },
         "beginner": {
-            "name": "First Job",
-            "description": "Enthusiastic and versatile high school graduate, ready to put my knowledge into practice. Strong adaptability and willingness to learn. Proficient with basic office tools."
-        }
+            "name": "Versatile Beginner Profile",
+            "description": "Summary for early career individuals highlighting versatility and potential."
+        },
+        "short": {
+            "student": "Student",
+            "archivist": "Archivist",
+            "beginner": "Beginner"
+        },
+        "subtitle": "Choose a template to start quickly"
     },
     "actions": {
         "select": "Select",

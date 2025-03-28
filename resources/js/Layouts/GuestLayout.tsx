@@ -3,11 +3,12 @@ import { Head, Link } from '@inertiajs/react';
 import { useTranslation } from 'react-i18next';
 import { Toaster } from "@/Components/ui/toaster";
 import { ThemeToggle } from '@/Components/ThemeToggle';
-import { Sparkles, Globe, Menu, X } from 'lucide-react';
+import { Sparkles, Globe, Menu, X, MessageSquare, Mail } from 'lucide-react';
 import { Button } from '@/Components/ui/button';
 import { cn } from "@/lib/utils";
 import { motion, AnimatePresence } from 'framer-motion';
 import Dropdown from '@/Components/Dropdown';
+import { MobileTabBar } from '@/Components/MobileTabBar';
 
 const LanguageSelector = () => {
     const { t, i18n } = useTranslation();
@@ -176,7 +177,7 @@ export default function Guest({ children }: PropsWithChildren) {
                 </nav>
 
                 {/* Main Content */}
-                <div className="min-h-[calc(100vh-4rem)] flex flex-col sm:justify-center items-center px-4">
+                <div className="min-h-[calc(100vh-4rem)] flex flex-col sm:justify-center items-center px-4 pb-16">
                     <div className="">
                         {children}
                     </div>
@@ -188,10 +189,31 @@ export default function Guest({ children }: PropsWithChildren) {
                             <Sparkles className="h-4 w-4 text-amber-500 dark:text-amber-400" />
                             <span>© {new Date().getFullYear()} {t('brand')}</span>
                         </div>
+
+                        <div className="flex items-center gap-4 text-xs sm:text-sm">
+                            <Link
+                                href={route('support')}
+                                className="flex items-center gap-1 text-gray-500 hover:text-amber-500 transition-colors"
+                            >
+                                <MessageSquare className="h-3 w-3 sm:h-4 sm:w-4" />
+                                <span>Support</span>
+                            </Link>
+
+                            <a
+                                href="mailto:guidy.makeitreall@gmail.com"
+                                className="flex items-center gap-1 text-gray-500 hover:text-amber-500 transition-colors"
+                            >
+                                <Mail className="h-3 w-3 sm:h-4 sm:w-4" />
+                                <span className="hidden sm:inline">Contact</span>
+                            </a>
+                        </div>
                     </div>
                 </footer>
 
                 <Toaster />
+
+                {/* Barre de navigation mobile pour les invités */}
+                <MobileTabBar isGuest={true} />
             </div>
         </>
     );

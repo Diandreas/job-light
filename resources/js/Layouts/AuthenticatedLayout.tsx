@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { User as UserType } from '@/types';
 import { Toaster } from "@/Components/ui/toaster";
 import { ThemeToggle } from '@/Components/ThemeToggle';
+import { MobileTabBar } from '@/Components/MobileTabBar';
 import {
     Folder, Star, Eye, Menu, X, Brain, Layout,
     ChevronRight, ChevronLeft, Sparkles, LucideIcon, Coins,
@@ -220,7 +221,31 @@ export default function Authenticated({ user, header, children }: PropsWithChild
                             className="py-1 sm:py-2 space-y-1 sm:space-y-2"
                         >
                             {cvSideMenuItems.map((item, index) => (
-                                <NavButton key={index} item={item} compact={true} />
+                                <Link
+                                    key={index}
+                                    href={item.href}
+                                    className={cn(
+                                        "flex items-center justify-between px-3 py-2 rounded-lg transition-all",
+                                        item.active
+                                            ? "bg-gradient-to-r from-amber-500 to-purple-500 text-white shadow-sm"
+                                            : "text-gray-700 dark:text-gray-100 hover:bg-amber-50 dark:hover:bg-amber-500/20"
+                                    )}
+                                >
+                                    <div className="flex items-center gap-2">
+                                        <item.icon className={cn(
+                                            "h-4 w-4",
+                                            item.active ? "text-white" : "text-amber-500 dark:text-amber-400"
+                                        )} />
+                                        <span className="font-medium text-xs">{item.name}</span>
+                                    </div>
+                                    {item.active && (
+                                        <motion.div
+                                            layoutId="activeMobileNavItem"
+                                            className="w-1.5 h-1.5 rounded-full bg-white"
+                                            transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                                        />
+                                    )}
+                                </Link>
                             ))}
                         </motion.div>
                     )}
@@ -563,7 +588,8 @@ export default function Authenticated({ user, header, children }: PropsWithChild
         <Head>
             <link rel="icon" type="image/png" href="/ai.png" />
         </Head>
-        <div className="min-h-screen bg-gradient-to-br from-amber-50/50 to-purple-50/50 dark:from-gray-900 dark:to-gray-800">
+        <div className="min-h-screen flex flex-col bg-gradient-to-br from-gray-50 to-amber-50 dark:from-gray-950 dark:to-gray-900 transition-colors">
+            <Toaster />
             <nav className="sticky top-0 z-50 bg-white/80 dark:bg-gray-900/90 backdrop-blur-md shadow-sm border-b border-amber-100 dark:border-gray-700">
                 <div className="mx-auto px-3 sm:px-6">
                     <div className="flex h-12 sm:h-16 items-center justify-between">
@@ -727,8 +753,10 @@ export default function Authenticated({ user, header, children }: PropsWithChild
                 </div>
             </footer>
 
-            <Toaster />
             <ReferralCodeRenewal />
+
+            {/* Mobile Tab Bar */}
+            <MobileTabBar onRenewCodeClick={() => setIsReferralDialogOpen(true)} />
         </div>
     </>
     );

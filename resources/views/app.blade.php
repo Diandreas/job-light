@@ -2,7 +2,18 @@
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 <head>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=no">
+
+    <!-- PWA -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Guidy">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="application-name" content="Guidy">
+    <meta name="msapplication-TileColor" content="#F59E0B">
+    <meta name="msapplication-tap-highlight" content="no">
+    <meta name="theme-color" content="#F59E0B">
+    <link rel="manifest" href="{{ asset('manifest.json') }}">
 
     <!-- SEO - Balises techniques -->
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
@@ -120,5 +131,19 @@
 </head>
 <body class="font-sans antialiased">
 @inertia
+
+<!-- PWA Service Worker -->
+<script>
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function() {
+            navigator.serviceWorker.register('/sw.js')
+            .then(function(registration) {
+                console.log('ServiceWorker registration successful with scope: ', registration.scope);
+            }, function(err) {
+                console.log('ServiceWorker registration failed: ', err);
+            });
+        });
+    }
+</script>
 </body>
 </html>

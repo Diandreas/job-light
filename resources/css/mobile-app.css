@@ -1,0 +1,144 @@
+/* Styles pour donner l'apparence d'une application mobile */
+
+/* Empêcher le comportement de défilement élastique sur iOS */
+html {
+    height: 100%;
+    width: 100%;
+    overflow: hidden;
+    position: fixed;
+}
+
+body {
+    height: 100%;
+    width: 100%;
+    overflow: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+/* Masquer la barre d'adresse en mode standalone */
+@media all and (display-mode: standalone) {
+    body {
+        padding-top: env(safe-area-inset-top);
+        padding-bottom: env(safe-area-inset-bottom);
+        padding-left: env(safe-area-inset-left);
+        padding-right: env(safe-area-inset-right);
+    }
+}
+
+/* Style des boutons pour qu'ils ressemblent à des boutons d'application native */
+button,
+.button,
+a.button {
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+}
+
+/* Effet de clic d'application native */
+button:active,
+.button:active,
+a.button:active {
+    transform: scale(0.97);
+}
+
+/* Animations et transitions fluides */
+.page-transition {
+    animation: fadeIn 0.3s ease-in-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+/* Barre d'onglets de style application mobile */
+.mobile-tab-bar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    padding: 8px 0;
+    background-color: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    box-shadow: 0 -1px 5px rgba(0, 0, 0, 0.1);
+    z-index: 999;
+}
+
+.dark .mobile-tab-bar {
+    background-color: rgba(17, 24, 39, 0.95);
+}
+
+.mobile-tab-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 4px 0;
+    color: #6B7280;
+    transition: all 0.2s ease-in-out;
+}
+
+.mobile-tab-item.active {
+    color: #F59E0B;
+}
+
+.mobile-tab-item-icon {
+    margin-bottom: 4px;
+}
+
+.mobile-tab-item-label {
+    font-size: 10px;
+    font-weight: 500;
+}
+
+/* Améliorer le tactile pour les formulaires */
+input,
+textarea,
+select {
+    font-size: 16px !important;
+    /* Empêche le zoom iOS sur focus */
+}
+
+/* Pull to refresh */
+.ptr-element {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    color: #F59E0B;
+    z-index: 10;
+    text-align: center;
+    height: 50px;
+}
+
+/* Suppression de la sélection de texte */
+* {
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    user-select: none;
+}
+
+/* Autoriser la sélection dans les champs de saisie */
+input,
+textarea {
+    -webkit-user-select: auto;
+    user-select: auto;
+}
+
+/* Cacher les barres de défilement mais permettre le défilement */
+::-webkit-scrollbar {
+    width: 0px;
+    background: transparent;
+}
+
+/* Désactiver le double tap pour zoomer */
+* {
+    touch-action: pan-x pan-y;
+}

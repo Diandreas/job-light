@@ -161,6 +161,17 @@
             "cta": {
                 "title": "Créer votre CV maintenant",
                 "subtitle": "Choisissez parmi nos designs professionnels"
+            },
+            "sidebar": {
+                "items": {
+                    "personalInfo": "Informations Personnelles",
+                    "summary": "Résumé",
+                    "experience": "Expériences",
+                    "competence": "Compétences",
+                    "profession": "Formation",
+                    "language": "Langues",
+                    "hobby": "Centres d'Intérêt"
+                }
             }
         },
         "sidebar": {
@@ -228,33 +239,92 @@
     "cv_models": {
         "title": "Collection de Modèles de CV",
         "back": "Retour",
-        "export_cv": "Exporter CV",
+        "export_cv": "Exporter le CV",
+        "export": "Exporter",
         "search_placeholder": "Rechercher...",
-        "active_models": {
-            "title": "Mes Modèles Actifs",
-            "limit": "{{current}}/{{max}} modèles"
+        "models": "modèles",
+        "active": "Actif",
+        "selected": "Sélectionné",
+        "select": "Sélectionner",
+        "use": "Utiliser",
+        "view": "Aperçu",
+        "add_to_catalog": "Ajouter au catalogue",
+        "model_active_from_discover": "Vous utilisez actuellement un modèle de la section Découvrir",
+        "preview": {
+            "free": "Gratuit"
         },
-        "discover_models": "Découvrir nos Modèles",
+        "tabs": {
+            "active": "Mes modèles",
+            "discover": "Découvrir"
+        },
         "empty_state": {
-            "title": "Aucun Modèle Actif",
-            "description": "Sélectionnez un modèle parmi les modèles disponibles ci-dessous."
-        },
-        "model_card": {
-            "active": "Actif",
-            "use_model": "Utiliser ce Modèle",
-            "active_model": "Modèle Actif",
-            "add_to_catalog": "Ajouter au Catalogue"
+            "no_search_results": "Aucun résultat ne correspond à votre recherche",
+            "description": "Vous n'avez pas encore de modèles actifs. Ajoutez-en un depuis la section Découvrir.",
+            "all_models_added": "Vous avez déjà ajouté tous les modèles disponibles"
         },
         "notifications": {
             "model_added": "Modèle ajouté à votre collection",
             "model_activated": "Votre modèle a été activé avec succès",
             "max_models_reached": "Vous ne pouvez pas ajouter plus de {{max}} modèles",
-            "error": "Une erreur s'est produite"
+            "error": "Une erreur est survenue",
+            "model_from_discover_selected": "Modèle sélectionné depuis la section Découvrir"
+        },
+        "sidebar": {
+            "items": {
+                "personalInfo": "Informations Personnelles",
+                "summary": "Résumé",
+                "experience": "Expériences",
+                "competence": "Compétences",
+                "profession": "Formation",
+                "language": "Langues",
+                "hobby": "Centres d'Intérêt"
+            }
+        },
+        "personal": {
+            "fields": {
+                "email": "Email",
+                "phone": "Téléphone",
+                "address": "Adresse",
+                "linkedin": "LinkedIn",
+                "github": "GitHub",
+                "notSpecified": "Non spécifié"
+            },
+            "photo": {
+                "crop": "Recadrer la photo",
+                "cropDescription": "Ajustez le cadre pour sélectionner la partie de l'image à utiliser",
+                "save": "Enregistrer",
+                "saving": "Enregistrement...",
+                "cancel": "Annuler",
+                "success": {
+                    "title": "Photo mise à jour",
+                    "description": "Votre photo de profil a été mise à jour avec succès"
+                },
+                "deleteSuccess": {
+                    "title": "Photo supprimée",
+                    "description": "Votre photo de profil a été supprimée avec succès"
+                },
+                "error": {
+                    "title": "Erreur",
+                    "noCrop": "Veuillez sélectionner une partie de l'image"
+                },
+                "sizeError": "La taille de l'image ne doit pas dépasser 5 Mo"
+            }
+        },
+        "import": {
+            "button": "Importer CV",
+            "pdf": "Importer PDF",
+            "word": "Importer Word",
+            "loading": "Importation...",
+            "success": "Import réussi",
+            "successDetail": "Votre CV a été importé avec succès",
+            "error": "Erreur d'importation",
+            "errorDetail": "Une erreur est survenue lors de l'importation",
+            "insufficient": "Solde insuffisant"
         }
     },
     "auth": {
         "register": {
-            "value": "S'enregistrer",
+            "value": "S'inscrire",
             "title": "Créer votre compte",
             "subtitle": "Rejoignez-nous et commencez à créer votre CV professionnel",
             "name": {
@@ -282,20 +352,46 @@
             "button": {
                 "submit": "S'inscrire",
                 "processing": "Inscription..."
+            },
+            "referral": {
+                "title": "Vous avez été parrainé(e) !",
+                "description": "Des avantages vous attendent."
             }
         },
         "logout": "Déconnexion",
         "login": {
             "value": "Connexion",
-            "title": "Bon retour parmi nous!",
+            "title": "Bon retour parmi nous !",
             "subtitle": "Connectez-vous pour accéder à votre espace personnel",
             "email": "Votre email",
             "password": "Votre mot de passe",
             "remember": "Se souvenir de moi",
             "button": "Se connecter",
             "processing": "Connexion...",
-            "forgotPassword": "Mot de passe oublié?",
+            "forgotPassword": "Mot de passe oublié ?",
             "createAccount": "Créer un compte"
+        },
+        "forgotPassword": {
+            "title": "Mot de passe oublié",
+            "subtitle": "Entrez votre email pour réinitialiser votre mot de passe",
+            "email": "Votre email",
+            "button": "Envoyer le lien",
+            "processing": "Envoi en cours...",
+            "backToLogin": "Retour à la connexion"
+        },
+        "resetPassword": {
+            "title": "Réinitialiser le mot de passe",
+            "subtitle": "Entrez votre nouveau mot de passe",
+            "password": "Nouveau mot de passe",
+            "confirm": "Confirmer le mot de passe",
+            "button": "Réinitialiser",
+            "processing": "Réinitialisation..."
+        },
+        "verifyEmail": {
+            "title": "Vérifier l'email",
+            "subtitle": "Veuillez vérifier votre email pour le lien de vérification",
+            "resend": "Renvoyer l'email de vérification",
+            "processing": "Envoi en cours..."
         }
     },
     "cv_preview": {
@@ -333,7 +429,7 @@
         }
     },
     "career_advisor": {
-        "title": "Assistant de Carrière",
+        "title": "Conseiller de Carrière",
         "header": {
             "balance": "Solde",
             "history": "Historique"
@@ -373,6 +469,14 @@
             "title": "Historique des conversations",
             "empty": "Aucune conversation",
             "created_at": "Créé le {{date}}"
+        },
+        "info": {
+            "balance": "Solde du Portefeuille",
+            "tokens": "Jetons Utilisés",
+            "questions": "Questions Restantes"
+        },
+        "common": {
+            "tokens": "jetons"
         }
     },
     "hobbies": {
@@ -877,11 +981,68 @@
             "shareEmail": "Partager par email",
             "shareWhatsapp": "Partager via WhatsApp",
             "invitationLink": "Lien d'invitation"
+        },
+        "progress": {
+            "title": "Votre Progression",
+            "currentLevel": "Niveau Actuel",
+            "nextLevel": "Niveau Suivant",
+            "referralsNeeded": "Parrainages nécessaires pour le niveau suivant",
+            "earnings": "Gains Totaux",
+            "referralCount": "Total des Parrainages"
+        },
+        "support": {
+            "title": "Support",
+            "description": "Besoin d'aide avec le programme de parrainage ?",
+            "contact": "Contactez notre équipe de support",
+            "email": "Envoyez-nous un email",
+            "whatsapp": "WhatsAppez-nous"
+        },
+        "info": {
+            "title": "Informations sur le Programme",
+            "description": "En savoir plus sur notre programme de parrainage",
+            "benefits": {
+                "title": "Avantages",
+                "list": [
+                    "Gagnez des commissions sur les parrainages",
+                    "Débloquez des récompenses exclusives",
+                    "Développez votre réseau",
+                    "Aidez les autres à réussir"
+                ]
+            },
+            "howItWorks": {
+                "title": "Comment ça marche",
+                "steps": [
+                    "Partagez votre code de parrainage",
+                    "Vos amis s'inscrivent avec votre code",
+                    "Gagnez des récompenses quand ils font des achats",
+                    "Récupérez vos gains"
+                ]
+            }
         }
     },
     "pages": {
         "dashboard": {
-            "title": "Tableau de bord"
+            "title": "Tableau de bord",
+            "welcome": "Bienvenue sur votre tableau de bord",
+            "recentActivity": "Activité récente",
+            "quickActions": "Actions rapides",
+            "statistics": "Statistiques",
+            "categories": {
+                "experience": "Catégories d'Expérience",
+                "professions": "Catégories de Professions",
+                "hobbies": "Centres d'intérêt",
+                "professionsList": "Professions",
+                "competences": "Compétences",
+                "models": "Modèles de CV"
+            },
+            "descriptions": {
+                "experience": "Créer, mettre à jour et gérer les catégories d'expérience",
+                "professions": "Créer, mettre à jour et gérer les catégories de professions",
+                "hobbies": "Créer, mettre à jour et gérer les centres d'intérêt",
+                "professionsList": "Créer, mettre à jour et gérer les professions",
+                "competences": "Créer, mettre à jour et gérer les compétences",
+                "models": "Créer, mettre à jour et gérer les modèles de CV"
+            }
         },
         "privacyPolicy": {
             "title": "Politique de Confidentialité",
@@ -1139,14 +1300,29 @@
             "supportHours": {
                 "title": "Heures de Support",
                 "description": "Notre équipe de support est disponible pour vous assister du lundi au vendredi, de 9h à 18h. Pour les demandes urgentes, notre support WhatsApp est accessible 24/7."
+            },
+            "contact": {
+                "phone": "Téléphone",
+                "email": "Email",
+                "whatsapp": "WhatsApp",
+                "hours": "Heures de Support"
             }
         },
-        "dashboard": {
-            "title": "Tableau de bord",
-            "welcome": "Bienvenue sur votre tableau de bord",
-            "recentActivity": "Activité récente",
-            "quickActions": "Actions rapides",
-            "statistics": "Statistiques"
+        "error": {
+            "404": {
+                "title": "Page Non Trouvée",
+                "description": "La page que vous recherchez n'existe pas.",
+                "action": "Retour à l'Accueil"
+            },
+            "500": {
+                "title": "Erreur Serveur",
+                "description": "Une erreur s'est produite de notre côté. Veuillez réessayer plus tard.",
+                "action": "Retour à l'Accueil"
+            },
+            "actions": {
+                "back": "Retour",
+                "home": "Retour à l'Accueil"
+            }
         }
     },
     "admin": {
@@ -1169,10 +1345,10 @@
         }
     },
     "payment": {
-        "pageTitle": "Acheter des Jetons",
-        "title": "Obtenir des Jetons",
+        "pageTitle": "Acheter des Tokens",
+        "title": "Obtenir des Tokens",
         "subtitle": "Choisissez votre pack et votre méthode de paiement préférée : Mobile Money ou Carte Bancaire",
-        "tokens": "jetons",
+        "tokens": "tokens",
         "bonus": "BONUS",
         "total": "Total",
         "unitPrice": "Prix unitaire",
@@ -1184,12 +1360,12 @@
         },
         "popularityText": {
             "starter": "Pour commencer",
-            "plus": "Bon rapport qualité/prix",
-            "pro": "Le plus populaire",
+            "plus": "Bon rapport qualité-prix",
+            "pro": "Plus populaire",
             "ultimate": "Meilleure valeur"
         },
         "features": {
-            "bonus": "Jusqu'à 100 jetons bonus",
+            "bonus": "Jusqu'à 100 tokens bonus",
             "mobile": "MTN & Orange Money",
             "card": "PayPal & Carte Bancaire"
         },
@@ -1204,17 +1380,17 @@
             "bankCard": {
                 "title": "Carte Bancaire",
                 "secure": "Paiement sécurisé via PayPal",
-                "accepted": "Visa & Mastercard acceptés",
+                "accepted": "Visa & Mastercard acceptées",
                 "pricing": "Tarification en Euros"
             }
         },
         "footer": {
-            "immediate": "Les jetons achetés sont immédiatement disponibles sur votre compte après le paiement.",
+            "immediate": "Les tokens achetés sont immédiatement disponibles sur votre compte après le paiement.",
             "secure": "Tous les paiements sont sécurisés et vos données sont protégées."
         },
         "success": {
             "title": "Paiement réussi !",
-            "description": "Vos jetons ont été ajoutés à votre compte."
+            "description": "Vos tokens ont été ajoutés à votre compte."
         },
         "errors": {
             "default": "Une erreur est survenue",
@@ -1224,6 +1400,25 @@
             "captureFailure": "Échec de la capture du paiement",
             "processingFailure": "Échec du traitement du paiement",
             "paypalFailed": "Le paiement a échoué. Veuillez réessayer."
+        },
+        "pack": {
+            "tokens": "Tokens",
+            "bonus": "Bonus",
+            "price": "Prix",
+            "total": "Total",
+            "unitPrice": "Prix unitaire",
+            "select": "Sélectionner ce pack"
+        }
+    },
+    "welcome": {
+        "meta": {
+            "title": "Guidy | Créez un CV Professionnel en 5 Minutes avec l'IA | Créateur de CV",
+            "description": "Créez gratuitement un CV optimisé ATS avec notre IA. Templates internationaux, conseils de carrière personnalisés et préparation aux entretiens. Disponible en français. CVs professionnels en quelques minutes !",
+            "keywords": "CV IA, CV ATS, créateur de CV, CV IA, lettre de motivation, préparation entretien, template CV, CV international, conseil carrière, recherche d'emploi internationale, CV Canada, CV France, CV USA, CV Afrique, CV UK, carrières internationales, CV francophone, CV anglophone"
+        },
+        "language": {
+            "en": "Anglais",
+            "fr": "Français"
         }
     }
 }

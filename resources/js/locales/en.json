@@ -264,6 +264,58 @@
             "max_models_reached": "You cannot add more than {{max}} models",
             "error": "An error occurred",
             "model_from_discover_selected": "Model selected from Discover section"
+        },
+        "sidebar": {
+            "items": {
+                "personalInfo": "Personal Information",
+                "summary": "Summary",
+                "experience": "Experiences",
+                "competence": "Skills",
+                "profession": "Education",
+                "language": "Languages",
+                "hobby": "Interests"
+            }
+        },
+        "personal": {
+            "fields": {
+                "email": "Email",
+                "phone": "Phone",
+                "address": "Address",
+                "linkedin": "LinkedIn",
+                "github": "GitHub",
+                "notSpecified": "Not specified"
+            },
+            "photo": {
+                "crop": "Crop photo",
+                "cropDescription": "Adjust the frame to select the part of the image to use",
+                "save": "Save",
+                "saving": "Saving...",
+                "cancel": "Cancel",
+                "success": {
+                    "title": "Photo updated",
+                    "description": "Your profile photo has been updated successfully"
+                },
+                "deleteSuccess": {
+                    "title": "Photo deleted",
+                    "description": "Your profile photo has been deleted successfully"
+                },
+                "error": {
+                    "title": "Error",
+                    "noCrop": "Please select a part of the image"
+                },
+                "sizeError": "Image size should not exceed 5 MB"
+            }
+        },
+        "import": {
+            "button": "Import CV",
+            "pdf": "Import PDF",
+            "word": "Import Word",
+            "loading": "Importing...",
+            "success": "Import successful",
+            "successDetail": "Your CV has been imported successfully",
+            "error": "Import error",
+            "errorDetail": "An error occurred during import",
+            "insufficient": "Insufficient balance"
         }
     },
     "auth": {
@@ -296,6 +348,10 @@
             "button": {
                 "submit": "Register",
                 "processing": "Registering..."
+            },
+            "referral": {
+                "title": "You've been referred!",
+                "description": "Benefits await you."
             }
         },
         "logout": "Logout",
@@ -310,6 +366,28 @@
             "processing": "Logging in...",
             "forgotPassword": "Forgot password?",
             "createAccount": "Create an account"
+        },
+        "forgotPassword": {
+            "title": "Forgot Password",
+            "subtitle": "Enter your email to reset your password",
+            "email": "Your email",
+            "button": "Send Reset Link",
+            "processing": "Sending...",
+            "backToLogin": "Back to login"
+        },
+        "resetPassword": {
+            "title": "Reset Password",
+            "subtitle": "Enter your new password",
+            "password": "New password",
+            "confirm": "Confirm password",
+            "button": "Reset Password",
+            "processing": "Resetting..."
+        },
+        "verifyEmail": {
+            "title": "Verify Email",
+            "subtitle": "Please check your email for verification link",
+            "resend": "Resend verification email",
+            "processing": "Sending..."
         }
     },
     "cv_preview": {
@@ -347,7 +425,7 @@
         }
     },
     "career_advisor": {
-        "title": "Career Assistant",
+        "title": "Career Advisor",
         "header": {
             "balance": "Balance",
             "history": "History"
@@ -360,8 +438,8 @@
             "loading": "Loading conversation...",
             "empty": "Please enter your message",
             "insufficient_balance": "Insufficient balance",
-            "recharge_needed": "Please reload your account",
-            "error": "An error has occurred",
+            "recharge_needed": "Please recharge your account",
+            "error": "An error occurred",
             "processing_error": "Processing error",
             "export_success": "Document exported successfully",
             "export_error": "Export failed"
@@ -387,6 +465,14 @@
             "title": "Conversation history",
             "empty": "No conversations",
             "created_at": "Created on {{date}}"
+        },
+        "info": {
+            "balance": "Wallet Balance",
+            "tokens": "Tokens Used",
+            "questions": "Questions Remaining"
+        },
+        "common": {
+            "tokens": "tokens"
         }
     },
     "hobbies": {
@@ -895,7 +981,27 @@
     },
     "pages": {
         "dashboard": {
-            "title": "Dashboard"
+            "title": "Dashboard",
+            "welcome": "Welcome to your dashboard",
+            "recentActivity": "Recent activity",
+            "quickActions": "Quick actions",
+            "statistics": "Statistics",
+            "categories": {
+                "experience": "Experience Categories",
+                "professions": "Profession Categories",
+                "hobbies": "Interests",
+                "professionsList": "Professions",
+                "competences": "Skills",
+                "models": "CV Templates"
+            },
+            "descriptions": {
+                "experience": "Create, update and manage experience categories",
+                "professions": "Create, update and manage profession categories",
+                "hobbies": "Create, update and manage interests",
+                "professionsList": "Create, update and manage professions",
+                "competences": "Create, update and manage skills",
+                "models": "Create, update and manage CV templates"
+            }
         },
         "privacyPolicy": {
             "title": "Privacy Policy",
@@ -1153,14 +1259,29 @@
             "supportHours": {
                 "title": "Support Hours",
                 "description": "Our support team is available to assist you Monday to Friday, 9am to 6pm. For urgent requests, our WhatsApp support is accessible 24/7."
+            },
+            "contact": {
+                "phone": "Phone",
+                "email": "Email",
+                "whatsapp": "WhatsApp",
+                "hours": "Support Hours"
             }
         },
-        "dashboard": {
-            "title": "Dashboard",
-            "welcome": "Welcome to your dashboard",
-            "recentActivity": "Recent activity",
-            "quickActions": "Quick actions",
-            "statistics": "Statistics"
+        "error": {
+            "404": {
+                "title": "Page Not Found",
+                "description": "The page you are looking for does not exist.",
+                "action": "Return to Home"
+            },
+            "500": {
+                "title": "Server Error",
+                "description": "Something went wrong on our end. Please try again later.",
+                "action": "Return to Home"
+            },
+            "actions": {
+                "back": "Go Back",
+                "home": "Return to Home"
+            }
         }
     },
     "admin": {
@@ -1238,6 +1359,25 @@
             "captureFailure": "Payment capture failed",
             "processingFailure": "Payment processing failed",
             "paypalFailed": "Payment failed. Please try again."
+        },
+        "pack": {
+            "tokens": "Tokens",
+            "bonus": "Bonus",
+            "price": "Price",
+            "total": "Total",
+            "unitPrice": "Unit price",
+            "select": "Select this pack"
+        }
+    },
+    "welcome": {
+        "meta": {
+            "title": "Guidy | Create a Professional CV in 5 Minutes with AI | Resume Builder",
+            "description": "Create a free ATS-optimized CV with our AI. International templates, personalized career advice, and interview preparation. Available in English. Professional resumes in minutes!",
+            "keywords": "AI CV, ATS CV, resume builder, AI CV, cover letter, interview preparation, CV template, international resume, career advice, global job search, Canada CV, France CV, USA CV, Africa CV, UK resume, international careers, Francophone CV, Anglophone CV"
+        },
+        "language": {
+            "en": "English",
+            "fr": "French"
         }
     }
 }

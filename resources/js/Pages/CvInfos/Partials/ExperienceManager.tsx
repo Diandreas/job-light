@@ -999,7 +999,7 @@ const ExperienceManager: React.FC<Props> = ({ auth, experiences: initialExperien
                         </SheetDescription>
                     </SheetHeader>
 
-                    <form onSubmit={handleSubmit} className="space-y-4 pt-3">
+                    <form onSubmit={handleSubmit} className="space-y-4 pt-3 pb-20 md:pb-4">
                         {/* Template Selection */}
                         <Card className="border-amber-100 dark:border-amber-900/50">
                             <CardHeader className="p-3">
@@ -1329,7 +1329,7 @@ const ExperienceManager: React.FC<Props> = ({ auth, experiences: initialExperien
                         </div>
 
                         {/* Form Actions */}
-                        <div className="flex justify-between gap-2 sticky bottom-0 bg-white dark:bg-gray-900 pt-4 border-t dark:border-gray-700">
+                        <div className="flex justify-between gap-2 sticky bottom-0 bg-white dark:bg-gray-900 pt-4 pb-6 md:pb-2 border-t dark:border-gray-700">
                             <Button
                                 type="submit"
                                 disabled={isLoading}

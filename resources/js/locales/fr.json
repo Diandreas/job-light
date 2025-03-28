@@ -222,7 +222,8 @@
         "manage": "Gérer",
         "error": {
             "generic": "Une erreur est survenue."
-        }
+        },
+        "close": "Fermer"
     },
     "wallet": {
         "balance": "Solde",
@@ -623,126 +624,103 @@
         }
     },
     "experiences": {
-        "title": "Gestion des Expériences",
+        "title": "Expériences",
         "description": "Gérez vos expériences professionnelles, académiques et bénévoles",
         "actions": {
             "add": "Ajouter une expérience",
-            "update": "Mettre à jour l'expérience",
-            "save": "Enregistrer l'expérience",
+            "save": "Enregistrer",
+            "update": "Mettre à jour",
             "cancel": "Annuler",
+            "view": "Voir",
+            "edit": "Éditer",
             "delete": "Supprimer"
         },
-        "filters": {
-            "search": "Rechercher des expériences..."
-        },
         "tabs": {
-            "list": "Expériences",
+            "list": "Liste",
             "attachments": "Pièces jointes"
+        },
+        "filters": {
+            "search": "Rechercher une expérience..."
         },
         "form": {
             "title": {
-                "new": "Nouvelle Expérience",
-                "edit": "Modifier l'Expérience"
+                "new": "Nouvelle expérience",
+                "edit": "Modifier l'expérience"
             },
             "description": {
-                "new": "Ajouter une nouvelle expérience à votre profil",
-                "edit": "Modifier les détails d'une expérience existante"
+                "new": "Ajoutez une nouvelle expérience à votre CV",
+                "edit": "Modifiez les informations de votre expérience"
+            },
+            "tabs": {
+                "general": "Général",
+                "details": "Détails",
+                "references": "Références"
             },
             "templates": {
                 "title": "Modèles",
-                "description": "Commencez avec un modèle prédéfini",
-                "academic": "Expérience Académique",
-                "internship": "Expérience de Stage",
-                "volunteer": "Expérience de Bénévolat",
-                "defaultComment": "Ajoutez vos commentaires additionnels ici"
-            },
-            "references": {
-                "title": "Références",
-                "add": "Ajouter une Référence",
-                "name": "Nom Complet",
-                "function": "Poste/Rôle",
-                "email": "Email",
-                "phone": "Téléphone",
-                "placeholders": {
-                    "name": "Entrez le nom de la référence",
-                    "function": "Entrez le poste/rôle",
-                    "email": "Entrez l'adresse email",
-                    "phone": "Entrez le numéro de téléphone"
-                },
-                "default": {
-                    "name": "Jean Dupont",
-                    "function": "Chef de Projet",
-                    "email": "jean.dupont@exemple.com",
-                    "phone": "+33 6 12 34 56 78"
-                }
+                "description": "Utilisez un modèle prérempli pour gagner du temps",
+                "academic": "Académique",
+                "internship": "Stage",
+                "volunteer": "Bénévolat",
+                "auto": "Générer automatiquement",
+                "defaultComment": "Commentaire par défaut"
             },
             "fields": {
                 "name": {
-                    "label": "Nom de l'Expérience",
-                    "placeholder": "Entrez le nom de votre expérience"
+                    "label": "Titre",
+                    "placeholder": "Ex: Développeur Web Frontend"
                 },
                 "institution": {
-                    "label": "Nom de l'Institution",
-                    "placeholder": "Entrez le nom de l'institution ou de l'entreprise"
+                    "label": "Institution / Entreprise",
+                    "placeholder": "Ex: Entreprise ABC"
                 },
                 "dates": {
-                    "start": "Date de Début",
-                    "end": "Date de Fin",
-                    "ongoing": "Laissez la date de fin vide pour les expériences en cours"
+                    "start": "Date de début",
+                    "end": "Date de fin",
+                    "ongoing": "Laissez vide pour une expérience en cours"
                 },
                 "type": {
-                    "label": "Type d'Expérience",
-                    "placeholder": "Sélectionnez le type d'expérience"
+                    "label": "Type d'expérience",
+                    "placeholder": "Sélectionnez un type"
                 },
                 "description": {
                     "label": "Description",
-                    "placeholder": "Décrivez votre expérience, vos responsabilités et vos réalisations"
+                    "placeholder": "Décrivez vos tâches, responsabilités et réalisations"
                 },
                 "output": {
-                    "label": "Résultats",
-                    "placeholder": "Quels ont été les principaux résultats ou réalisations?"
+                    "label": "Résultat",
+                    "placeholder": "Ex: Augmentation du trafic de 30%"
                 },
                 "references": {
-                    "title": "Références",
                     "label": "Références",
-                    "add": "Ajouter une Référence",
-                    "name": "Nom Complet",
-                    "function": "Poste/Rôle",
+                    "add": "Ajouter une référence",
+                    "empty": "Aucune référence ajoutée pour le moment",
+                    "name": "Nom",
+                    "function": "Fonction",
                     "email": "Email",
-                    "phone": "Téléphone",
-                    "placeholders": {
-                        "name": "Entrez le nom de la référence",
-                        "function": "Entrez le poste/rôle",
-                        "email": "Entrez l'adresse email",
-                        "phone": "Entrez le numéro de téléphone"
-                    },
-                    "default": {
-                        "name": "Jean Dupont",
-                        "function": "Chef de Projet",
-                        "email": "jean.dupont@exemple.com",
-                        "phone": "+33 6 12 34 56 78"
-                    }
+                    "phone": "Téléphone"
                 }
             },
             "attachment": {
-                "title": "Pièces jointes",
-                "maxSize": "Max 100MB",
-                "current": "Fichier actuel :",
-                "delete": "Supprimer le fichier",
-                "formats": "Formats acceptés : PDF, DOC, DOCX"
+                "title": "Pièce jointe",
+                "select": "Sélectionner un fichier",
+                "none": "Aucun fichier sélectionné",
+                "delete": "Supprimer",
+                "current": "Fichier actuel:",
+                "formats": "Formats acceptés: PDF, DOC, DOCX, PNG, JPG"
             }
         },
         "attachments": {
             "stats": {
-                "used": "Espace Utilisé",
-                "files": "Total des Fichiers",
-                "available": "Espace Disponible"
+                "used": "Espace utilisé",
+                "files": "Fichiers",
+                "available": "Espace disponible"
             }
         },
         "empty": {
-            "experiences": "Aucune expérience ajoutée pour le moment",
-            "search": "Aucune expérience ne correspond à votre recherche",
-            "attachments": "Aucune pièce jointe téléchargée pour le moment"
+            "experiences": "Aucune expérience enregistrée pour le moment",
+            "search": "Aucun résultat pour votre recherche",
+            "attachments": "Aucune pièce jointe disponible"
         },
         "success": {
             "created": "Expérience créée avec succès",
@@ -797,18 +775,23 @@
     },
     "templates": {
         "title": "Choisir un modèle",
-        "subtitle": "Commencez avec un modèle prédéfini ou créez le vôtre",
+        "subtitle": "Choisissez un modèle pour démarrer rapidement",
         "student": {
-            "name": "Étudiant",
-            "description": "Jeune diplômé motivé, à l'écoute et dynamique. Formation académique solide avec une première expérience via des stages et projets étudiants. Maîtrise des outils informatiques et capacité d'apprentissage rapide."
+            "name": "Profil d'étudiant en ingénierie",
+            "description": "Résumé professionnel pour les étudiants et les récents diplômés mettant en avant les compétences académiques."
         },
         "archivist": {
-            "name": "Assistant Archiviste",
-            "description": "Passionné par l'organisation et la préservation des documents. Méthodique et rigoureux, avec une bonne maîtrise des outils numériques. Capable de travailler en autonomie et en équipe."
+            "name": "Profil d'archiviste documentaliste",
+            "description": "Résumé adapté aux professionnels de la gestion documentaire et de l'archivage."
         },
         "beginner": {
-            "name": "Premier Emploi",
-            "description": "Bachelier enthousiaste et polyvalent, prêt à mettre en pratique mes connaissances. Forte capacité d'adaptation et volonté d'apprendre. Maîtrise des outils bureautiques de base."
+            "name": "Profil débutant polyvalent",
+            "description": "Résumé pour les personnes en début de carrière mettant en avant leur polyvalence et leur potentiel."
+        },
+        "short": {
+            "student": "Étudiant",
+            "archivist": "Archiviste",
+            "beginner": "Débutant"
         }
     },
     "actions": {

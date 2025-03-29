@@ -25,7 +25,7 @@
         }
 
         .cv-container {
-            width: 170mm;
+            width: 210mm;
             background-color: #FFFFFF;
         }
 

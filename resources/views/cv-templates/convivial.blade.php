@@ -8,7 +8,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ $cvInformation['personalInformation']['firstName'] ?? 'CV' }} - CV</title>
     <style>
-        @page { margin: 10mm; size: A4; }
+        @page { margin: 8mm; size: A4; }
         * { margin: 0; padding: 0; box-sizing: border-box; }
 
         body {
@@ -20,9 +20,9 @@
         }
 
         .cv-container {
-            width: 170mm;
+            width: 190mm;
             margin: 0 auto;
-            padding: 5mm;
+            padding: 8mm;
             background: white;
         }
 

@@ -91,20 +91,20 @@ const FeatureCard = ({ icon: Icon, title, description, action, link }) => (
     <motion.div
         whileHover={{ y: -5, scale: 1.02 }}
         whileTap={{ scale: 0.98 }}
-        className="relative bg-white rounded-xl p-6 shadow-lg border border-gray-100 overflow-hidden group"
+        className="relative bg-white dark:bg-gray-800 rounded-xl p-3 sm:p-6 shadow-lg border border-gray-100 dark:border-gray-700 overflow-hidden group"
     >
-        <div className="absolute inset-0 bg-gradient-to-r from-amber-500/10 to-purple-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+        <div className="absolute inset-0 bg-gradient-to-r from-amber-500/10 to-purple-500/10 dark:from-amber-500/5 dark:to-purple-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
         <div className="relative z-10">
-            <div className="flex justify-between items-start mb-4">
-                <div className="p-3 rounded-lg bg-gradient-to-r from-amber-500 to-purple-500 transform group-hover:rotate-6 transition-transform duration-300">
-                    <Icon className="w-6 h-6 text-white" />
+            <div className="flex justify-between items-start mb-2 sm:mb-4">
+                <div className="p-2 sm:p-3 rounded-lg bg-gradient-to-r from-amber-500 to-purple-500 transform group-hover:rotate-6 transition-transform duration-300">
+                    <Icon className="w-4 h-4 sm:w-6 sm:h-6 text-white" />
                 </div>
             </div>
-            <h3 className="text-xl font-semibold mb-2 group-hover:text-amber-600 transition-colors">{title}</h3>
-            <p className="text-gray-600 mb-4">{description}</p>
-            <Link href={link} className="inline-flex items-center text-amber-600 hover:text-amber-700 font-medium group">
+            <h3 className="text-sm sm:text-xl font-semibold mb-1 sm:mb-2 group-hover:text-amber-600 dark:group-hover:text-amber-400 transition-colors dark:text-white">{title}</h3>
+            <p className="text-xs sm:text-base text-gray-600 dark:text-gray-300 mb-2 sm:mb-4 line-clamp-3 sm:line-clamp-none">{description}</p>
+            <Link href={link} className="inline-flex items-center text-xs sm:text-base text-amber-600 dark:text-amber-400 hover:text-amber-700 dark:hover:text-amber-300 font-medium group">
                 {action}
-                <ArrowRight className="ml-2 w-4 h-4 transform group-hover:translate-x-1 transition-transform" />
+                <ArrowRight className="ml-1 sm:ml-2 w-3 h-3 sm:w-4 sm:h-4 transform group-hover:translate-x-1 transition-transform" />
             </Link>
         </div>
     </motion.div>
@@ -113,15 +113,112 @@ const FeatureCard = ({ icon: Icon, title, description, action, link }) => (
 const StatisticCard = ({ icon: Icon, value, label }) => (
     <motion.div
         whileHover={{ scale: 1.05 }}
-        className="bg-white p-6 rounded-xl shadow-lg border border-gray-100"
+        className="bg-white dark:bg-gray-800 p-3 sm:p-6 rounded-xl shadow-lg border border-gray-100 dark:border-gray-700"
     >
-        <Icon className="w-8 h-8 text-amber-500 mb-4" />
-        <div className="text-3xl font-bold text-gray-800 mb-2">
+        <Icon className="w-5 h-5 sm:w-8 sm:h-8 text-amber-500 dark:text-amber-400 mb-2 sm:mb-4" />
+        <div className="text-xl sm:text-3xl font-bold text-gray-800 dark:text-white mb-1 sm:mb-2">
             <AnimatedCounter target={value} />
         </div>
-        <p className="text-gray-600">{label}</p>
+        <p className="text-xs sm:text-base text-gray-600 dark:text-gray-300">{label}</p>
     </motion.div>
 );
+
+// Nouveau composant pour le Call-to-Action avec image
+const ImageCallToAction = () => {
+    const { t } = useTranslation();
+    return (
+        <div className="bg-gradient-to-r from-amber-100 to-purple-100 dark:from-amber-900/20 dark:to-purple-900/20 rounded-2xl overflow-hidden shadow-xl mb-8 sm:mb-20 border-2 border-amber-200 dark:border-amber-700">
+            {/* Layout mobile: empilé avec grande image */}
+            <div className="block md:hidden">
+                <div className="p-4 sm:p-6">
+                    <h2 className="text-xl sm:text-2xl font-bold mb-3 bg-gradient-to-r from-amber-500 to-purple-500 text-transparent bg-clip-text text-center">
+                        {t('cta_image.title')}
+                    </h2>
+
+                    {/* Grande image sur mobile */}
+                    <div className="relative h-80 sm:h-96 w-full rounded-xl shadow-md overflow-hidden border-2 border-amber-300 dark:border-amber-700 bg-white dark:bg-gray-800 mb-4">
+                        <div className="absolute right-0 top-1/2 transform -translate-y-1/2 z-20">
+                            <ChevronRight className="w-12 h-12 sm:w-16 sm:h-16 text-amber-500 dark:text-amber-400 transform rotate-180" />
+                        </div>
+                        <div className="flex items-center justify-center h-full">
+                            <img
+                                src="/cvs.png"
+                                alt="CV Professionnel"
+                                className="h-auto max-w-[90%] object-contain dark:opacity-90 dark:brightness-90"
+                            />
+                        </div>
+                    </div>
+
+                    <p className="text-sm sm:text-base text-gray-600 dark:text-gray-300 mb-4 text-center">
+                        {t('cta_image.description')}
+                    </p>
+                    <div className="flex justify-center">
+                        <Link
+                            href={route('register')}
+                            className="inline-flex items-center px-5 py-3 rounded-full text-sm sm:text-base font-medium bg-gradient-to-r from-amber-500 to-purple-500 text-white hover:from-amber-600 hover:to-purple-600 shadow-md hover:shadow-lg transition-all"
+                        >
+                            {t('cta_image.button')}
+                            <ArrowRight className="ml-2 w-4 h-4" />
+                        </Link>
+                    </div>
+                </div>
+            </div>
+
+            {/* Layout desktop: 3 colonnes bien équilibrées */}
+            <div className="hidden md:flex md:flex-row md:items-stretch">
+                {/* Image gauche (conversation) */}
+                <div className="w-1/3 p-6 flex items-center justify-center relative">
+                    <div className="relative h-80 w-full rounded-xl shadow-md overflow-hidden border border-amber-300 dark:border-amber-700 bg-white dark:bg-gray-800">
+                        <div className="absolute inset-0 bg-gradient-to-r from-amber-500/20 to-purple-500/20 z-10"></div>
+                        <div className="absolute left-0 top-1/2 transform -translate-y-1/2 z-20">
+                            <ChevronRight className="w-16 h-16 text-amber-500 dark:text-amber-400" />
+                        </div>
+                        <div className="flex items-center justify-center h-full p-3">
+                            <img
+                                src="/call.png"
+                                alt="Conversation IA"
+                                className="max-h-full max-w-full object-contain rounded-lg dark:opacity-90 dark:brightness-90 z-5"
+                            />
+                        </div>
+                    </div>
+                </div>
+
+                {/* Contenu central */}
+                <div className="w-1/3 p-8 flex flex-col justify-center items-center text-center">
+                    <h2 className="text-2xl lg:text-3xl font-bold mb-6 bg-gradient-to-r from-amber-500 to-purple-500 text-transparent bg-clip-text">
+                        {t('cta_image.title')}
+                    </h2>
+                    <p className="text-base text-gray-600 dark:text-gray-300 mb-8">
+                        {t('cta_image.description')}
+                    </p>
+                    <Link
+                        href={route('register')}
+                        className="inline-flex items-center px-6 py-3 rounded-full text-base font-medium bg-gradient-to-r from-amber-500 to-purple-500 text-white hover:from-amber-600 hover:to-purple-600 shadow-md hover:shadow-lg transition-all"
+                    >
+                        {t('cta_image.button')}
+                        <ArrowRight className="ml-2 w-4 h-4" />
+                    </Link>
+                </div>
+
+                {/* Image droite (CV) */}
+                <div className="w-1/3 p-6 flex items-center justify-center relative">
+                    <div className="relative h-80 w-full rounded-xl shadow-md overflow-hidden border border-amber-300 dark:border-amber-700 bg-white dark:bg-gray-800">
+                        <div className="absolute right-0 top-1/2 transform -translate-y-1/2 z-20">
+                            <ChevronRight className="w-16 h-16 text-amber-500 dark:text-amber-400 transform rotate-180" />
+                        </div>
+                        <div className="flex items-center justify-center h-full p-3">
+                            <img
+                                src="/cvs.png"
+                                alt="CV Professionnel"
+                                className="max-h-full max-w-full object-contain rounded-lg dark:opacity-90 dark:brightness-90"
+                            />
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
+};
 
 export default function Welcome() {
     const { scrollYProgress } = useScroll();
@@ -603,58 +700,28 @@ export default function Welcome() {
                     })}
                 </script>
             </Head>
-            <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white">
+            <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white dark:from-gray-900 dark:to-gray-800">
 
 
                 <main className="pt-24">
                     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+
                         <motion.div
-                            className="text-center mb-16"
-                            style={{ opacity, y }}
+                            initial={{ opacity: 0, scale: 0.5 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            transition={{ duration: 0.5 }}
+                            className="mb-6"
                         >
-                            <motion.div
-                                initial={{ opacity: 0, scale: 0.5 }}
-                                animate={{ opacity: 1, scale: 1 }}
-                                transition={{ duration: 0.5 }}
-                                className="mb-6"
-                            >
-                                <span className="bg-amber-100 text-amber-800 px-4 py-2 rounded-full text-sm font-medium">
-                                    {t('hero.badge')}
-                                </span>
-                            </motion.div>
-                            <motion.h1
-                                initial={{ opacity: 0, y: 20 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                transition={{ delay: 0.2 }}
-                                className="text-6xl font-bold mb-6 bg-gradient-to-r from-amber-500 to-purple-500 text-transparent bg-clip-text"
-                            >
-                                {t('hero.title')}
-                            </motion.h1>
-                            <motion.p
-                                initial={{ opacity: 0, y: 20 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                transition={{ delay: 0.4 }}
-                                className="text-xl text-gray-600 mb-8 max-w-3xl mx-auto"
-                            >
-                                {t('hero.description')}
-                            </motion.p>
-                            <motion.div
-                                className="flex justify-center space-x-4"
-                                initial={{ opacity: 0, y: 20 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                transition={{ delay: 0.6 }}
-                            >
-                                <Link
-                                    href={route('register')}
-                                    className="inline-flex items-center px-8 py-4 rounded-full text-lg font-medium bg-gradient-to-r from-amber-500 to-purple-500 text-white hover:from-amber-600 hover:to-purple-600 shadow-lg hover:shadow-xl transition-all"
-                                >
-                                    <FileText className="w-5 h-5 mr-2" />
-                                    {t('nav.start_free')}
-                                </Link>
-                            </motion.div>
+                            <span className="bg-amber-100 dark:bg-amber-900/40 text-amber-800 dark:text-amber-300 px-4 py-2 rounded-full text-sm font-medium">
+                                {t('hero.badge')}
+                            </span>
                         </motion.div>
 
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-16">
+                        <div className="mb-16 bg-amber-50 dark:bg-amber-900/10 p-2 rounded-2xl shadow-md" id="cta-forced">
+                            <ImageCallToAction />
+                        </div>
+
+                        <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6 mb-12 sm:mb-16">
                             {features.map((feature, index) => (
                                 <FeatureCard
                                     key={index}
@@ -668,7 +735,7 @@ export default function Welcome() {
                         </div>
 
                         <motion.div
-                            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-16"
+                            className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6 mb-12 sm:mb-16"
                             initial={{ opacity: 0, y: 20 }}
                             whileInView={{ opacity: 1, y: 0 }}
                             viewport={{ once: true }}
@@ -690,7 +757,7 @@ export default function Welcome() {
                                 whileInView={{ opacity: 1, y: 0 }}
                                 viewport={{ once: true }}
                             >
-                                <span className="bg-amber-100 text-amber-800 px-4 py-2 rounded-full text-sm font-medium">
+                                <span className="bg-amber-100 dark:bg-amber-900/40 text-amber-800 dark:text-amber-300 px-4 py-2 rounded-full text-sm font-medium">
                                     {t('cta.badge')}
                                 </span>
                             </motion.div>
@@ -711,12 +778,12 @@ export default function Welcome() {
                     </div>
                 </main>
 
-                <footer className="bg-white border-t border-gray-100">
+                <footer className="bg-white dark:bg-gray-900 border-t border-gray-100 dark:border-gray-800">
                     <div className="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
                         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
                             <div className="col-span-1 md:col-span-2">
                                 <div className="flex items-center space-x-2 mb-4">
-                                    <Sparkles className="w-6 h-6 text-amber-500" />
+                                    <Sparkles className="w-6 h-6 text-amber-500 dark:text-amber-400" />
                                     <span className="font-bold text-xl bg-gradient-to-r from-amber-500 to-purple-500 text-transparent bg-clip-text">
                                         {t('brand')}
                                     </span>
@@ -724,13 +791,13 @@ export default function Welcome() {
                                 <div className="flex space-x-4">
                                     <a
                                         href="mailto:guidy.makeitreall@gmail.com"
-                                        className="text-gray-400 hover:text-amber-500"
+                                        className="text-gray-400 hover:text-amber-500 dark:text-gray-500 dark:hover:text-amber-400"
                                     >
                                         <Mail className="h-6 w-6" />
                                     </a>
                                     <a
                                         href="https://wa.me/237693427913"
-                                        className="text-gray-400 hover:text-amber-500"
+                                        className="text-gray-400 hover:text-amber-500 dark:text-gray-500 dark:hover:text-amber-400"
                                     >
                                         <MessageSquare className="h-6 w-6" />
                                     </a>
@@ -738,20 +805,20 @@ export default function Welcome() {
                             </div>
 
                             <div>
-                                <h3 className="text-sm font-semibold text-gray-600">{t('footer.services.title')}</h3>
+                                <h3 className="text-sm font-semibold text-gray-600 dark:text-gray-300">{t('footer.services.title')}</h3>
                                 <ul className="mt-4 space-y-2">
                                     <li>
-                                        <Link href="#" className="text-gray-500 hover:text-amber-600">
+                                        <Link href="#" className="text-gray-500 hover:text-amber-600 dark:text-gray-400 dark:hover:text-amber-400">
                                             {t('footer.services.resume')}
                                         </Link>
                                     </li>
                                     <li>
-                                        <Link href="#" className="text-gray-500 hover:text-amber-600">
+                                        <Link href="#" className="text-gray-500 hover:text-amber-600 dark:text-gray-400 dark:hover:text-amber-400">
                                             {t('footer.services.advisor')}
                                         </Link>
                                     </li>
                                     <li>
-                                        <Link href="#" className="text-gray-500 hover:text-amber-600">
+                                        <Link href="#" className="text-gray-500 hover:text-amber-600 dark:text-gray-400 dark:hover:text-amber-400">
                                             {t('footer.services.interview')}
                                         </Link>
                                     </li>
@@ -759,25 +826,25 @@ export default function Welcome() {
                             </div>
 
                             <div>
-                                <h3 className="text-sm font-semibold text-gray-600">{t('footer.legal.title')}</h3>
+                                <h3 className="text-sm font-semibold text-gray-600 dark:text-gray-300">{t('footer.legal.title')}</h3>
                                 <ul className="mt-4 space-y-2">
                                     <li>
-                                        <Link href="/privacy" className="text-gray-500 hover:text-amber-600">
+                                        <Link href="/privacy" className="text-gray-500 hover:text-amber-600 dark:text-gray-400 dark:hover:text-amber-400">
                                             {t('footer.legal.privacy')}
                                         </Link>
                                     </li>
                                     <li>
-                                        <Link href="/terms" className="text-gray-500 hover:text-amber-600">
+                                        <Link href="/terms" className="text-gray-500 hover:text-amber-600 dark:text-gray-400 dark:hover:text-amber-400">
                                             {t('footer.legal.terms')}
                                         </Link>
                                     </li>
                                     <li>
-                                        <Link href="/cookies" className="text-gray-500 hover:text-amber-600">
+                                        <Link href="/cookies" className="text-gray-500 hover:text-amber-600 dark:text-gray-400 dark:hover:text-amber-400">
                                             {t('footer.legal.cookies')}
                                         </Link>
                                     </li>
                                     <li>
-                                        <Link href="/mentions-legales" className="text-gray-500 hover:text-amber-600">
+                                        <Link href="/mentions-legales" className="text-gray-500 hover:text-amber-600 dark:text-gray-400 dark:hover:text-amber-400">
                                             {t('footer.legal.mentions')}
                                         </Link>
                                     </li>
@@ -785,8 +852,8 @@ export default function Welcome() {
                             </div>
                         </div>
 
-                        <div className="mt-8 pt-8 border-t border-gray-200">
-                            <p className="text-center text-gray-400">
+                        <div className="mt-8 pt-8 border-t border-gray-200 dark:border-gray-700">
+                            <p className="text-center text-gray-400 dark:text-gray-500">
                                 © {new Date().getFullYear()} {t('brand')}. {t('footer.copyright')}
                             </p>
                         </div>

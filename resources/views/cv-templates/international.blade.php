@@ -9,7 +9,7 @@
     <title>{{ $cvInformation['personalInformation']['firstName'] ?? 'CV' }} - CV</title>
     <style>
         @page {
-            margin: 0;
+            margin: 5mm;
             padding: 0;
             size: A4;
         }
@@ -25,15 +25,22 @@
         }
 
         .cv-container {
-            width: 210mm;
+            width: 180mm;
             background-color: #FFFFFF;
-            padding: 8mm;
+            padding: 0;
+            margin: 0;
         }
 
         /* Tables Reset */
         table {
             width: 100%;
             border-collapse: collapse;
+            page-break-inside: auto;
+        }
+
+        tr {
+            page-break-inside: avoid;
+            page-break-after: auto;
         }
 
         td {
@@ -49,6 +56,7 @@
             padding-bottom: 4mm;
             -webkit-print-color-adjust: exact !important;
             print-color-adjust: exact !important;
+            page-break-after: avoid !important;
         }
 
         .header-left-cell {
@@ -77,10 +85,12 @@
         /* Photo Styling */
         .photo-container {
             width: 30mm;
-            height: 35mm;
+            height: 30mm;
             overflow: hidden;
             border: 0.2mm solid #cccccc !important;
             float: right;
+            border-radius: 2mm;
+            padding: 2mm;
             -webkit-print-color-adjust: exact !important;
             print-color-adjust: exact !important;
         }
@@ -107,16 +117,20 @@
             display: inline-block;
             width: 15mm;
         }
-
+        
         /* Main Layout */
         .main-table {
-            width: 100%;
+            width: 90%;
             margin-top: 4mm;
+            margin: 2mm;
+            page-break-inside: auto;
+            page-break-before: avoid !important;
         }
 
         .left-column-cell {
-            width: 32%;
+            width: 28%;
             padding-right: 4mm;
+            page-break-inside: auto;
         }
 
         .right-column-cell {
@@ -125,11 +139,13 @@
             padding-left: 4mm;
             -webkit-print-color-adjust: exact !important;
             print-color-adjust: exact !important;
+            page-break-inside: auto;
         }
 
         /* Section Styling */
         .section {
             margin-bottom: 5mm;
+            page-break-inside: auto;
         }
 
         .section-title {
@@ -157,6 +173,7 @@
         .experience-table {
             width: 100%;
             margin-bottom: 3mm;
+            page-break-inside: auto;
         }
 
         .experience-left-cell {
@@ -307,6 +324,47 @@
             font-style: italic;
             color: #666666;
             margin-left: 1mm;
+        }
+
+        /* Experience Item */
+        .experience-item {
+            page-break-inside: avoid;
+            margin-bottom: 3mm;
+        }
+        
+        @media print {
+            body {
+                width: 210mm;
+                height: 297mm;
+                margin: 0;
+                padding: 0;
+            }
+            
+            .cv-container {
+                position: relative;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: auto;
+                margin: 0;
+                padding: 0;
+            }
+            
+            .header-table {
+                page-break-after: avoid !important;
+            }
+            
+            .main-table {
+                page-break-before: avoid !important;
+            }
+            
+            h1, h2, h3, h4, h5, h6 {
+                page-break-after: avoid;
+            }
+            
+            .experience-left-cell, .experience-right-cell {
+                page-break-inside: auto;
+            }
         }
     </style>
 </head>

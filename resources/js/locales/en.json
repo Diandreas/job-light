@@ -38,6 +38,12 @@
         "cvs": "CVs generated",
         "availability": "% availability"
     },
+    "cta_image": {
+        "title": "Boost your career with Guidy",
+        "description": "Our AI assistant analyzes your profile and guides you towards opportunities that match your journey. Create your optimized resume now.",
+        "button": "Get started for free",
+        "image_placeholder": "Space for your image"
+    },
     "cta": {
         "badge": "The assistant that guides you to success",
         "button": "Unlock your potential"

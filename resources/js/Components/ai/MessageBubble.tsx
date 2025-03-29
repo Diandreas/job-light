@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import ReactMarkdown from 'react-markdown';
-import { Share2, Download, X } from 'lucide-react';
+import { Share2, Download, X, Copy, Check } from 'lucide-react';
 import html2canvas from 'html2canvas';
 
 interface MessageBubbleProps {
@@ -18,16 +18,17 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({ message }) => {
     const [isTypingComplete, setIsTypingComplete] = useState(isUser);
     const [showShareOptions, setShowShareOptions] = useState(false);
     const [generatedImage, setGeneratedImage] = useState<string | null>(null);
+    const [copied, setCopied] = useState(false);
     const messageRef = useRef<HTMLDivElement>(null);
 
-    // Animation d'écriture rapide pour les messages de l'assistant
+    // Animation d'écriture plus lente pour les messages de l'assistant
     useEffect(() => {
         if (isUser) return;
 
         setDisplayedContent('');
         setIsTypingComplete(false);
 
-        const charsPerIteration = 12; // Encore plus rapide
+        const charsPerIteration = 6; // Réduit pour ralentir l'animation
         let currentIndex = 0;
 
         const typingInterval = setInterval(() => {
@@ -39,10 +40,21 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({ message }) => {
                 clearInterval(typingInterval);
                 setIsTypingComplete(true);
             }
-        }, 5); // Intervalle encore plus court (5ms)
+        }, 15); // Intervalle plus long pour ralentir l'animation
 
         return () => clearInterval(typingInterval);
     }, [isUser, message.content]);
+
+    // Fonction pour copier le texte
+    const handleCopy = async () => {
+        try {
+            await navigator.clipboard.writeText(message.content);
+            setCopied(true);
+            setTimeout(() => setCopied(false), 2000);
+        } catch (err) {
+            console.error('Échec de la copie:', err);
+        }
+    };
 
     const handleShare = async () => {
         if (!messageRef.current) return;
@@ -190,21 +202,21 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({ message }) => {
                     </ReactMarkdown>
 
                     {!isUser && !isTypingComplete && (
-                        <div className="flex space-x-1 mt-1">
+                        <div className="flex space-x-1.5 mt-2">
                             <motion.div
                                 animate={{ opacity: [0.4, 1, 0.4] }}
-                                transition={{ duration: 0.8, repeat: Infinity }}
-                                className="w-1.5 h-1.5 rounded-full bg-amber-500 dark:bg-amber-400"
+                                transition={{ duration: 1.2, repeat: Infinity }}
+                                className="w-2 h-2 sm:w-2.5 sm:h-2.5 rounded-full bg-amber-500 dark:bg-amber-400"
                             />
                             <motion.div
                                 animate={{ opacity: [0.4, 1, 0.4] }}
-                                transition={{ duration: 0.8, delay: 0.2, repeat: Infinity }}
-                                className="w-1.5 h-1.5 rounded-full bg-amber-500 dark:bg-amber-400"
+                                transition={{ duration: 1.2, delay: 0.3, repeat: Infinity }}
+                                className="w-2 h-2 sm:w-2.5 sm:h-2.5 rounded-full bg-amber-500 dark:bg-amber-400"
                             />
                             <motion.div
                                 animate={{ opacity: [0.4, 1, 0.4] }}
-                                transition={{ duration: 0.8, delay: 0.4, repeat: Infinity }}
-                                className="w-1.5 h-1.5 rounded-full bg-amber-500 dark:bg-amber-400"
+                                transition={{ duration: 1.2, delay: 0.6, repeat: Infinity }}
+                                className="w-2 h-2 sm:w-2.5 sm:h-2.5 rounded-full bg-amber-500 dark:bg-amber-400"
                             />
                         </div>
                     )}
@@ -217,19 +229,51 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({ message }) => {
                         {new Date(message.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                     </div>
 
-                    {/* Uniquement bouton de partage */}
+                    {/* Boutons d'actions: Copier et Partager */}
                     {!isUser && isTypingComplete && (
-                        <motion.button
-                            whileHover={{ scale: 1.2 }}
-                            whileTap={{ scale: 0.9 }}
-                            onClick={handleShare}
-                            className="text-gray-400 hover:text-blue-500 dark:text-gray-500 dark:hover:text-blue-400 p-1"
-                        >
-                            <Share2 className="h-4 w-4" />
-                        </motion.button>
+                        <div className="flex items-center space-x-1">
+                            <motion.button
+                                whileHover={{ scale: 1.2 }}
+                                whileTap={{ scale: 0.9 }}
+                                onClick={handleCopy}
+                                className="text-gray-400 hover:text-amber-500 dark:text-gray-500 dark:hover:text-amber-400 p-1"
+                                aria-label="Copier le message"
+                                title="Copier le message"
+                            >
+                                {copied ? (
+                                    <Check className="h-4 w-4 text-green-500" />
+                                ) : (
+                                    <Copy className="h-4 w-4" />
+                                )}
+                            </motion.button>
+                            <motion.button
+                                whileHover={{ scale: 1.2 }}
+                                whileTap={{ scale: 0.9 }}
+                                onClick={handleShare}
+                                className="text-gray-400 hover:text-blue-500 dark:text-gray-500 dark:hover:text-blue-400 p-1"
+                                aria-label="Partager le message"
+                                title="Partager le message"
+                            >
+                                <Share2 className="h-4 w-4" />
+                            </motion.button>
+                        </div>
                     )}
                 </div>
             </div>
+
+            {/* Notification de copie réussie */}
+            <AnimatePresence>
+                {copied && (
+                    <motion.div
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -20 }}
+                        className="fixed bottom-4 right-4 bg-gradient-to-r from-amber-500 to-purple-500 text-white px-4 py-2 rounded-md shadow-lg"
+                    >
+                        Texte copié !
+                    </motion.div>
+                )}
+            </AnimatePresence>
 
             {/* Modal d'options de partage simplifié */}
             <AnimatePresence>

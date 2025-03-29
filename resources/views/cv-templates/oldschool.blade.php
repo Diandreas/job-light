@@ -19,8 +19,7 @@
         /* Seul changement critique : définir des marges dans @page */
         @page {
             size: A4;
-
-            margin: 12mm; /* Ceci est le changement principal */
+            margin: 10mm; /* Uniformisé à 10mm comme les autres modèles */
         }
 
         body {
@@ -34,8 +33,8 @@
 
         /* Retirer le padding du conteneur pour laisser @page gérer les marges */
         .cv-container {
-            width: 190mm;
-
+            width: 170mm;
+            padding: 5mm;
         }
 
         table {

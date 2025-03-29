@@ -38,6 +38,12 @@
         "cvs": "CVs générés",
         "availability": "% de disponibilité"
     },
+    "cta_image": {
+        "title": "Propulsez votre carrière avec Guidy",
+        "description": "Notre assistant IA analyse votre profil et vous guide vers les opportunités qui correspondent à votre parcours. Créez votre CV optimisé dès maintenant.",
+        "button": "Commencer gratuitement",
+        "image_placeholder": "Espace pour votre image"
+    },
     "cta": {
         "badge": "L'assistant qui vous guide vers le succès",
         "button": "Débloquez votre potentiel"

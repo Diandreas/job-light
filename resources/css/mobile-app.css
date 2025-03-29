@@ -1,21 +1,21 @@
-/* Styles pour donner l'apparence d'une application mobile */
+/* Styles for mobile app appearance with better usability */
 
-/* Empêcher le comportement de défilement élastique sur iOS */
-html {
-    height: 100%;
-    width: 100%;
-    overflow: hidden;
-    position: fixed;
-}
-
+/* Better approach for iOS elastic scroll prevention */
+html,
 body {
     height: 100%;
     width: 100%;
-    overflow: auto;
+    overflow-x: hidden;
+    /* Prevent horizontal scroll only */
+    position: relative;
+    /* Use relative instead of fixed */
+}
+
+body {
     -webkit-overflow-scrolling: touch;
 }
 
-/* Masquer la barre d'adresse en mode standalone */
+/* Proper safe area handling for notched devices */
 @media all and (display-mode: standalone) {
     body {
         padding-top: env(safe-area-inset-top);
@@ -25,7 +25,7 @@ body {
     }
 }
 
-/* Style des boutons pour qu'ils ressemblent à des boutons d'application native */
+/* Native-feeling buttons */
 button,
 .button,
 a.button {
@@ -33,14 +33,14 @@ a.button {
     touch-action: manipulation;
 }
 
-/* Effet de clic d'application native */
+/* Click effect */
 button:active,
 .button:active,
 a.button:active {
     transform: scale(0.97);
 }
 
-/* Animations et transitions fluides */
+/* Smooth transitions */
 .page-transition {
     animation: fadeIn 0.3s ease-in-out;
 }
@@ -55,7 +55,7 @@ a.button:active {
     }
 }
 
-/* Barre d'onglets de style application mobile */
+/* Mobile tab bar */
 .mobile-tab-bar {
     position: fixed;
     bottom: 0;
@@ -70,6 +70,8 @@ a.button:active {
     -webkit-backdrop-filter: blur(10px);
     box-shadow: 0 -1px 5px rgba(0, 0, 0, 0.1);
     z-index: 999;
+    padding-bottom: env(safe-area-inset-bottom);
+    /* Extra padding for notched devices */
 }
 
 .dark .mobile-tab-bar {
@@ -98,12 +100,12 @@ a.button:active {
     font-weight: 500;
 }
 
-/* Améliorer le tactile pour les formulaires */
+/* Better form field handling */
 input,
 textarea,
 select {
     font-size: 16px !important;
-    /* Empêche le zoom iOS sur focus */
+    /* Prevents iOS zoom */
 }
 
 /* Pull to refresh */
@@ -118,27 +120,56 @@ select {
     height: 50px;
 }
 
-/* Suppression de la sélection de texte */
+/* MODIFIED: Allow text selection by default, disable only on specific elements */
 * {
+    -webkit-touch-callout: default;
+    -webkit-user-select: text;
+    user-select: text;
+}
+
+/* Elements where selection should be disabled */
+.no-select,
+.mobile-tab-bar,
+button,
+.button,
+a.button,
+svg,
+.icon {
     -webkit-touch-callout: none;
     -webkit-user-select: none;
     user-select: none;
 }
 
-/* Autoriser la sélection dans les champs de saisie */
+/* Allow selection in form fields */
 input,
 textarea {
     -webkit-user-select: auto;
     user-select: auto;
 }
 
-/* Cacher les barres de défilement mais permettre le défilement */
+/* Subtle scrollbars instead of hidden ones */
 ::-webkit-scrollbar {
-    width: 0px;
+    width: 4px;
+    height: 4px;
     background: transparent;
 }
 
-/* Désactiver le double tap pour zoomer */
+::-webkit-scrollbar-thumb {
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 4px;
+}
+
+.dark ::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+/* MODIFIED: Better touch action handling */
 * {
+    touch-action: auto;
+    /* Default to auto */
+}
+
+/* Apply restrictions only to specific interactive elements */
+.swipe-element {
     touch-action: pan-x pan-y;
 }

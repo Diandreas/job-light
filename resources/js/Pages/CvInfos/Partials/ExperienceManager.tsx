@@ -988,7 +988,7 @@ const ExperienceManager: React.FC<Props> = ({ auth, experiences: initialExperien
             </Tabs>
 
             <Sheet open={isFormOpen} onOpenChange={setIsFormOpen}>
-                <SheetContent side="right" className="w-full max-w-md overflow-y-auto p-3 sm:p-4">
+                <SheetContent side="right" className="w-full max-w-md md:max-w-lg lg:max-w-xl overflow-y-auto p-3 sm:p-4">
                     <SheetHeader className="text-left pb-2">
                         <SheetTitle className="flex items-center gap-2 text-lg text-gray-800 dark:text-white">
                             <PencilRuler className="w-4 h-4 text-amber-500 dark:text-amber-400" />

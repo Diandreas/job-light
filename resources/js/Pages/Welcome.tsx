@@ -150,7 +150,7 @@ const ImageCallToAction = () => {
                     </div>
 
                     <p className="text-sm sm:text-base text-gray-600 dark:text-gray-300 mb-4 text-center">
-                        {t('cta_image.description')}
+                        {t('hero.description')}
                     </p>
                     <div className="flex justify-center">
                         <Link
@@ -189,7 +189,7 @@ const ImageCallToAction = () => {
                         {t('cta_image.title')}
                     </h2>
                     <p className="text-base text-gray-600 dark:text-gray-300 mb-8">
-                        {t('cta_image.description')}
+                        {t('hero.description')}
                     </p>
                     <Link
                         href={route('register')}

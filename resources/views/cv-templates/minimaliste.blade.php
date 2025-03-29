@@ -9,7 +9,7 @@
     <title>{{ $cvInformation['personalInformation']['firstName'] ?? 'CV' }} - CV</title>
     <style>
         @page {
-            margin: 10mm;
+            margin: 5mm;
             padding: 0;
             size: A4;
         }
@@ -34,8 +34,8 @@
         }
 
         .cv-container {
-            width: 170mm;
-            padding: 5mm;
+            width: 190mm;
+            padding: 1mm;
         }
 
         .header-table {

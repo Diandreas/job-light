@@ -9,7 +9,7 @@
     <title>{{ $cvInformation['personalInformation']['firstName'] ?? 'CV' }} - CV</title>
     <style>
         @page {
-            margin: 10mm;
+            margin: 5mm;
             padding: 0;
             size: A4;
         }
@@ -34,7 +34,7 @@
         }
 
         .cv-container {
-            width: 170mm;
+            width: 190mm;
             padding: 5mm;
         }
 
@@ -357,26 +357,27 @@
                             </div>
                         </div>
                     @endif
+                    
+    @if(isset($cvInformation['languages']) && count($cvInformation['languages']) > 0)
+    <div class="language-section">
+        <div class="language-title">{{ $currentLocale === 'fr' ? 'Langues' : 'Languages' }}</div>
+        <div class="language-items">
+            @foreach($cvInformation['languages'] ?? [] as $language)
+                <div class="language-item">
+                    {{ $language['name'] ?? '' }}
+                    @if(isset($language['level']))
+                        <span class="language-level">- {{ $language['level'] ?? '' }}</span>
+                    @endif
+                </div>
+            @endforeach
+        </div>
+    </div>
+@endif
                 </td>
             </tr>
         </table>
     </div>
 
-    @if(isset($cvInformation['languages']) && count($cvInformation['languages']) > 0)
-        <div class="language-section">
-            <div class="language-title">{{ $currentLocale === 'fr' ? 'Langues' : 'Languages' }}</div>
-            <div class="language-items">
-                @foreach($cvInformation['languages'] ?? [] as $language)
-                    <div class="language-item">
-                        {{ $language['name'] ?? '' }}
-                        @if(isset($language['level']))
-                            <span class="language-level">- {{ $language['level'] ?? '' }}</span>
-                        @endif
-                    </div>
-                @endforeach
-            </div>
-        </div>
-    @endif
 </div>
 </body>
 </html>

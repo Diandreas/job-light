@@ -24,7 +24,7 @@
         }
 
         .cv-container {
-            width: 170mm;
+            width: 190mm;
             padding: 5mm;
         }
 

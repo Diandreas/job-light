@@ -781,18 +781,18 @@
     },
     "templates": {
         "title": "Choisir un modèle",
-        "subtitle": "Choisissez un modèle pour démarrer rapidement",
+        "subtitle": "Commencez avec un modèle prédéfini ou créez le vôtre",
         "student": {
-            "name": "Profil d'étudiant en ingénierie",
-            "description": "Résumé professionnel pour les étudiants et les récents diplômés mettant en avant les compétences académiques."
+            "name": "Profil Étudiant en Ingénierie",
+            "description": "Jeune diplômé en ingénierie avec une solide formation académique en développement logiciel et en apprentissage automatique. Maîtrise de Python, Java et C++. Réalisation de plusieurs projets concrets, dont un système d'analyse prédictive qui a amélioré l'efficacité de 25%. À la recherche d'un poste stimulant où je pourrai appliquer mes compétences techniques et mon esprit d'innovation pour développer des solutions de pointe."
         },
         "archivist": {
-            "name": "Profil d'archiviste documentaliste",
-            "description": "Résumé adapté aux professionnels de la gestion documentaire et de l'archivage."
+            "name": "Profil Archiviste Professionnel",
+            "description": "Archiviste minutieux avec 8 ans d'expérience dans la gestion et la préservation de documents. Expert dans le développement de systèmes de catalogage efficaces et la mise en œuvre de solutions d'archivage numérique. Connaissance avancée des logiciels standards du secteur et des cadres de métadonnées. Solide expérience dans l'amélioration de l'accessibilité tout en maintenant une stricte conformité aux règlements de confidentialité."
         },
         "beginner": {
-            "name": "Profil débutant polyvalent",
-            "description": "Résumé pour les personnes en début de carrière mettant en avant leur polyvalence et leur potentiel."
+            "name": "Profil Professionnel Polyvalent",
+            "description": "Professionnel motivé avec un ensemble diversifié de compétences en gestion de projet, service client et analyse de données. Apprenant rapide qui s'adapte facilement aux nouveaux environnements et technologies. Excellentes compétences en communication avec une capacité avérée à collaborer entre différents départements. Dédié à fournir des résultats de haute qualité et à contribuer positivement aux objectifs de l'équipe."
         },
         "short": {
             "student": "Étudiant",

@@ -47,7 +47,7 @@ const SupportPage = () => {
         <motion.div
             whileHover={{ y: -5, scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
-            className="relative bg-white rounded-xl p-6 shadow-lg border border-gray-100 overflow-hidden group cursor-pointer"
+            className="relative bg-white dark:bg-gray-800 rounded-xl p-6 shadow-lg border border-gray-100 dark:border-gray-700 overflow-hidden group cursor-pointer"
             onClick={action}
         >
             <div className="absolute inset-0 bg-gradient-to-r from-amber-500/10 to-purple-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
@@ -58,10 +58,10 @@ const SupportPage = () => {
                     </div>
                     <ChevronRight className="w-5 h-5 text-gray-400 group-hover:text-amber-500 transition-colors" />
                 </div>
-                <h3 className="text-xl font-semibold mb-2 group-hover:text-amber-600 transition-colors">{title}</h3>
-                <p className="text-gray-600 mb-4">{description}</p>
-                <p className="text-lg font-medium text-amber-600">{contact}</p>
-                <div className="flex items-center mt-4 text-sm text-gray-500">
+                <h3 className="text-xl font-semibold mb-2 group-hover:text-amber-600 dark:group-hover:text-amber-400 transition-colors dark:text-white">{title}</h3>
+                <p className="text-gray-600 dark:text-gray-300 mb-4">{description}</p>
+                <p className="text-lg font-medium text-amber-600 dark:text-amber-400">{contact}</p>
+                <div className="flex items-center mt-4 text-sm text-gray-500 dark:text-gray-400">
                     <Clock className="w-4 h-4 mr-2" />
                     {availability}
                 </div>
@@ -85,7 +85,7 @@ const SupportPage = () => {
                 </script>
             </Head>
 
-            <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white pt-24">
+            <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white dark:from-gray-900 dark:to-gray-800 pt-24">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <motion.div
                         initial={{ opacity: 0, y: 20 }}
@@ -98,14 +98,14 @@ const SupportPage = () => {
                             transition={{ duration: 0.5 }}
                             className="mb-6"
                         >
-                            <span className="bg-amber-100 text-amber-800 px-4 py-2 rounded-full text-sm font-medium">
+                            <span className="bg-amber-100 dark:bg-amber-900/50 text-amber-800 dark:text-amber-200 px-4 py-2 rounded-full text-sm font-medium">
                                 {t('pages.support.badge')}
                             </span>
                         </motion.div>
                         <h1 className="text-4xl font-bold mb-6 bg-gradient-to-r from-amber-500 to-purple-500 text-transparent bg-clip-text">
                             {t('pages.support.title')}
                         </h1>
-                        <p className="text-xl text-gray-600 mb-8 max-w-3xl mx-auto">
+                        <p className="text-xl text-gray-600 dark:text-gray-300 mb-8 max-w-3xl mx-auto">
                             {t('pages.support.description')}
                         </p>
                     </motion.div>
@@ -116,12 +116,12 @@ const SupportPage = () => {
                         ))}
                     </div>
 
-                    <Card className="mb-16">
+                    <Card className="mb-16 dark:bg-gray-800 dark:border-gray-700">
                         <CardHeader>
-                            <CardTitle className="text-2xl font-semibold text-center">{t('pages.support.supportHours.title')}</CardTitle>
+                            <CardTitle className="text-2xl font-semibold text-center dark:text-white">{t('pages.support.supportHours.title')}</CardTitle>
                         </CardHeader>
                         <CardContent className="text-center">
-                            <p className="text-gray-600">
+                            <p className="text-gray-600 dark:text-gray-300">
                                 {t('pages.support.supportHours.description')}
                             </p>
                         </CardContent>

@@ -52,10 +52,10 @@ const ModelCard = ({ model, isActive, onSelect, onAdd, onPreview, loading, inCat
             initial="hidden"
             animate="visible"
             whileHover="hover"
-            className="overflow-hidden rounded-xl border bg-white shadow-sm border-gray-100 flex flex-col h-full"
+            className="overflow-hidden rounded-xl border bg-white dark:bg-gray-800 shadow-sm border-gray-100 dark:border-gray-700 flex flex-col h-full"
         >
             <div
-                className="relative aspect-[3/4] sm:aspect-[3/5] overflow-hidden rounded-t-xl bg-gray-50 cursor-pointer"
+                className="relative aspect-[3/4] sm:aspect-[3/5] overflow-hidden rounded-t-xl bg-gray-50 dark:bg-gray-900 cursor-pointer"
                 onClick={() => onPreview(model)}
             >
                 <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent z-10" />
@@ -101,7 +101,7 @@ const ModelCard = ({ model, isActive, onSelect, onAdd, onPreview, loading, inCat
                     <Button
                         variant={isActive ? "outline" : "default"}
                         className={`w-full ${isActive
-                            ? 'border-amber-200 text-amber-700 hover:bg-amber-50'
+                            ? 'border-amber-200 dark:border-amber-700 text-amber-700 dark:text-amber-400 hover:bg-amber-50 dark:hover:bg-amber-900/20'
                             : 'bg-gradient-to-r from-amber-500 to-purple-500 hover:from-amber-600 hover:to-purple-600 text-white'
                             }`}
                         disabled={isActive || loading}
@@ -119,7 +119,7 @@ const ModelCard = ({ model, isActive, onSelect, onAdd, onPreview, loading, inCat
                         <Button
                             variant={isActive ? "outline" : "default"}
                             className={`w-full ${isActive
-                                ? 'border-amber-200 text-amber-700 hover:bg-amber-50'
+                                ? 'border-amber-200 dark:border-amber-700 text-amber-700 dark:text-amber-400 hover:bg-amber-50 dark:hover:bg-amber-900/20'
                                 : 'bg-gradient-to-r from-amber-500 to-purple-500 hover:from-amber-600 hover:to-purple-600 text-white'
                                 }`}
                             disabled={loading}
@@ -134,7 +134,7 @@ const ModelCard = ({ model, isActive, onSelect, onAdd, onPreview, loading, inCat
                         </Button>
                         <Button
                             variant="outline"
-                            className="w-full border-amber-200 text-amber-700 hover:bg-amber-50"
+                            className="w-full border-amber-200 dark:border-amber-700 text-amber-700 dark:text-amber-400 hover:bg-amber-50 dark:hover:bg-amber-900/20"
                             disabled={loading}
                             onClick={() => onAdd(model)}
                         >
@@ -155,9 +155,9 @@ const ModelPreview = ({ model, onClose, onAdd, onSelect, isActive, inCatalog, lo
 
     return (
         <Dialog open={Boolean(model)} onOpenChange={() => onClose(null)}>
-            <DialogContent className="max-w-md sm:max-w-2xl p-0 overflow-hidden">
-                <DialogHeader className="px-4 py-3 border-b">
-                    <DialogTitle className="flex items-center gap-2 text-base">
+            <DialogContent className="max-w-md sm:max-w-2xl p-0 overflow-hidden dark:bg-gray-800 dark:border-gray-700">
+                <DialogHeader className="px-4 py-3 border-b dark:border-gray-700">
+                    <DialogTitle className="flex items-center gap-2 text-base dark:text-white">
                         <Star className="h-4 w-4 text-amber-500" />
                         <span className="bg-gradient-to-r from-amber-500 to-purple-500 text-transparent bg-clip-text line-clamp-1">
                             {model?.name}
@@ -170,7 +170,7 @@ const ModelPreview = ({ model, onClose, onAdd, onSelect, isActive, inCatalog, lo
                     </DialogTitle>
                 </DialogHeader>
 
-                <div className="relative w-full aspect-square sm:aspect-[4/3] bg-gray-50">
+                <div className="relative w-full aspect-square sm:aspect-[4/3] bg-gray-50 dark:bg-gray-900">
                     <img
                         src={`/storage/${model?.previewImagePath}`}
                         alt={model?.name}
@@ -178,14 +178,14 @@ const ModelPreview = ({ model, onClose, onAdd, onSelect, isActive, inCatalog, lo
                     />
                 </div>
 
-                <div className="p-4 bg-white">
+                <div className="p-4 bg-white dark:bg-gray-800">
                     {model.price > 0 ? (
                         <div className="flex items-center gap-2 mb-4">
                             <Coins className="w-4 h-4 text-amber-500" />
-                            <span className="font-medium">{model.price.toLocaleString()}</span>
+                            <span className="font-medium dark:text-white">{model.price.toLocaleString()}</span>
                         </div>
                     ) : (
-                        <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200 mb-4">
+                        <Badge variant="outline" className="bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-400 border-green-200 dark:border-green-800 mb-4">
                             {t('cv_models.preview.free')}
                         </Badge>
                     )}
@@ -195,7 +195,7 @@ const ModelPreview = ({ model, onClose, onAdd, onSelect, isActive, inCatalog, lo
                             <Button
                                 variant={isActive ? "outline" : "default"}
                                 className={`flex-1 ${isActive
-                                    ? 'border-amber-200 text-amber-700 hover:bg-amber-50'
+                                    ? 'border-amber-200 dark:border-amber-700 text-amber-700 dark:text-amber-400 hover:bg-amber-50 dark:hover:bg-amber-900/20'
                                     : 'bg-gradient-to-r from-amber-500 to-purple-500 hover:from-amber-600 hover:to-purple-600 text-white'
                                     }`}
                                 disabled={isActive || loading}
@@ -215,7 +215,7 @@ const ModelPreview = ({ model, onClose, onAdd, onSelect, isActive, inCatalog, lo
                             <Button
                                 variant="outline"
                                 onClick={() => onClose(null)}
-                                className="flex-1 sm:flex-none"
+                                className="flex-1 sm:flex-none dark:border-gray-700 dark:text-gray-300"
                             >
                                 {t('common.close')}
                             </Button>
@@ -226,7 +226,7 @@ const ModelPreview = ({ model, onClose, onAdd, onSelect, isActive, inCatalog, lo
                                 <Button
                                     variant={isActive ? "outline" : "default"}
                                     className={`${isActive
-                                        ? 'border-amber-200 text-amber-700 hover:bg-amber-50'
+                                        ? 'border-amber-200 dark:border-amber-700 text-amber-700 dark:text-amber-400 hover:bg-amber-50 dark:hover:bg-amber-900/20'
                                         : 'bg-gradient-to-r from-amber-500 to-purple-500 hover:from-amber-600 hover:to-purple-600 text-white'
                                         }`}
                                     disabled={loading}
@@ -245,7 +245,7 @@ const ModelPreview = ({ model, onClose, onAdd, onSelect, isActive, inCatalog, lo
 
                                 <Button
                                     variant="outline"
-                                    className="border-amber-200 text-amber-700 hover:bg-amber-50"
+                                    className="border-amber-200 dark:border-amber-700 text-amber-700 dark:text-amber-400 hover:bg-amber-50 dark:hover:bg-amber-900/20"
                                     disabled={loading}
                                     onClick={() => {
                                         onAdd(model);
@@ -260,6 +260,7 @@ const ModelPreview = ({ model, onClose, onAdd, onSelect, isActive, inCatalog, lo
                             <Button
                                 variant="ghost"
                                 onClick={() => onClose(null)}
+                                className="dark:text-gray-300 dark:hover:bg-gray-700/50"
                             >
                                 {t('common.close')}
                             </Button>
@@ -373,14 +374,14 @@ export default function CvModelsIndex({ auth, userCvModels, availableCvModels, m
         <AuthenticatedLayout user={auth.user}>
             <Head title={t('cv_models.title')} />
 
-            <div className="min-h-screen bg-gradient-to-b from-amber-50/30 to-white pb-16">
+            <div className="min-h-screen bg-gradient-to-b from-amber-50/30 dark:from-gray-900 to-white dark:to-gray-800 pb-16">
                 <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-3 sm:py-6">
                     {/* Header with navigation - Compact but clear */}
                     <header className="flex flex-col gap-3 mb-4 sm:mb-6">
                         <div className="flex items-center justify-between">
                             <div className="flex items-center gap-2">
                                 <Link href={route('cv-infos.index')}>
-                                    <Button variant="ghost" size="sm" className="flex items-center gap-1 hover:bg-amber-50 h-8 px-2 sm:h-9 sm:px-3">
+                                    <Button variant="ghost" size="sm" className="flex items-center gap-1 hover:bg-amber-50 dark:hover:bg-amber-900/20 h-8 px-2 sm:h-9 sm:px-3 dark:text-gray-300">
                                         <ChevronLeft className="w-4 h-4" />
                                         <span className="hidden sm:inline">{t('cv_models.back')}</span>
                                     </Button>
@@ -401,23 +402,23 @@ export default function CvModelsIndex({ auth, userCvModels, availableCvModels, m
 
                         {/* Search - Full width */}
                         <div className="relative w-full">
-                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4" />
+                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-500 w-4 h-4" />
                             <Input
                                 type="text"
                                 placeholder={t('cv_models.search_placeholder')}
                                 value={searchTerm}
                                 onChange={(e) => setSearchTerm(e.target.value)}
-                                className="pl-9 w-full border-amber-100 focus:border-amber-500 bg-white"
+                                className="pl-9 w-full border-amber-100 dark:border-gray-700 focus:border-amber-500 bg-white dark:bg-gray-800 dark:text-gray-300"
                             />
                         </div>
                     </header>
 
                     {/* Model usage stats - Simplified and responsive */}
-                    <div className="flex items-center justify-between p-2 sm:p-3 mb-3 sm:mb-5 rounded-md bg-white border border-amber-100 shadow-sm">
-                        <div className="text-xs sm:text-sm font-medium text-gray-600">
+                    <div className="flex items-center justify-between p-2 sm:p-3 mb-3 sm:mb-5 rounded-md bg-white dark:bg-gray-800 border border-amber-100 dark:border-gray-700 shadow-sm">
+                        <div className="text-xs sm:text-sm font-medium text-gray-600 dark:text-gray-300">
                             {activeModels.length}/{maxAllowedModels} {t('cv_models.models')}
                         </div>
-                        <div className="w-32 sm:w-48 h-1.5 sm:h-2 bg-gray-100 rounded-full overflow-hidden">
+                        <div className="w-32 sm:w-48 h-1.5 sm:h-2 bg-gray-100 dark:bg-gray-700 rounded-full overflow-hidden">
                             <div
                                 className="h-full bg-gradient-to-r from-amber-400 to-purple-500"
                                 style={{ width: `${(activeModels.length / maxAllowedModels) * 100}%` }}
@@ -427,8 +428,8 @@ export default function CvModelsIndex({ auth, userCvModels, availableCvModels, m
 
                     {/* Selected model from discover notification */}
                     {selectedModelId && availableModels.some(model => model.id === selectedModelId) && (
-                        <Alert className="mb-3 sm:mb-5 bg-amber-50 border-amber-200">
-                            <AlertDescription className="flex items-center text-amber-700 text-sm">
+                        <Alert className="mb-3 sm:mb-5 bg-amber-50 dark:bg-amber-900/20 border-amber-200 dark:border-amber-800">
+                            <AlertDescription className="flex items-center text-amber-700 dark:text-amber-400 text-sm">
                                 <CheckCircle className="w-4 h-4 text-amber-500 mr-2" />
                                 {t('cv_models.model_active_from_discover')}
                             </AlertDescription>
@@ -441,17 +442,17 @@ export default function CvModelsIndex({ auth, userCvModels, availableCvModels, m
                         onValueChange={setCurrentTab}
                         className="mb-4 sm:mb-6"
                     >
-                        <TabsList className="mb-3 sm:mb-4 bg-white border border-amber-100 w-full">
+                        <TabsList className="mb-3 sm:mb-4 bg-white dark:bg-gray-800 border border-amber-100 dark:border-gray-700 w-full">
                             <TabsTrigger
                                 value="active"
-                                className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-amber-500 data-[state=active]:to-purple-500 data-[state=active]:text-white flex-1 text-xs sm:text-sm"
+                                className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-amber-500 data-[state=active]:to-purple-500 data-[state=active]:text-white flex-1 text-xs sm:text-sm dark:text-gray-300 dark:data-[state=inactive]:hover:bg-gray-700/50"
                             >
                                 <CheckCircle className="w-3.5 h-3.5 mr-1.5" />
                                 {t('cv_models.tabs.active')} ({filteredActiveModels.length})
                             </TabsTrigger>
                             <TabsTrigger
                                 value="discover"
-                                className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-amber-500 data-[state=active]:to-purple-500 data-[state=active]:text-white flex-1 text-xs sm:text-sm"
+                                className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-amber-500 data-[state=active]:to-purple-500 data-[state=active]:text-white flex-1 text-xs sm:text-sm dark:text-gray-300 dark:data-[state=inactive]:hover:bg-gray-700/50"
                             >
                                 <Sparkles className="w-3.5 h-3.5 mr-1.5" />
                                 {t('cv_models.tabs.discover')} ({filteredAvailableModels.length})
@@ -460,8 +461,8 @@ export default function CvModelsIndex({ auth, userCvModels, availableCvModels, m
 
                         <TabsContent value="active" className="mt-0 focus-visible:outline-none">
                             {filteredActiveModels.length === 0 ? (
-                                <Alert className="bg-amber-50 border-amber-200">
-                                    <AlertDescription className="text-amber-700 text-sm">
+                                <Alert className="bg-amber-50 dark:bg-amber-900/20 border-amber-200 dark:border-amber-800">
+                                    <AlertDescription className="text-amber-700 dark:text-amber-400 text-sm">
                                         {searchTerm
                                             ? t('cv_models.empty_state.no_search_results')
                                             : t('cv_models.empty_state.description')
@@ -493,8 +494,8 @@ export default function CvModelsIndex({ auth, userCvModels, availableCvModels, m
 
                         <TabsContent value="discover" className="mt-0 focus-visible:outline-none">
                             {filteredAvailableModels.length === 0 ? (
-                                <Alert className="bg-amber-50 border-amber-200">
-                                    <AlertDescription className="text-amber-700 text-sm">
+                                <Alert className="bg-amber-50 dark:bg-amber-900/20 border-amber-200 dark:border-amber-800">
+                                    <AlertDescription className="text-amber-700 dark:text-amber-400 text-sm">
                                         {searchTerm
                                             ? t('cv_models.empty_state.no_search_results')
                                             : t('cv_models.empty_state.all_models_added')

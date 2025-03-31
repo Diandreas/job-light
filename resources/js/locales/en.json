@@ -779,15 +779,15 @@
         "subtitle": "Start with a predefined template or create your own",
         "student": {
             "name": "Engineering Student Profile",
-            "description": "Professional summary for students and recent graduates highlighting academic skills."
+            "description": "Recent engineering graduate with a strong academic foundation in software development and machine learning. Proficient in Python, Java, and C++. Completed multiple real-world projects including a predictive analytics system that improved efficiency by 25%. Seeking a challenging role where I can apply my technical skills and innovative mindset to develop cutting-edge solutions."
         },
         "archivist": {
-            "name": "Archivist Documentalist Profile",
-            "description": "Summary tailored for document management and archiving professionals."
+            "name": "Professional Archivist Profile",
+            "description": "Detail-oriented archivist with 8 years of experience in document management and preservation. Expert in developing efficient cataloging systems and implementing digital archiving solutions. Advanced knowledge of industry-standard software and metadata frameworks. Strong track record of improving accessibility while maintaining strict compliance with confidentiality regulations."
         },
         "beginner": {
-            "name": "Versatile Beginner Profile",
-            "description": "Summary for early career individuals highlighting versatility and potential."
+            "name": "Versatile Professional Profile",
+            "description": "Motivated professional with a diverse skill set spanning project management, customer service, and data analysis. Fast learner who adapts quickly to new environments and technologies. Excellent communication skills with a proven ability to collaborate across departments. Dedicated to delivering high-quality results and contributing positively to team objectives."
         },
         "short": {
             "student": "Student",

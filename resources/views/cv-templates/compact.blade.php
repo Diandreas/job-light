@@ -9,18 +9,20 @@
     <title>{{ $cvInformation['personalInformation']['firstName'] ?? 'CV' }} - CV</title>
     <style>
         @page {
-            margin: 5mm;
+            margin: 10mm;
             padding: 0;
             size: A4;
         }
 
         body {
-            font-family: 'DejaVu Sans', sans-serif;
-            line-height: 1.15;
-            font-size: 8pt;
+            font-family: 'DejaVu Sans', Arial, sans-serif;
+            line-height: 1.3;
+            font-size: 11pt;
             color: #2c3e50;
             margin: 0;
             padding: 0;
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
         }
 
         table {
@@ -35,23 +37,24 @@
 
         .cv-container {
             width: 190mm;
-            padding: 5mm;
+            padding: 0;
         }
 
         /* Header Section */
         .header {
             background-color: #2c3e50;
             color: white;
-            padding: 6mm;
+            padding: 5mm;
+            page-break-after: avoid;
         }
 
         .header-table {
-            width: 100%;
+            /* width: 100%; */
         }
 
         .profile-photo {
-            width: 30mm;
-            height: 30mm;
+            width: 28mm;
+            height: 28mm;
             overflow: hidden;
             border-radius: 50%;
             border: 0.5mm solid #ffffff;
@@ -65,49 +68,49 @@
         }
 
         .header-left {
-            padding-right: 4mm;
+            padding-right: 3mm;
         }
 
         .header-right {
             text-align: right;
-            padding-left: 4mm;
+            padding-left: 3mm;
         }
 
         .name {
-            font-size: 14pt;
+            font-size: 18pt;
             font-weight: bold;
             letter-spacing: 0.5mm;
             margin-bottom: 1mm;
         }
 
         .profession {
-            font-size: 9pt;
+            font-size: 12pt;
             color: #ecf0f1;
             margin-bottom: 2mm;
         }
 
         .contact-info {
-            font-size: 7.5pt;
+            font-size: 10pt;
             color: #bdc3c7;
         }
 
         .contact-item {
-            margin-bottom: 0.5mm;
+            margin-bottom: 0.8mm;
         }
 
         /* Language Section */
         .language-section {
-            margin-top: 4mm;
-            padding: 3mm;
+            margin-top: 3mm;
+            padding: 2.5mm;
             background-color: #ecf0f1;
             border-radius: 1mm;
         }
         
         .language-title {
-            font-size: 9pt;
+            font-size: 12pt;
             font-weight: bold;
             color: #2c3e50;
-            margin-bottom: 2mm;
+            margin-bottom: 1.5mm;
             text-transform: uppercase;
             letter-spacing: 0.2mm;
         }
@@ -115,14 +118,14 @@
         .language-items {
             display: flex;
             flex-wrap: wrap;
-            gap: 2mm;
+            gap: 1.5mm;
         }
         
         .language-item {
             background-color: #ffffff;
             border-radius: 0.5mm;
             padding: 1mm 2mm;
-            font-size: 7.5pt;
+            font-size: 10pt;
             color: #2c3e50;
             box-shadow: 0 0.2mm 0.5mm rgba(0,0,0,0.1);
         }
@@ -135,66 +138,74 @@
 
         /* Main Content */
         .main-content {
-            padding: 6mm;
+            padding: 5mm;
+            page-break-before: avoid;
         }
 
         .two-columns {
             width: 100%;
+            page-break-inside: auto;
         }
 
         .left-column {
             width: 68%;
             padding-right: 4mm;
             border-right: 0.2mm solid #ecf0f1;
+            page-break-inside: auto;
         }
 
         .right-column {
             width: 32%;
             padding-left: 4mm;
+            page-break-inside: auto;
         }
 
         .section {
             margin-bottom: 3mm;
+            page-break-inside: auto;
         }
 
         .section-title {
-            font-size: 9pt;
+            font-size: 12pt;
             font-weight: bold;
             color: #2c3e50;
             margin-bottom: 2mm;
             padding-bottom: 0.5mm;
             border-bottom: 0.3mm solid #3498db;
+            page-break-after: avoid;
         }
 
         .experience-block {
-            margin-bottom: 2mm;
+            margin-bottom: 2.5mm;
+            page-break-inside: auto;
         }
 
         .experience-header {
-            margin-bottom: 0.5mm;
+            margin-bottom: 0.8mm;
+            page-break-after: avoid;
         }
 
         .experience-title {
             font-weight: bold;
             color: #2c3e50;
-            font-size: 8pt;
+            font-size: 11pt;
         }
 
         .company {
             font-style: italic;
             color: #7f8c8d;
-            font-size: 7.5pt;
+            font-size: 10.5pt;
         }
 
         .date {
             float: right;
             color: #7f8c8d;
-            font-size: 7pt;
+            font-size: 10pt;
         }
 
         .description {
-            font-size: 7.5pt;
-            line-height: 1.2;
+            font-size: 10.5pt;
+            line-height: 1.3;
             color: #34495e;
             text-align: justify;
         }
@@ -206,19 +217,19 @@
         .skill-category-title {
             font-weight: bold;
             color: #3498db;
-            font-size: 7.5pt;
-            margin-bottom: 0.5mm;
+            font-size: 10.5pt;
+            margin-bottom: 0.8mm;
         }
 
         .skill-list {
-            margin-bottom: 1mm;
+            margin-bottom: 1.5mm;
             padding-left: 2mm;
         }
 
         .skill-item {
-            font-size: 7.5pt;
+            font-size: 10pt;
             color: #34495e;
-            margin-bottom: 0.5mm;
+            margin-bottom: 0.8mm;
             position: relative;
             padding-left: 2mm;
         }
@@ -231,14 +242,93 @@
         }
 
         .summary {
-            padding: 2mm;
+            padding: 2.5mm;
             background-color: #f8f9fa;
             border-left: 0.3mm solid #3498db;
             margin-bottom: 3mm;
-            font-size: 8pt;
-            line-height: 1.2;
+            font-size: 11pt;
+            line-height: 1.3;
             color: #34495e;
             text-align: justify;
+            page-break-after: avoid;
+        }
+        
+        /* Fix pour éviter les sauts de page indésirables */
+        .summary-and-columns {
+            page-break-inside: auto;
+            display: block;
+        }
+        
+        @media print {
+            @page {
+                margin: 10mm;
+                size: A4;
+            }
+            
+            body {
+                width: 100%;
+                height: 100%;
+                margin: 0;
+                padding: 0;
+            }
+            
+            .cv-container {
+                width: 100%;
+                box-shadow: none;
+            }
+            
+            .header {
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+                page-break-after: avoid !important;
+            }
+            
+            .main-content {
+                page-break-before: avoid !important;
+            }
+            
+            .section-title {
+                page-break-after: avoid !important;
+            }
+            
+            .experience-header {
+                page-break-after: avoid !important;
+            }
+            
+            /* Permettre des sauts de page au sein des sections */
+            .left-column, 
+            .right-column, 
+            .section, 
+            .experience-block {
+                page-break-inside: auto !important;
+            }
+            
+            /* Éviter les sauts de page juste après les titres */
+            h1, h2, h3, 
+            .section-title + .experience-block, 
+            .experience-header + .description {
+                page-break-after: avoid !important;
+            }
+            
+            /* Empêcher les éléments orphelins */
+            p, .description {
+                orphans: 3;
+                widows: 3;
+            }
+            
+            /* Contrôle supplémentaire pour les tables */
+            table.two-columns {
+                page-break-inside: auto !important;
+            }
+            
+            tr, td {
+                page-break-inside: auto !important;
+            }
+            
+            /* Forcer la suite du contenu après le header */
+            .header + .main-content {
+                page-break-before: avoid !important;
+            }
         }
     </style>
 </head>
@@ -358,26 +448,25 @@
                         </div>
                     @endif
                     
-    @if(isset($cvInformation['languages']) && count($cvInformation['languages']) > 0)
-    <div class="language-section">
-        <div class="language-title">{{ $currentLocale === 'fr' ? 'Langues' : 'Languages' }}</div>
-        <div class="language-items">
-            @foreach($cvInformation['languages'] ?? [] as $language)
-                <div class="language-item">
-                    {{ $language['name'] ?? '' }}
-                    @if(isset($language['level']))
-                        <span class="language-level">- {{ $language['level'] ?? '' }}</span>
+                    @if(isset($cvInformation['languages']) && count($cvInformation['languages']) > 0)
+                        <div class="language-section">
+                            <div class="language-title">{{ $currentLocale === 'fr' ? 'Langues' : 'Languages' }}</div>
+                            <div class="language-items">
+                                @foreach($cvInformation['languages'] ?? [] as $language)
+                                    <div class="language-item">
+                                        {{ $language['name'] ?? '' }}
+                                        @if(isset($language['level']))
+                                            <span class="language-level">- {{ $language['level'] ?? '' }}</span>
+                                        @endif
+                                    </div>
+                                @endforeach
+                            </div>
+                        </div>
                     @endif
-                </div>
-            @endforeach
-        </div>
-    </div>
-@endif
                 </td>
             </tr>
         </table>
     </div>
-
 </div>
 </body>
 </html>

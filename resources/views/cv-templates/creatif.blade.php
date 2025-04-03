@@ -9,16 +9,15 @@
     <title>{{ $cvInformation['personalInformation']['firstName'] ?? 'CV' }} - CV</title>
     <style>
         @page {
-            margin: 2mm ;
-
+            margin: 5mm;
             padding: 0;
             size: A4;
         }
 
         body {
-            font-family: 'DejaVu Sans', sans-serif;
-            line-height: 1.2;
-            font-size: 9pt;
+            font-family: Arial, 'DejaVu Sans', sans-serif;
+            line-height: 1.15;
+            font-size: 11pt;
             color: #2c3e50;
             margin: 0;
             padding: 0;
@@ -59,13 +58,17 @@
         .contact-item {
             margin-bottom: 2mm;
             padding-left: 5mm;
-            font-size: 8pt;
+            font-size: 10pt;
         }
 
         .section-title {
-            font-size: 11pt;
+            font-size: 14pt;
             color: white;
             font-weight: bold;
+            text-transform: uppercase;
+            margin: 4mm 0 2mm 0;
+            padding-bottom: 1mm;
+            border-bottom: 0.5mm solid #ffffff;
         }
 
         /* Language Section */
@@ -79,7 +82,7 @@
 
         .language-title {
             color: white;
-            font-size: 10pt;
+            font-size: 14pt;
             font-weight: bold;
             margin-bottom: 2mm;
             text-transform: uppercase;
@@ -97,7 +100,7 @@
             border-radius: 1mm;
             padding: 1mm 2mm;
             margin-bottom: 1mm;
-            font-size: 8pt;
+            font-size: 10pt;
             color: rgba(255, 255, 255, 0.9);
         }
 
@@ -106,17 +109,12 @@
             font-weight: 600;
             margin-left: 1mm;
         }
-            text-transform: uppercase;
-            margin: 4mm 0 2mm 0;
-            padding-bottom: 1mm;
-            border-bottom: 0.5mm solid #ffffff;
-        }
 
         .skill-item, .hobby-item {
             background: rgba(255, 255, 255, 0.1);
-            padding: 1mm 2mm;
-            margin-bottom: 1mm;
-            font-size: 8pt;
+            padding: 1.5mm 2.5mm;
+            margin-bottom: 1.5mm;
+            font-size: 10pt;
         }
 
         .header-name {
@@ -127,26 +125,28 @@
         }
 
         .header-title {
-            font-size: 11pt;
+            font-size: 12pt;
             color: #7f8c8d;
             margin-bottom: 4mm;
         }
 
         .main-section-title {
-
-            font-size: 12pt;
+            font-size: 14pt;
             color: #3498db;
             text-transform: uppercase;
             padding-bottom: 1mm;
             border-bottom: 0.3mm solid #3498db;
-            margin: 4mm 0;
+            /* margin: 4mm 0; */
         }
 
         .summary-box {
             background: #f5f6fa;
-            padding: 2mm;
+            padding: 3mm;
             border-left: 1mm solid #3498db;
             margin-bottom: 4mm;
+            font-size: 11pt;
+            line-height: 1.15;
+            text-align: justify;
         }
 
         .experience-table {
@@ -156,27 +156,28 @@
         }
 
         .experience-title {
-            font-size: 10pt;
+            font-size: 12pt;
             font-weight: bold;
             color: #2c3e50;
         }
 
         .experience-company {
-            font-size: 9pt;
+            font-size: 11pt;
             font-style: italic;
             color: #3498db;
         }
 
         .experience-date {
-            font-size: 8pt;
+            font-size: 10pt;
             color: #7f8c8d;
         }
 
         .experience-description {
-            font-size: 9pt;
+            font-size: 10.5pt;
             color: #2c3e50;
             text-align: justify;
-            padding-top: 1mm;
+            padding-top: 1.5mm;
+            line-height: 1.15;
         }
 
         .separator {

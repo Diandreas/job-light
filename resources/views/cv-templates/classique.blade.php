@@ -8,39 +8,49 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ $cvInformation['personalInformation']['firstName'] ?? 'CV' }} - CV</title>
     <style>
-        @page { margin: 10mm; size: A4; }
+        @page {
+            margin: 5mm; 
+            padding: 0;
+            size: A4; 
+        }
         * { margin: 0; padding: 0; box-sizing: border-box; }
 
         body {
-            font-family: 'DejaVu Sans', sans-serif;
-            line-height: 1.15;
-            font-size: 9pt;
-            color: #333;
+            font-family: Arial, 'DejaVu Sans', sans-serif;
+            line-height: 1.2;
+            font-size: 10.5pt;
+            color: #2c3e50;
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+            margin: 0;
+            padding: 0;
         }
 
         .cv-container {
             width: 170mm;
             margin: 0 auto;
-            padding: 5mm;
+            padding-top: 5mm;
             background: white;
         }
 
         .header-content {
             position: relative;
-            min-height: 22mm;
-            margin-bottom: 2mm;
-            border-bottom: 0.3mm solid #2c3e50;
-            padding-bottom: 1mm;
+            min-height: 25mm;
+            margin-bottom: 4mm;
+            border-bottom: 0.4mm solid #3498db;
+            padding-bottom: 3mm;
         }
 
         .profile-photo {
             position: absolute;
             top: 0;
             left: 0;
-            width: 22mm;
-            height: 22mm;
+            width: 25mm;
+            height: 25mm;
             border-radius: 50%;
             overflow: hidden;
+            border: 0.3mm solid #e0e0e0;
+            box-shadow: 0 1mm 2mm rgba(0,0,0,0.1);
         }
 
         .profile-photo img {
@@ -50,52 +60,71 @@
         }
 
         .header-text {
-            margin-left: 26mm;
+            margin-left: 30mm;
         }
 
         h1 {
-            font-size: 13pt;
+            font-size: 16pt;
             color: #2c3e50;
-            margin-bottom: 0.5mm;
+            margin-bottom: 1.5mm;
             line-height: 1.1;
         }
 
         h2 {
-            font-size: 10pt;
-            color: #2c3e50;
-            border-bottom: 0.2mm solid #bdc3c7;
-            padding-bottom: 0.5mm;
-            margin-bottom: 1.5mm;
+            font-size: 12pt;
+            color: #3498db;
+            border-bottom: 0.2mm solid #e0e0e0;
+            padding-bottom: 0.8mm;
+            margin-bottom: 2mm;
+            text-transform: uppercase;
+            letter-spacing: 0.4mm;
         }
 
         h2.profession {
-            font-size: 10pt;
-            color: #34495e;
-            margin-bottom: 1mm;
+            font-size: 11pt;
+            color: #7f8c8d;
+            margin-bottom: 2mm;
             border: none;
+            text-transform: none;
+            letter-spacing: normal;
+            font-weight: normal;
         }
 
         .contact-info {
             display: flex;
             flex-wrap: wrap;
             gap: 1.5mm;
-            margin-top: 1mm;
+            margin-top: 1.5mm;
         }
 
         .contact-item {
             display: inline-flex;
             align-items: center;
-            font-size: 8pt;
+            font-size: 9pt;
             color: #34495e;
-            margin-right: 2mm;
+            margin-right: 3mm;
         }
 
-        section { margin-bottom: 3mm; }
+        .contact-icon {
+            margin-right: 1mm;
+            color: #3498db;
+            font-size: 9pt;
+        }
+
+        section { 
+            margin-bottom: 4mm; 
+            page-break-inside: avoid;
+        }
 
         .experience-item {
-            margin-bottom: 2mm;
-            padding-bottom: 1mm;
-            border-bottom: 0.2mm dotted #bdc3c7;
+            margin-bottom: 2.5mm;
+            padding-bottom: 1.5mm;
+            border-bottom: 0.1mm dotted #bdc3c7;
+        }
+
+        .experience-item:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
         }
 
         .experience-header table {
@@ -104,58 +133,64 @@
         }
 
         .title-company {
-            width: 80%;
+            width: 75%;
         }
 
         .title-company h3 {
-            font-size: 9pt;
-            color: #34495e;
-            margin-bottom: 0.3mm;
+            font-size: 11pt;
+            color: #2c3e50;
+            margin-bottom: 0.8mm;
         }
 
         .company {
-            font-size: 8pt;
+            font-size: 10pt;
             font-style: italic;
-            color: #34495e;
+            color: #7f8c8d;
         }
 
         .date {
             text-align: right;
-            font-size: 8pt;
-            color: #666;
-            width: 20%;
+            font-size: 9pt;
+            color: #3498db;
+            width: 25%;
+            font-weight: bold;
         }
 
         .description {
-            font-size: 8pt;
+            font-size: 9.5pt;
             line-height: 1.3;
             text-align: justify;
-            margin: 1mm 0;
-            color: #444;
+            margin: 1.5mm 0;
+            color: #2c3e50;
         }
 
         .skills-list, .hobbies-list {
             display: flex;
             flex-wrap: wrap;
-            gap: 1mm;
-            margin-top: 1mm;
+            gap: 1.5mm;
+            margin-top: 1.5mm;
         }
 
         .skill-item, .hobby-item {
             display: inline-block;
-            background: #f5f5f5;
-            padding: 0.8mm 1.5mm;
-            border-radius: 0.8mm;
-            font-size: 8pt;
-            color: #444;
+            background: #f8f9fa;
+            padding: 1mm 2mm;
+            border-radius: 1.5mm;
+            font-size: 9pt;
+            color: #2c3e50;
             border: 0.2mm solid #e0e0e0;
+            margin-bottom: 1mm;
+            margin-right: 1mm;
         }
 
         .professional-summary {
             background: #f8f9fa;
-            padding: 1.5mm;
-            border-radius: 0.8mm;
-            margin-bottom: 3mm;
+            padding: 2.5mm;
+            border-radius: 1.5mm;
+            margin-bottom: 4mm;
+            font-size: 10pt;
+            line-height: 1.3;
+            border-left: 1mm solid #3498db;
         }
 
         /* Language section styling */
@@ -166,38 +201,53 @@
         .language-items {
             display: flex;
             flex-wrap: wrap;
-            gap: 2mm;
+            gap: 1.5mm;
         }
         
         .language-item {
-            background-color: #f5f7fa;
-            border: 0.2mm solid #dfe4ea;
-            border-radius: 1mm;
+            background-color: #f8f9fa;
+            border: 0.2mm solid #e0e0e0;
+            border-radius: 1.5mm;
             padding: 1mm 2mm;
-            font-size: 8.5pt;
+            font-size: 9pt;
             color: #2c3e50;
+            margin-bottom: 1mm;
+            margin-right: 1mm;
+            display: inline-block;
         }
         
         .language-level {
-            color: #7f8c8d;
+            color: #3498db;
             margin-left: 1mm;
             font-style: italic;
+            font-weight: 600;
         }
 
         @media print {
+        
             body {
                 margin: 0;
                 padding: 0;
                 width: 210mm;
                 height: 297mm;
             }
+            
             .cv-container {
                 margin: 0 auto;
+                padding-top: 5mm;
                 box-shadow: none;
             }
-            section { page-break-inside: avoid; }
+            
+            section { 
+                page-break-inside: avoid; 
+            }
+            
+            .page-break {
+                page-break-before: always;
+            }
         }
     </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
 <div class="cv-container">
@@ -215,16 +265,16 @@
             </h2>
             <div class="contact-info">
                 @if($cvInformation['personalInformation']['email'])
-                    <span class="contact-item">📧 {{ $cvInformation['personalInformation']['email'] }}</span>
+                    <span class="contact-item"><i class="fas fa-envelope contact-icon"></i> {{ $cvInformation['personalInformation']['email'] }}</span>
                 @endif
                 @if($cvInformation['personalInformation']['phone'])
-                    <span class="contact-item">📱 {{ $cvInformation['personalInformation']['phone'] }}</span>
+                    <span class="contact-item"><i class="fas fa-phone-alt contact-icon"></i> {{ $cvInformation['personalInformation']['phone'] }}</span>
                 @endif
                 @if($cvInformation['personalInformation']['address'])
-                    <span class="contact-item">📍 {{ $cvInformation['personalInformation']['address'] }}</span>
+                    <span class="contact-item"><i class="fas fa-map-marker-alt contact-icon"></i> {{ $cvInformation['personalInformation']['address'] }}</span>
                 @endif
                 @if($cvInformation['personalInformation']['linkedin'])
-                    <span class="contact-item">🔗 {{ $cvInformation['personalInformation']['linkedin'] }}</span>
+                    <span class="contact-item"><i class="fab fa-linkedin-in contact-icon"></i> {{ $cvInformation['personalInformation']['linkedin'] }}</span>
                 @endif
             </div>
         </div>

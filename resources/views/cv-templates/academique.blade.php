@@ -9,15 +9,15 @@
     <title>{{ $cvInformation['personalInformation']['firstName'] ?? 'CV' }} - CV</title>
     <style>
         @page {
-            margin: 10mm;
+            margin: 15mm;
             padding: 0;
             size: A4;
         }
 
         body {
-            font-family: 'DejaVu Serif', serif;
+            font-family: 'Times New Roman', 'DejaVu Serif', serif;
             line-height: 1.3;
-            font-size: 9pt;
+            font-size: 11pt;
             color: #333333;
             margin: 0;
             padding: 0;
@@ -25,8 +25,7 @@
         }
 
         .cv-container {
-            width: 190mm;
-            /* padding: 10mm; */
+            width: 170mm;
             background-color: #FFFFFF;
         }
 
@@ -50,16 +49,16 @@
         }
 
         .name {
-            font-size: 16pt;
+            font-size: 18pt;
             font-weight: bold;
             color: #1F497D;
             margin-bottom: 2mm;
-            font-family: 'DejaVu Serif', serif;
+            font-family: 'Times New Roman', 'DejaVu Serif', serif;
             letter-spacing: 0.3mm;
         }
 
         .profession {
-            font-size: 11pt;
+            font-size: 14pt;
             color: #555555;
             margin-bottom: 3mm;
             font-style: italic;
@@ -73,7 +72,7 @@
 
         .contact-row td {
             text-align: center;
-            font-size: 8pt;
+            font-size: 11pt;
             color: #666666;
             padding: 0 2mm;
         }
@@ -100,7 +99,7 @@
         }
 
         .section-title {
-            font-size: 11pt;
+            font-size: 14pt;
             font-weight: bold;
             color: #1F497D;
             margin-bottom: 2mm;
@@ -112,9 +111,9 @@
 
         /* Summary Section */
         .summary {
-            font-size: 9pt;
+            font-size: 11pt;
             color: #333333;
-            line-height: 1.4;
+            line-height: 1.3;
             text-align: justify;
             margin-bottom: 4mm;
             font-style: italic;
@@ -139,21 +138,21 @@
         }
 
         .exp-title {
-            font-size: 9pt;
+            font-size: 12pt;
             font-weight: bold;
             color: #333333;
             margin-bottom: 0.5mm;
         }
 
         .exp-institution {
-            font-size: 8pt;
+            font-size: 11pt;
             font-style: italic;
             color: #666666;
             margin-bottom: 1mm;
         }
 
         .exp-description {
-            font-size: 8pt;
+            font-size: 11pt;
             color: #333333;
             line-height: 1.3;
             text-align: justify;
@@ -163,7 +162,7 @@
         .publication-item {
             margin-bottom: 2mm;
             text-align: justify;
-            font-size: 8pt;
+            font-size: 11pt;
             line-height: 1.3;
             padding-left: 4mm;
             text-indent: -4mm;
@@ -210,12 +209,12 @@
         }
 
         .skill-name {
-            font-size: 8pt;
+            font-size: 11pt;
             color: #333333;
         }
 
         .skill-level {
-            font-size: 7pt;
+            font-size: 11pt;
             color: #1F497D;
             font-style: italic;
         }
@@ -245,19 +244,19 @@
         }
         
         .language-name {
-            font-size: 8pt;
+            font-size: 11pt;
             color: #333333;
         }
         
         .language-level {
-            font-size: 7pt;
+            font-size: 11pt;
             color: #1F497D;
             font-style: italic;
         }
 
         /* References/Hobbies Styling */
         .references {
-            font-size: 8pt;
+            font-size: 10pt;
             color: #666666;
             font-style: italic;
             text-align: center;
@@ -271,7 +270,7 @@
         
         .hobby-item {
             display: inline-block;
-            font-size: 8pt;
+            font-size: 10pt;
             color: #666666;
             margin: 0 2mm;
         }

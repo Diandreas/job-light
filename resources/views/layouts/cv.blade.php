@@ -5,25 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ $cvInformation['personalInformation']['firstName'] ?? 'CV' }} - CV</title>
     <style>
-        @page {
-            size: A4;
-            margin: 12mm; !important;
-        }
 
-        body {
-            margin: 0;
-            padding: 0;
-            background: #ffffff;
-            font-family: "DejaVu Sans", Arial, sans-serif;
-            line-height: 1.4;
-            color: #333333;
-        }
 
         @media screen {
-            body {
-                background: #f5f5f5;
-                padding: 20px;
-            }
 
             .floating-button {
                 position: fixed;
@@ -49,10 +33,7 @@
         }
 
         @media print {
-            body {
-                width: 210mm;
-                height: 297mm;
-            }
+
 
             .floating-button {
                 display: none !important;

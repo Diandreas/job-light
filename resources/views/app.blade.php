@@ -31,22 +31,22 @@
     <meta name="language" content="English, French">
 
     <!-- Favicon et icônes -->
-    <link rel="icon" type="image/png" href="{{ asset('ai.png') }}">
-    <link rel="apple-touch-icon" href="{{ asset('ai.png') }}">
-    <link rel="shortcut icon" href="{{ asset('ai.png') }}">
+    <link rel="icon" type="image/x-icon" href="{{ asset('flavicon.ico') }}">
+    <link rel="apple-touch-icon" href="{{ asset('flavicon.ico') }}">
+    <link rel="shortcut icon" href="{{ asset('flavicon.ico') }}">
 
     <!-- Titre de page dynamique -->
-    <title inertia>{{ config('app.name', 'Guidy | AI Resume Builder & Career Assistant') }}</title>
+    <title inertia>{{ config('app.name', 'Guidy | Générateur de CV gratuit & Assistant de carrière IA') }}</title>
 
     <!-- Description et mots-clés par défaut (peuvent être écrasés par Inertia) -->
-    <meta name="description" content="Créez votre CV professionnel avec l'IA en minutes. Templates optimisés pour le marché international, conseils personnalisés et préparation aux entretiens. Available in English & French.">
-    <meta name="keywords" content="CV, création CV, resume builder, AI CV, lettre de motivation, cover letter, entretien embauche, interview preparation, IA, AI, assistant carrière">
+    <meta name="description" content="Générateur de CV gratuit avec intelligence artificielle. Créez votre CV professionnel en minutes. Templates optimisés pour l'ATS, conseils personnalisés et préparation aux entretiens. Guidy AI - votre assistant de carrière.">
+    <meta name="keywords" content="générateur de CV gratuit, CV gratuit, Guidy AI, Guidy CV, création CV, resume builder, AI CV, lettre de motivation, cover letter, entretien embauche, interview preparation, IA, AI, assistant carrière">
 
     <!-- Open Graph par défaut -->
     <meta property="og:type" content="website">
     <meta property="og:site_name" content="Guidy">
-    <meta property="og:title" content="Guidy | AI Resume Builder & Career Assistant">
-    <meta property="og:description" content="Create professional resumes with AI guidance. Available in English & French worldwide.">
+    <meta property="og:title" content="Guidy | Générateur de CV gratuit & Assistant de carrière IA">
+    <meta property="og:description" content="Utilisez Guidy AI pour créer un CV professionnel gratuit optimisé pour l'ATS. Disponible en français et anglais.">
     <meta property="og:url" content="{{ url()->current() }}">
     <meta property="og:image" content="{{ asset('image.png') }}" fetchpriority="low">
     <meta property="og:locale" content="{{ str_replace('_', '-', app()->getLocale()) }}">
@@ -55,17 +55,17 @@
     <!-- Twitter Card par défaut -->
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:site" content="@guidyai">
-    <meta name="twitter:title" content="Guidy - AI Resume Builder">
-    <meta name="twitter:description" content="Create professional resumes with AI guidance. Templates optimized for global job markets.">
+    <meta name="twitter:title" content="Guidy - Générateur de CV gratuit avec IA">
+    <meta name="twitter:description" content="Créez gratuitement un CV professionnel avec l'aide de l'IA. Templates optimisés pour le marché de l'emploi mondial.">
     <meta name="twitter:image" content="{{ asset('image.png') }}">
     <meta property="og:site_name" content="Guidy">
-    <meta property="og:whatsapp:title" content="Guidy - Créateur de CV propulsé par l'IA">
-    <meta property="og:whatsapp:text" content="Crée ton CV professionnel en 5 minutes avec l'IA! Optimisé pour ATS, gratuit et disponible en français et anglais.">
+    <meta property="og:whatsapp:title" content="Guidy - Générateur de CV gratuit propulsé par l'IA">
+    <meta property="og:whatsapp:text" content="Crée ton CV professionnel gratuit en 5 minutes avec l'IA! Optimisé pour ATS, disponible en français et anglais.">
     <meta property="og:whatsapp:image" content="{{ asset('image.png') }}">
 
     <!-- LinkedIn Sharing Optimization -->
-    <meta property="linkedin:title" content="Guidy - Créez votre CV professionnel avec l'IA">
-    <meta property="linkedin:description" content="Notre IA analyse votre profil et crée un CV optimisé pour les recruteurs et les ATS. Templates internationaux, conseils personnalisés et préparation aux entretiens.">
+    <meta property="linkedin:title" content="Guidy - Générateur de CV gratuit avec l'IA">
+    <meta property="linkedin:description" content="Notre IA analyse votre profil et crée gratuitement un CV optimisé pour les recruteurs et les ATS. Templates internationaux, conseils personnalisés et préparation aux entretiens.">
     <meta property="linkedin:image" content="{{ asset('image.png') }}">
     <meta property="linkedin:owner" content="Guidy">
     <meta property="article:publisher" content="https://www.linkedin.com/company/guidyai">
@@ -84,8 +84,9 @@
             "@context": "https://schema.org",
             "@type": "WebSite",
             "url": "{{ url('/') }}",
-            "name": "Guidy - AI Resume Builder",
-            "alternateName": "Guidy - Créateur de CV IA",
+            "name": "Guidy - Générateur de CV gratuit avec IA",
+            "alternateName": ["Guidy AI", "Guidy CV", "Guidy - Créateur de CV IA"],
+            "description": "Générateur de CV gratuit avec IA. Créez un CV professionnel optimisé pour l'ATS en quelques minutes.",
             "potentialAction": {
                 "@type": "SearchAction",
                 "target": "{{ url('/') }}/search?q={search_term_string}",
@@ -111,6 +112,22 @@
                 "contactType": "customer service",
                 "email": "guidy.makeitreall@gmail.com",
                 "availableLanguage": ["French", "English"]
+            }
+        }
+    </script>
+
+    <!-- Données structurées pour SoftwareApplication -->
+    <script type="application/ld+json">
+        {
+            "@context": "https://schema.org",
+            "@type": "SoftwareApplication",
+            "name": "Guidy - Générateur de CV gratuit",
+            "applicationCategory": "BusinessApplication",
+            "operatingSystem": "Web",
+            "offers": {
+                "@type": "Offer",
+                "price": "0",
+                "priceCurrency": "EUR"
             }
         }
     </script>

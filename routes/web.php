@@ -49,6 +49,12 @@ Route::get('/cookies', function () {
 Route::get('/mentions-legales', function () {
     return Inertia::render('LegalNotice');
 })->name('mentions-legales');
+
+
+Route::get('/blog/comparaison', function () {
+    return view('blog-comparaison-autonome');
+})->name('blog.comparaison-autonome');
+
 Route::get('/', function () {
     return Inertia::render('Welcome');
 })->name('welcome');

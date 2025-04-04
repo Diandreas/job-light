@@ -1,2 +1,10 @@
 User-agent: *
-Disallow:
+Allow: /
+Disallow: /login
+Disallow: /register
+Disallow: /dashboard
+Disallow: /api/
+Disallow: /storage/
+Disallow: /admin/
+
+Sitemap: https://guidy.com/sitemap.xml

@@ -4,73 +4,73 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Guidy: Le Générateur de CV Intelligent avec Système de Jetons | 2025</title>
-    
+
     <!-- Meta SEO -->
     <meta name="description" content="Découvrez Guidy, le générateur de CV avec IA avancée et système de jetons flexibles. Créez votre CV professionnel à petit prix sans abonnement coûteux.">
     <meta name="keywords" content="générateur CV, Guidy, CV professionnel, jetons CV, créer CV pas cher, CV optimisé ATS, IA CV">
-    
+
     <!-- Open Graph -->
     <meta property="og:title" content="Guidy: Le Générateur de CV Intelligent avec Système de Jetons | 2025">
     <meta property="og:description" content="Créez votre CV professionnel avec Guidy grâce à notre système de jetons flexible et notre IA avancée. À partir de 1,99€ seulement!">
     <meta property="og:url" content="{{ url()->current() }}">
     <meta property="og:type" content="article">
     <meta property="og:image" content="{{ asset('image.png') }}">
-    
+
     <!-- Favicon -->
     <link rel="icon" type="image/x-icon" href="{{ asset('flavicon.ico') }}">
-    
+
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    
+
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
-        
+
         body {
             font-family: 'Inter', sans-serif;
             color: #333;
             line-height: 1.6;
         }
-        
+
         .article-container {
             max-width: 1200px;
             margin: 0 auto;
             padding: 2rem;
         }
-        
+
         .table-container {
             overflow-x: auto;
         }
-        
+
         table {
             width: 100%;
             border-collapse: collapse;
         }
-        
+
         th, td {
             padding: 0.75rem 1rem;
             border: 1px solid #e2e8f0;
         }
-        
+
         th {
             background-color: #f8fafc;
             font-weight: 600;
         }
-        
+
         .highlight {
             background-color: #fef3c7;
             font-weight: 600;
         }
-        
+
         .nav-link {
             color: #1e40af;
             text-decoration: none;
             transition: color 0.3s;
         }
-        
+
         .nav-link:hover {
             color: #f59e0b;
         }
-        
+
         .banner {
             background: linear-gradient(135deg, #f59e0b 0%, #f97316 100%);
             color: white;
@@ -78,7 +78,7 @@
             border-radius: 0.5rem;
             margin-bottom: 2rem;
         }
-        
+
         .section-title {
             font-size: 1.75rem;
             font-weight: 700;
@@ -88,7 +88,7 @@
             padding-bottom: 0.5rem;
             border-bottom: 2px solid #f59e0b;
         }
-        
+
         .btn {
             display: inline-block;
             background-color: #f59e0b;
@@ -99,11 +99,11 @@
             text-decoration: none;
             transition: background-color 0.3s;
         }
-        
+
         .btn:hover {
             background-color: #d97706;
         }
-        
+
         .footer {
             margin-top: 3rem;
             padding-top: 2rem;
@@ -111,26 +111,26 @@
             text-align: center;
             color: #64748b;
         }
-        
+
         .template-gallery {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
             gap: 1rem;
             margin-bottom: 2rem;
         }
-        
+
         .template-preview {
             border: 1px solid #e2e8f0;
             border-radius: 0.5rem;
             overflow: hidden;
             transition: transform 0.3s;
         }
-        
+
         .template-preview:hover {
             transform: translateY(-5px);
             box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
         }
-        
+
         .testimonial {
             background-color: #f8fafc;
             border-radius: 0.5rem;
@@ -138,24 +138,24 @@
             margin-bottom: 1rem;
             border-left: 4px solid #f59e0b;
         }
-        
+
         .token-card {
             border: 1px solid #e2e8f0;
             border-radius: 0.5rem;
             padding: 1.25rem;
             transition: transform 0.3s, box-shadow 0.3s;
         }
-        
+
         .token-card:hover {
             transform: translateY(-5px);
             box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
         }
-        
+
         @media (max-width: 768px) {
             .article-container {
                 padding: 1rem;
             }
-            
+
             .section-title {
                 font-size: 1.5rem;
             }
@@ -190,12 +190,12 @@
             <h1 class="text-3xl md:text-4xl font-bold mb-4">Guidy : Le Générateur de CV Intelligent</h1>
             <p class="text-xl">Créez un CV professionnel optimisé pour les ATS grâce à notre IA avancée</p>
         </div>
-        
+
         <!-- Introduction -->
         <p class="text-lg mb-6">
             Guidy révolutionne la création de CV avec une approche flexible basée sur des jetons. Payez uniquement ce dont vous avez besoin, sans abonnement contraignant ! Notre IA avancée et notre optimisation ATS vous aident à créer un CV qui se démarque auprès des recruteurs.
         </p>
-        
+
         <!-- Système de jetons -->
         <h2 class="section-title">Notre système de jetons flexible</h2>
         <div class="bg-white rounded-lg shadow-md p-6 mb-8">
@@ -239,10 +239,10 @@
                 </div>
             </div>
         </div>
-        
+
         <!-- Tableau comparatif (version réduite) -->
         <h2 class="section-title">Comparaison rapide avec d'autres solutions</h2>
-        
+
         <div class="table-container mb-8">
             <table>
                 <thead>
@@ -286,16 +286,16 @@
                 </tbody>
             </table>
         </div>
-        
+
         <!-- Galerie de  -->
         <h2 class="section-title">Notre galerie de  optimisés ATS</h2>
-     
+
         <div class="text-center mb-8">
             <a href="{{ url('/') }}" class="btn">Voir tous nos </a>
         </div>
-        
+
         <!-- Exemples avant/après avec images réelles -->
-      
+
             <h3 class="text-xl font-bold mb-4 mt-8">Exemples de CV avec données réelles</h3>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-4">
                 <div>
@@ -311,7 +311,7 @@
                     </div>
                 </div>
             </div>
-            
+
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <div>
                     <h4 class="font-semibold mb-2 text-indigo-700">Design bleu marine</h4>
@@ -333,10 +333,10 @@
                 </div>
             </div>
         </div>
-        
+
         <!-- Guidy en détail -->
         <h2 class="section-title">Guidy en détail : La solution intelligente pour votre CV</h2>
-        
+
         <div class="mb-8">
             <div class="flex flex-col md:flex-row gap-6">
                 <div class="md:w-2/3">
@@ -366,7 +366,7 @@
                 </div>
             </div>
         </div>
-        
+
         <!-- Témoignages -->
         <div class="mb-8">
             <h3 class="text-xl font-bold mb-4">Ce que nos utilisateurs disent</h3>
@@ -381,7 +381,7 @@
                 </div>
             </div>
         </div>
-        
+
         <!-- Comment fonctionne l'optimisation ATS -->
         <div class="bg-white p-6 rounded-lg shadow-md mb-8">
             <h3 class="text-xl font-bold mb-4">Comment fonctionne l'optimisation ATS chez Guidy</h3>
@@ -402,7 +402,7 @@
                 </div>
             </div>
         </div>
-        
+
         <!-- FAQ Structurée -->
         <h2 class="section-title">Questions fréquentes</h2>
         <div class="mb-8">
@@ -425,10 +425,10 @@
                 </div>
             </div>
         </div>
-        
+
         <!-- Conclusion -->
         <h2 class="section-title">Pourquoi choisir Guidy ?</h2>
-        
+
         <div class="bg-orange-50 p-6 rounded-lg mb-8">
             <h3 class="text-xl font-semibold mb-4 text-orange-700">Les avantages distinctifs de Guidy</h3>
             <ul class="space-y-4">
@@ -452,7 +452,7 @@
                 </li>
             </ul>
         </div>
-        
+
         <!-- Call to Action -->
         <div class="bg-blue-50 p-6 rounded-lg mb-12 text-center">
             <h3 class="text-xl font-semibold mb-4 text-blue-700">Prêt à créer votre CV professionnel ?</h3>
@@ -466,7 +466,7 @@
             <p class="text-sm text-gray-600 mt-4">Essai sans engagement. Annulation possible à tout moment.</p>
         </div>
     </div>
-    
+
     <!-- Footer -->
     <footer class="footer">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">

@@ -55,6 +55,8 @@ Route::get('/blog/comparaison', function () {
     return view('blog-comparaison-autonome');
 })->name('blog.comparaison-autonome');
 
+Route::get('/blog', [App\Http\Controllers\BlogController::class, 'index'])->name('blog.index');
+
 Route::get('/', function () {
     return Inertia::render('Welcome');
 })->name('welcome');

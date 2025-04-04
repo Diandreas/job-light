@@ -318,22 +318,23 @@ export default function Show({ auth, cvInformation, selectedCvModel }) {
                                             exit={{ opacity: 0, scale: 0.9 }}
                                             className="flex gap-2"
                                         >
-                                            <Button
-                                                onClick={handlePrint}
-                                                className="bg-gradient-to-r from-amber-500 to-purple-500 hover:from-amber-600 hover:to-purple-600 dark:from-amber-400 dark:to-purple-400"
-                                                disabled={isLoading}
-                                            >
-                                                <Printer className="mr-2 h-4 w-4" />
-                                                {isLoading ? t('cv_preview.export.printing') : t('cv_preview.export.print')}
-                                            </Button>
-                                            {isDownloadAllowed && (
+                                            {!isDownloadAllowed ? (
+                                                <Button
+                                                    onClick={handlePrint}
+                                                    className="bg-gradient-to-r from-amber-500 to-purple-500 hover:from-amber-600 hover:to-purple-600 dark:from-amber-400 dark:to-purple-400"
+                                                    disabled={isLoading}
+                                                >
+                                                    <Printer className="mr-2 h-4 w-4" />
+                                                    {isLoading ? t('cv_preview.export.printing') : t('cv_preview.export.print')}
+                                                </Button>
+                                            ) : (
                                                 <Button
                                                     onClick={handleDownload}
                                                     className="bg-gradient-to-r from-amber-500 to-purple-500 hover:from-amber-600 hover:to-purple-600 dark:from-amber-400 dark:to-purple-400"
                                                     disabled={isDownloading}
                                                 >
                                                     <Download className="mr-2 h-4 w-4" />
-                                                    {t('cv_preview.export.downloading')} {t('cv_preview.export.download')}
+                                                    {isDownloading ? t('cv_preview.export.downloading') : t('cv_preview.export.download')}
                                                 </Button>
                                             )}
                                         </motion.div>

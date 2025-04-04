@@ -9,15 +9,15 @@
     <title>{{ $cvInformation['personalInformation']['firstName'] ?? 'CV' }} - CV</title>
     <style>
         @page {
-            margin: 10mm;
+            margin: 15mm;
             padding: 0;
             size: A4;
         }
 
         body {
-            font-family: 'DejaVu Sans', sans-serif;
-            line-height: 1.2;
-            font-size: 9pt;
+            font-family: Arial, 'DejaVu Sans', sans-serif;
+            line-height: 1.1;
+            font-size: 10.5pt;
             color: #2C3E50;
             margin: 0;
             padding: 0;
@@ -25,8 +25,8 @@
         }
 
         .cv-container {
-            width: 170mm;
-            padding: 5mm;
+            width: 180mm;
+            padding: 0;
         }
 
         /* Tables Reset */
@@ -42,41 +42,41 @@
 
         /* Header Styling */
         .header-table {
-            margin-bottom: 8mm;
+            margin-bottom: 6mm;
         }
 
         .profile-td {
             width: 65%;
-            padding-right: 5mm;
+            padding-right: 4mm;
         }
 
         .contact-td {
             background-color: #F8F9FA;
-            padding: 3mm;
+            padding: 2.5mm;
             border-radius: 2mm;
         }
 
         .photo-td {
-            width: 30mm;
-            padding-left: 3mm;
+            width: 28mm;
+            padding-left: 2mm;
         }
 
         .name {
-            font-size: 24pt;
+            font-size: 15pt;
             font-weight: 700;
             color: #1ABC9C;
-            margin-bottom: 2mm;
+            margin-bottom: 1.5mm;
             letter-spacing: -0.5pt;
         }
 
         .profession {
-            font-size: 12pt;
+            font-size: 11pt;
             color: #34495E;
-            margin-bottom: 3mm;
+            margin-bottom: 2mm;
         }
 
         .contact-item {
-            font-size: 8pt;
+            font-size: 9.5pt;
             margin-bottom: 1.5mm;
             color: #7F8C8D;
             white-space: nowrap;
@@ -89,8 +89,8 @@
 
         /* Photo Styling */
         .photo-container {
-            width: 30mm;
-            height: 30mm;
+            width: 28mm;
+            height: 28mm;
             overflow: hidden;
             border-radius: 2mm;
             border: 0.5mm solid #1ABC9C;
@@ -108,20 +108,20 @@
         }
 
         .section-title {
-            font-size: 11pt;
+            font-size: 13pt;
             font-weight: bold;
             color: #1ABC9C;
             text-transform: uppercase;
-            margin-bottom: 2mm;
+            margin-bottom: 2.5mm;
             padding-bottom: 1mm;
             border-bottom: 0.3mm solid #E8EAED;
         }
 
         /* Summary Section */
         .summary {
-            font-size: 9pt;
+            font-size: 10.5pt;
             color: #34495E;
-            line-height: 1.4;
+            line-height: 1.1;
             text-align: justify;
             margin-bottom: 4mm;
         }
@@ -134,18 +134,18 @@
         }
 
         .date-td {
-            width: 20mm;
-            padding-right: 3mm;
+            width: 18mm;
+            padding-right: 2.5mm;
         }
 
         .date-box {
             background-color: #F8F9FA;
             border-left: 0.5mm solid #1ABC9C;
-            padding: 1.5mm 2mm;
-            font-size: 7.5pt;
+            padding: 1.5mm;
+            font-size: 9.5pt;
             color: #7F8C8D;
             text-align: left;
-            line-height: 1.2;
+            line-height: 1.1;
         }
 
         .duration {
@@ -155,33 +155,33 @@
         }
 
         .company-td {
-            width: 35mm;
-            padding-right: 3mm;
+            width: 33mm;
+            padding-right: 2.5mm;
         }
 
         .company-name {
             color: #1ABC9C;
             font-weight: 600;
-            font-size: 8.5pt;
-            line-height: 1.3;
+            font-size: 10.5pt;
+            line-height: 1.1;
         }
 
         .content-td {
-            padding-right: 2mm;
+            padding-right: 1.5mm;
         }
 
         .experience-title {
             font-weight: bold;
             color: #2C3E50;
             margin-bottom: 1mm;
-            font-size: 9pt;
+            font-size: 11pt;
         }
 
         .experience-description {
-            font-size: 8.5pt;
+            font-size: 10pt;
             color: #34495E;
             text-align: justify;
-            line-height: 1.3;
+            line-height: 1.1;
         }
 
         /* Skills and Hobbies */
@@ -191,12 +191,12 @@
 
         .skills-td {
             width: 50%;
-            padding-right: 3mm;
+            padding-right: 2.5mm;
         }
 
         .hobbies-td {
             width: 50%;
-            padding-left: 3mm;
+            padding-left: 2.5mm;
         }
 
         .skill-item, .hobby-item {
@@ -205,7 +205,7 @@
             padding: 1mm 2mm;
             margin: 0 1mm 1mm 0;
             border-radius: 1mm;
-            font-size: 8pt;
+            font-size: 9.5pt;
             color: #34495E;
         }
 
@@ -217,25 +217,25 @@
 
         /* Language Section Styling */
         .language-section {
-            margin-top: 4mm;
-            padding-top: 3mm;
+            margin-top: 3mm;
+            padding-top: 2mm;
             border-top: 0.2mm solid #E0E0E0;
         }
 
         .language-title {
             color: #1ABC9C;
             font-weight: 600;
-            font-size: 9pt;
-            margin-bottom: 2mm;
+            font-size: 13pt;
+            margin-bottom: 1.5mm;
             text-transform: uppercase;
             letter-spacing: 0.3mm;
         }
 
         .language-item {
-            font-size: 8pt;
+            font-size: 9.5pt;
             color: #7F8C8D;
-            margin-bottom: 1.5mm;
-            padding: 1mm 0;
+            margin-bottom: 1mm;
+            padding: 0.8mm 0;
             display: flex;
             justify-content: space-between;
             border-bottom: 0.1mm dotted #E0E0E0;

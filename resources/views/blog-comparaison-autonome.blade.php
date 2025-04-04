@@ -3,14 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Guidy: Le Générateur de CV Intelligent avec Système de Jetons | 2024</title>
+    <title>Guidy: Le Générateur de CV Intelligent avec Système de Jetons | 2025</title>
     
     <!-- Meta SEO -->
     <meta name="description" content="Découvrez Guidy, le générateur de CV avec IA avancée et système de jetons flexibles. Créez votre CV professionnel à petit prix sans abonnement coûteux.">
     <meta name="keywords" content="générateur CV, Guidy, CV professionnel, jetons CV, créer CV pas cher, CV optimisé ATS, IA CV">
     
     <!-- Open Graph -->
-    <meta property="og:title" content="Guidy: Le Générateur de CV Intelligent avec Système de Jetons | 2024">
+    <meta property="og:title" content="Guidy: Le Générateur de CV Intelligent avec Système de Jetons | 2025">
     <meta property="og:description" content="Créez votre CV professionnel avec Guidy grâce à notre système de jetons flexible et notre IA avancée. À partir de 1,99€ seulement!">
     <meta property="og:url" content="{{ url()->current() }}">
     <meta property="og:type" content="article">

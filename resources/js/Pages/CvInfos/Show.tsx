@@ -16,7 +16,7 @@ import axios from 'axios';
 
 // Liste des modèles sans bouton de téléchargement
 // const MODELS_WITHOUT_DOWNLOAD = [10, 14, 12, 19, 18];
-const MODELS_WITHOUT_DOWNLOAD = [];
+const MODELS_WITHOUT_DOWNLOAD = [10, 12, 13, 17, 14, 19, 22, 4, 8, 21, 25, 26];
 
 
 const InfoCard = ({ icon: Icon, title, value, type = "default" }) => {

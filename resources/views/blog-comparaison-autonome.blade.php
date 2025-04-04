@@ -239,7 +239,7 @@
     <header class="bg-white shadow-md py-4">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center">
             <a href="{{ url('/') }}" class="flex items-center" title="Accueil Guidy">
-                <img src="{{ asset('ai.png') }}" alt="Guidy - Logo officiel du générateur de CV" class="h-10" width="120" height="40">
+                <img src="{{ asset('ai.png') }}" alt="Guidy - Logo officiel du générateur de CV" class="h-10" >
             </a>
             <nav class="hidden md:flex space-x-8">
                 <a href="{{ url('/') }}" class="nav-link" title="Accueil Guidy">Accueil</a>
@@ -544,7 +544,7 @@
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex flex-col md:flex-row justify-between items-center">
                 <div class="mb-4 md:mb-0">
-                    <img src="{{ asset('ai.png') }}" alt="Guidy - Générateur de CV professionnel" class="h-8" width="100" height="32">
+                    <img src="{{ asset('ai.png') }}" alt="Guidy - Générateur de CV professionnel" class="h-8">
                     <p class="mt-2 text-sm">© {{ date('Y') }} Guidy. Tous droits réservés.</p>
                 </div>
                 <div class="flex space-x-6">

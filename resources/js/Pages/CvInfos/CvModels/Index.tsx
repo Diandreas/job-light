@@ -281,7 +281,7 @@ export default function CvModelsIndex({ auth, userCvModels, availableCvModels, m
     const [previewModel, setPreviewModel] = useState(null);
     const [activeModels, setActiveModels] = useState(userCvModels);
     const [availableModels, setAvailableModels] = useState(availableCvModels);
-    const [currentTab, setCurrentTab] = useState('active');
+    const [currentTab, setCurrentTab] = useState('discover');
 
     const handleAddModel = async (model) => {
         if (activeModels.length >= maxAllowedModels) {

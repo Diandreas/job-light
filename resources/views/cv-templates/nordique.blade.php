@@ -9,15 +9,15 @@
     <title>{{ $cvInformation['personalInformation']['firstName'] ?? 'CV' }} - CV</title>
     <style>
         @page {
-            margin: 5mm;
+            margin: 20mm;
             padding: 0;
             size: A4;
         }
 
         body {
-            font-family: 'DejaVu Sans', sans-serif;
-            line-height: 1.3;
-            font-size: 9pt;
+            font-family: Arial, 'DejaVu Sans', sans-serif;
+            line-height: 1.15;
+            font-size: 11pt;
             color: #2E2E2E;
             margin: 0;
             padding: 0;
@@ -25,8 +25,8 @@
         }
 
         .cv-container {
-            width: 190mm;
-            /* padding: 15mm; */
+            width: 170mm;
+            padding: 0;
             background-color: #FFFFFF;
         }
 
@@ -44,7 +44,7 @@
         /* Header Styling */
         .header-table {
             width: 100%;
-            margin-bottom: 10mm;
+            margin-bottom: 8mm;
         }
 
         .header-left-cell {
@@ -57,31 +57,31 @@
         }
 
         .name {
-            font-size: 20pt;
-            font-weight: 300;
+            font-size: 16pt;
+            font-weight: normal;
             color: #2E2E2E;
-            margin-bottom: 3mm;
+            margin-bottom: 2mm;
             letter-spacing: 0.5pt;
         }
 
         .profession {
-            font-size: 11pt;
+            font-size: 12pt;
             color: #777777;
             letter-spacing: 0.3pt;
-            font-weight: 300;
-            margin-bottom: 5mm;
+            font-weight: normal;
+            margin-bottom: 4mm;
         }
 
         .contact-item {
-            font-size: 8pt;
-            margin-bottom: 2mm;
+            font-size: 10pt;
+            margin-bottom: 1.5mm;
             color: #777777;
         }
 
         /* Photo Styling */
         .photo-container {
-            width: 35mm;
-            height: 35mm;
+            width: 30mm;
+            height: 30mm;
             overflow: hidden;
             border-radius: 1mm;
             margin-left: auto;
@@ -95,32 +95,32 @@
 
         /* Section Styling */
         .section {
-            margin-bottom: 8mm;
+            margin-bottom: 5mm;
         }
 
         .section-title {
-            font-size: 11pt;
+            font-size: 14pt;
             font-weight: 600;
             color: #2E2E2E;
-            margin-bottom: 4mm;
+            margin-bottom: 3mm;
             letter-spacing: 0.5pt;
             text-transform: uppercase;
         }
 
         /* Summary Section */
         .summary {
-            font-size: 9pt;
+            font-size: 11pt;
             color: #2E2E2E;
-            line-height: 1.5;
-            margin-bottom: 6mm;
-            padding: 4mm;
+            line-height: 1.15;
+            margin-bottom: 5mm;
+            padding: 3mm;
             background-color: #F8F8F8;
             border-radius: 1mm;
         }
 
         /* Experience Styling */
         .experience-item {
-            margin-bottom: 5mm;
+            margin-bottom: 3mm;
         }
 
         .experience-table {
@@ -133,7 +133,7 @@
         }
 
         .experience-date {
-            font-size: 9pt;
+            font-size: 8pt;
             color: #777777;
         }
 
@@ -142,22 +142,23 @@
         }
 
         .experience-title {
-            font-size: 10pt;
+            font-size: 12pt;
             font-weight: 600;
             color: #2E2E2E;
             margin-bottom: 1mm;
         }
 
         .experience-company {
-            font-size: 9pt;
+            font-size: 11pt;
             color: #555555;
-            margin-bottom: 2mm;
+            margin-bottom: 1.5mm;
         }
 
         .experience-description {
-            font-size: 8.5pt;
+            font-size: 10.5pt;
             color: #555555;
-            line-height: 1.4;
+            line-height: 1.15;
+            text-align: justify;
         }
 
         /* Skills and Languages Layout */
@@ -182,13 +183,13 @@
         }
 
         .skill-item {
-            font-size: 8pt;
+            font-size: 10pt;
             color: #2E2E2E;
             background-color: #F8F8F8;
             padding: 1.5mm 3mm;
             border-radius: 4mm;
-            margin-bottom: 2mm;
-            margin-right: 2mm;
+            margin-bottom: 1.5mm;
+            margin-right: 1.5mm;
             display: inline-block;
         }
 
@@ -211,12 +212,12 @@
         }
         
         .language-name {
-            font-size: 9pt;
+            font-size: 11pt;
             color: #2E2E2E;
         }
         
         .language-level {
-            font-size: 8pt;
+            font-size: 10pt;
             color: #777777;
             font-style: italic;
         }
@@ -227,10 +228,10 @@
         }
 
         .hobby-item {
-            font-size: 8pt;
+            font-size: 10pt;
             color: #777777;
             margin-bottom: 1mm;
-            margin-right: 3mm;
+            margin-right: 2.5mm;
             display: inline-block;
         }
 
@@ -238,7 +239,7 @@
         .divider {
             height: 0.1mm;
             background-color: #EEEEEE;
-            margin: 6mm 0;
+            margin: 5mm 0;
         }
     </style>
 </head>

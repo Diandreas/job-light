@@ -1,7 +1,7 @@
 @extends('layouts.cv')
 
 @section('content')
-    <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="{{ $currentLocale }}">
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
@@ -16,25 +16,29 @@
             --text-light: #4A4A4A;
         }
 
-        /* Seul changement critique : définir des marges dans @page */
+        /* Optimized page margins */
         @page {
+            margin: 10mm;
+            padding: 0;
             size: A4;
-            margin: 10mm; /* Uniformisé à 10mm comme les autres modèles */
         }
 
         body {
-            font-family: 'DejaVu Sans', sans-serif;
-            line-height: 1.2;
-            font-size: 9pt;
+            font-family: 'Times New Roman', 'DejaVu Serif', serif;
+            line-height: 1.15;
+            font-size: 10pt;
             color: var(--text-dark);
             margin: 0;
             padding: 0;
+            background-color: #FFFFFF;
         }
 
-        /* Retirer le padding du conteneur pour laisser @page gérer les marges */
+        /* Improved container width for better space utilization */
         .cv-container {
-            width: 170mm;
-            padding: 5mm;
+            width: 100%;
+            max-width: 190mm;
+            margin: 0 auto;
+            padding: 0;
         }
 
         table {
@@ -47,155 +51,144 @@
             padding: 0;
         }
 
-        /* Header Styling */
+        /* Improved Header Section */
         .header-table {
-            margin-bottom: 4mm;
-            border-bottom: 0.4mm solid var(--presidential-blue);
-            padding-bottom: 2mm;
+            width: 100%;
+            margin-bottom: 3mm;
         }
 
         .header-left {
-            width: 58%;
-            padding-right: 3mm;
+            width: 50%;
         }
 
         .header-right {
-            width: 25%;
-            padding-right: 2mm;
+            width: 32%;
+            text-align: right;
         }
 
         .photo-td {
-            width: 25mm;
+            width: 18%;
+            text-align: right;
         }
 
         .name {
-            font-size: 16pt;
-            font-weight: 700;
-            color: var(--presidential-blue);
+            font-size: 15pt;
+            font-weight: bold;
+            letter-spacing: 0.2mm;
             margin-bottom: 1mm;
-            letter-spacing: -0.2pt;
+            text-transform: uppercase;
+            color: var(--presidential-blue);
         }
 
         .profession {
-            font-size: 10pt;
-            color: var(--presidential-light);
+            font-size: 12pt;
             margin-bottom: 1.5mm;
-            font-weight: 600;
+            color: var(--presidential-light);
         }
 
         .contact-info {
-            font-size: 8pt;
-            color: var(--text-light);
-            line-height: 1.3;
+            font-size: 9pt;
+            line-height: 1.2;
         }
 
-        .photo-container {
-            width: 25mm;
-            height: 30mm;
-            overflow: hidden;
-            border: 0.25mm solid var(--presidential-light);
-            border-radius: 1.5mm;
-            box-shadow: 0 1mm 2mm rgba(0,45,114,0.1);
-        }
-
-        .photo-container img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-
-        /* Section Styling */
+        /* Enhanced Section Styling */
         .section {
-            margin-bottom: 3mm;
-            page-break-inside: avoid; /* Ajout pour éviter de couper les sections */
+            margin-bottom: 5mm;
         }
 
         .section-title {
-            font-size: 10pt;
+            font-size: 12pt;
             font-weight: bold;
-            color: var(--presidential-blue);
-            text-transform: uppercase;
-            margin-bottom: 1.5mm;
-            border-bottom: 0.2mm solid var(--presidential-light);
-            padding-bottom: 0.5mm;
-            page-break-after: avoid; /* Ajout pour garder le titre avec son contenu */
-        }
-
-        /* Summary Section */
-        .summary {
-            font-size: 8.5pt;
-            color: var(--text-dark);
-            line-height: 1.3;
-            text-align: justify;
-            margin-bottom: 3mm;
-            padding: 2mm;
-            background-color: var(--presidential-pale);
-            border-left: 0.6mm solid var(--presidential-blue);
-        }
-
-        /* Experience Section */
-        .experience-table {
-            width: 100%;
             margin-bottom: 2mm;
-            page-break-inside: avoid;
+            text-transform: uppercase;
+            text-align: left;
+            color: var(--presidential-blue);
+            border-bottom: 0.4mm solid var(--presidential-light);
+            padding-bottom: 0.5mm;
+        }
+
+        /* Experience Item Formatting */
+        .experience-table {
+            margin-bottom: 3mm;
+            width: 100%;
         }
 
         .date-td {
-            width: 20mm;
-            padding-right: 2mm;
+            width: 16%;
+            vertical-align: top;
+            padding-right: 1.5mm;
+        }
+
+        .content-td {
+            width: 84%;
         }
 
         .date-box {
-            font-size: 8pt;
-            color: var(--presidential-blue);
-            line-height: 1.2;
-            font-weight: 600;
-            background-color: var(--presidential-pale);
-            padding: 0.8mm 1mm;
-            border-radius: 0.8mm;
+            font-size: 9pt;
+            font-weight: bold;
+            color: var(--presidential-light);
         }
 
         .duration {
-            font-size: 7.5pt;
+            font-size: 8pt;
+            font-style: italic;
             color: var(--text-light);
             margin-top: 0.5mm;
         }
 
-        .content-td {
-            padding-right: 1.5mm;
-        }
-
         .position-title {
+            font-size: 10.5pt;
             font-weight: bold;
-            color: var(--presidential-blue);
-            font-size: 9pt;
             margin-bottom: 0.5mm;
         }
 
         .company-info {
-            color: var(--presidential-light);
-            font-weight: 600;
-            font-size: 8.5pt;
+            font-size: 9.5pt;
+            font-style: italic;
             margin-bottom: 1mm;
         }
 
+        /* Enhanced Description Table */
         .description-table {
             width: 100%;
-            padding-left: 1mm;
         }
 
         .description-bullet {
-            width: 1.5mm;
-            padding-right: 0.8mm;
+            width: 2mm;
+            vertical-align: top;
             color: var(--presidential-light);
-            font-size: 7.5pt;
+            font-weight: bold;
         }
 
         .description-content {
-            font-size: 8pt;
-            color: var(--text-light);
+            padding-bottom: 0.7mm;
+            text-align: justify;
+            font-size: 9.5pt;
+        }
+
+        /* Summary */
+        .summary {
+            font-size: 9.5pt;
             line-height: 1.2;
-            padding-bottom: 0.8mm;
+            margin-bottom: 3mm;
+            text-align: justify;
+            font-style: italic;
+            color: var(--text-light);
+        }
+
+        /* Photo */
+        .photo-container {
+            border: 0.4mm solid var(--presidential-light);
+            padding: 0.5mm;
+            margin: 0 auto;
+            max-width: 27mm;
+            box-shadow: 0 0.5mm 1mm rgba(0,0,0,0.1);
+        }
+
+        .photo-container img {
+            width: 100%;
+            height: auto;
+            display: block;
         }
 
         /* Skills Section */
@@ -205,40 +198,53 @@
         }
 
         .skill-category {
-            width: 50%;
-            padding-right: 2mm;
             vertical-align: top;
+            padding-right: 2mm;
         }
 
         .skill-item {
-            display: inline-block;
-            background-color: var(--presidential-pale);
-            padding: 0.8mm 1.5mm;
-            margin: 0 1mm 1mm 0;
-            border-radius: 0.8mm;
-            font-size: 8pt;
-            color: var(--presidential-blue);
-            border: 0.15mm solid var(--presidential-light);
+            display: block;
+            margin-bottom: 1mm;
+            font-size: 9.5pt;
+            line-height: 1.15;
         }
 
         .skill-item:before {
             content: "•";
             color: var(--presidential-light);
             margin-right: 0.5mm;
+            font-weight: bold;
         }
 
         /* Additional Info */
         .additional-info {
             font-size: 8pt;
             color: var(--text-light);
-            margin-top: 2mm;
+            margin-top: 1.5mm;
             text-align: center;
             font-style: italic;
         }
 
-        /* Classe utilitaire pour forcer un saut de page si nécessaire */
+        .hobby-item {
+            display: inline-block;
+            margin-right: 1.5mm;
+            margin-bottom: 0.5mm;
+        }
+
+        /* Page break utility */
         .page-break {
             page-break-before: always;
+        }
+
+        /* Print-specific adjustments */
+        @media print {
+            body {
+                font-size: 10pt;
+            }
+            
+            .cv-container {
+                width: 100%;
+            }
         }
     </style>
 </head>
@@ -255,25 +261,25 @@
             </td>
             <td class="header-right">
                 <div class="contact-info">
-                    @if($cvInformation['personalInformation']['email'])
+                    @if(!empty($cvInformation['personalInformation']['email']))
                         {{ $cvInformation['personalInformation']['email'] }}<br>
                     @endif
-                    @if($cvInformation['personalInformation']['phone'])
+                    @if(!empty($cvInformation['personalInformation']['phone']))
                         {{ $cvInformation['personalInformation']['phone'] }}<br>
                     @endif
-                    @if($cvInformation['personalInformation']['address'])
+                    @if(!empty($cvInformation['personalInformation']['address']))
                         {{ $cvInformation['personalInformation']['address'] }}<br>
                     @endif
-                    @if($cvInformation['personalInformation']['linkedin'])
+                    @if(!empty($cvInformation['personalInformation']['linkedin']))
                         {{ $cvInformation['personalInformation']['linkedin'] }}
                     @endif
                 </div>
             </td>
-            @if($cvInformation['personalInformation']['photo'])
+            @if(!empty($cvInformation['personalInformation']['photo']))
                 <td class="photo-td">
                     <div class="photo-container">
                         <img src="data:image/jpeg;base64,{{ base64_encode(file_get_contents(public_path('storage/' . str_replace('/storage/', '', $cvInformation['personalInformation']['photo'])))) }}"
-                             alt="Profile">
+                             alt="Profile Photo">
                     </div>
                 </td>
             @endif
@@ -283,7 +289,7 @@
     <!-- Summary Section -->
     @if(!empty($cvInformation['summaries']))
         <div class="section">
-            <div class="section-title">{{ $currentLocale === 'fr' ? 'Sommaire Professionnel' : 'Professional Summary' }}</div>
+            <div class="section-title">{{ $currentLocale === 'fr' ? 'Profil' : 'Profile' }}</div>
             <div class="summary">
                 {{ $cvInformation['summaries'][0]['description'] ?? '' }}
             </div>
@@ -314,7 +320,7 @@
                                 @if($startDate === $endDate)
                                     {{ $startDate }}
                                 @else
-                                    {{ $startDate }}-{{ $endDate }}
+                                    {{ $startDate }} - {{ $endDate }}
                                 @endif
 
                                 @if($startDate !== $endDate)
@@ -346,11 +352,11 @@
                                     @if(trim($line))
                                         <tr>
                                             <td class="description-bullet">•</td>
-                                            <td class="description-content">{{ $line }}</td>
+                                            <td class="description-content">{{ trim($line) }}</td>
                                         </tr>
                                     @endif
                                 @endforeach
-                                @if($experience['output'])
+                                @if(!empty($experience['output']))
                                     <tr>
                                         <td class="description-bullet">•</td>
                                         <td class="description-content">{{ $experience['output'] }}</td>
@@ -379,7 +385,7 @@
                     @foreach($columns as $column)
                         <td class="skill-category">
                             @foreach($column as $skill)
-                                <span class="skill-item">{{ $currentLocale === 'fr' ? $skill['name'] : $skill['name_en'] }}</span>
+                                <div class="skill-item">{{ $currentLocale === 'fr' ? $skill['name'] : $skill['name_en'] }}</div>
                             @endforeach
                         </td>
                     @endforeach
@@ -392,11 +398,18 @@
     @if(!empty($cvInformation['hobbies']))
         <div class="section">
             <div class="section-title">{{ $currentLocale === 'fr' ? 'Informations Complémentaires' : 'Additional Information' }}</div>
-            @foreach($cvInformation['hobbies'] as $hobby)
-                <span class="skill-item">{{ $currentLocale === 'fr' ? $hobby['name'] : $hobby['name_en'] }}</span>
-            @endforeach
+            <div>
+                @foreach($cvInformation['hobbies'] as $hobby)
+                    <span class="hobby-item skill-item">{{ $currentLocale === 'fr' ? $hobby['name'] : $hobby['name_en'] }}</span>
+                @endforeach
+            </div>
         </div>
     @endif
+
+    <!-- Footer with date -->
+    <div class="additional-info">
+        {{ $currentLocale === 'fr' ? 'Mise à jour le ' : 'Updated on ' }} {{ \Carbon\Carbon::now()->locale($currentLocale)->isoFormat('LL') }}
+    </div>
 </div>
 </body>
 </html>

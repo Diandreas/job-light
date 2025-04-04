@@ -10,6 +10,7 @@
     <style>
         @page {
             margin: 5mm;
+            margin-left: -1mm;
             padding: 0;
             size: A4;
         }
@@ -17,7 +18,7 @@
         body {
             font-family: 'DejaVu Serif', serif;
             line-height: 1.2;
-            font-size: 9pt;
+            font-size: 10.5pt;
             color: #111111;
             margin: 0;
             padding: 0;
@@ -64,20 +65,23 @@
         }
 
         .monogram-cell {
-            width: 18%;
+            /* width: 18%; */
+            padding: 2px;
             text-align: center;
+          
         }
 
         .monogram {
             font-size: 20pt;
             font-weight: bold;
+            margin-bottom: 2mm;
             color: #D4AF37 !important;
             border: 1.5mm solid #D4AF37 !important;
             border-radius: 50%;
             width: 15mm;
             height: 15mm;
             line-height: 15mm;
-            margin: 0 auto;
+            /* margin: 0 auto; */
             -webkit-print-color-adjust: exact !important;
             print-color-adjust: exact !important;
         }
@@ -145,7 +149,7 @@
         .contact-item {
             display: inline-block;
             margin: 0 2mm;
-            font-size: 8pt;
+            font-size: 9.5pt;
             color: #111111;
             letter-spacing: 0.5pt;
         }
@@ -161,7 +165,7 @@
         }
 
         .section-title {
-            font-size: 10pt;
+            font-size: 12pt;
             font-weight: normal;
             color: #D4AF37 !important;
             margin-bottom: 2mm;
@@ -174,7 +178,7 @@
 
         /* Summary Section */
         .summary {
-            font-size: 8.5pt;
+            font-size: 10pt;
             color: #111111;
             line-height: 1.4;
             text-align: center;
@@ -203,27 +207,27 @@
         }
 
         .experience-date {
-            font-size: 8pt;
+            font-size: 9.5pt;
             color: #111111;
             font-style: italic;
         }
 
         .experience-company {
-            font-size: 8pt;
+            font-size: 9.5pt;
             color: #111111;
             margin-top: 1mm;
             font-weight: bold;
         }
 
         .experience-title {
-            font-size: 9pt;
+            font-size: 10.5pt;
             font-weight: normal;
             color: #111111;
             margin-bottom: 1mm;
         }
 
         .experience-description {
-            font-size: 8pt;
+            font-size: 9.5pt;
             color: #333333;
             line-height: 1.3;
             text-align: justify;
@@ -254,26 +258,18 @@
         }
 
         .skill-name {
-            font-size: 8.5pt;
+            font-size: 10pt;
             font-weight: normal;
             color: #111111;
-            margin-bottom: 0.8mm;
+            margin-bottom: 1mm;
         }
 
         .skill-bar-container {
-            height: 0.5mm;
-            background-color: #EEEEEE;
-            position: relative;
+            display: none;
         }
 
         .skill-bar {
-            height: 100%;
-            background-color: #D4AF37 !important;
-            position: absolute;
-            top: 0;
-            left: 0;
-            -webkit-print-color-adjust: exact !important;
-            print-color-adjust: exact !important;
+            display: none;
         }
 
         /* Language Section */
@@ -283,13 +279,13 @@
         }
         
         .language-name {
-            font-size: 8.5pt;
+            font-size: 10pt;
             color: #111111;
             display: inline-block;
         }
         
         .language-level {
-            font-size: 7.5pt;
+            font-size: 9pt;
             color: #333333;
             display: inline-block;
             font-style: italic;
@@ -304,7 +300,7 @@
         .hobby-item {
             display: inline-block;
             margin: 0 1.5mm;
-            font-size: 8pt;
+            font-size: 9.5pt;
             color: #333333;
             font-style: italic;
         }
@@ -433,9 +429,6 @@
                                 <div class="skill-item">
                                     <div class="skill-name">
                                         {{ $currentLocale === 'fr' ? $competence['name'] : $competence['name_en'] }}
-                                    </div>
-                                    <div class="skill-bar-container">
-                                        <div class="skill-bar" style="width: {{ min((($index + 1) % 5 + 2) * 17, 100) }}%"></div>
                                     </div>
                                 </div>
                             @endforeach

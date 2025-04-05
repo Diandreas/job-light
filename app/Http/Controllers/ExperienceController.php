@@ -89,11 +89,11 @@ class ExperienceController extends Controller
         try {
             // 1. Valider les données de base
             $validatedData = $request->validate([
-                'name' => 'required|string|max:255',
-                'description' => 'nullable|string|max:255',
+                'name' => 'required|string',
+                'description' => 'nullable|string',
                 'date_start' => 'nullable|date',
                 'date_end' => 'nullable|date|after_or_equal:date_start',
-                'output' => 'nullable|string|max:255',
+                'output' => 'nullable|string',
                 'experience_categories_id' => 'required|exists:experience_categories,id',
                 'comment' => 'nullable|string',
                 'InstitutionName' => 'nullable|string|max:255',
@@ -197,11 +197,11 @@ class ExperienceController extends Controller
     public function update(Request $request, Experience $experience)
     {
         $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'description' => 'nullable|string|max:255',
+            'name' => 'required|string',
+            'description' => 'nullable|string',
             'date_start' => 'nullable|date',
             'date_end' => 'nullable|date|after_or_equal:date_start',
-            'output' => 'nullable|string|max:255',
+            'output' => 'nullable|string',
             'experience_categories_id' => 'required|exists:experience_categories,id',
             'comment' => 'nullable|string',
             'InstitutionName' => 'nullable|string|max:255',

@@ -36,6 +36,8 @@ class User extends Authenticatable
         'phone_number',
         'username',
         'photo',
+        'manual_competences',
+        'manual_hobbies',
         'wallet_balance',
         'UserType',
         'sponsor_id',
@@ -61,6 +63,8 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
+        'manual_competences' => 'array',
+        'manual_hobbies' => 'array',
     ];
 
     public function cvInfos()

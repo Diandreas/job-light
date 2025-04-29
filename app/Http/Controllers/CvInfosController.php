@@ -221,22 +221,43 @@ class CvInfosController extends Controller
         ->toArray();
 
         $baseInfo = [
-            'hobbies' => collect($user->hobbies()->select(['id', 'name', 'name_en'])->get())->map(function($hobby) {
-                return [
-                    'id' => $hobby->id,
-                    'name' => $hobby->name ?? '',
-                    'name_en' => $hobby->name_en ?? ''
-                ];
-            })->toArray(),
+            'hobbies' => array_merge(
+                collect($user->hobbies()->select(['id', 'name', 'name_en'])->get())->map(function($hobby) {
+                    return [
+                        'id' => $hobby->id,
+                        'name' => $hobby->name ?? '',
+                        'name_en' => $hobby->name_en ?? ''
+                    ];
+                })->toArray(),
+                is_array($user->manual_hobbies) ? array_map(function($hobby) {
+                    return [
+                        'id' => $hobby['id'] ?? 'manual-' . uniqid(),
+                        'name' => $hobby['name'] ?? '',
+                        'name_en' => $hobby['name_en'] ?? $hobby['name'] ?? '',
+                        'is_manual' => true
+                    ];
+                }, $user->manual_hobbies) : []
+            ),
 
-            'competences' => collect($user->competences()->select(['id', 'name', 'name_en', 'description'])->get())->map(function($competence) {
-                return [
-                    'id' => $competence->id,
-                    'name' => $competence->name ?? '',
-                    'name_en' => $competence->name_en ?? '',
-                    'description' => $competence->description ?? ''
-                ];
-            })->toArray(),
+            'competences' => array_merge(
+                collect($user->competences()->select(['id', 'name', 'name_en', 'description'])->get())->map(function($competence) {
+                    return [
+                        'id' => $competence->id,
+                        'name' => $competence->name ?? '',
+                        'name_en' => $competence->name_en ?? '',
+                        'description' => $competence->description ?? ''
+                    ];
+                })->toArray(),
+                is_array($user->manual_competences) ? array_map(function($competence) {
+                    return [
+                        'id' => $competence['id'] ?? 'manual-' . uniqid(),
+                        'name' => $competence['name'] ?? '',
+                        'name_en' => $competence['name_en'] ?? $competence['name'] ?? '',
+                        'description' => $competence['description'] ?? '',
+                        'is_manual' => true
+                    ];
+                }, $user->manual_competences) : []
+            ),
 
             'languages' => $languages,
             'experiences' => $experiencesWithReferences,

@@ -173,6 +173,13 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::delete('/user-competences/{user_id}/{competence_id}', [UserCompetenceController::class, 'destroy'])->name('user-competences.destroy');
     Route::resource('user-competences', UserCompetenceController::class)->except(['destroy']);
 
+    // Compétences manuelles
+    Route::post('/user-manual-competences', [App\Http\Controllers\UserManualCompetenceController::class, 'store'])->name('user-manual-competences.store');
+    Route::delete('/user-manual-competences/{user_id}/{competence_id}', [App\Http\Controllers\UserManualCompetenceController::class, 'destroy'])->name('user-manual-competences.destroy');
+
+    // Hobbies manuels
+    Route::post('/user-manual-hobbies', [App\Http\Controllers\UserManualHobbyController::class, 'store'])->name('user-manual-hobbies.store');
+    Route::delete('/user-manual-hobbies/{user_id}/{hobby_id}', [App\Http\Controllers\UserManualHobbyController::class, 'destroy'])->name('user-manual-hobbies.destroy');
 
     // Sponsorship
     Route::get('/sponsorship', [SponsorshipController::class, 'index'])->name('sponsorship.index');

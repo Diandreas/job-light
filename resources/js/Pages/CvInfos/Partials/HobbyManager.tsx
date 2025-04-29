@@ -4,17 +4,20 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Card, CardHeader, CardContent, CardTitle, CardDescription } from '@/Components/ui/card';
 import { Badge } from '@/Components/ui/badge';
 import { Input } from '@/Components/ui/input';
-import { Heart, X, Search, Plus, Sparkles } from 'lucide-react';
+import { Heart, X, Search, Plus, Sparkles, Edit, Check } from 'lucide-react';
 import { useToast } from '@/Components/ui/use-toast';
 import { ScrollArea } from "@/Components/ui/scroll-area";
 import axios from 'axios';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter, DialogClose } from "@/Components/ui/dialog";
+import { Label } from "@/Components/ui/label";
 
 interface Hobby {
-    id: number;
+    id: number | string;
     name: string;
     name_en: string;
+    is_manual?: boolean;
 }
 
 interface Props {
@@ -33,10 +36,15 @@ const getLocalizedName = (hobby: Hobby, currentLanguage: string): string => {
 
 const HobbyManager: React.FC<Props> = ({ auth, availableHobbies, initialUserHobbies, onUpdate }) => {
     const { t, i18n } = useTranslation();
-    const [selectedHobbyId, setSelectedHobbyId] = useState<number | null>(null);
+    const [selectedHobbyId, setSelectedHobbyId] = useState<number | string | null>(null);
     const [userHobbies, setUserHobbies] = useState<Hobby[]>(initialUserHobbies);
     const [searchTerm, setSearchTerm] = useState('');
     const { toast } = useToast();
+    const [showAddManualDialog, setShowAddManualDialog] = useState(false);
+    const [newManualHobby, setNewManualHobby] = useState<{ name: string; name_en: string }>({
+        name: '',
+        name_en: ''
+    });
 
     useEffect(() => {
         setUserHobbies(initialUserHobbies);
@@ -103,9 +111,66 @@ const HobbyManager: React.FC<Props> = ({ auth, availableHobbies, initialUserHobb
         }
     };
 
-    const handleRemoveHobby = async (hobbyId: number) => {
+    const handleAddManualHobby = async () => {
+        if (!newManualHobby.name.trim()) {
+            toast({
+                title: t('hobbies.errors.manual.title'),
+                description: t('hobbies.errors.manual.description'),
+                variant: 'destructive'
+            });
+            return;
+        }
+
         try {
-            await axios.delete(`/user-hobbies/${auth.user.id}/${hobbyId}`);
+            // Créer un nouvel ID unique pour le hobby manuel
+            const newId = `manual-${Date.now()}`;
+            const manualHobby: Hobby = {
+                id: newId,
+                name: newManualHobby.name.trim(),
+                name_en: newManualHobby.name_en.trim() || newManualHobby.name.trim(),
+                is_manual: true
+            };
+
+            // Enregistrer le hobby manuel dans le profil de l'utilisateur
+            await axios.post('/user-manual-hobbies', {
+                user_id: auth.user.id,
+                hobby: manualHobby
+            });
+
+            // Ajouter le hobby à la liste locale
+            const updatedHobbies = [...userHobbies, manualHobby];
+            setUserHobbies(updatedHobbies);
+            onUpdate(updatedHobbies);
+
+            // Réinitialiser le formulaire
+            setNewManualHobby({ name: '', name_en: '' });
+            setShowAddManualDialog(false);
+
+            toast({
+                title: t('hobbies.success.manual.title'),
+                description: t('hobbies.success.manual.description', {
+                    hobby: manualHobby.name
+                }),
+            });
+        } catch (error) {
+            toast({
+                title: t('hobbies.errors.adding.title'),
+                description: error.response?.data?.message || t('hobbies.errors.generic'),
+                variant: 'destructive'
+            });
+        }
+    };
+
+    const handleRemoveHobby = async (hobbyId: number | string) => {
+        try {
+            if (typeof hobbyId === 'string' && hobbyId.startsWith('manual-')) {
+                // Supprimer un hobby manuel
+                await axios.delete(`/user-manual-hobbies/${auth.user.id}/${hobbyId}`);
+            } else {
+                // Supprimer un hobby standard
+                await axios.delete(`/user-hobbies/${auth.user.id}/${hobbyId}`);
+            }
+
             const updatedHobbies = userHobbies.filter(h => h.id !== hobbyId);
             setUserHobbies(updatedHobbies);
             onUpdate(updatedHobbies);
@@ -149,7 +214,11 @@ const HobbyManager: React.FC<Props> = ({ auth, availableHobbies, initialUserHobb
                         <div className="flex-1">
                             <Select
                                 value={selectedHobbyId?.toString() || ''}
-                                onValueChange={(value) => setSelectedHobbyId(parseInt(value))}
+                                onValueChange={(value) => {
+                                    // Vérifier si la valeur est numérique ou non
+                                    const numericValue = parseInt(value);
+                                    setSelectedHobbyId(!isNaN(numericValue) ? numericValue : value);
+                                }}
                             >
                                 <SelectTrigger className="border-amber-200 dark:border-amber-800 focus:ring-amber-500 dark:focus:ring-amber-400 dark:bg-gray-900">
                                     <SelectValue placeholder={t('hobbies.select.placeholder')} />
@@ -163,13 +232,71 @@ const HobbyManager: React.FC<Props> = ({ auth, availableHobbies, initialUserHobb
                                 </SelectContent>
                             </Select>
                         </div>
-                        <Button
-                            onClick={handleAddHobby}
-                            className="bg-gradient-to-r from-amber-500 to-purple-500 hover:from-amber-600 hover:to-purple-600 text-white dark:from-amber-400 dark:to-purple-400 dark:hover:from-amber-500 dark:hover:to-purple-500"
-                        >
-                            <Plus className="w-4 h-4 mr-2" />
-                            {t('hobbies.actions.add')}
-                        </Button>
+                        <div className="flex gap-2">
+                            <Button
+                                onClick={handleAddHobby}
+                                className="bg-gradient-to-r from-amber-500 to-purple-500 hover:from-amber-600 hover:to-purple-600 text-white dark:from-amber-400 dark:to-purple-400 dark:hover:from-amber-500 dark:hover:to-purple-500"
+                            >
+                                <Plus className="w-4 h-4 mr-2" />
+                                {t('hobbies.actions.add')}
+                            </Button>
+
+                            <Dialog open={showAddManualDialog} onOpenChange={setShowAddManualDialog}>
+                                <DialogTrigger asChild>
+                                    <Button
+                                        variant="outline"
+                                        className="border-amber-200 dark:border-amber-800 hover:bg-amber-50 dark:hover:bg-amber-900/30
+                                                text-amber-700 dark:text-amber-300"
+                                    >
+                                        <Edit className="w-4 h-4 mr-2" />
+                                        {t('hobbies.actions.addManual')}
+                                    </Button>
+                                </DialogTrigger>
+                                <DialogContent className="dark:bg-gray-900 border-amber-200 dark:border-amber-800">
+                                    <DialogHeader>
+                                        <DialogTitle className="text-amber-700 dark:text-amber-300">
+                                            {t('hobbies.manual.title')}
+                                        </DialogTitle>
+                                    </DialogHeader>
+                                    <div className="space-y-4 py-4">
+                                        <div className="space-y-2">
+                                            <Label htmlFor="hobby-name">{t('hobbies.manual.name')}</Label>
+                                            <Input
+                                                id="hobby-name"
+                                                value={newManualHobby.name}
+                                                onChange={(e) => setNewManualHobby({ ...newManualHobby, name: e.target.value })}
+                                                className="border-amber-200 dark:border-amber-800 focus:ring-amber-500 dark:focus:ring-amber-400 dark:bg-gray-900"
+                                            />
+                                        </div>
+                                        <div className="space-y-2">
+                                            <Label htmlFor="hobby-name-en">{t('hobbies.manual.nameEn')}</Label>
+                                            <Input
+                                                id="hobby-name-en"
+                                                value={newManualHobby.name_en}
+                                                onChange={(e) => setNewManualHobby({ ...newManualHobby, name_en: e.target.value })}
+                                                className="border-amber-200 dark:border-amber-800 focus:ring-amber-500 dark:focus:ring-amber-400 dark:bg-gray-900"
+                                            />
+                                        </div>
+                                    </div>
+                                    <DialogFooter>
+                                        <DialogClose asChild>
+                                            <Button variant="outline" className="border-red-200 dark:border-red-800 hover:bg-red-50 dark:hover:bg-red-900/30 text-red-700 dark:text-red-300">
+                                                {t('common.cancel')}
+                                            </Button>
+                                        </DialogClose>
+                                        <Button
+                                            onClick={handleAddManualHobby}
+                                            className="bg-gradient-to-r from-amber-500 to-purple-500 hover:from-amber-600 hover:to-purple-600
+                                                    dark:from-amber-400 dark:to-purple-400 dark:hover:from-amber-500 dark:hover:to-purple-500
+                                                    text-white"
+                                        >
+                                            <Check className="w-4 h-4 mr-2" />
+                                            {t('hobbies.actions.save')}
+                                        </Button>
+                                    </DialogFooter>
+                                </DialogContent>
+                            </Dialog>
+                        </div>
                     </div>
 
                     <div className="relative">
@@ -204,11 +331,19 @@ const HobbyManager: React.FC<Props> = ({ auth, availableHobbies, initialUserHobb
                                         >
                                             <Badge
                                                 variant="secondary"
-                                                className="bg-gradient-to-r from-amber-100 to-purple-100 hover:from-amber-200 hover:to-purple-200
-                                                         dark:from-amber-900/40 dark:to-purple-900/40 dark:hover:from-amber-900/60 dark:hover:to-purple-900/60
-                                                         text-gray-800 dark:text-gray-200 flex items-center gap-2 py-2 pl-3 pr-2"
+                                                className={`
+                                                    ${hobby.is_manual
+                                                        ? 'bg-gradient-to-r from-purple-100 to-blue-100 hover:from-purple-200 hover:to-blue-200 dark:from-purple-900/40 dark:to-blue-900/40 dark:hover:from-purple-900/60 dark:hover:to-blue-900/60'
+                                                        : 'bg-gradient-to-r from-amber-100 to-purple-100 hover:from-amber-200 hover:to-purple-200 dark:from-amber-900/40 dark:to-purple-900/40 dark:hover:from-amber-900/60 dark:hover:to-purple-900/60'
+                                                    }
+                                                    text-gray-800 dark:text-gray-200 flex items-center gap-2 py-2 pl-3 pr-2`}
                                             >
                                                 <span>{getLocalizedName(hobby, i18n.language)}</span>
+                                                {hobby.is_manual && (
+                                                    <span className="px-1 py-0.5 text-[10px] rounded bg-purple-200 dark:bg-purple-800 text-purple-800 dark:text-purple-200">
+                                                        {t('hobbies.manual.tag')}
+                                                    </span>
+                                                )}
                                                 <Button
                                                     variant="ghost"
                                                     size="sm"

@@ -148,7 +148,7 @@ const CompetenceManager: React.FC<Props> = ({ auth, availableCompetences, initia
             onUpdate(updatedCompetences);
 
             // Réinitialiser le formulaire
-            setNewManualCompetence({ name: '', name_en: '',description:'' });
+            setNewManualCompetence({ name: '', name_en: '' });
             setShowAddManualDialog(false);
 
             toast({

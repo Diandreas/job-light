@@ -356,6 +356,19 @@ const PersonalInfoCard = ({ item, onEdit, updateCvInformation }) => {
                             {t('cv.interface.personal.photo.cropDescription')}
                         </SheetDescription>
                     </SheetHeader>
+                    <Separator className="my-3 sm:my-4" />
+                    <div className="flex justify-end gap-2 sm:gap-3 mt-3 sm:mt-4 sticky bottom-0 bg-white dark:bg-gray-900 pt-3 sm:pt-4 border-t border-amber-100 dark:border-amber-800">
+                        <Button variant="outline" onClick={() => setIsOpen(false)} className="h-8 sm:h-10 text-xs sm:text-sm">
+                            {t('cv.interface.personal.photo.cancel')}
+                        </Button>
+                        <Button
+                            onClick={handleUpload}
+                            disabled={!completedCrop || isUploading}
+                            className="bg-gradient-to-r from-amber-500 to-purple-500 hover:from-amber-600 hover:to-purple-600 dark:from-amber-400 dark:to-purple-400 h-8 sm:h-10 text-xs sm:text-sm"
+                        >
+                            {isUploading ? t('cv.interface.personal.photo.saving') : t('cv.interface.personal.photo.save')}
+                        </Button>
+                    </div>
 
                     <Separator className="my-3 sm:my-4" />
 
@@ -387,18 +400,7 @@ const PersonalInfoCard = ({ item, onEdit, updateCvInformation }) => {
                         </div>
                     </ScrollArea>
 
-                    <div className="flex justify-end gap-2 sm:gap-3 mt-3 sm:mt-4 sticky bottom-0 bg-white dark:bg-gray-900 pt-3 sm:pt-4 border-t border-amber-100 dark:border-amber-800">
-                        <Button variant="outline" onClick={() => setIsOpen(false)} className="h-8 sm:h-10 text-xs sm:text-sm">
-                            {t('cv.interface.personal.photo.cancel')}
-                        </Button>
-                        <Button
-                            onClick={handleUpload}
-                            disabled={!completedCrop || isUploading}
-                            className="bg-gradient-to-r from-amber-500 to-purple-500 hover:from-amber-600 hover:to-purple-600 dark:from-amber-400 dark:to-purple-400 h-8 sm:h-10 text-xs sm:text-sm"
-                        >
-                            {isUploading ? t('cv.interface.personal.photo.saving') : t('cv.interface.personal.photo.save')}
-                        </Button>
-                    </div>
+
                 </SheetContent>
             </Sheet>
         </div>

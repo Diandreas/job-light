@@ -192,6 +192,9 @@
             "address": "Address",
             "linkedin": "LinkedIn",
             "github": "GitHub"
+        },
+        "sections": {
+            "notFound": "Section not found"
         }
     },
     "profile": {
@@ -224,7 +227,8 @@
         "back": "Back",
         "next": "Next",
         "manage": "Manage",
-        "close": "Close"
+        "close": "Close",
+        "tokens": "tokens"
     },
     "wallet": {
         "balance": "Balance",
@@ -270,58 +274,6 @@
             "max_models_reached": "You cannot add more than {{max}} models",
             "error": "An error occurred",
             "model_from_discover_selected": "Model selected from Discover section"
-        },
-        "sidebar": {
-            "items": {
-                "personalInfo": "Personal Information",
-                "summary": "Summary",
-                "experience": "Experiences",
-                "competence": "Skills",
-                "profession": "Education",
-                "language": "Languages",
-                "hobby": "Interests"
-            }
-        },
-        "personal": {
-            "fields": {
-                "email": "Email",
-                "phone": "Phone",
-                "address": "Address",
-                "linkedin": "LinkedIn",
-                "github": "GitHub",
-                "notSpecified": "Not specified"
-            },
-            "photo": {
-                "crop": "Crop photo",
-                "cropDescription": "Adjust the frame to select the part of the image to use",
-                "save": "Save",
-                "saving": "Saving...",
-                "cancel": "Cancel",
-                "success": {
-                    "title": "Photo updated",
-                    "description": "Your profile photo has been updated successfully"
-                },
-                "deleteSuccess": {
-                    "title": "Photo deleted",
-                    "description": "Your profile photo has been deleted successfully"
-                },
-                "error": {
-                    "title": "Error",
-                    "noCrop": "Please select a part of the image"
-                },
-                "sizeError": "Image size should not exceed 5 MB"
-            }
-        },
-        "import": {
-            "button": "Import CV",
-            "pdf": "Import PDF",
-            "word": "Import Word",
-            "loading": "Importing...",
-            "success": "Import successful",
-            "successDetail": "Your CV has been imported successfully",
-            "error": "Import error",
-            "errorDetail": "An error occurred during import",
-            "insufficient": "Insufficient balance"
         }
     },
     "auth": {
@@ -421,7 +373,6 @@
             }
         },
         "no_model": {
-            "title": "Selection required",
             "message": "Please select a CV template in the \"My designs\" section before continuing.",
             "action": "Choose a template"
         },
@@ -499,7 +450,15 @@
             "empty": "Add your first interests to personalize your profile!"
         },
         "actions": {
-            "add": "Add"
+            "add": "Add",
+            "addManual": "Manual entry",
+            "save": "Save"
+        },
+        "manual": {
+            "title": "Add custom interest",
+            "name": "Interest name",
+            "nameEn": "Interest name (English)",
+            "tag": "Custom"
         },
         "mobile": {
             "openDrawer": "Manage my interests"
@@ -512,6 +471,10 @@
             "removed": {
                 "title": "Interest removed",
                 "description": "This interest has been removed from your profile"
+            },
+            "manual": {
+                "title": "Custom interest added",
+                "description": "{{hobby}} has been added to your profile"
             }
         },
         "errors": {
@@ -524,6 +487,10 @@
             },
             "removing": {
                 "title": "Error removing"
+            },
+            "manual": {
+                "title": "Error",
+                "description": "Please enter an interest name"
             },
             "generic": "An error occurred. Please try again."
         }
@@ -570,7 +537,7 @@
                 "title": "Error",
                 "description": "Please select an education"
             },
-            "manual": {
+            "empty": {
                 "title": "Error",
                 "description": "Please enter your education"
             },
@@ -598,7 +565,16 @@
             "empty": "No skills selected. Add your first skills!"
         },
         "actions": {
-            "add": "Add"
+            "add": "Add",
+            "addManual": "Manual entry",
+            "save": "Save"
+        },
+        "manual": {
+            "title": "Add custom skill",
+            "name": "Skill name",
+            "nameEn": "Skill name (English)",
+            "description": "Skill description",
+            "tag": "Custom"
         },
         "success": {
             "added": {
@@ -608,6 +584,10 @@
             "removed": {
                 "title": "Skill removed",
                 "description": "The skill has been removed from your profile"
+            },
+            "manual": {
+                "title": "Custom skill added",
+                "description": "{{name}} has been added to your profile"
             }
         },
         "errors": {
@@ -620,6 +600,10 @@
             },
             "removing": {
                 "title": "Error removing"
+            },
+            "manual": {
+                "title": "Error",
+                "description": "Please enter a skill name"
             },
             "generic": "An error occurred. Please try again."
         }
@@ -664,7 +648,10 @@
                 "internship": "Internship",
                 "volunteer": "Volunteer",
                 "auto": "Auto-generate",
-                "defaultComment": "Default comment"
+                "defaultComment": "Default comment",
+                "academic": {
+                    "defaultOutput": "Academic achievement"
+                }
             },
             "fields": {
                 "name": {
@@ -746,7 +733,9 @@
             "attachment": {
                 "delete": "Error deleting attachment",
                 "noFile": "No file available",
-                "noFileDescription": "There is no attachment to preview"
+                "noFileDescription": "There is no attachment to preview",
+                "tooLarge": "File is too large",
+                "tooLargeDescription": "Maximum file size is 5MB"
             }
         }
     },
@@ -754,7 +743,7 @@
         "title": "My Summaries",
         "subtitle": "Manage your professional summaries",
         "new": "New summary",
-        "edit": "Edit summary",
+        "edit": "Modify summary",
         "search": "Search summary...",
         "noResults": "No summaries match your search.",
         "createFirst": "Create your first professional summary!",
@@ -800,16 +789,19 @@
         "select": "Select",
         "selected": "Selected",
         "edit": "Edit",
-        "delete": "Delete"
+        "delete": "Delete",
+        "close": "Close"
     },
     "toast": {
         "success": {
+            "title": "Success",
             "created": "Summary created successfully",
             "updated": "Summary updated successfully",
             "deleted": "Summary deleted successfully",
             "selected": "Summary selected successfully"
         },
         "error": {
+            "title": "Error",
             "create": "Unable to create summary",
             "update": "Unable to update summary",
             "delete": "Unable to delete summary",
@@ -894,54 +886,6 @@
             "subtitle": "Invite your friends and earn rewards",
             "button": "Invite now"
         },
-        "code": {
-            "title": "Your referral code",
-            "validUntil": "Valid until",
-            "expired": "Expired",
-            "almostExpired": "Almost expired",
-            "valid": "Valid",
-            "renewal": {
-                "title": "Renew code",
-                "loading": "Loading...",
-                "expires": "Expires on",
-                "expired": "Expired on",
-                "viewDetails": "View details",
-                "renew": "Renew",
-                "success": "Code renewed successfully",
-                "error": "Error renewing",
-                "renewCode": "Renew Code",
-                "title": "Referral Management",
-                "description": "Manage your referral code and renew it when it expires.",
-                "tabs": {
-                    "current": "Current Code",
-                    "new": "New Code"
-                },
-                "sponsorCode": "Sponsor code",
-                "sponsor": "Sponsor",
-                "validity": "Code validity",
-                "expires": "Expires on",
-                "expired": "Expired",
-                "renewFor30Days": "Renew this code for 30 days",
-                "noSponsorYet": "You don't have a sponsor yet.",
-                "canApplyCodeInNewTab": "You can apply a referral code in the \"New Code\" tab.",
-                "noReferralCodeYet": "You don't have a referral code yet.",
-                "visitSponsorshipPage": "Visit the referral page to create one.",
-                "newSponsorCode": "New referral code",
-                "enterCodePlaceholder": "Enter the referral code",
-                "validityInfo": "The code will be valid for 30 days. Your sponsor will receive a percentage of your purchases during this period.",
-                "applyCode": "Apply this code",
-                "yourCodeToShare": "Your own code to share",
-                "code": "Code",
-                "shareCodeWithFriends": "Share this code with your friends to earn commissions on their purchases!",
-                "viewAllDetails": "View all details",
-                "success": "Code renewed",
-                "successDescription": "Your referral code has been renewed successfully.",
-                "newCodeApplied": "New code applied",
-                "newCodeAppliedDescription": "The new referral code has been applied successfully.",
-                "enterCode": "Please enter a referral code.",
-                "applyError": "An error occurred while applying the code."
-            }
-        },
         "dashboard": {
             "yourReferrals": "Your referrals",
             "noReferrals": "No referrals yet",
@@ -966,6 +910,43 @@
             "shareEmail": "Share by email",
             "shareWhatsapp": "Share via WhatsApp",
             "invitationLink": "Invitation link"
+        },
+        "progress": {
+            "title": "Your Progress",
+            "currentLevel": "Current Level",
+            "nextLevel": "Next Level",
+            "referralsNeeded": "Referrals needed for next level",
+            "earnings": "Total Earnings",
+            "referralCount": "Total Referrals"
+        },
+        "support": {
+            "title": "Support",
+            "description": "Need help with the referral program?",
+            "contact": "Contact our support team",
+            "email": "Email us",
+            "whatsapp": "WhatsApp us"
+        },
+        "info": {
+            "title": "Program Information",
+            "description": "Learn more about our referral program",
+            "benefits": {
+                "title": "Benefits",
+                "list": [
+                    "Earn commissions on referrals",
+                    "Unlock exclusive rewards",
+                    "Grow your network",
+                    "Help others succeed"
+                ]
+            },
+            "howItWorks": {
+                "title": "How it works",
+                "steps": [
+                    "Share your referral code",
+                    "Your friends sign up with your code",
+                    "Earn rewards when they make purchases",
+                    "Collect your earnings"
+                ]
+            }
         }
     },
     "pages": {
@@ -1367,6 +1348,15 @@
         "language": {
             "en": "English",
             "fr": "French"
+        }
+    },
+    "blog": {
+        "index": {
+            "title": "Blog Posts",
+            "heading": "Guidy Blog",
+            "description": "Discover our articles, tips and advice to create a standout CV and optimize your job search.",
+            "read_more": "Read article",
+            "no_articles": "No articles available at the moment."
         }
     }
 }

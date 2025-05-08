@@ -133,4 +133,5 @@ export const MobileTabBar: React.FC<MobileTabBarProps> = ({ onRenewCodeClick, is
             ))}
         </div>
     );
-}; 
+};
+

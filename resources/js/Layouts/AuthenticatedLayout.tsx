@@ -42,6 +42,17 @@ interface MenuItem {
 const LanguageSelector = () => {
     const { t, i18n } = useTranslation();
 
+    const languages = [
+        { code: "fr", label: "Français" },
+        { code: "en", label: "English" }
+    ];
+
+    const handleLanguageChange = (langCode) => {
+        i18n.changeLanguage(langCode);
+    };
+
+    const currentLanguage = i18n.language;
+
     return (
         <Dropdown>
             <Dropdown.Trigger>
@@ -49,47 +60,40 @@ const LanguageSelector = () => {
                     variant="ghost"
                     size="sm"
                     className="flex items-center gap-1 sm:gap-2 hover:bg-amber-50 dark:hover:bg-amber-500/20 h-7 sm:h-auto px-2 sm:px-3"
+                    aria-label={t('common.changeLanguage')}
                 >
                     <Globe className="h-3.5 w-3.5 sm:h-5 sm:w-5 text-amber-500 dark:text-amber-400" />
-                    <span className="font-medium text-xs sm:text-sm">{i18n.language === 'fr' ? 'FR' : 'EN'}</span>
+                    <span className="font-medium text-xs sm:text-sm">
+            {currentLanguage.toUpperCase()}
+          </span>
                 </Button>
             </Dropdown.Trigger>
+
             <Dropdown.Content>
-                <div className="bg-white dark:bg-gray-900 rounded-lg w-28 sm:w-32">
-                    <button
-                        onClick={() => i18n.changeLanguage('fr')}
-                        className={cn(
-                            "w-full flex items-center gap-1 sm:gap-2 px-2 sm:px-3 py-1.5 sm:py-2 text-xs sm:text-sm rounded-md transition-colors",
-                            i18n.language === 'fr'
-                                ? "bg-gradient-to-r from-amber-500 to-purple-500 text-white"
-                                : "text-gray-700 dark:text-gray-100 hover:bg-amber-50 dark:hover:bg-amber-500/20"
-                        )}
-                    >
-                        <span className="font-medium">Français</span>
-                        {i18n.language === 'fr' && (
-                            <motion.div
-                                layoutId="activeLang"
-                                className="ml-auto w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-white"
-                            />
-                        )}
-                    </button>
-                    <button
-                        onClick={() => i18n.changeLanguage('en')}
-                        className={cn(
-                            "w-full flex items-center gap-1 sm:gap-2 px-2 sm:px-3 py-1.5 sm:py-2 text-xs sm:text-sm rounded-md transition-colors",
-                            i18n.language === 'en'
-                                ? "bg-gradient-to-r from-amber-500 to-purple-500 text-white"
-                                : "text-gray-700 dark:text-gray-100 hover:bg-amber-50 dark:hover:bg-amber-500/20"
-                        )}
-                    >
-                        <span className="font-medium">English</span>
-                        {i18n.language === 'en' && (
-                            <motion.div
-                                layoutId="activeLang"
-                                className="ml-auto w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-white"
-                            />
-                        )}
-                    </button>
+                <div className="bg-white dark:bg-gray-900 rounded-lg w-28 sm:w-32 py-1" role="menu">
+                    {languages.map((lang) => (
+                        <button
+                            key={lang.code}
+                            onClick={() => handleLanguageChange(lang.code)}
+                            className={cn(
+                                "w-full flex items-center gap-1 sm:gap-2 px-2 sm:px-3 py-1.5 sm:py-2 text-xs sm:text-sm rounded-md transition-colors",
+                                currentLanguage === lang.code
+                                    ? "bg-gradient-to-r from-amber-500 to-purple-500 text-white"
+                                    : "text-gray-700 dark:text-gray-100 hover:bg-amber-50 dark:hover:bg-amber-500/20"
+                            )}
+                            role="menuitem"
+                            aria-selected={currentLanguage === lang.code}
+                        >
+                            <span className="font-medium">{lang.label}</span>
+                            {currentLanguage === lang.code && (
+                                <motion.div
+                                    layoutId="activeLang"
+                                    className="ml-auto w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-white"
+                                    aria-hidden="true"
+                                />
+                            )}
+                        </button>
+                    ))}
                 </div>
             </Dropdown.Content>
         </Dropdown>
@@ -197,62 +201,49 @@ export default function Authenticated({ user, header, children }: PropsWithChild
         </motion.div>
     );
 
-    const MobileNav = () => (
-        <div className="sticky top-12 sm:top-16 z-30 md:hidden bg-white/80 dark:bg-gray-900/90 backdrop-blur-md border-b border-amber-100 dark:border-gray-700">
-            <div className="mx-auto px-3 py-1 sm:py-2">
-                <Button
-                    variant="ghost"
-                    onClick={() => setIsNavOpen(!isNavOpen)}
-                    className="w-full flex items-center justify-between p-1.5 sm:p-2 hover:bg-amber-50 dark:hover:bg-amber-500/20 rounded-lg text-xs sm:text-sm h-8 sm:h-10"
-                >
-                    <div className="flex items-center gap-1.5 sm:gap-2">
-                        <Folder className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-amber-500 dark:text-amber-400" />
-                        <span className="text-gray-700 dark:text-gray-100">{t('cv.navigation')}</span>
-                    </div>
-                    <ChevronRight className={`h-3.5 w-3.5 sm:h-4 sm:w-4 text-gray-700 dark:text-gray-100 transition-transform ${isNavOpen ? 'rotate-90' : ''}`} />
-                </Button>
-                <AnimatePresence>
-                    {isNavOpen && (
-                        <motion.div
-                            initial={{ height: 0, opacity: 0 }}
-                            animate={{ height: "auto", opacity: 1 }}
-                            exit={{ height: 0, opacity: 0 }}
-                            transition={{ duration: 0.2 }}
-                            className="py-1 sm:py-2 space-y-1 sm:space-y-2"
+    const MobileNav = () => {
+        const { t } = useTranslation();
+        const cvSideMenuItems = getCvSideMenuItems(t);
+
+        return (
+            <div className="sticky top-12 sm:top-16 z-30 md:hidden bg-white/80 dark:bg-gray-900/90 backdrop-blur-md border-b border-amber-100 dark:border-gray-700">
+                <div className="flex h-9">
+                    {cvSideMenuItems.map((item, index) => (
+                        <Link
+                            key={index}
+                            href={item.href}
+                            className={cn(
+                                "flex-1 flex items-center justify-center gap-1 px-1 relative",
+                                item.active
+                                    ? "bg-gradient-to-r from-amber-500 to-purple-500 text-white"
+                                    : "text-gray-700 dark:text-gray-100 hover:bg-amber-50 dark:hover:bg-amber-500/20"
+                            )}
+                            aria-current={item.active ? "page" : undefined}
                         >
-                            {cvSideMenuItems.map((item, index) => (
-                                <Link
-                                    key={index}
-                                    href={item.href}
-                                    className={cn(
-                                        "flex items-center justify-between px-3 py-2 rounded-lg transition-all",
-                                        item.active
-                                            ? "bg-gradient-to-r from-amber-500 to-purple-500 text-white shadow-sm"
-                                            : "text-gray-700 dark:text-gray-100 hover:bg-amber-50 dark:hover:bg-amber-500/20"
-                                    )}
-                                >
-                                    <div className="flex items-center gap-2">
-                                        <item.icon className={cn(
-                                            "h-4 w-4",
-                                            item.active ? "text-white" : "text-amber-500 dark:text-amber-400"
-                                        )} />
-                                        <span className="font-medium text-xs">{item.name}</span>
-                                    </div>
-                                    {item.active && (
-                                        <motion.div
-                                            layoutId="activeMobileNavItem"
-                                            className="w-1.5 h-1.5 rounded-full bg-white"
-                                            transition={{ type: "spring", stiffness: 300, damping: 30 }}
-                                        />
-                                    )}
-                                </Link>
-                            ))}
-                        </motion.div>
-                    )}
-                </AnimatePresence>
+                            <item.icon
+                                className={cn(
+                                    "h-3.5 w-3.5 flex-shrink-0",
+                                    item.active ? "text-white" : "text-amber-500 dark:text-amber-400"
+                                )}
+                            />
+                            <span className="text-[10px] font-medium truncate">
+              {item.name}
+            </span>
+                            {item.active && (
+                                <motion.div
+                                    layoutId="activeMobileNavItem"
+                                    className="absolute bottom-0 w-full h-0.5 bg-white opacity-80"
+                                    transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                                />
+                            )}
+                        </Link>
+                    ))}
+                </div>
             </div>
-        </div>
-    );
+        );
+    };
+
+
 
     // Composant pour le renouvellement du code de parrainage
     const ReferralCodeRenewal = () => {
@@ -616,8 +607,16 @@ export default function Authenticated({ user, header, children }: PropsWithChild
                         <div className="flex items-center gap-2 sm:gap-4">
                             <div className="md:hidden">
                                 <TokenDisplay />
+
+
                             </div>
                             <ThemeToggle />
+                            <div className="md:hidden">
+                                <LanguageSelector/>
+
+
+                            </div>
+
                             <Dropdown>
                                 <Dropdown.Trigger>
                                     <Button variant="ghost" className="p-0 h-7 w-7 sm:h-8 sm:w-auto sm:p-2">
@@ -641,7 +640,6 @@ export default function Authenticated({ user, header, children }: PropsWithChild
                                     </Dropdown.Link>
                                 </Dropdown.Content>
                             </Dropdown>
-
                             <Button
                                 variant="ghost"
                                 size="sm"
@@ -650,6 +648,7 @@ export default function Authenticated({ user, header, children }: PropsWithChild
                             >
                                 <Menu className="h-4 w-4 sm:h-5 sm:w-5 text-gray-700 dark:text-gray-100" />
                             </Button>
+
                         </div>
                     </div>
                 </div>
@@ -672,9 +671,9 @@ export default function Authenticated({ user, header, children }: PropsWithChild
                                 <NavButton key={index} item={item} compact={true} />
                             )
                         ))}
-                        <div className="px-3 sm:px-4 mt-2 sm:mt-3">
-                            <LanguageSelector />
-                        </div>
+                        {/*<div className="px-3 sm:px-4 mt-2 sm:mt-3">*/}
+                        {/*    <LanguageSelector />*/}
+                        {/*</div>*/}
                     </div>
                 </SheetContent>
             </Sheet>

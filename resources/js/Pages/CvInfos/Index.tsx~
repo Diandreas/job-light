@@ -950,20 +950,20 @@ export default function CvInterface({ auth, cvInformation: initialCvInformation 
 
                     <Card className="shadow-md border border-amber-100 dark:border-amber-800">
                         <CardHeader className="bg-white dark:bg-gray-900 border-b border-amber-100 dark:border-amber-800 p-3 sm:p-4">
-                            <div className="flex items-center justify-between">
-                                <div>
-                                    <CardTitle className="text-base sm:text-xl font-bold bg-gradient-to-r from-amber-500 to-purple-500 dark:from-amber-400 dark:to-purple-400 text-transparent bg-clip-text">
-                                        {t('cv.interface.sections.title')}
-                                    </CardTitle>
-                                    <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 mt-0.5 sm:mt-1">
-                                        {t('cv.interface.sections.description')}
-                                    </p>
-                                </div>
-                                {/* Affichage du pourcentage sur mobile à côté du titre des sections */}
-                                <div className="sm:hidden flex items-center gap-1">
-                                    <span className="text-xs font-medium">{getCompletionPercentage()}%</span>
-                                </div>
-                            </div>
+                            {/*<div className="flex items-center justify-between">*/}
+                            {/*    <div>*/}
+                            {/*        <CardTitle className="text-base sm:text-xl font-bold bg-gradient-to-r from-amber-500 to-purple-500 dark:from-amber-400 dark:to-purple-400 text-transparent bg-clip-text">*/}
+                            {/*            {t('cv.interface.sections.title')}*/}
+                            {/*        </CardTitle>*/}
+                            {/*        <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 mt-0.5 sm:mt-1">*/}
+                            {/*            {t('cv.interface.sections.description')}*/}
+                            {/*        </p>*/}
+                            {/*    </div>*/}
+                            {/*    /!* Affichage du pourcentage sur mobile à côté du titre des sections *!/*/}
+                            {/*    <div className="sm:hidden flex items-center gap-1">*/}
+                            {/*        <span className="text-xs font-medium">{getCompletionPercentage()}%</span>*/}
+                            {/*    </div>*/}
+                            {/*</div>*/}
                         </CardHeader>
 
                         <div className="flex flex-row min-h-[500px] sm:min-h-[600px]">

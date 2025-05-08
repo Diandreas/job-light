@@ -1,0 +1,110 @@
+import React from 'react';
+import { Link, usePage } from '@inertiajs/react';
+import { useTranslation } from 'react-i18next';
+import { Folder, Brain, MessageSquare, RefreshCw } from 'lucide-react';
+import { cn } from '@/lib/utils';
+import { motion } from 'framer-motion';
+import { useMediaQuery } from '@/lib/hooks';
+
+interface MobileTabBarProps {
+    onRenewCodeClick?: () => void;
+    isGuest?: boolean;
+}
+
+export const MobileTabBar: React.FC<MobileTabBarProps> = ({
+                                                              onRenewCodeClick,
+                                                              isGuest = false
+                                                          }) => {
+    const { t } = useTranslation();
+    const { url } = usePage();
+    const isMobile = useMediaQuery('(max-width: 768px)');
+
+    if (!isMobile) return null;
+
+    // Tabs principaux pour l'application
+    const tabs = [
+        {
+            name: t('menu.createCV'),
+            href: route('cv-infos.index'),
+            icon: Folder,
+            active: url.includes('/cv-infos') || url.includes('/userCvModels')
+        },
+        {
+            name: t('menu.assistant'),
+            href: route('career-advisor.index'),
+            icon: Brain,
+            active: url.includes('/career-advisor')
+        },
+        {
+            name: 'Support',
+            href: route('support'),
+            icon: MessageSquare,
+            active: url.includes('/support')
+        },
+        {
+            name: t('sponsorship.code.renewal.renewCode', 'Renouveler'),
+            href: '#',
+            icon: RefreshCw,
+            active: false,
+            onClick: onRenewCodeClick
+        }
+    ];
+
+    // Filtrer les onglets si besoin
+    const visibleTabs = isGuest
+        ? tabs.filter(tab => tab.name === 'Support')
+        : tabs;
+
+    return (
+        <>
+            <div className="fixed bottom-0 left-0 right-0 z-50 md:hidden bg-white/90 dark:bg-gray-900/90 backdrop-blur-md border-t border-amber-100 dark:border-gray-700">
+                <div className="flex items-center justify-around h-14">
+                    {visibleTabs.map((tab) => (
+                        tab.onClick ? (
+                            <button
+                                key={tab.name}
+                                onClick={tab.onClick}
+                                className="flex flex-col items-center justify-center w-1/4 h-full relative"
+                            >
+                                <tab.icon className={cn(
+                                    "h-5 w-5",
+                                    tab.active ? "text-amber-500 dark:text-amber-400" : "text-gray-600 dark:text-gray-300"
+                                )} />
+                                <span className="text-xs font-medium mt-1 truncate max-w-[80px] text-gray-600 dark:text-gray-300">
+                  {tab.name}
+                </span>
+                            </button>
+                        ) : (
+                            <Link
+                                key={tab.name}
+                                href={tab.href}
+                                className="flex flex-col items-center justify-center w-1/4 h-full relative"
+                            >
+                                <tab.icon className={cn(
+                                    "h-5 w-5",
+                                    tab.active ? "text-amber-500 dark:text-amber-400" : "text-gray-600 dark:text-gray-300"
+                                )} />
+                                <span className={cn(
+                                    "text-xs font-medium mt-1 truncate max-w-[80px]",
+                                    tab.active ? "text-amber-500 dark:text-amber-400" : "text-gray-600 dark:text-gray-300"
+                                )}>
+                  {tab.name}
+                </span>
+                                {tab.active && (
+                                    <motion.div
+                                        layoutId="activeTab"
+                                        className="absolute -top-1 w-1 h-1 rounded-full bg-amber-500"
+                                        transition={{ type: 'spring', stiffness: 400, damping: 30 }}
+                                    />
+                                )}
+                            </Link>
+                        )
+                    ))}
+                </div>
+            </div>
+
+            {/* Espace en bas pour éviter que le contenu soit caché par la barre d'onglets */}
+            <div className="md:hidden h-14"></div>
+        </>
+    );
+};

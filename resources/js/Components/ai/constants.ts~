@@ -1,4 +1,4 @@
-import {Brain, FileText, MessageSquare, PenTool, Presentation} from 'lucide-react';
+import { Brain, FileText, MessageSquare, PenTool } from 'lucide-react';
 import { Service } from '@/types/career-advisor';
 
 export const DEFAULT_PROMPTS = {
@@ -101,17 +101,6 @@ export const SERVICES: Service[] = [
         // @ts-ignore
         defaultPrompt: DEFAULT_PROMPTS['resume-review']
     },
-    {
-        id: 'presentation-ppt',
-        icon: Presentation,
-        title: 'services.presentation_ppt.title',  // Clé de traduction
-        description: 'services.presentation_ppt.description',  // Clé de traduction
-        cost: 8,
-        category: 'document',
-        formats: ['pptx'],
-        // @ts-ignore
-        defaultPrompt: DEFAULT_PROMPTS['presentation-ppt']
-    }
 
 
 ];

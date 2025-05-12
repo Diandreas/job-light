@@ -17,8 +17,7 @@ import {
 import { MessageBubble } from '@/Components/ai/MessageBubble';
 import { ServiceCard } from '@/Components/ai/ServiceCard';
 import { SERVICES, DEFAULT_PROMPTS } from '@/Components/ai/constants';
-import { PowerPointService } from '@/Components/ai/PresentationService';
-
+import { PowerPointService } from '@/Services/PowerPointService';
 import {
     AlertDialog,
     AlertDialogAction,

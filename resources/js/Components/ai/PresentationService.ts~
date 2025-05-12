@@ -1,0 +1,259 @@
+import pptxgen from 'pptxgenjs';
+
+export class PresentationService {
+    /**
+     * Génère une présentation PowerPoint à partir des données de conversation
+     * @param messages Messages de la conversation
+     * @param userInfo Informations de l'utilisateur
+     * @returns Blob de la présentation PowerPoint
+     */
+    static async generateFromConversation(messages, userInfo) {
+        const pres = new pptxgen();
+
+        // Configuration de la présentation
+        pres.layout = 'LAYOUT_16x9';
+        pres.author = userInfo.name || 'Utilisateur Guidy';
+        pres.company = 'Généré via Guidy';
+        pres.subject = 'Présentation professionnelle';
+
+        // Extraire le titre de la conversation
+        const title = this.extractTitleFromMessages(messages);
+        pres.title = title;
+
+        // Slide de titre
+        let slide = pres.addSlide();
+        slide.addText(title, {
+            x: 1.0, y: 2.0, w: '80%', h: 1.5,
+            fontSize: 36,
+            color: '363636',
+            align: pres.AlignH.center,
+            bold: true
+        });
+        slide.addText(`Créé pour ${userInfo.name || 'vous'}`, {
+            x: 1.0, y: 4.0, w: '80%', h: 0.5,
+            fontSize: 18,
+            color: '666666',
+            align: pres.AlignH.center
+        });
+
+        // Générer les slides de contenu à partir des messages
+        this.generateContentSlides(pres, messages);
+
+        // Retourner la présentation comme un Blob
+        return await pres.write('blob');
+    }
+
+    /**
+     * Génère une présentation PowerPoint à partir des données de CV
+     * @param cvData Données du CV analysé
+     * @returns Blob de la présentation PowerPoint
+     */
+    static async generateFromCVData(cvData) {
+        const pres = new pptxgen();
+
+        // Configuration
+        pres.layout = 'LAYOUT_16x9';
+        pres.author = cvData.nom_complet || 'Candidat';
+        pres.title = `Profil professionnel - ${cvData.nom_complet}`;
+
+        // Slide de titre
+        let slide = pres.addSlide();
+        slide.addText(`Profil de ${cvData.nom_complet}`, {
+            x: 1.0, y: 2.0, w: '80%', h: 1.5,
+            fontSize: 36,
+            color: '363636',
+            align: pres.AlignH.center,
+            bold: true
+        });
+        slide.addText(cvData.poste_actuel || 'Professionnel', {
+            x: 1.0, y: 3.5, w: '80%', h: 0.5,
+            fontSize: 24,
+            color: '666666',
+            align: pres.AlignH.center
+        });
+
+        // Slide de résumé
+        slide = pres.addSlide();
+        slide.addText('Résumé Professionnel', {
+            x: 0.5, y: 0.5, w: '95%', h: 0.8,
+            fontSize: 24,
+            color: '363636',
+            bold: true
+        });
+        slide.addText(cvData.resume, {
+            x: 0.5, y: 1.5, w: '95%', h: 4.0,
+            fontSize: 16,
+            color: '666666',
+            align: pres.AlignH.left
+        });
+
+        // Slides d'expérience
+        this.generateExperienceSlides(pres, cvData.experiences);
+
+        // Retourner la présentation
+        return await pres.write('blob');
+    }
+
+    private static extractTitleFromMessages(messages) {
+        // Logique pour extraire un titre pertinent des messages
+        // Par défaut, on prend le premier message de l'utilisateur
+        const userMessage = messages.find(msg => msg.role === 'user');
+        if (userMessage) {
+            // Extraire une courte phrase du premier message
+            const text = userMessage.content;
+            return text.split('\n')[0].substring(0, 50) + (text.length > 50 ? '...' : '');
+        }
+        return 'Présentation Professionnelle';
+    }
+
+    private static generateContentSlides(pres, messages) {
+        // Extraire le contenu des messages de l'assistant
+        const assistantMessages = messages.filter(msg => msg.role === 'assistant');
+
+        for (let i = 0; i < assistantMessages.length; i++) {
+            const msg = assistantMessages[i];
+            const content = msg.content;
+
+            // Diviser le contenu en sections pour créer plusieurs slides
+            const sections = this.splitContentIntoSections(content);
+
+            for (const section of sections) {
+                const slide = pres.addSlide();
+
+                // Ajouter un titre pour la section
+                slide.addText(section.title, {
+                    x: 0.5, y: 0.5, w: '95%', h: 0.8,
+                    fontSize: 24,
+                    color: '363636',
+                    bold: true
+                });
+
+                // Ajouter le contenu
+                slide.addText(section.content, {
+                    x: 0.5, y: 1.5, w: '95%', h: 4.0,
+                    fontSize: 16,
+                    color: '666666',
+                    bullet: true
+                });
+            }
+        }
+    }
+
+    private static generateExperienceSlides(pres, experiences) {
+        if (!experiences || !experiences.length) return;
+
+        // Slide de présentation des expériences
+        let slide = pres.addSlide();
+        slide.addText('Expériences Professionnelles', {
+            x: 0.5, y: 0.5, w: '95%', h: 0.8,
+            fontSize: 24,
+            color: '363636',
+            bold: true
+        });
+
+        // Créer une diapositive pour chaque expérience
+        for (const exp of experiences) {
+            slide = pres.addSlide();
+
+            // Titre de l'expérience
+            slide.addText(`${exp.titre} - ${exp.entreprise}`, {
+                x: 0.5, y: 0.5, w: '95%', h: 0.8,
+                fontSize: 24,
+                color: '363636',
+                bold: true
+            });
+
+            // Période
+            slide.addText(`${exp.date_debut} - ${exp.date_fin === 'present' ? 'Aujourd\'hui' : exp.date_fin}`, {
+                x: 0.5, y: 1.3, w: '95%', h: 0.5,
+                fontSize: 16,
+                color: '666666',
+                italic: true
+            });
+
+            // Description
+            slide.addText('Description:', {
+                x: 0.5, y: 2.0, w: '95%', h: 0.5,
+                fontSize: 16,
+                color: '363636',
+                bold: true
+            });
+
+            slide.addText(exp.description, {
+                x: 0.5, y: 2.5, w: '95%', h: 2.0,
+                fontSize: 14,
+                color: '666666'
+            });
+
+            // Réalisations
+            if (exp.output) {
+                slide.addText('Réalisations:', {
+                    x: 0.5, y: 4.5, w: '95%', h: 0.5,
+                    fontSize: 16,
+                    color: '363636',
+                    bold: true
+                });
+
+                slide.addText(exp.output, {
+                    x: 0.5, y: 5.0, w: '95%', h: 1.0,
+                    fontSize: 14,
+                    color: '666666'
+                });
+            }
+        }
+    }
+
+    private static splitContentIntoSections(content) {
+        // Diviser le contenu en sections pour plusieurs diapositives
+        const sections = [];
+
+        // Recherche de titres dans le contenu Markdown (lignes commençant par #)
+        const lines = content.split('\n');
+        let currentTitle = 'Points clés';
+        let currentContent = '';
+
+        for (const line of lines) {
+            if (line.startsWith('# ')) {
+                // Si nous avons déjà du contenu, enregistrer la section précédente
+                if (currentContent.trim()) {
+                    sections.push({
+                        title: currentTitle,
+                        content: currentContent.trim()
+                    });
+                }
+
+                // Nouvelle section
+                currentTitle = line.substring(2).trim();
+                currentContent = '';
+            } else if (line.startsWith('## ')) {
+                // Sous-section, traiter comme un nouveau point
+                if (currentContent.trim()) {
+                    currentContent += '\n• ' + line.substring(3).trim();
+                } else {
+                    currentContent = '• ' + line.substring(3).trim();
+                }
+            } else {
+                // Contenu régulier
+                currentContent += line + '\n';
+            }
+        }
+
+        // Ajouter la dernière section
+        if (currentContent.trim()) {
+            sections.push({
+                title: currentTitle,
+                content: currentContent.trim()
+            });
+        }
+
+        // Si aucune section n'a été trouvée, créer une section par défaut
+        if (sections.length === 0) {
+            sections.push({
+                title: 'Points clés',
+                content: content
+            });
+        }
+
+        return sections;
+    }
+}

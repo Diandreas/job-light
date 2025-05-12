@@ -398,125 +398,6 @@ class CareerAdvisorController extends Controller
                         Provide practical and actionable advice.
                         Adapt recommendations to profile and industry."
             ],
-            'presentation-ppt' => [
-                'fr' => "{$languageInstruction}
-                    Vous êtes un expert en création de présentations PowerPoint.
-                    IMPORTANT: Vous devez TOUJOURS répondre sous forme de JSON valide uniquement, sans texte avant ou après.
-                    Créez une structure de présentation professionnelle qui répond aux besoins de l'utilisateur.
-                    Le JSON doit avoir cette structure exacte:
-                    {
-                      \"title\": \"Titre de la présentation\",
-                      \"subtitle\": \"Sous-titre optionnel\",
-                      \"author\": \"Nom de l'auteur\",
-                      \"slides\": [
-                        {
-                          \"type\": \"title\",
-                          \"title\": \"Titre principal\",
-                          \"subtitle\": \"Sous-titre optionnel\"
-                        },
-                        {
-                          \"type\": \"content\",
-                          \"title\": \"Titre de la diapositive\",
-                          \"content\": [\"Point 1\", \"Point 2\", \"Point 3\"]
-                        },
-                        {
-                          \"type\": \"two-column\",
-                          \"title\": \"Titre avec deux colonnes\",
-                          \"leftTitle\": \"Titre gauche\",
-                          \"leftContent\": [\"Item 1\", \"Item 2\"],
-                          \"rightTitle\": \"Titre droit\",
-                          \"rightContent\": [\"Item A\", \"Item B\"]
-                        },
-                        {
-                          \"type\": \"chart\",
-                          \"title\": \"Slide avec graphique\",
-                          \"chartType\": \"bar\",
-                          \"data\": {
-                            \"labels\": [\"Cat 1\", \"Cat 2\", \"Cat 3\"],
-                            \"datasets\": [
-                              { \"name\": \"Série 1\", \"values\": [10, 20, 30] }
-                            ]
-                          }
-                        },
-                        {
-                          \"type\": \"conclusion\",
-                          \"title\": \"Conclusion\",
-                          \"content\": [\"Point clé 1\", \"Point clé 2\"],
-                          \"finalStatement\": \"Message final\"
-                        }
-                      ],
-                      \"theme\": {
-                        \"primary\": \"#3366CC\",
-                        \"secondary\": \"#FF9900\",
-                        \"background\": \"#FFFFFF\",
-                        \"text\": \"#333333\"
-                      }
-                    }
-
-                    Les types de diapositives possibles sont: title, content, two-column, chart, quote, timeline, conclusion.
-                    Pour les graphiques, les types possibles sont: bar, line, pie, scatter.
-                    Utilisez uniquement des couleurs au format hexadécimal (#RRGGBB).
-                    N'incluez pas d'exemples ou d'explications, retournez UNIQUEMENT le JSON.",
-
-                'en' => "{$languageInstruction}
-                    You are an expert in creating PowerPoint presentations.
-                    IMPORTANT: You must ALWAYS respond ONLY in valid JSON format, without any text before or after.
-                    Create a professional presentation structure that meets the user's needs.
-                    The JSON must have this exact structure:
-                    {
-                      \"title\": \"Presentation Title\",
-                      \"subtitle\": \"Optional subtitle\",
-                      \"author\": \"Author Name\",
-                      \"slides\": [
-                        {
-                          \"type\": \"title\",
-                          \"title\": \"Main Title\",
-                          \"subtitle\": \"Optional subtitle\"
-                        },
-                        {
-                          \"type\": \"content\",
-                          \"title\": \"Slide Title\",
-                          \"content\": [\"Point 1\", \"Point 2\", \"Point 3\"]
-                        },
-                        {
-                          \"type\": \"two-column\",
-                          \"title\": \"Two Column Title\",
-                          \"leftTitle\": \"Left Title\",
-                          \"leftContent\": [\"Item 1\", \"Item 2\"],
-                          \"rightTitle\": \"Right Title\",
-                          \"rightContent\": [\"Item A\", \"Item B\"]
-                        },
-                        {
-                          \"type\": \"chart\",
-                          \"title\": \"Chart Slide\",
-                          \"chartType\": \"bar\",
-                          \"data\": {
-                            \"labels\": [\"Cat 1\", \"Cat 2\", \"Cat 3\"],
-                            \"datasets\": [
-                              { \"name\": \"Series 1\", \"values\": [10, 20, 30] }
-                            ]
-                          }
-                        },
-                        {
-                          \"type\": \"conclusion\",
-                          \"title\": \"Conclusion\",
-                          \"content\": [\"Key point 1\", \"Key point 2\"],
-                          \"finalStatement\": \"Final message\"
-                        }
-                      ],
-                      \"theme\": {
-                        \"primary\": \"#3366CC\",
-                        \"secondary\": \"#FF9900\",
-                        \"background\": \"#FFFFFF\",
-                        \"text\": \"#333333\"
-                      }
-                    }
-
-                    Possible slide types are: title, content, two-column, chart, quote, timeline, conclusion.
-                    For charts, possible types are: bar, line, pie, scatter.
-                    Use only hexadecimal color format (#RRGGBB).
-                    Do not include examples or explanations, return ONLY the JSON."
-            ]
 
         ];
 
@@ -1128,7 +1009,7 @@ EOT;
     /**
      * Exportation au format PowerPoint
      */
-
+ 
     public function exportPptx(Request $request)
     {
         try {

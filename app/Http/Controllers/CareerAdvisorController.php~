@@ -29,6 +29,7 @@ class CareerAdvisorController extends Controller
     {
         $this->mistral = new Mistral(apiKey: config('mistral.api_key'));
     }
+
     public function show($contextId)
     {
         try {
@@ -210,9 +211,11 @@ class CareerAdvisorController extends Controller
             'interview-prep' => 'Simulation d\'entretien',
             'cover-letter' => 'Lettre de motivation',
             'resume-review' => 'Analyse de CV',
-            'career-advice' => 'Conseil carrière'
+            'career-advice' => 'Conseil carrière',
+            'presentation-ppt' => 'Présentation PowerPoint'
         ][$serviceId] ?? 'Service inconnu';
     }
+
     private function getModelConfigForService($serviceId)
     {
         $configs = [
@@ -238,6 +241,12 @@ class CareerAdvisorController extends Controller
                 'model' => 'mistral-medium-latest',
                 'maxTokens' => 1000,
                 'temperature' => 0.2,
+                'maxHistory' => 3
+            ],
+            'presentation-ppt' => [
+                'model' => 'mistral-large-latest',
+                'maxTokens' => 1000,
+                'temperature' => 0.7,
                 'maxHistory' => 3
             ]
         ];
@@ -388,7 +397,7 @@ class CareerAdvisorController extends Controller
                         Focus on highlighting key skills.
                         Provide specific examples."
             ],
-            'default' => [
+            'career-advice' => [
                 'fr' => "{$languageInstruction}
                         Vous êtes un conseiller professionnel expert.
                         Donnez des conseils pratiques et applicables.
@@ -398,7 +407,129 @@ class CareerAdvisorController extends Controller
                         Provide practical and actionable advice.
                         Adapt recommendations to profile and industry."
             ],
+            'presentation-ppt' => [
+                'fr' => "{$languageInstruction}
+                    Vous êtes un expert en création de présentations PowerPoint.
+                    IMPORTANT: Vous devez TOUJOURS répondre sous forme de JSON valide uniquement, sans texte avant ou après.
+                    Créez une structure de présentation professionnelle qui répond aux besoins de l'utilisateur.
+                    Le JSON doit avoir cette structure exacte:
+                    {
+                      \"title\": \"Titre de la présentation\",
+                      \"subtitle\": \"Sous-titre optionnel\",
+                      \"author\": \"Nom de l'auteur\",
+                      \"slides\": [
+                        {
+                          \"type\": \"title\",
+                          \"title\": \"Titre principal\",
+                          \"subtitle\": \"Sous-titre optionnel\"
+                        },
+                        {
+                          \"type\": \"content\",
+                          \"title\": \"Titre de la diapositive\",
+                          \"content\": [\"Point 1\", \"Point 2\", \"Point 3\"]
+                        },
+                        {
+                          \"type\": \"two-column\",
+                          \"title\": \"Titre avec deux colonnes\",
+                          \"leftTitle\": \"Titre gauche\",
+                          \"leftContent\": [\"Item 1\", \"Item 2\"],
+                          \"rightTitle\": \"Titre droit\",
+                          \"rightContent\": [\"Item A\", \"Item B\"]
+                        },
+                        {
+                          \"type\": \"chart\",
+                          \"title\": \"Slide avec graphique\",
+                          \"chartType\": \"bar\",
+                          \"data\": {
+                            \"labels\": [\"Cat 1\", \"Cat 2\", \"Cat 3\"],
+                            \"datasets\": [
+                              { \"name\": \"Série 1\", \"values\": [10, 20, 30] }
+                            ]
+                          }
+                        },
+                        {
+                          \"type\": \"conclusion\",
+                          \"title\": \"Conclusion\",
+                          \"content\": [\"Point clé 1\", \"Point clé 2\"],
+                          \"finalStatement\": \"Message final\"
+                        }
+                      ],
+                      \"theme\": {
+                        \"primary\": \"#3366CC\",
+                        \"secondary\": \"#FF9900\",
+                        \"background\": \"#FFFFFF\",
+                        \"text\": \"#333333\"
+                      }
+                    }
 
+                    Les types de diapositives possibles sont: title, content, two-column, chart, quote, timeline, conclusion.
+                    Pour les graphiques, les types possibles sont: bar, line, pie, scatter.
+                    Assurez-vous que tous les tableaux de contenu (content, leftContent, rightContent) sont bien des tableaux, même pour un seul élément.
+                    Pour le type timeline, utilisez la structure d'événements suivante: \"events\": [{\"date\": \"Date\", \"description\": \"Description\"}]
+                    Utilisez uniquement des couleurs au format hexadécimal (#RRGGBB).
+                    N'incluez pas d'exemples ou d'explications, retournez UNIQUEMENT le JSON.",
+
+                'en' => "{$languageInstruction}
+                    You are an expert in creating PowerPoint presentations.
+                    IMPORTANT: You must ALWAYS respond ONLY in valid JSON format, without any text before or after.
+                    Create a professional presentation structure that meets the user's needs.
+                    The JSON must have this exact structure:
+                    {
+                      \"title\": \"Presentation Title\",
+                      \"subtitle\": \"Optional subtitle\",
+                      \"author\": \"Author Name\",
+                      \"slides\": [
+                        {
+                          \"type\": \"title\",
+                          \"title\": \"Main Title\",
+                          \"subtitle\": \"Optional subtitle\"
+                        },
+                        {
+                          \"type\": \"content\",
+                          \"title\": \"Slide Title\",
+                          \"content\": [\"Point 1\", \"Point 2\", \"Point 3\"]
+                        },
+                        {
+                          \"type\": \"two-column\",
+                          \"title\": \"Two Column Title\",
+                          \"leftTitle\": \"Left Title\",
+                          \"leftContent\": [\"Item 1\", \"Item 2\"],
+                          \"rightTitle\": \"Right Title\",
+                          \"rightContent\": [\"Item A\", \"Item B\"]
+                        },
+                        {
+                          \"type\": \"chart\",
+                          \"title\": \"Chart Slide\",
+                          \"chartType\": \"bar\",
+                          \"data\": {
+                            \"labels\": [\"Cat 1\", \"Cat 2\", \"Cat 3\"],
+                            \"datasets\": [
+                              { \"name\": \"Series 1\", \"values\": [10, 20, 30] }
+                            ]
+                          }
+                        },
+                        {
+                          \"type\": \"conclusion\",
+                          \"title\": \"Conclusion\",
+                          \"content\": [\"Key point 1\", \"Key point 2\"],
+                          \"finalStatement\": \"Final message\"
+                        }
+                      ],
+                      \"theme\": {
+                        \"primary\": \"#3366CC\",
+                        \"secondary\": \"#FF9900\",
+                        \"background\": \"#FFFFFF\",
+                        \"text\": \"#333333\"
+                      }
+                    }
+
+                    Possible slide types are: title, content, two-column, chart, quote, timeline, conclusion.
+                    For charts, possible types are: bar, line, pie, scatter.
+                    Make sure all content arrays (content, leftContent, rightContent) are actual arrays, even for single items.
+                    For timeline type, use the following events structure: \"events\": [{\"date\": \"Date\", \"description\": \"Description\"}]
+                    Use only hexadecimal color format (#RRGGBB).
+                    Do not include examples or explanations, return ONLY the JSON."
+            ]
         ];
 
         return $prompts[$serviceId][$language] ?? $prompts['default'][$language];
@@ -539,6 +670,7 @@ class CareerAdvisorController extends Controller
             'interview-prep' => 'Simulation d\'entretien',
             'cover-letter' => 'Lettre de motivation',
             'resume-review' => 'Analyse de CV',
+            'presentation-ppt' => 'Présentation PowerPoint',
             'default' => 'Conseil carrière'
         ][$serviceId] ?? 'Document Guidy';
     }
@@ -553,15 +685,6 @@ class CareerAdvisorController extends Controller
             ];
         }, $messages);
     }
-
-
-
-
-
-
-
-
-
 
     public function analyzeCV(Request $request)
     {
@@ -619,8 +742,6 @@ class CareerAdvisorController extends Controller
             ], 500);
         }
     }
-
-
 
     private function extractTextFromFile($file)
     {
@@ -807,6 +928,7 @@ RÈGLES IMPORTANTES:
 7. Tous les champs sont obligatoires, même vides
 EOT;
     }
+
     private function saveCVData($userId, $cvData)
     {
         DB::beginTransaction();
@@ -971,45 +1093,9 @@ EOT;
         return $errors;
     }
 
-    private function getMockCVAnalysis()
-    {
-        return [
-            "nom_complet" => "John Doe",
-            "poste_actuel" => "Développeur Full Stack",
-            "contact" => [
-                "email" => "john.doe@example.com",
-                "telephone" => "+237600000000",
-                "adresse" => "Yaoundé, Cameroun",
-                "github" => "github.com/johndoe",
-                "linkedin" => "linkedin.com/in/johndoe"
-            ],
-            "resume" => "Développeur Full Stack expérimenté avec 5 ans d'expérience",
-            "experiences" => [
-                [
-                    "titre" => "Développeur Full Stack Senior",
-                    "entreprise" => "Tech Company SA",
-                    "date_debut" => "2022-01",
-                    "date_fin" => "present",
-                    "categorie" => "professionnel",
-                    "description" => "Développement d'applications web avec Laravel et React",
-                    "output" => "Augmentation de 40% des performances des applications",
-                    "comment" => "Lead d'une équipe de 5 développeurs",
-                    "references" => [
-                        [
-                            "name" => "Marie Smith",
-                            "function" => "CTO",
-                            "email" => "marie.smith@example.com",
-                            "telephone" => "+237600000001"
-                        ]
-                    ]
-                ]
-            ]
-        ];
-    }
     /**
      * Exportation au format PowerPoint
      */
- 
     public function exportPptx(Request $request)
     {
         try {

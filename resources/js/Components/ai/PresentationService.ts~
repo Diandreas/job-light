@@ -1,259 +1,403 @@
+// src/Services/PowerPointService.ts
 import pptxgen from 'pptxgenjs';
 
-export class PresentationService {
+interface PowerPointSlide {
+    type: string;
+    title: string;
+    subtitle?: string;
+    content?: string[];
+    leftTitle?: string;
+    leftContent?: string[];
+    rightTitle?: string;
+    rightContent?: string[];
+    chartType?: string;
+    data?: {
+        labels: string[];
+        datasets: {
+            name: string;
+            values: number[];
+        }[];
+    };
+    finalStatement?: string;
+    events?: {
+        date: string;
+        title: string;
+        description: string;
+    }[];
+}
+
+interface PowerPointData {
+    title: string;
+    subtitle?: string;
+    author?: string;
+    slides: PowerPointSlide[];
+    theme: {
+        primary: string;
+        secondary: string;
+        background: string;
+        text: string;
+    };
+}
+
+export class PowerPointService {
     /**
-     * Génère une présentation PowerPoint à partir des données de conversation
-     * @param messages Messages de la conversation
-     * @param userInfo Informations de l'utilisateur
+     * Génère une présentation PowerPoint à partir d'une structure JSON
+     * @param jsonData Structure JSON de la présentation
      * @returns Blob de la présentation PowerPoint
      */
-    static async generateFromConversation(messages, userInfo) {
-        const pres = new pptxgen();
-
-        // Configuration de la présentation
-        pres.layout = 'LAYOUT_16x9';
-        pres.author = userInfo.name || 'Utilisateur Guidy';
-        pres.company = 'Généré via Guidy';
-        pres.subject = 'Présentation professionnelle';
-
-        // Extraire le titre de la conversation
-        const title = this.extractTitleFromMessages(messages);
-        pres.title = title;
-
-        // Slide de titre
-        let slide = pres.addSlide();
-        slide.addText(title, {
-            x: 1.0, y: 2.0, w: '80%', h: 1.5,
-            fontSize: 36,
-            color: '363636',
-            align: pres.AlignH.center,
-            bold: true
-        });
-        slide.addText(`Créé pour ${userInfo.name || 'vous'}`, {
-            x: 1.0, y: 4.0, w: '80%', h: 0.5,
-            fontSize: 18,
-            color: '666666',
-            align: pres.AlignH.center
-        });
-
-        // Générer les slides de contenu à partir des messages
-        this.generateContentSlides(pres, messages);
-
-        // Retourner la présentation comme un Blob
-        return await pres.write('blob');
-    }
-
-    /**
-     * Génère une présentation PowerPoint à partir des données de CV
-     * @param cvData Données du CV analysé
-     * @returns Blob de la présentation PowerPoint
-     */
-    static async generateFromCVData(cvData) {
-        const pres = new pptxgen();
-
-        // Configuration
-        pres.layout = 'LAYOUT_16x9';
-        pres.author = cvData.nom_complet || 'Candidat';
-        pres.title = `Profil professionnel - ${cvData.nom_complet}`;
-
-        // Slide de titre
-        let slide = pres.addSlide();
-        slide.addText(`Profil de ${cvData.nom_complet}`, {
-            x: 1.0, y: 2.0, w: '80%', h: 1.5,
-            fontSize: 36,
-            color: '363636',
-            align: pres.AlignH.center,
-            bold: true
-        });
-        slide.addText(cvData.poste_actuel || 'Professionnel', {
-            x: 1.0, y: 3.5, w: '80%', h: 0.5,
-            fontSize: 24,
-            color: '666666',
-            align: pres.AlignH.center
-        });
-
-        // Slide de résumé
-        slide = pres.addSlide();
-        slide.addText('Résumé Professionnel', {
-            x: 0.5, y: 0.5, w: '95%', h: 0.8,
-            fontSize: 24,
-            color: '363636',
-            bold: true
-        });
-        slide.addText(cvData.resume, {
-            x: 0.5, y: 1.5, w: '95%', h: 4.0,
-            fontSize: 16,
-            color: '666666',
-            align: pres.AlignH.left
-        });
-
-        // Slides d'expérience
-        this.generateExperienceSlides(pres, cvData.experiences);
-
-        // Retourner la présentation
-        return await pres.write('blob');
-    }
-
-    private static extractTitleFromMessages(messages) {
-        // Logique pour extraire un titre pertinent des messages
-        // Par défaut, on prend le premier message de l'utilisateur
-        const userMessage = messages.find(msg => msg.role === 'user');
-        if (userMessage) {
-            // Extraire une courte phrase du premier message
-            const text = userMessage.content;
-            return text.split('\n')[0].substring(0, 50) + (text.length > 50 ? '...' : '');
+    static async generateFromJSON(jsonData: string): Promise<Blob> {
+        // Analyser le JSON
+        let data: PowerPointData;
+        try {
+            data = JSON.parse(jsonData);
+        } catch (error) {
+            console.error('Invalid JSON data:', error);
+            throw new Error('Le format JSON fourni est invalide');
         }
-        return 'Présentation Professionnelle';
+
+        // Créer la présentation
+        const pres = new pptxgen();
+
+        // Configuration globale
+        pres.layout = 'LAYOUT_16x9';
+        pres.title = data.title;
+        pres.author = data.author || 'Guidy AI';
+
+        // Définir un thème de couleurs
+        const theme = data.theme || {
+            primary: '#3366CC',
+            secondary: '#FF9900',
+            background: '#FFFFFF',
+            text: '#333333'
+        };
+
+        // Créer les diapositives
+        this.createSlides(pres, data.slides, theme);
+
+        // Générer le fichier PPTX
+        return await pres.write('blob');
     }
 
-    private static generateContentSlides(pres, messages) {
-        // Extraire le contenu des messages de l'assistant
-        const assistantMessages = messages.filter(msg => msg.role === 'assistant');
-
-        for (let i = 0; i < assistantMessages.length; i++) {
-            const msg = assistantMessages[i];
-            const content = msg.content;
-
-            // Diviser le contenu en sections pour créer plusieurs slides
-            const sections = this.splitContentIntoSections(content);
-
-            for (const section of sections) {
-                const slide = pres.addSlide();
-
-                // Ajouter un titre pour la section
-                slide.addText(section.title, {
-                    x: 0.5, y: 0.5, w: '95%', h: 0.8,
-                    fontSize: 24,
-                    color: '363636',
-                    bold: true
-                });
-
-                // Ajouter le contenu
-                slide.addText(section.content, {
-                    x: 0.5, y: 1.5, w: '95%', h: 4.0,
-                    fontSize: 16,
-                    color: '666666',
-                    bullet: true
-                });
+    private static createSlides(pres: any, slides: PowerPointSlide[], theme: any) {
+        for (const slideData of slides) {
+            switch (slideData.type) {
+                case 'title':
+                    this.createTitleSlide(pres, slideData, theme);
+                    break;
+                case 'content':
+                    this.createContentSlide(pres, slideData, theme);
+                    break;
+                case 'two-column':
+                    this.createTwoColumnSlide(pres, slideData, theme);
+                    break;
+                case 'chart':
+                    this.createChartSlide(pres, slideData, theme);
+                    break;
+                case 'quote':
+                    this.createQuoteSlide(pres, slideData, theme);
+                    break;
+                case 'timeline':
+                    this.createTimelineSlide(pres, slideData, theme);
+                    break;
+                case 'conclusion':
+                    this.createConclusionSlide(pres, slideData, theme);
+                    break;
+                default:
+                    this.createBasicSlide(pres, slideData, theme);
             }
         }
     }
 
-    private static generateExperienceSlides(pres, experiences) {
-        if (!experiences || !experiences.length) return;
+    private static createTitleSlide(pres: any, slideData: PowerPointSlide, theme: any) {
+        const slide = pres.addSlide();
 
-        // Slide de présentation des expériences
-        let slide = pres.addSlide();
-        slide.addText('Expériences Professionnelles', {
+        // Titre principal
+        slide.addText(slideData.title, {
+            x: 0.5, y: 1.5, w: '95%', h: 2,
+            fontSize: 44,
+            color: theme.text,
+            bold: true,
+            align: pres.AlignH.center
+        });
+
+        // Sous-titre si présent
+        if (slideData.subtitle) {
+            slide.addText(slideData.subtitle, {
+                x: 0.5, y: 3.5, w: '95%', h: 1,
+                fontSize: 28,
+                color: theme.secondary,
+                align: pres.AlignH.center
+            });
+        }
+
+        // Ajouter un élément de design
+        slide.addShape(pres.ShapeType.rect, {
+            x: 4, y: 5.2, w: 5, h: 0.2,
+            fill: { color: theme.primary }
+        });
+    }
+
+    // Dans PowerPointService.ts, modifiez la méthode createContentSlide
+    // Dans PresentationService.ts
+    private static createContentSlide(pres: any, slideData: PowerPointSlide, theme: any) {
+        const slide = pres.addSlide();
+
+        // Titre
+        slide.addText(slideData.title, {
             x: 0.5, y: 0.5, w: '95%', h: 0.8,
             fontSize: 24,
-            color: '363636',
+            color: theme.primary,
             bold: true
         });
 
-        // Créer une diapositive pour chaque expérience
-        for (const exp of experiences) {
-            slide = pres.addSlide();
+        // Contenu avec puces
+        if (slideData.content && slideData.content.length > 0) {
+            // Utiliser directement le tableau de chaînes pour les bullets
+            slide.addText(slideData.content, {
+                x: 0.5, y: 1.5, w: '95%', h: 4.5,
+                fontSize: 18,
+                color: theme.text,
+                bullet: { type: 'bullet' }
+            });
+        }
+    }
+    private static createTwoColumnSlide(pres: any, slideData: PowerPointSlide, theme: any) {
+        const slide = pres.addSlide();
 
-            // Titre de l'expérience
-            slide.addText(`${exp.titre} - ${exp.entreprise}`, {
-                x: 0.5, y: 0.5, w: '95%', h: 0.8,
-                fontSize: 24,
-                color: '363636',
+        // Titre
+        slide.addText(slideData.title, {
+            x: 0.5, y: 0.5, w: '95%', h: 0.8,
+            fontSize: 24,
+            color: theme.primary,
+            bold: true
+        });
+
+        // Colonne gauche
+        if (slideData.leftTitle) {
+            slide.addText(slideData.leftTitle, {
+                x: 0.5, y: 1.5, w: '45%', h: 0.6,
+                fontSize: 20,
+                color: theme.secondary,
                 bold: true
             });
+        }
 
-            // Période
-            slide.addText(`${exp.date_debut} - ${exp.date_fin === 'present' ? 'Aujourd\'hui' : exp.date_fin}`, {
-                x: 0.5, y: 1.3, w: '95%', h: 0.5,
+        if (slideData.leftContent && slideData.leftContent.length > 0) {
+            slide.addText(slideData.leftContent.map(item => item), {
+                x: 0.5, y: 2.2, w: '45%', h: 3.5,
                 fontSize: 16,
-                color: '666666',
-                italic: true
+                color: theme.text,
+                bullet: { type: 'bullet' }
             });
+        }
 
-            // Description
-            slide.addText('Description:', {
-                x: 0.5, y: 2.0, w: '95%', h: 0.5,
-                fontSize: 16,
-                color: '363636',
+        // Colonne droite
+        if (slideData.rightTitle) {
+            slide.addText(slideData.rightTitle, {
+                x: 6.5, y: 1.5, w: '45%', h: 0.6,
+                fontSize: 20,
+                color: theme.secondary,
                 bold: true
             });
+        }
 
-            slide.addText(exp.description, {
-                x: 0.5, y: 2.5, w: '95%', h: 2.0,
-                fontSize: 14,
-                color: '666666'
+        if (slideData.rightContent && slideData.rightContent.length > 0) {
+            slide.addText(slideData.rightContent.map(item => item), {
+                x: 6.5, y: 2.2, w: '45%', h: 3.5,
+                fontSize: 16,
+                color: theme.text,
+                bullet: { type: 'bullet' }
             });
+        }
 
-            // Réalisations
-            if (exp.output) {
-                slide.addText('Réalisations:', {
-                    x: 0.5, y: 4.5, w: '95%', h: 0.5,
-                    fontSize: 16,
-                    color: '363636',
-                    bold: true
+        // Ligne de séparation
+        slide.addShape(pres.ShapeType.line, {
+            x: 6.0, y: 1.5, w: 0, h: 4.2,
+            line: { color: theme.primary, width: 1 }
+        });
+    }
+
+    private static createChartSlide(pres: any, slideData: PowerPointSlide, theme: any) {
+        if (!slideData.data || !slideData.chartType) return;
+
+        const slide = pres.addSlide();
+
+        // Titre
+        slide.addText(slideData.title, {
+            x: 0.5, y: 0.5, w: '95%', h: 0.8,
+            fontSize: 24,
+            color: theme.primary,
+            bold: true
+        });
+
+        // Déterminer le type de graphique
+        let chartType;
+        switch (slideData.chartType.toLowerCase()) {
+            case 'bar': chartType = pres.ChartType.bar; break;
+            case 'line': chartType = pres.ChartType.line; break;
+            case 'pie': chartType = pres.ChartType.pie; break;
+            case 'scatter': chartType = pres.ChartType.scatter; break;
+            default: chartType = pres.ChartType.bar;
+        }
+
+        // Préparer les données de graphique
+        const chartData = slideData.data.datasets.map(dataset => ({
+            name: dataset.name,
+            labels: slideData.data?.labels || [],
+            values: dataset.values
+        }));
+
+        // Ajouter le graphique
+        slide.addChart(chartType, chartData, {
+            x: 0.5, y: 1.5, w: '95%', h: 4.5,
+            chartColors: [theme.primary, theme.secondary, '#44AA66', '#AA44AA'],
+            showTitle: false,
+            showLabel: true,
+            chartColorsOpacity: 80
+        });
+    }
+
+    private static createQuoteSlide(pres: any, slideData: PowerPointSlide, theme: any) {
+        const slide = pres.addSlide();
+
+        // Quote background
+        slide.addShape(pres.ShapeType.rect, {
+            x: 0.5, y: 1.5, w: '95%', h: 3.5,
+            fill: { color: theme.primary + '20' }, // Transparence ajoutée
+            line: { color: theme.primary, width: 1 }
+        });
+
+        // Citation
+        if (slideData.content && slideData.content.length > 0) {
+            slide.addText(slideData.content[0], {
+                x: 1.0, y: 2.0, w: '90%', h: 2.5,
+                fontSize: 28,
+                fontFace: 'Georgia',
+                italic: true,
+                color: theme.text,
+                align: pres.AlignH.center
+            });
+        }
+
+        // Auteur de la citation (si disponible)
+        if (slideData.subtitle) {
+            slide.addText(slideData.subtitle, {
+                x: 1.0, y: 4.0, w: '90%', h: 0.5,
+                fontSize: 16,
+                color: theme.secondary,
+                align: pres.AlignH.center
+            });
+        }
+    }
+
+    private static createTimelineSlide(pres: any, slideData: PowerPointSlide, theme: any) {
+        const slide = pres.addSlide();
+
+        // Titre
+        slide.addText(slideData.title, {
+            x: 0.5, y: 0.5, w: '95%', h: 0.8,
+            fontSize: 24,
+            color: theme.primary,
+            bold: true
+        });
+
+        // Ligne de temps
+        slide.addShape(pres.ShapeType.line, {
+            x: 0.5, y: 2.5, w: '95%', h: 0,
+            line: { color: theme.primary, width: 3 }
+        });
+
+        // Événements
+        if (slideData.events && slideData.events.length > 0) {
+            const eventsCount = slideData.events.length;
+            const widthPerEvent = 10 / (eventsCount + 1);
+
+            slideData.events.forEach((event, index) => {
+                const xPos = 0.5 + widthPerEvent * (index + 1);
+
+                // Point sur la ligne
+                slide.addShape(pres.ShapeType.ellipse, {
+                    x: xPos - 0.25, y: 2.25, w: 0.5, h: 0.5,
+                    fill: { color: theme.secondary }
                 });
 
-                slide.addText(exp.output, {
-                    x: 0.5, y: 5.0, w: '95%', h: 1.0,
+                // Date
+                slide.addText(event.date, {
+                    x: xPos - 1, y: 1.5, w: 2, h: 0.5,
+                    fontSize: 16,
+                    color: theme.primary,
+                    bold: true,
+                    align: pres.AlignH.center
+                });
+
+                // Description
+                slide.addText(event.description, {
+                    x: xPos - 1.5, y: 3.0, w: 3, h: 1.0,
                     fontSize: 14,
-                    color: '666666'
+                    color: theme.text,
+                    align: pres.AlignH.center
                 });
-            }
+            });
+        }
+    }
+    private static createConclusionSlide(pres: any, slideData: PowerPointSlide, theme: any) {
+        const slide = pres.addSlide();
+
+        // Titre
+        slide.addText(slideData.title, {
+            x: 0.5, y: 0.5, w: '95%', h: 0.8,
+            fontSize: 28,
+            color: theme.primary,
+            bold: true,
+            align: pres.AlignH.center
+        });
+
+        // Points clés
+        if (slideData.content && slideData.content.length > 0) {
+            slide.addText(slideData.content.map(item => item), {
+                x: 1.5, y: 1.5, w: '80%', h: 3.0,
+                fontSize: 20,
+                color: theme.text,
+                bullet: { type: 'bullet' }
+            });
+        }
+
+        // Message final
+        if (slideData.finalStatement) {
+            slide.addShape(pres.ShapeType.rect, {
+                x: 1.5, y: 4.5, w: '80%', h: 1.0,
+                fill: { color: theme.secondary + '30' },
+                line: { color: theme.secondary, width: 1 }
+            });
+
+            slide.addText(slideData.finalStatement, {
+                x: 1.5, y: 4.5, w: '80%', h: 1.0,
+                fontSize: 20,
+                color: theme.text,
+                align: pres.AlignH.center,
+                bold: true
+            });
         }
     }
 
-    private static splitContentIntoSections(content) {
-        // Diviser le contenu en sections pour plusieurs diapositives
-        const sections = [];
+    private static createBasicSlide(pres: any, slideData: PowerPointSlide, theme: any) {
+        const slide = pres.addSlide();
 
-        // Recherche de titres dans le contenu Markdown (lignes commençant par #)
-        const lines = content.split('\n');
-        let currentTitle = 'Points clés';
-        let currentContent = '';
+        // Titre
+        slide.addText(slideData.title, {
+            x: 0.5, y: 0.5, w: '95%', h: 0.8,
+            fontSize: 24,
+            color: theme.primary,
+            bold: true
+        });
 
-        for (const line of lines) {
-            if (line.startsWith('# ')) {
-                // Si nous avons déjà du contenu, enregistrer la section précédente
-                if (currentContent.trim()) {
-                    sections.push({
-                        title: currentTitle,
-                        content: currentContent.trim()
-                    });
-                }
-
-                // Nouvelle section
-                currentTitle = line.substring(2).trim();
-                currentContent = '';
-            } else if (line.startsWith('## ')) {
-                // Sous-section, traiter comme un nouveau point
-                if (currentContent.trim()) {
-                    currentContent += '\n• ' + line.substring(3).trim();
-                } else {
-                    currentContent = '• ' + line.substring(3).trim();
-                }
-            } else {
-                // Contenu régulier
-                currentContent += line + '\n';
-            }
-        }
-
-        // Ajouter la dernière section
-        if (currentContent.trim()) {
-            sections.push({
-                title: currentTitle,
-                content: currentContent.trim()
+        // Contenu texte simple
+        if (slideData.content && slideData.content.length > 0) {
+            slide.addText(slideData.content.join('\n\n'), {
+                x: 0.5, y: 1.5, w: '95%', h: 4.5,
+                fontSize: 18,
+                color: theme.text
             });
         }
-
-        // Si aucune section n'a été trouvée, créer une section par défaut
-        if (sections.length === 0) {
-            sections.push({
-                title: 'Points clés',
-                content: content
-            });
-        }
-
-        return sections;
     }
 }

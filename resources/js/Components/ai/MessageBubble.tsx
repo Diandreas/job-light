@@ -29,6 +29,7 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({ message }) => {
     const { toast } = useToast();
 
     // Fonction pour détecter et extraire du JSON valide pour une présentation PowerPoint
+    // Dans MessageBubble.tsx, modifiez la fonction extractPresentationJson
     const extractPresentationJson = (content: string) => {
         try {
             // Chercher du contenu entre accolades
@@ -39,16 +40,26 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({ message }) => {
             const jsonStr = jsonMatch[0];
             const data = JSON.parse(jsonStr);
 
-            // Vérifier si c'est un JSON de présentation (contient slides et title)
+            // Vérifier si c'est un JSON de présentation avec les éléments requis
             if (data && data.slides && data.title) {
-                return jsonStr;
+                // Vérifier et normaliser chaque diapositive
+                if (Array.isArray(data.slides)) {
+                    data.slides = data.slides.map(slide => {
+                        // S'assurer que content est un tableau s'il existe
+                        if (slide.content && !Array.isArray(slide.content)) {
+                            slide.content = [slide.content];
+                        }
+                        return slide;
+                    });
+                }
+                return JSON.stringify(data);
             }
             return null;
         } catch (e) {
+            console.error('Error parsing presentation JSON:', e);
             return null;
         }
     };
-
     // Animation d'écriture plus lente pour les messages de l'assistant
     useEffect(() => {
         if (isUser) return;
@@ -100,6 +111,25 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({ message }) => {
         try {
             setIsGeneratingPPTX(true);
 
+            // Valider le JSON avant de tenter de générer la présentation
+            let jsonData;
+            try {
+                jsonData = JSON.parse(presentationJson);
+                // Vérification supplémentaire que la structure est correcte
+                if (!jsonData.slides || !jsonData.title) {
+                    throw new Error('Structure JSON invalide pour la présentation');
+                }
+            } catch (parseError) {
+                console.error('Error parsing JSON:', parseError);
+                toast({
+                    title: "Format JSON invalide",
+                    description: "Le contenu JSON n'est pas dans le format attendu pour une présentation",
+                    variant: "destructive"
+                });
+                setIsGeneratingPPTX(false);
+                return;
+            }
+
             // Générer la présentation PowerPoint
             const pptxBlob = await PowerPointService.generateFromJSON(presentationJson);
 
@@ -128,7 +158,7 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({ message }) => {
             console.error('Error generating presentation:', error);
             toast({
                 title: "Erreur",
-                description: "Une erreur est survenue lors de la génération de la présentation",
+                description: `Erreur lors de la génération: ${error.message || "Erreur inconnue"}`,
                 variant: "destructive"
             });
         } finally {
@@ -439,7 +469,7 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({ message }) => {
             {/* Style pour l'export */}
             {/* @ts-ignore */}
 
-            <style jsx global>{`
+            <style data-jsx="true"  data-global="true">{`
                 .share-image-style {
                     box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
                     border-width: 2px;

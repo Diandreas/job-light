@@ -29,6 +29,7 @@ class CareerAdvisorController extends Controller
     {
         $this->mistral = new Mistral(apiKey: config('mistral.api_key'));
     }
+
     public function show($contextId)
     {
         try {
@@ -67,7 +68,7 @@ class CareerAdvisorController extends Controller
         $chatHistories = ChatHistory::where('user_id', $user->id)
             ->orderBy('created_at', 'desc')
             ->get()
-            ->map(function($chat) {
+            ->map(function ($chat) {
                 return [
                     'id' => $chat->id,
                     'context_id' => $chat->context_id,
@@ -174,7 +175,7 @@ class CareerAdvisorController extends Controller
         $chats = ChatHistory::where('user_id', auth()->id())
             ->orderBy('created_at', 'desc')
             ->get()
-            ->map(function($chat) {
+            ->map(function ($chat) {
                 return [
                     'id' => $chat->id,
                     'context_id' => $chat->context_id,
@@ -210,9 +211,11 @@ class CareerAdvisorController extends Controller
             'interview-prep' => 'Simulation d\'entretien',
             'cover-letter' => 'Lettre de motivation',
             'resume-review' => 'Analyse de CV',
-            'career-advice' => 'Conseil carrière'
+            'career-advice' => 'Conseil carrière',
+            'presentation-ppt' => 'Présentation PowerPoint'
         ][$serviceId] ?? 'Service inconnu';
     }
+
     private function getModelConfigForService($serviceId)
     {
         $configs = [
@@ -238,6 +241,12 @@ class CareerAdvisorController extends Controller
                 'model' => 'mistral-medium-latest',
                 'maxTokens' => 1000,
                 'temperature' => 0.2,
+                'maxHistory' => 3
+            ],
+            'presentation-ppt' => [
+                'model' => 'mistral-large-latest',
+                'maxTokens' => 3500,
+                'temperature' => 0.7,
                 'maxHistory' => 3
             ]
         ];
@@ -388,7 +397,7 @@ class CareerAdvisorController extends Controller
                         Focus on highlighting key skills.
                         Provide specific examples."
             ],
-            'default' => [
+            'career-advice' => [
                 'fr' => "{$languageInstruction}
                         Vous êtes un conseiller professionnel expert.
                         Donnez des conseils pratiques et applicables.
@@ -455,6 +464,8 @@ class CareerAdvisorController extends Controller
 
                     Les types de diapositives possibles sont: title, content, two-column, chart, quote, timeline, conclusion.
                     Pour les graphiques, les types possibles sont: bar, line, pie, scatter.
+                    Assurez-vous que tous les tableaux de contenu (content, leftContent, rightContent) sont bien des tableaux, même pour un seul élément.
+                    Pour le type timeline, utilisez la structure d'événements suivante: \"events\": [{\"date\": \"Date\", \"description\": \"Description\"}]
                     Utilisez uniquement des couleurs au format hexadécimal (#RRGGBB).
                     N'incluez pas d'exemples ou d'explications, retournez UNIQUEMENT le JSON.",
 
@@ -514,10 +525,11 @@ class CareerAdvisorController extends Controller
 
                     Possible slide types are: title, content, two-column, chart, quote, timeline, conclusion.
                     For charts, possible types are: bar, line, pie, scatter.
+                    Make sure all content arrays (content, leftContent, rightContent) are actual arrays, even for single items.
+                    For timeline type, use the following events structure: \"events\": [{\"date\": \"Date\", \"description\": \"Description\"}]
                     Use only hexadecimal color format (#RRGGBB).
                     Do not include examples or explanations, return ONLY the JSON."
             ]
-
         ];
 
         return $prompts[$serviceId][$language] ?? $prompts['default'][$language];
@@ -658,13 +670,14 @@ class CareerAdvisorController extends Controller
             'interview-prep' => 'Simulation d\'entretien',
             'cover-letter' => 'Lettre de motivation',
             'resume-review' => 'Analyse de CV',
+            'presentation-ppt' => 'Présentation PowerPoint',
             'default' => 'Conseil carrière'
         ][$serviceId] ?? 'Document Guidy';
     }
 
     private function formatContent($messages, $serviceId)
     {
-        return array_map(function($message) {
+        return array_map(function ($message) {
             return [
                 'role' => $message['role'],
                 'content' => $message['content'],
@@ -672,15 +685,6 @@ class CareerAdvisorController extends Controller
             ];
         }, $messages);
     }
-
-
-
-
-
-
-
-
-
 
     public function analyzeCV(Request $request)
     {
@@ -738,8 +742,6 @@ class CareerAdvisorController extends Controller
             ], 500);
         }
     }
-
-
 
     private function extractTextFromFile($file)
     {
@@ -926,6 +928,7 @@ RÈGLES IMPORTANTES:
 7. Tous les champs sont obligatoires, même vides
 EOT;
     }
+
     private function saveCVData($userId, $cvData)
     {
         DB::beginTransaction();
@@ -1090,45 +1093,9 @@ EOT;
         return $errors;
     }
 
-    private function getMockCVAnalysis()
-    {
-        return [
-            "nom_complet" => "John Doe",
-            "poste_actuel" => "Développeur Full Stack",
-            "contact" => [
-                "email" => "john.doe@example.com",
-                "telephone" => "+237600000000",
-                "adresse" => "Yaoundé, Cameroun",
-                "github" => "github.com/johndoe",
-                "linkedin" => "linkedin.com/in/johndoe"
-            ],
-            "resume" => "Développeur Full Stack expérimenté avec 5 ans d'expérience",
-            "experiences" => [
-                [
-                    "titre" => "Développeur Full Stack Senior",
-                    "entreprise" => "Tech Company SA",
-                    "date_debut" => "2022-01",
-                    "date_fin" => "present",
-                    "categorie" => "professionnel",
-                    "description" => "Développement d'applications web avec Laravel et React",
-                    "output" => "Augmentation de 40% des performances des applications",
-                    "comment" => "Lead d'une équipe de 5 développeurs",
-                    "references" => [
-                        [
-                            "name" => "Marie Smith",
-                            "function" => "CTO",
-                            "email" => "marie.smith@example.com",
-                            "telephone" => "+237600000001"
-                        ]
-                    ]
-                ]
-            ]
-        ];
-    }
     /**
      * Exportation au format PowerPoint
      */
-
     public function exportPptx(Request $request)
     {
         try {
@@ -1145,11 +1112,31 @@ EOT;
             // Décoder le contenu base64
             $pptxContent = base64_decode($validated['pptxData']);
 
+            if ($pptxContent === false) {
+                Log::error('Export PPTX error: Invalid base64 content');
+                return response()->json(['error' => 'Contenu base64 invalide'], 400);
+            }
+
+            // Vérifier que le contenu décodé a une taille correcte
+            if (strlen($pptxContent) < 100) {
+                Log::error('Export PPTX error: Content too small, likely corrupted', ['size' => strlen($pptxContent)]);
+                return response()->json(['error' => 'Contenu du fichier trop petit, probablement corrompu'], 400);
+            }
+
+            // Vérifier que l'en-tête du fichier PPTX est correct
+            $pptxHeader = substr($pptxContent, 0, 4);
+            $validHeader = pack("C*", 0x50, 0x4B, 0x03, 0x04); // Signature ZIP PK\003\004
+
+            if ($pptxHeader !== $validHeader) {
+                Log::error('Export PPTX error: Invalid file header', ['header' => bin2hex($pptxHeader)]);
+                return response()->json(['error' => 'En-tête de fichier invalide, données non conformes au format PPTX'], 400);
+            }
+
             // Créer un fichier temporaire
             $tempFile = tempnam(sys_get_temp_dir(), 'pptx');
             file_put_contents($tempFile, $pptxContent);
 
-            // Enregistrer dans la table DocumentExport si nécessaire
+            // Enregistrer dans la table DocumentExport
             DocumentExport::create([
                 'user_id' => auth()->id(),
                 'filename' => "presentation-{$chatHistory->context_id}.pptx",
@@ -1163,7 +1150,11 @@ EOT;
             return response()->download(
                 $tempFile,
                 "presentation-{$chatHistory->context_id}.pptx",
-                ['Content-Type' => 'application/vnd.openxmlformats-officedocument.presentationml.presentation']
+                [
+                    'Content-Type' => 'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+                    'Content-Disposition' => 'attachment; filename="presentation-' . $chatHistory->context_id . '.pptx"',
+                    'Content-Length' => strlen($pptxContent)
+                ]
             )->deleteFileAfterSend();
 
         } catch (\Exception $e) {

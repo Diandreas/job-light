@@ -47,7 +47,7 @@ export const ServiceCard: React.FC<ServiceCardProps> = ({
                 {t(`${title.toLowerCase().replace(/\s/g, '-')}`)}
             </h3>
             <p className="text-xs text-gray-600 dark:text-gray-400 leading-relaxed line-clamp-2">
-                {t(`${title.toLowerCase().replace(/\s/g, '-')}`)}
+                {t(`services.${title.toLowerCase().replace(/\s/g, '-')}.description`)}
             </p>
         </motion.div>
     );

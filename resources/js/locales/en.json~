@@ -851,7 +851,7 @@
             "description": "Interactive interview simulation",
             "placeholder": "Ask your questions about interview preparation..."
         },
-
+        
         "cover-letter": {
             "title": "Cover Letter",
             "description": "Personalized cover letter",

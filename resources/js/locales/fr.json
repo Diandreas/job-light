@@ -382,14 +382,14 @@
         }
     },
     "career_advisor": {
-        "title": "Conseiller de Carrière",
+        "title": "Conseiller de Carrière IA",
         "header": {
             "balance": "Solde",
             "history": "Historique"
         },
         "messages": {
-            "loading_error": "Erreur de chargement des conversations",
-            "chat_loading_error": "Erreur de chargement de la conversation",
+            "loading_error": "Erreur lors du chargement des conversations",
+            "chat_loading_error": "Erreur lors du chargement de la conversation",
             "delete_success": "Conversation supprimée avec succès",
             "delete_error": "Erreur lors de la suppression de la conversation",
             "loading": "Chargement de la conversation...",
@@ -404,7 +404,14 @@
         "chat": {
             "send": "Envoyer",
             "sending": "Envoi en cours...",
+            "new": "Nouvelle conversation",
             "questions_remaining": "{{count}} questions restantes",
+            "thinking": {
+                "analyzing": "Analyse en cours...",
+                "reflecting": "Réflexion sur votre demande...",
+                "generating": "Génération de la réponse...",
+                "finalizing": "Finalisation des conseils..."
+            },
             "actions": {
                 "delete": {
                     "title": "Supprimer la conversation ?",
@@ -420,16 +427,20 @@
         },
         "history": {
             "title": "Historique des conversations",
-            "empty": "Pas de conversations",
+            "empty": "Aucune conversation",
             "created_at": "Créé le {{date}}"
         },
         "info": {
             "balance": "Solde du Portefeuille",
-            "tokens": "Jetons Utilisés",
+            "tokens": "Tokens Utilisés",
             "questions": "Questions Restantes"
         },
+        "services": {
+            "choose": "Choisissez un service",
+            "description": "Sélectionnez le service qui correspond le mieux à vos besoins professionnels"
+        },
         "common": {
-            "tokens": "jetons"
+            "tokens": "tokens"
         }
     },
     "hobbies": {

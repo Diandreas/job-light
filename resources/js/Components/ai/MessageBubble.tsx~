@@ -1,7 +1,7 @@
-import React, { useState, useEffect, useRef, forwardRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import ReactMarkdown from 'react-markdown';
-import { Share2, Download, X, Copy, Check, Presentation } from 'lucide-react';
+import { Share2, Download, X, Copy, Check, Presentation, Sparkles } from 'lucide-react';
 import html2canvas from 'html2canvas';
 import { PowerPointService } from '@/Components/ai/PresentationService';
 import { Button } from "@/Components/ui/button";
@@ -12,279 +12,296 @@ interface MessageBubbleProps {
         role: 'user' | 'assistant';
         content: string;
         timestamp: Date;
+        isLatest?: boolean;
+        isThinking?: boolean;
     };
 }
 
-// Utiliser forwardRef pour résoudre l'avertissement sur les refs
-export const MessageBubble = forwardRef<HTMLDivElement, MessageBubbleProps>(
-    ({ message }, ref) => {
-        const isUser = message.role === 'user';
-        const [displayedContent, setDisplayedContent] = useState(isUser ? message.content : '');
-        const [isTypingComplete, setIsTypingComplete] = useState(isUser);
-        const [showShareOptions, setShowShareOptions] = useState(false);
-        const [generatedImage, setGeneratedImage] = useState<string | null>(null);
-        const [copied, setCopied] = useState(false);
-        const messageRef = useRef<HTMLDivElement>(null);
-        const [presentationJson, setPresentationJson] = useState<string | null>(null);
-        const [isGeneratingPPTX, setIsGeneratingPPTX] = useState(false);
-        const [isPPTXSuccess, setIsPPTXSuccess] = useState(false);
-        const { toast } = useToast();
+export const MessageBubble: React.FC<MessageBubbleProps> = ({ message }) => {
+    const isUser = message.role === 'user';
+    const [displayedContent, setDisplayedContent] = useState(isUser ? message.content : '');
+    const [isTypingComplete, setIsTypingComplete] = useState(isUser);
+    const [showShareOptions, setShowShareOptions] = useState(false);
+    const [generatedImage, setGeneratedImage] = useState<string | null>(null);
+    const [copied, setCopied] = useState(false);
+    const messageRef = useRef<HTMLDivElement>(null);
+    const [isGeneratingPPTX, setIsGeneratingPPTX] = useState(false);
+    const [isPPTXSuccess, setIsPPTXSuccess] = useState(false);
+    const { toast } = useToast();
 
-        // Fonction pour détecter et extraire du JSON valide pour une présentation PowerPoint
-        const extractPresentationJson = (content: string) => {
-            try {
-                // Chercher du contenu entre accolades
-                const jsonMatch = content.match(/\{[\s\S]*\}/);
-                if (!jsonMatch) return null;
+    // Fonction pour détecter et extraire du JSON valide pour une présentation PowerPoint
+    const extractPresentationJson = (content: string) => {
+        try {
+            const jsonMatch = content.match(/\{[\s\S]*\}/);
+            if (!jsonMatch) return null;
 
-                // Essayer de parser le JSON
-                const jsonStr = jsonMatch[0];
-                const data = JSON.parse(jsonStr);
+            const jsonStr = jsonMatch[0];
+            const data = JSON.parse(jsonStr);
 
-                // Vérifier si c'est un JSON de présentation avec les éléments requis
-                if (data && data.slides && data.title) {
-                    // Vérifier et normaliser chaque diapositive
-                    if (Array.isArray(data.slides)) {
-                        data.slides = data.slides.map(slide => {
-                            // S'assurer que content est un tableau s'il existe
-                            if (slide.content && !Array.isArray(slide.content)) {
-                                slide.content = [slide.content];
-                            }
-                            return slide;
-                        });
-                    }
-                    return JSON.stringify(data);
-                }
-                return null;
-            } catch (e) {
-                console.error('Error parsing presentation JSON:', e);
-                return null;
-            }
-        };
-
-        // Animation d'écriture plus lente pour les messages de l'assistant
-        useEffect(() => {
-            if (isUser) return;
-
-            setDisplayedContent('');
-            setIsTypingComplete(false);
-
-            const charsPerIteration = 6; // Réduit pour ralentir l'animation
-            let currentIndex = 0;
-
-            const typingInterval = setInterval(() => {
-                const nextIndex = Math.min(currentIndex + charsPerIteration, message.content.length);
-                setDisplayedContent(message.content.substring(0, nextIndex));
-                currentIndex = nextIndex;
-
-                if (currentIndex >= message.content.length) {
-                    clearInterval(typingInterval);
-                    setIsTypingComplete(true);
-                }
-            }, 15); // Intervalle plus long pour ralentir l'animation
-
-            return () => clearInterval(typingInterval);
-        }, [isUser, message.content]);
-
-        // Vérifier si le message contient un JSON de présentation
-        useEffect(() => {
-            if (message.role === 'assistant' && isTypingComplete) {
-                const jsonData = extractPresentationJson(message.content);
-                if (jsonData) {
-                    setPresentationJson(jsonData);
-                }
-            }
-        }, [message.content, message.role, isTypingComplete]);
-
-        // Fonction pour copier le texte
-        const handleCopy = async () => {
-            try {
-                await navigator.clipboard.writeText(message.content);
-                setCopied(true);
-                setTimeout(() => setCopied(false), 2000);
-            } catch (err) {
-                console.error('Échec de la copie:', err);
-            }
-        };
-
-        const handleGeneratePPTX = async () => {
-            if (!presentationJson) return;
-
-            try {
-                setIsGeneratingPPTX(true);
-
-                // Valider le JSON avant de tenter de générer la présentation
-                let jsonData;
-                try {
-                    jsonData = JSON.parse(presentationJson);
-                    // Vérification supplémentaire que la structure est correcte
-                    if (!jsonData.slides || !jsonData.title) {
-                        throw new Error('Structure JSON invalide pour la présentation');
-                    }
-                } catch (parseError) {
-                    console.error('Error parsing JSON:', parseError);
-                    toast({
-                        title: "Format JSON invalide",
-                        description: "Le contenu JSON n'est pas dans le format attendu pour une présentation",
-                        variant: "destructive"
+            if (data && data.slides && data.title) {
+                if (Array.isArray(data.slides)) {
+                    data.slides = data.slides.map(slide => {
+                        if (slide.content && !Array.isArray(slide.content)) {
+                            slide.content = [slide.content];
+                        }
+                        return slide;
                     });
-                    setIsGeneratingPPTX(false);
-                    return;
                 }
+                return JSON.stringify(data);
+            }
+            return null;
+        } catch (e) {
+            console.error('Error parsing presentation JSON:', e);
+            return null;
+        }
+    };
 
-                // Générer la présentation PowerPoint
-                const pptxBlob = await PowerPointService.generateFromJSON(presentationJson);
+    // Fonction pour masquer le JSON des présentations dans l'affichage
+    const cleanContentForDisplay = (content: string) => {
+        try {
+            const jsonMatch = content.match(/\{[\s\S]*\}/);
+            if (!jsonMatch) return content;
 
-                // Créer un lien de téléchargement
-                const contextId = typeof message.timestamp === 'string'
-                    ? message.timestamp
-                    : new Date(message.timestamp).getTime().toString();
+            const jsonStr = jsonMatch[0];
+            const data = JSON.parse(jsonStr);
 
-                const url = window.URL.createObjectURL(pptxBlob);
-                const link = document.createElement('a');
-                link.href = url;
-                link.download = `presentation-${contextId}.pptx`;
-                document.body.appendChild(link);
-                link.click();
-                document.body.removeChild(link);
-                window.URL.revokeObjectURL(url);
+            if (data && data.slides && data.title) {
+                return content.replace(jsonMatch[0], '').trim();
+            }
+            return content;
+        } catch (e) {
+            return content;
+        }
+    };
 
-                setIsPPTXSuccess(true);
-                setTimeout(() => setIsPPTXSuccess(false), 3000);
+    // Animation d'écriture ultra-fluide pour les messages pensés
+    useEffect(() => {
+        if (isUser || !message.isLatest || message.isThinking) {
+            if (message.isThinking) {
+                setDisplayedContent(message.content);
+                setIsTypingComplete(false);
+            } else {
+                setDisplayedContent(message.content);
+                setIsTypingComplete(true);
+            }
+            return;
+        }
 
+        const cleanContent = cleanContentForDisplay(message.content);
+        setDisplayedContent('');
+        setIsTypingComplete(false);
+
+        // Animation plus fluide avec caractères par caractères
+        const charsPerIteration = 1;
+        let currentIndex = 0;
+
+        const typingInterval = setInterval(() => {
+            const nextIndex = Math.min(currentIndex + charsPerIteration, cleanContent.length);
+            setDisplayedContent(cleanContent.substring(0, nextIndex));
+            currentIndex = nextIndex;
+
+            if (currentIndex >= cleanContent.length) {
+                clearInterval(typingInterval);
+                setIsTypingComplete(true);
+            }
+        }, 3); // Animation très rapide
+
+        return () => clearInterval(typingInterval);
+    }, [isUser, message.content, message.isLatest, message.isThinking]);
+
+    const handleCopy = async () => {
+        try {
+            await navigator.clipboard.writeText(cleanContentForDisplay(message.content));
+            setCopied(true);
+            setTimeout(() => setCopied(false), 2000);
+        } catch (err) {
+            console.error('Échec de la copie:', err);
+        }
+    };
+
+    const handleGeneratePPTX = async () => {
+        const jsonData = extractPresentationJson(message.content);
+        if (!jsonData) return;
+
+        try {
+            setIsGeneratingPPTX(true);
+
+            let parsedData;
+            try {
+                parsedData = JSON.parse(jsonData);
+                if (!parsedData.slides || !parsedData.title) {
+                    throw new Error('Structure JSON invalide pour la présentation');
+                }
+            } catch (parseError) {
+                console.error('Error parsing JSON:', parseError);
                 toast({
-                    title: "Succès",
-                    description: "Votre présentation PowerPoint a été générée avec succès"
-                });
-            } catch (error) {
-                console.error('Error generating presentation:', error);
-                toast({
-                    title: "Erreur",
-                    description: `Erreur lors de la génération: ${error.message || "Erreur inconnue"}`,
+                    title: "Format JSON invalide",
+                    description: "Le contenu JSON n'est pas dans le format attendu pour une présentation",
                     variant: "destructive"
                 });
-            } finally {
                 setIsGeneratingPPTX(false);
+                return;
             }
-        };
 
-        const handleShare = async () => {
-            // Utiliser messageRef.current qui est l'élément local, pas la ref transmise
-            if (!messageRef.current) return;
+            const pptxBlob = await PowerPointService.generateFromJSON(jsonData);
 
-            // Ouvrir le modal
-            setShowShareOptions(true);
+            const contextId = typeof message.timestamp === 'string'
+                ? message.timestamp
+                : new Date(message.timestamp).getTime().toString();
 
-            try {
-                // Ajouter temporairement des classes pour le style de l'image
-                messageRef.current.classList.add('share-image-style');
-
-                // Générer une capture du message
-                const canvas = await html2canvas(messageRef.current, {
-                    backgroundColor: null,
-                    scale: 2, // Meilleure qualité
-                    logging: false,
-                    allowTaint: true,
-                    useCORS: true
-                });
-
-                // Créer une image avec des éléments décoratifs
-                const decoratedCanvas = document.createElement('canvas');
-                const ctx = decoratedCanvas.getContext('2d');
-
-                if (!ctx) return;
-
-                // Dimensions de l'image finale
-                decoratedCanvas.width = canvas.width + 80;
-                decoratedCanvas.height = canvas.height + 120;
-
-                // Fond dégradé
-                const gradient = ctx.createLinearGradient(0, 0, decoratedCanvas.width, decoratedCanvas.height);
-                gradient.addColorStop(0, '#f59e0b10');
-                gradient.addColorStop(1, '#8b5cf610');
-                ctx.fillStyle = gradient;
-                ctx.fillRect(0, 0, decoratedCanvas.width, decoratedCanvas.height);
-
-                // Bordure
-                ctx.strokeStyle = '#f59e0b30';
-                ctx.lineWidth = 8;
-                ctx.roundRect(15, 15, decoratedCanvas.width - 30, decoratedCanvas.height - 30, 20);
-                ctx.stroke();
-
-                // Ajouter le message capturé
-                ctx.drawImage(canvas, 40, 40);
-
-                // Ajouter le logo/texte en bas avec une taille plus grande
-                ctx.fillStyle = '#f59e0b';
-                ctx.font = 'bold 22px Arial'; // Police plus grande pour une meilleure lisibilité
-                ctx.fillText('Conseiller de Carrière IA • Partagé via Guidy', 40, decoratedCanvas.height - 40);
-
-                // Convertir en image
-                const imgData = decoratedCanvas.toDataURL('image/png');
-                setGeneratedImage(imgData);
-
-                // Restaurer le style d'origine
-                messageRef.current.classList.remove('share-image-style');
-
-            } catch (error) {
-                console.error('Erreur lors de la génération de l\'image:', error);
-                setShowShareOptions(false);
-            }
-        };
-
-        const handleDownload = () => {
-            if (!generatedImage) return;
-
+            const url = window.URL.createObjectURL(pptxBlob);
             const link = document.createElement('a');
-            link.href = generatedImage;
-            link.download = `conseil-guidy-${new Date().getTime()}.png`;
+            link.href = url;
+            link.download = `presentation-${contextId}.pptx`;
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
+            window.URL.revokeObjectURL(url);
 
-            // Fermer le modal après le téléchargement
-            setTimeout(() => setShowShareOptions(false), 500);
-        };
+            setIsPPTXSuccess(true);
+            setTimeout(() => setIsPPTXSuccess(false), 3000);
 
-        // Utiliser messageRef pour la référence locale et transmettre la ref fournie par forwardRef
-        return (
-            <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                className={`flex ${isUser ? 'justify-end' : 'justify-start'} mb-3 sm:mb-4`}
+            toast({
+                title: "Succès",
+                description: "Votre présentation PowerPoint a été générée avec succès"
+            });
+        } catch (error) {
+            console.error('Error generating presentation:', error);
+            toast({
+                title: "Erreur",
+                description: `Erreur lors de la génération: ${error.message || "Erreur inconnue"}`,
+                variant: "destructive"
+            });
+        } finally {
+            setIsGeneratingPPTX(false);
+        }
+    };
+
+    const handleShare = async () => {
+        if (!messageRef.current) return;
+
+        setShowShareOptions(true);
+
+        try {
+            messageRef.current.classList.add('share-image-style');
+
+            const canvas = await html2canvas(messageRef.current, {
+                backgroundColor: null,
+                scale: 2,
+                logging: false,
+                allowTaint: true,
+                useCORS: true
+            });
+
+            const decoratedCanvas = document.createElement('canvas');
+            const ctx = decoratedCanvas.getContext('2d');
+
+            if (!ctx) return;
+
+            decoratedCanvas.width = canvas.width + 60;
+            decoratedCanvas.height = canvas.height + 100;
+
+            const gradient = ctx.createLinearGradient(0, 0, decoratedCanvas.width, decoratedCanvas.height);
+            gradient.addColorStop(0, '#f59e0b08');
+            gradient.addColorStop(1, '#8b5cf608');
+            ctx.fillStyle = gradient;
+            ctx.fillRect(0, 0, decoratedCanvas.width, decoratedCanvas.height);
+
+            ctx.strokeStyle = '#f59e0b20';
+            ctx.lineWidth = 4;
+            ctx.roundRect(10, 10, decoratedCanvas.width - 20, decoratedCanvas.height - 20, 15);
+            ctx.stroke();
+
+            ctx.drawImage(canvas, 30, 30);
+
+            ctx.fillStyle = '#f59e0b';
+            ctx.font = 'bold 18px Arial';
+            ctx.fillText('Conseiller de Carrière IA • Partagé via Guidy', 30, decoratedCanvas.height - 35);
+
+            const imgData = decoratedCanvas.toDataURL('image/png');
+            setGeneratedImage(imgData);
+
+            messageRef.current.classList.remove('share-image-style');
+
+        } catch (error) {
+            console.error('Erreur lors de la génération de l\'image:', error);
+            setShowShareOptions(false);
+        }
+    };
+
+    const handleDownload = () => {
+        if (!generatedImage) return;
+
+        const link = document.createElement('a');
+        link.href = generatedImage;
+        link.download = `conseil-guidy-${new Date().getTime()}.png`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+
+        setTimeout(() => setShowShareOptions(false), 500);
+    };
+
+    // Nettoyer le contenu affiché pour masquer le JSON
+    const displayContent = cleanContentForDisplay(isUser ? message.content : displayedContent);
+    const hasPresentationJson = extractPresentationJson(message.content) !== null;
+
+    return (
+        <motion.div
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.2 }}
+            className={`flex ${isUser ? 'justify-end' : 'justify-start'} mb-3 group`}
+        >
+            <div
+                ref={messageRef}
+                className={`max-w-[85%] sm:max-w-[80%] p-3 sm:p-4 rounded-lg shadow-sm border transition-all group-hover:shadow-md ${isUser
+                    ? 'bg-amber-500 text-white dark:bg-amber-600 border-amber-600'
+                    : message.isThinking
+                        ? 'bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300'
+                        : 'bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 text-gray-800 dark:text-gray-200'
+                }`}
             >
-                <div
-                    ref={(el) => {
-                        // Gérer à la fois la ref interne et externe
-                        messageRef.current = el;
-                        if (typeof ref === 'function') {
-                            ref(el);
-                        } else if (ref) {
-                            ref.current = el;
-                        }
-                    }}
-                    className={`max-w-[85%] sm:max-w-[80%] p-2.5 sm:p-4 rounded-xl shadow-sm ${isUser
-                        ? 'bg-gradient-to-r from-amber-500 to-purple-500 text-white dark:from-amber-400 dark:to-purple-400'
-                        : 'bg-white dark:bg-gray-800 border border-amber-100 dark:border-gray-700 text-gray-800 dark:text-gray-200'
-                    }`}
-                >
-                    <div className="space-y-1.5 sm:space-y-2">
+                {/* Message de pensée */}
+                {message.isThinking ? (
+                    <div className="flex items-center gap-2">
+                        <div className="flex items-center space-x-1">
+                            <motion.div
+                                animate={{ opacity: [0.4, 1, 0.4] }}
+                                transition={{ duration: 0.8, repeat: Infinity }}
+                                className="w-2 h-2 rounded-full bg-amber-400"
+                            />
+                            <motion.div
+                                animate={{ opacity: [0.4, 1, 0.4] }}
+                                transition={{ duration: 0.8, delay: 0.2, repeat: Infinity }}
+                                className="w-2 h-2 rounded-full bg-amber-400"
+                            />
+                            <motion.div
+                                animate={{ opacity: [0.4, 1, 0.4] }}
+                                transition={{ duration: 0.8, delay: 0.4, repeat: Infinity }}
+                                className="w-2 h-2 rounded-full bg-amber-400"
+                            />
+                        </div>
+                        <span className="text-sm text-gray-600 dark:text-gray-400">{message.content}</span>
+                    </div>
+                ) : (
+                    <div className="space-y-2">
                         <ReactMarkdown
                             components={{
-                                h1: ({ node, ...props }) => <h1 className="text-xl sm:text-2xl font-bold mb-2 sm:mb-3" {...props} />,
-                                h2: ({ node, ...props }) => <h2 className="text-lg sm:text-xl font-bold mb-1.5 sm:mb-2" {...props} />,
-                                h3: ({ node, ...props }) => <h3 className="text-base sm:text-lg font-bold mb-1.5 sm:mb-2" {...props} />,
-                                ul: ({ node, ...props }) => <ul className="list-disc ml-4 space-y-0.5 sm:space-y-1 text-sm sm:text-base" {...props} />,
-                                ol: ({ node, ...props }) => <ol className="list-decimal ml-4 space-y-0.5 sm:space-y-1 text-sm sm:text-base" {...props} />,
-                                li: ({ node, ...props }) => <li className="text-sm sm:text-base mb-0.5 sm:mb-1" {...props} />,
+                                h1: ({ node, ...props }) => <h1 className="text-lg sm:text-xl font-bold mb-2" {...props} />,
+                                h2: ({ node, ...props }) => <h2 className="text-base sm:text-lg font-bold mb-2" {...props} />,
+                                h3: ({ node, ...props }) => <h3 className="text-sm sm:text-base font-bold mb-1" {...props} />,
+                                ul: ({ node, ...props }) => <ul className="list-disc ml-4 space-y-0.5 text-sm" {...props} />,
+                                ol: ({ node, ...props }) => <ol className="list-decimal ml-4 space-y-0.5 text-sm" {...props} />,
+                                li: ({ node, ...props }) => <li className="text-sm leading-relaxed" {...props} />,
                                 p: ({ node, ...props }) => (
-                                    <p className="text-sm sm:text-base leading-relaxed whitespace-pre-wrap" {...props} />
+                                    <p className="text-sm leading-relaxed whitespace-pre-wrap" {...props} />
                                 ),
                                 strong: ({ node, ...props }) => (
                                     <strong
-                                        className={`font-bold ${isUser
+                                        className={`font-semibold ${isUser
                                             ? 'text-white'
-                                            : 'text-amber-900 dark:text-amber-300'
+                                            : 'text-amber-800 dark:text-amber-300'
                                         }`}
                                         {...props}
                                     />
@@ -295,201 +312,182 @@ export const MessageBubble = forwardRef<HTMLDivElement, MessageBubbleProps>(
                                         className={`border-l-4 ${isUser
                                             ? 'border-white/30'
                                             : 'border-amber-200 dark:border-amber-700'
-                                        } pl-3 sm:pl-4 italic my-1.5 sm:my-2 text-sm sm:text-base`}
+                                        } pl-3 italic my-2 text-sm`}
                                         {...props}
                                     />
                                 ),
+                                // @ts-ignore
                                 code: ({ node, inline, ...props }) => (
                                     inline
                                         ? <code
-                                            className={`px-1 rounded text-xs sm:text-sm ${isUser
-                                                ? 'bg-white/10'
-                                                : 'bg-amber-100 dark:bg-amber-900/30 text-amber-800 dark:text-amber-300'
+                                            className={`px-1.5 py-0.5 rounded text-xs font-mono ${isUser
+                                                ? 'bg-white/15 text-white'
+                                                : 'bg-amber-100 dark:bg-amber-900/30 text-amber-800 dark:text-amber-300 border'
                                             }`}
                                             {...props}
                                         />
                                         : <code
-                                            className={`block p-1.5 sm:p-2 rounded my-1.5 sm:my-2 font-mono text-xs sm:text-sm ${isUser
-                                                ? 'bg-white/10'
-                                                : 'bg-amber-50 dark:bg-gray-800/80 text-gray-800 dark:text-gray-200'
+                                            className={`block p-3 rounded-lg my-2 font-mono text-xs overflow-x-auto ${isUser
+                                                ? 'bg-white/10 text-white'
+                                                : 'bg-gray-50 dark:bg-gray-800/80 text-gray-800 dark:text-gray-200 border'
                                             }`}
                                             {...props}
                                         />
                                 )
                             }}
                         >
-                            {isUser ? message.content : displayedContent}
+                            {displayContent}
                         </ReactMarkdown>
 
-                        {!isUser && !isTypingComplete && (
-                            <div className="flex space-x-1.5 mt-2">
-                                <motion.div
-                                    animate={{ opacity: [0.4, 1, 0.4] }}
-                                    transition={{ duration: 1.2, repeat: Infinity }}
-                                    className="w-2 h-2 sm:w-2.5 sm:h-2.5 rounded-full bg-amber-500 dark:bg-amber-400"
-                                />
-                                <motion.div
-                                    animate={{ opacity: [0.4, 1, 0.4] }}
-                                    transition={{ duration: 1.2, delay: 0.3, repeat: Infinity }}
-                                    className="w-2 h-2 sm:w-2.5 sm:h-2.5 rounded-full bg-amber-500 dark:bg-amber-400"
-                                />
-                                <motion.div
-                                    animate={{ opacity: [0.4, 1, 0.4] }}
-                                    transition={{ duration: 1.2, delay: 0.6, repeat: Infinity }}
-                                    className="w-2 h-2 sm:w-2.5 sm:h-2.5 rounded-full bg-amber-500 dark:bg-amber-400"
-                                />
-                            </div>
-                        )}
-
-                        {/* Bouton pour générer une présentation PowerPoint si un JSON valide est détecté */}
-                        {!isUser && isTypingComplete && presentationJson && (
-                            <div className="mt-3">
+                        {/* Bouton pour générer une présentation PowerPoint */}
+                        {!isUser && isTypingComplete && hasPresentationJson && (
+                            <div className="mt-3 pt-2 border-t border-gray-100 dark:border-gray-700">
                                 <Button
                                     variant="outline"
                                     size="sm"
                                     onClick={handleGeneratePPTX}
                                     disabled={isGeneratingPPTX}
-                                    className="border-amber-200 dark:border-gray-700 text-gray-700 dark:text-gray-300
-                                        hover:bg-amber-50 dark:hover:bg-gray-800 flex items-center gap-2"
+                                    className="h-9 text-xs bg-gradient-to-r from-amber-50 to-purple-50 dark:from-amber-900/20 dark:to-purple-900/20 border-amber-200 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gradient-to-r hover:from-amber-100 hover:to-purple-100 dark:hover:from-amber-800/20 dark:hover:to-purple-800/20"
                                 >
                                     {isGeneratingPPTX ? (
-                                        <div className="animate-spin h-4 w-4">
-                                            <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                                                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                                            </svg>
-                                        </div>
+                                        <motion.div
+                                            animate={{ rotate: 360 }}
+                                            transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                                            className="mr-2"
+                                        >
+                                            <Sparkles className="h-3 w-3" />
+                                        </motion.div>
                                     ) : isPPTXSuccess ? (
-                                        <Check className="h-4 w-4 text-green-500" />
+                                        <Check className="h-3 w-3 text-green-600 mr-2" />
                                     ) : (
-                                        <Presentation className="h-4 w-4" />
+                                        <Presentation className="h-3 w-3 mr-2" />
                                     )}
-                                    <span>Générer la présentation PowerPoint</span>
+                                    <span className="font-medium">
+                                        {isGeneratingPPTX ? 'Génération...' : 'Créer PowerPoint'}
+                                    </span>
                                 </Button>
                             </div>
                         )}
                     </div>
+                )}
 
-                    <div className="flex justify-between items-center mt-2">
-                        <div
-                            className={`text-[10px] sm:text-xs ${isUser ? 'text-white/70' : 'text-gray-500 dark:text-gray-400'}`}
-                        >
-                            {new Date(message.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                        </div>
-
-                        {/* Boutons d'actions: Copier et Partager */}
-                        {!isUser && isTypingComplete && (
-                            <div className="flex items-center space-x-1">
-                                <motion.button
-                                    whileHover={{ scale: 1.2 }}
-                                    whileTap={{ scale: 0.9 }}
-                                    onClick={handleCopy}
-                                    className="text-gray-400 hover:text-amber-500 dark:text-gray-500 dark:hover:text-amber-400 p-1"
-                                    aria-label="Copier le message"
-                                    title="Copier le message"
-                                >
-                                    {copied ? (
-                                        <Check className="h-4 w-4 text-green-500" />
-                                    ) : (
-                                        <Copy className="h-4 w-4" />
-                                    )}
-                                </motion.button>
-                                <motion.button
-                                    whileHover={{ scale: 1.2 }}
-                                    whileTap={{ scale: 0.9 }}
-                                    onClick={handleShare}
-                                    className="text-gray-400 hover:text-blue-500 dark:text-gray-500 dark:hover:text-blue-400 p-1"
-                                    aria-label="Partager le message"
-                                    title="Partager le message"
-                                >
-                                    <Share2 className="h-4 w-4" />
-                                </motion.button>
-                            </div>
-                        )}
+                {/* Horodatage et boutons d'action */}
+                <div className="flex justify-between items-center mt-2 pt-2">
+                    <div
+                        className={`text-xs ${isUser ? 'text-white/70' : 'text-gray-500 dark:text-gray-400'}`}
+                    >
+                        {new Date(message.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                     </div>
-                </div>
 
-                {/* Notification de copie réussie - utiliser une div normale dans l'AnimatePresence */}
-                <AnimatePresence>
-                    {copied && (
-                        <motion.div
-                            initial={{ opacity: 0, y: 20 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            exit={{ opacity: 0, y: -20 }}
-                            className="fixed bottom-4 right-4 bg-gradient-to-r from-amber-500 to-purple-500 text-white px-4 py-2 rounded-md shadow-lg"
-                        >
-                            Texte copié !
-                        </motion.div>
-                    )}
-                </AnimatePresence>
-
-                {/* Modal d'options de partage - assurer que les composants sont compatibles avec forwardRef */}
-                <AnimatePresence>
-                    {showShareOptions && (
-                        <motion.div
-                            initial={{ opacity: 0 }}
-                            animate={{ opacity: 1 }}
-                            exit={{ opacity: 0 }}
-                            className="fixed inset-0 bg-black/50 flex items-center justify-center z-50"
-                            onClick={() => setShowShareOptions(false)}
-                        >
-                            <motion.div
-                                initial={{ scale: 0.8, opacity: 0 }}
-                                animate={{ scale: 1, opacity: 1 }}
-                                exit={{ scale: 0.8, opacity: 0 }}
-                                className="bg-white dark:bg-gray-900 p-4 rounded-xl max-w-md w-full mx-4 shadow-xl"
-                                onClick={e => e.stopPropagation()}
+                    {/* Boutons d'actions */}
+                    {!isUser && isTypingComplete && !message.isThinking && (
+                        <div className="flex items-center space-x-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                            <motion.button
+                                whileHover={{ scale: 1.15 }}
+                                whileTap={{ scale: 0.9 }}
+                                onClick={handleCopy}
+                                className="text-gray-400 hover:text-green-500 dark:text-gray-500 dark:hover:text-green-400 p-1.5 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 transition-all"
+                                aria-label="Copier le message"
+                                title="Copier le message"
                             >
-                                <div className="flex justify-between items-center mb-4">
-                                    <h3 className="text-lg font-bold text-gray-900 dark:text-gray-100">
-                                        Partager ce conseil
-                                    </h3>
-                                    <button
-                                        onClick={() => setShowShareOptions(false)}
-                                        className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
-                                    >
-                                        <X className="h-5 w-5" />
-                                    </button>
-                                </div>
-
-                                {generatedImage && (
-                                    <div className="mb-4 border border-amber-200 dark:border-gray-700 rounded-lg overflow-hidden">
-                                        <img
-                                            src={generatedImage}
-                                            alt="Aperçu du message à partager"
-                                            className="w-full object-contain"
-                                        />
-                                    </div>
+                                {copied ? (
+                                    <Check className="h-3.5 w-3.5 text-green-500" />
+                                ) : (
+                                    <Copy className="h-3.5 w-3.5" />
                                 )}
-
-                                <div className="space-y-3">
-                                    <button
-                                        onClick={handleDownload}
-                                        className="w-full py-3 px-4 bg-gradient-to-r from-amber-500 to-purple-500 hover:from-amber-600 hover:to-purple-600 text-white rounded-lg flex items-center justify-center gap-2 transition-colors font-medium"
-                                    >
-                                        <Download className="h-5 w-5" />
-                                        Télécharger l'image pour partager
-                                    </button>
-                                </div>
-                            </motion.div>
-                        </motion.div>
+                            </motion.button>
+                            <motion.button
+                                whileHover={{ scale: 1.15 }}
+                                whileTap={{ scale: 0.9 }}
+                                onClick={handleShare}
+                                className="text-gray-400 hover:text-blue-500 dark:text-gray-500 dark:hover:text-blue-400 p-1.5 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 transition-all"
+                                aria-label="Partager le message"
+                                title="Partager le message"
+                            >
+                                <Share2 className="h-3.5 w-3.5" />
+                            </motion.button>
+                        </div>
                     )}
-                </AnimatePresence>
+                </div>
+            </div>
 
-                {/* Style pour l'export */}
-                <style jsx global>{`
-                    .share-image-style {
-                        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
-                        border-width: 2px;
-                    }
-                    .share-image-style strong {
-                        color: #f59e0b !important;
-                    }
-                `}</style>
-            </motion.div>
-        );
-    }
-);
+            {/* Notification de copie réussie */}
+            <AnimatePresence>
+                {copied && (
+                    <motion.div
+                        initial={{ opacity: 0, y: 20, scale: 0.9 }}
+                        animate={{ opacity: 1, y: 0, scale: 1 }}
+                        exit={{ opacity: 0, y: -20, scale: 0.9 }}
+                        className="fixed bottom-4 right-4 bg-gradient-to-r from-green-500 to-emerald-500 text-white px-3 py-2 rounded-lg shadow-lg text-sm font-medium"
+                    >
+                        ✓ Texte copié !
+                    </motion.div>
+                )}
+            </AnimatePresence>
 
-// Ajouter un displayName pour aider au débogage
-MessageBubble.displayName = "MessageBubble";
+            {/* Modal d'options de partage */}
+            <AnimatePresence>
+                {showShareOptions && (
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 backdrop-blur-sm"
+                        onClick={() => setShowShareOptions(false)}
+                    >
+                        <motion.div
+                            initial={{ scale: 0.9, opacity: 0 }}
+                            animate={{ scale: 1, opacity: 1 }}
+                            exit={{ scale: 0.9, opacity: 0 }}
+                            className="bg-white dark:bg-gray-900 p-5 rounded-xl max-w-sm w-full mx-4 shadow-2xl border border-gray-200 dark:border-gray-700"
+                            onClick={e => e.stopPropagation()}
+                        >
+                            <div className="flex justify-between items-center mb-4">
+                                <h3 className="text-base font-semibold text-gray-900 dark:text-gray-100">
+                                    Partager ce conseil
+                                </h3>
+                                <button
+                                    onClick={() => setShowShareOptions(false)}
+                                    className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 p-1 rounded-md hover:bg-gray-100 dark:hover:bg-gray-800 transition-all"
+                                >
+                                    <X className="h-4 w-4" />
+                                </button>
+                            </div>
+
+                            {generatedImage && (
+                                <div className="mb-4 border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden">
+                                    <img
+                                        src={generatedImage}
+                                        alt="Aperçu du message à partager"
+                                        className="w-full object-contain"
+                                    />
+                                </div>
+                            )}
+
+                            <Button
+                                onClick={handleDownload}
+                                className="w-full py-3 bg-gradient-to-r from-amber-500 to-purple-500 hover:from-amber-600 hover:to-purple-600 text-white rounded-lg flex items-center justify-center gap-2 transition-all duration-200 font-medium"
+                            >
+                                <Download className="h-4 w-4" />
+                                Télécharger l'image
+                            </Button>
+                        </motion.div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
+
+            {/* Style pour l'export */}
+            <style jsx global>{`
+                .share-image-style {
+                    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+                    border-width: 1px;
+                }
+                .share-image-style strong {
+                    color: #f59e0b !important;
+                }
+            `}</style>
+        </motion.div>
+    );
+};
+
+export default MessageBubble;

@@ -2,13 +2,13 @@
     "brand": "Guidy",
     "nav": {
         "login": "Connexion",
-        "register": "Démarrer Gratuitement",
+        "register": "Démarrer gratuitement",
         "start_free": "Commencer maintenant"
     },
     "hero": {
-        "badge": "🚀 Propulsez votre carrière avec l'IA",
+        "badge": "🚀 Boostez votre carrière avec l'IA",
         "title": "Votre guide professionnel intelligent",
-        "description": "Créez des CVs percutants, obtenez des conseils carrière personnalisés et préparez vos entretiens avec notre assistant IA de dernière génération"
+        "description": "Créez des CV percutants, obtenez des conseils de carrière personnalisés et préparez-vous aux entretiens avec notre assistant IA de pointe"
     },
     "features": {
         "cv_designer": {
@@ -17,17 +17,17 @@
             "action": "Créer mon CV"
         },
         "career_advisor": {
-            "title": "Conseiller Carrière IA",
+            "title": "Conseiller de Carrière IA",
             "description": "Obtenez des conseils personnalisés pour votre développement professionnel.",
             "action": "Consulter l'assistant"
         },
         "cover_letter": {
             "title": "Lettre de Motivation",
-            "description": "Générez des lettres de motivation impactantes adaptées à vos candidatures.",
+            "description": "Générez des lettres de motivation percutantes adaptées à vos candidatures.",
             "action": "Rédiger ma lettre"
         },
         "interview_coach": {
-            "title": "Coach Entretien",
+            "title": "Coach d'Entretien",
             "description": "Préparez vos entretiens avec notre simulation interactive intelligente.",
             "action": "Préparer mon entretien"
         }
@@ -35,12 +35,12 @@
     "stats": {
         "users": "Utilisateurs actifs",
         "satisfaction": "% de satisfaction",
-        "cvs": "CVs générés",
+        "cvs": "CV générés",
         "availability": "% de disponibilité"
     },
     "cta_image": {
-        "title": "Propulsez votre carrière avec Guidy",
-        "description": "Notre assistant IA analyse votre profil et vous guide vers les opportunités qui correspondent à votre parcours. Créez votre CV optimisé dès maintenant.",
+        "title": "Boostez votre carrière avec Guidy",
+        "description": "Notre assistant IA analyse votre profil et vous guide vers des opportunités qui correspondent à votre parcours. Créez votre CV optimisé maintenant.",
         "button": "Commencer gratuitement",
         "image_placeholder": "Espace pour votre image"
     },
@@ -52,15 +52,15 @@
         "services": {
             "title": "Services",
             "resume": "Création de CV",
-            "advisor": "Conseiller Carrière",
-            "interview": "Préparation Entretien"
+            "advisor": "Conseiller de Carrière",
+            "interview": "Préparation d'Entretien"
         },
         "legal": {
             "title": "Légal",
-            "privacy": "Politique de confidentialité",
-            "terms": "Conditions d'utilisation",
-            "cookies": "Politique des cookies",
-            "mentions": "Mentions légales"
+            "privacy": "Politique de Confidentialité",
+            "terms": "Conditions d'Utilisation",
+            "cookies": "Politique de Cookies",
+            "mentions": "Mentions Légales"
         },
         "copyright": "Tous droits réservés"
     },
@@ -73,22 +73,30 @@
         "profile": "Mon Profil"
     },
     "cv": {
+        "navigation": "Navigation CV",
+        "edit": "Modifier le CV",
+        "premium": "Designs Premium",
+        "preview": "Aperçu & Export",
+        "download": "Télécharger",
+        "template": "Modèles",
+        "save": "Enregistrer",
+        "continue": "Continuer",
         "languages": {
             "title": "Langues",
             "description": "Ajoutez les langues que vous parlez",
             "add": "Ajouter une langue",
             "select": "Sélectionner une langue",
-            "selectPlaceholder": "Choisissez une langue...",
+            "selectPlaceholder": "Choisir une langue...",
             "level": "Niveau de compétence",
-            "levelPlaceholder": "Sélectionnez le niveau",
+            "levelPlaceholder": "Sélectionner un niveau",
             "empty": "Aucune langue ajoutée",
             "delete": "Supprimer la langue",
             "levels": {
                 "beginner": "Débutant",
                 "intermediate": "Intermédiaire",
                 "elementary": "Élémentaire",
-                "upperIntermediate": "Intermédiaire supérieur",
-                "proficient": "Compétent",
+                "upperIntermediate": "Intermédiaire avancé",
+                "proficient": "Maîtrise professionnelle",
                 "advanced": "Avancé",
                 "native": "Langue maternelle"
             },
@@ -114,14 +122,14 @@
                 "complete": "complété"
             },
             "import": {
-                "button": "Importer CV",
+                "button": "Importer un CV",
                 "pdf": "Importer PDF",
                 "word": "Importer Word",
-                "loading": "Importation...",
-                "success": "Import réussi",
+                "loading": "Importation en cours...",
+                "success": "Importation réussie",
                 "successDetail": "Votre CV a été importé avec succès",
                 "error": "Erreur d'importation",
-                "errorDetail": "Une erreur est survenue lors de l'importation",
+                "errorDetail": "Une erreur s'est produite lors de l'importation",
                 "insufficient": "Solde insuffisant"
             },
             "sections": {
@@ -133,7 +141,7 @@
                 "successDetail": "Vos informations ont été mises à jour avec succès"
             },
             "personal": {
-                "title": "Informations personnelles",
+                "title": "Informations Personnelles",
                 "edit": "Modifier",
                 "fields": {
                     "notSpecified": "Non spécifié",
@@ -147,7 +155,7 @@
                     "crop": "Recadrer la photo",
                     "cropDescription": "Ajustez le cadre pour sélectionner la partie de l'image à utiliser",
                     "save": "Enregistrer",
-                    "saving": "Enregistrement...",
+                    "saving": "Sauvegarde en cours...",
                     "cancel": "Annuler",
                     "success": {
                         "title": "Photo mise à jour",
@@ -165,28 +173,18 @@
                 }
             },
             "cta": {
-                "title": "Créer votre CV maintenant",
+                "title": "Créez votre CV maintenant",
                 "subtitle": "Choisissez parmi nos designs professionnels"
-            },
-            "sidebar": {
-                "items": {
-                    "personalInfo": "Informations Personnelles",
-                    "summary": "Résumé",
-                    "experience": "Expériences",
-                    "competence": "Compétences",
-                    "profession": "Formation",
-                    "language": "Langues",
-                    "hobby": "Centres d'Intérêt"
-                }
             }
         },
         "sidebar": {
             "personalInfo": "Informations Personnelles",
             "summary": "Résumé",
             "experience": "Expériences",
+            "language": "Langues",
             "competence": "Compétences",
             "profession": "Formation",
-            "hobby": "Centres d'Intérêt"
+            "hobby": "Centres d'intérêt"
         },
         "personal": {
             "email": "Email",
@@ -194,6 +192,9 @@
             "address": "Adresse",
             "linkedin": "LinkedIn",
             "github": "GitHub"
+        },
+        "sections": {
+            "notFound": "Section non trouvée"
         }
     },
     "profile": {
@@ -226,10 +227,8 @@
         "back": "Retour",
         "next": "Suivant",
         "manage": "Gérer",
-        "error": {
-            "generic": "Une erreur est survenue."
-        },
-        "close": "Fermer"
+        "close": "Fermer",
+        "tokens": "jetons"
     },
     "wallet": {
         "balance": "Solde",
@@ -240,7 +239,7 @@
     "notifications": {
         "title": "Notifications",
         "empty": "Aucune notification",
-        "markAllRead": "Tout marquer comme lu",
+        "markAllRead": "Marquer tout comme lu",
         "new": "Nouveau"
     },
     "cv_models": {
@@ -273,66 +272,14 @@
             "model_added": "Modèle ajouté à votre collection",
             "model_activated": "Votre modèle a été activé avec succès",
             "max_models_reached": "Vous ne pouvez pas ajouter plus de {{max}} modèles",
-            "error": "Une erreur est survenue",
+            "error": "Une erreur s'est produite",
             "model_from_discover_selected": "Modèle sélectionné depuis la section Découvrir"
-        },
-        "sidebar": {
-            "items": {
-                "personalInfo": "Informations Personnelles",
-                "summary": "Résumé",
-                "experience": "Expériences",
-                "competence": "Compétences",
-                "profession": "Formation",
-                "language": "Langues",
-                "hobby": "Centres d'Intérêt"
-            }
-        },
-        "personal": {
-            "fields": {
-                "email": "Email",
-                "phone": "Téléphone",
-                "address": "Adresse",
-                "linkedin": "LinkedIn",
-                "github": "GitHub",
-                "notSpecified": "Non spécifié"
-            },
-            "photo": {
-                "crop": "Recadrer la photo",
-                "cropDescription": "Ajustez le cadre pour sélectionner la partie de l'image à utiliser",
-                "save": "Enregistrer",
-                "saving": "Enregistrement...",
-                "cancel": "Annuler",
-                "success": {
-                    "title": "Photo mise à jour",
-                    "description": "Votre photo de profil a été mise à jour avec succès"
-                },
-                "deleteSuccess": {
-                    "title": "Photo supprimée",
-                    "description": "Votre photo de profil a été supprimée avec succès"
-                },
-                "error": {
-                    "title": "Erreur",
-                    "noCrop": "Veuillez sélectionner une partie de l'image"
-                },
-                "sizeError": "La taille de l'image ne doit pas dépasser 5 Mo"
-            }
-        },
-        "import": {
-            "button": "Importer CV",
-            "pdf": "Importer PDF",
-            "word": "Importer Word",
-            "loading": "Importation...",
-            "success": "Import réussi",
-            "successDetail": "Votre CV a été importé avec succès",
-            "error": "Erreur d'importation",
-            "errorDetail": "Une erreur est survenue lors de l'importation",
-            "insufficient": "Solde insuffisant"
         }
     },
     "auth": {
         "register": {
             "value": "S'inscrire",
-            "title": "Créer votre compte",
+            "title": "Créez votre compte",
             "subtitle": "Rejoignez-nous et commencez à créer votre CV professionnel",
             "name": {
                 "label": "Nom complet",
@@ -346,7 +293,7 @@
                 "label": "Mot de passe",
                 "placeholder": "Votre mot de passe",
                 "confirm": "Confirmer le mot de passe",
-                "confirm_placeholder": "Confirmez le mot de passe",
+                "confirm_placeholder": "Confirmez votre mot de passe",
                 "strength": {
                     "label": "Force",
                     "weak": "Faible",
@@ -358,10 +305,10 @@
             "already_registered": "Déjà inscrit ?",
             "button": {
                 "submit": "S'inscrire",
-                "processing": "Inscription..."
+                "processing": "Inscription en cours..."
             },
             "referral": {
-                "title": "Vous avez été parrainé(e) !",
+                "title": "Vous avez été parrainé !",
                 "description": "Des avantages vous attendent."
             }
         },
@@ -373,8 +320,8 @@
             "email": "Votre email",
             "password": "Votre mot de passe",
             "remember": "Se souvenir de moi",
-            "button": "Se connecter",
-            "processing": "Connexion...",
+            "button": "Connexion",
+            "processing": "Connexion en cours...",
             "forgotPassword": "Mot de passe oublié ?",
             "createAccount": "Créer un compte"
         },
@@ -382,7 +329,7 @@
             "title": "Mot de passe oublié",
             "subtitle": "Entrez votre email pour réinitialiser votre mot de passe",
             "email": "Votre email",
-            "button": "Envoyer le lien",
+            "button": "Envoyer le lien de réinitialisation",
             "processing": "Envoi en cours...",
             "backToLogin": "Retour à la connexion"
         },
@@ -391,8 +338,8 @@
             "subtitle": "Entrez votre nouveau mot de passe",
             "password": "Nouveau mot de passe",
             "confirm": "Confirmer le mot de passe",
-            "button": "Réinitialiser",
-            "processing": "Réinitialisation..."
+            "button": "Réinitialiser le mot de passe",
+            "processing": "Réinitialisation en cours..."
         },
         "verifyEmail": {
             "title": "Vérifier l'email",
@@ -405,33 +352,32 @@
         "title": "CV Professionnel",
         "export": {
             "download": "Télécharger le CV",
-            "downloading": "Téléchargent en cours",
+            "downloading": "Téléchargement",
             "title": "Exporter mon CV",
-            "selected_model": "Modèle sélectionné : {{name}}",
-            "back_to_models": "Retour aux modèles",
+            "selected_model": "Template sélectionné : {{name}}",
+            "back_to_models": "Retour aux templates",
             "print": "Imprimer",
             "printing": "Impression en cours...",
             "download_success": "Téléchargement réussi",
             "download_success_description": "Votre CV a été téléchargé avec succès",
-            "download_error": "Erreur lors du téléchargement",
-            "download_not_allowed": "Téléchargement non autorisé pour ce modèle"
+            "download_error": "Erreur de téléchargement",
+            "download_not_allowed": "Téléchargement non autorisé pour ce template"
         },
         "wallet": {
             "current_balance": "Solde actuel",
-            "model_price": "Prix du modèle",
-            "insufficient_tokens": "Vous n'avez pas assez de jetons pour utiliser ce modèle. Veuillez recharger votre compte.",
+            "model_price": "Prix du template",
+            "insufficient_tokens": "Vous n'avez pas assez de jetons pour utiliser ce template. Veuillez recharger votre compte.",
             "recharge_tokens": "Recharger mes jetons",
             "insufficient_access": {
                 "title": "Accès insuffisant"
             }
         },
         "no_model": {
-            "title": "Sélection requise",
-            "message": "Veuillez sélectionner un modèle de CV dans la section \"Mes designs\" avant de continuer.",
-            "action": "Choisir un modèle"
+            "message": "Veuillez sélectionner un template de CV dans la section \"Mes designs\" avant de continuer.",
+            "action": "Choisir un template"
         },
         "preview": {
-            "title": "Aperçu CV",
+            "title": "Aperçu du CV",
             "loading": "Chargement de l'aperçu..."
         }
     },
@@ -442,8 +388,8 @@
             "history": "Historique"
         },
         "messages": {
-            "loading_error": "Erreur lors du chargement des conversations",
-            "chat_loading_error": "Erreur lors du chargement de la conversation",
+            "loading_error": "Erreur de chargement des conversations",
+            "chat_loading_error": "Erreur de chargement de la conversation",
             "delete_success": "Conversation supprimée avec succès",
             "delete_error": "Erreur lors de la suppression de la conversation",
             "loading": "Chargement de la conversation...",
@@ -474,7 +420,7 @@
         },
         "history": {
             "title": "Historique des conversations",
-            "empty": "Aucune conversation",
+            "empty": "Pas de conversations",
             "created_at": "Créé le {{date}}"
         },
         "info": {
@@ -494,7 +440,7 @@
             "description": "Ajoutez les activités qui vous passionnent"
         },
         "select": {
-            "placeholder": "Sélectionner un centre d'intérêt"
+            "placeholder": "Sélectionnez un centre d'intérêt"
         },
         "search": {
             "placeholder": "Rechercher des centres d'intérêt..."
@@ -504,7 +450,15 @@
             "empty": "Ajoutez vos premiers centres d'intérêt pour personnaliser votre profil !"
         },
         "actions": {
-            "add": "Ajouter"
+            "add": "Ajouter",
+            "addManual": "Saisie manuelle",
+            "save": "Enregistrer"
+        },
+        "manual": {
+            "title": "Ajouter un centre d'intérêt personnalisé",
+            "name": "Nom du centre d'intérêt",
+            "nameEn": "Nom du centre d'intérêt (Anglais)",
+            "tag": "Personnalisé"
         },
         "mobile": {
             "openDrawer": "Gérer mes centres d'intérêt"
@@ -517,6 +471,10 @@
             "removed": {
                 "title": "Centre d'intérêt supprimé",
                 "description": "Ce centre d'intérêt a été retiré de votre profil"
+            },
+            "manual": {
+                "title": "Centre d'intérêt personnalisé ajouté",
+                "description": "{{hobby}} a été ajouté à votre profil"
             }
         },
         "errors": {
@@ -529,6 +487,10 @@
             },
             "removing": {
                 "title": "Erreur de suppression"
+            },
+            "manual": {
+                "title": "Erreur",
+                "description": "Veuillez saisir un nom de centre d'intérêt"
             },
             "generic": "Une erreur s'est produite. Veuillez réessayer."
         }
@@ -563,7 +525,7 @@
         "success": {
             "updated": {
                 "title": "Formation mise à jour",
-                "description": "Vous êtes maintenant enregistré en tant que {{profession}}."
+                "description": "Vous êtes maintenant enregistré comme {{profession}}."
             },
             "manual": {
                 "title": "Formation mise à jour",
@@ -575,25 +537,25 @@
                 "title": "Erreur",
                 "description": "Veuillez sélectionner une formation"
             },
-            "manual": {
+            "empty": {
                 "title": "Erreur",
                 "description": "Veuillez saisir votre formation"
             },
             "adding": {
                 "title": "Erreur"
             },
-            "generic": "Une erreur est survenue."
+            "generic": "Une erreur s'est produite."
         }
     },
     "competences": {
         "title": "Mes Compétences",
-        "description": "Mettez en avant vos atouts professionnels",
+        "description": "Mettez en valeur vos atouts professionnels",
         "card": {
             "title": "Gérer mes compétences",
-            "description": "Ajoutez les compétences qui correspondent à votre profil"
+            "description": "Ajoutez des compétences qui correspondent à votre profil"
         },
         "select": {
-            "placeholder": "Sélectionner une compétence"
+            "placeholder": "Sélectionnez une compétence"
         },
         "search": {
             "placeholder": "Rechercher des compétences..."
@@ -603,7 +565,16 @@
             "empty": "Aucune compétence sélectionnée. Ajoutez vos premières compétences !"
         },
         "actions": {
-            "add": "Ajouter"
+            "add": "Ajouter",
+            "addManual": "Saisie manuelle",
+            "save": "Enregistrer"
+        },
+        "manual": {
+            "title": "Ajouter une compétence personnalisée",
+            "name": "Nom de la compétence",
+            "nameEn": "Nom de la compétence (Anglais)",
+            "description": "Description de la compétence",
+            "tag": "Personnalisée"
         },
         "success": {
             "added": {
@@ -613,6 +584,10 @@
             "removed": {
                 "title": "Compétence supprimée",
                 "description": "La compétence a été retirée de votre profil"
+            },
+            "manual": {
+                "title": "Compétence personnalisée ajoutée",
+                "description": "{{name}} a été ajoutée à votre profil"
             }
         },
         "errors": {
@@ -626,6 +601,10 @@
             "removing": {
                 "title": "Erreur de suppression"
             },
+            "manual": {
+                "title": "Erreur",
+                "description": "Veuillez saisir un nom de compétence"
+            },
             "generic": "Une erreur s'est produite. Veuillez réessayer."
         }
     },
@@ -638,7 +617,7 @@
             "update": "Mettre à jour",
             "cancel": "Annuler",
             "view": "Voir",
-            "edit": "Éditer",
+            "edit": "Modifier",
             "delete": "Supprimer"
         },
         "tabs": {
@@ -664,21 +643,24 @@
             },
             "templates": {
                 "title": "Modèles",
-                "description": "Utilisez un modèle prérempli pour gagner du temps",
+                "description": "Utilisez un modèle pré-rempli pour gagner du temps",
                 "academic": "Académique",
                 "internship": "Stage",
                 "volunteer": "Bénévolat",
-                "auto": "Générer automatiquement",
-                "defaultComment": "Commentaire par défaut"
+                "auto": "Auto-générer",
+                "defaultComment": "Commentaire par défaut",
+                "academic": {
+                    "defaultOutput": "Réussite académique"
+                }
             },
             "fields": {
                 "name": {
                     "label": "Titre",
-                    "placeholder": "Ex: Développeur Web Frontend"
+                    "placeholder": "Ex : Développeur Web Frontend"
                 },
                 "institution": {
                     "label": "Institution / Entreprise",
-                    "placeholder": "Ex: Entreprise ABC"
+                    "placeholder": "Ex : Entreprise ABC"
                 },
                 "dates": {
                     "start": "Date de début",
@@ -695,14 +677,14 @@
                 },
                 "output": {
                     "label": "Résultat",
-                    "placeholder": "Ex: Augmentation du trafic de 30%"
+                    "placeholder": "Ex : Augmentation du trafic de 30%"
                 },
                 "references": {
                     "label": "Références",
                     "add": "Ajouter une référence",
                     "empty": "Aucune référence ajoutée pour le moment",
                     "name": "Nom",
-                    "function": "Fonction",
+                    "function": "Poste",
                     "email": "Email",
                     "phone": "Téléphone"
                 }
@@ -712,8 +694,8 @@
                 "select": "Sélectionner un fichier",
                 "none": "Aucun fichier sélectionné",
                 "delete": "Supprimer",
-                "current": "Fichier actuel:",
-                "formats": "Formats acceptés: PDF, DOC, DOCX, PNG, JPG"
+                "current": "Fichier actuel :",
+                "formats": "Formats acceptés : PDF, DOC, DOCX, PNG, JPG"
             }
         },
         "attachments": {
@@ -747,11 +729,13 @@
             "title": "Erreur",
             "save": "Erreur lors de l'enregistrement de l'expérience",
             "delete": "Erreur lors de la suppression de l'expérience",
-            "generic": "Une erreur inattendue est survenue",
+            "generic": "Une erreur inattendue s'est produite",
             "attachment": {
                 "delete": "Erreur lors de la suppression de la pièce jointe",
                 "noFile": "Aucun fichier disponible",
-                "noFileDescription": "Il n'y a pas de pièce jointe à prévisualiser"
+                "noFileDescription": "Il n'y a pas de pièce jointe à prévisualiser",
+                "tooLarge": "Le fichier est trop volumineux",
+                "tooLargeDescription": "La taille maximale du fichier est de 5 Mo"
             }
         }
     },
@@ -772,48 +756,52 @@
     },
     "form": {
         "jobTitle": "Titre du poste",
-        "jobTitlePlaceholder": "Ex : Commercial, Assistant administratif...",
+        "jobTitlePlaceholder": "Ex : Représentant commercial, Assistant administratif...",
         "description": "Description",
         "descriptionPlaceholder": "Décrivez votre profil...",
         "save": "Enregistrer",
         "cancel": "Annuler",
-        "update": "Modifier"
+        "update": "Mettre à jour"
     },
     "templates": {
-        "title": "Choisir un modèle",
+        "title": "Choisissez un modèle",
         "subtitle": "Commencez avec un modèle prédéfini ou créez le vôtre",
         "student": {
-            "name": "Profil Étudiant en Ingénierie",
-            "description": "Jeune diplômé en ingénierie avec une solide formation académique en développement logiciel et en apprentissage automatique. Maîtrise de Python, Java et C++. Réalisation de plusieurs projets concrets, dont un système d'analyse prédictive qui a amélioré l'efficacité de 25%. À la recherche d'un poste stimulant où je pourrai appliquer mes compétences techniques et mon esprit d'innovation pour développer des solutions de pointe."
+            "name": "Profil d'Étudiant en Ingénierie",
+            "description": "Jeune diplômé en ingénierie avec une solide formation académique en développement logiciel et apprentissage automatique. Maîtrise de Python, Java et C++. A réalisé plusieurs projets concrets dont un système d'analyse prédictive qui a amélioré l'efficacité de 25%. À la recherche d'un poste stimulant où je pourrai appliquer mes compétences techniques et mon esprit innovant pour développer des solutions de pointe."
         },
         "archivist": {
-            "name": "Profil Archiviste Professionnel",
-            "description": "Archiviste minutieux avec 8 ans d'expérience dans la gestion et la préservation de documents. Expert dans le développement de systèmes de catalogage efficaces et la mise en œuvre de solutions d'archivage numérique. Connaissance avancée des logiciels standards du secteur et des cadres de métadonnées. Solide expérience dans l'amélioration de l'accessibilité tout en maintenant une stricte conformité aux règlements de confidentialité."
+            "name": "Profil d'Archiviste Professionnel",
+            "description": "Archiviste méticuleux avec 8 ans d'expérience en gestion et préservation de documents. Expert dans le développement de systèmes de catalogage efficaces et la mise en œuvre de solutions d'archivage numérique. Connaissance avancée des logiciels standard de l'industrie et des cadres de métadonnées. Solide expérience dans l'amélioration de l'accessibilité tout en maintenant une stricte conformité aux réglementations de confidentialité."
         },
         "beginner": {
             "name": "Profil Professionnel Polyvalent",
-            "description": "Professionnel motivé avec un ensemble diversifié de compétences en gestion de projet, service client et analyse de données. Apprenant rapide qui s'adapte facilement aux nouveaux environnements et technologies. Excellentes compétences en communication avec une capacité avérée à collaborer entre différents départements. Dédié à fournir des résultats de haute qualité et à contribuer positivement aux objectifs de l'équipe."
+            "description": "Professionnel motivé avec un ensemble diversifié de compétences couvrant la gestion de projet, le service client et l'analyse de données. Apprend rapidement et s'adapte facilement aux nouveaux environnements et technologies. Excellentes compétences en communication avec une capacité prouvée à collaborer entre départements. Dévoué à fournir des résultats de haute qualité et à contribuer positivement aux objectifs de l'équipe."
         },
         "short": {
             "student": "Étudiant",
             "archivist": "Archiviste",
             "beginner": "Débutant"
-        }
+        },
+        "subtitle": "Choisissez un modèle pour démarrer rapidement"
     },
     "actions": {
         "select": "Sélectionner",
         "selected": "Sélectionné",
         "edit": "Modifier",
-        "delete": "Supprimer"
+        "delete": "Supprimer",
+        "close": "Fermer"
     },
     "toast": {
         "success": {
+            "title": "Succès",
             "created": "Résumé créé avec succès",
             "updated": "Résumé mis à jour avec succès",
             "deleted": "Résumé supprimé avec succès",
             "selected": "Résumé sélectionné avec succès"
         },
         "error": {
+            "title": "Erreur",
             "create": "Impossible de créer le résumé",
             "update": "Impossible de mettre à jour le résumé",
             "delete": "Impossible de supprimer le résumé",
@@ -821,7 +809,7 @@
         }
     },
     "personalInfos": {
-        "editTitle": "Modifier informations personnelles",
+        "editTitle": "Modifier les informations personnelles",
         "form": {
             "name": "Nom",
             "email": "Email",
@@ -842,14 +830,14 @@
             "error": {
                 "title": "Erreur",
                 "userDataNotFound": "Données utilisateur non trouvées",
-                "updateFailed": "La mise à jour a échoué"
+                "updateFailed": "Échec de la mise à jour"
             }
         }
     },
     "services": {
         "interview-prep": {
-            "title": "Préparation Entretien",
-            "description": "Simulation interactive d'entretien",
+            "title": "Préparation d'Entretien",
+            "description": "Simulation d'entretien interactive",
             "placeholder": "Posez vos questions sur la préparation d'entretien..."
         },
         "cover-letter": {
@@ -859,29 +847,29 @@
         },
         "resume-review": {
             "title": "Analyse de CV",
-            "description": "Suggestions d'amélioration de CV",
+            "description": "Suggestions d'amélioration du CV",
             "placeholder": "Partagez votre CV ou demandez des conseils spécifiques..."
         },
         "career-advice": {
-            "title": "Conseil Carrière",
-            "description": "Conseils personnalisés de développement de carrière",
-            "placeholder": "Quel conseil carrière souhaitez-vous ?"
+            "title": "Conseil de Carrière",
+            "description": "Conseils personnalisés sur le développement de carrière",
+            "placeholder": "Quel conseil de carrière souhaitez-vous ?"
         },
         "career_advice": {
             "title": "Conseil de Carrière",
-            "description": "Conseils personnalisés de développement de carrière"
+            "description": "Conseils personnalisés sur le développement de carrière"
         },
         "cover_letter": {
             "title": "Lettre de Motivation",
             "description": "Lettre de motivation personnalisée"
         },
         "interview_prep": {
-            "title": "Préparation à l'Entretien",
-            "description": "Simulation interactive d'entretien"
+            "title": "Préparation d'Entretien",
+            "description": "Simulation d'entretien interactive"
         },
         "resume_review": {
-            "title": "Révision de CV",
-            "description": "Suggestions d'amélioration de CV"
+            "title": "Analyse de CV",
+            "description": "Suggestions d'amélioration du CV"
         }
     },
     "sponsorship": {
@@ -898,57 +886,9 @@
             "subtitle": "Invitez vos amis et gagnez des récompenses",
             "button": "Inviter maintenant"
         },
-        "code": {
-            "title": "Votre code de parrainage",
-            "validUntil": "Valide jusqu'au",
-            "expired": "Expiré",
-            "almostExpired": "Presque expiré",
-            "valid": "Valide",
-            "renewal": {
-                "title": "Renouveler le code",
-                "loading": "Chargement...",
-                "expires": "Expire le",
-                "expired": "Expiré le",
-                "viewDetails": "Voir les détails",
-                "renew": "Renouveler",
-                "success": "Code renouvelé avec succès",
-                "error": "Erreur lors du renouvellement",
-                "renewCode": "Renouveler Code",
-                "title": "Gestion de Parrainage",
-                "description": "Gérez votre code de parrainage et renouvelez-le lorsqu'il expire.",
-                "tabs": {
-                    "current": "Code Actuel",
-                    "new": "Nouveau Code"
-                },
-                "sponsorCode": "Code sponsor",
-                "sponsor": "Sponsor",
-                "validity": "Validité du code",
-                "expires": "Expire le",
-                "expired": "Expiré",
-                "renewFor30Days": "Renouveler ce code pour 30 jours",
-                "noSponsorYet": "Vous n'avez pas encore de sponsor.",
-                "canApplyCodeInNewTab": "Vous pouvez appliquer un code de parrainage dans l'onglet \"Nouveau Code\".",
-                "noReferralCodeYet": "Vous n'avez pas encore de code de parrainage.",
-                "visitSponsorshipPage": "Visitez la page de parrainage pour en créer un.",
-                "newSponsorCode": "Nouveau code de parrainage",
-                "enterCodePlaceholder": "Entrez le code de parrainage",
-                "validityInfo": "Le code sera valide pendant 30 jours. Votre sponsor recevra un pourcentage de vos achats pendant cette période.",
-                "applyCode": "Appliquer ce code",
-                "yourCodeToShare": "Votre propre code à partager",
-                "code": "Code",
-                "shareCodeWithFriends": "Partagez ce code avec vos amis pour gagner des commissions sur leurs achats !",
-                "viewAllDetails": "Voir tous les détails",
-                "success": "Code renouvelé",
-                "successDescription": "Votre code de parrainage a été renouvelé avec succès.",
-                "newCodeApplied": "Nouveau code appliqué",
-                "newCodeAppliedDescription": "Le nouveau code de parrainage a été appliqué avec succès.",
-                "enterCode": "Veuillez saisir un code de parrainage.",
-                "applyError": "Une erreur est survenue lors de l'application du code."
-            }
-        },
         "dashboard": {
-            "yourReferrals": "Vos filleuls",
-            "noReferrals": "Aucun filleul pour le moment",
+            "yourReferrals": "Vos parrainages",
+            "noReferrals": "Pas encore de parrainages",
             "inviteFriends": "Invitez vos amis pour commencer à gagner des récompenses",
             "registered": "Inscrit",
             "registeredOn": "Inscrit le",
@@ -956,13 +896,13 @@
             "totalEarnings": "Gains totaux",
             "currentLevel": "Niveau actuel",
             "requestWithdrawal": "Demander un retrait",
-            "withdrawalMinimum": "Minimum requis: {{minimum}}",
-            "withdrawalMessage": "Bonjour, je souhaite demander un retrait de mes gains de parrainage. Mon solde actuel est de {{earnings}} FCFA. Merci de me contacter pour finaliser la transaction."
+            "withdrawalMinimum": "Minimum requis : {{minimum}}",
+            "withdrawalMessage": "Bonjour, je souhaite demander un retrait de mes gains de parrainage. Mon solde actuel est de {{earnings}} FCFA. Veuillez me contacter pour finaliser la transaction."
         },
         "invitation": {
             "emailSubject": "Rejoignez-moi sur notre plateforme de CV",
-            "emailBody": "Bonjour,\n\nJe vous invite à utiliser notre plateforme de création de CV. Inscrivez-vous en utilisant mon lien de parrainage et obtenez des avantages :\n\n{{invitationLink}}\n\nÀ bientôt !",
-            "whatsappText": "Rejoignez-moi sur cette super plateforme de création de CV en utilisant mon lien de parrainage : {{invitationLink}}",
+            "emailBody": "Bonjour,\n\nJe vous invite à utiliser notre plateforme de création de CV. Inscrivez-vous en utilisant mon lien de parrainage et bénéficiez d'avantages :\n\n{{invitationLink}}\n\nÀ bientôt !",
+            "whatsappText": "Rejoignez-moi sur cette excellente plateforme de création de CV en utilisant mon lien de parrainage : {{invitationLink}}",
             "shareYourCode": "Partagez votre code",
             "copyCode": "Copier le code",
             "copied": "Copié !",
@@ -984,7 +924,7 @@
             "description": "Besoin d'aide avec le programme de parrainage ?",
             "contact": "Contactez notre équipe de support",
             "email": "Envoyez-nous un email",
-            "whatsapp": "WhatsAppez-nous"
+            "whatsapp": "Contactez-nous via WhatsApp"
         },
         "info": {
             "title": "Informations sur le Programme",
@@ -1003,8 +943,8 @@
                 "steps": [
                     "Partagez votre code de parrainage",
                     "Vos amis s'inscrivent avec votre code",
-                    "Gagnez des récompenses quand ils font des achats",
-                    "Récupérez vos gains"
+                    "Gagnez des récompenses lorsqu'ils effectuent des achats",
+                    "Collectez vos gains"
                 ]
             }
         }
@@ -1018,7 +958,7 @@
             "statistics": "Statistiques",
             "categories": {
                 "experience": "Catégories d'Expérience",
-                "professions": "Catégories de Professions",
+                "professions": "Catégories de Profession",
                 "hobbies": "Centres d'intérêt",
                 "professionsList": "Professions",
                 "competences": "Compétences",
@@ -1026,7 +966,7 @@
             },
             "descriptions": {
                 "experience": "Créer, mettre à jour et gérer les catégories d'expérience",
-                "professions": "Créer, mettre à jour et gérer les catégories de professions",
+                "professions": "Créer, mettre à jour et gérer les catégories de profession",
                 "hobbies": "Créer, mettre à jour et gérer les centres d'intérêt",
                 "professionsList": "Créer, mettre à jour et gérer les professions",
                 "competences": "Créer, mettre à jour et gérer les compétences",
@@ -1042,7 +982,7 @@
             "sections": {
                 "dataProtection": {
                     "title": "Protection des Données",
-                    "description": "Nous utilisons des technologies avancées pour protéger vos informations personnelles contre tout accès non autorisé."
+                    "description": "Nous utilisons des technologies avancées pour protéger vos informations personnelles contre les accès non autorisés."
                 },
                 "security": {
                     "title": "Sécurité Renforcée",
@@ -1050,20 +990,20 @@
                 },
                 "transparency": {
                     "title": "Transparence Totale",
-                    "description": "Nous vous expliquons clairement comment vos données sont utilisées et vous gardons informés de tout changement."
+                    "description": "Nous expliquons clairement comment vos données sont utilisées et vous tenons informé de tout changement."
                 },
                 "control": {
                     "title": "Contrôle Utilisateur",
-                    "description": "Vous avez le contrôle total sur vos données personnelles avec des options pour les consulter ou les supprimer."
+                    "description": "Vous avez un contrôle total sur vos données personnelles avec des options pour les consulter ou les supprimer."
                 }
             }
         },
         "cookiePolicy": {
-            "title": "Politique des Cookies",
+            "title": "Politique de Cookies",
             "subtitle": "Comment nous utilisons les cookies pour améliorer votre expérience",
-            "metaTitle": "Politique des Cookies | Guidy",
+            "metaTitle": "Politique de Cookies | Guidy",
             "metaDescription": "Découvrez comment Guidy utilise les cookies pour améliorer votre expérience sur notre plateforme de création de CV.",
-            "metaKeywords": "cookies, politique cookies, traceurs, confidentialité, expérience utilisateur",
+            "metaKeywords": "cookies, politique de cookies, traceurs, vie privée, expérience utilisateur",
             "lastUpdate": "Dernière mise à jour :",
             "sections": {
                 "essential": {
@@ -1071,12 +1011,12 @@
                     "description": "Nécessaires au fonctionnement du site et à la sécurité de votre compte."
                 },
                 "preferences": {
-                    "title": "Cookies de Préférence",
+                    "title": "Cookies de Préférences",
                     "description": "Améliorent votre expérience en mémorisant vos choix."
                 },
                 "what": {
                     "title": "Qu'est-ce qu'un Cookie ?",
-                    "description": "Un cookie est un petit fichier texte stocké sur votre appareil lors de votre visite sur notre site. Ces fichiers nous permettent de :",
+                    "description": "Un cookie est un petit fichier texte stocké sur votre appareil lorsque vous visitez notre site. Ces fichiers nous permettent de :",
                     "uses": {
                         "preferences": "Mémoriser vos préférences",
                         "security": "Sécuriser votre connexion",
@@ -1101,7 +1041,7 @@
                         "uses": {
                             "analytics": "Analyse du trafic",
                             "usage": "Statistiques d'utilisation",
-                            "errors": "Détection des erreurs"
+                            "errors": "Détection d'erreurs"
                         }
                     }
                 },
@@ -1125,25 +1065,25 @@
                 },
                 "contact": {
                     "title": "Contact",
-                    "description": "Pour toute question sur notre utilisation des cookies :"
+                    "description": "Pour toute question concernant notre utilisation des cookies :"
                 }
             }
         },
         "legalNotice": {
             "title": "Mentions Légales",
-            "subtitle": "Informations légales sur notre société",
+            "subtitle": "Informations légales sur notre entreprise",
             "metaTitle": "Mentions Légales | Guidy",
-            "metaDescription": "Consultez les mentions légales de Guidy, information sur notre entreprise et nos responsabilités.",
+            "metaDescription": "Consultez les mentions légales de Guidy, les informations sur notre entreprise et nos responsabilités.",
             "metaKeywords": "mentions légales, informations légales, entreprise, responsabilités",
             "lastUpdate": "Dernière mise à jour :",
             "sections": {
                 "company": {
                     "title": "Entreprise",
-                    "description": "Informations légales sur notre société"
+                    "description": "Informations légales sur notre entreprise"
                 },
                 "dataProtection": {
                     "title": "Protection des Données",
-                    "description": "Conformité avec la réglementation"
+                    "description": "Conformité aux réglementations"
                 },
                 "legal": {
                     "title": "Informations Légales",
@@ -1151,7 +1091,7 @@
                 },
                 "contact": {
                     "title": "Contact",
-                    "description": "Nos coordonnées pour nous joindre :"
+                    "description": "Nos coordonnées :"
                 },
                 "hosting": {
                     "title": "Hébergement",
@@ -1161,26 +1101,26 @@
                     "title": "Propriété Intellectuelle",
                     "description": "Tous les éléments du site Guidy sont protégés par :",
                     "rights": {
-                        "copyright": "Le droit d'auteur",
-                        "trademark": "Le droit des marques",
-                        "design": "Le droit des dessins et modèles",
-                        "database": "Le droit des bases de données"
+                        "copyright": "Droit d'auteur",
+                        "trademark": "Droit des marques",
+                        "design": "Droits de design",
+                        "database": "Droits des bases de données"
                     }
                 }
             }
         },
         "termsOfService": {
-            "title": "Conditions Générales d'Utilisation",
-            "subtitle": "Règles et modalités d'utilisation de nos services",
+            "title": "Conditions d'Utilisation",
+            "subtitle": "Règles et conditions d'utilisation de nos services",
             "metaTitle": "Conditions d'Utilisation | Guidy",
             "metaDescription": "Consultez les conditions d'utilisation de Guidy pour la création de CV. Informations sur les droits et obligations des utilisateurs.",
-            "metaKeywords": "conditions utilisation, CGU, termes service, règles utilisation",
+            "metaKeywords": "conditions d'utilisation, termes et conditions, conditions de service, règles d'utilisation",
             "lastUpdate": "Dernière mise à jour :",
             "sections": {
                 "usage": {
-                    "title": "Utilisation Conforme",
-                    "description": "Respectez nos conditions pour une expérience optimale.",
-                    "usageDescription": "En utilisant notre service, vous vous engagez à :",
+                    "title": "Utilisation Appropriée",
+                    "description": "Suivez nos conditions pour une expérience optimale.",
+                    "usageDescription": "En utilisant notre service, vous acceptez de :",
                     "items": {
                         "accurate": "Fournir des informations exactes et véridiques",
                         "confidentiality": "Maintenir la confidentialité de votre compte",
@@ -1197,7 +1137,7 @@
                     "description": "En accédant à Guidy, vous acceptez d'être lié par ces conditions d'utilisation, toutes les lois et réglementations applicables. Si vous n'acceptez pas ces conditions, vous ne devez pas utiliser notre service."
                 },
                 "services": {
-                    "title": "Services Proposés",
+                    "title": "Services Offerts",
                     "description": "Guidy propose les services suivants :",
                     "items": {
                         "cv": "Création de CV professionnels adaptés au marché du travail",
@@ -1208,22 +1148,22 @@
                 },
                 "intellectual": {
                     "title": "Propriété Intellectuelle",
-                    "description": "Le contenu de Guidy est protégé par les droits de propriété intellectuelle. Cela inclut :",
+                    "description": "Le contenu de Guidy est protégé par des droits de propriété intellectuelle. Cela comprend :",
                     "items": {
-                        "templates": "Les modèles de CV et lettres de motivation",
-                        "content": "Les textes et images du site",
-                        "logo": "Le logo et les éléments graphiques",
-                        "code": "Le code source et les fonctionnalités"
+                        "templates": "Modèles de CV et de lettres de motivation",
+                        "content": "Textes et images du site",
+                        "logo": "Logo et éléments graphiques",
+                        "code": "Code source et fonctionnalités"
                     }
                 },
                 "pricing": {
                     "title": "Tarification et Paiement",
-                    "description": "Les modalités de paiement sont les suivantes :",
+                    "description": "Les conditions de paiement sont les suivantes :",
                     "items": {
                         "free": "Version de base gratuite",
                         "premium": "Tarifs premium clairement affichés",
                         "payment": "Paiements sécurisés (Mobile Money, Orange Money, Paypal)",
-                        "refund": "Remboursement selon conditions spécifiques"
+                        "refund": "Remboursements selon des conditions spécifiques"
                     }
                 },
                 "dataProtection": {
@@ -1237,11 +1177,11 @@
                     }
                 },
                 "modifications": {
-                    "title": "Modifications des Services",
+                    "title": "Modifications du Service",
                     "description": "Guidy se réserve le droit de :",
                     "items": {
                         "features": "Modifier les fonctionnalités du service",
-                        "pricing": "Mettre à jour les tarifs",
+                        "pricing": "Mettre à jour les prix",
                         "templates": "Améliorer les modèles de CV",
                         "market": "Adapter les services aux besoins du marché"
                     }
@@ -1260,19 +1200,19 @@
                     "title": "Contact et Support",
                     "description": "Notre équipe est disponible pour vous aider :",
                     "items": {
-                        "languages": "Assistance disponible en français et en anglais",
-                        "support": "Support technique 7j/7"
+                        "languages": "Support disponible en français et en anglais",
+                        "support": "Support technique 7 jours sur 7"
                     }
                 }
             }
         },
         "support": {
             "title": "Support & Assistance",
-            "subtitle": "Notre service d'assistance",
+            "subtitle": "Notre service de support",
             "description": "Notre équipe est disponible pour répondre à toutes vos questions et vous accompagner dans votre parcours professionnel",
             "badge": "🤝 Nous sommes là pour vous aider",
             "metaTitle": "Support & Assistance | Guidy",
-            "metaDescription": "Contactez le service d'assistance Guidy pour toute question concernant la création de CV ou l'utilisation de nos services.",
+            "metaDescription": "Contactez le service de support Guidy pour toute question sur la création de CV ou l'utilisation de nos services.",
             "metaKeywords": "support, assistance, aide, contact, service client",
             "contactMethods": {
                 "whatsapp": {
@@ -1288,7 +1228,7 @@
             },
             "supportHours": {
                 "title": "Heures de Support",
-                "description": "Notre équipe de support est disponible pour vous assister du lundi au vendredi, de 9h à 18h. Pour les demandes urgentes, notre support WhatsApp est accessible 24/7."
+                "description": "Notre équipe de support est disponible pour vous aider du lundi au vendredi, de 9h à 18h. Pour les demandes urgentes, notre support WhatsApp est accessible 24/7."
             },
             "contact": {
                 "phone": "Téléphone",
@@ -1305,7 +1245,7 @@
             },
             "500": {
                 "title": "Erreur Serveur",
-                "description": "Une erreur s'est produite de notre côté. Veuillez réessayer plus tard.",
+                "description": "Quelque chose s'est mal passé de notre côté. Veuillez réessayer plus tard.",
                 "action": "Retour à l'Accueil"
             },
             "actions": {
@@ -1318,7 +1258,7 @@
         "title": "Administration",
         "categories": {
             "experience": "Catégories d'Expérience",
-            "professions": "Catégories de Professions",
+            "professions": "Catégories de Profession",
             "hobbies": "Centres d'intérêt",
             "professionsList": "Professions",
             "competences": "Compétences",
@@ -1326,7 +1266,7 @@
         },
         "descriptions": {
             "experience": "Créer, mettre à jour et gérer les catégories d'expérience",
-            "professions": "Créer, mettre à jour et gérer les catégories de professions",
+            "professions": "Créer, mettre à jour et gérer les catégories de profession",
             "hobbies": "Créer, mettre à jour et gérer les centres d'intérêt",
             "professionsList": "Créer, mettre à jour et gérer les professions",
             "competences": "Créer, mettre à jour et gérer les compétences",
@@ -1334,10 +1274,10 @@
         }
     },
     "payment": {
-        "pageTitle": "Acheter des Tokens",
-        "title": "Obtenir des Tokens",
+        "pageTitle": "Acheter des Jetons",
+        "title": "Obtenir des Jetons",
         "subtitle": "Choisissez votre pack et votre méthode de paiement préférée : Mobile Money ou Carte Bancaire",
-        "tokens": "tokens",
+        "tokens": "jetons",
         "bonus": "BONUS",
         "total": "Total",
         "unitPrice": "Prix unitaire",
@@ -1348,13 +1288,13 @@
             "bankCard": "Carte Bancaire"
         },
         "popularityText": {
-            "starter": "Pour commencer",
+            "starter": "Pour débuter",
             "plus": "Bon rapport qualité-prix",
-            "pro": "Plus populaire",
+            "pro": "Le plus populaire",
             "ultimate": "Meilleure valeur"
         },
         "features": {
-            "bonus": "Jusqu'à 100 tokens bonus",
+            "bonus": "Jusqu'à 100 jetons bonus",
             "mobile": "MTN & Orange Money",
             "card": "PayPal & Carte Bancaire"
         },
@@ -1374,24 +1314,24 @@
             }
         },
         "footer": {
-            "immediate": "Les tokens achetés sont immédiatement disponibles sur votre compte après le paiement.",
+            "immediate": "Les jetons achetés sont immédiatement disponibles sur votre compte après paiement.",
             "secure": "Tous les paiements sont sécurisés et vos données sont protégées."
         },
         "success": {
             "title": "Paiement réussi !",
-            "description": "Vos tokens ont été ajoutés à votre compte."
+            "description": "Vos jetons ont été ajoutés à votre compte."
         },
         "errors": {
-            "default": "Une erreur est survenue",
+            "default": "Une erreur s'est produite",
             "paymentFailed": "Erreur de paiement",
-            "processingError": "Une erreur est survenue lors du traitement",
+            "processingError": "Une erreur s'est produite lors du traitement",
             "initialization": "Erreur lors de l'initialisation du paiement",
-            "captureFailure": "Échec de la capture du paiement",
-            "processingFailure": "Échec du traitement du paiement",
+            "captureFailure": "La capture du paiement a échoué",
+            "processingFailure": "Le traitement du paiement a échoué",
             "paypalFailed": "Le paiement a échoué. Veuillez réessayer."
         },
         "pack": {
-            "tokens": "Tokens",
+            "tokens": "Jetons",
             "bonus": "Bonus",
             "price": "Prix",
             "total": "Total",
@@ -1401,13 +1341,22 @@
     },
     "welcome": {
         "meta": {
-            "title": "Guidy | Créez un CV Professionnel en 5 Minutes avec l'IA | Créateur de CV",
-            "description": "Créez gratuitement un CV optimisé ATS avec notre IA. Templates internationaux, conseils de carrière personnalisés et préparation aux entretiens. Disponible en français. CVs professionnels en quelques minutes !",
-            "keywords": "CV IA, CV ATS, créateur de CV, CV IA, lettre de motivation, préparation entretien, template CV, CV international, conseil carrière, recherche d'emploi internationale, CV Canada, CV France, CV USA, CV Afrique, CV UK, carrières internationales, CV francophone, CV anglophone"
+            "title": "Guidy | Créez un CV Professionnel en 5 Minutes avec l'IA | Générateur de CV",
+            "description": "Créez un CV optimisé pour l'ATS gratuitement avec notre IA. Modèles internationaux, conseils de carrière personnalisés et préparation aux entretiens. Disponible en français. CV professionnels en quelques minutes !",
+            "keywords": "CV IA, CV ATS, générateur de CV, CV IA, lettre de motivation, préparation entretien, modèle CV, CV international, conseil carrière, recherche emploi international, CV Canada, CV France, CV USA, CV Afrique, CV UK, carrières internationales, CV francophone, CV anglophone"
         },
         "language": {
             "en": "Anglais",
             "fr": "Français"
+        }
+    },
+    "blog": {
+        "index": {
+            "title": "Articles de Blog",
+            "heading": "Blog Guidy",
+            "description": "Découvrez nos articles, astuces et conseils pour créer un CV remarquable et optimiser votre recherche d'emploi.",
+            "read_more": "Lire l'article",
+            "no_articles": "Aucun article disponible pour le moment."
         }
     }
 }

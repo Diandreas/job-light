@@ -14,14 +14,16 @@ import {
     Brain, Wallet, Clock, Loader, Download, Coins, Trash2,
     MessageSquare, Calendar, History, Menu, Send, Plus,
     FileText, Presentation, ChevronDown, ChartLine, ChartArea,
-    FileInput, MessageCircleQuestion, PenTool
+    FileInput, MessageCircleQuestion, PenTool, Sparkles
 } from 'lucide-react';
 import { MessageBubble } from '@/Components/ai/MessageBubble';
 import { ServiceCard, MobileServiceCard } from '@/Components/ai/ServiceCard';
 import { SERVICES, DEFAULT_PROMPTS } from '@/Components/ai/constants';
 import { PowerPointService } from '@/Components/ai/PresentationService';
 import { Avatar, AvatarFallback, AvatarImage } from "@/Components/ui/avatar";
-
+import { Badge } from "@/Components/ui/badge";
+import { Separator } from "@/Components/ui/separator";
+import FluidCursorEffect from '@/Components/ai/FluidCursorEffect';
 import {
     AlertDialog,
     AlertDialogAction,
@@ -38,6 +40,12 @@ import {
     DropdownMenuItem,
     DropdownMenuTrigger,
 } from "@/Components/ui/dropdown-menu";
+import {
+    Tooltip,
+    TooltipContent,
+    TooltipProvider,
+    TooltipTrigger,
+} from "@/Components/ui/tooltip";
 import axios from 'axios';
 
 const TOKEN_LIMIT = 2000;
@@ -71,47 +79,95 @@ const extractValidJsonFromMessage = (content) => {
 const ChatHistoryCard = ({ chat, isActive, onSelect, onDelete }) => {
     const { t } = useTranslation();
 
-    // Limiter la longueur du titre affiché - plus strict pour mobile
     const truncatedPreview = chat.preview ?
-        (chat.preview.length > 25 ? chat.preview.substring(0, 25) + '...' : chat.preview) :
+        (chat.preview.length > 40 ? chat.preview.substring(0, 40) + '...' : chat.preview) :
         'Nouvelle conversation';
 
     return (
         <motion.div
-            initial={{ opacity: 0, y: 5 }}
-            animate={{ opacity: 1, y: 0 }}
-            className={`relative p-2 rounded-lg cursor-pointer transition-all group ${
+            layout
+            initial={{ opacity: 0, y: 4, scale: 0.98 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, x: -20, scale: 0.95 }}
+            whileHover={{ scale: 1.02, y: -2 }}
+            whileTap={{ scale: 0.98 }}
+            transition={{
+                type: "spring",
+                stiffness: 300,
+                damping: 20,
+                layout: { duration: 0.2 }
+            }}
+            className={`relative group p-3 rounded-lg cursor-pointer transition-all duration-300 border ${
                 isActive
-                    ? 'bg-amber-100 dark:bg-amber-500/20 border border-amber-300 dark:border-amber-500/40'
-                    : 'hover:bg-gray-100 dark:hover:bg-gray-800 border border-transparent'
+                    ? 'bg-gradient-to-r from-amber-50 to-purple-50 dark:from-amber-900/20 dark:to-purple-900/20 border-amber-300 dark:border-amber-600 shadow-md shadow-amber-100/50 dark:shadow-amber-900/20'
+                    : 'bg-white dark:bg-gray-850 hover:bg-gray-50 dark:hover:bg-gray-800 border-gray-200 dark:border-gray-700 hover:border-amber-200 dark:hover:border-amber-800 shadow-sm hover:shadow-md'
             }`}
             onClick={() => onSelect(chat)}
         >
             {/* Contenu principal */}
-            <div className="pr-8">
-                <p className="text-sm font-medium text-gray-900 dark:text-gray-100 truncate" title={chat.preview}>
-                    {truncatedPreview}
-                </p>
-                <div className="flex items-center gap-1.5 mt-0.5">
-                    <Calendar className="h-3 w-3 text-gray-400 dark:text-gray-500" />
-                    <p className="text-xs text-gray-500 dark:text-gray-400">
-                        {new Date(chat.created_at).toLocaleDateString()}
-                    </p>
+            <div className="pr-10">
+                <div className="flex items-start gap-2 mb-1.5">
+                    <motion.div
+                        className={`w-1.5 h-1.5 rounded-full mt-2 ${
+                            isActive ? 'bg-amber-500' : 'bg-gray-300 dark:bg-gray-600'
+                        }`}
+                        animate={isActive ? { scale: [1, 1.2, 1] } : {}}
+                        transition={{ duration: 1, repeat: isActive ? Infinity : 0 }}
+                    />
+                    <h3 className="text-sm font-medium text-gray-900 dark:text-gray-100 line-clamp-2 leading-tight" title={chat.preview}>
+                        {truncatedPreview}
+                    </h3>
+                </div>
+                <div className="flex items-center gap-3 ml-3.5">
+                    <div className="flex items-center gap-1">
+                        <Calendar className="h-3 w-3 text-amber-500 dark:text-amber-400" />
+                        <span className="text-xs text-gray-500 dark:text-gray-400 font-medium">
+                            {new Date(chat.created_at).toLocaleDateString('fr-FR', {
+                                day: 'numeric',
+                                month: 'short'
+                            })}
+                        </span>
+                    </div>
+                    {chat.messages_count && (
+                        <div className="flex items-center gap-1">
+                            <MessageSquare className="h-3 w-3 text-purple-500 dark:text-purple-400" />
+                            <span className="text-xs text-gray-500 dark:text-gray-400 font-medium">
+                                {chat.messages_count}
+                            </span>
+                        </div>
+                    )}
                 </div>
             </div>
 
-            {/* Bouton supprimer - toujours visible */}
-            <Button
-                variant="ghost"
-                size="sm"
-                onClick={(e) => {
-                    e.stopPropagation();
-                    onDelete(chat);
-                }}
-                className="absolute right-1 top-1/2 -translate-y-1/2 h-7 w-7 p-0 opacity-60 hover:opacity-100 hover:text-red-500 dark:hover:text-red-400"
-            >
-                <Trash2 className="h-3 w-3" />
-            </Button>
+            {/* Bouton supprimer */}
+            <TooltipProvider>
+                <Tooltip>
+                    <TooltipTrigger asChild>
+                        <motion.div
+                            initial={{ opacity: 0, scale: 0 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            exit={{ opacity: 0, scale: 0 }}
+                            whileHover={{ rotate: 10, scale: 1.1 }}
+                            className="absolute right-2 top-1/2 -translate-y-1/2"
+                        >
+                            <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    onDelete(chat);
+                                }}
+                                className="h-7 w-7 p-0 opacity-0 group-hover:opacity-100 hover:text-red-500 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-all duration-200"
+                            >
+                                <Trash2 className="h-3.5 w-3.5" />
+                            </Button>
+                        </motion.div>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                        <p>Supprimer la conversation</p>
+                    </TooltipContent>
+                </Tooltip>
+            </TooltipProvider>
         </motion.div>
     );
 };
@@ -138,8 +194,10 @@ export default function Index({ auth, userInfo, chatHistories }) {
     const [chatToDelete, setChatToDelete] = useState(null);
     const [tempMessage, setTempMessage] = useState(null);
     const [thinkingIndex, setThinkingIndex] = useState(0);
+    const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
     const scrollRef = useRef(null);
     const inputRef = useRef(null);
+    const thinkingIntervalRef = useRef(null);
     const maxHistory = getMaxHistoryForService(selectedService.id);
     const currentQuestions = countUserQuestions(activeChat?.messages);
 
@@ -151,11 +209,17 @@ export default function Index({ auth, userInfo, chatHistories }) {
 
     useEffect(() => {
         loadUserChats();
+        return () => {
+            if (thinkingIntervalRef.current) {
+                clearInterval(thinkingIntervalRef.current);
+            }
+        };
     }, []);
 
     useEffect(() => {
         if (scrollRef.current) {
-            scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+            const scrollElement = scrollRef.current;
+            scrollElement.scrollTop = scrollElement.scrollHeight;
         }
     }, [activeChat?.messages, tempMessage]);
 
@@ -196,6 +260,8 @@ export default function Index({ auth, userInfo, chatHistories }) {
             setData('question', '');
             setData('contextId', crypto.randomUUID());
         }
+        // Fermer le sidebar mobile après sélection
+        setIsMobileSidebarOpen(false);
     };
 
     const handleChatSelection = async (chat) => {
@@ -214,6 +280,8 @@ export default function Index({ auth, userInfo, chatHistories }) {
                 messages: chatData.messages || []
             });
             setData('contextId', chatData.context_id);
+            // Fermer le sidebar mobile après sélection
+            setIsMobileSidebarOpen(false);
         } catch (error) {
             console.error('Error loading chat:', error);
             toast({
@@ -306,7 +374,12 @@ export default function Index({ auth, userInfo, chatHistories }) {
             isThinking: true
         });
 
-        const thinkingInterval = setInterval(() => {
+        // Nettoyer l'ancien interval s'il existe
+        if (thinkingIntervalRef.current) {
+            clearInterval(thinkingIntervalRef.current);
+        }
+
+        thinkingIntervalRef.current = setInterval(() => {
             setThinkingIndex(prev => {
                 const next = (prev + 1) % thinkingMessages.length;
                 setTempMessage({
@@ -336,7 +409,9 @@ export default function Index({ auth, userInfo, chatHistories }) {
                 history: activeChat?.messages || []
             });
 
-            clearInterval(thinkingInterval);
+            if (thinkingIntervalRef.current) {
+                clearInterval(thinkingIntervalRef.current);
+            }
             setTempMessage(null);
 
             const assistantMessage = {
@@ -362,7 +437,9 @@ export default function Index({ auth, userInfo, chatHistories }) {
 
         } catch (error) {
             console.error('Error:', error);
-            clearInterval(thinkingInterval);
+            if (thinkingIntervalRef.current) {
+                clearInterval(thinkingIntervalRef.current);
+            }
             setTempMessage(null);
 
             try {
@@ -456,6 +533,7 @@ export default function Index({ auth, userInfo, chatHistories }) {
         setActiveChat(null);
         setData('contextId', crypto.randomUUID());
         setData('question', '');
+        setIsMobileSidebarOpen(false);
     };
 
     // Auto-resize textarea
@@ -463,7 +541,7 @@ export default function Index({ auth, userInfo, chatHistories }) {
         const textarea = event.target;
         setData('question', textarea.value);
         textarea.style.height = 'auto';
-        textarea.style.height = `${Math.min(textarea.scrollHeight, 120)}px`;
+        textarea.style.height = `${Math.min(textarea.scrollHeight, 100)}px`;
     };
 
     // Handle keyboard shortcuts
@@ -478,79 +556,153 @@ export default function Index({ auth, userInfo, chatHistories }) {
 
     return (
         <AuthenticatedLayout user={auth.user}>
-            <div className="h-screen bg-gray-50 dark:bg-gray-900 flex flex-col">
-                {/* En-tête */}
-                <div className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 px-4 py-3 flex-shrink-0">
-                    <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-3">
-                            <div className="lg:hidden">
-                                <Sheet>
-                                    <SheetTrigger asChild>
-                                        <Button variant="ghost" size="sm">
-                                            <Menu className="h-5 w-5" />
-                                        </Button>
-                                    </SheetTrigger>
-                                    <SheetContent side="left" className="w-80">
-                                        <SheetHeader>
-                                            <SheetTitle className="flex items-center gap-2">
-                                                <MessageSquare className="h-5 w-5 text-amber-500" />
-                                                {t('career_advisor.history.title')}
-                                            </SheetTitle>
-                                        </SheetHeader>
-                                        <div className="mt-6 space-y-3">
-                                            <Button
-                                                onClick={createNewChat}
-                                                className="w-full bg-gradient-to-r from-amber-500 to-purple-500 text-white h-10"
-                                            >
-                                                <Plus className="h-4 w-4 mr-2" />
-                                                {t('career_advisor.chat.new')}
-                                            </Button>
-                                            <ScrollArea className="h-[calc(100vh-200px)]">
-                                                <div className="space-y-2">
-                                                    {userChats
-                                                        .filter(chat => chat.service_id === selectedService.id)
-                                                        .map(chat => (
-                                                            <ChatHistoryCard
-                                                                key={chat.context_id}
-                                                                chat={chat}
-                                                                isActive={activeChat?.context_id === chat.context_id}
-                                                                onSelect={handleChatSelection}
-                                                                onDelete={confirmDeleteChat}
-                                                            />
-                                                        ))}
-                                                </div>
-                                            </ScrollArea>
-                                        </div>
-                                    </SheetContent>
-                                </Sheet>
-                            </div>
-
-                            <Avatar className="w-8 h-8">
-                                <AvatarImage src="/ai-avatar.png" alt="AI" />
-                                <AvatarFallback className="bg-gradient-to-br from-amber-500 to-purple-500 text-white">AI</AvatarFallback>
+            <FluidCursorEffect zIndex={100} />
+            <div className="h-screen flex bg-gray-50 dark:bg-gray-900">
+                {/* Sidebar Desktop - Plus compact */}
+                <div className="hidden lg:flex lg:w-72 bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-800 flex-col">
+                    {/* En-tête sidebar avec titre et wallet */}
+                    <div className="p-4 border-b border-gray-200 dark:border-gray-800 flex-shrink-0">
+                        <div className="flex items-center gap-3 mb-4">
+                            <Avatar className="w-8 h-8 ring-2 ring-amber-100 dark:ring-amber-900/30">
+                                <AvatarImage src="/ai-avatar.png" alt="AI Assistant" />
+                                <AvatarFallback className="bg-gradient-to-br from-amber-500 via-purple-500 to-amber-600 text-white text-sm font-semibold">
+                                    AI
+                                </AvatarFallback>
                             </Avatar>
-                            <div>
-                                <h1 className="text-lg font-bold text-gray-900 dark:text-gray-100">
-                                    {t('career_advisor.title')}
-                                </h1>
-                                <p className="text-sm text-gray-500 dark:text-gray-400 hidden lg:block">
+                            <div className="flex-1">
+                                <div className="flex items-center gap-2">
+                                    <h1 className="text-base font-bold text-gray-900 dark:text-gray-100">
+                                        {t('career_advisor.title')}
+                                    </h1>
+                                    <Badge variant="secondary" className="text-xs bg-amber-50 text-amber-600 dark:bg-amber-900/30 dark:text-amber-300">
+                                        <Sparkles className="w-3 h-3 mr-1" />
+                                        Pro
+                                    </Badge>
+                                </div>
+                                <p className="text-xs text-gray-600 dark:text-gray-400">
                                     {t(`services.${selectedService.id}.title`)}
                                 </p>
                             </div>
                         </div>
 
-                        <div className="flex items-center gap-3">
-                            {/* Sélecteur de service mobile */}
-                            <div className="lg:hidden">
+                        {/* Wallet info */}
+                        <div className="bg-gradient-to-r from-amber-50 to-purple-50 dark:from-amber-900/20 dark:to-purple-900/20 border border-amber-200 dark:border-amber-700 px-3 py-2 rounded-lg flex items-center gap-2 mb-3">
+                            <div className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse" />
+                            <Wallet className="h-3.5 w-3.5 text-amber-600 dark:text-amber-400" />
+                            <span className="text-sm font-semibold text-amber-700 dark:text-amber-300">
+                                {walletBalance.toLocaleString()}
+                            </span>
+                            <span className="text-xs text-amber-600 dark:text-amber-400 font-medium">
+                                crédits
+                            </span>
+                        </div>
+
+                        <Button
+                            onClick={createNewChat}
+                            className="w-full bg-gradient-to-r from-amber-500 to-purple-500 hover:from-amber-600 hover:to-purple-600 text-white h-9 rounded-lg shadow-sm transition-all duration-200 hover:shadow-md"
+                        >
+                            <Plus className="h-4 w-4 mr-2" />
+                            {t('career_advisor.chat.new')}
+                        </Button>
+                    </div>
+
+                    {/* Historique */}
+                    <div className="flex-1 p-3 min-h-0">
+                        <div className="flex items-center justify-between mb-3">
+                            <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-300">
+                                {t('career_advisor.history.title')}
+                            </h3>
+                            <Badge variant="outline" className="text-xs border-amber-200 text-amber-600">
+                                {userChats.filter(chat => chat.service_id === selectedService.id).length}
+                            </Badge>
+                        </div>
+                        <ScrollArea className="h-full">
+                            <div className="space-y-2">
+                                <AnimatePresence>
+                                    {userChats
+                                        .filter(chat => chat.service_id === selectedService.id)
+                                        .map(chat => (
+                                            <ChatHistoryCard
+                                                key={chat.context_id}
+                                                chat={chat}
+                                                isActive={activeChat?.context_id === chat.context_id}
+                                                onSelect={handleChatSelection}
+                                                onDelete={confirmDeleteChat}
+                                            />
+                                        ))}
+                                </AnimatePresence>
+                                {userChats.filter(chat => chat.service_id === selectedService.id).length === 0 && (
+                                    <div className="text-center py-6">
+                                        <MessageSquare className="h-8 w-8 text-gray-300 dark:text-gray-600 mx-auto mb-2" />
+                                        <p className="text-xs text-gray-500 dark:text-gray-400">
+                                            Aucune conversation
+                                        </p>
+                                    </div>
+                                )}
+                            </div>
+                        </ScrollArea>
+                    </div>
+                </div>
+
+                {/* Zone de chat */}
+                <div className="flex-1 flex flex-col min-w-0 bg-gray-50 dark:bg-gray-900 h-full">
+                    {/* Mobile header avec service selector et menu */}
+                    <div className="lg:hidden px-3 py-2 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 flex-shrink-0">
+                        <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-2">
+                                <Sheet open={isMobileSidebarOpen} onOpenChange={setIsMobileSidebarOpen}>
+                                    <SheetTrigger asChild>
+                                        <Button variant="outline" size="sm" className="h-8">
+                                            <Menu className="h-4 w-4 mr-1" />
+                                            {t('career_advisor.history.title')}
+                                        </Button>
+                                    </SheetTrigger>
+                                    <SheetContent side="left" className="w-72 bg-white dark:bg-gray-900">
+                                        <SheetHeader className="text-left">
+                                            <SheetTitle className="flex items-center gap-2 text-base">
+                                                <Brain className="h-4 w-4 text-amber-500" />
+                                                {t('career_advisor.history.title')}
+                                            </SheetTitle>
+                                        </SheetHeader>
+                                        <Separator className="my-3" />
+                                        <div className="space-y-3">
+                                            <Button
+                                                onClick={createNewChat}
+                                                className="w-full bg-gradient-to-r from-amber-500 to-purple-500 text-white h-9"
+                                            >
+                                                <Plus className="h-4 w-4 mr-2" />
+                                                {t('career_advisor.chat.new')}
+                                            </Button>
+                                            <ScrollArea className="h-[calc(100vh-180px)]">
+                                                <div className="space-y-2">
+                                                    <AnimatePresence>
+                                                        {userChats
+                                                            .filter(chat => chat.service_id === selectedService.id)
+                                                            .map(chat => (
+                                                                <ChatHistoryCard
+                                                                    key={chat.context_id}
+                                                                    chat={chat}
+                                                                    isActive={activeChat?.context_id === chat.context_id}
+                                                                    onSelect={handleChatSelection}
+                                                                    onDelete={confirmDeleteChat}
+                                                                />
+                                                            ))}
+                                                    </AnimatePresence>
+                                                </div>
+                                            </ScrollArea>
+                                        </div>
+                                    </SheetContent>
+                                </Sheet>
+
                                 <DropdownMenu>
                                     <DropdownMenuTrigger asChild>
-                                        <Button variant="outline" size="sm">
-                                            <selectedService.icon className="h-4 w-4 mr-2" />
-                                            <span className="text-xs">{t(`services.${selectedService.id}.title`).substring(0, 10)}...</span>
+                                        <Button variant="outline" size="sm" className="text-xs h-8">
+                                            <selectedService.icon className="h-3.5 w-3.5 mr-1.5" />
+                                            <span className="max-w-[80px] truncate">{t(`services.${selectedService.id}.title`)}</span>
                                             <ChevronDown className="h-3 w-3 ml-1" />
                                         </Button>
                                     </DropdownMenuTrigger>
-                                    <DropdownMenuContent>
+                                    <DropdownMenuContent align="end">
                                         {SERVICES.map((service) => (
                                             <DropdownMenuItem
                                                 key={service.id}
@@ -564,240 +716,294 @@ export default function Index({ auth, userInfo, chatHistories }) {
                                 </DropdownMenu>
                             </div>
 
-                            {/* Balance */}
-                            <div className="bg-amber-50 dark:bg-amber-500/10 px-3 py-1.5 rounded-lg flex items-center gap-2">
-                                <Wallet className="h-4 w-4 text-amber-500 dark:text-amber-400" />
-                                <span className="text-sm font-medium text-amber-700 dark:text-amber-300">
-                                    {walletBalance}
+                            {/* Balance mobile */}
+                            <div className="bg-gradient-to-r from-amber-50 to-purple-50 dark:from-amber-900/20 dark:to-purple-900/20 border border-amber-200 dark:border-amber-700 px-2.5 py-1.5 rounded-lg flex items-center gap-1.5">
+                                <Wallet className="h-3.5 w-3.5 text-amber-600 dark:text-amber-400" />
+                                <span className="text-sm font-semibold text-amber-700 dark:text-amber-300">
+                                    {walletBalance.toLocaleString()}
                                 </span>
                             </div>
                         </div>
                     </div>
-                </div>
 
-                {/* Contenu principal */}
-                <div className="flex-1 flex min-h-0">
-                    {/* Sidebar Desktop */}
-                    <div className="hidden lg:flex lg:w-80 bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 flex-col">
-                        {/* Nouveau chat */}
-                        <div className="p-4 border-b border-gray-200 dark:border-gray-700 flex-shrink-0">
-                            <Button
-                                onClick={createNewChat}
-                                className="w-full bg-gradient-to-r from-amber-500 to-purple-500 text-white h-10"
-                            >
-                                <Plus className="h-4 w-4 mr-2" />
-                                {t('career_advisor.chat.new')}
-                            </Button>
-                        </div>
-
-                        {/* Historique */}
-                        <div className="flex-1 p-4 min-h-0">
-                            <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-3">
-                                {t('career_advisor.history.title')}
-                            </h3>
-                            <ScrollArea className="h-full">
-                                <div className="space-y-2">
-                                    {userChats
-                                        .filter(chat => chat.service_id === selectedService.id)
-                                        .map(chat => (
-                                            <ChatHistoryCard
-                                                key={chat.context_id}
-                                                chat={chat}
-                                                isActive={activeChat?.context_id === chat.context_id}
-                                                onSelect={handleChatSelection}
-                                                onDelete={confirmDeleteChat}
-                                            />
-                                        ))}
+                    {/* Services ou Chat */}
+                    {!activeChat ? (
+                        <div className="flex-1 flex items-center justify-center p-4 overflow-hidden">
+                            <div className="max-w-5xl mx-auto w-full">
+                                <div className="text-center mb-8">
+                                    <motion.div
+                                        initial={{ scale: 0.8, opacity: 0 }}
+                                        animate={{ scale: 1, opacity: 1 }}
+                                        transition={{ duration: 0.5, type: "spring" }}
+                                        className="mb-4"
+                                    >
+                                        <div className="w-16 h-16 bg-gradient-to-br from-amber-500 to-purple-500 rounded-2xl mx-auto flex items-center justify-center mb-3 shadow-lg">
+                                            <Brain className="h-8 w-8 text-white" />
+                                        </div>
+                                    </motion.div>
+                                    <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-3">
+                                        {t('career_advisor.services.choose')}
+                                    </h2>
+                                    <p className="text-base text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
+                                        {t('career_advisor.services.description')}
+                                    </p>
                                 </div>
-                            </ScrollArea>
-                        </div>
-                    </div>
 
-                    {/* Zone de chat */}
-                    <div className="flex-1 flex flex-col min-w-0">
-                        {/* Services - affichage si pas de conversation */}
-                        {!activeChat && (
-                            <div className="flex-1 flex items-center justify-center p-4">
-                                <div className="max-w-4xl mx-auto w-full">
-                                    <div className="text-center mb-8">
-                                        <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-3">
-                                            {t('career_advisor.services.choose')}
-                                        </h2>
-                                        <p className="text-gray-600 dark:text-gray-400">
-                                            {t('career_advisor.services.description')}
-                                        </p>
-                                    </div>
+                                {/* Services Grid - Plus compact */}
+                                <div className="hidden lg:grid grid-cols-1 xl:grid-cols-2 2xl:grid-cols-3 gap-4">
+                                    {SERVICES.map(service => (
+                                        <ServiceCard
+                                            key={service.id}
+                                            {...service}
+                                            isSelected={selectedService.id === service.id}
+                                            onClick={() => handleServiceSelection(service)}
+                                        />
+                                    ))}
+                                </div>
 
-                                    {/* Services Desktop */}
-                                    <div className="hidden lg:grid grid-cols-2 xl:grid-cols-3 gap-4">
-                                        {SERVICES.map(service => (
-                                            <ServiceCard
-                                                key={service.id}
-                                                {...service}
-                                                isSelected={selectedService.id === service.id}
-                                                onClick={() => handleServiceSelection(service)}
-                                            />
-                                        ))}
-                                    </div>
-
-                                    {/* Services Mobile - maximum 2 par ligne */}
-                                    <div className="lg:hidden grid grid-cols-2 gap-3">
-                                        {SERVICES.map(service => (
-                                            <div key={service.id} className="aspect-square">
-                                                <MobileServiceCard
-                                                    service={service}
-                                                    isSelected={selectedService.id === service.id}
-                                                    onClick={() => handleServiceSelection(service)}
-                                                />
-                                            </div>
-                                        ))}
-                                    </div>
+                                {/* Services Mobile */}
+                                <div className="lg:hidden space-y-3">
+                                    {SERVICES.map(service => (
+                                        <MobileServiceCard
+                                            key={service.id}
+                                            service={service}
+                                            isSelected={selectedService.id === service.id}
+                                            onClick={() => handleServiceSelection(service)}
+                                        />
+                                    ))}
                                 </div>
                             </div>
-                        )}
-
-                        {/* Zone de chat active */}
-                        {activeChat && (
-                            <>
-                                {/* En-tête du chat */}
-                                <div className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 p-3 flex-shrink-0">
-                                    <div className="flex items-center justify-between">
-                                        <div className="flex items-center gap-3 min-w-0">
-                                            <selectedService.icon className="h-5 w-5 text-amber-500 dark:text-amber-400 flex-shrink-0" />
-                                            <div className="min-w-0">
-                                                <h3 className="font-semibold text-gray-900 dark:text-gray-100 text-sm truncate">
-                                                    {t(`services.${selectedService.id}.title`)}
-                                                </h3>
-                                                <p className="text-xs text-gray-500 dark:text-gray-400">
-                                                    {t('career_advisor.chat.questions_remaining', {
-                                                        count: maxHistory - currentQuestions
-                                                    })}
-                                                </p>
+                        </div>
+                    ) : (
+                        <div className="flex-1 flex flex-col min-h-0">
+                            {/* En-tête du chat */}
+                            <div className="bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 p-3 flex-shrink-0">
+                                <div className="flex items-center justify-between">
+                                    <div className="flex items-center gap-3 min-w-0">
+                                        <div className="w-8 h-8 bg-gradient-to-br from-amber-500 to-purple-500 rounded-lg flex items-center justify-center">
+                                            <selectedService.icon className="h-4 w-4 text-white" />
+                                        </div>
+                                        <div className="min-w-0">
+                                            <h3 className="font-semibold text-gray-900 dark:text-gray-100 text-sm truncate">
+                                                {t(`services.${selectedService.id}.title`)}
+                                            </h3>
+                                            <div className="flex items-center gap-3 mt-0.5">
+                                                <div className="flex items-center gap-1">
+                                                    <div className="w-1.5 h-1.5 bg-green-500 rounded-full"></div>
+                                                    <span className="text-xs text-gray-500 dark:text-gray-400 font-medium">
+                                                        Active
+                                                    </span>
+                                                </div>
+                                                <Badge variant="outline" className="text-xs border-amber-200 text-amber-600 h-5">
+                                                    {maxHistory - currentQuestions} restantes
+                                                </Badge>
                                             </div>
                                         </div>
-
-                                        <div className="flex gap-1">
-                                            <Button
-                                                variant="outline"
-                                                size="sm"
-                                                onClick={() => handleExport('pdf')}
-                                                className="h-8 px-2 text-xs"
-                                            >
-                                                <Download className="h-3 w-3 mr-1" />
-                                                <span className="hidden sm:inline">PDF</span>
-                                            </Button>
-                                            <Button
-                                                variant="outline"
-                                                size="sm"
-                                                onClick={() => handleExport('docx')}
-                                                className="h-8 px-2 text-xs"
-                                            >
-                                                <FileText className="h-3 w-3 mr-1" />
-                                                <span className="hidden sm:inline">DOCX</span>
-                                            </Button>
-                                            {selectedService.id === 'presentation-ppt' && (
-                                                <Button
-                                                    variant="outline"
-                                                    size="sm"
-                                                    onClick={() => handleExport('pptx')}
-                                                    className="h-8 px-2 text-xs"
-                                                >
-                                                    <Presentation className="h-3 w-3 mr-1" />
-                                                    <span className="hidden sm:inline">PPTX</span>
-                                                </Button>
-                                            )}
-                                        </div>
                                     </div>
-                                </div>
 
-                                {/* Messages */}
-                                <div className="flex-1 p-4 min-h-0">
-                                    <ScrollArea className="h-full" ref={scrollRef}>
-                                        <div className="space-y-3">
-                                            <AnimatePresence mode="popLayout">
-                                                {(activeChat?.messages || []).map((message, index) => (
+                                    {/* Bouton export */}
+                                    <DropdownMenu>
+                                        <DropdownMenuTrigger asChild>
+                                            <Button
+                                                variant="outline"
+                                                size="sm"
+                                                className="h-8 px-3"
+                                            >
+                                                <Download className="h-3.5 w-3.5 mr-1" />
+                                                <span className="hidden sm:inline text-xs">Exporter</span>
+                                                <ChevronDown className="h-3 w-3 ml-1" />
+                                            </Button>
+                                        </DropdownMenuTrigger>
+                                        <DropdownMenuContent align="end">
+                                            <DropdownMenuItem onClick={() => handleExport('pdf')}>
+                                                <FileText className="h-4 w-4 mr-2" />
+                                                PDF
+                                            </DropdownMenuItem>
+                                            <DropdownMenuItem onClick={() => handleExport('docx')}>
+                                                <FileText className="h-4 w-4 mr-2" />
+                                                DOCX
+                                            </DropdownMenuItem>
+                                            {selectedService.id === 'presentation-ppt' && (
+                                                <DropdownMenuItem onClick={() => handleExport('pptx')}>
+                                                    <Presentation className="h-4 w-4 mr-2" />
+                                                    PPTX
+                                                </DropdownMenuItem>
+                                            )}
+                                        </DropdownMenuContent>
+                                    </DropdownMenu>
+                                </div>
+                            </div>
+
+                            {/* Messages */}
+                            <div className="flex-1 min-h-0">
+                                <ScrollArea className="h-full p-3" ref={scrollRef}>
+                                    <div className="max-w-4xl mx-auto space-y-4">
+                                        <AnimatePresence mode="popLayout">
+                                            {(activeChat?.messages || []).map((message, index) => (
+                                                <motion.div
+                                                    key={`message-${index}`}
+                                                    initial={{ opacity: 0, y: 20, scale: 0.95 }}
+                                                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                                                    exit={{ opacity: 0, scale: 0.95 }}
+                                                    transition={{ duration: 0.3, type: "spring", stiffness: 100 }}
+                                                >
                                                     <MessageBubble
-                                                        key={index}
                                                         message={{
                                                             ...message,
                                                             isLatest: index === (activeChat?.messages || []).length - 1
                                                         }}
                                                     />
-                                                ))}
-                                                {tempMessage && (
+                                                </motion.div>
+                                            ))}
+                                            {tempMessage && (
+                                                <motion.div
+                                                    key="thinking"
+                                                    initial={{ opacity: 0, y: 20 }}
+                                                    animate={{ opacity: 1, y: 0 }}
+                                                    exit={{ opacity: 0 }}
+                                                    transition={{ duration: 0.3 }}
+                                                >
                                                     <MessageBubble
-                                                        key="thinking"
                                                         message={{
                                                             ...tempMessage,
                                                             isLatest: true
                                                         }}
                                                     />
-                                                )}
-                                            </AnimatePresence>
-                                        </div>
-                                    </ScrollArea>
-                                </div>
-                            </>
-                        )}
-
-                        {/* Zone de saisie fixée */}
-                        <div className="bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 p-4 flex-shrink-0">
-                            <form onSubmit={handleSubmit} className="max-w-4xl mx-auto">
-                                <div className="flex gap-2 items-end">
-                                    <div className="flex-1 relative">
-                                        <Textarea
-                                            ref={inputRef}
-                                            value={data.question}
-                                            onChange={handleInputChange}
-                                            onKeyDown={handleKeyDown}
-                                            placeholder={t(`services.${selectedService.id}.placeholder`)}
-                                            className="min-h-[44px] max-h-[120px] pr-12 resize-none border-gray-300 dark:border-gray-600 focus:border-amber-500 dark:focus:border-amber-400 text-sm"
-                                            disabled={isLoading}
-                                        />
-                                        <Button
-                                            type="submit"
-                                            size="sm"
-                                            disabled={processing || isLoading || !data.question.trim()}
-                                            className="absolute right-2 bottom-2 h-8 w-8 bg-gradient-to-r from-amber-500 to-purple-500 text-white p-0"
-                                        >
-                                            {isLoading ? (
-                                                <Loader className="h-4 w-4 animate-spin" />
-                                            ) : (
-                                                <Send className="h-4 w-4" />
+                                                </motion.div>
                                             )}
-                                        </Button>
+                                        </AnimatePresence>
                                     </div>
-                                </div>
-                            </form>
+                                </ScrollArea>
+                            </div>
                         </div>
+                    )}
+
+                    {/* Zone de saisie - Input seulement, sans fond */}
+                    <div className="relative p-3 flex-shrink-0">
+                        <form onSubmit={handleSubmit} className="max-w-4xl mx-auto">
+                            <div className="relative">
+                                <motion.div
+                                    initial={{ opacity: 0, y: 10 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    transition={{ duration: 0.3 }}
+                                    className="relative"
+                                >
+                                    <Textarea
+                                        ref={inputRef}
+                                        value={data.question}
+                                        onChange={handleInputChange}
+                                        onKeyDown={handleKeyDown}
+                                        placeholder={t(`services.${selectedService.id}.placeholder`)}
+                                        className="min-h-[44px] max-h-[100px] pr-24 pl-3 py-2.5 resize-none border-2 border-gray-200 dark:border-gray-700 focus:border-amber-500 dark:focus:border-amber-400 rounded-xl text-sm bg-white dark:bg-gray-800 transition-all duration-200 focus:shadow-md"
+                                        disabled={isLoading}
+                                        maxLength={2000}
+                                    />
+                                    <div className="absolute right-2.5 bottom-2.5 flex gap-1.5">
+                                        {/* Indicateur de coût */}
+                                        <motion.div
+                                            initial={{ scale: 0 }}
+                                            animate={{ scale: 1 }}
+                                            className="flex items-center gap-1 px-2 py-1 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-md"
+                                        >
+                                            <Coins className="h-3 w-3 text-amber-600 dark:text-amber-400" />
+                                            <span className="text-xs text-amber-700 dark:text-amber-300 font-medium">
+                                                -{selectedService.cost}
+                                            </span>
+                                        </motion.div>
+                                        <motion.div
+                                            whileHover={{ scale: 1.05 }}
+                                            whileTap={{ scale: 0.95 }}
+                                        >
+                                            <Button
+                                                type="submit"
+                                                size="sm"
+                                                disabled={processing || isLoading || !data.question.trim()}
+                                                className="h-7 w-7 bg-gradient-to-r from-amber-500 to-purple-500 hover:from-amber-600 hover:to-purple-600 text-white p-0 rounded-lg shadow-sm hover:shadow-md transition-all duration-200 disabled:opacity-50"
+                                            >
+                                                {isLoading ? (
+                                                    <motion.div
+                                                        animate={{ rotate: 360 }}
+                                                        transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                                                    >
+                                                        <Loader className="h-3.5 w-3.5" />
+                                                    </motion.div>
+                                                ) : (
+                                                    <Send className="h-3.5 w-3.5" />
+                                                )}
+                                            </Button>
+                                        </motion.div>
+                                    </div>
+                                </motion.div>
+
+                                {/* Barre de progression des caractères */}
+                                <motion.div
+                                    initial={{ opacity: 0 }}
+                                    animate={{ opacity: 1 }}
+                                    className="mt-1.5 px-1"
+                                >
+                                    <div className="flex justify-between items-center text-xs">
+                                        <span className="text-gray-500 dark:text-gray-400">
+                                            {data.question.length}/2000
+                                        </span>
+                                        <span className="text-gray-400 dark:text-gray-500 flex items-center gap-1">
+                                            <kbd className="px-1 py-0.5 text-xs font-mono bg-gray-100 dark:bg-gray-700 rounded">⏎</kbd>
+                                            envoyer
+                                        </span>
+                                    </div>
+                                    {data.question.length > 1500 && (
+                                        <motion.div
+                                            initial={{ scaleX: 0 }}
+                                            animate={{ scaleX: 1 }}
+                                            className="mt-1"
+                                        >
+                                            <Progress
+                                                value={(data.question.length / 2000) * 100}
+                                                className="h-1 bg-gray-200 dark:bg-gray-700"
+                                            />
+                                        </motion.div>
+                                    )}
+                                </motion.div>
+                            </div>
+                        </form>
                     </div>
                 </div>
+            </div>
 
-                {/* Dialogue de confirmation de suppression */}
-                <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
-                    <AlertDialogContent>
-                        <AlertDialogHeader>
-                            <AlertDialogTitle>
-                                {t('career_advisor.chat.actions.delete.title')}
-                            </AlertDialogTitle>
-                            <AlertDialogDescription>
-                                {t('career_advisor.chat.actions.delete.description')}
-                            </AlertDialogDescription>
-                        </AlertDialogHeader>
-                        <AlertDialogFooter>
-                            <AlertDialogCancel>
-                                {t('career_advisor.chat.actions.delete.cancel')}
-                            </AlertDialogCancel>
+            {/* Dialogue de suppression amélioré */}
+            <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+                <AlertDialogContent className="sm:max-w-md">
+                    <AlertDialogHeader>
+                        <AlertDialogTitle className="flex items-center gap-2">
+                            <motion.div
+                                initial={{ rotate: 0 }}
+                                animate={{ rotate: [0, -10, 10, -10, 0] }}
+                                transition={{ duration: 0.5 }}
+                                className="w-8 h-8 bg-red-100 dark:bg-red-900/20 rounded-full flex items-center justify-center"
+                            >
+                                <Trash2 className="h-4 w-4 text-red-600 dark:text-red-400" />
+                            </motion.div>
+                            {t('career_advisor.chat.actions.delete.title')}
+                        </AlertDialogTitle>
+                        <AlertDialogDescription className="text-gray-600 dark:text-gray-400 mt-2">
+                            {t('career_advisor.chat.actions.delete.description')}
+                        </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter className="gap-2 mt-4">
+                        <AlertDialogCancel className="sm:mr-0">
+                            {t('career_advisor.chat.actions.delete.cancel')}
+                        </AlertDialogCancel>
+                        <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
                             <AlertDialogAction
                                 onClick={handleDeleteChat}
-                                className="bg-red-500 hover:bg-red-600 text-white"
+                                className="bg-red-500 hover:bg-red-600 text-white shadow-sm"
                             >
+                                <Trash2 className="h-4 w-4 mr-2" />
                                 {t('career_advisor.chat.actions.delete.confirm')}
                             </AlertDialogAction>
-                        </AlertDialogFooter>
-                    </AlertDialogContent>
-                </AlertDialog>
-            </div>
+                        </motion.div>
+                    </AlertDialogFooter>
+                </AlertDialogContent>
+            </AlertDialog>
         </AuthenticatedLayout>
     );
 }

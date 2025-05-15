@@ -1,5 +1,190 @@
 /* Styles for mobile app appearance with better usability */
+/* Style global pour l'effet smoke sur le curseur */
+@keyframes smokeEffect {
+    0% {
+        opacity: 0;
+        transform: scale(0.8);
+        filter: blur(0px);
+    }
+    50% {
+        opacity: 0.6;
+        transform: scale(1.2);
+        filter: blur(2px);
+    }
+    100% {
+        opacity: 0.3;
+        transform: scale(1.5);
+        filter: blur(4px);
+    }
+}
 
+@keyframes smokeTrail {
+    0% {
+        transform: scale(0.5);
+        opacity: 1;
+    }
+    100% {
+        transform: scale(2);
+        opacity: 0;
+    }
+}
+
+.cursor-smoke {
+    position: relative;
+}
+
+.cursor-smoke::before {
+    content: '';
+    position: fixed;
+    width: 20px;
+    height: 20px;
+    background: radial-gradient(circle, rgba(219, 39, 119, 0.3) 0%, rgba(147, 51, 234, 0.2) 50%, transparent 100%);
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 10000;
+    transform: translate(-50%, -50%);
+    animation: smokeEffect 1s ease-out infinite;
+    left: var(--mouse-x);
+    top: var(--mouse-y);
+}
+
+/* Effet de trail multiple pour un meilleur rendu */
+.cursor-smoke::after {
+    content: '';
+    position: fixed;
+    width: 15px;
+    height: 15px;
+    background: radial-gradient(circle, rgba(220, 38, 127, 0.2) 0%, rgba(147, 51, 234, 0.1) 50%, transparent 100%);
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 9999;
+    transform: translate(-50%, -50%);
+    animation: smokeTrail 0.8s ease-out infinite;
+    animation-delay: 0.1s;
+    left: var(--mouse-x);
+    top: var(--mouse-y);
+}
+
+/* Curseur personnalisé pour l'interface */
+.custom-cursor {
+    cursor: none;
+}
+
+.custom-cursor-dot {
+    width: 8px;
+    height: 8px;
+    background: linear-gradient(45deg, #f59e0b, #a855f7);
+    border-radius: 50%;
+    position: fixed;
+    pointer-events: none;
+    z-index: 10001;
+    transition: transform 0.1s ease;
+    box-shadow: 0 0 10px rgba(168, 85, 247, 0.5);
+}
+
+/* Animation pour les services cards */
+.service-card-animate {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.service-card-animate:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+}
+
+/* Amélioration des scrollbars */
+.custom-scrollbar::-webkit-scrollbar {
+    width: 6px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+    background: linear-gradient(to bottom, #f59e0b, #a855f7);
+    border-radius: 3px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(to bottom, #d97706, #9333ea);
+}
+
+/* Animation de typing pour les bulles de message */
+.typing-animation {
+    position: relative;
+}
+
+.typing-animation::after {
+    content: "";
+    width: 4px;
+    height: 20px;
+    background: linear-gradient(to bottom, #f59e0b, #a855f7);
+    display: inline-block;
+    margin-left: 4px;
+    animation: typing 1s infinite;
+}
+
+@keyframes typing {
+    0%, 50% { opacity: 1; }
+    51%, 100% { opacity: 0; }
+}
+
+/* Effet de glow sur les boutons principaux */
+.btn-glow {
+    position: relative;
+    overflow: hidden;
+}
+
+.btn-glow::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: left 0.5s;
+}
+
+.btn-glow:hover::before {
+    left: 100%;
+}
+
+/* Amélioration des animations de layout */
+.layout-animate {
+    transition: all 0.3s cubic-bezier(0.23, 1, 0.320, 1);
+}
+
+/* Style pour les badges de status */
+.status-badge {
+    position: relative;
+    overflow: hidden;
+}
+
+.status-badge::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+    animation: shimmer 2s infinite;
+}
+
+@keyframes shimmer {
+    0% { transform: translateX(-100%); }
+    100% { transform: translateX(100%); }
+}
+
+/* Responsive improvements */
+@media (max-width: 768px) {
+    .cursor-smoke::before,
+    .cursor-smoke::after {
+        display: none;
+    }
+}
 /* Better approach for iOS elastic scroll prevention */
 html,
 body {

@@ -113,7 +113,7 @@ const ExperienceManager: React.FC<Props> = ({ auth, experiences: initialExperien
     const [currentTab, setCurrentTab] = useState('experiences');
     const [attachmentSummary, setAttachmentSummary] = useState<AttachmentSummary>({
         total_size: 0,
-        max_size: 104857600, // 100MB default
+        max_size: 20971520, // 20MB default
         files_count: 0
     });
     const [actionMenuOpen, setActionMenuOpen] = useState<number | null>(null);

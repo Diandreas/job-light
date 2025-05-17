@@ -201,11 +201,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
             'profession-missions' => ProfessionMissionController::class,
             'cv-models' => CvModelController::class,
         ]);
-        
+
         // Routes pour la gestion des niveaux de parrainage
         Route::resource('referral-levels', \App\Http\Controllers\Admin\ReferralLevelController::class)
             ->names('admin.referral-levels');
-            
+
         // Route pour initialiser les niveaux de parrainage
         Route::post('/referral-levels/initialize', [\App\Http\Controllers\Admin\ReferralLevelController::class, 'initialize'])
             ->name('admin.referral-levels.initialize');
@@ -220,6 +220,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
         // Le reste de vos routes authentifiées...
     });
+    // Dans le groupe career-advisor
+    Route::post('/export-pptx', [CareerAdvisorController::class, 'exportPptx'])->name('career-advisor.export-pptx');
 
     // Languages routes
     Route::get('/user-languages', [UserlanguageController::class, 'index'])->name('user-languages.index');

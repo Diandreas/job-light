@@ -14,7 +14,7 @@ import {
     Brain, Wallet, Clock, Loader, Download, Coins, Trash2,
     MessageSquare, Calendar, History, Menu, Send, Plus,
     FileText, Presentation, ChevronDown, ChartLine, ChartArea,
-    FileInput, MessageCircleQuestion, PenTool, Sparkles
+    FileInput, MessageCircleQuestion, PenTool, Sparkles, ChevronRight, ChevronLeft
 } from 'lucide-react';
 import { MessageBubble } from '@/Components/ai/MessageBubble';
 import { ServiceCard, MobileServiceCard } from '@/Components/ai/ServiceCard';
@@ -80,7 +80,7 @@ const ChatHistoryCard = ({ chat, isActive, onSelect, onDelete }) => {
     const { t } = useTranslation();
 
     const truncatedPreview = chat.preview ?
-        (chat.preview.length > 40 ? chat.preview.substring(0, 40) + '...' : chat.preview) :
+        (chat.preview.length > 35 ? chat.preview.substring(0, 35) + '...' : chat.preview) :
         'Nouvelle conversation';
 
     return (
@@ -88,40 +88,35 @@ const ChatHistoryCard = ({ chat, isActive, onSelect, onDelete }) => {
             layout
             initial={{ opacity: 0, y: 4, scale: 0.98 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, x: -20, scale: 0.95 }}
-            whileHover={{ scale: 1.02, y: -2 }}
+            exit={{ opacity: 0, x: -10, scale: 0.95 }}
+            whileHover={{ y: -1 }}
             whileTap={{ scale: 0.98 }}
             transition={{
                 type: "spring",
-                stiffness: 300,
-                damping: 20,
-                layout: { duration: 0.2 }
+                stiffness: 400,
+                damping: 25,
+                layout: { duration: 0.15 }
             }}
-            className={`relative group p-3 rounded-lg cursor-pointer transition-all duration-300 border ${
+            className={`relative group p-2.5 rounded-lg cursor-pointer transition-all border ${
                 isActive
-                    ? 'bg-gradient-to-r from-amber-50 to-purple-50 dark:from-amber-900/20 dark:to-purple-900/20 border-amber-300 dark:border-amber-600 shadow-md shadow-amber-100/50 dark:shadow-amber-900/20'
-                    : 'bg-white dark:bg-gray-850 hover:bg-gray-50 dark:hover:bg-gray-800 border-gray-200 dark:border-gray-700 hover:border-amber-200 dark:hover:border-amber-800 shadow-sm hover:shadow-md'
+                    ? 'bg-gradient-to-r from-amber-50 to-purple-50 dark:from-amber-900/20 dark:to-purple-900/20 border-amber-300 dark:border-amber-600 shadow-sm'
+                    : 'bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-800 border-gray-200 dark:border-gray-700 hover:border-amber-200 dark:hover:border-amber-800'
             }`}
             onClick={() => onSelect(chat)}
         >
-            {/* Contenu principal */}
-            <div className="pr-10">
-                <div className="flex items-start gap-2 mb-1.5">
-                    <motion.div
-                        className={`w-1.5 h-1.5 rounded-full mt-2 ${
-                            isActive ? 'bg-amber-500' : 'bg-gray-300 dark:bg-gray-600'
-                        }`}
-                        animate={isActive ? { scale: [1, 1.2, 1] } : {}}
-                        transition={{ duration: 1, repeat: isActive ? Infinity : 0 }}
-                    />
-                    <h3 className="text-sm font-medium text-gray-900 dark:text-gray-100 line-clamp-2 leading-tight" title={chat.preview}>
+            <div className="pr-6">
+                <div className="flex items-start gap-1.5 mb-1">
+                    <div className={`w-1 h-1 rounded-full mt-1.5 ${
+                        isActive ? 'bg-amber-500' : 'bg-gray-300 dark:bg-gray-600'
+                    }`} />
+                    <h3 className="text-xs font-medium text-gray-900 dark:text-gray-100 line-clamp-1 leading-tight" title={chat.preview}>
                         {truncatedPreview}
                     </h3>
                 </div>
-                <div className="flex items-center gap-3 ml-3.5">
+                <div className="flex items-center gap-2 ml-2.5 mt-1">
                     <div className="flex items-center gap-1">
-                        <Calendar className="h-3 w-3 text-amber-500 dark:text-amber-400" />
-                        <span className="text-xs text-gray-500 dark:text-gray-400 font-medium">
+                        <Calendar className="h-2.5 w-2.5 text-amber-500 dark:text-amber-400" />
+                        <span className="text-xs text-gray-500 dark:text-gray-400">
                             {new Date(chat.created_at).toLocaleDateString('fr-FR', {
                                 day: 'numeric',
                                 month: 'short'
@@ -130,8 +125,8 @@ const ChatHistoryCard = ({ chat, isActive, onSelect, onDelete }) => {
                     </div>
                     {chat.messages_count && (
                         <div className="flex items-center gap-1">
-                            <MessageSquare className="h-3 w-3 text-purple-500 dark:text-purple-400" />
-                            <span className="text-xs text-gray-500 dark:text-gray-400 font-medium">
+                            <MessageSquare className="h-2.5 w-2.5 text-purple-500 dark:text-purple-400" />
+                            <span className="text-xs text-gray-500 dark:text-gray-400">
                                 {chat.messages_count}
                             </span>
                         </div>
@@ -139,16 +134,14 @@ const ChatHistoryCard = ({ chat, isActive, onSelect, onDelete }) => {
                 </div>
             </div>
 
-            {/* Bouton supprimer */}
+            {/* Bouton supprimer plus compact */}
             <TooltipProvider>
                 <Tooltip>
                     <TooltipTrigger asChild>
                         <motion.div
-                            initial={{ opacity: 0, scale: 0 }}
-                            animate={{ opacity: 1, scale: 1 }}
-                            exit={{ opacity: 0, scale: 0 }}
-                            whileHover={{ rotate: 10, scale: 1.1 }}
-                            className="absolute right-2 top-1/2 -translate-y-1/2"
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            className="absolute right-1 top-1/2 -translate-y-1/2"
                         >
                             <Button
                                 variant="ghost"
@@ -157,14 +150,14 @@ const ChatHistoryCard = ({ chat, isActive, onSelect, onDelete }) => {
                                     e.stopPropagation();
                                     onDelete(chat);
                                 }}
-                                className="h-7 w-7 p-0 opacity-0 group-hover:opacity-100 hover:text-red-500 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-all duration-200"
+                                className="h-6 w-6 p-0 opacity-0 group-hover:opacity-100 hover:text-red-500 dark:hover:text-red-400 hover:bg-red-50/70 dark:hover:bg-red-900/20 transition-all duration-200"
                             >
-                                <Trash2 className="h-3.5 w-3.5" />
+                                <Trash2 className="h-3 w-3" />
                             </Button>
                         </motion.div>
                     </TooltipTrigger>
-                    <TooltipContent>
-                        <p>Supprimer la conversation</p>
+                    <TooltipContent side="left">
+                        <p className="text-xs">Supprimer</p>
                     </TooltipContent>
                 </Tooltip>
             </TooltipProvider>
@@ -195,6 +188,7 @@ export default function Index({ auth, userInfo, chatHistories }) {
     const [tempMessage, setTempMessage] = useState(null);
     const [thinkingIndex, setThinkingIndex] = useState(0);
     const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
+    const [isSidebarCollapsed, setSidebarCollapsed] = useState(false);
     const scrollRef = useRef(null);
     const inputRef = useRef(null);
     const thinkingIntervalRef = useRef(null);
@@ -536,12 +530,12 @@ export default function Index({ auth, userInfo, chatHistories }) {
         setIsMobileSidebarOpen(false);
     };
 
-    // Auto-resize textarea
+    // Auto-resize textarea compact
     const handleInputChange = (event) => {
         const textarea = event.target;
         setData('question', textarea.value);
         textarea.style.height = 'auto';
-        textarea.style.height = `${Math.min(textarea.scrollHeight, 100)}px`;
+        textarea.style.height = `${Math.min(textarea.scrollHeight, 80)}px`; // Limit to 80px height
     };
 
     // Handle keyboard shortcuts
@@ -556,84 +550,157 @@ export default function Index({ auth, userInfo, chatHistories }) {
 
     return (
         <AuthenticatedLayout user={auth.user}>
-            <FluidCursorEffect zIndex={100} />
-            <div className="h-screen flex bg-gray-50 dark:bg-gray-900">
-                {/* Sidebar Desktop - Plus compact */}
-                <div className="hidden lg:flex lg:w-72 bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-800 flex-col">
+            {/* Rendre l'effet de curseur plus subtil */}
+            <div className="opacity-15"><FluidCursorEffect zIndex={100} /></div>
+
+            <div className="h-[calc(100vh-4rem)] flex bg-gray-50 dark:bg-gray-900"> {/* Hauteur ajustée pour header et footer */}
+                {/* Sidebar Desktop - Collapsible */}
+                <div className={`hidden lg:flex ${isSidebarCollapsed ? 'lg:w-16' : 'lg:w-64'} bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-800 flex-col transition-all duration-300`}>
                     {/* En-tête sidebar avec titre et wallet */}
-                    <div className="p-4 border-b border-gray-200 dark:border-gray-800 flex-shrink-0">
-                        <div className="flex items-center gap-3 mb-4">
-                            <Avatar className="w-8 h-8 ring-2 ring-amber-100 dark:ring-amber-900/30">
+                    <div className="p-3 border-b border-gray-200 dark:border-gray-800 flex-shrink-0">
+                        <div className={`flex items-center ${isSidebarCollapsed ? 'justify-center' : 'gap-2'} mb-3`}>
+                            <Avatar className="w-7 h-7">
                                 <AvatarImage src="/ai-avatar.png" alt="AI Assistant" />
-                                <AvatarFallback className="bg-gradient-to-br from-amber-500 via-purple-500 to-amber-600 text-white text-sm font-semibold">
+                                <AvatarFallback className="bg-gradient-to-r from-amber-500 to-purple-500 text-white text-xs">
                                     AI
                                 </AvatarFallback>
                             </Avatar>
-                            <div className="flex-1">
-                                <div className="flex items-center gap-2">
-                                    <h1 className="text-base font-bold text-gray-900 dark:text-gray-100">
-                                        {t('career_advisor.title')}
-                                    </h1>
-                                    <Badge variant="secondary" className="text-xs bg-amber-50 text-amber-600 dark:bg-amber-900/30 dark:text-amber-300">
-                                        <Sparkles className="w-3 h-3 mr-1" />
-                                        Pro
-                                    </Badge>
+                            {!isSidebarCollapsed && (
+                                <div className="flex-1 min-w-0">
+                                    <div className="flex items-center gap-1.5">
+                                        <h1 className="text-sm font-bold text-gray-900 dark:text-gray-100 truncate">
+                                            {t('career_advisor.title')}
+                                        </h1>
+                                        <Badge variant="secondary" className="text-xs px-1.5 py-0 h-4 bg-amber-50 text-amber-600 dark:bg-amber-900/30 dark:text-amber-300">
+                                            <Sparkles className="w-2.5 h-2.5 mr-0.5" />
+                                            Pro
+                                        </Badge>
+                                    </div>
+                                    <p className="text-xs text-gray-600 dark:text-gray-400 truncate">
+                                        {t(`services.${selectedService.id}.title`)}
+                                    </p>
                                 </div>
-                                <p className="text-xs text-gray-600 dark:text-gray-400">
-                                    {t(`services.${selectedService.id}.title`)}
-                                </p>
+                            )}
+                        </div>
+
+                        {/* Wallet info compactée */}
+                        {!isSidebarCollapsed && (
+                            <div className="bg-gradient-to-r from-amber-50 to-purple-50 dark:from-amber-900/20 dark:to-purple-900/20 border border-amber-200 dark:border-amber-700 px-2.5 py-1.5 rounded-lg flex items-center gap-2 mb-2.5">
+                                <div className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse" />
+                                <Wallet className="h-3 w-3 text-amber-600 dark:text-amber-400" />
+                                <span className="text-xs font-semibold text-amber-700 dark:text-amber-300">
+                                    {walletBalance.toLocaleString()}
+                                </span>
+                                <span className="text-xs text-amber-600 dark:text-amber-400">
+                                    crédits
+                                </span>
                             </div>
-                        </div>
+                        )}
 
-                        {/* Wallet info */}
-                        <div className="bg-gradient-to-r from-amber-50 to-purple-50 dark:from-amber-900/20 dark:to-purple-900/20 border border-amber-200 dark:border-amber-700 px-3 py-2 rounded-lg flex items-center gap-2 mb-3">
-                            <div className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse" />
-                            <Wallet className="h-3.5 w-3.5 text-amber-600 dark:text-amber-400" />
-                            <span className="text-sm font-semibold text-amber-700 dark:text-amber-300">
-                                {walletBalance.toLocaleString()}
-                            </span>
-                            <span className="text-xs text-amber-600 dark:text-amber-400 font-medium">
-                                crédits
-                            </span>
-                        </div>
-
-                        <Button
-                            onClick={createNewChat}
-                            className="w-full bg-gradient-to-r from-amber-500 to-purple-500 hover:from-amber-600 hover:to-purple-600 text-white h-9 rounded-lg shadow-sm transition-all duration-200 hover:shadow-md"
-                        >
-                            <Plus className="h-4 w-4 mr-2" />
-                            {t('career_advisor.chat.new')}
-                        </Button>
+                        {/* Bouton collapsible */}
+                        <TooltipProvider>
+                            <Tooltip>
+                                <TooltipTrigger asChild>
+                                    <Button
+                                        onClick={() => {
+                                            createNewChat();
+                                            setSidebarCollapsed(!isSidebarCollapsed);
+                                        }}
+                                        className={`${isSidebarCollapsed ? 'w-10 p-0' : 'w-full'} h-8 bg-gradient-to-r from-amber-500 to-purple-500 hover:from-amber-600 hover:to-purple-600 text-white text-xs rounded-lg shadow-sm transition-all duration-200`}
+                                    >
+                                        {isSidebarCollapsed ? (
+                                            <Plus className="h-3.5 w-3.5" />
+                                        ) : (
+                                            <>
+                                                <Plus className="h-3.5 w-3.5 mr-1.5" />
+                                                {t('career_advisor.chat.new')}
+                                            </>
+                                        )}
+                                    </Button>
+                                </TooltipTrigger>
+                                <TooltipContent side="right">
+                                    <p className="text-xs">Nouveau message</p>
+                                </TooltipContent>
+                            </Tooltip>
+                        </TooltipProvider>
                     </div>
 
-                    {/* Historique */}
-                    <div className="flex-1 p-3 min-h-0">
-                        <div className="flex items-center justify-between mb-3">
-                            <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-300">
-                                {t('career_advisor.history.title')}
-                            </h3>
-                            <Badge variant="outline" className="text-xs border-amber-200 text-amber-600">
-                                {userChats.filter(chat => chat.service_id === selectedService.id).length}
-                            </Badge>
-                        </div>
-                        <ScrollArea className="h-full">
-                            <div className="space-y-2">
+                    {/* Historique optimisé */}
+                    <div className="flex-1 p-2.5 min-h-0">
+                        {!isSidebarCollapsed && (
+                            <div className="flex items-center justify-between mb-2">
+                                <h3 className="text-xs font-semibold text-gray-700 dark:text-gray-300">
+                                    {t('career_advisor.history.title')}
+                                </h3>
+                                <Badge variant="outline" className="text-xs h-5 px-1.5 border-amber-200 text-amber-600">
+                                    {userChats.filter(chat => chat.service_id === selectedService.id).length}
+                                </Badge>
+                            </div>
+                        )}
+
+                        <ScrollArea className="h-[calc(100vh-190px)]">
+                            <div className={`${isSidebarCollapsed ? 'space-y-2 items-center flex flex-col' : 'space-y-1.5'}`}>
+                                {/* Bouton toggle sidebar */}
+                                <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    onClick={() => setSidebarCollapsed(!isSidebarCollapsed)}
+                                    className={`${isSidebarCollapsed ? 'w-10 h-10 p-0 rounded-full' : 'w-full h-7'} mb-1 text-gray-500`}
+                                >
+                                    {isSidebarCollapsed ? (
+                                        <ChevronRight className="h-4 w-4" />
+                                    ) : (
+                                        <div className="flex items-center w-full justify-between">
+                                            <span className="text-xs">Réduire</span>
+                                            <ChevronLeft className="h-3.5 w-3.5" />
+                                        </div>
+                                    )}
+                                </Button>
+
                                 <AnimatePresence>
                                     {userChats
                                         .filter(chat => chat.service_id === selectedService.id)
                                         .map(chat => (
-                                            <ChatHistoryCard
-                                                key={chat.context_id}
-                                                chat={chat}
-                                                isActive={activeChat?.context_id === chat.context_id}
-                                                onSelect={handleChatSelection}
-                                                onDelete={confirmDeleteChat}
-                                            />
+                                            isSidebarCollapsed ? (
+                                                <TooltipProvider key={chat.context_id}>
+                                                    <Tooltip>
+                                                        <TooltipTrigger asChild>
+                                                            <motion.div
+                                                                layout
+                                                                initial={{ opacity: 0 }}
+                                                                animate={{ opacity: 1 }}
+                                                                exit={{ opacity: 0 }}
+                                                                whileHover={{ scale: 1.05 }}
+                                                                whileTap={{ scale: 0.95 }}
+                                                                onClick={() => handleChatSelection(chat)}
+                                                                className={`w-10 h-10 flex items-center justify-center rounded-full cursor-pointer ${
+                                                                    activeChat?.context_id === chat.context_id
+                                                                        ? 'bg-amber-100 dark:bg-amber-900/30 text-amber-600 dark:text-amber-300'
+                                                                        : 'bg-white dark:bg-gray-800 text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-700'
+                                                                } border border-gray-200 dark:border-gray-700 shadow-sm`}
+                                                            >
+                                                                <MessageSquare className="h-4 w-4" />
+                                                            </motion.div>
+                                                        </TooltipTrigger>
+                                                        <TooltipContent side="right">
+                                                            <p className="text-xs">{chat.preview.substring(0, 30)}{chat.preview.length > 30 ? '...' : ''}</p>
+                                                        </TooltipContent>
+                                                    </Tooltip>
+                                                </TooltipProvider>
+                                            ) : (
+                                                <ChatHistoryCard
+                                                    key={chat.context_id}
+                                                    chat={chat}
+                                                    isActive={activeChat?.context_id === chat.context_id}
+                                                    onSelect={handleChatSelection}
+                                                    onDelete={confirmDeleteChat}
+                                                />
+                                            )
                                         ))}
                                 </AnimatePresence>
-                                {userChats.filter(chat => chat.service_id === selectedService.id).length === 0 && (
-                                    <div className="text-center py-6">
-                                        <MessageSquare className="h-8 w-8 text-gray-300 dark:text-gray-600 mx-auto mb-2" />
+                                {userChats.filter(chat => chat.service_id === selectedService.id).length === 0 && !isSidebarCollapsed && (
+                                    <div className="text-center py-4">
+                                        <MessageSquare className="h-6 w-6 text-gray-300 dark:text-gray-600 mx-auto mb-2" />
                                         <p className="text-xs text-gray-500 dark:text-gray-400">
                                             Aucune conversation
                                         </p>
@@ -647,34 +714,34 @@ export default function Index({ auth, userInfo, chatHistories }) {
                 {/* Zone de chat */}
                 <div className="flex-1 flex flex-col min-w-0 bg-gray-50 dark:bg-gray-900 h-full">
                     {/* Mobile header avec service selector et menu */}
-                    <div className="lg:hidden px-3 py-2 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 flex-shrink-0">
+                    <div className="lg:hidden px-2.5 py-2 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 flex-shrink-0">
                         <div className="flex items-center justify-between">
                             <div className="flex items-center gap-2">
                                 <Sheet open={isMobileSidebarOpen} onOpenChange={setIsMobileSidebarOpen}>
                                     <SheetTrigger asChild>
-                                        <Button variant="outline" size="sm" className="h-8">
-                                            <Menu className="h-4 w-4 mr-1" />
+                                        <Button variant="outline" size="sm" className="h-7 px-2 text-xs">
+                                            <Menu className="h-3.5 w-3.5 mr-1" />
                                             {t('career_advisor.history.title')}
                                         </Button>
                                     </SheetTrigger>
-                                    <SheetContent side="left" className="w-72 bg-white dark:bg-gray-900">
+                                    <SheetContent side="left" className="w-64 bg-white dark:bg-gray-900">
                                         <SheetHeader className="text-left">
-                                            <SheetTitle className="flex items-center gap-2 text-base">
+                                            <SheetTitle className="flex items-center gap-2 text-sm">
                                                 <Brain className="h-4 w-4 text-amber-500" />
                                                 {t('career_advisor.history.title')}
                                             </SheetTitle>
                                         </SheetHeader>
-                                        <Separator className="my-3" />
-                                        <div className="space-y-3">
+                                        <Separator className="my-2.5" />
+                                        <div className="space-y-2.5">
                                             <Button
                                                 onClick={createNewChat}
-                                                className="w-full bg-gradient-to-r from-amber-500 to-purple-500 text-white h-9"
+                                                className="w-full bg-gradient-to-r from-amber-500 to-purple-500 text-white h-8 text-xs"
                                             >
-                                                <Plus className="h-4 w-4 mr-2" />
+                                                <Plus className="h-3.5 w-3.5 mr-1.5" />
                                                 {t('career_advisor.chat.new')}
                                             </Button>
                                             <ScrollArea className="h-[calc(100vh-180px)]">
-                                                <div className="space-y-2">
+                                                <div className="space-y-1.5">
                                                     <AnimatePresence>
                                                         {userChats
                                                             .filter(chat => chat.service_id === selectedService.id)
@@ -696,19 +763,20 @@ export default function Index({ auth, userInfo, chatHistories }) {
 
                                 <DropdownMenu>
                                     <DropdownMenuTrigger asChild>
-                                        <Button variant="outline" size="sm" className="text-xs h-8">
+                                        <Button variant="outline" size="sm" className="h-7 text-xs">
                                             <selectedService.icon className="h-3.5 w-3.5 mr-1.5" />
-                                            <span className="max-w-[80px] truncate">{t(`services.${selectedService.id}.title`)}</span>
+                                            <span className="max-w-[70px] truncate">{t(`services.${selectedService.id}.title`)}</span>
                                             <ChevronDown className="h-3 w-3 ml-1" />
                                         </Button>
                                     </DropdownMenuTrigger>
-                                    <DropdownMenuContent align="end">
+                                    <DropdownMenuContent align="end" className="min-w-[150px]">
                                         {SERVICES.map((service) => (
                                             <DropdownMenuItem
                                                 key={service.id}
                                                 onSelect={() => handleServiceSelection(service)}
+                                                className="text-xs py-1.5"
                                             >
-                                                <service.icon className="h-4 w-4 mr-2" />
+                                                <service.icon className="h-3.5 w-3.5 mr-1.5" />
                                                 {t(`services.${service.id}.title`)}
                                             </DropdownMenuItem>
                                         ))}
@@ -717,9 +785,9 @@ export default function Index({ auth, userInfo, chatHistories }) {
                             </div>
 
                             {/* Balance mobile */}
-                            <div className="bg-gradient-to-r from-amber-50 to-purple-50 dark:from-amber-900/20 dark:to-purple-900/20 border border-amber-200 dark:border-amber-700 px-2.5 py-1.5 rounded-lg flex items-center gap-1.5">
-                                <Wallet className="h-3.5 w-3.5 text-amber-600 dark:text-amber-400" />
-                                <span className="text-sm font-semibold text-amber-700 dark:text-amber-300">
+                            <div className="bg-gradient-to-r from-amber-50 to-purple-50 dark:from-amber-900/20 dark:to-purple-900/20 border border-amber-200 dark:border-amber-700 px-2 py-1 rounded-lg flex items-center gap-1.5">
+                                <Wallet className="h-3 w-3 text-amber-600 dark:text-amber-400" />
+                                <span className="text-xs font-semibold text-amber-700 dark:text-amber-300">
                                     {walletBalance.toLocaleString()}
                                 </span>
                             </div>
@@ -728,29 +796,30 @@ export default function Index({ auth, userInfo, chatHistories }) {
 
                     {/* Services ou Chat */}
                     {!activeChat ? (
-                        <div className="flex-1 flex items-center justify-center p-4 overflow-hidden">
-                            <div className="max-w-5xl mx-auto w-full">
-                                <div className="text-center mb-8">
+                        <div className="flex-1 flex flex-col justify-between p-3 overflow-hidden">
+                            {/* Services section */}
+                            <div className="mb-auto">
+                                <div className="text-center mb-6">
                                     <motion.div
-                                        initial={{ scale: 0.8, opacity: 0 }}
+                                        initial={{ scale: 0.9, opacity: 0 }}
                                         animate={{ scale: 1, opacity: 1 }}
-                                        transition={{ duration: 0.5, type: "spring" }}
-                                        className="mb-4"
+                                        transition={{ duration: 0.4, type: "spring" }}
+                                        className="mb-3"
                                     >
-                                        <div className="w-16 h-16 bg-gradient-to-br from-amber-500 to-purple-500 rounded-2xl mx-auto flex items-center justify-center mb-3 shadow-lg">
-                                            <Brain className="h-8 w-8 text-white" />
+                                        <div className="w-14 h-14 bg-gradient-to-r from-amber-500 to-purple-500 rounded-xl mx-auto flex items-center justify-center mb-2.5 shadow-md">
+                                            <Brain className="h-7 w-7 text-white" />
                                         </div>
                                     </motion.div>
-                                    <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-3">
+                                    <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-2">
                                         {t('career_advisor.services.choose')}
                                     </h2>
-                                    <p className="text-base text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
+                                    <p className="text-sm text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
                                         {t('career_advisor.services.description')}
                                     </p>
                                 </div>
 
-                                {/* Services Grid - Plus compact */}
-                                <div className="hidden lg:grid grid-cols-1 xl:grid-cols-2 2xl:grid-cols-3 gap-4">
+                                {/* Grille de services plus compacte */}
+                                <div className="hidden lg:grid grid-cols-2 xl:grid-cols-3 gap-3 px-2">
                                     {SERVICES.map(service => (
                                         <ServiceCard
                                             key={service.id}
@@ -761,8 +830,8 @@ export default function Index({ auth, userInfo, chatHistories }) {
                                     ))}
                                 </div>
 
-                                {/* Services Mobile */}
-                                <div className="lg:hidden space-y-3">
+                                {/* Services Mobile - 2 par ligne */}
+                                <div className="lg:hidden grid grid-cols-2 gap-2 px-2">
                                     {SERVICES.map(service => (
                                         <MobileServiceCard
                                             key={service.id}
@@ -773,59 +842,130 @@ export default function Index({ auth, userInfo, chatHistories }) {
                                     ))}
                                 </div>
                             </div>
+
+                            {/* Input pour commencer directement */}
+                            <div className="max-w-4xl mx-auto w-full mt-4 px-2">
+                                <form onSubmit={handleSubmit} className="relative">
+                                    <Textarea
+                                        ref={inputRef}
+                                        value={data.question}
+                                        onChange={handleInputChange}
+                                        onKeyDown={handleKeyDown}
+                                        placeholder={`Posez votre question... (${t(`services.${selectedService.id}.title`)})`}
+                                        className="min-h-[48px] max-h-[80px] pr-20 pl-10 py-3 resize-none border border-gray-200 dark:border-gray-700 focus:border-amber-500 dark:focus:border-amber-400 rounded-lg text-sm bg-white dark:bg-gray-800 shadow-sm"
+                                        disabled={isLoading}
+                                        maxLength={2000}
+                                    />
+
+                                    {/* Icône du service sélectionné */}
+                                    <div className="absolute left-3 top-3.5 text-gray-400 dark:text-gray-500">
+                                        <selectedService.icon className="h-4 w-4" />
+                                    </div>
+
+                                    <div className="absolute right-2 bottom-2 flex gap-1">
+                                        {/* Raccourci touches */}
+                                        <TooltipProvider>
+                                            <Tooltip>
+                                                <TooltipTrigger asChild>
+                                                    <div className="border border-gray-200 dark:border-gray-700 rounded-md px-1.5 py-0.5 bg-gray-50 dark:bg-gray-800 flex items-center">
+                                                        <kbd className="text-[10px] text-gray-500 dark:text-gray-400 font-mono">⏎</kbd>
+                                                    </div>
+                                                </TooltipTrigger>
+                                                <TooltipContent side="top">
+                                                    <p className="text-xs">Appuyez sur Entrée pour envoyer</p>
+                                                </TooltipContent>
+                                            </Tooltip>
+                                        </TooltipProvider>
+
+                                        {/* Indicateur de coût compact */}
+                                        <div className="flex items-center gap-1 px-1.5 py-0.5 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-md">
+                                            <Coins className="h-3 w-3 text-amber-600 dark:text-amber-400" />
+                                            <span className="text-xs text-amber-700 dark:text-amber-300">
+                                                {selectedService.cost}
+                                            </span>
+                                        </div>
+                                        <Button
+                                            type="submit"
+                                            size="sm"
+                                            disabled={processing || isLoading || !data.question.trim()}
+                                            className="h-6 w-6 bg-gradient-to-r from-amber-500 to-purple-500 hover:from-amber-600 hover:to-purple-600 text-white p-0 rounded-md shadow-sm transition-all disabled:opacity-50"
+                                        >
+                                            {isLoading ? (
+                                                <motion.div
+                                                    animate={{ rotate: 360 }}
+                                                    transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                                                >
+                                                    <Loader className="h-3 w-3" />
+                                                </motion.div>
+                                            ) : (
+                                                <Send className="h-3 w-3" />
+                                            )}
+                                        </Button>
+                                    </div>
+                                </form>
+
+                                {/* Compteur de caractères discret */}
+                                {data.question.length > 0 && (
+                                    <div className="text-right mt-1 pr-1">
+                                        <span className="text-[10px] text-gray-400 dark:text-gray-500">
+                                            {data.question.length}/2000
+                                        </span>
+                                    </div>
+                                )}
+                            </div>
                         </div>
                     ) : (
                         <div className="flex-1 flex flex-col min-h-0">
-                            {/* En-tête du chat */}
-                            <div className="bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 p-3 flex-shrink-0">
+                            {/* En-tête du chat plus compact */}
+                            <div className="bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 py-2 px-3 flex-shrink-0">
                                 <div className="flex items-center justify-between">
-                                    <div className="flex items-center gap-3 min-w-0">
-                                        <div className="w-8 h-8 bg-gradient-to-br from-amber-500 to-purple-500 rounded-lg flex items-center justify-center">
-                                            <selectedService.icon className="h-4 w-4 text-white" />
+                                    <div className="flex items-center gap-2 min-w-0">
+                                        <div className="w-6 h-6 bg-gradient-to-r from-amber-500 to-purple-500 rounded-lg flex items-center justify-center">
+                                            <selectedService.icon className="h-3.5 w-3.5 text-white" />
                                         </div>
                                         <div className="min-w-0">
-                                            <h3 className="font-semibold text-gray-900 dark:text-gray-100 text-sm truncate">
+                                            <h3 className="font-medium text-gray-900 dark:text-gray-100 text-sm truncate">
                                                 {t(`services.${selectedService.id}.title`)}
                                             </h3>
-                                            <div className="flex items-center gap-3 mt-0.5">
+                                            <div className="flex items-center gap-2">
                                                 <div className="flex items-center gap-1">
-                                                    <div className="w-1.5 h-1.5 bg-green-500 rounded-full"></div>
-                                                    <span className="text-xs text-gray-500 dark:text-gray-400 font-medium">
+                                                    <div className="w-1 h-1 bg-green-500 rounded-full"></div>
+                                                    <span className="text-xs text-gray-500 dark:text-gray-400">
                                                         Active
                                                     </span>
                                                 </div>
-                                                <Badge variant="outline" className="text-xs border-amber-200 text-amber-600 h-5">
-                                                    {maxHistory - currentQuestions} restantes
+                                                <Badge variant="outline" className="text-xs h-4 px-1.5 py-0 border-amber-200 text-amber-600">
+                                                    {maxHistory - currentQuestions}
                                                 </Badge>
                                             </div>
                                         </div>
                                     </div>
 
-                                    {/* Bouton export */}
+                                    {/* Bouton export compact */}
                                     <DropdownMenu>
                                         <DropdownMenuTrigger asChild>
                                             <Button
                                                 variant="outline"
                                                 size="sm"
-                                                className="h-8 px-3"
+                                                className="h-7 px-2"
                                             >
-                                                <Download className="h-3.5 w-3.5 mr-1" />
-                                                <span className="hidden sm:inline text-xs">Exporter</span>
-                                                <ChevronDown className="h-3 w-3 ml-1" />
+                                                <Download className="h-3 w-3 mr-1" />
+                                                <span className="hidden sm:inline text-xs">Export</span>
+                                                <ChevronDown className="h-2.5 w-2.5 ml-0.5" />
                                             </Button>
                                         </DropdownMenuTrigger>
-                                        <DropdownMenuContent align="end">
-                                            <DropdownMenuItem onClick={() => handleExport('pdf')}>
-                                                <FileText className="h-4 w-4 mr-2" />
+                                        <DropdownMenuContent align="end" className="min-w-[120px]">
+                                            <DropdownMenuItem onClick={() => handleExport('pdf')} className="text-xs py-1.5">
+                                                <FileText className="h-3.5 w-3.5 mr-2" />
                                                 PDF
                                             </DropdownMenuItem>
-                                            <DropdownMenuItem onClick={() => handleExport('docx')}>
-                                                <FileText className="h-4 w-4 mr-2" />
+                                            <DropdownMenuItem onClick={() => handleExport('docx')} className="text-xs py-1.5">
+                                                <FileText className="h-3.5 w-3.5 mr-2" />
                                                 DOCX
                                             </DropdownMenuItem>
                                             {selectedService.id === 'presentation-ppt' && (
-                                                <DropdownMenuItem onClick={() => handleExport('pptx')}>
-                                                    <Presentation className="h-4 w-4 mr-2" />
+                                                <DropdownMenuItem onClick={() => handleExport('pptx')} className="text-xs py-1.5">
+                                                    <Presentation className="h-3.5 w-3.5 mr-2" />
                                                     PPTX
                                                 </DropdownMenuItem>
                                             )}
@@ -834,18 +974,19 @@ export default function Index({ auth, userInfo, chatHistories }) {
                                 </div>
                             </div>
 
-                            {/* Messages */}
+                            {/* Zone de messages avec hauteur fixe optimisée */}
                             <div className="flex-1 min-h-0">
-                                <ScrollArea className="h-full p-3" ref={scrollRef}>
-                                    <div className="max-w-4xl mx-auto space-y-4">
+                                <ScrollArea className="h-[calc(100vh-160px)]" ref={scrollRef}>
+                                    <div className="max-w-4xl mx-auto space-y-3 p-3">
                                         <AnimatePresence mode="popLayout">
+                                            {/* Optimisation de l'affichage avec animations */}
                                             {(activeChat?.messages || []).map((message, index) => (
                                                 <motion.div
                                                     key={`message-${index}`}
-                                                    initial={{ opacity: 0, y: 20, scale: 0.95 }}
-                                                    animate={{ opacity: 1, y: 0, scale: 1 }}
-                                                    exit={{ opacity: 0, scale: 0.95 }}
-                                                    transition={{ duration: 0.3, type: "spring", stiffness: 100 }}
+                                                    initial={{ opacity: 0, y: 15 }}
+                                                    animate={{ opacity: 1, y: 0 }}
+                                                    exit={{ opacity: 0 }}
+                                                    transition={{ duration: 0.2 }}
                                                 >
                                                     <MessageBubble
                                                         message={{
@@ -858,10 +999,10 @@ export default function Index({ auth, userInfo, chatHistories }) {
                                             {tempMessage && (
                                                 <motion.div
                                                     key="thinking"
-                                                    initial={{ opacity: 0, y: 20 }}
+                                                    initial={{ opacity: 0, y: 10 }}
                                                     animate={{ opacity: 1, y: 0 }}
                                                     exit={{ opacity: 0 }}
-                                                    transition={{ duration: 0.3 }}
+                                                    transition={{ duration: 0.2 }}
                                                 >
                                                     <MessageBubble
                                                         message={{
@@ -875,132 +1016,93 @@ export default function Index({ auth, userInfo, chatHistories }) {
                                     </div>
                                 </ScrollArea>
                             </div>
-                        </div>
-                    )}
 
-                    {/* Zone de saisie - Input seulement, sans fond */}
-                    <div className="relative p-3 flex-shrink-0">
-                        <form onSubmit={handleSubmit} className="max-w-4xl mx-auto">
-                            <div className="relative">
-                                <motion.div
-                                    initial={{ opacity: 0, y: 10 }}
-                                    animate={{ opacity: 1, y: 0 }}
-                                    transition={{ duration: 0.3 }}
-                                    className="relative"
-                                >
-                                    <Textarea
-                                        ref={inputRef}
-                                        value={data.question}
-                                        onChange={handleInputChange}
-                                        onKeyDown={handleKeyDown}
-                                        placeholder={t(`services.${selectedService.id}.placeholder`)}
-                                        className="min-h-[44px] max-h-[100px] pr-24 pl-3 py-2.5 resize-none border-2 border-gray-200 dark:border-gray-700 focus:border-amber-500 dark:focus:border-amber-400 rounded-xl text-sm bg-white dark:bg-gray-800 transition-all duration-200 focus:shadow-md"
-                                        disabled={isLoading}
-                                        maxLength={2000}
-                                    />
-                                    <div className="absolute right-2.5 bottom-2.5 flex gap-1.5">
-                                        {/* Indicateur de coût */}
-                                        <motion.div
-                                            initial={{ scale: 0 }}
-                                            animate={{ scale: 1 }}
-                                            className="flex items-center gap-1 px-2 py-1 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-md"
-                                        >
-                                            <Coins className="h-3 w-3 text-amber-600 dark:text-amber-400" />
-                                            <span className="text-xs text-amber-700 dark:text-amber-300 font-medium">
-                                                -{selectedService.cost}
-                                            </span>
-                                        </motion.div>
-                                        <motion.div
-                                            whileHover={{ scale: 1.05 }}
-                                            whileTap={{ scale: 0.95 }}
-                                        >
+                            {/* Zone de saisie compacte */}
+                            <div className="relative px-3 py-2 flex-shrink-0 border-t border-gray-200 dark:border-gray-800">
+                                <form onSubmit={handleSubmit} className="max-w-4xl mx-auto">
+                                    <div className="relative">
+                                        <Textarea
+                                            ref={inputRef}
+                                            value={data.question}
+                                            onChange={handleInputChange}
+                                            onKeyDown={handleKeyDown}
+                                            placeholder={t(`services.${selectedService.id}.placeholder`)}
+                                            className="min-h-[40px] max-h-[80px] pr-20 pl-3 py-2 resize-none border border-gray-200 dark:border-gray-700 focus:border-amber-500 dark:focus:border-amber-400 rounded-lg text-sm bg-white dark:bg-gray-800 transition-all"
+                                            disabled={isLoading}
+                                            maxLength={2000}
+                                        />
+                                        <div className="absolute right-2 bottom-2 flex gap-1">
+                                            {/* Indicateur de coût compact */}
+                                            <div className="flex items-center gap-1 px-1.5 py-0.5 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-md">
+                                                <Coins className="h-3 w-3 text-amber-600 dark:text-amber-400" />
+                                                <span className="text-xs text-amber-700 dark:text-amber-300">
+                                                    -{selectedService.cost}
+                                                </span>
+                                            </div>
                                             <Button
                                                 type="submit"
                                                 size="sm"
                                                 disabled={processing || isLoading || !data.question.trim()}
-                                                className="h-7 w-7 bg-gradient-to-r from-amber-500 to-purple-500 hover:from-amber-600 hover:to-purple-600 text-white p-0 rounded-lg shadow-sm hover:shadow-md transition-all duration-200 disabled:opacity-50"
+                                                className="h-6 w-6 bg-gradient-to-r from-amber-500 to-purple-500 hover:from-amber-600 hover:to-purple-600 text-white p-0 rounded-md shadow-sm transition-all disabled:opacity-50"
                                             >
                                                 {isLoading ? (
                                                     <motion.div
                                                         animate={{ rotate: 360 }}
                                                         transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
                                                     >
-                                                        <Loader className="h-3.5 w-3.5" />
+                                                        <Loader className="h-3 w-3" />
                                                     </motion.div>
                                                 ) : (
-                                                    <Send className="h-3.5 w-3.5" />
+                                                    <Send className="h-3 w-3" />
                                                 )}
                                             </Button>
-                                        </motion.div>
+                                        </div>
                                     </div>
-                                </motion.div>
 
-                                {/* Barre de progression des caractères */}
-                                <motion.div
-                                    initial={{ opacity: 0 }}
-                                    animate={{ opacity: 1 }}
-                                    className="mt-1.5 px-1"
-                                >
-                                    <div className="flex justify-between items-center text-xs">
-                                        <span className="text-gray-500 dark:text-gray-400">
+                                    {/* Mini-barre d'informations */}
+                                    <div className="flex justify-between items-center text-xs px-0.5 mt-1">
+                                        <span className="text-gray-500 dark:text-gray-400 text-[10px]">
                                             {data.question.length}/2000
                                         </span>
-                                        <span className="text-gray-400 dark:text-gray-500 flex items-center gap-1">
-                                            <kbd className="px-1 py-0.5 text-xs font-mono bg-gray-100 dark:bg-gray-700 rounded">⏎</kbd>
-                                            envoyer
-                                        </span>
+                                        {data.question.length > 0 && (
+                                            <span className="text-gray-400 dark:text-gray-500 text-[10px] flex items-center gap-1">
+                                                <kbd className="px-1 py-0 text-[10px] font-mono bg-gray-100 dark:bg-gray-700 rounded">⏎</kbd>
+                                                envoyer
+                                            </span>
+                                        )}
                                     </div>
-                                    {data.question.length > 1500 && (
-                                        <motion.div
-                                            initial={{ scaleX: 0 }}
-                                            animate={{ scaleX: 1 }}
-                                            className="mt-1"
-                                        >
-                                            <Progress
-                                                value={(data.question.length / 2000) * 100}
-                                                className="h-1 bg-gray-200 dark:bg-gray-700"
-                                            />
-                                        </motion.div>
-                                    )}
-                                </motion.div>
+                                </form>
                             </div>
-                        </form>
-                    </div>
+                        </div>
+                    )}
                 </div>
             </div>
 
-            {/* Dialogue de suppression amélioré */}
+            {/* Dialogue de suppression optimisé */}
             <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
-                <AlertDialogContent className="sm:max-w-md">
+                <AlertDialogContent className="sm:max-w-sm">
                     <AlertDialogHeader>
-                        <AlertDialogTitle className="flex items-center gap-2">
-                            <motion.div
-                                initial={{ rotate: 0 }}
-                                animate={{ rotate: [0, -10, 10, -10, 0] }}
-                                transition={{ duration: 0.5 }}
-                                className="w-8 h-8 bg-red-100 dark:bg-red-900/20 rounded-full flex items-center justify-center"
-                            >
-                                <Trash2 className="h-4 w-4 text-red-600 dark:text-red-400" />
-                            </motion.div>
+                        <AlertDialogTitle className="flex items-center gap-2 text-base">
+                            <div className="w-7 h-7 bg-red-100 dark:bg-red-900/20 rounded-full flex items-center justify-center">
+                                <Trash2 className="h-3.5 w-3.5 text-red-600 dark:text-red-400" />
+                            </div>
                             {t('career_advisor.chat.actions.delete.title')}
                         </AlertDialogTitle>
-                        <AlertDialogDescription className="text-gray-600 dark:text-gray-400 mt-2">
+                        <AlertDialogDescription className="text-gray-600 dark:text-gray-400 text-sm mt-1.5">
                             {t('career_advisor.chat.actions.delete.description')}
                         </AlertDialogDescription>
                     </AlertDialogHeader>
-                    <AlertDialogFooter className="gap-2 mt-4">
-                        <AlertDialogCancel className="sm:mr-0">
+                    <AlertDialogFooter className="gap-2 mt-3">
+                        <AlertDialogCancel className="text-sm py-1.5 px-3 h-9">
                             {t('career_advisor.chat.actions.delete.cancel')}
                         </AlertDialogCancel>
-                        <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
-                            <AlertDialogAction
-                                onClick={handleDeleteChat}
-                                className="bg-red-500 hover:bg-red-600 text-white shadow-sm"
-                            >
-                                <Trash2 className="h-4 w-4 mr-2" />
-                                {t('career_advisor.chat.actions.delete.confirm')}
-                            </AlertDialogAction>
-                        </motion.div>
+                        <AlertDialogAction
+                            onClick={handleDeleteChat}
+                            className="bg-red-500 hover:bg-red-600 text-white shadow-sm text-sm py-1.5 px-3 h-9"
+                        >
+                            <Trash2 className="h-3.5 w-3.5 mr-1.5" />
+                            {t('career_advisor.chat.actions.delete.confirm')}
+                        </AlertDialogAction>
                     </AlertDialogFooter>
                 </AlertDialogContent>
             </AlertDialog>

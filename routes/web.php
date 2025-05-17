@@ -212,14 +212,14 @@ Route::middleware(['auth', 'verified'])->group(function () {
     });
 
 
-    Route::middleware(['auth'])->group(function () {
+//    Route::middleware(['auth'])->group(function () {
         // Ajoutez au début de votre groupe de routes authentifiées
         Route::get('/dashboard', function () {
             return redirect('/cv-infos');  // ou n'importe quelle route que vous voulez
         })->name('dashboard');
 
         // Le reste de vos routes authentifiées...
-    });
+//    });
     // Dans le groupe career-advisor
     Route::post('/export-pptx', [CareerAdvisorController::class, 'exportPptx'])->name('career-advisor.export-pptx');
 

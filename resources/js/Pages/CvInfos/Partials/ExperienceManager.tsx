@@ -96,84 +96,9 @@ const formatBytes = (bytes: number | undefined): string => {
     return `${(posBytes / Math.pow(k, sizeIndex)).toFixed(2)} ${sizes[sizeIndex]}`;
 };
 
-// Experience Data Types
-const experienceData = {
-    academic: {
-        names: [
-            "Formation en Développement Web",
-            "Master en Informatique",
-            "Certification en Gestion de Projet",
-            "Licence en Technologies Numériques",
-            "Formation en Cybersécurité",
-            "Programme Data Science",
-            "Certification Cloud Computing",
-            "Formation en Intelligence Artificielle"
-        ],
-        institutions: [
-            "École Supérieure du Digital",
-            "Institut des Technologies Avancées",
-            "Centre de Formation Tech",
-            "Université des Sciences Appliquées",
-            "Académie du Numérique",
-            "Institut de Formation Professionnelle",
-            "École d'Ingénierie Digitale"
-        ],
-        descriptions: [
-            "Programme intensif combinant théorie et pratique. Réalisation de projets concrets en utilisant les technologies les plus récentes.",
-            "Formation approfondie axée sur les technologies émergentes. Participation à des projets innovants et acquisition d'une expertise technique pointue.",
-            "Apprentissage des meilleures pratiques et méthodologies actuelles. Développement de compétences techniques et soft skills essentielles.",
-            "Programme complet couvrant les aspects théoriques et pratiques du domaine. Acquisition d'une expertise technique approfondie."
-        ]
-    },
-    internship: {
-        names: ["Stage Développeur Front-end", "Stage UX/UI Designer", "Stage DevOps", "Stage Data Analyst"],
-        companies: ["Startup Innovante", "Agence Digitale", "Entreprise Tech", "Cabinet de Conseil IT"],
-        descriptions: ["Participation au développement de nouvelles fonctionnalités pour l'application web principale.",
-            "Collaboration avec l'équipe produit pour créer des expériences utilisateur innovantes.",
-            "Amélioration des processus de déploiement et d'intégration continue."],
-        achievements: ["Développement d'un module utilisé par plus de 1000 utilisateurs",
-            "Réduction de 30% du temps de chargement des pages",
-            "Mise en place d'un nouveau système de gestion des données"]
-    },
-    volunteer: {
-        names: ["Mentor Tech", "Organisateur d'événements tech", "Formateur bénévole", "Contributeur open source"],
-        institutions: ["Association Code Pour Tous", "Communauté Dev Local", "Meetup Tech", "Projet Open Source"],
-        descriptions: ["Animation d'ateliers d'initiation à la programmation pour les jeunes.",
-            "Organisation de hackathons et de conférences techniques.",
-            "Contribution à des projets open source dans le domaine de l'éducation."],
-        outputs: ["Formation de 20 jeunes aux bases du développement web",
-            "Organisation de 5 événements tech rassemblant plus de 200 participants",
-            "Contribution de plus de 50 commits à des projets open source"]
-    }
-};
 
-// Utility Functions for Date Generation
-const generateDates = (type: 'academic' | 'internship' | 'volunteer') => {
-    const currentDate = new Date();
-    const currentYear = currentDate.getFullYear();
 
-    switch (type) {
-        case 'academic':
-            return {
-                startDate: `${currentYear - 1}-09-01`,
-                endDate: `${currentYear}-06-30`
-            };
-        case 'internship':
-            return {
-                startDate: `${currentYear}-01-01`,
-                endDate: `${currentYear}-06-30`
-            };
-        case 'volunteer':
-            return {
-                startDate: `${currentYear - 1}-01-01`,
-                endDate: `${currentYear}-12-31`
-            };
-    }
-};
 
-const getRandomItem = <T,>(array: T[]): T => {
-    return array[Math.floor(Math.random() * array.length)];
-};
 
 const ExperienceManager: React.FC<Props> = ({ auth, experiences: initialExperiences, categories, onUpdate }) => {
     const { t } = useTranslation();
@@ -188,7 +113,7 @@ const ExperienceManager: React.FC<Props> = ({ auth, experiences: initialExperien
     const [currentTab, setCurrentTab] = useState('experiences');
     const [attachmentSummary, setAttachmentSummary] = useState<AttachmentSummary>({
         total_size: 0,
-        max_size: 104857600, // 100MB default
+        max_size: 20971520, // 20MB default
         files_count: 0
     });
     const [actionMenuOpen, setActionMenuOpen] = useState<number | null>(null);
@@ -258,56 +183,6 @@ const ExperienceManager: React.FC<Props> = ({ auth, experiences: initialExperien
         setFilteredExperiences(filtered);
     }, [searchTerm, experiences, selectedCategory]);
 
-    // Generate predefined experience template
-    const generatePredefinedExperience = (type: 'academic' | 'internship' | 'volunteer') => {
-        const data = experienceData[type];
-        const dates = generateDates(type);
-
-        const baseData = {
-            experience_categories_id: type === 'academic' ? '2' : type === 'internship' ? '1' : '3',
-            date_start: dates.startDate,
-            date_end: dates.endDate,
-            comment: t('experiences.form.templates.defaultComment'),
-
-        };
-
-        switch (type) {
-            case 'academic':
-                return {
-                    ...baseData,
-                    name: getRandomItem(data.names),
-                    //@ts-ignore
-
-                    InstitutionName: getRandomItem(data.institutions),
-                    description: getRandomItem(data.descriptions),
-                    output: t('experiences.form.templates.academic.defaultOutput'),
-                };
-            case 'internship':
-                return {
-                    ...baseData,
-                    name: getRandomItem(data.names),
-                    //@ts-ignore
-
-                    InstitutionName: getRandomItem(data.companies),
-                    description: getRandomItem(data.descriptions),
-                    //@ts-ignore
-
-                    output: getRandomItem(data.achievements),
-                };
-            case 'volunteer':
-                return {
-                    ...baseData,
-                    name: getRandomItem(data.names),
-                    //@ts-ignore
-
-                    InstitutionName: getRandomItem(data.institutions),
-                    description: getRandomItem(data.descriptions),
-                    //@ts-ignore
-
-                    output: getRandomItem(data.outputs),
-                };
-        }
-    };
 
     // Event Handlers
     const handleEdit = (experience: Experience) => {
@@ -497,21 +372,6 @@ const ExperienceManager: React.FC<Props> = ({ auth, experiences: initialExperien
         setIsFormOpen(false);
     };
 
-    const handleTemplateSelection = (type: 'academic' | 'internship' | 'volunteer') => {
-        const template = generatePredefinedExperience(type);
-        if (template) {
-            //@ts-ignore
-
-            setData(prev => ({
-                ...prev,
-                ...template
-            }));
-            toast({
-                title: t('experiences.success.template.applied'),
-                description: t('experiences.success.template.description'),
-            });
-        }
-    };
 
     const handleAddReference = () => {
         setData('references', [...data.references, { name: '', function: '', email: '', telephone: '' }]);
@@ -1000,49 +860,6 @@ const ExperienceManager: React.FC<Props> = ({ auth, experiences: initialExperien
                     </SheetHeader>
 
                     <form onSubmit={handleSubmit} className="space-y-4 pt-3 pb-20 md:pb-4">
-                        {/* Template Selection */}
-                        <Card className="border-amber-100 dark:border-amber-900/50">
-                            <CardHeader className="p-3">
-                                <CardTitle className="text-sm dark:text-white">
-                                    {t('experiences.form.templates.title')}
-                                </CardTitle>
-                                <CardDescription className="text-xs dark:text-gray-400">
-                                    {t('experiences.form.templates.description')}
-                                </CardDescription>
-                            </CardHeader>
-                            <CardContent className="grid grid-cols-1 gap-2 p-3 pt-0">
-                                <Button
-                                    type="button"
-                                    variant="outline"
-                                    onClick={() => handleTemplateSelection('academic')}
-                                    className="justify-start border-amber-200 dark:border-amber-800 hover:bg-amber-50
-                                             dark:hover:bg-amber-900/20 dark:text-white h-8 text-xs"
-                                >
-                                    <GraduationCap className="w-3 h-3 mr-1" />
-                                    {t('experiences.form.templates.academic')}
-                                </Button>
-                                <Button
-                                    type="button"
-                                    variant="outline"
-                                    onClick={() => handleTemplateSelection('internship')}
-                                    className="justify-start border-amber-200 dark:border-amber-800 hover:bg-amber-50
-                                             dark:hover:bg-amber-900/20 dark:text-white h-8 text-xs"
-                                >
-                                    <Briefcase className="w-3 h-3 mr-1" />
-                                    {t('experiences.form.templates.internship')}
-                                </Button>
-                                <Button
-                                    type="button"
-                                    variant="outline"
-                                    onClick={() => handleTemplateSelection('volunteer')}
-                                    className="justify-start border-amber-200 dark:border-amber-800 hover:bg-amber-50
-                                             dark:hover:bg-amber-900/20 dark:text-white h-8 text-xs"
-                                >
-                                    <Users className="w-3 h-3 mr-1" />
-                                    {t('experiences.form.templates.volunteer')}
-                                </Button>
-                            </CardContent>
-                        </Card>
                         {/* Basic Information Fields */}
                         <div className="space-y-2">
                             <Label htmlFor="name" className="text-xs text-gray-700 dark:text-gray-200">

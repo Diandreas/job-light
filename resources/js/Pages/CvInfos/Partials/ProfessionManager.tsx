@@ -178,12 +178,7 @@ export default function ProfessionInput({ auth, availableProfessions, initialUse
 
     return (
         <div className="space-y-6">
-            <div className="flex flex-col md:flex-row justify-between items-center gap-4">
-                <div>
-                    <h2 className="text-2xl font-bold dark:text-white">{t('professions.title')}</h2>
-                    <p className="text-gray-500 dark:text-gray-400">{t('professions.description')}</p>
-                </div>
-            </div>
+
 
             <Card className="border-amber-100 dark:border-amber-900/50 shadow-md">
                 <CardHeader>

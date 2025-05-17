@@ -53,98 +53,66 @@ const PERSONAL_INFO_FIELDS = [
     { label: "GitHub", key: "github", icon: Github }
 ];
 
-// Composant WelcomeCard modifié avec une version desktop et mobile
-const WelcomeCard = ({ percentage, onImport, isImporting }) => {
+// Composant ImportButton pour l'utiliser dans différents endroits
+const ImportButton = ({ onImport, isImporting, isCompact = false }) => {
     const { t } = useTranslation();
 
     return (
-        <>
-            {/* Barre de progression et import pour mobile uniquement */}
-            <div className="sm:hidden flex items-center justify-between bg-gradient-to-r from-amber-50 to-purple-50 dark:from-gray-800 dark:to-gray-900 rounded-lg p-2 mb-2">
-                <div className="flex items-center gap-2">
-                    <Progress value={percentage} className="w-20 h-2" />
-                    <span className="text-xs font-medium">
-                        {percentage}% {t('cv.interface.welcome.complete')}
-                    </span>
-                </div>
-                <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                        <Button variant="outline" className="text-xs h-7 py-0 border-amber-200 dark:border-amber-800 hover:bg-amber-50 dark:hover:bg-amber-900/50" disabled={isImporting}>
-                            {isImporting ? (
-                                <>
-                                    <div className="animate-spin mr-1 w-3 h-3 border-2 border-amber-500 border-t-transparent rounded-full" />
-                                    {t('cv.interface.import.loading')}
-                                </>
-                            ) : (
-                                <>
-                                    <FileUp className="w-3 h-3 mr-1" />
-                                    {t('cv.interface.import.button')}
-                                </>
-                            )}
-                        </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end" className="text-xs">
-                        <DropdownMenuItem onClick={() => onImport('pdf')} className="cursor-pointer h-8" disabled={isImporting}>
-                            <FileText className="w-3 h-3 mr-1" />
-                            {t('cv.interface.import.pdf')}( - 5 <Coins className="w-3 h-3" />)
-                        </DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => onImport('docx')} className="cursor-pointer h-8" disabled={isImporting}>
-                            <FileText className="w-3 h-3 mr-1" />
-                            {t('cv.interface.import.word')}( - 5 <Coins className="w-3 h-3" />)
-                        </DropdownMenuItem>
-                    </DropdownMenuContent>
-                </DropdownMenu>
-            </div>
+        <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+                <Button
+                    variant="outline"
+                    className={`${isCompact ? 'text-xs h-7 py-0' : 'text-xs sm:text-sm h-7 sm:h-9 py-0 sm:py-2'} border-amber-200 dark:border-amber-800 hover:bg-amber-50 dark:hover:bg-amber-900/50`}
+                    disabled={isImporting}
+                >
+                    {isImporting ? (
+                        <>
+                            <div className={`animate-spin ${isCompact ? 'mr-1 w-3 h-3' : 'mr-1 sm:mr-2 w-3 h-3 sm:w-4 sm:h-4'} border-2 border-amber-500 border-t-transparent rounded-full`} />
+                            {t('cv.interface.import.loading')}
+                        </>
+                    ) : (
+                        <>
+                            <FileUp className={isCompact ? "w-3 h-3 mr-1" : "w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2"} />
+                            {t('cv.interface.import.button')}
+                        </>
+                    )}
+                </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className={isCompact ? "text-xs" : "text-xs sm:text-sm"}>
+                <DropdownMenuItem onClick={() => onImport('pdf')} className={`cursor-pointer ${isCompact ? 'h-8' : 'h-8 sm:h-10'}`} disabled={isImporting}>
+                    <FileText className={isCompact ? "w-3 h-3 mr-1" : "w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2"} />
+                    {t('cv.interface.import.pdf')}( - 5 <Coins className={isCompact ? "w-3 h-3" : "w-3 h-3 sm:w-4 sm:h-4"} />)
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => onImport('docx')} className={`cursor-pointer ${isCompact ? 'h-8' : 'h-8 sm:h-10'}`} disabled={isImporting}>
+                    <FileText className={isCompact ? "w-3 h-3 mr-1" : "w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2"} />
+                    {t('cv.interface.import.word')}( - 5 <Coins className={isCompact ? "w-3 h-3" : "w-3 h-3 sm:w-4 sm:h-4"} />)
+                </DropdownMenuItem>
+            </DropdownMenuContent>
+        </DropdownMenu>
+    );
+};
 
-            {/* Carte de bienvenue complète pour desktop */}
-            <Card className="hidden sm:block bg-gradient-to-r from-amber-50 to-purple-50 dark:from-gray-800 dark:to-gray-900 border-none mb-3 sm:mb-4">
-                <CardContent className="p-3 sm:p-4">
-                    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4">
-                        <div className="space-y-1 sm:space-y-2 w-full sm:w-auto">
-                            <h3 className="text-base sm:text-lg font-semibold text-gray-800 dark:text-white">
-                                {t('cv.interface.welcome.title')}
-                            </h3>
-                            <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-300">
-                                {t('cv.interface.welcome.subtitle')}
-                            </p>
-                            <div className="flex items-center gap-2 sm:gap-3">
-                                <Progress value={percentage} className="w-24 sm:w-32 h-2 sm:h-3" />
-                                <span className="text-xs sm:text-sm font-medium">
-                                    {percentage}% {t('cv.interface.welcome.complete')}
-                                </span>
-                            </div>
-                        </div>
-                        <DropdownMenu>
-                            <DropdownMenuTrigger asChild>
-                                <Button variant="outline" className="w-full sm:w-auto text-xs sm:text-sm h-7 sm:h-9 py-0 border-amber-200 dark:border-amber-800 hover:bg-amber-50 dark:hover:bg-amber-900/50" disabled={isImporting}>
-                                    {isImporting ? (
-                                        <>
-                                            <div className="animate-spin mr-1 sm:mr-2 w-3 h-3 sm:w-4 sm:h-4 border-2 border-amber-500 border-t-transparent rounded-full" />
-                                            {t('cv.interface.import.loading')}
-                                        </>
-                                    ) : (
-                                        <>
-                                            <FileUp className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
-                                            {t('cv.interface.import.button')}
-                                        </>
-                                    )}
-                                </Button>
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent align="end" className="text-xs sm:text-sm">
-                                <DropdownMenuItem onClick={() => onImport('pdf')} className="cursor-pointer h-8 sm:h-10" disabled={isImporting}>
-                                    <FileText className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
-                                    {t('cv.interface.import.pdf')}( - 5 <Coins className="w-3 h-3 sm:w-4 sm:h-4" />)
-                                </DropdownMenuItem>
-                                <DropdownMenuItem onClick={() => onImport('docx')} className="cursor-pointer h-8 sm:h-10" disabled={isImporting}>
-                                    <FileText className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
-                                    {t('cv.interface.import.word')}( - 5 <Coins className="w-3 h-3 sm:w-4 sm:h-4" />)
-                                </DropdownMenuItem>
-                            </DropdownMenuContent>
-                        </DropdownMenu>
+
+// Composant WelcomeCard modifié (sans le pourcentage et l'import qui sont déplacés dans le header)
+// Masqué sur mobile pour gagner de l'espace
+const WelcomeCard = () => {
+    const { t } = useTranslation();
+
+    return (
+        <Card className="hidden sm:block bg-gradient-to-r from-amber-50 to-purple-50 dark:from-gray-800 dark:to-gray-900 border-none mb-3 sm:mb-4">
+            <CardContent className="p-3 sm:p-4">
+                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4">
+                    <div className="space-y-1 sm:space-y-2 w-full">
+                        <h3 className="text-base sm:text-lg font-semibold text-gray-800 dark:text-white">
+                            {t('cv.interface.welcome.title')}
+                        </h3>
+                        <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-300">
+                            {t('cv.interface.welcome.subtitle')}
+                        </p>
                     </div>
-                </CardContent>
-            </Card>
-        </>
+                </div>
+            </CardContent>
+        </Card>
     );
 };
 
@@ -481,28 +449,43 @@ const SidebarButton = ({ item, isActive, isComplete, onClick, isMobile }) => {
 const SectionNavigation = ({ currentSection, nextSection, prevSection, canProgress, onNavigate }) => {
     const { t } = useTranslation();
 
+    // Vérifier si c'est la dernière section (hobby)
+    const isLastSection = currentSection === 'hobby';
+
     return (
-        <div className="flex justify-between items-center gap-2 sm:gap-4 mt-4 sm:mt-6 pt-3 sm:pt-4 border-t border-amber-100 dark:border-amber-800">
-            {prevSection && (
-                <Button
-                    variant="outline"
-                    onClick={() => onNavigate(prevSection.id)}
-                    className="h-8 sm:h-10 text-xs sm:text-sm py-0 sm:py-2 flex items-center gap-1 sm:gap-2 border-amber-200 dark:border-amber-800"
-                >
-                    <ChevronLeft className="w-3 h-3 sm:w-4 sm:h-4" />
-                    <span className="truncate max-w-[80px] sm:max-w-none">{prevSection.label}</span>
-                </Button>
-            )}
-            {nextSection && (
-                <Button
-                    onClick={() => onNavigate(nextSection.id)}
-                    disabled={!canProgress}
-                    className="h-8 sm:h-10 text-xs sm:text-sm py-0 sm:py-2 flex items-center gap-1 sm:gap-2 bg-gradient-to-r from-amber-500 to-purple-500 hover:from-amber-600 hover:to-purple-600 dark:from-amber-400 dark:to-purple-400 text-white"
-                >
-                    <span className="truncate max-w-[80px] sm:max-w-none">{nextSection.label}</span>
-                    <ChevronRight className="w-3 h-3 sm:w-4 sm:h-4" />
-                </Button>
-            )}
+        <div className="mt-4 sm:mt-6 pt-3 sm:pt-4 border-t border-amber-100 dark:border-amber-800">
+            <div className="flex justify-between items-center gap-2 sm:gap-4">
+                {prevSection && (
+                    <Button
+                        variant="outline"
+                        onClick={() => onNavigate(prevSection.id)}
+                        className="h-8 sm:h-10 text-xs sm:text-sm py-0 sm:py-2 flex items-center gap-1 sm:gap-2 border-amber-200 dark:border-amber-800"
+                    >
+                        <ChevronLeft className="w-3 h-3 sm:w-4 sm:h-4" />
+                        <span className="truncate max-w-[80px] sm:max-w-none">{prevSection.label}</span>
+                    </Button>
+                )}
+
+                {/* Bouton Choisir un design s'affiche uniquement à la dernière étape */}
+                {isLastSection && canProgress ? (
+                    <Link href={route('userCvModels.index')}>
+                        <Button className="h-8 sm:h-10 text-xs sm:text-sm py-0 sm:py-2 bg-gradient-to-r from-amber-500 to-purple-500 hover:from-amber-600 hover:to-purple-600 dark:from-amber-400 dark:to-purple-400 text-white">
+                            <Star className="mr-1 sm:mr-2 h-3 w-3 sm:h-4 sm:w-4" />
+                            {t('cv.interface.chooseDesign')}
+                            <CircleChevronRight className="ml-1 sm:ml-2 h-3 w-3 sm:h-4 sm:w-4" />
+                        </Button>
+                    </Link>
+                ) : nextSection && (
+                    <Button
+                        onClick={() => onNavigate(nextSection.id)}
+                        disabled={!canProgress}
+                        className="h-8 sm:h-10 text-xs sm:text-sm py-0 sm:py-2 flex items-center gap-1 sm:gap-2 bg-gradient-to-r from-amber-500 to-purple-500 hover:from-amber-600 hover:to-purple-600 dark:from-amber-400 dark:to-purple-400 text-white"
+                    >
+                        <span className="truncate max-w-[80px] sm:max-w-none">{nextSection.label}</span>
+                        <ChevronRight className="w-3 h-3 sm:w-4 sm:h-4" />
+                    </Button>
+                )}
+            </div>
         </div>
     );
 };
@@ -657,12 +640,21 @@ export default function CvInterface({ auth, cvInformation: initialCvInformation 
                 );
             case 'hobby':
                 return (
-                    <HobbyManager
-                        auth={auth}
-                        availableHobbies={cvInformation.availableHobbies}
-                        initialUserHobbies={cvInformation.hobbies}
-                        onUpdate={(hobbies) => updateCvInformation('hobbies', hobbies)}
-                    />
+                    <div className="space-y-3 sm:space-y-4">
+                        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 sm:gap-4">
+                            <h2 className="text-lg sm:text-xl font-bold text-gray-800 dark:text-white">
+                                {t('cv.sidebar.hobby')}
+                            </h2>
+
+                        </div>
+
+                        <HobbyManager
+                            auth={auth}
+                            availableHobbies={cvInformation.availableHobbies}
+                            initialUserHobbies={cvInformation.hobbies}
+                            onUpdate={(hobbies) => updateCvInformation('hobbies', hobbies)}
+                        />
+                    </div>
                 );
             case 'profession':
                 return (
@@ -914,7 +906,7 @@ export default function CvInterface({ auth, cvInformation: initialCvInformation 
 
             <div className="min-h-screen bg-gradient-to-b from-amber-50/50 to-purple-50/50 dark:from-gray-900 dark:to-gray-800">
                 <div className="container mx-auto py-3 sm:py-4 px-3 sm:px-4">
-                    {/* Header responsive optimisé */}
+                    {/* Header responsive amélioré - avec pourcentage et import intégrés */}
                     <div className="flex justify-between items-center mb-3 sm:mb-4">
                         <div className="flex items-center gap-1.5 sm:gap-2">
                             <Sparkles className="h-5 w-5 sm:h-6 sm:w-6 text-amber-500 dark:text-amber-400" />
@@ -923,49 +915,23 @@ export default function CvInterface({ auth, cvInformation: initialCvInformation 
                             </h2>
                         </div>
                         <div className="flex items-center gap-2">
-                            {/* Affichage du pourcentage sur desktop à côté du titre */}
-                            <div className="hidden sm:flex items-center gap-2">
-                                <Progress value={getCompletionPercentage()} className="w-24 h-2" />
+                            {/* Pourcentage et progression */}
+                            <div className="flex items-center gap-2">
+                                <Progress value={getCompletionPercentage()} className="w-16 sm:w-24 h-2" />
                                 <span className="text-xs font-medium">
                                     {getCompletionPercentage()}%
                                 </span>
                             </div>
-                            <Link href={route('userCvModels.index')}>
-                                <Button className="h-7 sm:h-9 text-xs sm:text-sm py-0 sm:py-2 bg-gradient-to-r from-amber-500 to-purple-500 hover:from-amber-600 hover:to-purple-600 dark:from-amber-400 dark:to-purple-400 text-white">
-                                    <Star className="mr-1 sm:mr-2 h-3 w-3 sm:h-4 sm:w-4" />
-                                    <span className="hidden sm:inline">{t('cv.interface.chooseDesign')}</span>
-                                    <span className="sm:hidden">{t('cv.interface.designs')}</span>
-                                    <CircleChevronRight className="ml-1 sm:ml-2 h-3 w-3 sm:h-4 sm:w-4" />
-                                </Button>
-                            </Link>
+
+                            {/* Bouton d'import */}
+                            <ImportButton onImport={handleImport} isImporting={isImporting} isCompact={true} />
                         </div>
                     </div>
 
-                    {/* Nouvelle carte de bienvenue optimisée */}
-                    <WelcomeCard
-                        percentage={getCompletionPercentage()}
-                        onImport={handleImport}
-                        isImporting={isImporting}
-                    />
+                    {/* WelcomeCard sans le pourcentage et import */}
+                    <WelcomeCard />
 
                     <Card className="shadow-md border border-amber-100 dark:border-amber-800">
-                        <CardHeader className="bg-white dark:bg-gray-900 border-b border-amber-100 dark:border-amber-800 p-3 sm:p-4">
-                            <div className="flex items-center justify-between">
-                                <div>
-                                    <CardTitle className="text-base sm:text-xl font-bold bg-gradient-to-r from-amber-500 to-purple-500 dark:from-amber-400 dark:to-purple-400 text-transparent bg-clip-text">
-                                        {t('cv.interface.sections.title')}
-                                    </CardTitle>
-                                    <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 mt-0.5 sm:mt-1">
-                                        {t('cv.interface.sections.description')}
-                                    </p>
-                                </div>
-                                {/* Affichage du pourcentage sur mobile à côté du titre des sections */}
-                                <div className="sm:hidden flex items-center gap-1">
-                                    <span className="text-xs font-medium">{getCompletionPercentage()}%</span>
-                                </div>
-                            </div>
-                        </CardHeader>
-
                         <div className="flex flex-row min-h-[500px] sm:min-h-[600px]">
                             {/* Sidebar mobile optimisée (icônes uniquement) */}
                             <div className="w-11 sm:w-14 md:w-16 flex-shrink-0 border-r border-amber-100 dark:border-amber-800 bg-white/50 dark:bg-gray-900/50 md:hidden">
@@ -1029,22 +995,24 @@ export default function CvInterface({ auth, cvInformation: initialCvInformation 
                         </div>
                     </Card>
 
-                    {/* Call-to-action responsive plus compact */}
-                    <div className="mt-4 sm:mt-6 text-center">
-                        <Link href={route('userCvModels.index')}>
-                            <Button className="w-full bg-gradient-to-r from-amber-500 to-purple-500 hover:from-amber-600 hover:to-purple-600 dark:from-amber-400 dark:to-purple-400 text-white p-2 sm:p-4 rounded-lg shadow-md sm:shadow-lg group">
-                                <div className="flex flex-col items-center gap-1 sm:gap-2">
-                                    <Sparkles className="h-4 w-4 sm:h-5 sm:w-5 group-hover:animate-spin" />
-                                    <span className="text-sm sm:text-base font-medium">
-                                        {t('cv.interface.cta.title')}
-                                    </span>
-                                    <span className="text-xs sm:text-sm opacity-90">
-                                        {t('cv.interface.cta.subtitle')}
-                                    </span>
-                                </div>
-                            </Button>
-                        </Link>
-                    </div>
+                    {/* Call-to-action pour les utilisateurs qui ont terminé la dernière étape */}
+                    {completionStatus.hobby && (
+                        <div className="mt-4 sm:mt-6 text-center">
+                            <Link href={route('userCvModels.index')}>
+                                <Button className="w-full bg-gradient-to-r from-amber-500 to-purple-500 hover:from-amber-600 hover:to-purple-600 dark:from-amber-400 dark:to-purple-400 text-white p-2 sm:p-4 rounded-lg shadow-md sm:shadow-lg group">
+                                    <div className="flex flex-col items-center gap-1 sm:gap-2">
+                                        <Sparkles className="h-4 w-4 sm:h-5 sm:w-5 group-hover:animate-spin" />
+                                        <span className="text-sm sm:text-base font-medium">
+                                            {t('cv.interface.cta.title')}
+                                        </span>
+                                        <span className="text-xs sm:text-sm opacity-90">
+                                            {t('cv.interface.cta.subtitle')}
+                                        </span>
+                                    </div>
+                                </Button>
+                            </Link>
+                        </div>
+                    )}
                 </div>
             </div>
         </AuthenticatedLayout>

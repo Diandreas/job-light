@@ -188,15 +188,9 @@ export default function CompetenceInput({ auth, availableCompetences, initialUse
     }, [userCompetences, i18n.language]);
 
     return (
-        <div className="space-y-6">
-            <div className="flex flex-col md:flex-row justify-between items-center gap-4">
-                <div>
-                    <h2 className="text-2xl font-bold text-gray-800 dark:text-white">{t('competences.title')}</h2>
-                    <p className="text-gray-500 dark:text-gray-400">{t('competences.description')}</p>
-                </div>
-            </div>
+        <div className="space-y-1">
 
-            <Card className="border-amber-100 dark:border-amber-900/50 shadow-md">
+            <Card className=" items-stretch">
                 <CardHeader>
                     <CardTitle className="text-lg font-semibold">
                         <div className="flex items-center gap-2">
@@ -204,9 +198,7 @@ export default function CompetenceInput({ auth, availableCompetences, initialUse
                             {t('competences.card.title')}
                         </div>
                     </CardTitle>
-                    <CardDescription className="dark:text-gray-400">
-                        {t('competences.card.description')}
-                    </CardDescription>
+
                 </CardHeader>
 
                 <CardContent className="space-y-6">
@@ -282,11 +274,12 @@ export default function CompetenceInput({ auth, availableCompetences, initialUse
                                                     ? 'bg-gradient-to-r from-purple-100 to-blue-100 hover:from-purple-200 hover:to-blue-200 dark:from-purple-900/40 dark:to-blue-900/40'
                                                     : 'bg-gradient-to-r from-amber-100 to-purple-100 hover:from-amber-200 hover:to-purple-200 dark:from-amber-900/40 dark:to-purple-900/40'
                                                 }
-                          text-gray-800 dark:text-gray-200 flex items-center gap-2 py-2 pl-3 pr-2 text-base mb-2`}
+                                           text-gray-800 dark:text-gray-200 flex items-center gap-1 py-1 pl-3 pr-2 text-base`}
+
                                             >
                                                 <span>{getLocalizedName(competence, i18n.language)}</span>
                                                 {competence.is_manual && (
-                                                    <span className="px-1 py-0.5 text-[10px] rounded bg-purple-200 dark:bg-purple-800 text-purple-800 dark:text-purple-200">
+                                                    <span className="px-1 py-0.5 text-[8px] rounded bg-purple-200 dark:bg-purple-800 text-purple-800 dark:text-purple-200">
                             {t('competences.manual.tag', 'Manuel')}
                           </span>
                                                 )}

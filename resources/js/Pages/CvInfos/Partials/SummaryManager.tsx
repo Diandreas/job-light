@@ -427,19 +427,6 @@ const SummaryManager: React.FC<Props> = ({ auth, summaries: initialSummaries, se
     );
 };
 
-// Configuration pour next-themes
-const ThemeProvider = ({ children }) => {
-    return (
-        <ThemeProvider
-            // @ts-ignore
-            attribute="class"
-            defaultTheme="system"
-            enableSystem
-            disableTransitionOnChange
-        >
-            {children}
-        </ThemeProvider>
-    );
-};
+
 
 export default SummaryManager;

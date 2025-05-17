@@ -1,0 +1,321 @@
+import React, { useState, useEffect } from 'react';
+import { Badge } from '@/Components/ui/badge';
+import { X, GraduationCap, Check } from 'lucide-react';
+import { useToast } from '@/Components/ui/use-toast';
+import axios from 'axios';
+import { motion, AnimatePresence } from 'framer-motion';
+import { useTranslation } from 'react-i18next';
+import { Card, CardHeader, CardContent, CardTitle, CardDescription } from '@/Components/ui/card';
+
+const getLocalizedName = (profession, currentLanguage) => {
+    if (currentLanguage === 'en' && profession?.name_en) {
+        return profession.name_en;
+    }
+    return profession?.name || '';
+};
+
+export default function ProfessionInput({ auth, availableProfessions, initialUserProfession, onUpdate }) {
+    const { t, i18n } = useTranslation();
+    const [userProfession, setUserProfession] = useState(initialUserProfession || null);
+    const [manualProfession, setManualProfession] = useState(auth.user.full_profession || '');
+    const [inputValue, setInputValue] = useState('');
+    const [suggestions, setSuggestions] = useState([]);
+    const { toast } = useToast();
+
+    // Pour le debugging
+    console.log('Render state:', {
+        userProfession,
+        manualProfession,
+        initialUserProfession,
+        authFullProfession: auth.user.full_profession
+    });
+
+    // S'assurer que l'état initial est correctement défini
+    useEffect(() => {
+        console.log('Setting initial state:', initialUserProfession, auth.user.full_profession);
+        if (initialUserProfession) {
+            setUserProfession(initialUserProfession);
+            setManualProfession('');
+        } else if (auth.user.full_profession) {
+            setUserProfession(null);
+            setManualProfession(auth.user.full_profession);
+        }
+    }, [initialUserProfession, auth.user.full_profession]);
+
+    // Filtrer les suggestions en fonction de l'entrée utilisateur
+    useEffect(() => {
+        if (inputValue.trim().length > 0) {
+            const filteredSuggestions = availableProfessions
+                .filter(profession =>
+                    getLocalizedName(profession, i18n.language)
+                        .toLowerCase()
+                        .includes(inputValue.toLowerCase())
+                )
+                .slice(0, 5); // Limiter à 5 suggestions
+            setSuggestions(filteredSuggestions);
+        } else {
+            setSuggestions([]);
+        }
+    }, [inputValue, availableProfessions, i18n.language]);
+
+    const addProfession = async () => {
+        if (!inputValue.trim()) return;
+
+        // Vérifier si la profession existe dans les suggestions
+        const existingProfession = suggestions.length > 0 ? suggestions[0] : null;
+
+        if (existingProfession) {
+            // Ajouter une profession existante
+            try {
+                // Mettre à jour l'interface immédiatement
+                const newProfession = { ...existingProfession };
+                setUserProfession(newProfession);
+                setManualProfession('');
+                setInputValue('');
+                setSuggestions([]);
+
+                const response = await axios.post('/user-professions', {
+                    user_id: auth.user.id,
+                    profession_id: existingProfession.id,
+                    full_profession: null
+                });
+
+                if (response.data.success) {
+                    onUpdate(newProfession);
+                    toast({
+                        title: t('professions.success.updated.title'),
+                        description: t('professions.success.updated.description', {
+                            profession: getLocalizedName(newProfession, i18n.language)
+                        })
+                    });
+                }
+            } catch (error) {
+                console.error('Error adding profession:', error);
+                toast({
+                    title: t('professions.errors.adding.title'),
+                    description: error.response?.data?.message || t('professions.errors.generic'),
+                    variant: 'destructive'
+                });
+            }
+        } else {
+            // Créer une profession manuelle
+            const professionToSave = inputValue.trim();
+
+            try {
+                // Mettre à jour l'interface immédiatement
+                setUserProfession(null);
+                setManualProfession(professionToSave);
+                setInputValue('');
+
+                // Sauvegarde locale pour éviter toute perte de données
+                localStorage.setItem('manual_profession', professionToSave);
+
+                const response = await axios.post('/user-professions', {
+                    user_id: auth.user.id,
+                    profession_id: null,
+                    full_profession: professionToSave
+                });
+
+                if (response.data.success) {
+                    console.log('Manual profession saved:', professionToSave);
+                    onUpdate(null, professionToSave);
+                    toast({
+                        title: t('professions.success.updated.title'),
+                        description: t('professions.success.manual.description')
+                    });
+                }
+            } catch (error) {
+                console.error('Error adding manual profession:', error);
+                toast({
+                    title: t('professions.errors.adding.title'),
+                    description: error.response?.data?.message || t('professions.errors.generic'),
+                    variant: 'destructive'
+                });
+            }
+        }
+    };
+
+    const handleInputKeyDown = async (e) => {
+        if (e.key === 'Enter' && inputValue.trim()) {
+            e.preventDefault();
+            await addProfession();
+        }
+    };
+
+    const handleSuggestionClick = async (profession) => {
+        try {
+            // Mettre à jour l'interface immédiatement
+            const professionCopy = { ...profession };
+            setUserProfession(professionCopy);
+            setManualProfession('');
+            setInputValue('');
+            setSuggestions([]);
+
+            const response = await axios.post('/user-professions', {
+                user_id: auth.user.id,
+                profession_id: profession.id,
+                full_profession: null
+            });
+
+            if (response.data.success) {
+                onUpdate(professionCopy);
+                toast({
+                    title: t('professions.success.updated.title'),
+                    description: t('professions.success.updated.description', {
+                        profession: getLocalizedName(professionCopy, i18n.language)
+                    })
+                });
+            }
+        } catch (error) {
+            console.error('Error clicking suggestion:', error);
+            toast({
+                title: t('professions.errors.adding.title'),
+                description: error.response?.data?.message || t('professions.errors.generic'),
+                variant: 'destructive'
+            });
+        }
+    };
+
+    const handleClearProfession = async () => {
+        try {
+            // Mettre à jour l'interface immédiatement
+            setUserProfession(null);
+            setManualProfession('');
+
+            const response = await axios.delete(`/user-professions/${auth.user.id}`);
+
+            if (response.data.success) {
+                onUpdate(null, '');
+                toast({
+                    title: t('professions.success.removed.title'),
+                    description: t('professions.success.removed.description')
+                });
+            }
+        } catch (error) {
+            console.error('Error clearing profession:', error);
+            toast({
+                title: t('professions.errors.removing.title'),
+                description: error.response?.data?.message || t('professions.errors.generic'),
+                variant: 'destructive'
+            });
+        }
+    };
+
+    // Vérifier explicitement si nous avons une profession à afficher
+    const hasProfession = (userProfession !== null && userProfession !== undefined) ||
+        (manualProfession !== null && manualProfession !== undefined && manualProfession !== '');
+
+    return (
+        <div className="space-y-6">
+            <div className="flex flex-col md:flex-row justify-between items-center gap-4">
+                <div>
+                    <h2 className="text-2xl font-bold dark:text-white">{t('professions.title')}</h2>
+                    <p className="text-gray-500 dark:text-gray-400">{t('professions.description')}</p>
+                </div>
+            </div>
+
+            <Card className="border-amber-100 dark:border-amber-900/50 shadow-md">
+                <CardHeader>
+                    <CardTitle className="text-lg font-semibold">
+                        <div className="flex items-center gap-2">
+                            <GraduationCap className="w-5 h-5 text-amber-500 dark:text-amber-400" />
+                            {t('professions.card.title')}
+                        </div>
+                    </CardTitle>
+                    <CardDescription className="dark:text-gray-400">
+                        {t('professions.card.description')}
+                    </CardDescription>
+                </CardHeader>
+
+                <CardContent className="space-y-6">
+                    <div className="flex items-stretch gap-2">
+                        <div className="relative flex-grow">
+                            <input
+                                type="text"
+                                className="w-full p-3 border border-amber-200 rounded-lg shadow-sm focus:ring-2 focus:ring-amber-500 focus:border-transparent dark:bg-gray-900 dark:border-amber-800 dark:text-white"
+                                placeholder={t('professions.input.placeholder', 'Saisissez votre profession...')}
+                                value={inputValue}
+                                onChange={(e) => setInputValue(e.target.value)}
+                                onKeyDown={handleInputKeyDown}
+                            />
+
+                            {suggestions.length > 0 && (
+                                <div className="absolute z-10 w-full mt-1 bg-white rounded-md shadow-lg dark:bg-gray-800 border border-amber-200 dark:border-amber-800">
+                                    {suggestions.map((profession) => (
+                                        <div
+                                            key={profession.id}
+                                            className="px-4 py-3 cursor-pointer hover:bg-amber-50 dark:hover:bg-amber-900/30 text-base touch-manipulation"
+                                            onClick={() => handleSuggestionClick(profession)}
+                                        >
+                                            {getLocalizedName(profession, i18n.language)}
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
+                        </div>
+
+                        <button
+                            onClick={addProfession}
+                            className="min-w-16 px-4 py-3 bg-gradient-to-r from-amber-500 to-purple-500 hover:from-amber-600 hover:to-purple-600 text-white dark:from-amber-400 dark:to-purple-400 dark:hover:from-amber-500 dark:hover:to-purple-500 rounded-lg shadow-sm focus:ring-2 focus:ring-amber-500 focus:outline-none"
+                            aria-label={t('professions.actions.add', 'Ajouter')}
+                        >
+                            <Check className="w-5 h-5 mx-auto" />
+                        </button>
+                    </div>
+
+                    <div className="text-sm text-gray-500 dark:text-gray-400">
+                        {t('professions.input.help', 'Saisissez votre profession. Si elle existe dans notre base de données, elle sera automatiquement reconnue.')}
+                    </div>
+
+                    {/* Section profession actuelle - rendu conditionnel renforcé */}
+                    {hasProfession && (
+                        <div
+                            className="rounded-lg bg-gradient-to-r from-amber-50 to-purple-50 dark:from-amber-900/20 dark:to-purple-900/20 p-4 border border-amber-100 dark:border-amber-800"
+                        >
+                            <div className="flex items-center justify-between mb-2">
+                                <div className="flex items-center gap-2">
+                                    <GraduationCap className="w-5 h-5 text-amber-500 dark:text-amber-400" />
+                                    <h3 className="text-lg font-semibold dark:text-white">
+                                        {t('professions.current.title', 'Profession actuelle')}
+                                    </h3>
+                                </div>
+                                <button
+                                    onClick={handleClearProfession}
+                                    className="p-2 rounded-full hover:bg-red-100 dark:hover:bg-red-900/30 text-red-400 hover:text-red-500 dark:text-red-400 dark:hover:text-red-300"
+                                    aria-label={t('professions.actions.remove', 'Supprimer')}
+                                >
+                                    <X className="w-4 h-4" />
+                                </button>
+                            </div>
+                            <div className="space-y-2">
+                                {(userProfession || manualProfession) && (
+                                    <Badge
+                                        variant="secondary"
+                                        className={`
+                      ${userProfession
+                                            ? 'bg-gradient-to-r from-amber-100 to-purple-100 hover:from-amber-200 hover:to-purple-200 dark:from-amber-900/40 dark:to-purple-900/40'
+                                            : 'bg-gradient-to-r from-purple-100 to-blue-100 hover:from-purple-200 hover:to-blue-200 dark:from-purple-900/40 dark:to-blue-900/40'
+                                        }
+                      text-gray-800 dark:text-gray-200 py-2 px-3 text-base`}
+                                    >
+                                        {userProfession ? getLocalizedName(userProfession, i18n.language) : manualProfession}
+                                        {!userProfession && manualProfession && (
+                                            <span className="ml-2 px-1 py-0.5 text-[10px] rounded bg-purple-200 dark:bg-purple-800 text-purple-800 dark:text-purple-200">
+                        {t('professions.manual.tag', 'Manuel')}
+                      </span>
+                                        )}
+                                    </Badge>
+                                )}
+                                {userProfession && userProfession.description && (
+                                    <p className="text-sm text-gray-600 dark:text-gray-400 mt-2">
+                                        {userProfession.description}
+                                    </p>
+                                )}
+                            </div>
+                        </div>
+                    )}
+                </CardContent>
+            </Card>
+        </div>
+    );
+}

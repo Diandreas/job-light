@@ -691,7 +691,7 @@ export default function Index({ auth, userInfo, chatHistories }) {
     return (
         <AuthenticatedLayout user={auth.user}>
             {/* Rendre l'effet de curseur plus subtil */}
-            <div className="opacity-50"><FluidCursorEffect zIndex={100} /></div>
+            <div className="opacity-20"><FluidCursorEffect zIndex={100} /></div>
 
             <div className="h-[calc(100vh-4rem)] flex bg-gray-50 dark:bg-gray-900"> {/* Hauteur ajustée pour header et footer */}
                 {/* Sidebar Desktop - Collapsible */}

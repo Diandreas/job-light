@@ -30,7 +30,6 @@ import {
 import { Progress } from '@/Components/ui/progress';
 import { Badge } from '@/Components/ui/badge';
 import { Alert, AlertDescription } from '@/Components/ui/alert';
-import { JobPortalComingSoonDialog } from '@/Components/JobPortalComingSoonDialog';
 
 interface MenuItem {
     name: string | React.ReactNode;

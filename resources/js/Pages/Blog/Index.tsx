@@ -22,7 +22,7 @@ export default function Index({ auth, blogs }: { auth: any, blogs: BlogPost[] })
     const { t } = useTranslation();
 
     return (
-        <GuestLayout user={auth.user}>
+        <GuestLayout>
             <Head title={t('blog.index.title', 'Articles de blog')} />
             <div className="w-full p-4 md:p-6 space-y-6">
                 <motion.div
@@ -87,4 +87,4 @@ export default function Index({ auth, blogs }: { auth: any, blogs: BlogPost[] })
             </div>
         </GuestLayout>
     );
-} 
+}

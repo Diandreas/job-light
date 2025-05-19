@@ -146,6 +146,7 @@ const FluidCursorEffect = ({ zIndex = -1 }) => {
 
             // Material class for shader programs
             class Material {
+                private activeProgram: Boolean;
                 constructor(vertexShader, fragmentShaderSource) {
                     // @ts-ignore
                     this.vertexShader = vertexShader;
@@ -186,6 +187,7 @@ const FluidCursorEffect = ({ zIndex = -1 }) => {
 
             // Program class for shader programs
             class Program {
+                private uniforms: {};
                 constructor(vertexShader, fragmentShader) {
                     this.uniforms = {};
                     this.program = createProgram(vertexShader, fragmentShader);

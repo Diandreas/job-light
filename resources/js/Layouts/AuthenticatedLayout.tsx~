@@ -1,4 +1,4 @@
-import { useState, PropsWithChildren, useEffect } from 'react';
+import { useState, PropsWithChildren, useEffect, ReactNode } from 'react';
 import { Head, Link, usePage, router } from '@inertiajs/react';
 import { useTranslation } from 'react-i18next';
 import { User as UserType } from '@/types';
@@ -30,13 +30,15 @@ import {
 import { Progress } from '@/Components/ui/progress';
 import { Badge } from '@/Components/ui/badge';
 import { Alert, AlertDescription } from '@/Components/ui/alert';
+import { JobPortalComingSoonDialog } from '@/Components/JobPortalComingSoonDialog';
 
 interface MenuItem {
-    name: string;
+    name: string | React.ReactNode;
     href: string;
     icon: LucideIcon;
     active: boolean;
     adminOnly?: boolean;
+    onClick?: (e: React.MouseEvent) => void;
 }
 
 const LanguageSelector = () => {
@@ -139,8 +141,14 @@ export default function Authenticated({ user, header, children }: PropsWithChild
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const [isNavOpen, setIsNavOpen] = useState(false);
     const [isReferralDialogOpen, setIsReferralDialogOpen] = useState(false);
+    const [isJobPortalDialogOpen, setIsJobPortalDialogOpen] = useState(false);
     const showNav = ['cv-infos.show', 'cv-infos.index', 'userCvModels.index'].includes(route().current());
     const cvSideMenuItems = getCvSideMenuItems(t);
+
+    const handleJobPortalClick = (e: React.MouseEvent) => {
+        e.preventDefault();
+        setIsJobPortalDialogOpen(true);
+    };
 
     const mainMenuItems: MenuItem[] = [
         {
@@ -161,6 +169,20 @@ export default function Authenticated({ user, header, children }: PropsWithChild
             href: route('career-advisor.index'),
             icon: Brain,
             active: route().current('career-advisor.index')
+        },
+        {
+            name: (
+                <div className="flex items-center gap-1.5">
+                    {t('menu.jobPortal')}
+                    <Badge variant="outline" className="bg-amber-500/20 text-amber-600 dark:bg-amber-500/10 dark:text-amber-400 text-[9px] px-1 py-0 h-3.5">
+                        {t('common.comingSoon')}
+                    </Badge>
+                </div>
+            ),
+            href: '#',
+            icon: Award,
+            active: false,
+            onClick: handleJobPortalClick
         }
     ];
 
@@ -186,6 +208,7 @@ export default function Authenticated({ user, header, children }: PropsWithChild
         >
             <Link
                 href={item.href}
+                onClick={item.onClick}
                 className={cn(
                     "flex items-center gap-2 sm:gap-3 px-3 sm:px-4 py-2 sm:py-3 rounded-lg transition-all duration-200",
                     compact ? "text-xs sm:text-sm" : "text-xs sm:text-base",
@@ -605,6 +628,32 @@ export default function Authenticated({ user, header, children }: PropsWithChild
         );
     };
 
+    const JobPortalComingSoonDialog = () => {
+        return (
+            <Dialog open={isJobPortalDialogOpen} onOpenChange={setIsJobPortalDialogOpen}>
+                <DialogContent className="sm:max-w-md">
+                    <DialogHeader>
+                        <DialogTitle className="text-center flex items-center justify-center gap-2">
+                            <Award className="h-5 w-5 text-amber-500" />
+                            {t('jobPortal.comingSoon.title')}
+                        </DialogTitle>
+                        <DialogDescription className="text-center pt-2">
+                            {t('jobPortal.comingSoon.description')}
+                        </DialogDescription>
+                    </DialogHeader>
+                    <div className="flex justify-center mt-4">
+                        <Button
+                            onClick={() => setIsJobPortalDialogOpen(false)}
+                            className="bg-gradient-to-r from-amber-500 to-purple-500 text-white"
+                        >
+                            {t('common.close')}
+                        </Button>
+                    </div>
+                </DialogContent>
+            </Dialog>
+        );
+    };
+
     return (
         <>
             <Head>
@@ -621,7 +670,7 @@ export default function Authenticated({ user, header, children }: PropsWithChild
                                     <span className="font-bold text-base sm:text-2xl bg-gradient-to-r from-amber-500 to-purple-500 dark:from-amber-400 dark:to-purple-400 text-transparent bg-clip-text">
                                         { route().current('career-advisor.index') ? 'Guidy AI' : t('brand')}
                                     </span>
-                                    {!route().current('career-advisor.index') && (
+                                    {route().current('career-advisor.index') && (
                                         <Badge variant="secondary" className="text-xs px-1.5 py-0 h-4 bg-amber-50 text-amber-600 dark:bg-amber-900/30 dark:text-amber-300">
                                             <Sparkles className="w-2.5 h-2.5 mr-0.5" />
                                             {t('components.sidebar.pro_badge')}
@@ -782,6 +831,7 @@ export default function Authenticated({ user, header, children }: PropsWithChild
                 </footer>
 
                 <ReferralCodeRenewal />
+                <JobPortalComingSoonDialog />
 
                 {/* Mobile Tab Bar */}
                 <MobileTabBar onRenewCodeClick={() => setIsReferralDialogOpen(true)} />

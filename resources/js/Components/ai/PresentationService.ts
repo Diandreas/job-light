@@ -525,6 +525,7 @@ export class PowerPointService {
             await this.createSlides(pres, data.slides, theme, data.animations?.enabled || false);
 
             // Générer le PowerPoint
+            // @ts-ignore
             const result = await pres.write('blob');
             return this.ensureBlobResponse(result);
         } catch (error) {
@@ -663,8 +664,10 @@ export class PowerPointService {
                 console.log(`Creating slide ${i + 1} of type ${slideData.type}`);
 
                 // Appliquer les transitions et animations si activées
+                // @ts-ignore
                 const slideOptions = enableAnimations ? {
                     transition: {
+                        // @ts-ignore
                         name: this.getTransitionForSlideType(slideData.type),
                         duration: 1.0
                     }

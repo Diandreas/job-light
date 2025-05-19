@@ -1,0 +1,1622 @@
+import pptxgen from 'pptxgenjs';
+
+interface PowerPointSlide {
+    type: string;
+    title: string;
+    subtitle?: string;
+    content?: string[];
+    leftTitle?: string;
+    leftContent?: string[];
+    rightTitle?: string;
+    rightContent?: string[];
+    chartType?: string;
+    data?: {
+        title?: string;
+        labels: string[];
+        datasets: {
+            name: string;
+            values: number[];
+            color?: string | string[];
+        }[];
+        insight?: string;
+    };
+    finalStatement?: string;
+    events?: {
+        date: string;
+        title?: string;
+        description: string;
+    }[];
+    table?: {
+        headers: string[];
+        rows: string[][];
+        emphasis?: number[];
+        style?: string;
+    };
+    comparison?: {
+        leftTitle: string;
+        leftPoints: string[];
+        rightTitle: string;
+        rightPoints: string[];
+        verdict?: string;
+    };
+    process?: {
+        steps: {
+            number: number;
+            title: string;
+            description: string;
+            icon?: string;
+        }[];
+    };
+    design?: {
+        background?: string;
+        emphasis?: string;
+    };
+    // Additional fields to help debugging
+    debug?: boolean;
+}
+
+interface PowerPointData {
+    title: string;
+    subtitle?: string;
+    author?: string;
+    presentationType?: string;
+    slides: PowerPointSlide[];
+    theme: {
+        name?: string;
+        colors: {
+            primary: string;
+            secondary: string;
+            accent?: string;
+            background: string;
+            text: string;
+            textLight?: string;
+            success?: string;
+            warning?: string;
+            error?: string;
+        };
+        fonts?: {
+            heading?: string;
+            body?: string;
+            accent?: string;
+        };
+        spacing?: {
+            tight?: boolean;
+            margins?: string;
+        };
+    };
+    animations?: {
+        enabled: boolean;
+        style?: string;
+    };
+    // Flag for enabling debug messages
+    debug?: boolean;
+}
+
+export class PowerPointService {
+    // Logger for debugging
+    private static log(message: string, data?: any, isError: boolean = false) {
+        if (isError) {
+            console.error(`[PowerPointService] ${message}`, data);
+        } else {
+            console.log(`[PowerPointService] ${message}`, data);
+        }
+    }
+
+    // Default colors with improved contrast
+    private static readonly DEFAULT_COLORS = {
+        primary: '#3366CC',
+        secondary: '#FF6900',
+        accent: '#00C851',
+        background: '#FFFFFF',
+        text: '#333333',
+        textLight: '#666666',
+        success: '#00C851',
+        warning: '#FF8800',
+        error: '#CC0000'
+    };
+
+    // Thèmes prédéfinis améliorés avec plus d'options et meilleur contraste
+    private static readonly THEME_PRESETS = {
+        'modern-corporate': {
+            primary: '#1f3a93',
+            secondary: '#1976d2',
+            accent: '#42a5f5',
+            background: '#ffffff',
+            text: '#333333',
+            fonts: {
+                heading: 'Montserrat',
+                body: 'Roboto',
+                accent: 'Montserrat'
+            }
+        },
+        'creative-vibrant': {
+            primary: '#e91e63',
+            secondary: '#ff5722',
+            accent: '#ffc107',
+            background: '#fafafa',
+            text: '#212121',
+            fonts: {
+                heading: 'Raleway',
+                body: 'Open Sans',
+                accent: 'Pacifico'
+            }
+        },
+        'academic-clean': {
+            primary: '#2e7d32',
+            secondary: '#388e3c',
+            accent: '#66bb6a',
+            background: '#ffffff',
+            text: '#424242',
+            fonts: {
+                heading: 'Georgia',
+                body: 'Cambria',
+                accent: 'Times New Roman'
+            }
+        },
+        'tech-minimal': {
+            primary: '#455a64',
+            secondary: '#607d8b',
+            accent: '#00acc1',
+            background: '#ffffff',
+            text: '#333333',
+            fonts: {
+                heading: 'Segoe UI',
+                body: 'Arial',
+                accent: 'Segoe UI Light'
+            }
+        },
+        'elegant-dark': {
+            primary: '#263238',
+            secondary: '#546e7a',
+            accent: '#90a4ae',
+            background: '#eceff1',
+            text: '#263238',
+            textLight: '#455a64',
+            fonts: {
+                heading: 'Playfair Display',
+                body: 'Lato',
+                accent: 'Playfair Display SC'
+            }
+        }
+    };
+
+    // Méthode améliorée pour vérifier le contraste et ajuster les couleurs
+    private static ensureContrast(foreground: string, background: string,
+                                  minContrastRatio: number = 4.5): string {
+        // Fonction pour convertir couleur hex en luminance
+        const getLuminance = (color: string): number => {
+            // Extract RGB components
+            const hex = color.charAt(0) === '#' ? color.substring(1) : color;
+            const r = parseInt(hex.substring(0, 2), 16) / 255;
+            const g = parseInt(hex.substring(2, 4), 16) / 255;
+            const b = parseInt(hex.substring(4, 6), 16) / 255;
+
+            // Convert RGB to luminance using the formula
+            const rgb = [r, g, b].map(v => {
+                return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4);
+            });
+
+            return 0.2126 * rgb[0] + 0.7152 * rgb[1] + 0.0722 * rgb[2];
+        };
+
+        // Calculer le ratio de contraste
+        const bgLuminance = getLuminance(background);
+        const fgLuminance = getLuminance(foreground);
+        const contrastRatio = (Math.max(bgLuminance, fgLuminance) + 0.05) /
+            (Math.min(bgLuminance, fgLuminance) + 0.05);
+
+        // Si le contraste est suffisant, retourner la couleur originale
+        if (contrastRatio >= minContrastRatio) {
+            return foreground;
+        }
+
+        // Sinon, ajuster la couleur pour augmenter le contraste
+        // Assombrir ou éclaircir selon la luminance du fond
+        const adjustColor = (color: string, amount: number): string => {
+            let r = parseInt(color.substring(1, 3), 16);
+            let g = parseInt(color.substring(3, 5), 16);
+            let b = parseInt(color.substring(5, 7), 16);
+
+            if (amount < 0) {
+                r = Math.max(0, r + amount);
+                g = Math.max(0, g + amount);
+                b = Math.max(0, b + amount);
+            } else {
+                r = Math.min(255, r + amount);
+                g = Math.min(255, g + amount);
+                b = Math.min(255, b + amount);
+            }
+
+            return `#${r.toString(16).padStart(2, '0')}${g.toString(16).padStart(2, '0')}${b.toString(16).padStart(2, '0')}`;
+        };
+
+        // Décider si on éclaircit ou assombrit
+        if (bgLuminance > 0.5) { // Fond clair, texte sombre
+            return '#000000';
+        } else { // Fond sombre, texte clair
+            return '#FFFFFF';
+        }
+    }
+
+    // Fonction de création simplifiée pour les backgrounds
+    private static createBackgroundPattern(pres, slide, pattern, color) {
+        switch(pattern) {
+            case 'dots':
+                // Crée un motif de points pour l'arrière-plan
+                for (let x = 0; x < 13; x++) {
+                    for (let y = 0; y < 8; y++) {
+                        if ((x + y) % 2 === 0) continue;
+                        slide.addShape(pres.ShapeType.ellipse, {
+                            x: x * 1.0, y: y * 1.0, w: 0.05, h: 0.05,
+                            fill: { color: color + '20' },
+                            line: { type: 'none' }
+                        });
+                    }
+                }
+                break;
+            case 'grid':
+                // Crée un motif de grille pour l'arrière-plan
+                for (let x = 0; x < 13; x++) {
+                    slide.addShape(pres.ShapeType.line, {
+                        x: x * 1.0, y: 0, w: 0, h: 7.5,
+                        line: { color: color + '10', pt: 0.5 }
+                    });
+                }
+                for (let y = 0; y < 8; y++) {
+                    slide.addShape(pres.ShapeType.line, {
+                        x: 0, y: y * 1.0, w: 13.0, h: 0,
+                        line: { color: color + '10', pt: 0.5 }
+                    });
+                }
+                break;
+            case 'waves':
+                // Crée un motif d'ondes en bas de la diapo
+                for (let i = 0; i < 5; i++) {
+                    slide.addShape(pres.ShapeType.wave, {
+                        x: 0, y: 6.0 + (i * 0.3), w: 13.3, h: 1.0,
+                        fill: { color: color + (15 - i * 3).toString(16) },
+                        line: { type: 'none' },
+                        flipH: i % 2 === 0
+                    });
+                }
+                break;
+        }
+    }
+
+    static async generateFromJSON(jsonData: string): Promise<Blob> {
+        let data: PowerPointData;
+        try {
+            data = JSON.parse(jsonData);
+            this.log("JSON Parsed successfully");
+        } catch (error) {
+            this.log('Invalid JSON data:', error, true);
+            throw new Error('Le format JSON fourni est invalide');
+        }
+
+        // Activer le mode debug si demandé
+        const debug = data.debug === true;
+
+        try {
+            const pres = new pptxgen();
+
+            // Configuration globale améliorée
+            pres.layout = 'LAYOUT_16x9';
+            pres.title = data.title;
+            pres.author = data.author || 'Guidy AI';
+            pres.subject = data.subtitle || '';
+            pres.company = 'Guidy AI';
+
+            // Définir les marges par défaut pour toutes les diapositives
+            pres.defineLayout({
+                name: 'CUSTOM',
+                width: 13.33,
+                height: 7.5
+            });
+            pres.layout = 'CUSTOM';
+
+            // Appliquer le thème avec options avancées
+            const theme = this.setupTheme(data.theme);
+
+            if (debug) {
+                this.log("Theme setup completed", theme);
+            }
+
+            // Créer les diapositives
+            await this.createSlides(pres, data.slides, theme, data.animations?.enabled || false, debug);
+
+            // Générer le PowerPoint
+            const result = await pres.write('blob');
+            return this.ensureBlobResponse(result);
+        } catch (error) {
+            this.log('Error generating PowerPoint:', error, true);
+            throw new Error(`Erreur lors de la génération de la présentation: ${error.message}`);
+        }
+    }
+
+    private static setupTheme(themeData: any) {
+        // Fusionner avec les couleurs par défaut
+        let colors = { ...this.DEFAULT_COLORS };
+        let fonts = {
+            heading: 'Segoe UI',
+            body: 'Segoe UI',
+            accent: 'Arial'
+        };
+
+        // Appliquer un preset si spécifié
+        if (themeData.name && this.THEME_PRESETS[themeData.name]) {
+            const preset = this.THEME_PRESETS[themeData.name];
+            colors = { ...colors, ...preset };
+
+            if (preset.fonts) {
+                fonts = { ...fonts, ...preset.fonts };
+            }
+        }
+
+        // Appliquer les couleurs personnalisées
+        if (themeData.colors) {
+            colors = { ...colors, ...themeData.colors };
+        }
+
+        // Appliquer les polices personnalisées
+        if (themeData.fonts) {
+            fonts = { ...fonts, ...themeData.fonts };
+        }
+
+        return {
+            colors,
+            fonts,
+            spacing: themeData.spacing || {
+                tight: false,
+                margins: 'standard'
+            }
+        };
+    }
+
+    // Validation des données améliorée
+    private static validateChartData(slideData: PowerPointSlide): boolean {
+        if (!slideData.data) {
+            this.log(`Missing data for chart slide: ${slideData.title}`, null, true);
+            return false;
+        }
+
+        if (!slideData.data.labels || !Array.isArray(slideData.data.labels) || slideData.data.labels.length === 0) {
+            this.log(`Invalid or missing labels for chart: ${slideData.title}`, null, true);
+            return false;
+        }
+
+        if (!slideData.data.datasets || !Array.isArray(slideData.data.datasets) || slideData.data.datasets.length === 0) {
+            this.log(`Invalid or missing datasets for chart: ${slideData.title}`, null, true);
+            return false;
+        }
+
+        for (const dataset of slideData.data.datasets) {
+            if (!dataset.name) {
+                this.log(`Missing dataset name for chart: ${slideData.title}`, null, true);
+                return false;
+            }
+
+            if (!dataset.values || !Array.isArray(dataset.values) || dataset.values.length === 0) {
+                this.log(`Invalid or missing values for dataset: ${dataset.name}`, null, true);
+                return false;
+            }
+
+            if (dataset.values.length !== slideData.data.labels.length) {
+                this.log(`Mismatch between values length and labels length for dataset: ${dataset.name}`, null, true);
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    private static async createSlides(pres: any, slides: PowerPointSlide[], theme: any, enableAnimations: boolean, debug: boolean = false) {
+        for (let i = 0; i < slides.length; i++) {
+            const slideData = slides[i];
+            try {
+                if (debug) {
+                    this.log(`Creating slide ${i + 1}: ${slideData.type} - ${slideData.title}`);
+                }
+
+                // Appliquer les transitions et animations si activées
+                const slideOptions = enableAnimations ? {
+                    transition: {
+                        name: this.getTransitionForSlideType(slideData.type),
+                        duration: 1.0
+                    }
+                } : {};
+
+                // Validation préalable des données selon le type de slide
+                let isValid = true;
+                if (slideData.type === 'chart') {
+                    isValid = this.validateChartData(slideData);
+                    if (!isValid && debug) {
+                        this.log(`Skipping invalid chart slide: ${slideData.title}`, null, true);
+                    }
+                }
+
+                // Si les données sont valides ou si ce n'est pas un chart
+                if (isValid) {
+                    switch (slideData.type) {
+                        case 'title':
+                            this.createTitleSlide(pres, slideData, theme, slideOptions);
+                            break;
+                        case 'content':
+                            this.createContentSlide(pres, slideData, theme, slideOptions);
+                            break;
+                        case 'two-column':
+                            this.createTwoColumnSlideImproved(pres, slideData, theme, slideOptions);
+                            break;
+                        case 'chart':
+                            this.createChartSlideImproved(pres, slideData, theme, slideOptions);
+                            break;
+                        case 'table':
+                            this.createTableSlide(pres, slideData, theme, slideOptions);
+                            break;
+                        case 'comparison':
+                            this.createComparisonSlide(pres, slideData, theme, slideOptions);
+                            break;
+                        case 'process':
+                            this.createProcessSlide(pres, slideData, theme, slideOptions);
+                            break;
+                        case 'timeline':
+                            this.createTimelineSlideImproved(pres, slideData, theme, slideOptions);
+                            break;
+                        case 'conclusion':
+                            this.createConclusionSlide(pres, slideData, theme, slideOptions);
+                            break;
+                        case 'quote':
+                            this.createQuoteSlide(pres, slideData, theme, slideOptions);
+                            break;
+                        case 'image':
+                            this.createImageSlide(pres, slideData, theme, slideOptions);
+                            break;
+                        default:
+                            this.createBasicSlide(pres, slideData, theme, slideOptions);
+                    }
+
+                    if (debug) {
+                        this.log(`Slide ${i + 1} created successfully`);
+                    }
+                }
+                else {
+                    // Créer une diapositive d'erreur pour les problèmes de données
+                    this.createErrorSlide(pres, slideData, theme, slideOptions);
+                }
+            } catch (error) {
+                this.log(`Error creating slide ${i + 1} of type ${slideData.type}:`, error, true);
+
+                // Créer une diapositive d'erreur au lieu d'ignorer silencieusement
+                this.createErrorSlide(pres, slideData, theme, slideOptions);
+            }
+        }
+    }
+
+    // Nouvelle méthode pour créer une diapositive d'erreur
+    private static createErrorSlide(pres: any, slideData: PowerPointSlide, theme: any, options: any = {}) {
+        const slide = pres.addSlide(options);
+
+        // Titre avec style d'erreur
+        slide.addText(`Erreur: ${slideData.title || 'Diapositive invalide'}`, {
+            x: 0.5, y: 0.7, w: '95%', h: 0.8,
+            fontSize: 32,
+            fontFace: theme.fonts.heading,
+            color: theme.colors.error,
+            bold: true
+        });
+
+        // Message d'erreur
+        slide.addText("Cette diapositive n'a pas pu être générée correctement en raison de données manquantes ou invalides. Veuillez vérifier les données et réessayer.", {
+            x: 0.5, y: 2.0, w: '95%', h: 1.5,
+            fontSize: 18,
+            fontFace: theme.fonts.body,
+            color: theme.colors.text,
+            bold: false
+        });
+
+        // Afficher le type de diapositive
+        slide.addText(`Type de diapositive: ${slideData.type}`, {
+            x: 0.5, y: 4.0, w: '95%', h: 0.6,
+            fontSize: 16,
+            fontFace: theme.fonts.body,
+            color: theme.colors.textLight,
+            italic: true
+        });
+    }
+
+    // Fonctions de création de diapositives
+
+    private static createTitleSlide(pres: any, slideData: PowerPointSlide, theme: any, options: any = {}) {
+        const slide = pres.addSlide(options);
+
+        // Appliquer un motif d'arrière-plan
+        if (slideData.design?.background) {
+            this.createBackgroundPattern(pres, slide, slideData.design.background, theme.colors.primary);
+        }
+
+        // Titre avec style amélioré
+        slide.addText(slideData.title, {
+            x: 0.5, y: 2.5, w: '95%', h: 1.8,
+            fontSize: 54,
+            fontFace: theme.fonts.heading,
+            color: theme.colors.primary,
+            bold: true,
+            align: pres.AlignH.center,
+            valign: pres.AlignV.middle,
+            shadow: {
+                type: 'outer',
+                blur: 10,
+                offset: 3,
+                angle: 45,
+                color: '00000030'
+            }
+        });
+
+        // Sous-titre avec style élégant
+        if (slideData.subtitle) {
+            slide.addText(slideData.subtitle, {
+                x: 0.5, y: 4.2, w: '95%', h: 1.2,
+                fontSize: 28,
+                fontFace: theme.fonts.body,
+                color: theme.colors.secondary,
+                align: pres.AlignH.center,
+                italic: true
+            });
+        }
+
+        // Ligne décorative élégante
+        slide.addShape(pres.ShapeType.rect, {
+            x: 4, y: 5.8, w: 5, h: 0.05,
+            fill: { color: theme.colors.accent },
+            line: { type: 'none' }
+        });
+    }
+
+    private static createContentSlide(pres: any, slideData: PowerPointSlide, theme: any, options: any = {}) {
+        const slide = pres.addSlide(options);
+
+        // Titre avec effet de soulignement
+        slide.addText(slideData.title, {
+            x: 0.5, y: 0.7, w: '95%', h: 0.8,
+            fontSize: 32,
+            fontFace: theme.fonts.heading,
+            color: theme.colors.primary,
+            bold: true
+        });
+
+        // Ligne de séparation avec effet dégradé
+        slide.addShape(pres.ShapeType.rect, {
+            x: 0.5, y: 1.5, w: '95%', h: 0.05,
+            fill: { color: theme.colors.secondary },
+            line: { type: 'none' }
+        });
+
+        // Contenu avec puces personnalisées et animations
+        if (slideData.content && slideData.content.length > 0) {
+            slideData.content.forEach((point, index) => {
+                // Icône de puce personnalisée avec style
+                const bulletColors = [theme.colors.primary, theme.colors.secondary, theme.colors.accent];
+                slide.addShape(pres.ShapeType.roundRect, {
+                    x: 0.8, y: 1.9 + (index * 0.8), w: 0.3, h: 0.3,
+                    fill: { color: bulletColors[index % bulletColors.length] },
+                    line: { type: 'none' },
+                    radius: 0.15
+                });
+
+                // Texte du point avec mise en forme soignée
+                slide.addText(point, {
+                    x: 1.3, y: 1.8 + (index * 0.8), w: '85%', h: 0.6,
+                    fontSize: 20,
+                    fontFace: theme.fonts.body,
+                    color: theme.colors.text,
+                    valign: pres.AlignV.middle
+                });
+            });
+        }
+    }
+
+    // Version améliorée avec meilleur contraste
+    private static createTwoColumnSlideImproved(pres: any, slideData: PowerPointSlide, theme: any, options: any = {}) {
+        const slide = pres.addSlide(options);
+
+        // Titre avec effet de soulignement
+        slide.addText(slideData.title, {
+            x: 0.5, y: 0.5, w: '95%', h: 0.8,
+            fontSize: 32,
+            fontFace: theme.fonts.heading,
+            color: theme.colors.primary,
+            bold: true
+        });
+
+        // Ligne de séparation
+        slide.addShape(pres.ShapeType.rect, {
+            x: 0.5, y: 1.3, w: '95%', h: 0.05,
+            fill: { color: theme.colors.secondary },
+            line: { type: 'none' }
+        });
+
+        // Colonne gauche avec meilleur contraste
+        const leftColX = 0.5;
+        const colWidth = 5.5;
+
+        // Fond de colonne plus clair
+        slide.addShape(pres.ShapeType.roundRect, {
+            x: leftColX, y: 1.6, w: colWidth, h: 5.2,
+            fill: { color: theme.colors.primary + '10' }, // Plus clair pour un meilleur contraste
+            line: { color: theme.colors.primary + '40', pt: 1 }, // Bordure plus visible
+            radius: 0.2
+        });
+
+        // Titre de la colonne gauche
+        if (slideData.leftTitle) {
+            slide.addShape(pres.ShapeType.roundRect, {
+                x: leftColX, y: 1.6, w: colWidth, h: 0.6,
+                fill: { color: theme.colors.primary },
+                line: { type: 'none' },
+                radius: [0.2, 0.2, 0, 0]
+            });
+
+            slide.addText(slideData.leftTitle, {
+                x: leftColX, y: 1.6, w: colWidth, h: 0.6,
+                fontSize: 18,
+                fontFace: theme.fonts.heading,
+                color: '#FFFFFF', // Blanc pour assurer la lisibilité sur fond coloré
+                bold: true,
+                align: pres.AlignH.center,
+                valign: pres.AlignV.middle
+            });
+        }
+
+        // Contenu de la colonne gauche
+        if (slideData.leftContent && slideData.leftContent.length > 0) {
+            slideData.leftContent.forEach((point, index) => {
+                // Puce personnalisée
+                slide.addText('•', {
+                    x: leftColX + 0.3, y: 2.4 + (index * 0.7), w: 0.3, h: 0.5,
+                    fontSize: 16,
+                    color: theme.colors.primary,
+                    align: pres.AlignH.center,
+                    valign: pres.AlignV.middle
+                });
+
+                // Texte du point en noir pour assurer la lisibilité
+                slide.addText(point, {
+                    x: leftColX + 0.7, y: 2.4 + (index * 0.7), w: colWidth - 1.0, h: 0.5,
+                    fontSize: 16,
+                    fontFace: theme.fonts.body,
+                    color: '#000000', // Noir pour garantir la lisibilité
+                    valign: pres.AlignV.middle
+                });
+            });
+        }
+
+        // Colonne droite avec meilleur contraste
+        const rightColX = 6.5;
+
+        slide.addShape(pres.ShapeType.roundRect, {
+            x: rightColX, y: 1.6, w: colWidth, h: 5.2,
+            fill: { color: theme.colors.secondary + '10' }, // Plus clair pour un meilleur contraste
+            line: { color: theme.colors.secondary + '40', pt: 1 }, // Bordure plus visible
+            radius: 0.2
+        });
+
+        // Titre de la colonne droite
+        if (slideData.rightTitle) {
+            slide.addShape(pres.ShapeType.roundRect, {
+                x: rightColX, y: 1.6, w: colWidth, h: 0.6,
+                fill: { color: theme.colors.secondary },
+                line: { type: 'none' },
+                radius: [0.2, 0.2, 0, 0]
+            });
+
+            slide.addText(slideData.rightTitle, {
+                x: rightColX, y: 1.6, w: colWidth, h: 0.6,
+                fontSize: 18,
+                fontFace: theme.fonts.heading,
+                color: '#FFFFFF', // Blanc pour assurer la lisibilité sur fond coloré
+                bold: true,
+                align: pres.AlignH.center,
+                valign: pres.AlignV.middle
+            });
+        }
+
+        // Contenu de la colonne droite
+        if (slideData.rightContent && slideData.rightContent.length > 0) {
+            slideData.rightContent.forEach((point, index) => {
+                // Puce personnalisée
+                slide.addText('•', {
+                    x: rightColX + 0.3, y: 2.4 + (index * 0.7), w: 0.3, h: 0.5,
+                    fontSize: 16,
+                    color: theme.colors.secondary,
+                    align: pres.AlignH.center,
+                    valign: pres.AlignV.middle
+                });
+
+                // Texte du point en noir pour assurer la lisibilité
+                slide.addText(point, {
+                    x: rightColX + 0.7, y: 2.4 + (index * 0.7), w: colWidth - 1.0, h: 0.5,
+                    fontSize: 16,
+                    fontFace: theme.fonts.body,
+                    color: '#000000', // Noir pour garantir la lisibilité
+                    valign: pres.AlignV.middle
+                });
+            });
+        }
+    }
+
+    // Version améliorée avec support de légendes et validation de données
+    private static createChartSlideImproved(pres: any, slideData: PowerPointSlide, theme: any, options: any = {}) {
+        const slide = pres.addSlide(options);
+
+        // Titre avec style
+        slide.addText(slideData.title, {
+            x: 0.5, y: 0.5, w: '95%', h: 0.8,
+            fontSize: 32,
+            fontFace: theme.fonts.heading,
+            color: theme.colors.primary,
+            bold: true
+        });
+
+        try {
+            // Validation des données du graphique
+            if (!slideData.data || !slideData.chartType) {
+                throw new Error(`Données de graphique invalides pour la diapositive ${slideData.title}`);
+            }
+
+            if (!slideData.data.datasets || slideData.data.datasets.length === 0) {
+                throw new Error(`Aucun dataset défini pour le graphique ${slideData.title}`);
+            }
+
+            if (!slideData.data.labels || slideData.data.labels.length === 0) {
+                throw new Error(`Aucun label défini pour le graphique ${slideData.title}`);
+            }
+
+            // Déterminer le type de graphique
+            const chartTypeMap = {
+                bar: pres.ChartType.bar,
+                column: pres.ChartType.bar,
+                line: pres.ChartType.line,
+                pie: pres.ChartType.pie,
+                donut: pres.ChartType.doughnut,
+                scatter: pres.ChartType.scatter,
+                area: pres.ChartType.area
+            };
+
+            const chartType = chartTypeMap[slideData.chartType.toLowerCase()] || pres.ChartType.bar;
+
+            // Cadre élégant pour le graphique
+            slide.addShape(pres.ShapeType.roundRect, {
+                x: 0.5, y: 1.5, w: '95%', h: 4.5,
+                fill: { color: theme.colors.background },
+                line: { color: theme.colors.primary + '40', pt: 1.5 },
+                radius: 0.2
+            });
+
+            // Préparer les données avec couleurs améliorées
+            const chartColors = [
+                theme.colors.primary,
+                theme.colors.secondary,
+                theme.colors.accent,
+                '#8E24AA',  // Purple
+                '#D81B60',  // Pink
+                '#00897B',  // Teal
+                '#FB8C00',  // Orange
+                '#5E35B1'   // Deep Purple
+            ];
+
+            // Support amélioré pour les couleurs personnalisées
+            const chartData = slideData.data.datasets.map((dataset, index) => {
+                // Gérer les couleurs personnalisées
+                let color;
+
+                if (dataset.color) {
+                    // Si c'est un tableau de couleurs (pour les camemberts)
+                    if (Array.isArray(dataset.color)) {
+                        color = dataset.color;
+                    } else {
+                        color = dataset.color;
+                    }
+                } else {
+                    color = chartColors[index % chartColors.length];
+                }
+
+                return {
+                    name: dataset.name,
+                    labels: slideData.data?.labels || [],
+                    values: dataset.values,
+                    color: color
+                };
+            });
+
+            // Titre du graphique
+            let chartTitle = '';
+            if (slideData.data.title) {
+                chartTitle = slideData.data.title;
+            }
+
+            // Configuration du graphique avec style amélioré
+            const chartOptions = {
+                x: 0.7, y: 1.7, w: '90%', h: 4.0,
+                showTitle: !!chartTitle,
+                title: chartTitle,
+                titleColor: theme.colors.text,
+                titleFontSize: 18,
+                titleBold: true,
+                showLegend: chartData.length > 1 || slideData.chartType === 'pie' || slideData.chartType === 'donut',
+                legendPos: 'b',
+                legendFontSize: 12,
+                chartColors: chartData.map(d => typeof d.color === 'string' ? d.color : d.color[0]),
+                chartColorsOpacity: 75,
+                showValue: true,
+                dataLabelFontSize: 12,
+                dataLabelBold: true,
+                valAxisLabelColor: theme.colors.text,
+                catAxisLabelColor: theme.colors.text,
+                dataLabelColor: theme.colors.text,
+                lineSize: 2,
+                valGridLine: { color: theme.colors.textLight + '30', style: 'solid' },
+                catGridLine: { color: theme.colors.textLight + '30', style: 'solid' },
+                shadow: { type: 'subtle' }
+            };
+
+            // Ajuster les options selon le type de graphique
+            if (slideData.chartType === 'bar') {
+                chartOptions['barDir'] = 'bar';
+            } else if (slideData.chartType === 'column') {
+                chartOptions['barDir'] = 'col';
+            } else if (slideData.chartType === 'pie' || slideData.chartType === 'donut') {
+                // Pour les camemberts/donuts, s'assurer que les étiquettes sont visibles
+                chartOptions['showLabel'] = true;
+                chartOptions['dataLabelColor'] = theme.colors.text;
+                chartOptions['dataLabelFontSize'] = 12;
+
+                // Si array de couleurs est fourni, les utiliser
+                if (Array.isArray(chartData[0].color)) {
+                    chartOptions['chartColors'] = chartData[0].color;
+                }
+            }
+
+            // Ajouter le graphique
+            slide.addChart(chartType, chartData, chartOptions);
+
+            // Ajouter l'insight si disponible
+            if (slideData.data.insight) {
+                slide.addText(slideData.data.insight, {
+                    x: 0.5, y: 6.2, w: '95%', h: 0.8,
+                    fontSize: 16,
+                    fontFace: theme.fonts.body,
+                    color: theme.colors.secondary,
+                    italic: true,
+                    align: pres.AlignH.center
+                });
+            }
+        } catch (error) {
+            this.log('Error creating chart:', error, true);
+
+            // Afficher un message d'erreur élégant
+            slide.addText("Erreur dans la création du graphique", {
+                x: 0.5, y: 2.5, w: '95%', h: 1.0,
+                fontSize: 28,
+                color: theme.colors.error,
+                align: pres.AlignH.center,
+                bold: true
+            });
+
+            slide.addText(error.message || "Données du graphique invalides ou incomplètes", {
+                x: 0.5, y: 3.8, w: '95%', h: 1.0,
+                fontSize: 18,
+                color: theme.colors.textLight,
+                align: pres.AlignH.center,
+                italic: true
+            });
+        }
+    }
+
+    private static createTableSlide(pres: any, slideData: PowerPointSlide, theme: any, options: any = {}) {
+        if (!slideData.table) return;
+
+        const slide = pres.addSlide(options);
+
+        // Titre avec style
+        slide.addText(slideData.title, {
+            x: 0.5, y: 0.5, w: '95%', h: 0.8,
+            fontSize: 32,
+            fontFace: theme.fonts.heading,
+            color: theme.colors.primary,
+            bold: true
+        });
+
+        try {
+            // Préparer les données du tableau avec design amélioré
+            const tableData = [
+                // En-têtes avec style amélioré
+                slideData.table.headers.map(header => ({
+                    text: header,
+                    options: {
+                        bold: true,
+                        fontSize: 18,
+                        fontFace: theme.fonts.heading,
+                        color: theme.colors.background,
+                        fill: { color: theme.colors.primary },
+                        align: pres.AlignH.center,
+                        valign: pres.AlignV.middle
+                    }
+                })),
+                // Lignes avec style alterné et mise en évidence
+                ...slideData.table.rows.map((row, rowIndex) =>
+                    row.map((cell, cellIndex) => {
+                        // Déterminer si cette cellule doit être mise en évidence
+                        const isEmphasis = slideData.table?.emphasis?.includes(rowIndex);
+
+                        // Déterminer le style selon la position et l'emphase
+                        let cellStyle = {
+                            fontSize: 16,
+                            fontFace: theme.fonts.body,
+                            color: isEmphasis ? theme.colors.primary : theme.colors.text,
+                            bold: isEmphasis,
+                            fill: {
+                                color: isEmphasis
+                                    ? theme.colors.primary + '15'
+                                    : rowIndex % 2 === 0
+                                        ? theme.colors.background
+                                        : theme.colors.primary + '05'
+                            },
+                            align: pres.AlignH.center,
+                            valign: pres.AlignV.middle
+                        };
+
+                        return {
+                            text: cell,
+                            options: cellStyle
+                        };
+                    })
+                )
+            ];
+
+            // Calculer la largeur optimale des colonnes
+            const colCount = slideData.table.headers.length;
+            const availWidth = 12.0; // Largeur disponible
+            const colWidth = [];
+
+            // Répartir l'espace également
+            const width = availWidth / colCount;
+            for (let i = 0; i < colCount; i++) {
+                colWidth.push(width);
+            }
+
+            // Ajouter le tableau avec style amélioré
+            slide.addTable(tableData, {
+                x: 0.5,
+                y: 1.7,
+                w: '95%',
+                colW: colWidth,
+                border: { pt: 1, color: theme.colors.primary + '50' },
+                margin: 0.1
+            });
+        } catch (error) {
+            console.error('Error creating table:', error);
+            slide.addText("Erreur d'affichage du tableau", {
+                x: 0.5, y: 3.0, w: '95%', h: 1.0,
+                fontSize: 20,
+                color: theme.colors.error,
+                align: pres.AlignH.center
+            });
+        }
+    }
+
+    private static createComparisonSlide(pres: any, slideData: PowerPointSlide, theme: any, options: any = {}) {
+        if (!slideData.comparison) return;
+
+        const slide = pres.addSlide(options);
+
+        // Titre avec style
+        slide.addText(slideData.title, {
+            x: 0.5, y: 0.5, w: '95%', h: 0.8,
+            fontSize: 32,
+            fontFace: theme.fonts.heading,
+            color: theme.colors.primary,
+            bold: true
+        });
+
+        // Colonnes de comparaison
+        const leftX = 0.5;
+        const rightX = 6.8;
+        const colWidth = 5.8;
+
+        // Colonne gauche
+        slide.addShape(pres.ShapeType.roundRect, {
+            x: leftX, y: 1.5, w: colWidth, h: 4.5,
+            fill: { color: theme.colors.primary + '10' },
+            line: { color: theme.colors.primary, pt: 2 },
+            radius: 0.3
+        });
+
+        if (slideData.comparison.leftTitle) {
+            // Banner pour le titre
+            slide.addShape(pres.ShapeType.roundRect, {
+                x: leftX, y: 1.5, w: colWidth, h: 0.8,
+                fill: { color: theme.colors.primary },
+                line: { type: 'none' },
+                radius: [0.3, 0.3, 0, 0]
+            });
+
+            // Titre
+            slide.addText(slideData.comparison.leftTitle, {
+                x: leftX + 0.3, y: 1.6, w: colWidth - 0.6, h: 0.6,
+                fontSize: 22,
+                fontFace: theme.fonts.heading,
+                color: theme.colors.background,
+                bold: true,
+                align: pres.AlignH.center,
+                valign: pres.AlignV.middle
+            });
+        }
+
+        // Points de la colonne gauche
+        if (slideData.comparison.leftPoints && slideData.comparison.leftPoints.length > 0) {
+            slideData.comparison.leftPoints.forEach((point, index) => {
+                // Texte du point
+                slide.addText(`✓ ${point}`, {
+                    x: leftX + 0.5, y: 2.5 + (index * 0.7), w: colWidth - 1.0, h: 0.6,
+                    fontSize: 16,
+                    fontFace: theme.fonts.body,
+                    color: theme.colors.text,
+                    valign: pres.AlignV.middle
+                });
+            });
+        }
+
+        // Colonne droite
+        slide.addShape(pres.ShapeType.roundRect, {
+            x: rightX, y: 1.5, w: colWidth, h: 4.5,
+            fill: { color: theme.colors.secondary + '10' },
+            line: { color: theme.colors.secondary, pt: 2 },
+            radius: 0.3
+        });
+
+        if (slideData.comparison.rightTitle) {
+            // Banner pour le titre
+            slide.addShape(pres.ShapeType.roundRect, {
+                x: rightX, y: 1.5, w: colWidth, h: 0.8,
+                fill: { color: theme.colors.secondary },
+                line: { type: 'none' },
+                radius: [0.3, 0.3, 0, 0]
+            });
+
+            // Titre
+            slide.addText(slideData.comparison.rightTitle, {
+                x: rightX + 0.3, y: 1.6, w: colWidth - 0.6, h: 0.6,
+                fontSize: 22,
+                fontFace: theme.fonts.heading,
+                color: theme.colors.background,
+                bold: true,
+                align: pres.AlignH.center,
+                valign: pres.AlignV.middle
+            });
+        }
+
+        // Points de la colonne droite
+        if (slideData.comparison.rightPoints && slideData.comparison.rightPoints.length > 0) {
+            slideData.comparison.rightPoints.forEach((point, index) => {
+                // Texte du point
+                slide.addText(`✓ ${point}`, {
+                    x: rightX + 0.5, y: 2.5 + (index * 0.7), w: colWidth - 1.0, h: 0.6,
+                    fontSize: 16,
+                    fontFace: theme.fonts.body,
+                    color: theme.colors.text,
+                    valign: pres.AlignV.middle
+                });
+            });
+        }
+
+        // VS au centre avec effet 3D
+        slide.addShape(pres.ShapeType.ellipse, {
+            x: 5.8, y: 3.3, w: 1.3, h: 1.3,
+            fill: { color: theme.colors.accent },
+            line: { color: theme.colors.background, pt: 3 }
+        });
+
+        slide.addText('VS', {
+            x: 5.8, y: 3.3, w: 1.3, h: 1.3,
+            fontSize: 28,
+            fontFace: theme.fonts.accent,
+            color: theme.colors.background,
+            bold: true,
+            align: pres.AlignH.center,
+            valign: pres.AlignV.middle
+        });
+
+        // Verdict ou conclusion
+        if (slideData.comparison.verdict) {
+            slide.addText(slideData.comparison.verdict, {
+                x: 1.5, y: 6.2, w: 10, h: 0.8,
+                fontSize: 18,
+                fontFace: theme.fonts.heading,
+                color: theme.colors.success,
+                bold: true,
+                align: pres.AlignH.center,
+                fill: { color: theme.colors.success + '20' },
+                line: { color: theme.colors.success, pt: 2 },
+                margin: 0.1
+            });
+        }
+    }
+
+    private static createProcessSlide(pres: any, slideData: PowerPointSlide, theme: any, options: any = {}) {
+        if (!slideData.process || !slideData.process.steps) return;
+
+        const slide = pres.addSlide(options);
+
+        // Titre avec style
+        slide.addText(slideData.title, {
+            x: 0.5, y: 0.5, w: '95%', h: 0.8,
+            fontSize: 32,
+            fontFace: theme.fonts.heading,
+            color: theme.colors.primary,
+            bold: true
+        });
+
+        // Ligne de flux du processus
+        slide.addShape(pres.ShapeType.rect, {
+            x: 0.5, y: 2.5, w: 12, h: 0.1,
+            fill: { color: theme.colors.primary },
+            line: { type: 'none' }
+        });
+
+        const steps = slideData.process.steps;
+        const stepWidth = 11.0 / steps.length;
+        const startY = 1.8;
+
+        steps.forEach((step, index) => {
+            const xPos = 0.8 + (index * stepWidth);
+            const isLastStep = index === steps.length - 1;
+
+            // Cercle numéroté
+            slide.addShape(pres.ShapeType.ellipse, {
+                x: xPos + (stepWidth/2) - 0.4, y: startY, w: 0.8, h: 0.8,
+                fill: { color: theme.colors.primary },
+                line: { color: theme.colors.secondary, pt: 3 }
+            });
+
+            slide.addText(step.number.toString(), {
+                x: xPos + (stepWidth/2) - 0.4, y: startY, w: 0.8, h: 0.8,
+                fontSize: 24,
+                fontFace: theme.fonts.heading,
+                color: theme.colors.background,
+                bold: true,
+                align: pres.AlignH.center,
+                valign: pres.AlignV.middle
+            });
+
+            // Flèche vers l'étape suivante
+            if (!isLastStep) {
+                slide.addShape(pres.ShapeType.rightArrow, {
+                    x: xPos + stepWidth - 0.6, y: startY + 0.3, w: 1.2, h: 0.2,
+                    fill: { color: theme.colors.accent },
+                    line: { type: 'none' }
+                });
+            }
+
+            // Titre de l'étape
+            slide.addText(step.title, {
+                x: xPos, y: startY + 1.2, w: stepWidth, h: 0.6,
+                fontSize: 16,
+                fontFace: theme.fonts.heading,
+                color: theme.colors.text,
+                bold: true,
+                align: pres.AlignH.center
+            });
+
+            // Description
+            slide.addText(step.description, {
+                x: xPos + 0.1, y: startY + 1.9, w: stepWidth - 0.2, h: 2.0,
+                fontSize: 12,
+                fontFace: theme.fonts.body,
+                color: theme.colors.textLight,
+                align: pres.AlignH.center,
+                valign: pres.AlignV.top
+            });
+        });
+    }
+
+    // Version améliorée avec meilleur placement des événements
+    private static createTimelineSlideImproved(pres: any, slideData: PowerPointSlide, theme: any, options: any = {}) {
+        const slide = pres.addSlide(options);
+
+        // Titre avec style
+        slide.addText(slideData.title, {
+            x: 0.5, y: 0.5, w: '95%', h: 0.8,
+            fontSize: 32,
+            fontFace: theme.fonts.heading,
+            color: theme.colors.primary,
+            bold: true
+        });
+
+        // Ligne de temps principale avec style amélioré
+        slide.addShape(pres.ShapeType.rect, {
+            x: 0.5, y: 3.7, w: 12, h: 0.15,
+            fill: { color: theme.colors.primary },
+            line: { type: 'none' }
+        });
+
+        // Vérifier si nous avons des événements
+        if (!slideData.events || slideData.events.length === 0) {
+            slide.addText("Aucun événement n'est défini pour cette chronologie", {
+                x: 0.5, y: 3.0, w: '95%', h: 1.0,
+                fontSize: 20,
+                color: theme.colors.textLight,
+                align: pres.AlignH.center,
+                italic: true
+            });
+            return;
+        }
+
+        // Événements avec espacement amélioré
+        const eventsCount = slideData.events.length;
+
+        // Calculer l'espace disponible
+        const timelineWidth = 11;
+
+        // Ajuster l'espacement selon le nombre d'événements
+        // Pour éviter que les événements ne se chevauchent
+        let spacing;
+
+        if (eventsCount <= 2) {
+            spacing = timelineWidth / 3; // Pour 2 événements, diviser en 3 sections
+        } else if (eventsCount <= 4) {
+            spacing = timelineWidth / (eventsCount + 1); // Ajouter une marge
+        } else {
+            spacing = timelineWidth / (eventsCount * 0.85); // Compression pour plus d'événements
+        }
+
+        // Taille des boîtes d'événement selon le nombre
+        const boxWidth = Math.min(3.0, 10 / eventsCount);
+
+        slideData.events.forEach((event, index) => {
+            // Calculer la position en X pour répartir uniformément
+            const xPos = 1.0 + (index * spacing);
+
+            // Alternance haut/bas pour éviter le chevauchement
+            const isEven = index % 2 === 0;
+            const yOffset = isEven ? -1.7 : 1.0;
+
+            // Point sur la timeline avec halo pour meilleure visibilité
+            // Ajouter d'abord un cercle plus grand pour le halo
+            slide.addShape(pres.ShapeType.ellipse, {
+                x: xPos - 0.35, y: 3.57, w: 0.7, h: 0.7,
+                fill: { color: theme.colors.primary + '30' },
+                line: { type: 'none' }
+            });
+
+            // Puis le point principal
+            slide.addShape(pres.ShapeType.ellipse, {
+                x: xPos - 0.25, y: 3.58, w: 0.5, h: 0.5,
+                fill: { color: theme.colors.secondary },
+                line: { color: theme.colors.primary, pt: 2 }
+            });
+
+            // Date avec style amélioré et meilleur positionnement
+            const dateBox = isEven ? -0.7 : 0.2;
+            slide.addShape(pres.ShapeType.roundRect, {
+                x: xPos - 0.7, y: 3.7 + dateBox, w: 1.4, h: 0.4,
+                fill: { color: theme.colors.primary + '15' },
+                line: { color: theme.colors.primary + '30', pt: 1 },
+                radius: 0.2
+            });
+
+            slide.addText(event.date, {
+                x: xPos - 0.7, y: 3.7 + dateBox, w: 1.4, h: 0.4,
+                fontSize: 12,
+                fontFace: theme.fonts.heading,
+                color: theme.colors.primary,
+                bold: true,
+                align: pres.AlignH.center,
+                valign: pres.AlignV.middle
+            });
+
+            // Boîte d'événement avec style amélioré
+            const boxY = isEven ? 1.7 : 4.3;
+
+            // Fond de la boîte avec ombre légère
+            slide.addShape(pres.ShapeType.roundRect, {
+                x: xPos - (boxWidth/2), y: boxY, w: boxWidth, h: 1.5,
+                fill: { color: theme.colors.background },
+                line: { color: isEven ? theme.colors.primary : theme.colors.secondary, pt: 1.5 },
+                radius: 0.3,
+                shadow: { type: 'outer', angle: 45, blur: 5, offset: 2, color: '00000020' }
+            });
+
+            // Ligne de connexion avec style amélioré (pointillés et gradient)
+            const lineHeight = Math.abs(yOffset);
+            slide.addShape(pres.ShapeType.line, {
+                x: xPos, y: 3.7, w: 0, h: yOffset,
+                line: { color: theme.colors.secondary, pt: 1, dashType: 'dash' }
+            });
+
+            // Titre de l'événement avec fond coloré
+            if (event.title) {
+                slide.addShape(pres.ShapeType.roundRect, {
+                    x: xPos - (boxWidth/2) + 0.1, y: boxY + 0.1, w: boxWidth - 0.2, h: 0.5,
+                    fill: { color: isEven ? theme.colors.primary + '20' : theme.colors.secondary + '20' },
+                    line: { type: 'none' },
+                    radius: [0.2, 0.2, 0, 0]
+                });
+
+                slide.addText(event.title, {
+                    x: xPos - (boxWidth/2) + 0.1, y: boxY + 0.1, w: boxWidth - 0.2, h: 0.5,
+                    fontSize: 14,
+                    fontFace: theme.fonts.heading,
+                    color: isEven ? theme.colors.primary : theme.colors.secondary,
+                    bold: true,
+                    align: pres.AlignH.center,
+                    valign: pres.AlignV.middle
+                });
+
+                // Description
+                slide.addText(event.description, {
+                    x: xPos - (boxWidth/2) + 0.1, y: boxY + 0.6, w: boxWidth - 0.2, h: 0.8,
+                    fontSize: 12,
+                    fontFace: theme.fonts.body,
+                    color: theme.colors.text,
+                    align: pres.AlignH.center
+                });
+            } else {
+                // Si pas de titre, utiliser la description comme titre
+                slide.addText(event.description, {
+                    x: xPos - (boxWidth/2) + 0.1, y: boxY + 0.1, w: boxWidth - 0.2, h: 1.3,
+                    fontSize: 13,
+                    fontFace: theme.fonts.body,
+                    color: theme.colors.text,
+                    align: pres.AlignH.center,
+                    valign: pres.AlignV.middle
+                });
+            }
+        });
+    }
+
+    private static createConclusionSlide(pres: any, slideData: PowerPointSlide, theme: any, options: any = {}) {
+        const slide = pres.addSlide(options);
+
+        // Arrière-plan gradienté
+        slide.addShape(pres.ShapeType.rect, {
+            x: 0, y: 0, w: '100%', h: '100%',
+            fill: { color: theme.colors.background },
+            line: { type: 'none' }
+        });
+
+        // Titre avec emphase
+        slide.addText(slideData.title, {
+            x: 0.5, y: 1, w: '95%', h: 1,
+            fontSize: 36,
+            fontFace: theme.fonts.heading,
+            color: theme.colors.primary,
+            bold: true,
+            align: pres.AlignH.center
+        });
+
+        // Points clés
+        if (slideData.content && slideData.content.length > 0) {
+            slideData.content.forEach((point, index) => {
+                slide.addText(`⬧ ${point}`, {
+                    x: 1.5, y: 2.5 + (index * 0.8), w: '80%', h: 0.7,
+                    fontSize: 20,
+                    fontFace: theme.fonts.body,
+                    color: theme.colors.text,
+                    bold: true,
+                    valign: pres.AlignV.middle
+                });
+            });
+        }
+
+        // Message final avec cadre
+        if (slideData.finalStatement) {
+            slide.addShape(pres.ShapeType.rect, {
+                x: 1, y: 5.5, w: '85%', h: 1.2,
+                fill: { color: theme.colors.secondary },
+                line: { type: 'none' }
+            });
+
+            slide.addText(slideData.finalStatement, {
+                x: 1, y: 5.5, w: '85%', h: 1.2,
+                fontSize: 24,
+                fontFace: theme.fonts.heading,
+                color: theme.colors.background,
+                bold: true,
+                align: pres.AlignH.center,
+                valign: pres.AlignV.middle
+            });
+        }
+    }
+
+    private static createQuoteSlide(pres: any, slideData: PowerPointSlide, theme: any, options: any = {}) {
+        const slide = pres.addSlide(options);
+
+        // Arrière-plan avec motif subtil
+        slide.addShape(pres.ShapeType.rect, {
+            x: 0, y: 0, w: '100%', h: '100%',
+            fill: { color: theme.colors.background },
+            line: { type: 'none' }
+        });
+
+        // Guillemets décoratifs
+        slide.addText('"', {
+            x: 1, y: 1.5, w: 1, h: 1.5,
+            fontSize: 120,
+            fontFace: theme.fonts.accent,
+            color: theme.colors.primary + '40',
+            align: pres.AlignH.center,
+            valign: pres.AlignV.middle
+        });
+
+        slide.addText('"', {
+            x: 11, y: 4.5, w: 1, h: 1.5,
+            fontSize: 120,
+            fontFace: theme.fonts.accent,
+            color: theme.colors.primary + '40',
+            align: pres.AlignH.center,
+            valign: pres.AlignV.middle
+        });
+
+        // Citation
+        if (slideData.content && slideData.content.length > 0) {
+            slide.addText(slideData.content[0], {
+                x: 2, y: 2.5, w: '70%', h: 2.5,
+                fontSize: 32,
+                fontFace: theme.fonts.accent,
+                fontStyle: 'italic',
+                color: theme.colors.text,
+                align: pres.AlignH.center,
+                valign: pres.AlignV.middle
+            });
+        }
+
+        // Auteur
+        if (slideData.subtitle) {
+            slide.addShape(pres.ShapeType.rect, {
+                x: 3, y: 5.2, w: 7, h: 0.05,
+                fill: { color: theme.colors.secondary },
+                line: { type: 'none' }
+            });
+
+            slide.addText(slideData.subtitle, {
+                x: 3, y: 5.5, w: 7, h: 0.6,
+                fontSize: 18,
+                fontFace: theme.fonts.body,
+                color: theme.colors.secondary,
+                bold: true,
+                align: pres.AlignH.center
+            });
+        }
+    }
+
+    private static createImageSlide(pres: any, slideData: PowerPointSlide, theme: any, options: any = {}) {
+        const slide = pres.addSlide(options);
+
+        // Titre avec style
+        slide.addText(slideData.title, {
+            x: 0.5, y: 0.5, w: '95%', h: 0.8,
+            fontSize: 32,
+            fontFace: theme.fonts.heading,
+            color: theme.colors.primary,
+            bold: true
+        });
+
+        // Zone d'image placeholder
+        slide.addShape(pres.ShapeType.rect, {
+            x: 1.5, y: 1.5, w: 10, h: 4.5,
+            fill: { color: theme.colors.background },
+            line: { color: theme.colors.textLight, pt: 2, dashType: 'dash' }
+        });
+
+        slide.addText('Image à ajouter', {
+            x: 1.5, y: 3.5, w: 10, h: 0.5,
+            fontSize: 20,
+            fontFace: theme.fonts.body,
+            color: theme.colors.textLight,
+            align: pres.AlignH.center,
+            italic: true
+        });
+
+        // Légende
+        if (slideData.subtitle) {
+            slide.addText(slideData.subtitle, {
+                x: 1.5, y: 6.2, w: 10, h: 0.6,
+                fontSize: 14,
+                fontFace: theme.fonts.body,
+                color: theme.colors.textLight,
+                align: pres.AlignH.center,
+                italic: true
+            });
+        }
+    }
+
+    private static createBasicSlide(pres: any, slideData: PowerPointSlide, theme: any, options: any = {}) {
+        const slide = pres.addSlide(options);
+
+        // Titre avec style amélioré
+        slide.addText(slideData.title, {
+            x: 0.5, y: 0.5, w: '95%', h: 0.8,
+            fontSize: 28,
+            fontFace: theme.fonts.heading,
+            color: theme.colors.primary,
+            bold: true
+        });
+
+        // Contenu avec mise en page élégante
+        if (slideData.content && slideData.content.length > 0) {
+            // Traiter le contenu comme des paragraphes
+            const contentText = slideData.content.join('\n\n');
+
+            slide.addText(contentText, {
+                x: 0.5, y: 1.5, w: '95%', h: 4.5,
+                fontSize: 18,
+                fontFace: theme.fonts.body,
+                color: theme.colors.text,
+                lineSpacing: 32
+            });
+        }
+    }
+
+    // Fonctions utilitaires
+
+    private static getTransitionForSlideType(slideType: string): string {
+        // Associer des transitions appropriées selon le type de diapositive
+        const transitionMap = {
+            'title': 'fade',
+            'content': 'push',
+            'two-column': 'split',
+            'chart': 'zoom',
+            'comparison': 'split',
+            'process': 'wipe',
+            'timeline': 'wipe',
+            'conclusion': 'fade',
+            'quote': 'fade',
+            'image': 'zoom'
+        };
+
+        return transitionMap[slideType] || 'cut'; // 'cut' par défaut
+    }
+
+    private static getChartColor(index: number, theme: any): string {
+        const colors = [
+            theme.colors.primary,
+            theme.colors.secondary,
+            theme.colors.accent,
+            theme.colors.success,
+            '#8E24AA',
+            '#D81B60',
+            '#00897B',
+            '#FB8C00',
+            '#5E35B1'
+        ];
+        return colors[index % colors.length];
+    }
+
+    private static ensureBlobResponse(result: any): Blob {
+        if (result instanceof Blob) {
+            return result;
+        } else if (result instanceof ArrayBuffer || result instanceof Uint8Array) {
+            return new Blob([result], {
+                type: 'application/vnd.openxmlformats-officedocument.presentationml.presentation'
+            });
+        } else if (typeof result === 'string') {
+            const byteCharacters = atob(result.indexOf('base64,') !== -1
+                ? result.split('base64,')[1]
+                : result);
+            const byteArrays = [];
+            for (let offset = 0; offset < byteCharacters.length; offset += 512) {
+                const slice = byteCharacters.slice(offset, offset + 512);
+                const byteNumbers = new Array(slice.length);
+                for (let i = 0; i < slice.length; i++) {
+                    byteNumbers[i] = slice.charCodeAt(i);
+                }
+                const byteArray = new Uint8Array(byteNumbers);
+                byteArrays.push(byteArray);
+            }
+            return new Blob(byteArrays, {
+                type: 'application/vnd.openxmlformats-officedocument.presentationml.presentation'
+            });
+        } else {
+            throw new Error('Format de retour non pris en charge par l\'exportation PowerPoint');
+        }
+    }
+}

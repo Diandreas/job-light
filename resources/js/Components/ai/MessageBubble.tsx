@@ -509,7 +509,9 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({ message }) => {
                                     <Presentation className="h-3.5 w-3.5 mr-1.5" />
                                 )}
                                 <span>Exporter en PowerPoint</span>
+
                             </Button>
+                           
                         </div>
                     )}
                 </motion.div>
@@ -545,8 +547,12 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({ message }) => {
                                         <DropdownMenuItem onClick={handleGeneratePPTX} className="cursor-pointer">
                                             <Presentation className="h-3.5 w-3.5 mr-2" />
                                             <span className="text-sm">Exporter en PowerPoint</span>
+
                                         </DropdownMenuItem>
+
+
                                     )}
+
                                 </DropdownMenuContent>
                             </DropdownMenu>
                         </div>

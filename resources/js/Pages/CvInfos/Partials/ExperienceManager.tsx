@@ -774,7 +774,7 @@ const ExperienceManager: React.FC<Props> = ({ auth, experiences: initialExperien
                         </CardContent>
                     </Card>
 
-                    <ScrollArea className="h-[calc(100vh-300px)] sm:h-[500px] pr-2 mt-3">
+                    <ScrollArea className="h-[calc(60vh-200px)] sm:h-[300px] pr-2 mt-3">
                         <div className="space-y-3">
                             <AnimatePresence mode="sync">
                                 {filteredExperiences.length > 0 ? (

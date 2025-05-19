@@ -387,6 +387,10 @@
             "balance": "Solde",
             "history": "Historique"
         },
+        "coming_soon": {
+            "badge": "Bientôt disponible",
+            "available_from": "Dès le {{date}}"
+        },
         "messages": {
             "loading_error": "Erreur lors du chargement des conversations",
             "chat_loading_error": "Erreur lors du chargement de la conversation",
@@ -866,6 +870,16 @@
             "description": "Conseils personnalisés sur le développement de carrière",
             "placeholder": "Quel conseil de carrière souhaitez-vous ?"
         },
+        "presentation-ppt": {
+            "title": "Créateur de Présentation",
+            "description": "Créez des présentations PowerPoint professionnelles",
+            "placeholder": "Quel type de présentation souhaitez-vous créer ?"
+        },
+        "presentation_ppt": {
+            "title": "Créateur de Présentation",
+            "description": "Créez des présentations PowerPoint professionnelles",
+            "placeholder": "Quel type de présentation souhaitez-vous créer ?"
+        },
         "career_advice": {
             "title": "Conseil de Carrière",
             "description": "Conseils personnalisés sur le développement de carrière"
@@ -881,6 +895,10 @@
         "resume_review": {
             "title": "Analyse de CV",
             "description": "Suggestions d'amélioration du CV"
+        },
+        "internship_report": {
+            "title": "Rapport de Stage & Soutenance",
+            "description": "Générer des rapports de stage et de soutenance complets"
         }
     },
     "sponsorship": {
@@ -1368,6 +1386,49 @@
             "description": "Découvrez nos articles, astuces et conseils pour créer un CV remarquable et optimiser votre recherche d'emploi.",
             "read_more": "Lire l'article",
             "no_articles": "Aucun article disponible pour le moment."
+        }
+    },
+    "components": {
+        "messageBubble": {
+            "copy": {
+                "title": "Contenu copié",
+                "description": "Le texte a été copié dans le presse-papiers"
+            },
+            "copyError": {
+                "title": "Échec de la copie",
+                "description": "Impossible de copier le texte"
+            },
+            "presentation": {
+                "title": "Présentation prête",
+                "description": "Votre fichier PowerPoint a été généré avec succès",
+                "button": "Exporter en PowerPoint",
+                "invalidFormat": {
+                    "title": "Format invalide",
+                    "description": "Le contenu n'est pas dans le format attendu pour une présentation"
+                },
+                "error": {
+                    "title": "Erreur",
+                    "description": "Problème lors de la génération",
+                    "unknownError": "Erreur inconnue"
+                }
+            },
+            "share": {
+                "title": "Partager ce conseil",
+                "asImage": "Partager comme image",
+                "error": {
+                    "title": "Échec du partage",
+                    "description": "Impossible de générer l'image à partager"
+                }
+            },
+            "download": {
+                "title": "Image enregistrée",
+                "description": "L'image a été téléchargée sur votre appareil",
+                "button": "Télécharger"
+            },
+            "actions": {
+                "copy": "Copier",
+                "cancel": "Annuler"
+            }
         }
     }
 }

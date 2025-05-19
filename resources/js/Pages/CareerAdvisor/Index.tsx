@@ -13,7 +13,7 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/Co
 import {
     Brain, Wallet, Clock, Loader, Download, Coins, Trash2,
     MessageSquare, Calendar, History, Menu, Send, Plus,
-    FileText, Presentation, ChevronDown, ChartLine, ChartArea,
+    FileText, Presentation, ChevronDown, FileSpreadsheet,
     FileInput, MessageCircleQuestion, PenTool, Sparkles, ChevronRight, ChevronLeft
 } from 'lucide-react';
 import { MessageBubble } from '@/Components/ai/MessageBubble';
@@ -49,6 +49,136 @@ import {
 import axios from 'axios';
 
 const TOKEN_LIMIT = 2000;
+
+// Ajout du nouveau service "Rapport de stage"
+const REPORT_SERVICE = {
+    id: 'internship-report',
+    icon: FileSpreadsheet,
+    title: 'services.internship_report.title',
+    description: 'services.internship_report.description',
+    cost: 7,
+    category: 'document',
+    formats: ['docx', 'pdf'],
+    comingSoon: true,
+    releaseDate: '20 juin 2025'
+};
+
+// Modification des composants ServiceCard pour gérer les services "Coming Soon"
+const EnhancedServiceCard = ({ service, isSelected, onClick }) => {
+    const { t } = useTranslation();
+    const isComingSoon = service.comingSoon === true;
+    
+    return (
+        <motion.div
+            whileHover={{ y: isComingSoon ? 0 : -3, transition: { duration: 0.2 } }}
+            whileTap={{ scale: isComingSoon ? 0.99 : 0.98 }}
+            onClick={isComingSoon ? undefined : onClick}
+            className={`cursor-${isComingSoon ? 'not-allowed' : 'pointer'} p-3.5 rounded-lg border transition-all relative overflow-hidden
+                ${isSelected
+                    ? 'border-amber-400 dark:border-amber-500 bg-gradient-to-r from-amber-50 to-purple-50 dark:from-amber-500/10 dark:to-purple-500/10 shadow-sm'
+                    : isComingSoon
+                        ? 'border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800'
+                        : 'border-gray-200 dark:border-gray-700 hover:border-amber-300/70 dark:hover:border-amber-500/30 bg-white dark:bg-gray-800 hover:bg-gradient-to-r hover:from-amber-50/50 hover:to-purple-50/50 dark:hover:from-amber-500/5 dark:hover:to-purple-500/5'
+                }`}
+        >
+            <div className="flex items-start justify-between mb-2.5">
+                <div className={`p-1.5 rounded-lg bg-gradient-to-r ${isComingSoon ? 'from-gray-400 to-gray-500 dark:from-gray-600 dark:to-gray-700' : 'from-amber-500 to-purple-500 dark:from-amber-400 dark:to-purple-400'}`}>
+                    <service.icon className="text-white h-4 w-4" />
+                </div>
+                <TooltipProvider>
+                    <Tooltip>
+                        <TooltipTrigger asChild>
+                            <div className={`flex items-center gap-1 text-xs font-medium ${
+                                isComingSoon 
+                                    ? 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400' 
+                                    : 'bg-amber-100 dark:bg-amber-500/20 text-amber-700 dark:text-amber-300'
+                            } px-2 py-0.5 rounded-full`}>
+                                <Coins className="h-3 w-3" />
+                                <span>{service.cost}</span>
+                            </div>
+                        </TooltipTrigger>
+                        <TooltipContent side="top">
+                            <p className="text-xs">Coût du service</p>
+                        </TooltipContent>
+                    </Tooltip>
+                </TooltipProvider>
+            </div>
+            <h3 className="font-medium text-sm mb-1 text-gray-900 dark:text-gray-100">
+                {t(`${service.title}`)}
+            </h3>
+            <p className="text-xs text-gray-600 dark:text-gray-400 leading-relaxed line-clamp-2">
+                {t(`${service.description}`)}
+            </p>
+            
+            {isComingSoon && (
+                <div className="absolute inset-0 bg-gradient-to-b from-transparent via-white/90 to-white/95 dark:via-gray-900/90 dark:to-gray-900/95 flex flex-col items-center justify-end py-3">
+                    <div className="absolute top-0 left-0 right-0 bg-gradient-to-b from-transparent to-transparent h-14"></div>
+                    <div className="text-center max-w-[85%] z-10">
+                        <h3 className="font-medium text-sm mb-1 text-gray-900 dark:text-gray-100">
+                            {t(`${service.title}`)}
+                        </h3>
+                        <Badge className="bg-amber-500 text-white dark:bg-amber-600 dark:text-white mb-1 px-2 py-1 text-xs">
+                            {t('career_advisor.coming_soon.badge')}
+                        </Badge>
+                        <p className="text-xs text-gray-600 dark:text-gray-400">
+                            {t('career_advisor.coming_soon.available_from', { date: service.releaseDate })}
+                        </p>
+                    </div>
+                </div>
+            )}
+        </motion.div>
+    );
+};
+
+// Modification pour la version mobile
+const EnhancedMobileServiceCard = ({ service, isSelected, onClick }) => {
+    const { t } = useTranslation();
+    const isComingSoon = service.comingSoon === true;
+    
+    return (
+        <motion.div
+            whileTap={{ scale: isComingSoon ? 0.99 : 0.98 }}
+            onClick={isComingSoon ? undefined : onClick}
+            className={`flex items-center gap-2 p-2.5 rounded-lg cursor-${isComingSoon ? 'not-allowed' : 'pointer'} transition-all border relative overflow-hidden ${
+                isSelected
+                    ? 'bg-gradient-to-r from-amber-50 to-purple-50 dark:from-amber-900/20 dark:to-purple-900/20 border-amber-300 dark:border-amber-500/40'
+                    : isComingSoon
+                        ? 'border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800'
+                        : 'hover:bg-amber-50/50 dark:hover:bg-amber-500/5 border-transparent dark:hover:border-amber-500/20 bg-white dark:bg-gray-800'
+            }`}
+        >
+            <div className={`p-1.5 rounded-lg bg-gradient-to-r ${isComingSoon ? 'from-gray-400 to-gray-500 dark:from-gray-600 dark:to-gray-700' : 'from-amber-500 to-purple-500 dark:from-amber-400 dark:to-purple-400'}`}>
+                <service.icon className="h-3.5 w-3.5 text-white" />
+            </div>
+            <div className="flex-1 min-w-0">
+                <p className="font-medium text-xs text-gray-900 dark:text-gray-100 truncate">
+                    {t(`${service.title}`)}
+                </p>
+                <div className="flex items-center gap-1 text-xs text-amber-600 dark:text-amber-400">
+                    <Coins className="h-2.5 w-2.5" />
+                    <span>{service.cost}</span>
+                </div>
+            </div>
+            
+            {isComingSoon && (
+                <div className="absolute inset-0 bg-gradient-to-b from-transparent via-white/90 to-white/95 dark:via-gray-900/90 dark:to-gray-900/95 flex flex-col items-center justify-end py-3">
+                    <div className="absolute top-0 left-0 right-0 bg-gradient-to-b from-transparent to-transparent h-14"></div>
+                    <div className="text-center max-w-[85%] z-10">
+                        <h3 className="font-medium text-sm mb-1 text-gray-900 dark:text-gray-100">
+                            {t(`${service.title}`)}
+                        </h3>
+                        <Badge className="bg-amber-500 text-white dark:bg-amber-600 dark:text-white mb-1 px-2 py-1 text-xs">
+                            {t('career_advisor.coming_soon.badge')}
+                        </Badge>
+                        <p className="text-xs text-gray-600 dark:text-gray-400">
+                            {t('career_advisor.coming_soon.available_from', { date: service.releaseDate })}
+                        </p>
+                    </div>
+                </div>
+            )}
+        </motion.div>
+    );
+};
 
 const getMaxHistoryForService = (serviceId) => {
     return serviceId === 'interview-prep' ? 10 : 3;
@@ -248,6 +378,16 @@ export default function Index({ auth, userInfo, chatHistories }) {
     };
 
     const handleServiceSelection = (service) => {
+        // Ne pas permettre la sélection des services marqués comme "coming soon"
+        if (service.comingSoon) {
+            toast({
+                title: t('career_advisor.coming_soon.badge'),
+                description: t('career_advisor.coming_soon.available_from', { date: service.releaseDate }),
+                variant: "default"
+            });
+            return;
+        }
+        
         setSelectedService(service);
         if (!activeChat || activeChat.service_id !== service.id) {
             setActiveChat(null);
@@ -806,8 +946,9 @@ export default function Index({ auth, userInfo, chatHistories }) {
                                         transition={{ duration: 0.4, type: "spring" }}
                                         className="mb-3"
                                     >
-                                        <div className="w-14 h-14 bg-gradient-to-r from-amber-500 to-purple-500 rounded-xl mx-auto flex items-center justify-center mb-2.5 shadow-md">
+                                        <div className="w-20 h-22 bg-gradient-to-r from-amber-500 to-purple-500 rounded-xl mx-auto flex items-center justify-center mb-2.5 shadow-md">
                                             <Brain className="h-7 w-7 text-white" />
+                                            <img src="/mascot/mas.png" alt=""/>
                                         </div>
                                     </motion.div>
                                     <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-2">
@@ -820,26 +961,40 @@ export default function Index({ auth, userInfo, chatHistories }) {
 
                                 {/* Grille de services plus compacte */}
                                 <div className="hidden lg:grid grid-cols-2 xl:grid-cols-3 gap-3 px-2">
+                                    {/* Services existants */}
                                     {SERVICES.map(service => (
-                                        <ServiceCard
-                                            key={service.id}
-                                            {...service}
-                                            isSelected={selectedService.id === service.id}
-                                            onClick={() => handleServiceSelection(service)}
-                                        />
-                                    ))}
-                                </div>
-
-                                {/* Services Mobile - 2 par ligne */}
-                                <div className="lg:hidden grid grid-cols-2 gap-2 px-2">
-                                    {SERVICES.map(service => (
-                                        <MobileServiceCard
+                                        <EnhancedServiceCard
                                             key={service.id}
                                             service={service}
                                             isSelected={selectedService.id === service.id}
                                             onClick={() => handleServiceSelection(service)}
                                         />
                                     ))}
+                                    {/* Nouveau service "coming soon" */}
+                                    <EnhancedServiceCard
+                                        service={REPORT_SERVICE}
+                                        isSelected={false}
+                                        onClick={() => handleServiceSelection(REPORT_SERVICE)}
+                                    />
+                                </div>
+
+                                {/* Services Mobile - 2 par ligne */}
+                                <div className="lg:hidden grid grid-cols-2 gap-2 px-2">
+                                    {/* Services existants */}
+                                    {SERVICES.map(service => (
+                                        <EnhancedMobileServiceCard
+                                            key={service.id}
+                                            service={service}
+                                            isSelected={selectedService.id === service.id}
+                                            onClick={() => handleServiceSelection(service)}
+                                        />
+                                    ))}
+                                    {/* Nouveau service "coming soon" */}
+                                    <EnhancedMobileServiceCard
+                                        service={REPORT_SERVICE}
+                                        isSelected={false}
+                                        onClick={() => handleServiceSelection(REPORT_SERVICE)}
+                                    />
                                 </div>
                             </div>
 

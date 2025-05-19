@@ -387,6 +387,10 @@
             "balance": "Balance",
             "history": "History"
         },
+        "coming_soon": {
+            "badge": "Coming Soon",
+            "available_from": "Available from {{date}}"
+        },
         "messages": {
             "loading_error": "Error loading conversations",
             "chat_loading_error": "Error loading conversation",
@@ -851,7 +855,6 @@
             "description": "Interactive interview simulation",
             "placeholder": "Ask your questions about interview preparation..."
         },
-
         "cover-letter": {
             "title": "Cover Letter",
             "description": "Personalized cover letter",
@@ -866,6 +869,16 @@
             "title": "Career Advice",
             "description": "Personalized career development advice",
             "placeholder": "What career advice would you like?"
+        },
+        "presentation-ppt": {
+            "title": "Presentation Creator",
+            "description": "Create professional PowerPoint presentations",
+            "placeholder": "What kind of presentation would you like to create?"
+        },
+        "presentation_ppt": {
+            "title": "Presentation Creator",
+            "description": "Create professional PowerPoint presentations",
+            "placeholder": "What kind of presentation would you like to create?"
         },
         "career_advice": {
             "title": "Career Advice",
@@ -882,6 +895,10 @@
         "resume_review": {
             "title": "Resume Review",
             "description": "CV improvement suggestions"
+        },
+        "internship_report": {
+            "title": "Internship & Defense Report",
+            "description": "Generate comprehensive internship and defense reports"
         }
     },
     "sponsorship": {
@@ -1369,6 +1386,49 @@
             "description": "Discover our articles, tips and advice to create a standout CV and optimize your job search.",
             "read_more": "Read article",
             "no_articles": "No articles available at the moment."
+        }
+    },
+    "components": {
+        "messageBubble": {
+            "copy": {
+                "title": "Content copied",
+                "description": "The text has been copied to clipboard"
+            },
+            "copyError": {
+                "title": "Copy failed",
+                "description": "Unable to copy text"
+            },
+            "presentation": {
+                "title": "Presentation ready",
+                "description": "Your PowerPoint file has been generated successfully",
+                "button": "Export to PowerPoint",
+                "invalidFormat": {
+                    "title": "Invalid format",
+                    "description": "Content is not in the expected presentation format"
+                },
+                "error": {
+                    "title": "Error",
+                    "description": "Problem during generation",
+                    "unknownError": "Unknown error"
+                }
+            },
+            "share": {
+                "title": "Share this advice",
+                "asImage": "Share as image",
+                "error": {
+                    "title": "Share failed",
+                    "description": "Unable to generate the image to share"
+                }
+            },
+            "download": {
+                "title": "Image saved",
+                "description": "The image has been downloaded to your device",
+                "button": "Download"
+            },
+            "actions": {
+                "copy": "Copy",
+                "cancel": "Cancel"
+            }
         }
     }
 }

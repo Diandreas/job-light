@@ -7,6 +7,7 @@ import { PowerPointService } from '@/Components/ai/PresentationService';
 import { Button } from "@/Components/ui/button";
 import { useToast } from '@/Components/ui/use-toast';
 import { Avatar, AvatarFallback, AvatarImage } from "@/Components/ui/avatar";
+import { useTranslation } from 'react-i18next';
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -31,6 +32,7 @@ interface MessageBubbleProps {
 }
 
 export const MessageBubble: React.FC<MessageBubbleProps> = ({ message }) => {
+    const { t } = useTranslation();
     const isUser = message.role === 'user';
     const isThinking = message.isThinking || false;
     const [displayedContent, setDisplayedContent] = useState(isUser ? message.content : '');
@@ -148,18 +150,16 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({ message }) => {
             await navigator.clipboard.writeText(cleanContentForDisplay(message.content));
             setCopied(true);
             toast({
-                title: "Contenu copié",
-                description: "Le texte a été copié dans le presse-papiers",
-                duration: 2000,
+                title: t('components.messageBubble.copy.title'),
+                description: t('components.messageBubble.copy.description')
             });
             setTimeout(() => setCopied(false), 2000);
         } catch (err) {
             console.error('Échec de la copie:', err);
             toast({
-                title: "Échec de la copie",
-                description: "Impossible de copier le texte",
-                variant: "destructive",
-                duration: 2000,
+                title: t('components.messageBubble.copyError.title'),
+                description: t('components.messageBubble.copyError.description'),
+                variant: "destructive"
             });
         }
     };
@@ -180,8 +180,8 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({ message }) => {
             } catch (parseError) {
                 console.error('Error parsing JSON:', parseError);
                 toast({
-                    title: "Format invalide",
-                    description: "Le contenu n'est pas dans le format attendu pour une présentation",
+                    title: t('components.messageBubble.presentation.invalidFormat.title'),
+                    description: t('components.messageBubble.presentation.invalidFormat.description'),
                     variant: "destructive"
                 });
                 setIsGeneratingPPTX(false);
@@ -207,15 +207,14 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({ message }) => {
             setTimeout(() => setIsPPTXSuccess(false), 3000);
 
             toast({
-                title: "Présentation prête",
-                description: "Votre fichier PowerPoint a été généré avec succès",
-                duration: 3000,
+                title: t('components.messageBubble.presentation.title'),
+                description: t('components.messageBubble.presentation.description')
             });
         } catch (error) {
             console.error('Error generating presentation:', error);
             toast({
-                title: "Erreur",
-                description: `Problème lors de la génération: ${error.message || "Erreur inconnue"}`,
+                title: t('components.messageBubble.presentation.error.title'),
+                description: `${t('components.messageBubble.presentation.error.description')}: ${error.message || t('components.messageBubble.presentation.error.unknownError')}`,
                 variant: "destructive"
             });
         } finally {
@@ -278,7 +277,7 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({ message }) => {
             // Logo et signature
             ctx.fillStyle = '#374151';
             ctx.font = 'bold 16px Inter, system-ui, sans-serif';
-            ctx.fillText('Conseiller de Carrière IA • Guidy', 40, decoratedCanvas.height - 40);
+            ctx.fillText(t('career_advisor.title') + ' • Guidy', 40, decoratedCanvas.height - 40);
 
             // Ajouter un petit logo
             const logo = new Image();
@@ -304,10 +303,9 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({ message }) => {
             console.error('Erreur lors de la génération de l\'image:', error);
             setShowShareOptions(false);
             toast({
-                title: "Échec du partage",
-                description: "Impossible de générer l'image à partager",
-                variant: "destructive",
-                duration: 3000,
+                title: t('components.messageBubble.share.error.title'),
+                description: t('components.messageBubble.share.error.description'),
+                variant: "destructive"
             });
         }
     };
@@ -323,9 +321,8 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({ message }) => {
         document.body.removeChild(link);
 
         toast({
-            title: "Image enregistrée",
-            description: "L'image a été téléchargée sur votre appareil",
-            duration: 2000,
+            title: t('components.messageBubble.download.title'),
+            description: t('components.messageBubble.download.description')
         });
 
         setTimeout(() => setShowShareOptions(false), 500);
@@ -508,10 +505,8 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({ message }) => {
                                 ) : (
                                     <Presentation className="h-3.5 w-3.5 mr-1.5" />
                                 )}
-                                <span>Exporter en PowerPoint</span>
-
+                                <span>{t('components.messageBubble.presentation.button')}</span>
                             </Button>
-
                         </div>
                     )}
                 </motion.div>
@@ -537,22 +532,18 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({ message }) => {
                                 <DropdownMenuContent align="end" className="w-44">
                                     <DropdownMenuItem onClick={handleCopy} className="cursor-pointer">
                                         <Copy className="h-3.5 w-3.5 mr-2" />
-                                        <span className="text-sm">Copier</span>
+                                        <span className="text-sm">{t('components.messageBubble.actions.copy')}</span>
                                     </DropdownMenuItem>
                                     <DropdownMenuItem onClick={handleShare} className="cursor-pointer">
                                         <Share2 className="h-3.5 w-3.5 mr-2" />
-                                        <span className="text-sm">Partager comme image</span>
+                                        <span className="text-sm">{t('components.messageBubble.share.asImage')}</span>
                                     </DropdownMenuItem>
                                     {hasPresentationJson && (
                                         <DropdownMenuItem onClick={handleGeneratePPTX} className="cursor-pointer">
                                             <Presentation className="h-3.5 w-3.5 mr-2" />
-                                            <span className="text-sm">Exporter en PowerPoint</span>
-
+                                            <span className="text-sm">{t('components.messageBubble.presentation.button')}</span>
                                         </DropdownMenuItem>
-
-
                                     )}
-
                                 </DropdownMenuContent>
                             </DropdownMenu>
                         </div>
@@ -582,7 +573,7 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({ message }) => {
                             <div className="flex justify-between items-center mb-3">
                                 <h3 className="text-base font-semibold text-gray-900 dark:text-gray-100 flex items-center">
                                     <Share2 className="h-4 w-4 mr-2 text-amber-500" />
-                                    Partager ce conseil
+                                    {t('components.messageBubble.share.title')}
                                 </h3>
                                 <Button
                                     variant="ghost"
@@ -610,7 +601,7 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({ message }) => {
                                     className="flex-1 bg-gradient-to-r from-amber-500 to-purple-500 hover:from-amber-600 hover:to-purple-600 text-white font-medium shadow-sm"
                                 >
                                     <Download className="h-4 w-4 mr-2" />
-                                    Télécharger
+                                    {t('components.messageBubble.download.button')}
                                 </Button>
 
                                 <Button
@@ -618,7 +609,7 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({ message }) => {
                                     variant="outline"
                                     className="flex-1 border border-gray-200 dark:border-gray-700"
                                 >
-                                    Annuler
+                                    {t('components.messageBubble.actions.cancel')}
                                 </Button>
                             </div>
                         </motion.div>
@@ -626,7 +617,7 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({ message }) => {
                 )}
             </AnimatePresence>
 
-            <style jsx global>{`
+            <style>{`
                 .share-image-style {
                     box-shadow: 0 6px 15px rgba(0, 0, 0, 0.05);
                     border-width: 1px;

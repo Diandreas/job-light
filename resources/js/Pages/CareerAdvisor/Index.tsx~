@@ -13,8 +13,8 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/Co
 import {
     Brain, Wallet, Clock, Loader, Download, Coins, Trash2,
     MessageSquare, Calendar, History, Menu, Send, Plus,
-    FileText, Presentation, ChevronDown, ChartLine, ChartArea,
-    FileInput, MessageCircleQuestion, PenTool, Sparkles
+    FileText, Presentation, ChevronDown,
+    FileInput, MessageCircleQuestion, PenTool, Sparkles, ChevronRight, ChevronLeft
 } from 'lucide-react';
 import { MessageBubble } from '@/Components/ai/MessageBubble';
 import { ServiceCard, MobileServiceCard } from '@/Components/ai/ServiceCard';
@@ -806,8 +806,9 @@ export default function Index({ auth, userInfo, chatHistories }) {
                                         transition={{ duration: 0.4, type: "spring" }}
                                         className="mb-3"
                                     >
-                                        <div className="w-14 h-14 bg-gradient-to-r from-amber-500 to-purple-500 rounded-xl mx-auto flex items-center justify-center mb-2.5 shadow-md">
-                                            <Brain className="h-7 w-7 text-white" />
+                                        <div className="w-20 h-22 bg-gradient-to-r from-amber-500 to-purple-500 rounded-xl mx-auto flex items-center justify-center mb-2.5 shadow-md">
+                                            {/*<Brain className="h-7 w-7 text-white" />*/}
+                                            <img src="/mascot/mas.png" alt=""/>
                                         </div>
                                     </motion.div>
                                     <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-2">

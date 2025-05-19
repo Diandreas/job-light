@@ -691,9 +691,9 @@ export default function Index({ auth, userInfo, chatHistories }) {
     return (
         <AuthenticatedLayout user={auth.user}>
             {/* Rendre l'effet de curseur plus subtil */}
-            <div className="opacity-50"><FluidCursorEffect zIndex={100} /></div>
+            <div className="opacity-20"><FluidCursorEffect zIndex={100} /></div>
 
-            <div className="h-[calc(100vh-4rem)] flex bg-gray-50 dark:bg-gray-900"> {/* Hauteur ajustée pour header et footer */}
+            <div className="h-[calc(95vh-4rem)] flex bg-gray-50 dark:bg-gray-900"> {/* Hauteur ajustée pour header et footer */}
                 {/* Sidebar Desktop - Collapsible */}
                 <div className={`hidden lg:flex ${isSidebarCollapsed ? 'lg:w-16' : 'lg:w-64'}  bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-800 flex-col transition-all duration-300`}>
                     {/* En-tête sidebar avec titre et wallet */}
@@ -1039,7 +1039,7 @@ export default function Index({ auth, userInfo, chatHistories }) {
                                         onChange={handleInputChange}
                                         onKeyDown={handleKeyDown}
                                         placeholder={t('career_advisor.sidebar.ask_question', { service: t(`services.${selectedService.id}.title`) })}
-                                        className="min-h-[48px] max-h-[80px] pr-20 pl-10 py-3 resize-none border border-gray-200 dark:border-gray-700 focus:border-amber-500 dark:focus:border-amber-400 rounded-lg text-sm bg-white dark:bg-gray-800 shadow-sm"
+                                        className=" min-h-[48px] max-h-[80px] pr-20 pl-10 py-3 resize-none border border-gray-200 dark:border-gray-700 focus:border-amber-500 dark:focus:border-amber-400 rounded-lg text-sm bg-white dark:bg-gray-800 shadow-sm"
                                         disabled={isLoading}
                                         maxLength={2000}
                                     />
@@ -1214,7 +1214,7 @@ export default function Index({ auth, userInfo, chatHistories }) {
                                             onChange={handleInputChange}
                                             onKeyDown={handleKeyDown}
                                             placeholder={t(`services.${selectedService.id}.placeholder`)}
-                                            className="min-h-[40px] max-h-[80px] pr-20 pl-3 py-2 resize-none border border-gray-200 dark:border-gray-700 focus:border-amber-500 dark:focus:border-amber-400 rounded-lg text-sm bg-white dark:bg-gray-800 transition-all"
+                                            className=" min-h-[40px] max-h-[80px] pr-20 pl-3 py-2 resize-none border border-gray-200 dark:border-gray-700 focus:border-amber-500 dark:focus:border-amber-400 rounded-lg text-sm bg-white dark:bg-gray-800 transition-all"
                                             disabled={isLoading}
                                             maxLength={2000}
                                         />

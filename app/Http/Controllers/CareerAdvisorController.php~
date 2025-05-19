@@ -1056,8 +1056,8 @@ RÈGLES IMPORTANTES:
 5. Si une information est manquante, utilise une chaîne vide ""
 6. Les tableaux peuvent être vides mais doivent toujours être présents
 7. Tous les champs sont obligatoires, même vides
-8. Les compétences doivent être extraites du CV et listées individuellement , 5 competences max
-9. Les hobbies/centres d'intérêt doivent être extraits du CV et listés individuellement , 5 hobbies max
+8. Les compétences doivent être extraites du CV et listées individuellement
+9. Les hobbies/centres d'intérêt doivent être extraits du CV et listés individuellement
 10. La formation doit être le diplôme le plus élevé ou la formation académique principale
 EOT;
     }

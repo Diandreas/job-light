@@ -1039,7 +1039,7 @@ export default function Index({ auth, userInfo, chatHistories }) {
                                         onChange={handleInputChange}
                                         onKeyDown={handleKeyDown}
                                         placeholder={t('career_advisor.sidebar.ask_question', { service: t(`services.${selectedService.id}.title`) })}
-                                        className="min-h-[48px] max-h-[80px] pr-20 pl-10 py-3 resize-none border border-gray-200 dark:border-gray-700 focus:border-amber-500 dark:focus:border-amber-400 rounded-lg text-sm bg-white dark:bg-gray-800 shadow-sm"
+                                        className=" min-h-[48px] max-h-[80px] pr-20 pl-10 py-3 resize-none border border-gray-200 dark:border-gray-700 focus:border-amber-500 dark:focus:border-amber-400 rounded-lg text-sm bg-white dark:bg-gray-800 shadow-sm"
                                         disabled={isLoading}
                                         maxLength={2000}
                                     />
@@ -1214,7 +1214,7 @@ export default function Index({ auth, userInfo, chatHistories }) {
                                             onChange={handleInputChange}
                                             onKeyDown={handleKeyDown}
                                             placeholder={t(`services.${selectedService.id}.placeholder`)}
-                                            className="min-h-[40px] max-h-[80px] pr-20 pl-3 py-2 resize-none border border-gray-200 dark:border-gray-700 focus:border-amber-500 dark:focus:border-amber-400 rounded-lg text-sm bg-white dark:bg-gray-800 transition-all"
+                                            className=" min-h-[40px] max-h-[80px] pr-20 pl-3 py-2 resize-none border border-gray-200 dark:border-gray-700 focus:border-amber-500 dark:focus:border-amber-400 rounded-lg text-sm bg-white dark:bg-gray-800 transition-all"
                                             disabled={isLoading}
                                             maxLength={2000}
                                         />

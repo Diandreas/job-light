@@ -9,6 +9,13 @@ import {
     CardTitle,
     CardDescription
 } from '@/Components/ui/card';
+import {
+    Drawer,
+    DrawerContent,
+    DrawerHeader,
+    DrawerTitle,
+    DrawerClose
+} from "@/Components/ui/drawer"; // Ajoutez cette ligne
 import { Input } from '@/Components/ui/input';
 import { Label } from '@/Components/ui/label';
 import { Textarea } from "@/Components/ui/textarea";
@@ -872,18 +879,20 @@ const ExperienceManager: React.FC<Props> = ({ auth, experiences: initialExperien
             </Tabs>
 
             {/* Experience Detail Sheet */}
-            <Sheet open={isDetailOpen} onOpenChange={setIsDetailOpen}>
-                <SheetContent side="right" className="w-full sm:max-w-md p-4">
-                    <SheetHeader className="text-left">
-                        <SheetTitle className="text-lg font-bold text-gray-800 dark:text-white">
+            <Drawer open={isDetailOpen} onOpenChange={setIsDetailOpen}>
+                <DrawerContent className="max-h-[85vh]">
+                    <DrawerHeader className="text-left">
+                        <DrawerTitle className="text-lg font-bold text-gray-800 dark:text-white">
                             {selectedExperience?.name}
-                        </SheetTitle>
-                    </SheetHeader>
-                    <div className="mt-4">
+                        </DrawerTitle>
+                        <DrawerClose />
+                    </DrawerHeader>
+                    <div className="px-4 pb-4">
                         {selectedExperience && <ExperienceDetail experience={selectedExperience} />}
                     </div>
-                </SheetContent>
-            </Sheet>
+                    <br/><br/>
+                </DrawerContent>
+            </Drawer>
 
             {/* Form Sheet */}
             <Sheet open={isFormOpen} onOpenChange={setIsFormOpen}>

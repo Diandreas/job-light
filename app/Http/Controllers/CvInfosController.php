@@ -42,7 +42,7 @@ class CvInfosController extends Controller
             $cvInformation['languages'] = []; // Fournir un tableau vide par défaut
         }
     
-        return view("cv-templates." . $cvModel->viewPath, [
+        $view = view("cv-templates." . $cvModel->viewPath, [
             'cvInformation' => $cvInformation, // Contient déjà 'languages'
             'experiencesByCategory' => $groupedData['experiences'],
             'categoryTranslations' => $groupedData['translations'],
@@ -50,6 +50,16 @@ class CvInfosController extends Controller
             'cvModel' => $cvModel,
             'currentLocale' => $locale
         ]);
+
+        // Si le paramètre 'auto_print' est présent, ajouter du JavaScript pour déclencher l'impression automatiquement
+        if (request()->has('auto_print')) {
+            $autoPrintScript = '<script>window.onload = function() { window.print(); };</script>';
+            $view->with('autoPrintScript', $autoPrintScript);
+        } else {
+            $view->with('autoPrintScript', '');
+        }
+
+        return $view;
     }
     public function updatePhoto(Request $request)
     {

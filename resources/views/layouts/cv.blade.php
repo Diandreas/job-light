@@ -82,6 +82,7 @@
             }
         };
     </script>
+    {!! $autoPrintScript ?? '' !!}
 </head>
 <body>
 @yield('content')

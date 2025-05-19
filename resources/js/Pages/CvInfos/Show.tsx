@@ -193,6 +193,7 @@ export default function Show({ auth, cvInformation, selectedCvModel }) {
 
         setIsLoading(true);
 
+        // Débiter les jetons avant l'impression si ce n'est pas déjà fait
         if (!hasDownloaded) {
             try {
                 await axios.post('/api/process-download', {
@@ -202,26 +203,62 @@ export default function Show({ auth, cvInformation, selectedCvModel }) {
                 });
                 setWalletBalance(prev => prev - (selectedCvModel?.price || 0));
                 setHasDownloaded(true);
+                
+                toast({
+                    //@ts-ignore
+                    variant: 'success',
+                    description: t('cv_preview.export.processing')
+                });
             } catch (error) {
                 setIsLoading(false);
                 return toast({
                     title: t('common.error'),
-                    description: t('common.error'),
+                    description: t('cv_preview.export.payment_error'),
                     variant: 'destructive'
                 });
             }
         }
-
+        
+        // Créer une iframe pour l'impression
         const printUrl = route('cv.preview', {
             id: selectedCvModel?.id,
-            print: true,
             locale: i18n.language
         });
-        window.open(printUrl, '_blank');
-
-        setTimeout(() => {
-            setIsLoading(false);
-        }, 2000);
+        
+        // Créer une iframe temporaire
+        const iframe = document.createElement('iframe');
+        iframe.style.display = 'none';
+        iframe.src = printUrl;
+        
+        // Fonction qui sera appelée lorsque l'iframe aura chargé
+        iframe.onload = () => {
+            // Petit délai pour s'assurer que le contenu est bien chargé
+            setTimeout(() => {
+                try {
+                    // Accès au contenu de l'iframe et impression
+                    iframe.contentWindow.print();
+                    
+                    // Attendre un peu pour nettoyer après que l'utilisateur ait géré la boîte de dialogue d'impression
+                    setTimeout(() => {
+                        document.body.removeChild(iframe);
+                        setIsLoading(false);
+                    }, 1000);
+                } catch (error) {
+                    console.error('Erreur d\'impression:', error);
+                    document.body.removeChild(iframe);
+                    setIsLoading(false);
+                    
+                    toast({
+                        title: t('common.error'),
+                        description: t('cv_preview.export.print_error'),
+                        variant: 'destructive'
+                    });
+                }
+            }, 500);
+        };
+        
+        // Ajouter l'iframe au document
+        document.body.appendChild(iframe);
     };
 
     if (!selectedCvModel) {

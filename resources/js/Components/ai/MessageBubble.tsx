@@ -511,7 +511,7 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({ message }) => {
                                 <span>Exporter en PowerPoint</span>
 
                             </Button>
-                           
+
                         </div>
                     )}
                 </motion.div>

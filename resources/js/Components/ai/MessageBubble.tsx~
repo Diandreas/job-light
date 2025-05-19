@@ -511,10 +511,7 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({ message }) => {
                                 <span>Exporter en PowerPoint</span>
 
                             </Button>
-                            <div className="mt-2 p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
-                                {JSON.stringify(extractPresentationJson(message.content), null, 2)}
-
-                            </div>
+                           
                         </div>
                     )}
                 </motion.div>

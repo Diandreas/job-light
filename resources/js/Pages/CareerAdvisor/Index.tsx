@@ -67,7 +67,7 @@ const REPORT_SERVICE = {
 const EnhancedServiceCard = ({ service, isSelected, onClick }) => {
     const { t } = useTranslation();
     const isComingSoon = service.comingSoon === true;
-    
+
     return (
         <motion.div
             whileHover={{ y: isComingSoon ? 0 : -3, transition: { duration: 0.2 } }}
@@ -89,8 +89,8 @@ const EnhancedServiceCard = ({ service, isSelected, onClick }) => {
                     <Tooltip>
                         <TooltipTrigger asChild>
                             <div className={`flex items-center gap-1 text-xs font-medium ${
-                                isComingSoon 
-                                    ? 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400' 
+                                isComingSoon
+                                    ? 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400'
                                     : 'bg-amber-100 dark:bg-amber-500/20 text-amber-700 dark:text-amber-300'
                             } px-2 py-0.5 rounded-full`}>
                                 <Coins className="h-3 w-3" />
@@ -109,7 +109,7 @@ const EnhancedServiceCard = ({ service, isSelected, onClick }) => {
             <p className="text-xs text-gray-600 dark:text-gray-400 leading-relaxed line-clamp-2">
                 {t(`${service.description}`)}
             </p>
-            
+
             {isComingSoon && (
                 <div className="absolute inset-0 bg-gradient-to-b from-transparent via-white/90 to-white/95 dark:via-gray-900/90 dark:to-gray-900/95 flex flex-col items-center justify-end py-3">
                     <div className="absolute top-0 left-0 right-0 bg-gradient-to-b from-transparent to-transparent h-14"></div>
@@ -134,7 +134,7 @@ const EnhancedServiceCard = ({ service, isSelected, onClick }) => {
 const EnhancedMobileServiceCard = ({ service, isSelected, onClick }) => {
     const { t } = useTranslation();
     const isComingSoon = service.comingSoon === true;
-    
+
     return (
         <motion.div
             whileTap={{ scale: isComingSoon ? 0.99 : 0.98 }}
@@ -159,7 +159,7 @@ const EnhancedMobileServiceCard = ({ service, isSelected, onClick }) => {
                     <span>{service.cost}</span>
                 </div>
             </div>
-            
+
             {isComingSoon && (
                 <div className="absolute inset-0 bg-gradient-to-b from-transparent via-white/90 to-white/95 dark:via-gray-900/90 dark:to-gray-900/95 flex flex-col items-center justify-end py-3">
                     <div className="absolute top-0 left-0 right-0 bg-gradient-to-b from-transparent to-transparent h-14"></div>
@@ -264,7 +264,7 @@ const ChatHistoryCard = ({ chat, isActive, onSelect, onDelete }) => {
                 </div>
             </div>
 
-            {/* Bouton supprimer plus compact */}
+            {/* Tooltip-triggered "Delete" button */}
             <TooltipProvider>
                 <Tooltip>
                     <TooltipTrigger asChild>
@@ -287,7 +287,7 @@ const ChatHistoryCard = ({ chat, isActive, onSelect, onDelete }) => {
                         </motion.div>
                     </TooltipTrigger>
                     <TooltipContent side="left">
-                        <p className="text-xs">Supprimer</p>
+                        <p className="text-xs">{t('career_advisor.sidebar.delete')}</p>
                     </TooltipContent>
                 </Tooltip>
             </TooltipProvider>
@@ -297,10 +297,10 @@ const ChatHistoryCard = ({ chat, isActive, onSelect, onDelete }) => {
 
 // Messages temporaires pour simuler la réflexion de l'IA
 const thinkingMessages = [
-    "Analyse en cours...",
-    "Réflexion sur votre demande...",
-    "Génération de la réponse...",
-    "Finalisation des conseils..."
+    "career_advisor.chat.thinking.analyzing",
+    "career_advisor.chat.thinking.reflecting",
+    "career_advisor.chat.thinking.generating",
+    "career_advisor.chat.thinking.finalizing"
 ];
 
 export default function Index({ auth, userInfo, chatHistories }) {
@@ -387,7 +387,7 @@ export default function Index({ auth, userInfo, chatHistories }) {
             });
             return;
         }
-        
+
         setSelectedService(service);
         if (!activeChat || activeChat.service_id !== service.id) {
             setActiveChat(null);
@@ -503,7 +503,7 @@ export default function Index({ auth, userInfo, chatHistories }) {
         setThinkingIndex(0);
         setTempMessage({
             role: 'assistant',
-            content: thinkingMessages[0],
+            content: t(thinkingMessages[0]),
             timestamp: new Date(),
             isThinking: true
         });
@@ -518,7 +518,7 @@ export default function Index({ auth, userInfo, chatHistories }) {
                 const next = (prev + 1) % thinkingMessages.length;
                 setTempMessage({
                     role: 'assistant',
-                    content: thinkingMessages[next],
+                    content: t(thinkingMessages[next]),
                     timestamp: new Date(),
                     isThinking: true
                 });
@@ -695,12 +695,12 @@ export default function Index({ auth, userInfo, chatHistories }) {
 
             <div className="h-[calc(100vh-4rem)] flex bg-gray-50 dark:bg-gray-900"> {/* Hauteur ajustée pour header et footer */}
                 {/* Sidebar Desktop - Collapsible */}
-                <div className={`hidden lg:flex ${isSidebarCollapsed ? 'lg:w-16' : 'lg:w-64'} bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-800 flex-col transition-all duration-300`}>
+                <div className={`hidden lg:flex ${isSidebarCollapsed ? 'lg:w-16' : 'lg:w-64'}  bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-800 flex-col transition-all duration-300`}>
                     {/* En-tête sidebar avec titre et wallet */}
                     <div className="p-3 border-b border-gray-200 dark:border-gray-800 flex-shrink-0">
                         <div className={`flex items-center ${isSidebarCollapsed ? 'justify-center' : 'gap-2'} mb-3`}>
                             <Avatar className="w-7 h-7">
-                                <AvatarImage src="/ai-avatar.png" alt="AI Assistant" />
+                                <AvatarImage src="/mascot/mascot.png" alt="AI Assistant" />
                                 <AvatarFallback className="bg-gradient-to-r from-amber-500 to-purple-500 text-white text-xs">
                                     AI
                                 </AvatarFallback>
@@ -713,7 +713,7 @@ export default function Index({ auth, userInfo, chatHistories }) {
                                         </h1>
                                         <Badge variant="secondary" className="text-xs px-1.5 py-0 h-4 bg-amber-50 text-amber-600 dark:bg-amber-900/30 dark:text-amber-300">
                                             <Sparkles className="w-2.5 h-2.5 mr-0.5" />
-                                            Pro
+                                            {t('components.sidebar.pro_badge')}
                                         </Badge>
                                     </div>
                                     <p className="text-xs text-gray-600 dark:text-gray-400 truncate">
@@ -732,7 +732,7 @@ export default function Index({ auth, userInfo, chatHistories }) {
                                     {walletBalance.toLocaleString()}
                                 </span>
                                 <span className="text-xs text-amber-600 dark:text-amber-400">
-                                    crédits
+                                    {t('components.sidebar.credits')}
                                 </span>
                             </div>
                         )}
@@ -759,7 +759,7 @@ export default function Index({ auth, userInfo, chatHistories }) {
                                     </Button>
                                 </TooltipTrigger>
                                 <TooltipContent side="right">
-                                    <p className="text-xs">Nouveau message</p>
+                                    <p className="text-xs">{t('career_advisor.chat.new')}</p>
                                 </TooltipContent>
                             </Tooltip>
                         </TooltipProvider>
@@ -791,7 +791,7 @@ export default function Index({ auth, userInfo, chatHistories }) {
                                         <ChevronRight className="h-4 w-4" />
                                     ) : (
                                         <div className="flex items-center w-full justify-between">
-                                            <span className="text-xs">Réduire</span>
+                                            <span className="text-xs">{t('career_advisor.sidebar.collapse')}</span>
                                             <ChevronLeft className="h-3.5 w-3.5" />
                                         </div>
                                     )}
@@ -815,9 +815,9 @@ export default function Index({ auth, userInfo, chatHistories }) {
                                                                 onClick={() => handleChatSelection(chat)}
                                                                 className={`w-10 h-10 flex items-center justify-center rounded-full cursor-pointer ${
                                                                     activeChat?.context_id === chat.context_id
-                                                                        ? 'bg-amber-100 dark:bg-amber-900/30 text-amber-600 dark:text-amber-300'
-                                                                        : 'bg-white dark:bg-gray-800 text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-700'
-                                                                } border border-gray-200 dark:border-gray-700 shadow-sm`}
+                                                                        ? 'bg-amber-100 dark:bg-amber-900/30 text-amber-600 dark:text-amber-300 border border-amber-300 dark:border-amber-600'
+                                                                        : 'bg-white dark:bg-gray-800 text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-700 border border-gray-200 dark:border-gray-700'
+                                                                } shadow-sm transition-all duration-200`}
                                                             >
                                                                 <MessageSquare className="h-4 w-4" />
                                                             </motion.div>
@@ -842,7 +842,7 @@ export default function Index({ auth, userInfo, chatHistories }) {
                                     <div className="text-center py-4">
                                         <MessageSquare className="h-6 w-6 text-gray-300 dark:text-gray-600 mx-auto mb-2" />
                                         <p className="text-xs text-gray-500 dark:text-gray-400">
-                                            Aucune conversation
+                                            {t('career_advisor.history.empty')}
                                         </p>
                                     </div>
                                 )}
@@ -864,15 +864,31 @@ export default function Index({ auth, userInfo, chatHistories }) {
                                             {t('career_advisor.history.title')}
                                         </Button>
                                     </SheetTrigger>
-                                    <SheetContent side="left" className="w-64 bg-white dark:bg-gray-900">
+                                    <SheetContent side="left" className="w-[85vw] max-w-[300px] bg-white dark:bg-gray-900 p-4">
                                         <SheetHeader className="text-left">
                                             <SheetTitle className="flex items-center gap-2 text-sm">
-                                                <Brain className="h-4 w-4 text-amber-500" />
-                                                {t('career_advisor.history.title')}
+                                                <div className="w-7 h-7 bg-gradient-to-r from-amber-500 to-purple-500 rounded-lg flex items-center justify-center">
+                                                    <Brain className="h-4 w-4 text-white" />
+                                                </div>
+                                                {t('career_advisor.title')}
+                                                <Badge variant="secondary" className="text-xs px-1.5 py-0 h-4 bg-amber-50 text-amber-600 dark:bg-amber-900/30 dark:text-amber-300">
+                                                    <Sparkles className="w-2.5 h-2.5 mr-0.5" />
+                                                    {t('components.sidebar.pro_badge')}
+                                                </Badge>
                                             </SheetTitle>
                                         </SheetHeader>
                                         <Separator className="my-2.5" />
                                         <div className="space-y-2.5">
+                                            <div className="bg-gradient-to-r from-amber-50 to-purple-50 dark:from-amber-900/20 dark:to-purple-900/20 border border-amber-200 dark:border-amber-700 px-2.5 py-1.5 rounded-lg flex items-center gap-2 mb-2.5">
+                                                <div className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse" />
+                                                <Wallet className="h-3 w-3 text-amber-600 dark:text-amber-400" />
+                                                <span className="text-xs font-semibold text-amber-700 dark:text-amber-300">
+                                                    {walletBalance.toLocaleString()}
+                                                </span>
+                                                <span className="text-xs text-amber-600 dark:text-amber-400">
+                                                    {t('components.sidebar.credits')}
+                                                </span>
+                                            </div>
                                             <Button
                                                 onClick={createNewChat}
                                                 className="w-full bg-gradient-to-r from-amber-500 to-purple-500 text-white h-8 text-xs"
@@ -880,8 +896,16 @@ export default function Index({ auth, userInfo, chatHistories }) {
                                                 <Plus className="h-3.5 w-3.5 mr-1.5" />
                                                 {t('career_advisor.chat.new')}
                                             </Button>
-                                            <ScrollArea className="h-[calc(100vh-180px)]">
-                                                <div className="space-y-1.5">
+                                            <div className="flex items-center justify-between mt-4 mb-2">
+                                                <h3 className="text-xs font-semibold text-gray-700 dark:text-gray-300">
+                                                    {t('career_advisor.history.title')}
+                                                </h3>
+                                                <Badge variant="outline" className="text-xs h-5 px-1.5 border-amber-200 text-amber-600">
+                                                    {userChats.filter(chat => chat.service_id === selectedService.id).length}
+                                                </Badge>
+                                            </div>
+                                            <ScrollArea className="h-[calc(100vh-220px)]">
+                                                <div className="space-y-1.5 pr-2">
                                                     <AnimatePresence>
                                                         {userChats
                                                             .filter(chat => chat.service_id === selectedService.id)
@@ -895,6 +919,14 @@ export default function Index({ auth, userInfo, chatHistories }) {
                                                                 />
                                                             ))}
                                                     </AnimatePresence>
+                                                    {userChats.filter(chat => chat.service_id === selectedService.id).length === 0 && (
+                                                        <div className="text-center py-4">
+                                                            <MessageSquare className="h-6 w-6 text-gray-300 dark:text-gray-600 mx-auto mb-2" />
+                                                            <p className="text-xs text-gray-500 dark:text-gray-400">
+                                                                {t('career_advisor.history.empty')}
+                                                            </p>
+                                                        </div>
+                                                    )}
                                                 </div>
                                             </ScrollArea>
                                         </div>
@@ -1006,7 +1038,7 @@ export default function Index({ auth, userInfo, chatHistories }) {
                                         value={data.question}
                                         onChange={handleInputChange}
                                         onKeyDown={handleKeyDown}
-                                        placeholder={`Posez votre question... (${t(`services.${selectedService.id}.title`)})`}
+                                        placeholder={t('career_advisor.sidebar.ask_question', { service: t(`services.${selectedService.id}.title`) })}
                                         className="min-h-[48px] max-h-[80px] pr-20 pl-10 py-3 resize-none border border-gray-200 dark:border-gray-700 focus:border-amber-500 dark:focus:border-amber-400 rounded-lg text-sm bg-white dark:bg-gray-800 shadow-sm"
                                         disabled={isLoading}
                                         maxLength={2000}
@@ -1027,7 +1059,7 @@ export default function Index({ auth, userInfo, chatHistories }) {
                                                     </div>
                                                 </TooltipTrigger>
                                                 <TooltipContent side="top">
-                                                    <p className="text-xs">Appuyez sur Entrée pour envoyer</p>
+                                                    <p className="text-xs">{t('career_advisor.sidebar.enter_to_send')}</p>
                                                 </TooltipContent>
                                             </Tooltip>
                                         </TooltipProvider>
@@ -1222,7 +1254,7 @@ export default function Index({ auth, userInfo, chatHistories }) {
                                         {data.question.length > 0 && (
                                             <span className="text-gray-400 dark:text-gray-500 text-[10px] flex items-center gap-1">
                                                 <kbd className="px-1 py-0 text-[10px] font-mono bg-gray-100 dark:bg-gray-700 rounded">⏎</kbd>
-                                                envoyer
+                                                {t('career_advisor.sidebar.enter_to_send')}
                                             </span>
                                         )}
                                     </div>

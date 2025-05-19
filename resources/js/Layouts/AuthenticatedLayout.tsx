@@ -619,8 +619,15 @@ export default function Authenticated({ user, header, children }: PropsWithChild
                                 <Link href="/" className="flex items-center gap-1.5 sm:gap-2">
                                     <Sparkles className="h-4 w-4 sm:h-6 sm:w-6 text-amber-500 dark:text-amber-400" />
                                     <span className="font-bold text-base sm:text-2xl bg-gradient-to-r from-amber-500 to-purple-500 dark:from-amber-400 dark:to-purple-400 text-transparent bg-clip-text">
-                                        {route().current('career-advisor.index') ? 'Guidy AI' : t('brand')}
+                                        { route().current('career-advisor.index') ? 'Guidy AI' : t('brand')}
                                     </span>
+                                    {route().current('career-advisor.index') && (
+                                        <Badge variant="secondary" className="text-xs px-1.5 py-0 h-4 bg-amber-50 text-amber-600 dark:bg-amber-900/30 dark:text-amber-300">
+                                            <Sparkles className="w-2.5 h-2.5 mr-0.5" />
+                                            {t('components.sidebar.pro_badge')}
+                                        </Badge>
+                                    )}
+
                                 </Link>
                             </div>
 
@@ -686,8 +693,11 @@ export default function Authenticated({ user, header, children }: PropsWithChild
                             <SheetTitle className="flex items-center gap-1.5 sm:gap-2 text-base sm:text-lg">
                                 <Sparkles className="h-4 w-4 sm:h-5 sm:w-5 text-amber-500 dark:text-amber-400" />
                                 <span className="bg-gradient-to-r from-amber-500 to-purple-500 dark:from-amber-400 dark:to-purple-400 text-transparent bg-clip-text">
-                                    {route().current('career-advisor.index') ? 'Guidy AI' : t('menu.title')}
+                                    {route().current('career-advisor.index') ? 'Guidy AI ' : t('menu.title')}
+
+
                                 </span>
+
                             </SheetTitle>
                         </SheetHeader>
                         <div className="mt-4 sm:mt-6 flex flex-col gap-2 sm:gap-3">

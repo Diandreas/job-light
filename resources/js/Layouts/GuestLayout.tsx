@@ -3,7 +3,7 @@ import { Head, Link } from '@inertiajs/react';
 import { useTranslation } from 'react-i18next';
 import { Toaster } from "@/Components/ui/toaster";
 import { ThemeToggle } from '@/Components/ThemeToggle';
-import { Sparkles, Globe, Menu, X, MessageSquare, Mail } from 'lucide-react';
+import { Sparkles, Globe, Menu, X, MessageSquare, Mail, BookCopy } from 'lucide-react';
 import { Button } from '@/Components/ui/button';
 import { cn } from "@/lib/utils";
 import { motion, AnimatePresence } from 'framer-motion';
@@ -91,6 +91,18 @@ export default function Guest({ children }: PropsWithChildren) {
 
                             {/* Desktop Navigation */}
                             <div className="hidden sm:flex sm:items-center sm:gap-6">
+                                <Link
+                                    href={route('blog.index')}
+                                    className={cn(
+                                        "text-sm font-medium transition-all px-4 py-2 rounded-full flex items-center gap-2",
+                                        route().current('blog.index')
+                                            ? "bg-gradient-to-r from-amber-500 to-purple-500 text-white shadow-md"
+                                            : "hover:bg-amber-50 dark:hover:bg-amber-500/20"
+                                    )}
+                                >
+                                    <BookCopy className="h-4 w-4" />
+                                    {t('menu.blog')}
+                                </Link>
                                 <LanguageSelector />
                                 <ThemeToggle />
                                 <Link
@@ -148,6 +160,18 @@ export default function Guest({ children }: PropsWithChildren) {
                                     <div className="px-4 py-2">
                                         <LanguageSelector />
                                     </div>
+                                    <Link
+                                        href={route('blog.index')}
+                                        className={cn(
+                                            "flex items-center gap-3 px-4 py-3 rounded-lg transition-all",
+                                            route().current('blog.index')
+                                                ? "bg-gradient-to-r from-amber-500 to-purple-500 text-white shadow-md"
+                                                : "text-gray-700 dark:text-gray-100 hover:bg-amber-50 dark:hover:bg-amber-500/20"
+                                        )}
+                                    >
+                                        <BookCopy className="h-5 w-5 text-amber-500 dark:text-amber-400" />
+                                        {t('menu.blog')}
+                                    </Link>
                                     <Link
                                         href={route('login')}
                                         className={cn(

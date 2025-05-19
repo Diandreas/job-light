@@ -2,10 +2,11 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import { Head, Link } from '@inertiajs/react';
-import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
+// import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Card, CardContent } from "@/Components/ui/card";
 import { Button } from "@/Components/ui/button";
 import { ArrowRight, Calendar } from 'lucide-react';
+import GuestLayout from '@/Layouts/GuestLayout';
 
 interface BlogPost {
     id: number;
@@ -21,7 +22,7 @@ export default function Index({ auth, blogs }: { auth: any, blogs: BlogPost[] })
     const { t } = useTranslation();
 
     return (
-        <AuthenticatedLayout user={auth.user}>
+        <GuestLayout user={auth.user}>
             <Head title={t('blog.index.title', 'Articles de blog')} />
             <div className="w-full p-4 md:p-6 space-y-6">
                 <motion.div
@@ -84,6 +85,6 @@ export default function Index({ auth, blogs }: { auth: any, blogs: BlogPost[] })
                     )}
                 </motion.div>
             </div>
-        </AuthenticatedLayout>
+        </GuestLayout>
     );
 } 

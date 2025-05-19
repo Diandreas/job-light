@@ -70,7 +70,9 @@
         "createCV": "Create a CV",
         "assistant": "Guidy Assistant",
         "dashboard": "Dashboard",
-        "profile": "My Profile"
+        "profile": "My Profile",
+        "jobPortal": "Job Portal",
+        "blog": "Blog"
     },
     "cv": {
         "navigation": "CV Navigation",
@@ -228,7 +230,8 @@
         "next": "Next",
         "manage": "Manage",
         "close": "Close",
-        "tokens": "tokens"
+        "tokens": "tokens",
+        "comingSoon": "Coming Soon"
     },
     "wallet": {
         "balance": "Balance",
@@ -445,6 +448,14 @@
         },
         "common": {
             "tokens": "tokens"
+        },
+        "sidebar": {
+            "collapse": "Collapse",
+            "expand": "Expand",
+            "delete": "Delete",
+            "ask_question": "Ask your question... ({{service}})",
+            "enter_to_send": "Press Enter to send",
+            "token_cost": "Token cost"
         }
     },
     "hobbies": {
@@ -1429,6 +1440,21 @@
                 "copy": "Copy",
                 "cancel": "Cancel"
             }
+        },
+        "sidebar": {
+            "active": "Active",
+            "pro_badge": "Pro",
+            "credits": "credits",
+            "conversations": "Conversations",
+            "active_conversation": "Active conversation",
+            "ai_assistant": "AI Assistant",
+            "quick_actions": "Quick actions"
+        }
+    },
+    "jobPortal": {
+        "comingSoon": {
+            "title": "Coming Soon!",
+            "description": "We're working hard to bring you our new job portal feature. Stay tuned for exciting opportunities in your career journey!"
         }
     }
 }

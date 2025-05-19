@@ -70,7 +70,9 @@
         "createCV": "Créer un CV",
         "assistant": "Assistant Guidy",
         "dashboard": "Tableau de bord",
-        "profile": "Mon Profil"
+        "profile": "Mon Profil",
+        "jobPortal": "Portail d'emploi",
+        "blog": "Blog"
     },
     "cv": {
         "navigation": "Navigation CV",
@@ -228,7 +230,8 @@
         "next": "Suivant",
         "manage": "Gérer",
         "close": "Fermer",
-        "tokens": "jetons"
+        "tokens": "jetons",
+        "comingSoon": "Bientôt disponible"
     },
     "wallet": {
         "balance": "Solde",
@@ -445,6 +448,14 @@
         },
         "common": {
             "tokens": "tokens"
+        },
+        "sidebar": {
+            "collapse": "Réduire",
+            "expand": "Développer",
+            "delete": "Supprimer",
+            "ask_question": "Posez votre question... ({{service}})",
+            "enter_to_send": "Appuyez sur Entrée pour envoyer",
+            "token_cost": "Coût en jetons"
         }
     },
     "hobbies": {
@@ -1429,6 +1440,21 @@
                 "copy": "Copier",
                 "cancel": "Annuler"
             }
+        },
+        "sidebar": {
+            "active": "Active",
+            "pro_badge": "Pro",
+            "credits": "crédits",
+            "conversations": "Conversations",
+            "active_conversation": "Conversation active",
+            "ai_assistant": "Assistant IA",
+            "quick_actions": "Actions rapides"
+        }
+    },
+    "jobPortal": {
+        "comingSoon": {
+            "title": "Bientôt disponible !",
+            "description": "Nous travaillons activement pour vous proposer notre nouvelle fonctionnalité de portail d'emploi. Restez à l'écoute pour des opportunités passionnantes dans votre parcours professionnel !"
         }
     }
 }

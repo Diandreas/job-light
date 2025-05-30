@@ -43,6 +43,11 @@ class User extends Authenticatable
         'sponsor_id',
         'sponsor_code',
         'sponsor_expires_at',
+        'google_id',
+        'linkedin_id',
+        'social_avatar',
+        'social_token',
+        'social_refresh_token',
     ];
 
     /**

@@ -63,9 +63,8 @@ export default function Register({ referralCode }) {
     };
 
     const InputIcon = ({ icon: Icon, error }) => (
-        <div className={`absolute left-3 top-1/2 -translate-y-1/2 transition-colors ${
-            error ? 'text-red-500 dark:text-red-400' : 'text-gray-400 dark:text-gray-500'
-        }`}>
+        <div className={`absolute left-3 top-1/2 -translate-y-1/2 transition-colors ${error ? 'text-red-500 dark:text-red-400' : 'text-gray-400 dark:text-gray-500'
+            }`}>
             <Icon className="w-5 h-5" />
         </div>
     );
@@ -92,9 +91,9 @@ export default function Register({ referralCode }) {
                         <h2 className="text-2xl font-bold bg-gradient-to-r from-amber-500 to-purple-500 bg-clip-text text-transparent">
                             {t('auth.register.title')}
                         </h2>
-                        <p className="text-gray-500 dark:text-gray-400 text-sm">
+                        <div className="text-gray-500 dark:text-gray-400 text-sm">
                             {t('auth.register.subtitle')}
-                        </p>
+                        </div>
 
                         {/* Display referral info banner if there's a referral code */}
                         {referralCode && (
@@ -107,6 +106,57 @@ export default function Register({ referralCode }) {
                                 <span className="text-sm">Vous avez été parrainé(e) ! Des avantages vous attendent.</span>
                             </motion.div>
                         )}
+
+                        {/* Social Register Buttons */}
+                        <motion.div
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ delay: 0.3 }}
+                            className="mt-4 space-y-3"
+                        >
+                            <div className="text-center text-sm text-gray-500 dark:text-gray-400 mb-2">
+                                {t('auth.register.social') || "S'inscrire avec"}
+                            </div>
+                            <div className="grid grid-cols-2 gap-3">
+                                <a
+                                    href={route('social.login', { provider: 'google' })}
+                                    className="flex items-center justify-center gap-2 bg-white dark:bg-gray-700/50 border border-gray-200 dark:border-gray-700 rounded-md py-2 px-4 shadow-sm hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                                >
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="24px" height="24px" className="dark:hidden">
+                                        <path fill="#FFC107" d="M43.611,20.083H42V20H24v8h11.303c-1.649,4.657-6.08,8-11.303,8c-6.627,0-12-5.373-12-12c0-6.627,5.373-12,12-12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C12.955,4,4,12.955,4,24c0,11.045,8.955,20,20,20c11.045,0,20-8.955,20-20C44,22.659,43.862,21.35,43.611,20.083z" />
+                                        <path fill="#FF3D00" d="M6.306,14.691l6.571,4.819C14.655,15.108,18.961,12,24,12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C16.318,4,9.656,8.337,6.306,14.691z" />
+                                        <path fill="#4CAF50" d="M24,44c5.166,0,9.86-1.977,13.409-5.192l-6.19-5.238C29.211,35.091,26.715,36,24,36c-5.202,0-9.619-3.317-11.283-7.946l-6.522,5.025C9.505,39.556,16.227,44,24,44z" />
+                                        <path fill="#1976D2" d="M43.611,20.083H42V20H24v8h11.303c-0.792,2.237-2.231,4.166-4.087,5.571c0.001-0.001,0.002-0.001,0.003-0.002l6.19,5.238C36.971,39.205,44,34,44,24C44,22.659,43.862,21.35,43.611,20.083z" />
+                                    </svg>
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="24px" height="24px" className="hidden dark:block">
+                                        <path fill="#FFD54F" d="M43.611,20.083H42V20H24v8h11.303c-1.649,4.657-6.08,8-11.303,8c-6.627,0-12-5.373-12-12c0-6.627,5.373-12,12-12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C12.955,4,4,12.955,4,24c0,11.045,8.955,20,20,20c11.045,0,20-8.955,20-20C44,22.659,43.862,21.35,43.611,20.083z" />
+                                        <path fill="#FF7043" d="M6.306,14.691l6.571,4.819C14.655,15.108,18.961,12,24,12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C16.318,4,9.656,8.337,6.306,14.691z" />
+                                        <path fill="#66BB6A" d="M24,44c5.166,0,9.86-1.977,13.409-5.192l-6.19-5.238C29.211,35.091,26.715,36,24,36c-5.202,0-9.619-3.317-11.283-7.946l-6.522,5.025C9.505,39.556,16.227,44,24,44z" />
+                                        <path fill="#42A5F5" d="M43.611,20.083H42V20H24v8h11.303c-0.792,2.237-2.231,4.166-4.087,5.571c0.001-0.001,0.002-0.001,0.003-0.002l6.19,5.238C36.971,39.205,44,34,44,24C44,22.659,43.862,21.35,43.611,20.083z" />
+                                    </svg>
+                                    <span>Google</span>
+                                </a>
+                                <a
+                                    href={route('social.login', { provider: 'linkedin' })}
+                                    className="flex items-center justify-center gap-2 bg-white dark:bg-gray-700/50 border border-gray-200 dark:border-gray-700 rounded-md py-2 px-4 shadow-sm hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                                >
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="24px" height="24px" className="dark:hidden">
+                                        <path fill="#0288D1" d="M42,37c0,2.762-2.238,5-5,5H11c-2.761,0-5-2.238-5-5V11c0-2.762,2.239-5,5-5h26c2.762,0,5,2.238,5,5V37z" />
+                                        <path fill="#FFF" d="M12 19H17V36H12zM14.485 17h-.028C12.965 17 12 15.888 12 14.499 12 13.08 12.995 12 14.514 12c1.521 0 2.458 1.08 2.486 2.499C17 15.887 16.035 17 14.485 17zM36 36h-5v-9.099c0-2.198-1.225-3.698-3.192-3.698-1.501 0-2.313 1.012-2.707 1.99C24.957 25.543 25 26.511 25 27v9h-5V19h5v2.616C25.721 20.5 26.85 19 29.738 19c3.578 0 6.261 2.25 6.261 7.274L36 36 36 36z" />
+                                    </svg>
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="24px" height="24px" className="hidden dark:block">
+                                        <path fill="#2867B2" d="M42,37c0,2.762-2.238,5-5,5H11c-2.761,0-5-2.238-5-5V11c0-2.762,2.239-5,5-5h26c2.762,0,5,2.238,5,5V37z" />
+                                        <path fill="#FFFFFF" d="M12 19H17V36H12zM14.485 17h-.028C12.965 17 12 15.888 12 14.499 12 13.08 12.995 12 14.514 12c1.521 0 2.458 1.08 2.486 2.499C17 15.887 16.035 17 14.485 17zM36 36h-5v-9.099c0-2.198-1.225-3.698-3.192-3.698-1.501 0-2.313 1.012-2.707 1.99C24.957 25.543 25 26.511 25 27v9h-5V19h5v2.616C25.721 20.5 26.85 19 29.738 19c3.578 0 6.261 2.25 6.261 7.274L36 36 36 36z" />
+                                    </svg>
+                                    <span>LinkedIn</span>
+                                </a>
+                            </div>
+                        </motion.div>
+
+                        <div className="relative flex items-center justify-center mt-4">
+                            <div className="absolute border-t border-gray-200 dark:border-gray-700 w-full"></div>
+                            <div className="relative bg-white dark:bg-gray-800 px-4 text-sm text-gray-500 dark:text-gray-400">ou</div>
+                        </div>
                     </CardHeader>
 
                     <CardContent>
@@ -127,11 +177,10 @@ export default function Register({ referralCode }) {
                                         id="name"
                                         value={data.name}
                                         onChange={(e) => setData('name', e.target.value)}
-                                        className={`pl-10 bg-white/50 dark:bg-gray-900/50 ${
-                                            errors.name
-                                                ? 'border-red-500 focus:border-red-500 dark:border-red-400 dark:focus:border-red-400'
-                                                : 'border-amber-100 focus:border-amber-500 dark:border-gray-700 dark:focus:border-amber-400'
-                                        }`}
+                                        className={`pl-10 bg-white/50 dark:bg-gray-900/50 ${errors.name
+                                            ? 'border-red-500 focus:border-red-500 dark:border-red-400 dark:focus:border-red-400'
+                                            : 'border-amber-100 focus:border-amber-500 dark:border-gray-700 dark:focus:border-amber-400'
+                                            }`}
                                         placeholder={t('auth.register.name.placeholder')}
                                     />
                                 </div>
@@ -167,11 +216,10 @@ export default function Register({ referralCode }) {
                                         type="email"
                                         value={data.email}
                                         onChange={(e) => setData('email', e.target.value)}
-                                        className={`pl-10 bg-white/50 dark:bg-gray-900/50 ${
-                                            errors.email
-                                                ? 'border-red-500 focus:border-red-500 dark:border-red-400 dark:focus:border-red-400'
-                                                : 'border-amber-100 focus:border-amber-500 dark:border-gray-700 dark:focus:border-amber-400'
-                                        }`}
+                                        className={`pl-10 bg-white/50 dark:bg-gray-900/50 ${errors.email
+                                            ? 'border-red-500 focus:border-red-500 dark:border-red-400 dark:focus:border-red-400'
+                                            : 'border-amber-100 focus:border-amber-500 dark:border-gray-700 dark:focus:border-amber-400'
+                                            }`}
                                         placeholder={t('auth.register.email.placeholder')}
                                     />
                                 </div>
@@ -212,11 +260,10 @@ export default function Register({ referralCode }) {
                                                 setData('password', e.target.value);
                                                 checkPasswordStrength(e.target.value);
                                             }}
-                                            className={`pl-10 pr-10 bg-white/50 dark:bg-gray-900/50 ${
-                                                errors.password
-                                                    ? 'border-red-500 focus:border-red-500 dark:border-red-400 dark:focus:border-red-400'
-                                                    : 'border-amber-100 focus:border-amber-500 dark:border-gray-700 dark:focus:border-amber-400'
-                                            }`}
+                                            className={`pl-10 pr-10 bg-white/50 dark:bg-gray-900/50 ${errors.password
+                                                ? 'border-red-500 focus:border-red-500 dark:border-red-400 dark:focus:border-red-400'
+                                                : 'border-amber-100 focus:border-amber-500 dark:border-gray-700 dark:focus:border-amber-400'
+                                                }`}
                                             placeholder={t('auth.register.password.placeholder')}
                                         />
                                         <button
@@ -277,11 +324,10 @@ export default function Register({ referralCode }) {
                                             type={showConfirmPassword ? 'text' : 'password'}
                                             value={data.password_confirmation}
                                             onChange={(e) => setData('password_confirmation', e.target.value)}
-                                            className={`pl-10 pr-10 bg-white/50 dark:bg-gray-900/50 ${
-                                                errors.password_confirmation
-                                                    ? 'border-red-500 focus:border-red-500 dark:border-red-400 dark:focus:border-red-400'
-                                                    : 'border-amber-100 focus:border-amber-500 dark:border-gray-700 dark:focus:border-amber-400'
-                                            }`}
+                                            className={`pl-10 pr-10 bg-white/50 dark:bg-gray-900/50 ${errors.password_confirmation
+                                                ? 'border-red-500 focus:border-red-500 dark:border-red-400 dark:focus:border-red-400'
+                                                : 'border-amber-100 focus:border-amber-500 dark:border-gray-700 dark:focus:border-amber-400'
+                                                }`}
                                             placeholder={t('auth.register.password.confirm_placeholder')}
                                         />
                                         <button
@@ -330,11 +376,10 @@ export default function Register({ referralCode }) {
                                             id="referralCode"
                                             value={data.referralCode}
                                             onChange={(e) => setData('referralCode', e.target.value)}
-                                            className={`pl-10 bg-white/50 dark:bg-gray-900/50 ${
-                                                errors.referralCode
-                                                    ? 'border-red-500 focus:border-red-500 dark:border-red-400 dark:focus:border-red-400'
-                                                    : 'border-amber-100 focus:border-amber-500 dark:border-gray-700 dark:focus:border-amber-400'
-                                            }`}
+                                            className={`pl-10 bg-white/50 dark:bg-gray-900/50 ${errors.referralCode
+                                                ? 'border-red-500 focus:border-red-500 dark:border-red-400 dark:focus:border-red-400'
+                                                : 'border-amber-100 focus:border-amber-500 dark:border-gray-700 dark:focus:border-amber-400'
+                                                }`}
                                             placeholder="Entrez un code de parrainage si vous en avez un"
                                         />
                                     </div>

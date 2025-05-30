@@ -230,4 +230,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::delete('/user-languages/{user_id}/{language_id}', [UserlanguageController::class, 'destroy'])->name('user-languages.destroy');
 });
 
+// Routes pour l'authentification sociale
+Route::get('auth/{provider}', [App\Http\Controllers\SocialAuthController::class, 'redirectToProvider'])->name('social.login');
+Route::get('auth/{provider}/callback', [App\Http\Controllers\SocialAuthController::class, 'handleProviderCallback'])->name('social.callback');
+
 require __DIR__.'/auth.php';

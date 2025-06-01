@@ -152,14 +152,26 @@
 <!-- PWA Service Worker -->
 <script>
     if ('serviceWorker' in navigator) {
-        window.addEventListener('load', function() {
-            navigator.serviceWorker.register('/sw.js')
-            .then(function(registration) {
-                console.log('ServiceWorker registration successful with scope: ', registration.scope);
-            }, function(err) {
-                console.log('ServiceWorker registration failed: ', err);
-            });
-        });
+        // Désactiver temporairement les Service Workers pendant l'authentification
+        if (window.location.href.includes('/auth/') || window.location.href.includes('/login') || window.location.href.includes('/callback')) {
+            if (navigator.serviceWorker.controller) {
+                console.log('Désactivation du service worker pendant l\'authentification');
+                navigator.serviceWorker.ready.then(registration => {
+                    registration.unregister().then(() => {
+                        window.location.reload();
+                    });
+                });
+            }
+        } else {
+            // Version mise à jour du Service Worker (v2)
+            navigator.serviceWorker.register('/sw.js?v=2')
+                .then(registration => {
+                    console.log('ServiceWorker registration successful with scope: ', registration.scope);
+                })
+                .catch(error => {
+                    console.log('ServiceWorker registration failed: ', error);
+                });
+        }
     }
 </script>
 </body>

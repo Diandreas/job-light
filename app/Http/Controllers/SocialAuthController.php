@@ -24,6 +24,27 @@ class SocialAuthController extends Controller
         Log::info('Redirection vers le provider: ' . $provider);
         
         try {
+            // Vérifier si l'URI de redirection est relatif ou absolu
+            if ($provider === 'linkedin') {
+                $redirectUri = config('services.linkedin.redirect');
+                // S'assurer que l'URI contient bien le protocole et le domaine
+                if (strpos($redirectUri, 'http') !== 0) {
+                    // Construire une URL complète basée sur la requête actuelle
+                    $request = request();
+                    $baseUrl = $request->getScheme() . '://' . $request->getHost();
+                    if ($request->getPort() && $request->getPort() != 80 && $request->getPort() != 443) {
+                        $baseUrl .= ':' . $request->getPort();
+                    }
+                    
+                    // Ajouter le chemin relatif à l'URL de base
+                    $redirectUri = $baseUrl . $redirectUri;
+                    // Mettre à jour la configuration temporairement
+                    config(['services.linkedin.redirect' => $redirectUri]);
+                    
+                    Log::info('URL de redirection LinkedIn corrigée: ' . $redirectUri);
+                }
+            }
+            
             return Socialite::driver($provider)->redirect();
         } catch (Exception $e) {
             Log::error('Erreur lors de la redirection: ' . $e->getMessage(), [
@@ -48,6 +69,23 @@ class SocialAuthController extends Controller
         Log::info('Callback reçu du provider: ' . $provider);
         
         try {
+            // Même logique pour s'assurer que l'URL de callback est correcte
+            if ($provider === 'linkedin') {
+                $redirectUri = config('services.linkedin.redirect');
+                if (strpos($redirectUri, 'http') !== 0) {
+                    $request = request();
+                    $baseUrl = $request->getScheme() . '://' . $request->getHost();
+                    if ($request->getPort() && $request->getPort() != 80 && $request->getPort() != 443) {
+                        $baseUrl .= ':' . $request->getPort();
+                    }
+                    
+                    $redirectUri = $baseUrl . $redirectUri;
+                    config(['services.linkedin.redirect' => $redirectUri]);
+                    
+                    Log::info('URL de callback LinkedIn corrigée: ' . $redirectUri);
+                }
+            }
+            
             $socialUser = Socialite::driver($provider)->user();
             
             Log::info('Utilisateur récupéré depuis ' . $provider, [

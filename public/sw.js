@@ -8,6 +8,14 @@ const urlsToCache = [
     '/manifest.json'
 ];
 
+// Liste des URL à ne pas intercepter
+const urlsToIgnore = [
+    '/auth/',
+    '/login',
+    '/callback',
+    '/api/auth'
+];
+
 // Installation du service worker
 self.addEventListener('install', event => {
     event.waitUntil(
@@ -21,8 +29,20 @@ self.addEventListener('install', event => {
     );
 });
 
+// Vérifie si une URL doit être ignorée par le Service Worker
+function shouldIgnoreRequest(url) {
+    return urlsToIgnore.some(ignoreUrl => url.includes(ignoreUrl));
+}
+
 // Récupération des ressources
 self.addEventListener('fetch', event => {
+    const url = event.request.url;
+
+    // Ignorer les requêtes liées à l'authentification
+    if (shouldIgnoreRequest(url)) {
+        return;
+    }
+
     event.respondWith(
         caches.match(event.request)
             .then(response => {
@@ -51,7 +71,6 @@ self.addEventListener('fetch', event => {
                         const responseToCache = response.clone();
 
                         // Mise en cache stratégique : on ajoute les JS, CSS et images au cache
-                        const url = event.request.url;
                         if (url.endsWith('.js') || url.endsWith('.css') ||
                             url.endsWith('.png') || url.endsWith('.jpg') ||
                             url.endsWith('.jpeg') || url.endsWith('.svg') ||
@@ -70,7 +89,13 @@ self.addEventListener('fetch', event => {
                     }
                 ).catch(error => {
                     console.error('Erreur de fetch:', error);
-                    // Vous pourriez retourner une page d'erreur offline ici
+                    // Retourner une réponse basique pour éviter l'erreur uncaught
+                    return new Response('Erreur réseau', {
+                        status: 408,
+                        headers: new Headers({
+                            'Content-Type': 'text/plain'
+                        })
+                    });
                 });
             })
     );

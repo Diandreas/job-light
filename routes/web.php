@@ -230,8 +230,15 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::delete('/user-languages/{user_id}/{language_id}', [UserlanguageController::class, 'destroy'])->name('user-languages.destroy');
 });
 
-// Routes pour l'authentification sociale
+// Routes pour l'authentification sociale personnalisée
+Route::get('auth/linkedin', [App\Http\Controllers\LinkedinController::class, 'redirectToLinkedin'])->name('linkedin.login');
+Route::get('auth/linkedin/callback', [App\Http\Controllers\LinkedinController::class, 'handleLinkedinCallback'])->name('linkedin.callback');
+
+// Anciennes routes Socialite (à conserver temporairement pour la transition)
 Route::get('auth/{provider}', [App\Http\Controllers\SocialAuthController::class, 'redirectToProvider'])->name('social.login');
 Route::get('auth/{provider}/callback', [App\Http\Controllers\SocialAuthController::class, 'handleProviderCallback'])->name('social.callback');
+
+// Route de test pour vérifier le schéma de la base de données
+Route::get('/test-db-schema', [App\Http\Controllers\TestDbController::class, 'testSchema']);
 
 require __DIR__.'/auth.php';

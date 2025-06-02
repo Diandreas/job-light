@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+<html lang="{{ app()->getLocale() }}">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=no">
@@ -49,7 +49,7 @@
     <meta property="og:description" content="Utilisez Guidy AI pour créer un CV professionnel gratuit optimisé pour l'ATS. Disponible en français et anglais.">
     <meta property="og:url" content="{{ url()->current() }}">
     <meta property="og:image" content="{{ asset('image.png') }}" fetchpriority="low">
-    <meta property="og:locale" content="{{ str_replace('_', '-', app()->getLocale()) }}">
+    <meta property="og:locale" content="{{ app()->getLocale() == 'fr' ? 'fr_FR' : 'en_US' }}">
     <meta property="og:locale:alternate" content="{{ app()->getLocale() == 'fr' ? 'en_US' : 'fr_FR' }}">
 
     <!-- Twitter Card par défaut -->

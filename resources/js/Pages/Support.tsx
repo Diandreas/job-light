@@ -1,6 +1,6 @@
 import React from 'react';
 import { Card, CardHeader, CardTitle, CardContent } from '@/Components/ui/card';
-import { MessageSquare, Mail, Phone, Clock, ChevronRight } from 'lucide-react';
+import { MessageSquare, Mail, Phone, Clock, ChevronRight, Youtube } from 'lucide-react';
 import { motion } from 'framer-motion';
 import GuestLayout from '@/Layouts/GuestLayout';
 import { useTranslation } from 'react-i18next';
@@ -40,6 +40,14 @@ const SupportPage = () => {
             contact: "guidy.makeitreall@gmail.com",
             action: () => window.location.href = "mailto:guidy.makeitreall@gmail.com",
             availability: t('pages.support.contactMethods.email.availability')
+        },
+        {
+            icon: Youtube,
+            title: "Tutoriels YouTube",
+            description: "Découvrez nos tutoriels détaillés et guides vidéo pour maîtriser toutes les fonctionnalités",
+            contact: "@GUIDY-x9y",
+            action: () => window.open("https://www.youtube.com/@GUIDY-x9y", "_blank"),
+            availability: "Nouvelles vidéos chaque semaine"
         }
     ];
 
@@ -110,22 +118,34 @@ const SupportPage = () => {
                         </p>
                     </motion.div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-16">
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-16">
                         {contactMethods.map((method, index) => (
                             <ContactCard key={index} {...method} />
                         ))}
                     </div>
 
-                    <Card className="mb-16 dark:bg-gray-800 dark:border-gray-700">
-                        <CardHeader>
-                            <CardTitle className="text-2xl font-semibold text-center dark:text-white">{t('pages.support.supportHours.title')}</CardTitle>
-                        </CardHeader>
-                        <CardContent className="text-center">
-                            <p className="text-gray-600 dark:text-gray-300">
-                                {t('pages.support.supportHours.description')}
-                            </p>
-                        </CardContent>
-                    </Card>
+                    <motion.div
+                        initial={{ opacity: 0, y: 30 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.8, delay: 1 }}
+                    >
+                        <Card className="mb-16 dark:bg-gray-800 dark:border-gray-700 bg-gradient-to-r from-white to-gray-50 dark:from-gray-800 dark:to-gray-900 border-0 shadow-2xl rounded-3xl overflow-hidden">
+                            <div className="absolute inset-0 bg-gradient-to-br from-amber-500/5 to-purple-500/5"></div>
+                            <CardHeader className="relative z-10 pb-6">
+                                <CardTitle className="text-3xl font-bold text-center dark:text-white flex items-center justify-center space-x-3">
+                                    <Clock className="w-8 h-8 text-amber-500" />
+                                    <span>{t('pages.support.supportHours.title')}</span>
+                                </CardTitle>
+                            </CardHeader>
+                            <CardContent className="text-center relative z-10">
+                                <div className="bg-gradient-to-r from-amber-50 to-orange-50 dark:from-amber-900/20 dark:to-orange-900/20 rounded-2xl p-6 border border-amber-200 dark:border-amber-700">
+                                    <p className="text-lg text-gray-700 dark:text-gray-300 leading-relaxed">
+                                        {t('pages.support.supportHours.description')}
+                                    </p>
+                                </div>
+                            </CardContent>
+                        </Card>
+                    </motion.div>
                 </div>
             </div>
         </GuestLayout>

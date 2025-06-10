@@ -1,0 +1,232 @@
+import React from 'react';
+import { Card, CardHeader, CardTitle, CardContent } from '@/Components/ui/card';
+import { MessageSquare, Mail, Phone, Clock, ChevronRight, Youtube, Sparkles, HeadphonesIcon } from 'lucide-react';
+import { motion } from 'framer-motion';
+import GuestLayout from '@/Layouts/GuestLayout';
+import { useTranslation } from 'react-i18next';
+import { Head } from '@inertiajs/react';
+
+const SupportPage = () => {
+    const { t } = useTranslation();
+
+    const structuredData = {
+        "@context": "https://schema.org",
+        "@type": "ContactPage",
+        "name": t('pages.support.metaTitle'),
+        "description": t('pages.support.metaDescription'),
+        "publisher": {
+            "@type": "Organization",
+            "name": "Guidy",
+            "logo": {
+                "@type": "ImageObject",
+                "url": "../../public/logo.png"
+            }
+        }
+    };
+
+    const contactMethods = [
+        {
+            icon: Phone,
+            title: t('pages.support.contactMethods.whatsapp.title'),
+            description: t('pages.support.contactMethods.whatsapp.description'),
+            contact: "+237693427913",
+            action: () => window.open("https://wa.me/237693427913", "_blank"),
+            availability: t('pages.support.contactMethods.whatsapp.availability'),
+            gradient: "from-green-500 to-emerald-600",
+            bgGradient: "from-green-500/10 to-emerald-500/10"
+        },
+        {
+            icon: Mail,
+            title: t('pages.support.contactMethods.email.title'),
+            description: t('pages.support.contactMethods.email.description'),
+            contact: "guidy.makeitreall@gmail.com",
+            action: () => window.location.href = "mailto:guidy.makeitreall@gmail.com",
+            availability: t('pages.support.contactMethods.email.availability'),
+            gradient: "from-blue-500 to-cyan-600",
+            bgGradient: "from-blue-500/10 to-cyan-500/10"
+        },
+        {
+            icon: Youtube,
+            title: "Tutoriels YouTube",
+            description: "Découvrez nos tutoriels détaillés et guides vidéo pour maîtriser toutes les fonctionnalités",
+            contact: "@GUIDY-x9y",
+            action: () => window.open("https://www.youtube.com/@GUIDY-x9y", "_blank"),
+            availability: "Nouvelles vidéos chaque semaine",
+            gradient: "from-red-500 to-rose-600",
+            bgGradient: "from-red-500/10 to-rose-500/10"
+        }
+    ];
+
+    const ContactCard = ({ icon: Icon, title, description, contact, action, availability, gradient, bgGradient }) => (
+        <motion.div
+            whileHover={{ y: -8, scale: 1.03 }}
+            whileTap={{ scale: 0.97 }}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="relative bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-xl border border-gray-100 dark:border-gray-700 overflow-hidden group cursor-pointer hover:shadow-2xl transition-all duration-500"
+            onClick={action}
+        >
+            {/* Gradient overlay animé */}
+            <div className={`absolute inset-0 bg-gradient-to-br ${bgGradient} opacity-0 group-hover:opacity-100 transition-opacity duration-500`} />
+
+            {/* Effet de brillance */}
+            <div className="absolute -top-20 -right-20 w-40 h-40 bg-gradient-to-br from-white/20 to-transparent rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+
+            <div className="relative z-10">
+                <div className="flex justify-between items-start mb-6">
+                    <motion.div
+                        whileHover={{ rotate: 12, scale: 1.1 }}
+                        className={`p-4 rounded-2xl bg-gradient-to-r ${gradient} transform transition-all duration-300 shadow-lg`}
+                    >
+                        <Icon className="w-7 h-7 text-white" />
+                    </motion.div>
+                    <motion.div
+                        whileHover={{ x: 5 }}
+                        className="p-2 rounded-full bg-gray-100 dark:bg-gray-700 group-hover:bg-amber-100 dark:group-hover:bg-amber-900/50 transition-all duration-300"
+                    >
+                        <ChevronRight className="w-5 h-5 text-gray-400 group-hover:text-amber-600 dark:group-hover:text-amber-400 transition-colors" />
+                    </motion.div>
+                </div>
+
+                <h3 className="text-xl font-bold mb-3 group-hover:text-amber-600 dark:group-hover:text-amber-400 transition-colors dark:text-white">
+                    {title}
+                </h3>
+
+                <p className="text-gray-600 dark:text-gray-300 mb-4 leading-relaxed">
+                    {description}
+                </p>
+
+                <div className="bg-gray-50 dark:bg-gray-700/50 rounded-xl p-3 mb-4">
+                    <p className="text-lg font-semibold text-amber-600 dark:text-amber-400 truncate">
+                        {contact}
+                    </p>
+                </div>
+
+                <div className="flex items-center text-sm text-gray-500 dark:text-gray-400">
+                    <Clock className="w-4 h-4 mr-2 flex-shrink-0" />
+                    <span>{availability}</span>
+                </div>
+            </div>
+        </motion.div>
+    );
+
+    return (
+        <GuestLayout>
+            <Head>
+                <title>{t('pages.support.metaTitle')}</title>
+                <meta name="description" content={t('pages.support.metaDescription')} />
+                <meta name="keywords" content={t('pages.support.metaKeywords')} />
+                <meta property="og:title" content={t('pages.support.title')} />
+                <meta property="og:description" content={t('pages.support.subtitle')} />
+                <meta property="og:image" content="../../public/image.png" />
+                <meta property="og:type" content="website" />
+                <link rel="canonical" href="https://guidy.com/support" />
+                <script type="application/ld+json">
+                    {JSON.stringify(structuredData)}
+                </script>
+            </Head>
+
+            <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-amber-50/30 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 pt-24">
+                {/* Animated background elements */}
+                <div className="absolute inset-0 overflow-hidden">
+                    <div className="absolute top-20 left-10 w-72 h-72 bg-amber-400/10 rounded-full blur-3xl animate-pulse"></div>
+                    <div className="absolute bottom-20 right-10 w-96 h-96 bg-purple-400/10 rounded-full blur-3xl animate-pulse delay-1000"></div>
+                    <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-blue-400/10 rounded-full blur-3xl animate-pulse delay-500"></div>
+                </div>
+
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+                    <motion.div
+                        initial={{ opacity: 0, y: 30 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.8 }}
+                        className="text-center mb-20"
+                    >
+                        <motion.div
+                            initial={{ opacity: 0, scale: 0.5 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            transition={{ duration: 0.6, delay: 0.2 }}
+                            className="mb-8"
+                        >
+                            <span className="inline-flex items-center bg-gradient-to-r from-amber-100 to-orange-100 dark:from-amber-900/50 dark:to-orange-900/50 text-amber-800 dark:text-amber-200 px-6 py-3 rounded-full text-sm font-semibold shadow-lg border border-amber-200 dark:border-amber-700">
+                                <HeadphonesIcon className="w-4 h-4 mr-2" />
+                                {t('pages.support.badge')}
+                                <Sparkles className="w-4 h-4 ml-2 animate-pulse" />
+                            </span>
+                        </motion.div>
+
+                        <motion.h1
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ duration: 0.8, delay: 0.3 }}
+                            className="text-5xl lg:text-6xl font-extrabold mb-8 bg-gradient-to-r from-amber-500 via-orange-500 to-purple-600 text-transparent bg-clip-text leading-tight"
+                        >
+                            {t('pages.support.title')}
+                        </motion.h1>
+
+                        <motion.p
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ duration: 0.8, delay: 0.4 }}
+                            className="text-xl lg:text-2xl text-gray-600 dark:text-gray-300 mb-8 max-w-4xl mx-auto leading-relaxed"
+                        >
+                            {t('pages.support.description')}
+                        </motion.p>
+
+                        <motion.div
+                            initial={{ opacity: 0, scale: 0.8 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            transition={{ duration: 0.6, delay: 0.5 }}
+                            className="inline-flex items-center space-x-2 bg-white dark:bg-gray-800 px-6 py-3 rounded-full shadow-lg border border-gray-200 dark:border-gray-700"
+                        >
+                            <div className="w-3 h-3 bg-green-500 rounded-full animate-pulse"></div>
+                            <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Support disponible 24/7</span>
+                        </motion.div>
+                    </motion.div>
+
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        transition={{ duration: 0.8, delay: 0.6 }}
+                        className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-20"
+                    >
+                        {contactMethods.map((method, index) => (
+                            <motion.div
+                                key={index}
+                                initial={{ opacity: 0, y: 50 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                transition={{ duration: 0.6, delay: 0.7 + index * 0.1 }}
+                            >
+                                <ContactCard {...method} />
+                            </motion.div>
+                        ))}
+                    </motion.div>
+
+                    <motion.div
+                        initial={{ opacity: 0, y: 30 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.8, delay: 1 }}
+                    >
+                        <Card className="mb-16 dark:bg-gray-800 dark:border-gray-700 bg-gradient-to-r from-white to-gray-50 dark:from-gray-800 dark:to-gray-900 border-0 shadow-2xl rounded-3xl overflow-hidden">
+                            <div className="absolute inset-0 bg-gradient-to-br from-amber-500/5 to-purple-500/5"></div>
+                            <CardHeader className="relative z-10 pb-6">
+                                <CardTitle className="text-3xl font-bold text-center dark:text-white flex items-center justify-center space-x-3">
+                                    <Clock className="w-8 h-8 text-amber-500" />
+                                    <span>{t('pages.support.supportHours.title')}</span>
+                                </CardTitle>
+                            </CardHeader>
+                            <CardContent className="text-center relative z-10">
+                                <div className="bg-gradient-to-r from-amber-50 to-orange-50 dark:from-amber-900/20 dark:to-orange-900/20 rounded-2xl p-6 border border-amber-200 dark:border-amber-700">
+                                    <p className="text-lg text-gray-700 dark:text-gray-300 leading-relaxed">
+                                        {t('pages.support.supportHours.description')}
+                                    </p>
+                                </div>
+                            </CardContent>
+                        </Card>
+                    </motion.div>
+                </div>
+            </div>
+        </GuestLayout>
+    );
+};
+
+export default SupportPage;

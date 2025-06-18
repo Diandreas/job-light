@@ -1,86 +1,93 @@
-import { useState, useEffect } from 'react';
+// hooks/useMedian.ts
+import { useEffect, useState, useCallback } from 'react';
 
-interface MedianDownloadOptions {
-    filename?: string;
-    open?: boolean;
-}
-
-interface MedianResult {
-    success: boolean;
-    error?: string;
+interface MedianAPI {
+    share: {
+        downloadFile: (options: { url: string; open?: boolean }) => Promise<any>;
+    };
+    open: {
+        external: (options: { url: string; target?: string }) => Promise<any>;
+    };
+    onReady: (callback: () => void) => void;
 }
 
 export const useMedian = () => {
     const [isReady, setIsReady] = useState(false);
     const [isAndroidApp, setIsAndroidApp] = useState(false);
+    const [Median, setMedian] = useState<MedianAPI | null>(null);
 
     useEffect(() => {
-        // Détecter si on est dans l'app Median Android
-        const detectMedian = () => {
-            const userAgent = navigator.userAgent;
-            const isMedian = userAgent.includes('Median') || userAgent.includes('median');
-            const isAndroid = userAgent.includes('Android');
+        const userAgent = navigator.userAgent.toLowerCase();
+        const isMedianApp = userAgent.includes('median') || userAgent.includes('gonative');
+        setIsAndroidApp(isMedianApp);
 
-            setIsAndroidApp(isMedian && isAndroid);
+        if (isMedianApp) {
+            // Import dynamique du package NPM
+            import('median-js-bridge').then((MedianModule) => {
+                const MedianInstance = MedianModule.default;
+                setMedian(MedianInstance);
 
-            // Vérifier si les APIs Median sont disponibles
-            if (isMedian && isAndroid) {
-                // Attendre que Median soit prêt
-                const checkMedianReady = () => {
-                    if (window.Median && window.Median.isReady) {
-                        setIsReady(true);
-                    } else {
-                        setTimeout(checkMedianReady, 100);
-                    }
-                };
-                checkMedianReady();
-            }
-        };
-
-        detectMedian();
+                MedianInstance.onReady(() => {
+                    console.log('✅ Median JavaScript Bridge est prêt');
+                    setIsReady(true);
+                });
+            }).catch((error) => {
+                console.error('❌ Erreur lors du chargement de Median:', error);
+                // Fallback vers window.median si le package NPM échoue
+                if (window.median) {
+                    setMedian(window.median);
+                    setIsReady(true);
+                }
+            });
+        }
     }, []);
 
-    const downloadFile = async (url: string, options: MedianDownloadOptions = {}): Promise<MedianResult> => {
-        if (!isAndroidApp || !isReady) {
-            throw new Error('Median not available');
+    const downloadFile = useCallback(async (url: string, options: {
+        filename?: string;
+        open?: boolean
+    } = {}) => {
+        if (!isReady || !Median) {
+            throw new Error('Median n\'est pas prêt');
         }
 
         try {
-            const result = await window.Median.downloadFile(url, options);
-            return { success: true, ...result };
-        } catch (error) {
-            return { success: false, error: error.message };
-        }
-    };
+            const result = await Median.share.downloadFile({
+                url: url,
+                open: options.open ?? true
+            });
 
-    const printDocument = async (url: string): Promise<MedianResult> => {
-        if (!isAndroidApp || !isReady) {
-            throw new Error('Median not available');
+            console.log('✅ Téléchargement réussi:', result);
+            return { success: true, result };
+        } catch (error) {
+            console.error('❌ Erreur téléchargement:', error);
+            return { success: false, error };
+        }
+    }, [isReady, Median]);
+
+    const printDocument = useCallback(async (url: string) => {
+        if (!isReady || !Median) {
+            throw new Error('Median n\'est pas prêt');
         }
 
         try {
-            const result = await window.Median.printDocument(url);
-            return { success: true, ...result };
+            await Median.open.external({
+                url: url,
+                target: '_blank'
+            });
+
+            console.log('✅ Impression initiée');
+            return { success: true };
         } catch (error) {
-            return { success: false, error: error.message };
+            console.error('❌ Erreur impression:', error);
+            return { success: false, error };
         }
-    };
+    }, [isReady, Median]);
 
     return {
         isReady,
         isAndroidApp,
+        Median,
         downloadFile,
         printDocument
     };
 };
-
-// Déclaration des types pour window.Median
-declare global {
-    interface Window {
-        Median?: {
-            isReady: boolean;
-            downloadFile: (url: string, options?: MedianDownloadOptions) => Promise<any>;
-            printDocument: (url: string) => Promise<any>;
-        };
-    }
-}

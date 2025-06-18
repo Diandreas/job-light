@@ -25,6 +25,7 @@ export const useMedian = () => {
             // Import dynamique du package NPM
             import('median-js-bridge').then((MedianModule) => {
                 const MedianInstance = MedianModule.default;
+                // @ts-ignore
                 setMedian(MedianInstance);
 
                 MedianInstance.onReady(() => {
@@ -34,7 +35,9 @@ export const useMedian = () => {
             }).catch((error) => {
                 console.error('❌ Erreur lors du chargement de Median:', error);
                 // Fallback vers window.median si le package NPM échoue
+                // @ts-ignore
                 if (window.median) {
+                    // @ts-ignore
                     setMedian(window.median);
                     setIsReady(true);
                 }

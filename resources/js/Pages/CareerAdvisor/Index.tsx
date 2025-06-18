@@ -1296,21 +1296,33 @@ export default function Index({ auth, userInfo, chatHistories }) {
                                                 <Download className="h-3 w-3 mr-1" />
                                                 <span className="hidden sm:inline text-xs">Export</span>
                                                 <ChevronDown className="h-2.5 w-2.5 ml-0.5" />
+                                                {isAndroidApp && isReady && (
+                                                    <Smartphone className="ml-1 h-2.5 w-2.5 text-green-500" />
+                                                )}
                                             </Button>
                                         </DropdownMenuTrigger>
                                         <DropdownMenuContent align="end" className="min-w-[120px]">
                                             <DropdownMenuItem onClick={() => handleExport('pdf')} className="text-xs py-1.5">
                                                 <FileText className="h-3.5 w-3.5 mr-2" />
                                                 PDF
+                                                {isAndroidApp && isReady && (
+                                                    <Smartphone className="ml-auto h-3 w-3 text-green-500" />
+                                                )}
                                             </DropdownMenuItem>
                                             <DropdownMenuItem onClick={() => handleExport('docx')} className="text-xs py-1.5">
                                                 <FileText className="h-3.5 w-3.5 mr-2" />
                                                 DOCX
+                                                {isAndroidApp && isReady && (
+                                                    <Smartphone className="ml-auto h-3 w-3 text-green-500" />
+                                                )}
                                             </DropdownMenuItem>
                                             {selectedService.id === 'presentation-ppt' && (
                                                 <DropdownMenuItem onClick={() => handleExport('pptx')} className="text-xs py-1.5">
                                                     <Presentation className="h-3.5 w-3.5 mr-2" />
                                                     PPTX
+                                                    {isAndroidApp && isReady && (
+                                                        <Smartphone className="ml-auto h-3 w-3 text-green-500" />
+                                                    )}
                                                 </DropdownMenuItem>
                                             )}
                                         </DropdownMenuContent>

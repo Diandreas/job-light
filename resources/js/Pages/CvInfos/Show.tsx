@@ -142,6 +142,7 @@ export default function Show({ auth, cvInformation, selectedCvModel }) {
         setIsDownloading(true);
 
         try {
+            // Débiter les jetons si ce n'est pas déjà fait
             if (!hasDownloaded) {
                 await axios.post('/api/process-download', {
                     user_id: auth.user.id,
@@ -152,37 +153,84 @@ export default function Show({ auth, cvInformation, selectedCvModel }) {
                 setHasDownloaded(true);
             }
 
-            const response = await axios.get(route('cv.download', selectedCvModel?.id), {
-                responseType: 'blob',
-                params: { locale: i18n.language }
-            });
+            // Si on est dans l'app Android native avec Median
+            if (isAndroidApp && isReady) {
+                console.log('🚀 Téléchargement CV natif Android');
 
-            const blob = new Blob([response.data], { type: 'application/pdf' });
-            const url = window.URL.createObjectURL(blob);
-            const link = document.createElement('a');
-            link.href = url;
-            link.download = `CV-${auth.user.name}.pdf`;
-            document.body.appendChild(link);
-            link.click();
-            window.URL.revokeObjectURL(url);
-            document.body.removeChild(link);
+                const downloadUrl = new URL(route('cv.download', selectedCvModel.id), window.location.origin);
+                downloadUrl.searchParams.set('locale', i18n.language);
 
-            toast({
-                title: t('cv_preview.export.download_success'),
-                description: t('cv_preview.export.download_success_description'),
-                //@ts-ignore
-                variant: 'success'
-            });
+                const result = await downloadFile(downloadUrl.toString(), {
+                    filename: `CV-${auth.user.name}.pdf`,
+                    open: true
+                });
+
+                if (result.success) {
+                    toast({
+                        title: '📱 CV téléchargé',
+                        description: 'Le CV a été téléchargé et ouvert automatiquement',
+                        variant: 'default'
+                    });
+                } else {
+                    throw new Error('Échec du téléchargement natif');
+                }
+            } else {
+                // Fallback vers le téléchargement web classique
+                console.log('🌐 Utilisation du téléchargement web');
+                await handleDownloadWeb();
+            }
         } catch (error) {
-            console.error('Download error:', error);
-            toast({
-                title: t('common.error'),
-                description: t('cv_preview.export.download_error'),
-                variant: 'destructive'
-            });
+            console.error('❌ Erreur téléchargement CV:', error);
+
+            // En cas d'erreur avec Median, essayer le fallback web
+            if (isAndroidApp) {
+                console.log('🔄 Tentative de fallback vers téléchargement web');
+                try {
+                    await handleDownloadWeb();
+                } catch (fallbackError) {
+                    console.error('❌ Erreur fallback:', fallbackError);
+                    toast({
+                        title: t('common.error'),
+                        description: t('cv_preview.export.download_error'),
+                        variant: 'destructive'
+                    });
+                }
+            } else {
+                toast({
+                    title: t('common.error'),
+                    description: t('cv_preview.export.download_error'),
+                    variant: 'destructive'
+                });
+            }
         } finally {
             setIsDownloading(false);
         }
+    };
+
+    // Méthode fallback web classique
+    const handleDownloadWeb = async () => {
+        console.log('📄 Téléchargement web classique');
+
+        const response = await axios.get(route('cv.download', selectedCvModel?.id), {
+            responseType: 'blob',
+            params: { locale: i18n.language }
+        });
+
+        const blob = new Blob([response.data], { type: 'application/pdf' });
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `CV-${auth.user.name}.pdf`;
+        document.body.appendChild(link);
+        link.click();
+        window.URL.revokeObjectURL(url);
+        document.body.removeChild(link);
+
+        toast({
+            title: '🌐 Téléchargement web réussi',
+            description: t('cv_preview.export.download_success_description'),
+            variant: 'default'
+        });
     };
 
     const handlePrint = async () => {
@@ -196,9 +244,9 @@ export default function Show({ auth, cvInformation, selectedCvModel }) {
 
         setIsLoading(true);
 
-        // Débiter les jetons avant l'impression si ce n'est pas déjà fait
-        if (!hasDownloaded) {
-            try {
+        try {
+            // Débiter les jetons avant l'impression si ce n'est pas déjà fait
+            if (!hasDownloaded) {
                 await axios.post('/api/process-download', {
                     user_id: auth.user.id,
                     model_id: selectedCvModel?.id,
@@ -208,60 +256,85 @@ export default function Show({ auth, cvInformation, selectedCvModel }) {
                 setHasDownloaded(true);
 
                 toast({
-                    //@ts-ignore
-                    variant: 'success',
+                    variant: 'default',
                     description: t('cv_preview.export.processing')
                 });
-            } catch (error) {
-                setIsLoading(false);
-                return toast({
-                    title: t('common.error'),
-                    description: t('cv_preview.export.payment_error'),
-                    variant: 'destructive'
-                });
             }
-        }
 
-        // Créer une iframe pour l'impression
-        const printUrl = route('cv.preview', {
-            id: selectedCvModel?.id,
-            locale: i18n.language
-        });
+            // Si on est dans l'app Android native avec Median
+            if (isAndroidApp && isReady) {
+                console.log('🖨️ Impression CV native Android');
 
-        // Créer une iframe temporaire
-        const iframe = document.createElement('iframe');
-        iframe.style.display = 'none';
-        iframe.src = printUrl;
+                const printUrl = new URL(route('cv.preview', selectedCvModel.id), window.location.origin);
+                printUrl.searchParams.set('locale', i18n.language);
+                printUrl.searchParams.set('auto_print', 'true');
 
-        // Fonction qui sera appelée lorsque l'iframe aura chargé
-        iframe.onload = () => {
-            // Petit délai pour s'assurer que le contenu est bien chargé
-            setTimeout(() => {
+                const result = await printDocument(printUrl.toString());
+
+                if (result.success) {
+                    toast({
+                        title: '📱 Impression CV initiée',
+                        description: 'La boîte de dialogue d\'impression va s\'ouvrir',
+                        variant: 'default'
+                    });
+                } else {
+                    throw new Error('Échec de l\'impression native');
+                }
+            } else {
+                // Fallback vers l'impression web classique
+                console.log('🌐 Utilisation de l\'impression web');
+                await handlePrintWeb();
+            }
+        } catch (error) {
+            console.error('❌ Erreur impression CV:', error);
+
+            // En cas d'erreur avec Median, essayer le fallback web
+            if (isAndroidApp) {
+                console.log('🔄 Tentative de fallback vers impression web');
                 try {
-                    // Accès au contenu de l'iframe et impression
-                    iframe.contentWindow.print();
-
-                    // Attendre un peu pour nettoyer après que l'utilisateur ait géré la boîte de dialogue d'impression
-                    setTimeout(() => {
-                        document.body.removeChild(iframe);
-                        setIsLoading(false);
-                    }, 1000);
-                } catch (error) {
-                    console.error('Erreur d\'impression:', error);
-                    document.body.removeChild(iframe);
-                    setIsLoading(false);
-
+                    await handlePrintWeb();
+                } catch (fallbackError) {
+                    console.error('❌ Erreur fallback impression:', fallbackError);
                     toast({
                         title: t('common.error'),
                         description: t('cv_preview.export.print_error'),
                         variant: 'destructive'
                     });
                 }
-            }, 500);
-        };
+            } else {
+                toast({
+                    title: t('common.error'),
+                    description: t('cv_preview.export.print_error'),
+                    variant: 'destructive'
+                });
+            }
+        } finally {
+            setIsLoading(false);
+        }
+    };
 
-        // Ajouter l'iframe au document
-        document.body.appendChild(iframe);
+    // Méthode fallback web classique
+    const handlePrintWeb = async () => {
+        console.log('🖨️ Impression web classique');
+
+        const printUrl = route('cv.preview', {
+            id: selectedCvModel?.id,
+            locale: i18n.language,
+            auto_print: true
+        });
+
+        const printWindow = window.open(printUrl, '_blank');
+        if (printWindow) {
+            printWindow.onload = () => {
+                setTimeout(() => printWindow.print(), 500);
+            };
+
+            toast({
+                title: '🌐 Impression web initiée',
+                description: 'Une nouvelle fenêtre va s\'ouvrir pour l\'impression',
+                variant: 'default'
+            });
+        }
     };
 
     if (!selectedCvModel) {
@@ -276,6 +349,30 @@ export default function Show({ auth, cvInformation, selectedCvModel }) {
     return (
         <AuthenticatedLayout user={auth.user}>
             <Head title={t('cv_preview.title')} />
+
+            {/* Indicateur de statut Median */}
+            <div className="fixed top-4 right-4 z-50">
+                <div className="flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400 bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm px-2 py-1 rounded-lg border border-gray-200 dark:border-gray-700">
+                    {isAndroidApp ? (
+                        <>
+                            <Smartphone className="h-3 w-3 text-green-500" />
+                            <span>Mode natif Android</span>
+                            {isReady ? (
+                                <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
+                            ) : (
+                                <div className="w-2 h-2 bg-orange-500 rounded-full animate-pulse" />
+                            )}
+                        </>
+                    ) : (
+                        <>
+                            <Monitor className="h-3 w-3 text-blue-500" />
+                            <span>Mode web</span>
+                            <div className="w-2 h-2 bg-blue-500 rounded-full" />
+                        </>
+                    )}
+                </div>
+            </div>
+
             <div className="w-full p-4 md:p-6 space-y-6">
                 <motion.div
                     initial={{ opacity: 0, y: 20 }}
@@ -366,6 +463,9 @@ export default function Show({ auth, cvInformation, selectedCvModel }) {
                                                 >
                                                     <Printer className="mr-2 h-4 w-4" />
                                                     {isLoading ? t('cv_preview.export.printing') : t('cv_preview.export.print')}
+                                                    {isAndroidApp && isReady && (
+                                                        <Smartphone className="ml-2 h-3 w-3 text-green-400" />
+                                                    )}
                                                 </Button>
                                             ) : (
                                                 <Button
@@ -375,6 +475,9 @@ export default function Show({ auth, cvInformation, selectedCvModel }) {
                                                 >
                                                     <Download className="mr-2 h-4 w-4" />
                                                     {isDownloading ? t('cv_preview.export.downloading') : t('cv_preview.export.download')}
+                                                    {isAndroidApp && isReady && (
+                                                        <Smartphone className="ml-2 h-3 w-3 text-green-400" />
+                                                    )}
                                                 </Button>
                                             )}
                                         </motion.div>

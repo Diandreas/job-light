@@ -1,0 +1,57 @@
+{
+    "appId": "co.median.android.yajqwm",
+    "appName": "JobLight",
+    "version": "1.0.0",
+    "description": "Application de gestion de CV et conseil en carrière",
+    "permissions": [
+        "android.permission.WRITE_EXTERNAL_STORAGE",
+        "android.permission.READ_EXTERNAL_STORAGE",
+        "android.permission.INTERNET",
+        "android.permission.ACCESS_NETWORK_STATE"
+    ],
+    "features": {
+        "downloadFile": {
+            "enabled": true,
+            "description": "Téléchargement de fichiers PDF, DOCX, PPTX"
+        },
+        "printDocument": {
+            "enabled": true,
+            "description": "Impression de documents via l'appareil"
+        },
+        "fileSharing": {
+            "enabled": true,
+            "description": "Partage de fichiers avec d'autres applications"
+        }
+    },
+    "webView": {
+        "userAgent": "JobLight/1.0 (Android)",
+        "allowFileAccess": true,
+        "allowContentAccess": true,
+        "domStorageEnabled": true,
+        "databaseEnabled": true,
+        "setGeolocationEnabled": false
+    },
+    "nativeFeatures": {
+        "downloadManager": {
+            "enabled": true,
+            "notificationTitle": "JobLight - Téléchargement",
+            "notificationDescription": "Téléchargement en cours..."
+        },
+        "printService": {
+            "enabled": true,
+            "defaultPrinter": "auto"
+        }
+    },
+    "ui": {
+        "theme": "auto",
+        "primaryColor": "#f59e0b",
+        "secondaryColor": "#8b5cf6",
+        "statusBarColor": "#f59e0b",
+        "navigationBarColor": "#ffffff"
+    },
+    "security": {
+        "allowMixedContent": false,
+        "allowFileAccessFromFileURLs": false,
+        "allowUniversalAccessFromFileURLs": false
+    }
+}

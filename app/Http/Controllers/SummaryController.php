@@ -11,13 +11,12 @@ class SummaryController extends Controller
     public function index()
     {
         $user = auth()->user();
-        $summaries = $user->summaries; // Récupérer les résumés de l'utilisateur connecté
-        $availableSummaries = Summary::all(); // Récupérer tous les résumés disponibles
-        $selectedSummary = $user->selected_summary; // Récupérer le résumé sélectionné par l'utilisateur
+        
+        // Récupérer uniquement le résumé sélectionné
+        $selectedSummary = $user->selected_summary_id ? 
+            Summary::find($user->selected_summary_id) : null;
 
         return Inertia::render('CvInfos/Summaries/Index', [
-            'summaries' => $summaries,
-            'availableSummaries' => $availableSummaries,
             'selectedSummary' => $selectedSummary,
         ]);
     }
@@ -36,6 +35,11 @@ class SummaryController extends Controller
 
         $summary = Summary::create($validatedData);
         auth()->user()->summaries()->attach($summary->id);
+
+        // Sélectionner automatiquement le nouveau résumé créé
+        $user = auth()->user();
+        $user->selected_summary_id = $summary->id;
+        $user->save();
 
         return response()->json([
             'summary' => $summary,
@@ -57,20 +61,24 @@ class SummaryController extends Controller
 
     public function update(Request $request, Summary $summary)
     {
-        if ($summary->users->contains(auth()->user())) {
-            $validatedData = $request->validate([
-                'name' => 'required|string|max:100',
-                'description' => 'required|string',
-            ]);
-
-            $summary->update($validatedData);
-
-            return response()->json([
-                'summary' => $summary,
-                'message' => 'Résumé modifié avec succès'
-            ]);
+        $user = auth()->user();
+        
+        // Vérifier que ce résumé est bien le résumé sélectionné de l'utilisateur
+        if ($user->selected_summary_id !== $summary->id) {
+            abort(403, 'Vous ne pouvez modifier que votre résumé actuel');
         }
-        abort(403, 'Unauthorized');
+        
+        $validatedData = $request->validate([
+            'name' => 'required|string|max:100',
+            'description' => 'required|string',
+        ]);
+
+        $summary->update($validatedData);
+
+        return response()->json([
+            'summary' => $summary,
+            'message' => 'Résumé modifié avec succès'
+        ]);
     }
 
     public function destroy(Summary $summary)

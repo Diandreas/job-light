@@ -7,11 +7,13 @@ import { Head, Link } from '@inertiajs/react';
 import { Button } from "@/Components/ui/button";
 import {
     ArrowLeft, Printer, Wallet, Eye, Star,
-    Download, Coins, AlertCircle, ArrowUpRight
+    Download, Coins, AlertCircle, ArrowUpRight,
+    Smartphone, Monitor
 } from 'lucide-react';
 import { useToast } from "@/Components/ui/use-toast";
 import { Progress } from "@/Components/ui/progress";
 import { Alert, AlertDescription } from "@/Components/ui/alert";
+import { useMedian } from '@/Hooks/useMedian';
 import axios from 'axios';
 
 // Liste des modèles sans bouton de téléchargement
@@ -83,6 +85,7 @@ const NoModelSelected = ({ user }) => {
 export default function Show({ auth, cvInformation, selectedCvModel }) {
     const { t, i18n } = useTranslation();
     const { toast } = useToast();
+    const { isReady, isAndroidApp, downloadFile, printDocument } = useMedian();
     const iframeRef = useRef(null);
     const [isLoading, setIsLoading] = useState(false);
     const [isDownloading, setIsDownloading] = useState(false);
@@ -203,7 +206,7 @@ export default function Show({ auth, cvInformation, selectedCvModel }) {
                 });
                 setWalletBalance(prev => prev - (selectedCvModel?.price || 0));
                 setHasDownloaded(true);
-                
+
                 toast({
                     //@ts-ignore
                     variant: 'success',
@@ -218,18 +221,18 @@ export default function Show({ auth, cvInformation, selectedCvModel }) {
                 });
             }
         }
-        
+
         // Créer une iframe pour l'impression
         const printUrl = route('cv.preview', {
             id: selectedCvModel?.id,
             locale: i18n.language
         });
-        
+
         // Créer une iframe temporaire
         const iframe = document.createElement('iframe');
         iframe.style.display = 'none';
         iframe.src = printUrl;
-        
+
         // Fonction qui sera appelée lorsque l'iframe aura chargé
         iframe.onload = () => {
             // Petit délai pour s'assurer que le contenu est bien chargé
@@ -237,7 +240,7 @@ export default function Show({ auth, cvInformation, selectedCvModel }) {
                 try {
                     // Accès au contenu de l'iframe et impression
                     iframe.contentWindow.print();
-                    
+
                     // Attendre un peu pour nettoyer après que l'utilisateur ait géré la boîte de dialogue d'impression
                     setTimeout(() => {
                         document.body.removeChild(iframe);
@@ -247,7 +250,7 @@ export default function Show({ auth, cvInformation, selectedCvModel }) {
                     console.error('Erreur d\'impression:', error);
                     document.body.removeChild(iframe);
                     setIsLoading(false);
-                    
+
                     toast({
                         title: t('common.error'),
                         description: t('cv_preview.export.print_error'),
@@ -256,7 +259,7 @@ export default function Show({ auth, cvInformation, selectedCvModel }) {
                 }
             }, 500);
         };
-        
+
         // Ajouter l'iframe au document
         document.body.appendChild(iframe);
     };

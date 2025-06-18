@@ -6,6 +6,7 @@ import { Textarea } from "@/Components/ui/textarea";
 import { Progress } from "@/Components/ui/progress";
 import { Card, CardHeader, CardTitle, CardContent } from "@/Components/ui/card";
 import { useToast } from "@/Components/ui/use-toast";
+import { useMedian } from '@/Hooks/useMedian';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { ScrollArea } from "@/Components/ui/scroll-area";
 import { AnimatePresence, motion } from 'framer-motion';
@@ -14,7 +15,8 @@ import {
     Brain, Wallet, Clock, Loader, Download, Coins, Trash2,
     MessageSquare, Calendar, History, Menu, Send, Plus,
     FileText, Presentation, ChevronDown, FileSpreadsheet,
-    FileInput, MessageCircleQuestion, PenTool, Sparkles, ChevronRight, ChevronLeft
+    FileInput, MessageCircleQuestion, PenTool, Sparkles, ChevronRight, ChevronLeft,
+    Smartphone, Monitor
 } from 'lucide-react';
 import { MessageBubble } from '@/Components/ai/MessageBubble';
 import { ServiceCard, MobileServiceCard } from '@/Components/ai/ServiceCard';
@@ -88,11 +90,10 @@ const EnhancedServiceCard = ({ service, isSelected, onClick }) => {
                 <TooltipProvider>
                     <Tooltip>
                         <TooltipTrigger asChild>
-                            <div className={`flex items-center gap-1 text-xs font-medium ${
-                                isComingSoon
-                                    ? 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400'
-                                    : 'bg-amber-100 dark:bg-amber-500/20 text-amber-700 dark:text-amber-300'
-                            } px-2 py-0.5 rounded-full`}>
+                            <div className={`flex items-center gap-1 text-xs font-medium ${isComingSoon
+                                ? 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400'
+                                : 'bg-amber-100 dark:bg-amber-500/20 text-amber-700 dark:text-amber-300'
+                                } px-2 py-0.5 rounded-full`}>
                                 <Coins className="h-3 w-3" />
                                 <span>{service.cost}</span>
                             </div>
@@ -139,13 +140,12 @@ const EnhancedMobileServiceCard = ({ service, isSelected, onClick }) => {
         <motion.div
             whileTap={{ scale: isComingSoon ? 0.99 : 0.98 }}
             onClick={isComingSoon ? undefined : onClick}
-            className={`flex items-center gap-2 p-2.5 rounded-lg cursor-${isComingSoon ? 'not-allowed' : 'pointer'} transition-all border relative overflow-hidden ${
-                isSelected
-                    ? 'bg-gradient-to-r from-amber-50 to-purple-50 dark:from-amber-900/20 dark:to-purple-900/20 border-amber-300 dark:border-amber-500/40'
-                    : isComingSoon
-                        ? 'border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800'
-                        : 'hover:bg-amber-50/50 dark:hover:bg-amber-500/5 border-transparent dark:hover:border-amber-500/20 bg-white dark:bg-gray-800'
-            }`}
+            className={`flex items-center gap-2 p-2.5 rounded-lg cursor-${isComingSoon ? 'not-allowed' : 'pointer'} transition-all border relative overflow-hidden ${isSelected
+                ? 'bg-gradient-to-r from-amber-50 to-purple-50 dark:from-amber-900/20 dark:to-purple-900/20 border-amber-300 dark:border-amber-500/40'
+                : isComingSoon
+                    ? 'border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800'
+                    : 'hover:bg-amber-50/50 dark:hover:bg-amber-500/5 border-transparent dark:hover:border-amber-500/20 bg-white dark:bg-gray-800'
+                }`}
         >
             <div className={`p-1.5 rounded-lg bg-gradient-to-r ${isComingSoon ? 'from-gray-400 to-gray-500 dark:from-gray-600 dark:to-gray-700' : 'from-amber-500 to-purple-500 dark:from-amber-400 dark:to-purple-400'}`}>
                 <service.icon className="h-3.5 w-3.5 text-white" />
@@ -227,18 +227,16 @@ const ChatHistoryCard = ({ chat, isActive, onSelect, onDelete }) => {
                 damping: 25,
                 layout: { duration: 0.15 }
             }}
-            className={`relative group p-2.5 rounded-lg cursor-pointer transition-all border ${
-                isActive
-                    ? 'bg-gradient-to-r from-amber-50 to-purple-50 dark:from-amber-900/20 dark:to-purple-900/20 border-amber-300 dark:border-amber-600 shadow-sm'
-                    : 'bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-800 border-gray-200 dark:border-gray-700 hover:border-amber-200 dark:hover:border-amber-800'
-            }`}
+            className={`relative group p-2.5 rounded-lg cursor-pointer transition-all border ${isActive
+                ? 'bg-gradient-to-r from-amber-50 to-purple-50 dark:from-amber-900/20 dark:to-purple-900/20 border-amber-300 dark:border-amber-600 shadow-sm'
+                : 'bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-800 border-gray-200 dark:border-gray-700 hover:border-amber-200 dark:hover:border-amber-800'
+                }`}
             onClick={() => onSelect(chat)}
         >
             <div className="pr-6">
                 <div className="flex items-start gap-1.5 mb-1">
-                    <div className={`w-1 h-1 rounded-full mt-1.5 ${
-                        isActive ? 'bg-amber-500' : 'bg-gray-300 dark:bg-gray-600'
-                    }`} />
+                    <div className={`w-1 h-1 rounded-full mt-1.5 ${isActive ? 'bg-amber-500' : 'bg-gray-300 dark:bg-gray-600'
+                        }`} />
                     <h3 className="text-xs font-medium text-gray-900 dark:text-gray-100 line-clamp-1 leading-tight" title={chat.preview}>
                         {truncatedPreview}
                     </h3>
@@ -306,6 +304,7 @@ const thinkingMessages = [
 export default function Index({ auth, userInfo, chatHistories }) {
     const { t, i18n } = useTranslation();
     const { toast } = useToast();
+    const { isReady, isAndroidApp, downloadFile, printDocument } = useMedian();
     const [isLoading, setIsLoading] = useState(false);
     const [walletBalance, setWalletBalance] = useState(auth.user.wallet_balance);
     const [selectedService, setSelectedService] = useState(SERVICES[0]);
@@ -319,6 +318,8 @@ export default function Index({ auth, userInfo, chatHistories }) {
     const [thinkingIndex, setThinkingIndex] = useState(0);
     const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
     const [isSidebarCollapsed, setSidebarCollapsed] = useState(false);
+    const [isExporting, setIsExporting] = useState(false);
+    const [isPrinting, setIsPrinting] = useState(false);
     const scrollRef = useRef(null);
     const inputRef = useRef(null);
     const thinkingIntervalRef = useRef(null);
@@ -599,66 +600,200 @@ export default function Index({ auth, userInfo, chatHistories }) {
     const handleExport = async (format) => {
         if (!activeChat) return;
 
+        setIsExporting(true);
+
         try {
-            if (format === 'pptx') {
-                const lastAiMessage = activeChat.messages
-                    .filter(msg => msg.role === 'assistant')
-                    .pop();
+            // Si on est dans l'app Android native avec Median
+            if (isAndroidApp && isReady) {
+                console.log('🚀 Utilisation du téléchargement natif Android');
 
-                if (lastAiMessage) {
-                    const jsonData = extractValidJsonFromMessage(lastAiMessage.content);
-                    if (jsonData) {
-                        const pptxBlob = await PowerPointService.generateFromJSON(jsonData);
+                // Construire l'URL de téléchargement
+                const downloadUrl = new URL('/career-advisor/export', window.location.origin);
+                downloadUrl.searchParams.set('contextId', activeChat.context_id);
+                downloadUrl.searchParams.set('format', format);
 
-                        const url = window.URL.createObjectURL(pptxBlob);
-                        const link = document.createElement('a');
-                        link.href = url;
-                        link.download = `presentation-${activeChat.context_id}.pptx`;
-                        document.body.appendChild(link);
-                        link.click();
-                        document.body.removeChild(link);
-                        window.URL.revokeObjectURL(url);
+                const result = await downloadFile(downloadUrl.toString(), {
+                    filename: `conversation-${activeChat.context_id}.${format}`,
+                    open: true
+                });
 
-                        toast({
-                            title: t('common.success'),
-                            description: t('career_advisor.messages.export_success')
-                        });
-
-                        return;
-                    }
+                if (result.success) {
+                    toast({
+                        title: '📱 Téléchargement natif réussi',
+                        description: `Le fichier ${format.toUpperCase()} a été téléchargé et ouvert automatiquement`,
+                        variant: 'default'
+                    });
+                } else {
+                    throw new Error('Échec du téléchargement natif');
                 }
+            } else {
+                // Fallback vers le téléchargement web classique
+                console.log('🌐 Utilisation du téléchargement web');
+                await handleExportWeb(format);
+            }
+        } catch (error) {
+            console.error('❌ Erreur lors de l\'export:', error);
 
+            // En cas d'erreur avec Median, essayer le fallback web
+            if (isAndroidApp) {
+                console.log('🔄 Tentative de fallback vers téléchargement web');
+                try {
+                    await handleExportWeb(format);
+                } catch (fallbackError) {
+                    console.error('❌ Erreur fallback:', fallbackError);
+                    toast({
+                        title: t('career_advisor.messages.error'),
+                        description: t('career_advisor.messages.export_error'),
+                        variant: "destructive",
+                    });
+                }
+            } else {
                 toast({
                     title: t('career_advisor.messages.error'),
-                    description: "Aucun contenu de présentation valide trouvé",
+                    description: t('career_advisor.messages.export_error'),
                     variant: "destructive",
                 });
-                return;
+            }
+        } finally {
+            setIsExporting(false);
+        }
+    };
+
+    // Fonction d'impression améliorée avec support Median
+    const handlePrint = async () => {
+        if (!activeChat) return;
+
+        setIsPrinting(true);
+
+        try {
+            // Si on est dans l'app Android native avec Median
+            if (isAndroidApp && isReady) {
+                console.log('🖨️ Utilisation de l\'impression native Android');
+
+                // Construire l'URL d'impression
+                const printUrl = new URL('/career-advisor/print', window.location.origin);
+                printUrl.searchParams.set('contextId', activeChat.context_id);
+                printUrl.searchParams.set('auto_print', 'true');
+
+                const result = await printDocument(printUrl.toString());
+
+                if (result.success) {
+                    toast({
+                        title: '📱 Impression native initiée',
+                        description: 'La boîte de dialogue d\'impression Android va s\'ouvrir',
+                        variant: 'default'
+                    });
+                } else {
+                    throw new Error('Échec de l\'impression native');
+                }
+            } else {
+                // Fallback vers l'impression web classique
+                console.log('🌐 Utilisation de l\'impression web');
+                await handlePrintWeb();
+            }
+        } catch (error) {
+            console.error('❌ Erreur lors de l\'impression:', error);
+
+            // En cas d'erreur avec Median, essayer le fallback web
+            if (isAndroidApp) {
+                console.log('🔄 Tentative de fallback vers impression web');
+                try {
+                    await handlePrintWeb();
+                } catch (fallbackError) {
+                    console.error('❌ Erreur fallback impression:', fallbackError);
+                    toast({
+                        title: t('career_advisor.messages.error'),
+                        description: t('career_advisor.messages.print_error'),
+                        variant: "destructive",
+                    });
+                }
+            } else {
+                toast({
+                    title: t('career_advisor.messages.error'),
+                    description: t('career_advisor.messages.print_error'),
+                    variant: "destructive",
+                });
+            }
+        } finally {
+            setIsPrinting(false);
+        }
+    };
+
+    // Méthodes fallback web classiques
+    const handleExportWeb = async (format: string) => {
+        console.log('📄 Export web classique:', format);
+
+        if (format === 'pptx') {
+            const lastAiMessage = activeChat.messages
+                .filter(msg => msg.role === 'assistant')
+                .pop();
+
+            if (lastAiMessage) {
+                const jsonData = extractValidJsonFromMessage(lastAiMessage.content);
+                if (jsonData) {
+                    const pptxBlob = await PowerPointService.generateFromJSON(jsonData);
+
+                    const url = window.URL.createObjectURL(pptxBlob);
+                    const link = document.createElement('a');
+                    link.href = url;
+                    link.download = `presentation-${activeChat.context_id}.pptx`;
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                    window.URL.revokeObjectURL(url);
+
+                    toast({
+                        title: '🌐 Téléchargement web réussi',
+                        description: t('career_advisor.messages.export_success')
+                    });
+                    return;
+                }
             }
 
-            const response = await axios.post('/career-advisor/export', {
-                contextId: activeChat.context_id,
-                format
-            }, { responseType: 'blob' });
-
-            const url = window.URL.createObjectURL(new Blob([response.data]));
-            const link = document.createElement('a');
-            link.href = url;
-            link.download = `conversation-${activeChat.context_id}.${format}`;
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-            window.URL.revokeObjectURL(url);
-
-            toast({
-                title: t('common.success'),
-                description: t('career_advisor.messages.export_success')
-            });
-        } catch (error) {
             toast({
                 title: t('career_advisor.messages.error'),
-                description: t('career_advisor.messages.export_error'),
+                description: "Aucun contenu de présentation valide trouvé",
                 variant: "destructive",
+            });
+            return;
+        }
+
+        const response = await axios.post('/career-advisor/export', {
+            contextId: activeChat.context_id,
+            format
+        }, { responseType: 'blob' });
+
+        const url = window.URL.createObjectURL(new Blob([response.data]));
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `conversation-${activeChat.context_id}.${format}`;
+        document.body.appendChild(link);
+        link.click();
+        window.URL.revokeObjectURL(url);
+        document.body.removeChild(link);
+
+        toast({
+            title: '🌐 Téléchargement web réussi',
+            description: t('career_advisor.messages.export_success')
+        });
+    };
+
+    const handlePrintWeb = async () => {
+        console.log('🖨️ Impression web classique');
+
+        const printUrl = `/career-advisor/print?contextId=${activeChat.context_id}`;
+        const printWindow = window.open(printUrl, '_blank');
+
+        if (printWindow) {
+            printWindow.onload = () => {
+                setTimeout(() => {
+                    printWindow.print();
+                }, 500);
+            };
+
+            toast({
+                title: '🌐 Impression web initiée',
+                description: 'Une nouvelle fenêtre va s\'ouvrir pour l\'impression'
             });
         }
     };
@@ -692,6 +827,29 @@ export default function Index({ auth, userInfo, chatHistories }) {
         <AuthenticatedLayout user={auth.user}>
             {/* Rendre l'effet de curseur plus subtil */}
             <div className="opacity-20"><FluidCursorEffect zIndex={100} /></div>
+
+            {/* Indicateur de statut Median */}
+            <div className="fixed top-4 right-4 z-50">
+                <div className="flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400 bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm px-2 py-1 rounded-lg border border-gray-200 dark:border-gray-700">
+                    {isAndroidApp ? (
+                        <>
+                            <Smartphone className="h-3 w-3 text-green-500" />
+                            <span>Mode natif Android</span>
+                            {isReady ? (
+                                <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
+                            ) : (
+                                <div className="w-2 h-2 bg-orange-500 rounded-full animate-pulse" />
+                            )}
+                        </>
+                    ) : (
+                        <>
+                            <Monitor className="h-3 w-3 text-blue-500" />
+                            <span>Mode web</span>
+                            <div className="w-2 h-2 bg-blue-500 rounded-full" />
+                        </>
+                    )}
+                </div>
+            </div>
 
             <div className="h-[calc(100vh-4rem)] flex bg-gray-50 dark:bg-gray-900"> {/* Hauteur ajustée pour header et footer */}
                 {/* Sidebar Desktop - Collapsible */}
@@ -813,11 +971,10 @@ export default function Index({ auth, userInfo, chatHistories }) {
                                                                 whileHover={{ scale: 1.05 }}
                                                                 whileTap={{ scale: 0.95 }}
                                                                 onClick={() => handleChatSelection(chat)}
-                                                                className={`w-10 h-10 flex items-center justify-center rounded-full cursor-pointer ${
-                                                                    activeChat?.context_id === chat.context_id
-                                                                        ? 'bg-amber-100 dark:bg-amber-900/30 text-amber-600 dark:text-amber-300 border border-amber-300 dark:border-amber-600'
-                                                                        : 'bg-white dark:bg-gray-800 text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-700 border border-gray-200 dark:border-gray-700'
-                                                                } shadow-sm transition-all duration-200`}
+                                                                className={`w-10 h-10 flex items-center justify-center rounded-full cursor-pointer ${activeChat?.context_id === chat.context_id
+                                                                    ? 'bg-amber-100 dark:bg-amber-900/30 text-amber-600 dark:text-amber-300 border border-amber-300 dark:border-amber-600'
+                                                                    : 'bg-white dark:bg-gray-800 text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-700 border border-gray-200 dark:border-gray-700'
+                                                                    } shadow-sm transition-all duration-200`}
                                                             >
                                                                 <MessageSquare className="h-4 w-4" />
                                                             </motion.div>
@@ -980,7 +1137,7 @@ export default function Index({ auth, userInfo, chatHistories }) {
                                     >
                                         <div className="w-20 h-22 bg-gradient-to-r from-amber-500 to-purple-500 rounded-xl mx-auto flex items-center justify-center mb-2.5 shadow-md">
                                             <Brain className="h-7 w-7 text-white" />
-                                            <img src="/mascot/mas.png" alt=""/>
+                                            <img src="/mascot/mas.png" alt="" />
                                         </div>
                                     </motion.div>
                                     <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-2">

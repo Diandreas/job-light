@@ -1,0 +1,86 @@
+import { useState, useEffect } from 'react';
+
+interface MedianDownloadOptions {
+    filename?: string;
+    open?: boolean;
+}
+
+interface MedianResult {
+    success: boolean;
+    error?: string;
+}
+
+export const useMedian = () => {
+    const [isReady, setIsReady] = useState(false);
+    const [isAndroidApp, setIsAndroidApp] = useState(false);
+
+    useEffect(() => {
+        // Détecter si on est dans l'app Median Android
+        const detectMedian = () => {
+            const userAgent = navigator.userAgent;
+            const isMedian = userAgent.includes('Median') || userAgent.includes('median');
+            const isAndroid = userAgent.includes('Android');
+
+            setIsAndroidApp(isMedian && isAndroid);
+
+            // Vérifier si les APIs Median sont disponibles
+            if (isMedian && isAndroid) {
+                // Attendre que Median soit prêt
+                const checkMedianReady = () => {
+                    if (window.Median && window.Median.isReady) {
+                        setIsReady(true);
+                    } else {
+                        setTimeout(checkMedianReady, 100);
+                    }
+                };
+                checkMedianReady();
+            }
+        };
+
+        detectMedian();
+    }, []);
+
+    const downloadFile = async (url: string, options: MedianDownloadOptions = {}): Promise<MedianResult> => {
+        if (!isAndroidApp || !isReady) {
+            throw new Error('Median not available');
+        }
+
+        try {
+            const result = await window.Median.downloadFile(url, options);
+            return { success: true, ...result };
+        } catch (error) {
+            return { success: false, error: error.message };
+        }
+    };
+
+    const printDocument = async (url: string): Promise<MedianResult> => {
+        if (!isAndroidApp || !isReady) {
+            throw new Error('Median not available');
+        }
+
+        try {
+            const result = await window.Median.printDocument(url);
+            return { success: true, ...result };
+        } catch (error) {
+            return { success: false, error: error.message };
+        }
+    };
+
+    return {
+        isReady,
+        isAndroidApp,
+        downloadFile,
+        printDocument
+    };
+};
+
+// Déclaration des types pour window.Median
+declare global {
+    interface Window {
+        Median?: {
+            isReady: boolean;
+            downloadFile: (url: string, options?: MedianDownloadOptions) => Promise<any>;
+            printDocument: (url: string) => Promise<any>;
+        };
+    }
+}

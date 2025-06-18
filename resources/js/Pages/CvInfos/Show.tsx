@@ -267,14 +267,16 @@ export default function Show({ auth, cvInformation, selectedCvModel }) {
 
                 const printUrl = new URL(route('cv.preview', selectedCvModel.id), window.location.origin);
                 printUrl.searchParams.set('locale', i18n.language);
-                printUrl.searchParams.set('auto_print', 'true');
+                printUrl.searchParams.set('print_mode', 'pdf');
+                printUrl.searchParams.set('show_save_button', 'true');
+                printUrl.searchParams.set('auto_print', 'false');
 
                 const result = await printDocument(printUrl.toString());
 
                 if (result.success) {
                     toast({
                         title: '📱 Impression CV initiée',
-                        description: 'La boîte de dialogue d\'impression va s\'ouvrir',
+                        description: 'La boîte de dialogue d\'impression va s\'ouvrir avec option de sauvegarde PDF',
                         variant: 'default'
                     });
                 } else {
@@ -320,7 +322,9 @@ export default function Show({ auth, cvInformation, selectedCvModel }) {
         const printUrl = route('cv.preview', {
             id: selectedCvModel?.id,
             locale: i18n.language,
-            auto_print: true
+            print_mode: 'pdf',
+            show_save_button: 'true',
+            auto_print: 'false'
         });
 
         const printWindow = window.open(printUrl, '_blank');
@@ -331,7 +335,7 @@ export default function Show({ auth, cvInformation, selectedCvModel }) {
 
             toast({
                 title: '🌐 Impression web initiée',
-                description: 'Une nouvelle fenêtre va s\'ouvrir pour l\'impression',
+                description: 'Une nouvelle fenêtre va s\'ouvrir pour l\'impression avec option de sauvegarde PDF',
                 variant: 'default'
             });
         }

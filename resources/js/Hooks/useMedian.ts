@@ -73,12 +73,18 @@ export const useMedian = () => {
         }
 
         try {
+            // Ajouter des paramètres pour forcer l'ouverture en mode PDF avec bouton de sauvegarde
+            const printUrl = new URL(url);
+            printUrl.searchParams.set('print_mode', 'pdf');
+            printUrl.searchParams.set('show_save_button', 'true');
+            printUrl.searchParams.set('auto_print', 'false');
+
             await Median.open.external({
-                url: url,
+                url: printUrl.toString(),
                 target: '_blank'
             });
 
-            console.log('✅ Impression initiée');
+            console.log('✅ Impression initiée avec options PDF');
             return { success: true };
         } catch (error) {
             console.error('❌ Erreur impression:', error);

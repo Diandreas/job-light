@@ -607,10 +607,11 @@ export default function Index({ auth, userInfo, chatHistories }) {
             if (isAndroidApp && isReady) {
                 console.log('🚀 Utilisation du téléchargement natif Android');
 
-                // Construire l'URL de téléchargement
+                // Construire l'URL de téléchargement directe (GET)
                 const downloadUrl = new URL('/career-advisor/export', window.location.origin);
                 downloadUrl.searchParams.set('contextId', activeChat.context_id);
                 downloadUrl.searchParams.set('format', format);
+                downloadUrl.searchParams.set('direct', 'true'); // Paramètre pour forcer le téléchargement direct
 
                 const result = await downloadFile(downloadUrl.toString(), {
                     filename: `conversation-${activeChat.context_id}.${format}`,
@@ -670,17 +671,19 @@ export default function Index({ auth, userInfo, chatHistories }) {
             if (isAndroidApp && isReady) {
                 console.log('🖨️ Utilisation de l\'impression native Android');
 
-                // Construire l'URL d'impression
+                // Construire l'URL d'impression avec paramètres PDF
                 const printUrl = new URL('/career-advisor/print', window.location.origin);
                 printUrl.searchParams.set('contextId', activeChat.context_id);
-                printUrl.searchParams.set('auto_print', 'true');
+                printUrl.searchParams.set('print_mode', 'pdf');
+                printUrl.searchParams.set('show_save_button', 'true');
+                printUrl.searchParams.set('auto_print', 'false');
 
                 const result = await printDocument(printUrl.toString());
 
                 if (result.success) {
                     toast({
                         title: '📱 Impression native initiée',
-                        description: 'La boîte de dialogue d\'impression Android va s\'ouvrir',
+                        description: 'La boîte de dialogue d\'impression Android va s\'ouvrir avec option de sauvegarde PDF',
                         variant: 'default'
                     });
                 } else {
@@ -781,7 +784,7 @@ export default function Index({ auth, userInfo, chatHistories }) {
     const handlePrintWeb = async () => {
         console.log('🖨️ Impression web classique');
 
-        const printUrl = `/career-advisor/print?contextId=${activeChat.context_id}`;
+        const printUrl = `/career-advisor/print?contextId=${activeChat.context_id}&print_mode=pdf&show_save_button=true&auto_print=false`;
         const printWindow = window.open(printUrl, '_blank');
 
         if (printWindow) {
@@ -793,7 +796,7 @@ export default function Index({ auth, userInfo, chatHistories }) {
 
             toast({
                 title: '🌐 Impression web initiée',
-                description: 'Une nouvelle fenêtre va s\'ouvrir pour l\'impression'
+                description: 'Une nouvelle fenêtre va s\'ouvrir pour l\'impression avec option de sauvegarde PDF'
             });
         }
     };

@@ -260,14 +260,13 @@ class CareerAdvisorController extends Controller
             $validated = $request->validate([
                 'message' => 'required|string',
                 'contextId' => 'required|string',
-                'language' => 'required|string|in:fr,en',
+                'language' => 'required|string',
                 'serviceId' => 'required|string',
                 'history' => 'array'
             ]);
 
             // Définir 'fr' comme langue par défaut si nécessaire
-            $language = $validated['language'] ?? 'fr';
-
+            $language = strtolower(substr($validated['language'] ?? 'fr', 0, 2));
             $user = auth()->user();
             $config = $this->getModelConfigForService($validated['serviceId']);
 

@@ -26,8 +26,54 @@ export const useMedian = () => {
             // Import dynamique du package NPM
             import('median-js-bridge').then((MedianModule) => {
                 const MedianInstance = MedianModule.default;
-                setMedian(MedianInstance as MedianAPI);
-
+                // Wrap native methods to always return a Promise
+                const medianApi: MedianAPI = {
+                    share: {
+                        downloadFile: (options: { url: string; open?: boolean }) => {
+                            return new Promise((resolve, reject) => {
+                                try {
+                                    MedianInstance.share.downloadFile(options);
+                                    resolve(undefined);
+                                } catch (e) {
+                                    reject(e);
+                                }
+                            });
+                        },
+                        sharePage: (options: { url: string; text?: string }) => {
+                            return new Promise((resolve, reject) => {
+                                try {
+                                    MedianInstance.share.sharePage(options);
+                                    resolve(undefined);
+                                } catch (e) {
+                                    reject(e);
+                                }
+                            });
+                        }
+                    },
+                    open: {
+                        external: (options: { url: string; target?: string }) => {
+                            return new Promise((resolve, reject) => {
+                                try {
+                                    if (
+                                        MedianInstance.open &&
+                                        typeof MedianInstance.open === 'object' &&
+                                        'external' in MedianInstance.open &&
+                                        typeof MedianInstance.open.external === 'function'
+                                    ) {
+                                        MedianInstance.open.external(options);
+                                        resolve(undefined);
+                                    } else {
+                                        reject(new Error('MedianInstance.open.external is not a function or open is not an object'));
+                                    }
+                                } catch (e) {
+                                    reject(e);
+                                }
+                            });
+                        }
+                    },
+                    onReady: MedianInstance.onReady
+                };
+                setMedian(medianApi);
                 MedianInstance.onReady(() => {
                     console.log('✅ Median JavaScript Bridge est prêt');
                     setIsReady(true);

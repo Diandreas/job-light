@@ -1,4 +1,38 @@
 {
+    "tutorial": {
+        "welcome": {
+            "title": "Welcome to your CV workspace!",
+            "description": "We'll guide you through the different sections to create a professional CV. You can skip this tutorial at any time or restart it from the help button."
+        },
+        "progress": {
+            "title": "Track your progress",
+            "description": "This bar shows your advancement. Each completed section increases your percentage. Aim for 100% for a complete CV!"
+        },
+        "import": {
+            "title": "Import your existing CV",
+            "description": "Already have a CV? Use this feature to automatically analyze it and pre-fill your information. Supports PDF and Word files."
+        },
+        "sidebar": {
+            "title": "Section navigation",
+            "description": "Navigate between different CV sections. Green dots indicate completed sections. On mobile, only icons are visible."
+        },
+        "personalInfo": {
+            "title": "Start with your information",
+            "description": "First fill in your personal information: name, email, phone, etc. This is the foundation of your CV. You can also add a professional photo."
+        },
+        "navigation": {
+            "title": "Navigate between sections",
+            "description": "Use these buttons to move from one section to another. The 'Next' button is only enabled when the current section is completed. At the end, you'll be able to choose a design!"
+        },
+        "step": "Step",
+        "of": "of",
+        "previous": "Previous",
+        "next": "Next",
+        "skip": "Skip",
+        "finish": "Finish",
+        "restart": "View tutorial",
+        "help": "Help"
+    },
     "brand": "Guidy",
     "nav": {
         "login": "Login",

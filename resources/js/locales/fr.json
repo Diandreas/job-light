@@ -1,4 +1,40 @@
 {
+
+    "tutorial": {
+        "welcome": {
+            "title": "Bienvenue dans votre espace CV !",
+            "description": "Nous allons vous guider à travers les différentes sections pour créer un CV professionnel. Vous pouvez passer ce tutoriel à tout moment ou le relancer depuis le bouton d'aide."
+        },
+        "progress": {
+            "title": "Suivez votre progression",
+            "description": "Cette barre indique votre avancement. Chaque section complétée augmente votre pourcentage. Visez 100% pour un CV complet !"
+        },
+        "import": {
+            "title": "Importez votre CV existant",
+            "description": "Vous avez déjà un CV ? Utilisez cette fonctionnalité pour l'analyser automatiquement et pré-remplir vos informations. Supports PDF et Word."
+        },
+        "sidebar": {
+            "title": "Navigation par sections",
+            "description": "Naviguez entre les différentes sections de votre CV. Les points verts indiquent les sections complétées. Sur mobile, seules les icônes sont visibles."
+        },
+        "personalInfo": {
+            "title": "Commencez par vos informations",
+            "description": "Remplissez d'abord vos informations personnelles : nom, email, téléphone, etc. C'est la base de votre CV. Vous pouvez aussi ajouter une photo professionnelle."
+        },
+        "navigation": {
+            "title": "Naviguez entre les sections",
+            "description": "Utilisez ces boutons pour passer d'une section à l'autre. Le bouton 'Suivant' n'est activé que quand la section actuelle est complétée. À la fin, vous pourrez choisir un design !"
+        },
+        "step": "Étape",
+        "of": "sur",
+        "previous": "Précédent",
+        "next": "Suivant",
+        "skip": "Passer",
+        "finish": "Terminer",
+        "restart": "Revoir le tutoriel",
+        "help": "Aide"
+    },
+
     "brand": "Guidy",
     "nav": {
         "login": "Connexion",

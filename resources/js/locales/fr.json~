@@ -1,4 +1,39 @@
 {
+
+    "tutorial": {
+        "welcome": {
+            "title": "Bienvenue dans votre espace CV !",
+            "description": "Nous allons vous guider à travers les différentes sections pour créer un CV professionnel. Vous pouvez passer ce tutoriel à tout moment ou le relancer depuis le bouton d'aide."
+        },
+        "progress": {
+            "title": "Suivez votre progression",
+            "description": "Cette barre indique votre avancement. Chaque section complétée augmente votre pourcentage. Visez 100% pour un CV complet !"
+        },
+        "import": {
+            "title": "Importez votre CV existant",
+            "description": "Vous avez déjà un CV ? Utilisez cette fonctionnalité pour l'analyser automatiquement et pré-remplir vos informations. Supports PDF et Word."
+        },
+        "sidebar": {
+            "title": "Navigation par sections",
+            "description": "Naviguez entre les différentes sections de votre CV. Les points verts indiquent les sections complétées. Cliquez sur une section pour y accéder directement."
+        },
+        "personalInfo": {
+            "title": "Commencez par vos informations",
+            "description": "Remplissez d'abord vos informations personnelles : nom, email, téléphone, etc. C'est la base de votre CV. Vous pouvez aussi ajouter une photo professionnelle."
+        },
+        "navigation": {
+            "title": "Naviguez entre les sections",
+            "description": "Utilisez ces boutons pour passer d'une section à l'autre. Le bouton 'Suivant' n'est activé que quand la section actuelle est complétée. À la fin, vous pourrez choisir un design !"
+        },
+        "step": "Étape",
+        "of": "sur",
+        "previous": "Précédent",
+        "next": "Suivant",
+        "skip": "Passer",
+        "finish": "Terminer",
+        "close": "Fermer"
+    },
+
     "brand": "Guidy",
     "nav": {
         "login": "Connexion",
@@ -70,7 +105,9 @@
         "createCV": "Créer un CV",
         "assistant": "Assistant Guidy",
         "dashboard": "Tableau de bord",
-        "profile": "Mon Profil"
+        "profile": "Mon Profil",
+        "jobPortal": "Portail d'emploi",
+        "blog": "Blog"
     },
     "cv": {
         "navigation": "Navigation CV",
@@ -228,7 +265,8 @@
         "next": "Suivant",
         "manage": "Gérer",
         "close": "Fermer",
-        "tokens": "jetons"
+        "tokens": "jetons",
+        "comingSoon": "Bientôt disponible"
     },
     "wallet": {
         "balance": "Solde",
@@ -382,14 +420,18 @@
         }
     },
     "career_advisor": {
-        "title": "Conseiller de Carrière",
+        "title": "Conseiller de Carrière IA",
         "header": {
             "balance": "Solde",
             "history": "Historique"
         },
+        "coming_soon": {
+            "badge": "Bientôt disponible",
+            "available_from": "Dès le {{date}}"
+        },
         "messages": {
-            "loading_error": "Erreur de chargement des conversations",
-            "chat_loading_error": "Erreur de chargement de la conversation",
+            "loading_error": "Erreur lors du chargement des conversations",
+            "chat_loading_error": "Erreur lors du chargement de la conversation",
             "delete_success": "Conversation supprimée avec succès",
             "delete_error": "Erreur lors de la suppression de la conversation",
             "loading": "Chargement de la conversation...",
@@ -404,7 +446,14 @@
         "chat": {
             "send": "Envoyer",
             "sending": "Envoi en cours...",
+            "new": "Nouvelle conversation",
             "questions_remaining": "{{count}} questions restantes",
+            "thinking": {
+                "analyzing": "Analyse en cours...",
+                "reflecting": "Réflexion sur votre demande...",
+                "generating": "Génération de la réponse...",
+                "finalizing": "Finalisation des conseils..."
+            },
             "actions": {
                 "delete": {
                     "title": "Supprimer la conversation ?",
@@ -420,16 +469,28 @@
         },
         "history": {
             "title": "Historique des conversations",
-            "empty": "Pas de conversations",
+            "empty": "Aucune conversation",
             "created_at": "Créé le {{date}}"
         },
         "info": {
             "balance": "Solde du Portefeuille",
-            "tokens": "Jetons Utilisés",
+            "tokens": "Tokens Utilisés",
             "questions": "Questions Restantes"
         },
+        "services": {
+            "choose": "Choisissez un service",
+            "description": "Sélectionnez le service qui correspond le mieux à vos besoins professionnels"
+        },
         "common": {
-            "tokens": "jetons"
+            "tokens": "tokens"
+        },
+        "sidebar": {
+            "collapse": "Réduire",
+            "expand": "Développer",
+            "delete": "Supprimer",
+            "ask_question": "Posez votre question... ({{service}})",
+            "enter_to_send": "Appuyez sur Entrée pour envoyer",
+            "token_cost": "Coût en jetons"
         }
     },
     "hobbies": {
@@ -855,6 +916,16 @@
             "description": "Conseils personnalisés sur le développement de carrière",
             "placeholder": "Quel conseil de carrière souhaitez-vous ?"
         },
+        "presentation-ppt": {
+            "title": "Créateur de Présentation",
+            "description": "Créez des présentations PowerPoint professionnelles",
+            "placeholder": "Quel type de présentation souhaitez-vous créer ?"
+        },
+        "presentation_ppt": {
+            "title": "Créateur de Présentation",
+            "description": "Créez des présentations PowerPoint professionnelles",
+            "placeholder": "Quel type de présentation souhaitez-vous créer ?"
+        },
         "career_advice": {
             "title": "Conseil de Carrière",
             "description": "Conseils personnalisés sur le développement de carrière"
@@ -870,6 +941,10 @@
         "resume_review": {
             "title": "Analyse de CV",
             "description": "Suggestions d'amélioration du CV"
+        },
+        "internship_report": {
+            "title": "Rapport de Stage & Soutenance",
+            "description": "Générer des rapports de stage et de soutenance complets"
         }
     },
     "sponsorship": {
@@ -1357,6 +1432,64 @@
             "description": "Découvrez nos articles, astuces et conseils pour créer un CV remarquable et optimiser votre recherche d'emploi.",
             "read_more": "Lire l'article",
             "no_articles": "Aucun article disponible pour le moment."
+        }
+    },
+    "components": {
+        "messageBubble": {
+            "copy": {
+                "title": "Contenu copié",
+                "description": "Le texte a été copié dans le presse-papiers"
+            },
+            "copyError": {
+                "title": "Échec de la copie",
+                "description": "Impossible de copier le texte"
+            },
+            "presentation": {
+                "title": "Présentation prête",
+                "description": "Votre fichier PowerPoint a été généré avec succès",
+                "button": "Exporter en PowerPoint",
+                "invalidFormat": {
+                    "title": "Format invalide",
+                    "description": "Le contenu n'est pas dans le format attendu pour une présentation"
+                },
+                "error": {
+                    "title": "Erreur",
+                    "description": "Problème lors de la génération",
+                    "unknownError": "Erreur inconnue"
+                }
+            },
+            "share": {
+                "title": "Partager ce conseil",
+                "asImage": "Partager comme image",
+                "error": {
+                    "title": "Échec du partage",
+                    "description": "Impossible de générer l'image à partager"
+                }
+            },
+            "download": {
+                "title": "Image enregistrée",
+                "description": "L'image a été téléchargée sur votre appareil",
+                "button": "Télécharger"
+            },
+            "actions": {
+                "copy": "Copier",
+                "cancel": "Annuler"
+            }
+        },
+        "sidebar": {
+            "active": "Active",
+            "pro_badge": "Pro",
+            "credits": "crédits",
+            "conversations": "Conversations",
+            "active_conversation": "Conversation active",
+            "ai_assistant": "Assistant IA",
+            "quick_actions": "Actions rapides"
+        }
+    },
+    "jobPortal": {
+        "comingSoon": {
+            "title": "Bientôt disponible !",
+            "description": "Nous travaillons activement pour vous proposer notre nouvelle fonctionnalité de portail d'emploi. Restez à l'écoute pour des opportunités passionnantes dans votre parcours professionnel !"
         }
     }
 }

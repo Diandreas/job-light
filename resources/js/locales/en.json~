@@ -1,4 +1,38 @@
 {
+    "tutorial": {
+        "welcome": {
+            "title": "Welcome to your CV workspace!",
+            "description": "We'll guide you through the different sections to create a professional CV. You can skip this tutorial at any time or restart it from the help button."
+        },
+        "progress": {
+            "title": "Track your progress",
+            "description": "This bar shows your advancement. Each completed section increases your percentage. Aim for 100% for a complete CV!"
+        },
+        "import": {
+            "title": "Import your existing CV",
+            "description": "Already have a CV? Use this feature to automatically analyze it and pre-fill your information. Supports PDF and Word files."
+        },
+        "sidebar": {
+            "title": "Section navigation",
+            "description": "Navigate between different CV sections. Green dots indicate completed sections. Click on a section to access it directly."
+        },
+        "personalInfo": {
+            "title": "Start with your information",
+            "description": "First fill in your personal information: name, email, phone, etc. This is the foundation of your CV. You can also add a professional photo."
+        },
+        "navigation": {
+            "title": "Navigate between sections",
+            "description": "Use these buttons to move from one section to another. The 'Next' button is only enabled when the current section is completed. At the end, you'll be able to choose a design!"
+        },
+        "step": "Step",
+        "of": "of",
+        "previous": "Previous",
+        "next": "Next",
+        "skip": "Skip",
+        "finish": "Finish",
+        "close": "Close"
+    },
+    
     "brand": "Guidy",
     "nav": {
         "login": "Login",
@@ -70,7 +104,9 @@
         "createCV": "Create a CV",
         "assistant": "Guidy Assistant",
         "dashboard": "Dashboard",
-        "profile": "My Profile"
+        "profile": "My Profile",
+        "jobPortal": "Job Portal",
+        "blog": "Blog"
     },
     "cv": {
         "navigation": "CV Navigation",
@@ -228,7 +264,8 @@
         "next": "Next",
         "manage": "Manage",
         "close": "Close",
-        "tokens": "tokens"
+        "tokens": "tokens",
+        "comingSoon": "Coming Soon"
     },
     "wallet": {
         "balance": "Balance",
@@ -387,6 +424,10 @@
             "balance": "Balance",
             "history": "History"
         },
+        "coming_soon": {
+            "badge": "Coming Soon",
+            "available_from": "Available from {{date}}"
+        },
         "messages": {
             "loading_error": "Error loading conversations",
             "chat_loading_error": "Error loading conversation",
@@ -441,6 +482,14 @@
         },
         "common": {
             "tokens": "tokens"
+        },
+        "sidebar": {
+            "collapse": "Collapse",
+            "expand": "Expand",
+            "delete": "Delete",
+            "ask_question": "Ask your question... ({{service}})",
+            "enter_to_send": "Press Enter to send",
+            "token_cost": "Token cost"
         }
     },
     "hobbies": {
@@ -851,7 +900,6 @@
             "description": "Interactive interview simulation",
             "placeholder": "Ask your questions about interview preparation..."
         },
-        
         "cover-letter": {
             "title": "Cover Letter",
             "description": "Personalized cover letter",
@@ -866,6 +914,16 @@
             "title": "Career Advice",
             "description": "Personalized career development advice",
             "placeholder": "What career advice would you like?"
+        },
+        "presentation-ppt": {
+            "title": "Presentation Creator",
+            "description": "Create professional PowerPoint presentations",
+            "placeholder": "What kind of presentation would you like to create?"
+        },
+        "presentation_ppt": {
+            "title": "Presentation Creator",
+            "description": "Create professional PowerPoint presentations",
+            "placeholder": "What kind of presentation would you like to create?"
         },
         "career_advice": {
             "title": "Career Advice",
@@ -882,6 +940,10 @@
         "resume_review": {
             "title": "Resume Review",
             "description": "CV improvement suggestions"
+        },
+        "internship_report": {
+            "title": "Internship & Defense Report",
+            "description": "Generate comprehensive internship and defense reports"
         }
     },
     "sponsorship": {
@@ -1369,6 +1431,64 @@
             "description": "Discover our articles, tips and advice to create a standout CV and optimize your job search.",
             "read_more": "Read article",
             "no_articles": "No articles available at the moment."
+        }
+    },
+    "components": {
+        "messageBubble": {
+            "copy": {
+                "title": "Content copied",
+                "description": "The text has been copied to clipboard"
+            },
+            "copyError": {
+                "title": "Copy failed",
+                "description": "Unable to copy text"
+            },
+            "presentation": {
+                "title": "Presentation ready",
+                "description": "Your PowerPoint file has been generated successfully",
+                "button": "Export to PowerPoint",
+                "invalidFormat": {
+                    "title": "Invalid format",
+                    "description": "Content is not in the expected presentation format"
+                },
+                "error": {
+                    "title": "Error",
+                    "description": "Problem during generation",
+                    "unknownError": "Unknown error"
+                }
+            },
+            "share": {
+                "title": "Share this advice",
+                "asImage": "Share as image",
+                "error": {
+                    "title": "Share failed",
+                    "description": "Unable to generate the image to share"
+                }
+            },
+            "download": {
+                "title": "Image saved",
+                "description": "The image has been downloaded to your device",
+                "button": "Download"
+            },
+            "actions": {
+                "copy": "Copy",
+                "cancel": "Cancel"
+            }
+        },
+        "sidebar": {
+            "active": "Active",
+            "pro_badge": "Pro",
+            "credits": "credits",
+            "conversations": "Conversations",
+            "active_conversation": "Active conversation",
+            "ai_assistant": "AI Assistant",
+            "quick_actions": "Quick actions"
+        }
+    },
+    "jobPortal": {
+        "comingSoon": {
+            "title": "Coming Soon!",
+            "description": "We're working hard to bring you our new job portal feature. Stay tuned for exciting opportunities in your career journey!"
         }
     }
 }

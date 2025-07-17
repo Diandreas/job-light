@@ -1,12 +1,14 @@
-import React, { useState, useCallback, useEffect } from 'react';
+import React, { useState, useCallback, useEffect, ReactNode } from 'react';
 import { Head, Link } from '@inertiajs/react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
+import { createPortal } from 'react-dom';
 import {
     User, FileText, Briefcase, Code, GraduationCap, Heart,
     ChevronRight, ChevronLeft, Mail, Phone, MapPin, Linkedin,
     Github, PencilIcon, Sparkles, CircleChevronRight, Star,
-    Camera, Upload, FileUp, Bot, AlertCircle, X, Plus, Menu, Coins, Trash2, Globe
+    Camera, Upload, FileUp, Bot, AlertCircle, X, Plus, Menu, Coins, Trash2, Globe,
+    ArrowRight, Play, SkipForward, HelpCircle, Check
 } from 'lucide-react';
 import axios from 'axios';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
@@ -53,53 +55,543 @@ const PERSONAL_INFO_FIELDS = [
     { label: "GitHub", key: "github", icon: Github }
 ];
 
+// Hook pour gérer le scroll et le positionnement
+const useElementPosition = (targetSelector: string) => {
+    const [elementRect, setElementRect] = useState<DOMRect | null>(null);
+    const [isVisible, setIsVisible] = useState(false);
+
+    const updatePosition = useCallback(() => {
+        if (!targetSelector) {
+            setElementRect(null);
+            setIsVisible(false);
+            return;
+        }
+
+        const element = document.querySelector(targetSelector);
+        if (element) {
+            const rect = element.getBoundingClientRect();
+            setElementRect(rect);
+
+            // Vérifier si l'élément est visible dans le viewport
+            const windowHeight = window.innerHeight;
+            const windowWidth = window.innerWidth;
+            const isInView = rect.top >= 0 && rect.left >= 0 &&
+                rect.bottom <= windowHeight && rect.right <= windowWidth;
+
+            if (!isInView) {
+                // Faire défiler pour rendre l'élément visible
+                element.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'center',
+                    inline: 'center'
+                });
+
+                // Attendre que le scroll soit terminé pour mettre à jour la position
+                setTimeout(() => {
+                    const newRect = element.getBoundingClientRect();
+                    setElementRect(newRect);
+                    setIsVisible(true);
+                }, 300);
+            } else {
+                setIsVisible(true);
+            }
+        } else {
+            setElementRect(null);
+            setIsVisible(false);
+        }
+    }, [targetSelector]);
+
+    useEffect(() => {
+        updatePosition();
+
+        const handleResize = () => updatePosition();
+        const handleScroll = () => updatePosition();
+
+        window.addEventListener('resize', handleResize);
+        window.addEventListener('scroll', handleScroll);
+
+        return () => {
+            window.removeEventListener('resize', handleResize);
+            window.removeEventListener('scroll', handleScroll);
+        };
+    }, [updatePosition]);
+
+    return { elementRect, isVisible, updatePosition };
+};
+
+// Composant pour l'overlay avec trou
+const TutorialOverlay = ({ targetRect, children }: { targetRect: DOMRect | null, children: ReactNode }) => {
+    if (!targetRect) {
+        return (
+            <div className="fixed inset-0 bg-black/60 backdrop-blur-sm" style={{ zIndex: 9998 }}>
+                {children}
+            </div>
+        );
+    }
+
+    // Calculer les dimensions pour créer le "trou"
+    const padding = 8;
+    const x = targetRect.left - padding;
+    const y = targetRect.top - padding;
+    const width = targetRect.width + (padding * 2);
+    const height = targetRect.height + (padding * 2);
+
+    // Style pour créer l'effet de masque avec clip-path
+    const maskStyle = {
+        position: 'fixed' as const,
+        top: 0,
+        left: 0,
+        width: '100vw',
+        height: '100vh',
+        backgroundColor: 'rgba(0, 0, 0, 0.6)',
+        backdropFilter: 'blur(1px)',
+        clipPath: `polygon(
+            0% 0%,
+            0% 100%,
+            ${x}px 100%,
+            ${x}px ${y}px,
+            ${x + width}px ${y}px,
+            ${x + width}px ${y + height}px,
+            ${x}px ${y + height}px,
+            ${x}px 100%,
+            100% 100%,
+            100% 0%
+        )`,
+        zIndex: 9998
+    };
+
+    // Ajouter un contour doré autour de l'élément highlighted
+    const highlightStyle = {
+        position: 'fixed' as const,
+        top: y,
+        left: x,
+        width: width,
+        height: height,
+        border: '3px solid #f59e0b',
+        borderRadius: '8px',
+        boxShadow: '0 0 20px rgba(245, 158, 11, 0.5)',
+        zIndex: 9999,
+        pointerEvents: 'none' as const,
+        animation: 'pulse 2s infinite'
+    };
+
+    return (
+        <>
+            <div style={maskStyle} />
+            <div style={highlightStyle} />
+            <div style={{ position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', zIndex: 9999, pointerEvents: 'none' }}>
+                {children}
+            </div>
+            <style jsx>{`
+                @keyframes pulse {
+                    0%, 100% {
+                        box-shadow: 0 0 20px rgba(245, 158, 11, 0.5);
+                        border-color: #f59e0b;
+                    }
+                    50% {
+                        box-shadow: 0 0 30px rgba(245, 158, 11, 0.8);
+                        border-color: #fbbf24;
+                    }
+                }
+            `}</style>
+        </>
+    );
+};
+
+// Composant Tutoriel amélioré
+const Tutorial = ({ isVisible, onComplete, currentSection, onNavigateToSection }) => {
+    const { t } = useTranslation();
+    const [currentStep, setCurrentStep] = useState(0);
+    const [isAnimating, setIsAnimating] = useState(false);
+    const [isMobile, setIsMobile] = useState(false);
+
+    const tutorialSteps = [
+        {
+            id: 'welcome',
+            title: t('tutorial.welcome.title'),
+            description: t('tutorial.welcome.description'),
+            target: null,
+            action: null
+        },
+        {
+            id: 'progress',
+            title: t('tutorial.progress.title'),
+            description: t('tutorial.progress.description'),
+            target: '[data-tutorial="progress"]',
+            action: null
+        },
+        {
+            id: 'import',
+            title: t('tutorial.import.title'),
+            description: t('tutorial.import.description'),
+            target: '[data-tutorial="import"]',
+            action: null
+        },
+        {
+            id: 'sidebar',
+            title: t('tutorial.sidebar.title'),
+            description: t('tutorial.sidebar.description'),
+            target: '[data-tutorial="sidebar"]',
+            action: null
+        },
+        {
+            id: 'personalInfo',
+            title: t('tutorial.personalInfo.title'),
+            description: t('tutorial.personalInfo.description'),
+            target: '[data-tutorial="content"]',
+            action: () => onNavigateToSection('personalInfo')
+        },
+        {
+            id: 'navigation',
+            title: t('tutorial.navigation.title'),
+            description: t('tutorial.navigation.description'),
+            target: '[data-tutorial="navigation"]',
+            action: null
+        }
+    ];
+
+    const currentStepData = tutorialSteps[currentStep];
+    const { elementRect, isVisible: elementVisible, updatePosition } = useElementPosition(currentStepData.target);
+
+    // Détecter si on est sur mobile
+    useEffect(() => {
+        const checkMobile = () => {
+            setIsMobile(window.innerWidth < 768);
+        };
+
+        checkMobile();
+        window.addEventListener('resize', checkMobile);
+        return () => window.removeEventListener('resize', checkMobile);
+    }, []);
+
+    // Mettre à jour la position quand l'étape change
+    useEffect(() => {
+        if (currentStepData.target) {
+            updatePosition();
+        }
+    }, [currentStep, updatePosition, currentStepData.target]);
+
+    const nextStep = async () => {
+        if (currentStepData.action) {
+            setIsAnimating(true);
+            await currentStepData.action();
+            setTimeout(() => {
+                setIsAnimating(false);
+                updatePosition();
+            }, 500);
+        }
+
+        if (currentStep < tutorialSteps.length - 1) {
+            setCurrentStep(currentStep + 1);
+        } else {
+            handleComplete();
+        }
+    };
+
+    const prevStep = () => {
+        if (currentStep > 0) {
+            setCurrentStep(currentStep - 1);
+        }
+    };
+
+    const skipTutorial = () => {
+        handleComplete();
+    };
+
+    const handleComplete = () => {
+        localStorage.setItem('cv_tutorial_completed', 'true');
+        onComplete();
+    };
+
+    const getCardPosition = () => {
+        const padding = 16;
+        const cardWidth = isMobile ? Math.min(320, window.innerWidth - 32) : 350;
+        const cardHeight = 400; // hauteur approximative
+
+        // Zones de sécurité pour éviter les barres de navigation
+        const topSafeZone = isMobile ? 100 : 80; // navbar + mobile nav
+        const bottomSafeZone = isMobile ? 80 : 20; // mobile tab bar
+        const availableHeight = window.innerHeight - topSafeZone - bottomSafeZone;
+
+        if (!elementRect) {
+            // Centrer parfaitement pour l'étape de bienvenue
+            const centerX = (window.innerWidth - cardWidth) / 2;
+            const centerY = isMobile
+                ? topSafeZone + Math.max(50, (availableHeight - cardHeight) / 2)
+                : (window.innerHeight - cardHeight) / 2;
+
+            return {
+                position: 'fixed' as const,
+                top: `${Math.max(topSafeZone + padding, centerY)}px`,
+                left: `${Math.max(padding, centerX)}px`,
+                width: `${cardWidth}px`,
+                maxWidth: 'calc(100vw - 32px)',
+                pointerEvents: 'auto' as const
+            };
+        }
+
+        let top: number;
+        let left: number;
+
+        if (isMobile) {
+            // Sur mobile, positionner intelligemment selon l'élément ciblé
+            const elementCenterY = elementRect.top + elementRect.height / 2;
+            const isElementInTopHalf = elementCenterY < window.innerHeight / 2;
+
+            if (isElementInTopHalf && elementRect.bottom + cardHeight + padding < window.innerHeight - bottomSafeZone) {
+                // Placer en dessous de l'élément si possible
+                top = elementRect.bottom + padding;
+            } else if (!isElementInTopHalf && elementRect.top - cardHeight - padding > topSafeZone) {
+                // Placer au-dessus de l'élément si possible
+                top = elementRect.top - cardHeight - padding;
+            } else {
+                // Centrer dans l'espace disponible
+                top = topSafeZone + Math.max(padding, (availableHeight - cardHeight) / 2);
+            }
+
+            left = (window.innerWidth - cardWidth) / 2;
+        } else {
+            // Sur desktop, positionner intelligemment autour de l'élément
+            const centerX = elementRect.left + elementRect.width / 2;
+            const centerY = elementRect.top + elementRect.height / 2;
+
+            // Déterminer la meilleure position
+            const spaceRight = window.innerWidth - elementRect.right;
+            const spaceLeft = elementRect.left;
+            const spaceBelow = window.innerHeight - elementRect.bottom;
+            const spaceAbove = elementRect.top;
+
+            // Position horizontale
+            if (spaceRight >= cardWidth + padding && centerX < window.innerWidth / 2) {
+                left = elementRect.right + padding;
+            } else if (spaceLeft >= cardWidth + padding && centerX > window.innerWidth / 2) {
+                left = elementRect.left - cardWidth - padding;
+            } else {
+                left = Math.max(padding, Math.min(window.innerWidth - cardWidth - padding, centerX - cardWidth / 2));
+            }
+
+            // Position verticale
+            if (spaceBelow >= cardHeight + padding && centerY < window.innerHeight / 2) {
+                top = Math.max(topSafeZone, elementRect.bottom + padding);
+            } else if (spaceAbove >= cardHeight + padding && centerY > window.innerHeight / 2) {
+                top = Math.max(topSafeZone, elementRect.top - cardHeight - padding);
+            } else {
+                top = Math.max(topSafeZone, Math.min(window.innerHeight - bottomSafeZone - cardHeight, centerY - cardHeight / 2));
+            }
+        }
+
+        return {
+            position: 'fixed' as const,
+            top: `${top}px`,
+            left: `${left}px`,
+            width: `${cardWidth}px`,
+            maxWidth: 'calc(100vw - 32px)',
+            maxHeight: `${availableHeight - 32}px`,
+            pointerEvents: 'auto' as const
+        };
+    };
+
+    if (!isVisible) return null;
+
+    const tutorialContent = (
+        <TutorialOverlay targetRect={elementRect}>
+            <motion.div
+                key={currentStep}
+                initial={{ opacity: 0, scale: 0.9, y: 20 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                exit={{ opacity: 0, scale: 0.9, y: -20 }}
+                transition={{ duration: 0.3 }}
+                className="bg-white dark:bg-gray-800 rounded-xl shadow-2xl border border-amber-200 dark:border-amber-700 overflow-hidden"
+                style={getCardPosition()}
+            >
+                <div className={`${isMobile ? 'p-4' : 'p-6'}`}>
+                    {/* Header */}
+                    <div className="flex items-start justify-between mb-3">
+                        <div className="flex items-start gap-3 flex-1 min-w-0">
+                            <div className={`${isMobile ? 'w-8 h-8' : 'w-10 h-10'} bg-gradient-to-r from-amber-500 to-purple-500 rounded-full flex items-center justify-center flex-shrink-0`}>
+                                <HelpCircle className={`${isMobile ? 'w-4 h-4' : 'w-5 h-5'} text-white`} />
+                            </div>
+                            <div className="min-w-0 flex-1">
+                                <h3 className={`font-semibold text-gray-900 dark:text-white ${isMobile ? 'text-sm' : 'text-base'} leading-tight`}>
+                                    {currentStepData.title}
+                                </h3>
+                                <p className="text-xs text-gray-500 mt-1">
+                                    {t('tutorial.step')} {currentStep + 1} {t('tutorial.of')} {tutorialSteps.length}
+                                </p>
+                            </div>
+                        </div>
+                        <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={skipTutorial}
+                            className="text-gray-400 hover:text-gray-600 flex-shrink-0 -mt-1 -mr-1"
+                        >
+                            <X className="w-4 h-4" />
+                        </Button>
+                    </div>
+
+                    {/* Progress bar */}
+                    <div className="mb-4">
+                        <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
+                            <div
+                                className="bg-gradient-to-r from-amber-500 to-purple-500 h-2 rounded-full transition-all duration-300"
+                                style={{ width: `${((currentStep + 1) / tutorialSteps.length) * 100}%` }}
+                            />
+                        </div>
+                    </div>
+
+                    {/* Content */}
+                    <div className="mb-6">
+                        <p className={`text-gray-700 dark:text-gray-300 ${isMobile ? 'text-sm' : 'text-sm'} leading-relaxed`}>
+                            {currentStepData.description}
+                        </p>
+                    </div>
+
+                    {/* Actions */}
+                    <div className={`flex ${isMobile ? 'flex-col gap-3' : 'items-center justify-between gap-3'}`}>
+                        {isMobile ? (
+                            // Layout mobile : boutons empilés
+                            <>
+                                <div className="flex gap-2">
+                                    <Button
+                                        onClick={nextStep}
+                                        disabled={isAnimating}
+                                        className="flex-1 bg-gradient-to-r from-amber-500 to-purple-500 hover:from-amber-600 hover:to-purple-600 text-white h-9"
+                                        size="sm"
+                                    >
+                                        {isAnimating ? (
+                                            <div className="w-4 h-4 animate-spin border-2 border-white border-t-transparent rounded-full mr-2" />
+                                        ) : currentStep === tutorialSteps.length - 1 ? (
+                                            <Check className="w-4 h-4 mr-2" />
+                                        ) : (
+                                            <ArrowRight className="w-4 h-4 mr-2" />
+                                        )}
+                                        {currentStep === tutorialSteps.length - 1 ? t('tutorial.finish') : t('tutorial.next')}
+                                    </Button>
+                                    {currentStep > 0 && (
+                                        <Button
+                                            variant="outline"
+                                            size="sm"
+                                            onClick={prevStep}
+                                            disabled={isAnimating}
+                                            className="h-9"
+                                        >
+                                            <ChevronLeft className="w-4 h-4" />
+                                        </Button>
+                                    )}
+                                </div>
+                                <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    onClick={skipTutorial}
+                                    className="text-gray-500 w-full h-8"
+                                >
+                                    <SkipForward className="w-4 h-4 mr-2" />
+                                    {t('tutorial.skip')}
+                                </Button>
+                            </>
+                        ) : (
+                            // Layout desktop : boutons côte à côte
+                            <>
+                                <div className="flex gap-2">
+                                    {currentStep > 0 && (
+                                        <Button
+                                            variant="outline"
+                                            size="sm"
+                                            onClick={prevStep}
+                                            disabled={isAnimating}
+                                        >
+                                            <ChevronLeft className="w-4 h-4 mr-1" />
+                                            {t('tutorial.previous')}
+                                        </Button>
+                                    )}
+                                </div>
+
+                                <div className="flex gap-2">
+                                    <Button
+                                        variant="ghost"
+                                        size="sm"
+                                        onClick={skipTutorial}
+                                        className="text-gray-500"
+                                    >
+                                        <SkipForward className="w-4 h-4 mr-1" />
+                                        {t('tutorial.skip')}
+                                    </Button>
+                                    <Button
+                                        onClick={nextStep}
+                                        disabled={isAnimating}
+                                        className="bg-gradient-to-r from-amber-500 to-purple-500 hover:from-amber-600 hover:to-purple-600 text-white"
+                                        size="sm"
+                                    >
+                                        {isAnimating ? (
+                                            <div className="w-4 h-4 animate-spin border-2 border-white border-t-transparent rounded-full mr-1" />
+                                        ) : currentStep === tutorialSteps.length - 1 ? (
+                                            <Check className="w-4 h-4 mr-1" />
+                                        ) : (
+                                            <ArrowRight className="w-4 h-4 mr-1" />
+                                        )}
+                                        {currentStep === tutorialSteps.length - 1 ? t('tutorial.finish') : t('tutorial.next')}
+                                    </Button>
+                                </div>
+                            </>
+                        )}
+                    </div>
+                </div>
+            </motion.div>
+        </TutorialOverlay>
+    );
+
+    // Utiliser createPortal pour rendre au niveau body
+    return typeof document !== 'undefined' ? createPortal(tutorialContent, document.body) : null;
+};
+
 // Composant ImportButton pour l'utiliser dans différents endroits
 const ImportButton = ({ onImport, isImporting, isCompact = false }) => {
     const { t } = useTranslation();
 
     return (
-        <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-                <Button
-                    variant="outline"
-                    className={`${isCompact ? 'text-xs h-7 py-0' : 'text-xs sm:text-sm h-7 sm:h-9 py-0 sm:py-2'} border-amber-200 dark:border-amber-800 hover:bg-amber-50 dark:hover:bg-amber-900/50`}
-                    disabled={isImporting}
-                >
-                    {isImporting ? (
-                        <>
-                            <div className={`animate-spin ${isCompact ? 'mr-1 w-3 h-3' : 'mr-1 sm:mr-2 w-3 h-3 sm:w-4 sm:h-4'} border-2 border-amber-500 border-t-transparent rounded-full`} />
-                            {t('cv.interface.import.loading')}
-                        </>
-                    ) : (
-                        <>
-                            <FileUp className={isCompact ? "w-3 h-3 mr-1" : "w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2"} />
-                            {t('cv.interface.import.button')}
-                        </>
-                    )}
-                </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className={isCompact ? "text-xs" : "text-xs sm:text-sm"}>
-                <DropdownMenuItem onClick={() => onImport('pdf')} className={`cursor-pointer ${isCompact ? 'h-8' : 'h-8 sm:h-10'}`} disabled={isImporting}>
-                    <FileText className={isCompact ? "w-3 h-3 mr-1" : "w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2"} />
-                    {t('cv.interface.import.pdf')}( - 5 <Coins className={isCompact ? "w-3 h-3" : "w-3 h-3 sm:w-4 sm:h-4"} />)
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => onImport('docx')} className={`cursor-pointer ${isCompact ? 'h-8' : 'h-8 sm:h-10'}`} disabled={isImporting}>
-                    <FileText className={isCompact ? "w-3 h-3 mr-1" : "w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2"} />
-                    {t('cv.interface.import.word')}( - 5 <Coins className={isCompact ? "w-3 h-3" : "w-3 h-3 sm:w-4 sm:h-4"} />)
-                </DropdownMenuItem>
-            </DropdownMenuContent>
-        </DropdownMenu>
+        <div data-tutorial="import">
+            <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                    <Button
+                        variant="outline"
+                        className={`${isCompact ? 'text-xs h-7 py-0' : 'text-xs sm:text-sm h-7 sm:h-9 py-0 sm:py-2'} border-amber-200 dark:border-amber-800 hover:bg-amber-50 dark:hover:bg-amber-900/50`}
+                        disabled={isImporting}
+                    >
+                        {isImporting ? (
+                            <>
+                                <div className={`animate-spin ${isCompact ? 'mr-1 w-3 h-3' : 'mr-1 sm:mr-2 w-3 h-3 sm:w-4 sm:h-4'} border-2 border-amber-500 border-t-transparent rounded-full`} />
+                                {t('cv.interface.import.loading')}
+                            </>
+                        ) : (
+                            <>
+                                <FileUp className={isCompact ? "w-3 h-3 mr-1" : "w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2"} />
+                                {t('cv.interface.import.button')}
+                            </>
+                        )}
+                    </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className={isCompact ? "text-xs" : "text-xs sm:text-sm"}>
+                    <DropdownMenuItem onClick={() => onImport('pdf')} className={`cursor-pointer ${isCompact ? 'h-8' : 'h-8 sm:h-10'}`} disabled={isImporting}>
+                        <FileText className={isCompact ? "w-3 h-3 mr-1" : "w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2"} />
+                        {t('cv.interface.import.pdf')}( - 5 <Coins className={isCompact ? "w-3 h-3" : "w-3 h-3 sm:w-4 sm:h-4"} />)
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => onImport('docx')} className={`cursor-pointer ${isCompact ? 'h-8' : 'h-8 sm:h-10'}`} disabled={isImporting}>
+                        <FileText className={isCompact ? "w-3 h-3 mr-1" : "w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2"} />
+                        {t('cv.interface.import.word')}( - 5 <Coins className={isCompact ? "w-3 h-3" : "w-3 h-3 sm:w-4 sm:h-4"} />)
+                    </DropdownMenuItem>
+                </DropdownMenuContent>
+            </DropdownMenu>
+        </div>
     );
 };
 
-
-// Composant WelcomeCard modifié (sans le pourcentage et l'import qui sont déplacés dans le header)
-// Masqué sur mobile pour gagner de l'espace
-const WelcomeCard = () => {
+// Composant WelcomeCard - toujours visible avec bouton tutoriel
+const WelcomeCard = ({ onStartTutorial }) => {
     const { t } = useTranslation();
 
     return (
-        <Card className="hidden sm:block bg-gradient-to-r from-amber-50 to-purple-50 dark:from-gray-800 dark:to-gray-900 border-none mb-3 sm:mb-4">
+        <Card className="bg-gradient-to-r from-amber-50 to-purple-50 dark:from-gray-800 dark:to-gray-900 border-none mb-3 sm:mb-4">
             <CardContent className="p-3 sm:p-4">
                 <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4">
                     <div className="space-y-1 sm:space-y-2 w-full">
@@ -110,6 +602,16 @@ const WelcomeCard = () => {
                             {t('cv.interface.welcome.subtitle')}
                         </p>
                     </div>
+                    <Button
+                        onClick={onStartTutorial}
+                        variant="outline"
+                        size="sm"
+                        className="border-amber-200 hover:bg-amber-50 text-amber-700 whitespace-nowrap w-full sm:w-auto flex-shrink-0"
+                    >
+                        <Play className="w-4 h-4 mr-2" />
+                        <span className="hidden sm:inline">{t('tutorial.restart')}</span>
+                        <span className="sm:hidden">{t('tutorial.help')}</span>
+                    </Button>
                 </div>
             </CardContent>
         </Card>
@@ -453,7 +955,7 @@ const SectionNavigation = ({ currentSection, nextSection, prevSection, canProgre
     const isLastSection = currentSection === 'hobby';
 
     return (
-        <div className="mt-4 sm:mt-6 pt-3 sm:pt-4 border-t border-amber-100 dark:border-amber-800">
+        <div className="mt-4 sm:mt-6 pt-3 sm:pt-4 border-t border-amber-100 dark:border-amber-800" data-tutorial="navigation">
             <div className="flex justify-between items-center gap-2 sm:gap-4">
                 {prevSection && (
                     <Button
@@ -498,7 +1000,16 @@ export default function CvInterface({ auth, cvInformation: initialCvInformation 
     const [isImporting, setIsImporting] = useState(false);
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
     const [isPageBlocked, setIsPageBlocked] = useState(false);
+    const [showTutorial, setShowTutorial] = useState(false);
     const { toast } = useToast();
+
+    // Vérifier si l'utilisateur a déjà vu le tutoriel
+    useEffect(() => {
+        const hasSeenTutorial = localStorage.getItem('cv_tutorial_completed');
+        if (!hasSeenTutorial) {
+            setShowTutorial(true);
+        }
+    }, []);
 
     // Récupérer la profession manuelle sauvegardée au chargement
     useEffect(() => {
@@ -888,9 +1399,29 @@ export default function CvInterface({ auth, cvInformation: initialCvInformation 
         input.click();
     };
 
+    const handleStartTutorial = () => {
+        setShowTutorial(true);
+    };
+
+    const handleTutorialComplete = () => {
+        setShowTutorial(false);
+    };
+
+    const handleTutorialNavigate = (sectionId) => {
+        setActiveSection(sectionId);
+    };
+
     return (
         <AuthenticatedLayout user={auth.user}>
             <Head title={t('cv.interface.title')} />
+
+            {/* Tutoriel */}
+            <Tutorial
+                isVisible={showTutorial}
+                onComplete={handleTutorialComplete}
+                currentSection={activeSection}
+                onNavigateToSection={handleTutorialNavigate}
+            />
 
             {/* Overlay qui bloque toute interaction */}
             {isPageBlocked && (
@@ -916,7 +1447,7 @@ export default function CvInterface({ auth, cvInformation: initialCvInformation 
                         </div>
                         <div className="flex items-center gap-2">
                             {/* Pourcentage et progression */}
-                            <div className="flex items-center gap-2">
+                            <div className="flex items-center gap-2" data-tutorial="progress">
                                 <Progress value={getCompletionPercentage()} className="w-16 sm:w-24 h-2" />
                                 <span className="text-xs font-medium">
                                     {getCompletionPercentage()}%
@@ -928,13 +1459,13 @@ export default function CvInterface({ auth, cvInformation: initialCvInformation 
                         </div>
                     </div>
 
-                    {/* WelcomeCard sans le pourcentage et import */}
-                    <WelcomeCard />
+                    {/* WelcomeCard avec bouton tutoriel */}
+                    <WelcomeCard onStartTutorial={handleStartTutorial} />
 
                     <Card className="shadow-md border border-amber-100 dark:border-amber-800">
                         <div className="flex flex-row min-h-[500px] sm:min-h-[600px]">
                             {/* Sidebar mobile optimisée (icônes uniquement) */}
-                            <div className="w-11 sm:w-14 md:w-16 flex-shrink-0 border-r border-amber-100 dark:border-amber-800 bg-white/50 dark:bg-gray-900/50 md:hidden">
+                            <div className="w-11 sm:w-14 md:w-16 flex-shrink-0 border-r border-amber-100 dark:border-amber-800 bg-white/50 dark:bg-gray-900/50 md:hidden" data-tutorial="sidebar">
                                 <ScrollArea className="h-full py-1.5 sm:py-2">
                                     <nav className="sticky top-0 p-1 sm:p-1.5 space-y-1.5 sm:space-y-2">
                                         {translatedSidebarItems.map(item => (
@@ -952,7 +1483,7 @@ export default function CvInterface({ auth, cvInformation: initialCvInformation 
                             </div>
 
                             {/* Sidebar desktop (texte + icônes) */}
-                            <div className="hidden md:block w-48 lg:w-64 flex-shrink-0 border-r border-amber-100 dark:border-amber-800 bg-white/50 dark:bg-gray-900/50">
+                            <div className="hidden md:block w-48 lg:w-64 flex-shrink-0 border-r border-amber-100 dark:border-amber-800 bg-white/50 dark:bg-gray-900/50" data-tutorial="sidebar">
                                 <ScrollArea className="h-full py-2 sm:py-3">
                                     <nav className="sticky top-0 p-1.5 sm:p-3 space-y-1.5 sm:space-y-2">
                                         {translatedSidebarItems.map(item => (
@@ -970,7 +1501,7 @@ export default function CvInterface({ auth, cvInformation: initialCvInformation 
                             </div>
 
                             {/* Contenu principal */}
-                            <div className="flex-grow p-3 sm:p-5 overflow-x-hidden bg-white dark:bg-gray-900">
+                            <div className="flex-grow p-3 sm:p-5 overflow-x-hidden bg-white dark:bg-gray-900" data-tutorial="content">
                                 <AnimatePresence mode="wait">
                                     <motion.div
                                         key={activeSection}

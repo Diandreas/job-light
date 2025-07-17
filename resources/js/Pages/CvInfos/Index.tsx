@@ -182,7 +182,7 @@ const TutorialOverlay = ({ targetRect, children }: { targetRect: DOMRect | null,
             <div style={{ position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', zIndex: 9999, pointerEvents: 'none' }}>
                 {children}
             </div>
-            <style jsx>{`
+            <style>{`
                 @keyframes pulse {
                     0%, 100% {
                         box-shadow: 0 0 20px rgba(245, 158, 11, 0.5);

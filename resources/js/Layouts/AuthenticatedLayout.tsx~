@@ -30,7 +30,6 @@ import {
 import { Progress } from '@/Components/ui/progress';
 import { Badge } from '@/Components/ui/badge';
 import { Alert, AlertDescription } from '@/Components/ui/alert';
-import { JobPortalComingSoonDialog } from '@/Components/JobPortalComingSoonDialog';
 
 interface MenuItem {
     name: string | React.ReactNode;
@@ -278,7 +277,7 @@ export default function Authenticated({ user, header, children }: PropsWithChild
         );
     };
 
-    // Componant pour le renouvellement du code de parrainage
+    // Composant pour le renouvellement du code de parrainage
     const ReferralCodeRenewal = () => {
         const [isLoading, setIsLoading] = useState(false);
         const [sponsorInfo, setSponsorInfo] = useState<any>(null);
@@ -662,25 +661,26 @@ export default function Authenticated({ user, header, children }: PropsWithChild
             <div className="min-h-screen flex flex-col bg-gradient-to-br from-gray-50 to-amber-50 dark:from-gray-950 dark:to-gray-900 transition-colors">
                 <Toaster />
                 <nav className="sticky top-0 z-50 bg-white/80 dark:bg-gray-900/90 backdrop-blur-md shadow-sm border-b border-amber-100 dark:border-gray-700">
-                    <div className="mx-auto px-3 sm:px-6">
-                        <div className="flex h-12 sm:h-16 items-center justify-between">
-                            <div className="flex items-center gap-2 sm:gap-4">
-                                <Link href="/" className="flex items-center gap-1.5 sm:gap-2">
-                                    <Sparkles className="h-4 w-4 sm:h-6 sm:w-6 text-amber-500 dark:text-amber-400" />
-                                    <span className="font-bold text-base sm:text-2xl bg-gradient-to-r from-amber-500 to-purple-500 dark:from-amber-400 dark:to-purple-400 text-transparent bg-clip-text">
-                                        { route().current('career-advisor.index') ? 'Guidy AI' : t('brand')}
-                                    </span>
+                    <div className="mx-auto px-3 sm:px-4 lg:px-6">
+                        <div className="flex h-10 sm:h-12 items-center justify-between">
+                            {/* Logo et branding */}
+                            <div className="flex items-center gap-1.5 sm:gap-2">
+                                <Link href="/" className="flex items-center gap-1 sm:gap-1.5">
+                                    <Sparkles className="h-4 w-4 sm:h-5 sm:w-5 text-amber-500 dark:text-amber-400" />
+                                    <span className="font-bold text-sm sm:text-lg lg:text-xl bg-gradient-to-r from-amber-500 to-purple-500 dark:from-amber-400 dark:to-purple-400 text-transparent bg-clip-text">
+                        {route().current('career-advisor.index') ? 'Guidy AI' : t('brand')}
+                    </span>
                                     {route().current('career-advisor.index') && (
-                                        <Badge variant="secondary" className="text-xs px-1.5 py-0 h-4 bg-amber-50 text-amber-600 dark:bg-amber-900/30 dark:text-amber-300">
-                                            <Sparkles className="w-2.5 h-2.5 mr-0.5" />
+                                        <Badge variant="secondary" className="text-xs px-1 py-0 h-3.5 ml-1 bg-amber-50 text-amber-600 dark:bg-amber-900/30 dark:text-amber-300">
+                                            <Sparkles className="w-2 h-2 mr-0.5" />
                                             {t('components.sidebar.pro_badge')}
                                         </Badge>
                                     )}
-
                                 </Link>
                             </div>
 
-                            <div className="hidden md:flex md:items-center md:gap-3 lg:gap-6">
+                            {/* Menu principal - Desktop uniquement */}
+                            <div className="hidden lg:flex lg:items-center lg:gap-4">
                                 <TokenDisplay />
                                 {mainMenuItems.map((item, index) => (
                                     //@ts-ignore
@@ -691,62 +691,92 @@ export default function Authenticated({ user, header, children }: PropsWithChild
                                 <LanguageSelector />
                             </div>
 
-                            <div className="flex items-center gap-2 sm:gap-4">
-                                <div className="md:hidden">
+                            {/* Actions à droite */}
+                            <div className="flex items-center gap-1.5 sm:gap-2">
+                                {/* Token display pour tablet */}
+                                <div className="hidden md:block lg:hidden">
                                     <TokenDisplay />
                                 </div>
+
+                                {/* Theme toggle */}
                                 <ThemeToggle />
-                                <div className="md:hidden">
+
+                                {/* Language selector pour mobile/tablet */}
+                                <div className="lg:hidden">
                                     <LanguageSelector />
                                 </div>
 
+                                {/* User dropdown */}
                                 <Dropdown>
                                     <Dropdown.Trigger>
-                                        <Button variant="ghost" className="p-0 h-7 w-7 sm:h-8 sm:w-auto sm:p-2">
-                                            <div className="flex items-center gap-1.5 sm:gap-2">
-                                                <div className="h-6 w-6 sm:h-8 sm:w-8 rounded-full bg-gradient-to-r from-amber-500 to-purple-500 dark:from-amber-400 dark:to-purple-400 flex items-center justify-center">
-                                                    <span className="text-white font-medium text-xs sm:text-sm">
-                                                        {user.name.charAt(0).toUpperCase()}
-                                                    </span>
+                                        <Button variant="ghost" className="p-0 h-6 w-6 sm:h-7 sm:w-auto sm:px-2 sm:py-1">
+                                            <div className="flex items-center gap-1 sm:gap-1.5">
+                                                <div className="h-5 w-5 sm:h-6 sm:w-6 rounded-full bg-gradient-to-r from-amber-500 to-purple-500 dark:from-amber-400 dark:to-purple-400 flex items-center justify-center">
+                                    <span className="text-white font-medium text-xs">
+                                        {user.name.charAt(0).toUpperCase()}
+                                    </span>
                                                 </div>
-                                                <span className="hidden sm:block text-gray-700 dark:text-gray-100 text-xs sm:text-sm">{user.name}</span>
+                                                <span className="hidden sm:block lg:hidden xl:block text-gray-700 dark:text-gray-100 text-xs sm:text-sm max-w-20 truncate">
+                                    {user.name}
+                                </span>
                                             </div>
                                         </Button>
                                     </Dropdown.Trigger>
                                     {/*@ts-ignore*/}
-                                    <Dropdown.Content className="bg-white dark:bg-gray-900 dark:border-gray-700">
-                                        <Dropdown.Link href={route('profile.edit')} className="text-gray-700 dark:text-gray-900 hover:bg-amber-50 dark:hover:bg-amber-500/20 text-xs sm:text-sm py-1.5 sm:py-2 px-2 sm:px-3">
+                                    <Dropdown.Content className="bg-white dark:bg-gray-900 dark:border-gray-700 min-w-36">
+                                        <Dropdown.Link
+                                            href={route('profile.edit')}
+                                            className="text-gray-700 dark:text-gray-100 hover:bg-amber-50 dark:hover:bg-amber-500/20 text-sm py-1.5 px-3"
+                                        >
                                             {t('profile.edit')}
                                         </Dropdown.Link>
-                                        <Dropdown.Link href={route('logout')} method="post" as="button" className="text-gray-700 dark:text-gray-900 hover:bg-amber-50 dark:hover:bg-amber-500/20 text-xs sm:text-sm py-1.5 sm:py-2 px-2 sm:px-3">
+                                        <Dropdown.Link
+                                            href={route('logout')}
+                                            method="post"
+                                            as="button"
+                                            className="text-gray-700 dark:text-gray-100 hover:bg-amber-50 dark:hover:bg-amber-500/20 text-sm py-1.5 px-3"
+                                        >
                                             {t('auth.logout')}
                                         </Dropdown.Link>
                                     </Dropdown.Content>
                                 </Dropdown>
+
+                                {/* Mobile menu button */}
                                 <Button
                                     variant="ghost"
                                     size="sm"
-                                    className="md:hidden h-7 w-7 sm:h-8 sm:w-8 p-0"
+                                    className="lg:hidden h-6 w-6 sm:h-7 sm:w-7 p-0 ml-1"
                                     onClick={() => setIsMobileMenuOpen(true)}
                                 >
-                                    <Menu className="h-4 w-4 sm:h-5 sm:w-5 text-gray-700 dark:text-gray-100" />
+                                    <Menu className="h-4 w-4 text-gray-700 dark:text-gray-100" />
                                 </Button>
+                            </div>
+                        </div>
+
+                        {/* Menu mobile/tablet - version collapsible si nécessaire */}
+                        <div className="md:hidden lg:hidden border-t border-amber-100 dark:border-gray-700 bg-white/95 dark:bg-gray-900/95 backdrop-blur-sm">
+                            <div className="px-2 py-2 space-y-1">
+                                <TokenDisplay />
+                                {mainMenuItems.map((item, index) => (
+                                    //@ts-ignore
+                                    (!item.adminOnly || user.UserType === 1) && (
+                                        <div key={index} className="w-full">
+                                            <NavButton item={item} isMobile />
+                                        </div>
+                                    )
+                                ))}
                             </div>
                         </div>
                     </div>
                 </nav>
-
                 <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
                     <SheetContent side="right" className="bg-white dark:bg-gray-900 w-[250px] sm:w-[300px] border-amber-100 dark:border-gray-700 p-3 sm:p-4">
                         <SheetHeader className="text-left">
                             <SheetTitle className="flex items-center gap-1.5 sm:gap-2 text-base sm:text-lg">
-                                <Sparkles className="h-4 w-4 sm:h-5 sm:w-5 text-amber-500 dark:text-amber-400" />
+                                <Sparkles className="h-4 w-4 sm:h-5 sm:w-4 text-amber-500 dark:text-amber-400" />
                                 <span className="bg-gradient-to-r from-amber-500 to-purple-500 dark:from-amber-400 dark:to-purple-400 text-transparent bg-clip-text">
                                     {route().current('career-advisor.index') ? 'Guidy AI ' : t('menu.title')}
-
-
                                 </span>
-
                             </SheetTitle>
                         </SheetHeader>
                         <div className="mt-4 sm:mt-6 flex flex-col gap-2 sm:gap-3">
@@ -793,7 +823,8 @@ export default function Authenticated({ user, header, children }: PropsWithChild
                     </main>
                 </div>
 
-                <footer className="mt-auto py-3 sm:py-4 border-t border-amber-100 dark:border-gray-700">
+                {/* Footer normal - caché sur mobile, visible sur desktop */}
+                <footer className="hidden md:block mt-auto py-3 sm:py-4 border-t border-amber-100 dark:border-gray-700">
                     <div className="mx-auto px-3 sm:px-6 flex flex-col sm:flex-row justify-between items-center gap-2 sm:gap-4">
                         <div className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm text-gray-500 dark:text-gray-400">
                             <Sparkles className="h-3 w-3 sm:h-4 sm:w-4 text-amber-500 dark:text-amber-400" />
@@ -833,8 +864,10 @@ export default function Authenticated({ user, header, children }: PropsWithChild
                 <ReferralCodeRenewal />
                 <JobPortalComingSoonDialog />
 
-                {/* Mobile Tab Bar */}
-                <MobileTabBar onRenewCodeClick={() => setIsReferralDialogOpen(true)} />
+                {/* Mobile Tab Bar - s'affiche seulement sur mobile */}
+                <div className="md:hidden">
+                    <MobileTabBar onRenewCodeClick={() => setIsReferralDialogOpen(true)} />
+                </div>
             </div>
         </>
     );

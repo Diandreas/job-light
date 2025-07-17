@@ -23,116 +23,25 @@ use Inertia\Inertia;
 
 class CvInfosController extends Controller
 {
-    public function downloadPdfDirect($id)
-    {
-        $user = Auth::user();
-        if (!$user) abort(403, 'Unauthorized');
-
-        $cvModel = CvModel::findOrFail($id);
-        $cvInformation = $this->getCommonCvInformation($user);
-        $groupedData = $this->groupExperiencesByCategory($cvInformation['experiences']);
-        $locale = request()->get('locale', app()->getLocale());
-
-        // Configurer DomPDF
-        $pdf = PDF::loadView("cv-templates." . $cvModel->viewPath, [
-            'cvInformation' => $cvInformation,
-            'experiencesByCategory' => $groupedData['experiences'],
-            'categoryTranslations' => $groupedData['translations'],
-            'showPrintButton' => false,
-            'cvModel' => $cvModel,
-            'currentLocale' => $locale
-        ]);
-
-        $pdf->setOption([
-            'defaultFont' => 'dejavu sans',
-            'dpi' => 296,
-            'defaultMediaType' => 'print',
-            'enableCss' => true,
-        ]);
-
-        $filename = Str::slug($user->name) . '-cv.pdf';
-        $content = $pdf->output();
-
-        // Pour Median, retourner avec les bons headers
-        if (request()->get('direct')) {
-            return response($content, 200, [
-                'Content-Type' => 'application/pdf',
-                'Content-Disposition' => 'attachment; filename="' . $filename . '"',
-                'Content-Length' => strlen($content),
-                'Cache-Control' => 'no-cache, no-store, must-revalidate',
-                'Pragma' => 'no-cache',
-                'Expires' => '0'
-            ]);
-        }
-
-        return response($content, 200, [
-            'Content-Type' => 'application/pdf',
-            'Content-Disposition' => 'attachment; filename="' . $filename . '"',
-        ]);
-    }
-
-    /**
-     * Preview CV avec mode impression mobile optimisé
-     */
-    public function previewPrint($id)
-    {
-        $user = Auth::user();
-        if (!$user) abort(403, 'Unauthorized');
-
-        $locale = request()->get('locale', app()->getLocale());
-        app()->setLocale($locale);
-
-        $cvModel = CvModel::findOrFail($id);
-        $cvInformation = $this->getCommonCvInformation($user);
-        $groupedData = $this->groupExperiencesByCategory($cvInformation['experiences']);
-
-        $view = view("cv-templates." . $cvModel->viewPath, [
-            'cvInformation' => $cvInformation,
-            'experiencesByCategory' => $groupedData['experiences'],
-            'categoryTranslations' => $groupedData['translations'],
-            'showPrintButton' => request()->has('show_save_button'),
-            'cvModel' => $cvModel,
-            'currentLocale' => $locale,
-            'printMode' => true,
-            'mobileOptimized' => true
-        ]);
-
-        // Ajouter le script d'impression automatique si demandé
-        if (request()->has('auto_print')) {
-            $autoPrintScript = '
-        <script>
-        window.onload = function() {
-            setTimeout(function() {
-                window.print();
-            }, 1000);
-        };
-        </script>';
-            $view->with('autoPrintScript', $autoPrintScript);
-        } else {
-            $view->with('autoPrintScript', '');
-        }
-
-        return $view;
-    }
     public function previewCv($id)
     {
         $user = Auth::user();
         if (!$user) abort(403, 'Unauthorized');
-
+    
         // Récupérer la langue depuis la requête
         $locale = request()->get('locale', app()->getLocale());
         app()->setLocale($locale);
-
+    
         $cvModel = CvModel::findOrFail($id);
         $cvInformation = $this->getCommonCvInformation($user);
         $groupedData = $this->groupExperiencesByCategory($cvInformation['experiences']);
-
+        
         // Vérifier que les données de langues sont disponibles
         if (!isset($cvInformation['languages'])) {
             Log::warning('Language data missing for user ID: ' . $user->id);
             $cvInformation['languages'] = []; // Fournir un tableau vide par défaut
         }
-
+    
         $view = view("cv-templates." . $cvModel->viewPath, [
             'cvInformation' => $cvInformation, // Contient déjà 'languages'
             'experiencesByCategory' => $groupedData['experiences'],
@@ -216,7 +125,7 @@ class CvInfosController extends Controller
         $cvInformation = $this->getCommonCvInformation($user);
         $groupedData = $this->groupExperiencesByCategory($cvInformation['experiences']);
         $locale = request()->get('locale', app()->getLocale());
-
+        
         // Configurer DomPDF
         $pdf = PDF::loadView("cv-templates." . $cvModel->viewPath, [
             'cvInformation' => $cvInformation,
@@ -238,7 +147,7 @@ class CvInfosController extends Controller
         $filename = Str::slug($user->name) . '-cv.pdf';
         return $pdf->download($filename);
     }
-
+    
     private function getCommonCvInformation($user)
     {
         // Récupérer les expériences avec leurs références
@@ -379,7 +288,7 @@ class CvInfosController extends Controller
 
         return $baseInfo;
     }
-
+    
     public function index()
     {
         $user = auth()->user();

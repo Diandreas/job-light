@@ -277,7 +277,7 @@ export default function Authenticated({ user, header, children }: PropsWithChild
         );
     };
 
-    // Componant pour le renouvellement du code de parrainage
+    // Composant pour le renouvellement du code de parrainage
     const ReferralCodeRenewal = () => {
         const [isLoading, setIsLoading] = useState(false);
         const [sponsorInfo, setSponsorInfo] = useState<any>(null);
@@ -739,13 +739,10 @@ export default function Authenticated({ user, header, children }: PropsWithChild
                     <SheetContent side="right" className="bg-white dark:bg-gray-900 w-[250px] sm:w-[300px] border-amber-100 dark:border-gray-700 p-3 sm:p-4">
                         <SheetHeader className="text-left">
                             <SheetTitle className="flex items-center gap-1.5 sm:gap-2 text-base sm:text-lg">
-                                <Sparkles className="h-4 w-4 sm:h-5 sm:w-5 text-amber-500 dark:text-amber-400" />
+                                <Sparkles className="h-4 w-4 sm:h-5 sm:w-4 text-amber-500 dark:text-amber-400" />
                                 <span className="bg-gradient-to-r from-amber-500 to-purple-500 dark:from-amber-400 dark:to-purple-400 text-transparent bg-clip-text">
                                     {route().current('career-advisor.index') ? 'Guidy AI ' : t('menu.title')}
-
-
                                 </span>
-
                             </SheetTitle>
                         </SheetHeader>
                         <div className="mt-4 sm:mt-6 flex flex-col gap-2 sm:gap-3">
@@ -792,7 +789,8 @@ export default function Authenticated({ user, header, children }: PropsWithChild
                     </main>
                 </div>
 
-                <footer className="mt-auto py-3 sm:py-4 border-t border-amber-100 dark:border-gray-700">
+                {/* Footer normal - caché sur mobile, visible sur desktop */}
+                <footer className="hidden md:block mt-auto py-3 sm:py-4 border-t border-amber-100 dark:border-gray-700">
                     <div className="mx-auto px-3 sm:px-6 flex flex-col sm:flex-row justify-between items-center gap-2 sm:gap-4">
                         <div className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm text-gray-500 dark:text-gray-400">
                             <Sparkles className="h-3 w-3 sm:h-4 sm:w-4 text-amber-500 dark:text-amber-400" />
@@ -832,8 +830,10 @@ export default function Authenticated({ user, header, children }: PropsWithChild
                 <ReferralCodeRenewal />
                 <JobPortalComingSoonDialog />
 
-                {/* Mobile Tab Bar */}
-                <MobileTabBar onRenewCodeClick={() => setIsReferralDialogOpen(true)} />
+                {/* Mobile Tab Bar - s'affiche seulement sur mobile */}
+                <div className="md:hidden">
+                    <MobileTabBar onRenewCodeClick={() => setIsReferralDialogOpen(true)} />
+                </div>
             </div>
         </>
     );

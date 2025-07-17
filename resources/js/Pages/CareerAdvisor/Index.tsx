@@ -77,11 +77,11 @@ const EnhancedServiceCard = ({ service, isSelected, onClick }) => {
             onClick={isComingSoon ? undefined : onClick}
             className={`cursor-${isComingSoon ? 'not-allowed' : 'pointer'} p-3.5 rounded-lg border transition-all relative overflow-hidden
                 ${isSelected
-                    ? 'border-amber-400 dark:border-amber-500 bg-gradient-to-r from-amber-50 to-purple-50 dark:from-amber-500/10 dark:to-purple-500/10 shadow-sm'
-                    : isComingSoon
-                        ? 'border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800'
-                        : 'border-gray-200 dark:border-gray-700 hover:border-amber-300/70 dark:hover:border-amber-500/30 bg-white dark:bg-gray-800 hover:bg-gradient-to-r hover:from-amber-50/50 hover:to-purple-50/50 dark:hover:from-amber-500/5 dark:hover:to-purple-500/5'
-                }`}
+                ? 'border-amber-400 dark:border-amber-500 bg-gradient-to-r from-amber-50 to-purple-50 dark:from-amber-500/10 dark:to-purple-500/10 shadow-sm'
+                : isComingSoon
+                    ? 'border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800'
+                    : 'border-gray-200 dark:border-gray-700 hover:border-amber-300/70 dark:hover:border-amber-500/30 bg-white dark:bg-gray-800 hover:bg-gradient-to-r hover:from-amber-50/50 hover:to-purple-50/50 dark:hover:from-amber-500/5 dark:hover:to-purple-500/5'
+            }`}
         >
             <div className="flex items-start justify-between mb-2.5">
                 <div className={`p-1.5 rounded-lg bg-gradient-to-r ${isComingSoon ? 'from-gray-400 to-gray-500 dark:from-gray-600 dark:to-gray-700' : 'from-amber-500 to-purple-500 dark:from-amber-400 dark:to-purple-400'}`}>
@@ -93,7 +93,7 @@ const EnhancedServiceCard = ({ service, isSelected, onClick }) => {
                             <div className={`flex items-center gap-1 text-xs font-medium ${isComingSoon
                                 ? 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400'
                                 : 'bg-amber-100 dark:bg-amber-500/20 text-amber-700 dark:text-amber-300'
-                                } px-2 py-0.5 rounded-full`}>
+                            } px-2 py-0.5 rounded-full`}>
                                 <Coins className="h-3 w-3" />
                                 <span>{service.cost}</span>
                             </div>
@@ -145,7 +145,7 @@ const EnhancedMobileServiceCard = ({ service, isSelected, onClick }) => {
                 : isComingSoon
                     ? 'border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800'
                     : 'hover:bg-amber-50/50 dark:hover:bg-amber-500/5 border-transparent dark:hover:border-amber-500/20 bg-white dark:bg-gray-800'
-                }`}
+            }`}
         >
             <div className={`p-1.5 rounded-lg bg-gradient-to-r ${isComingSoon ? 'from-gray-400 to-gray-500 dark:from-gray-600 dark:to-gray-700' : 'from-amber-500 to-purple-500 dark:from-amber-400 dark:to-purple-400'}`}>
                 <service.icon className="h-3.5 w-3.5 text-white" />
@@ -230,13 +230,13 @@ const ChatHistoryCard = ({ chat, isActive, onSelect, onDelete }) => {
             className={`relative group p-2.5 rounded-lg cursor-pointer transition-all border ${isActive
                 ? 'bg-gradient-to-r from-amber-50 to-purple-50 dark:from-amber-900/20 dark:to-purple-900/20 border-amber-300 dark:border-amber-600 shadow-sm'
                 : 'bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-800 border-gray-200 dark:border-gray-700 hover:border-amber-200 dark:hover:border-amber-800'
-                }`}
+            }`}
             onClick={() => onSelect(chat)}
         >
             <div className="pr-6">
                 <div className="flex items-start gap-1.5 mb-1">
                     <div className={`w-1 h-1 rounded-full mt-1.5 ${isActive ? 'bg-amber-500' : 'bg-gray-300 dark:bg-gray-600'
-                        }`} />
+                    }`} />
                     <h3 className="text-xs font-medium text-gray-900 dark:text-gray-100 line-clamp-1 leading-tight" title={chat.preview}>
                         {truncatedPreview}
                     </h3>
@@ -304,7 +304,7 @@ const thinkingMessages = [
 export default function Index({ auth, userInfo, chatHistories }) {
     const { t, i18n } = useTranslation();
     const { toast } = useToast();
-    const { isReady, isAndroidApp, downloadFile, printDocument } = useMedian();
+    const { isReady, isAndroidApp, downloadFile, printDocument, createDirectDownloadUrl, isUrlCompatible } = useMedian();
     const [isLoading, setIsLoading] = useState(false);
     const [walletBalance, setWalletBalance] = useState(auth.user.wallet_balance);
     const [selectedService, setSelectedService] = useState(SERVICES[0]);
@@ -603,19 +603,75 @@ export default function Index({ auth, userInfo, chatHistories }) {
         setIsExporting(true);
 
         try {
-            // Si on est dans l'app Android native avec Median
+            // Cas spécial PowerPoint : toujours généré côté client
+            if (format === 'pptx') {
+                console.log('🎨 Génération PowerPoint côté client');
+
+                const lastAiMessage = activeChat.messages
+                    .filter(msg => msg.role === 'assistant')
+                    .pop();
+
+                if (lastAiMessage) {
+                    const jsonData = extractValidJsonFromMessage(lastAiMessage.content);
+                    if (jsonData) {
+                        try {
+                            const pptxBlob = await PowerPointService.generateFromJSON(jsonData);
+
+                            // Téléchargement direct sans passer par Median
+                            const url = window.URL.createObjectURL(pptxBlob);
+                            const link = document.createElement('a');
+                            link.href = url;
+                            link.download = `presentation-${activeChat.context_id}.pptx`;
+                            document.body.appendChild(link);
+                            link.click();
+                            document.body.removeChild(link);
+                            window.URL.revokeObjectURL(url);
+
+                            toast({
+                                title: '🎨 Présentation générée',
+                                description: 'Le fichier PowerPoint a été créé et téléchargé',
+                                variant: 'default'
+                            });
+                            return;
+                        } catch (pptxError) {
+                            console.error('❌ Erreur génération PowerPoint:', pptxError);
+                            toast({
+                                title: t('career_advisor.messages.error'),
+                                description: 'Erreur lors de la génération du PowerPoint',
+                                variant: "destructive",
+                            });
+                            return;
+                        }
+                    }
+                }
+
+                toast({
+                    title: t('career_advisor.messages.error'),
+                    description: "Aucun contenu de présentation valide trouvé",
+                    variant: "destructive",
+                });
+                return;
+            }
+
+            // Pour PDF et DOCX : utiliser Median si disponible
             if (isAndroidApp && isReady) {
-                console.log('🚀 Utilisation du téléchargement natif Android');
+                console.log('🚀 Utilisation du téléchargement natif Android pour', format);
 
-                // Construire l'URL de téléchargement directe (GET)
-                const downloadUrl = new URL('/career-advisor/export', window.location.origin);
-                downloadUrl.searchParams.set('contextId', activeChat.context_id);
-                downloadUrl.searchParams.set('format', format);
-                downloadUrl.searchParams.set('direct', 'true'); // Paramètre pour forcer le téléchargement direct
+                // Créer URL directe compatible avec Median
+                const downloadUrl = createDirectDownloadUrl('/career-advisor/export-direct', {
+                    contextId: activeChat.context_id,
+                    format: format,
+                    direct: true
+                });
 
-                const result = await downloadFile(downloadUrl.toString(), {
+                if (!isUrlCompatible(downloadUrl)) {
+                    throw new Error('URL non compatible avec Median');
+                }
+
+                const result = await downloadFile(downloadUrl, {
                     filename: `conversation-${activeChat.context_id}.${format}`,
-                    open: true
+                    open: true,
+                    forceDownload: true
                 });
 
                 if (result.success) {
@@ -629,14 +685,14 @@ export default function Index({ auth, userInfo, chatHistories }) {
                 }
             } else {
                 // Fallback vers le téléchargement web classique
-                console.log('🌐 Utilisation du téléchargement web');
+                console.log('🌐 Utilisation du téléchargement web pour', format);
                 await handleExportWeb(format);
             }
         } catch (error) {
             console.error('❌ Erreur lors de l\'export:', error);
 
-            // En cas d'erreur avec Median, essayer le fallback web
-            if (isAndroidApp) {
+            // En cas d'erreur avec Median, essayer le fallback web (sauf pour PowerPoint)
+            if (isAndroidApp && format !== 'pptx') {
                 console.log('🔄 Tentative de fallback vers téléchargement web');
                 try {
                     await handleExportWeb(format);
@@ -660,7 +716,6 @@ export default function Index({ auth, userInfo, chatHistories }) {
         }
     };
 
-    // Fonction d'impression améliorée avec support Median
     const handlePrint = async () => {
         if (!activeChat) return;
 
@@ -671,19 +726,23 @@ export default function Index({ auth, userInfo, chatHistories }) {
             if (isAndroidApp && isReady) {
                 console.log('🖨️ Utilisation de l\'impression native Android');
 
-                // Construire l'URL d'impression avec paramètres PDF
-                const printUrl = new URL('/career-advisor/print', window.location.origin);
-                printUrl.searchParams.set('contextId', activeChat.context_id);
-                printUrl.searchParams.set('print_mode', 'pdf');
-                printUrl.searchParams.set('show_save_button', 'true');
-                printUrl.searchParams.set('auto_print', 'false');
+                // Créer une URL d'impression optimisée pour mobile
+                const printUrl = createDirectDownloadUrl('/career-advisor/print-direct', {
+                    contextId: activeChat.context_id,
+                    print_mode: 'mobile',
+                    show_save_button: true,
+                    auto_print: false
+                });
 
-                const result = await printDocument(printUrl.toString());
+                const result = await printDocument(printUrl, {
+                    useShare: true, // Utiliser le partage natif
+                    openInBrowser: false
+                });
 
                 if (result.success) {
                     toast({
                         title: '📱 Impression native initiée',
-                        description: 'La boîte de dialogue d\'impression Android va s\'ouvrir avec option de sauvegarde PDF',
+                        description: 'Options de partage/impression Android ouvertes',
                         variant: 'default'
                     });
                 } else {
@@ -723,10 +782,11 @@ export default function Index({ auth, userInfo, chatHistories }) {
     };
 
     // Méthodes fallback web classiques
-    const handleExportWeb = async (format: string) => {
+    const handleExportWeb = async (format) => {
         console.log('📄 Export web classique:', format);
 
         if (format === 'pptx') {
+            // PowerPoint : toujours généré côté client
             const lastAiMessage = activeChat.messages
                 .filter(msg => msg.role === 'assistant')
                 .pop();
@@ -734,33 +794,35 @@ export default function Index({ auth, userInfo, chatHistories }) {
             if (lastAiMessage) {
                 const jsonData = extractValidJsonFromMessage(lastAiMessage.content);
                 if (jsonData) {
-                    const pptxBlob = await PowerPointService.generateFromJSON(jsonData);
+                    try {
+                        const pptxBlob = await PowerPointService.generateFromJSON(jsonData);
 
-                    const url = window.URL.createObjectURL(pptxBlob);
-                    const link = document.createElement('a');
-                    link.href = url;
-                    link.download = `presentation-${activeChat.context_id}.pptx`;
-                    document.body.appendChild(link);
-                    link.click();
-                    document.body.removeChild(link);
-                    window.URL.revokeObjectURL(url);
+                        const url = window.URL.createObjectURL(pptxBlob);
+                        const link = document.createElement('a');
+                        link.href = url;
+                        link.download = `presentation-${activeChat.context_id}.pptx`;
+                        document.body.appendChild(link);
+                        link.click();
+                        document.body.removeChild(link);
+                        window.URL.revokeObjectURL(url);
 
-                    toast({
-                        title: '🌐 Téléchargement web réussi',
-                        description: t('career_advisor.messages.export_success')
-                    });
-                    return;
+                        toast({
+                            title: '🌐 Téléchargement web réussi',
+                            description: 'Le PowerPoint a été généré et téléchargé',
+                            variant: 'default'
+                        });
+                        return;
+                    } catch (error) {
+                        console.error('❌ Erreur génération PowerPoint:', error);
+                        throw new Error('Erreur lors de la génération du PowerPoint');
+                    }
                 }
             }
 
-            toast({
-                title: t('career_advisor.messages.error'),
-                description: "Aucun contenu de présentation valide trouvé",
-                variant: "destructive",
-            });
-            return;
+            throw new Error('Aucun contenu de présentation valide trouvé');
         }
 
+        // Pour PDF et DOCX : requête POST classique
         const response = await axios.post('/career-advisor/export', {
             contextId: activeChat.context_id,
             format
@@ -977,7 +1039,7 @@ export default function Index({ auth, userInfo, chatHistories }) {
                                                                 className={`w-10 h-10 flex items-center justify-center rounded-full cursor-pointer ${activeChat?.context_id === chat.context_id
                                                                     ? 'bg-amber-100 dark:bg-amber-900/30 text-amber-600 dark:text-amber-300 border border-amber-300 dark:border-amber-600'
                                                                     : 'bg-white dark:bg-gray-800 text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-700 border border-gray-200 dark:border-gray-700'
-                                                                    } shadow-sm transition-all duration-200`}
+                                                                } shadow-sm transition-all duration-200`}
                                                             >
                                                                 <MessageSquare className="h-4 w-4" />
                                                             </motion.div>
@@ -1191,7 +1253,7 @@ export default function Index({ auth, userInfo, chatHistories }) {
                             </div>
 
                             {/* Input pour commencer directement */}
-                            <div className="max-w-4xl mx-auto w-full mt-4 px-2">
+                            <div className="max-w-4xl mx-auto w-full mt-2 mb-8 px-2">
                                 <form onSubmit={handleSubmit} className="relative">
                                     <Textarea
                                         ref={inputRef}
@@ -1323,9 +1385,7 @@ export default function Index({ auth, userInfo, chatHistories }) {
                                                 <DropdownMenuItem onClick={() => handleExport('pptx')} className="text-xs py-1.5">
                                                     <Presentation className="h-3.5 w-3.5 mr-2" />
                                                     PPTX
-                                                    {isAndroidApp && isReady && (
-                                                        <Smartphone className="ml-auto h-3 w-3 text-green-500" />
-                                                    )}
+                                                    <span className="ml-auto text-[10px] text-amber-600">Client</span>
                                                 </DropdownMenuItem>
                                             )}
                                         </DropdownMenuContent>
@@ -1335,7 +1395,7 @@ export default function Index({ auth, userInfo, chatHistories }) {
 
                             {/* Zone de messages avec hauteur fixe optimisée */}
                             <div className="flex-1 min-h-0">
-                                <ScrollArea className="h-[calc(100vh-160px)]" ref={scrollRef}>
+                                <ScrollArea className="h-[calc(100vh-150px)]" ref={scrollRef}>
                                     <div className="max-w-4xl mx-auto space-y-3 p-3">
                                         <AnimatePresence mode="popLayout">
                                             {/* Optimisation de l'affichage avec animations */}
@@ -1377,7 +1437,7 @@ export default function Index({ auth, userInfo, chatHistories }) {
                             </div>
 
                             {/* Zone de saisie compacte */}
-                            <div className="relative px-3 py-2 flex-shrink-0 border-t border-gray-200 dark:border-gray-800">
+                            <div className="relative px-3 py-1.5 flex-shrink-0 border-t border-gray-200 dark:border-gray-800">
                                 <form onSubmit={handleSubmit} className="max-w-4xl mx-auto">
                                     <div className="relative">
                                         <Textarea
@@ -1468,3 +1528,4 @@ export default function Index({ auth, userInfo, chatHistories }) {
         </AuthenticatedLayout>
     );
 }
+

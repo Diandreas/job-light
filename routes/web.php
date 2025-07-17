@@ -237,7 +237,11 @@ Route::get('auth/linkedin/callback', [App\Http\Controllers\LinkedinController::c
 // Anciennes routes Socialite (à conserver temporairement pour la transition)
 Route::get('auth/{provider}', [App\Http\Controllers\SocialAuthController::class, 'redirectToProvider'])->name('social.login');
 Route::get('auth/{provider}/callback', [App\Http\Controllers\SocialAuthController::class, 'handleProviderCallback'])->name('social.callback');
-
+// Nouveaux endpoints compatibles Median
+Route::get('/career-advisor/export-direct', [CareerAdvisorController::class, 'exportDirect']);
+Route::get('/career-advisor/print-direct', [CareerAdvisorController::class, 'printDirect']);
+Route::get('/cv/download-direct/{id}', [CvInfosController::class, 'downloadPdfDirect']);
+Route::get('/cv/preview-print/{id}', [CvInfosController::class, 'previewPrint']);
 // Route de test pour vérifier le schéma de la base de données
 Route::get('/test-db-schema', [App\Http\Controllers\TestDbController::class, 'testSchema']);
 

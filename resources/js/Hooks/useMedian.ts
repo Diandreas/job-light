@@ -4,6 +4,7 @@ import { useEffect, useState, useCallback } from 'react';
 interface MedianAPI {
     share: {
         downloadFile: (options: { url: string; open?: boolean }) => Promise<any>;
+        sharePage: (options?: { url?: string; text?: string }) => Promise<any>;
     };
     open: {
         external: (options: { url: string; target?: string }) => Promise<any>;
@@ -25,7 +26,6 @@ export const useMedian = () => {
             // Import dynamique du package NPM
             import('median-js-bridge').then((MedianModule) => {
                 const MedianInstance = MedianModule.default;
-                // @ts-ignore
                 setMedian(MedianInstance);
 
                 MedianInstance.onReady(() => {
@@ -45,58 +45,130 @@ export const useMedian = () => {
         }
     }, []);
 
+    /**
+     * Télécharge un fichier avec support natif Android optimisé
+     */
     const downloadFile = useCallback(async (url: string, options: {
         filename?: string;
-        open?: boolean
+        open?: boolean;
+        forceDownload?: boolean;
     } = {}) => {
         if (!isReady || !Median) {
             throw new Error('Median n\'est pas prêt');
         }
 
         try {
+            console.log('🚀 Téléchargement natif avec Median:', url);
+
+            // Assurer que l'URL est absolue
+            const absoluteUrl = url.startsWith('http') ? url : new URL(url, window.location.origin).toString();
+
+            // Pour les fichiers PDF, ajouter les headers appropriés
+            let downloadUrl = absoluteUrl;
+            if (options.forceDownload && !downloadUrl.includes('Content-Disposition')) {
+                downloadUrl += (downloadUrl.includes('?') ? '&' : '?') + 'download=1';
+            }
+
             const result = await Median.share.downloadFile({
-                url: url,
+                url: downloadUrl,
                 open: options.open ?? true
             });
 
-            console.log('✅ Téléchargement réussi:', result);
+            console.log('✅ Téléchargement natif réussi:', result);
             return { success: true, result };
         } catch (error) {
-            console.error('❌ Erreur téléchargement:', error);
+            console.error('❌ Erreur téléchargement natif:', error);
             return { success: false, error };
         }
     }, [isReady, Median]);
 
-    const printDocument = useCallback(async (url: string) => {
+    /**
+     * Impression avec support PDF natif amélioré
+     */
+    const printDocument = useCallback(async (url: string, options: {
+        useShare?: boolean;
+        openInBrowser?: boolean;
+    } = {}) => {
         if (!isReady || !Median) {
             throw new Error('Median n\'est pas prêt');
         }
 
         try {
-            // Ajouter des paramètres pour forcer l'ouverture en mode PDF avec bouton de sauvegarde
-            const printUrl = new URL(url);
-            printUrl.searchParams.set('print_mode', 'pdf');
-            printUrl.searchParams.set('show_save_button', 'true');
-            printUrl.searchParams.set('auto_print', 'false');
+            console.log('🖨️ Impression/partage natif avec Median:', url);
 
-            await Median.open.external({
-                url: printUrl.toString(),
-                target: '_blank'
-            });
+            const absoluteUrl = url.startsWith('http') ? url : new URL(url, window.location.origin).toString();
 
-            console.log('✅ Impression initiée avec options PDF');
+            if (options.useShare) {
+                // Utiliser le partage natif qui peut inclure l'impression
+                await Median.share.sharePage({
+                    url: absoluteUrl,
+                    text: "Document à imprimer"
+                });
+                console.log('✅ Partage natif initié');
+            } else {
+                // Ouvrir dans le navigateur externe pour impression
+                await Median.open.external({
+                    url: absoluteUrl,
+                    target: '_blank'
+                });
+                console.log('✅ Ouverture externe initiée');
+            }
+
             return { success: true };
         } catch (error) {
-            console.error('❌ Erreur impression:', error);
+            console.error('❌ Erreur impression native:', error);
             return { success: false, error };
         }
     }, [isReady, Median]);
+
+    /**
+     * Créer une URL de téléchargement direct compatible avec Median
+     */
+    const createDirectDownloadUrl = useCallback((endpoint: string, params: Record<string, any> = {}) => {
+        const url = new URL(endpoint, window.location.origin);
+
+        // Ajouter les paramètres comme query string pour GET
+        Object.keys(params).forEach(key => {
+            url.searchParams.set(key, params[key]);
+        });
+
+        // Forcer le téléchargement
+        url.searchParams.set('direct', 'true');
+        url.searchParams.set('Content-Disposition', 'attachment');
+
+        return url.toString();
+    }, []);
+
+    /**
+     * Vérifier si une URL est compatible avec Median
+     */
+    const isUrlCompatible = useCallback((url: string): boolean => {
+        try {
+            const urlObj = new URL(url, window.location.origin);
+
+            // Median ne supporte pas localhost
+            if (urlObj.hostname === 'localhost' || urlObj.hostname === '127.0.0.1') {
+                return false;
+            }
+
+            // Doit être une URL publique
+            if (!url.startsWith('http://') && !url.startsWith('https://')) {
+                return false;
+            }
+
+            return true;
+        } catch {
+            return false;
+        }
+    }, []);
 
     return {
         isReady,
         isAndroidApp,
         Median,
         downloadFile,
-        printDocument
+        printDocument,
+        createDirectDownloadUrl,
+        isUrlCompatible
     };
 };

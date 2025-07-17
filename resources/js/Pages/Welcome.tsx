@@ -66,7 +66,7 @@ const LanguageSelector = () => {
     );
 };
 
-const AnimatedCounter = ({ target, duration = 2000 }) => {
+const AnimatedCounter = ({ target, duration = 2000, suffix = '+' }) => {
     const [count, setCount] = useState(0);
 
     useEffect(() => {
@@ -85,137 +85,642 @@ const AnimatedCounter = ({ target, duration = 2000 }) => {
         requestAnimationFrame(updateCount);
     }, [target, duration]);
 
-    return <span>{count.toLocaleString()}+</span>;
+    return <span>{count.toLocaleString()}{suffix}</span>;
 };
 
 const FeatureCard = ({ icon: Icon, title, description, action, link }) => (
     <motion.div
-        whileHover={{ y: -5, scale: 1.02 }}
+        initial={{ opacity: 0, y: 30, scale: 0.95 }}
+        whileInView={{ opacity: 1, y: 0, scale: 1 }}
+        viewport={{ once: true, margin: "-50px" }}
+        transition={{ duration: 0.6, type: "spring", stiffness: 100 }}
+        whileHover={{
+            y: -8,
+            scale: 1.03,
+            transition: { type: "spring", stiffness: 300 }
+        }}
         whileTap={{ scale: 0.98 }}
-        className="relative bg-white dark:bg-gray-800 rounded-xl p-3 sm:p-6 shadow-lg border border-gray-100 dark:border-gray-700 overflow-hidden group"
+        className="relative bg-white dark:bg-gray-800 rounded-2xl p-4 md:p-6 shadow-lg border border-gray-100 dark:border-gray-700 overflow-hidden group h-full"
     >
-        <div className="absolute inset-0 bg-gradient-to-r from-amber-500/10 to-purple-500/10 dark:from-amber-500/5 dark:to-purple-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-        <div className="relative z-10">
-            <div className="flex justify-between items-start mb-2 sm:mb-4">
-                <div className="p-2 sm:p-3 rounded-lg bg-gradient-to-r from-amber-500 to-purple-500 transform group-hover:rotate-6 transition-transform duration-300">
-                    <Icon className="w-4 h-4 sm:w-6 sm:h-6 text-white" />
-                </div>
+        <motion.div
+            className="absolute inset-0 bg-gradient-to-r from-amber-500/10 to-purple-500/10 dark:from-amber-500/5 dark:to-purple-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+            initial={{ scale: 0.8 }}
+            whileHover={{ scale: 1 }}
+        />
+        <div className="relative z-10 h-full flex flex-col">
+            <div className="flex justify-between items-start mb-3 md:mb-4">
+                <motion.div
+                    className="p-2 md:p-3 rounded-xl bg-gradient-to-r from-amber-500 to-purple-500 shadow-lg"
+                    whileHover={{
+                        rotate: 12,
+                        scale: 1.1,
+                        transition: { type: "spring", stiffness: 300 }
+                    }}
+                    initial={{ rotate: 0, scale: 1 }}
+                >
+                    <motion.div
+                        animate={{
+                            rotateY: [0, 360],
+                        }}
+                        transition={{
+                            duration: 8,
+                            repeat: Infinity,
+                            ease: "linear",
+                            repeatDelay: 3
+                        }}
+                    >
+                        <Icon className="w-5 h-5 md:w-6 md:h-6 text-white" />
+                    </motion.div>
+                </motion.div>
             </div>
-            <h3 className="text-sm sm:text-xl font-semibold mb-1 sm:mb-2 group-hover:text-amber-600 dark:group-hover:text-amber-400 transition-colors dark:text-white">{title}</h3>
-            <p className="text-xs sm:text-base text-gray-600 dark:text-gray-300 mb-2 sm:mb-4 line-clamp-3 sm:line-clamp-none">{description}</p>
-            <Link href={link} className="inline-flex items-center text-xs sm:text-base text-amber-600 dark:text-amber-400 hover:text-amber-700 dark:hover:text-amber-300 font-medium group">
-                {action}
-                <ArrowRight className="ml-1 sm:ml-2 w-3 h-3 sm:w-4 sm:h-4 transform group-hover:translate-x-1 transition-transform" />
-            </Link>
+            <motion.h3
+                className="text-base md:text-xl font-bold mb-2 md:mb-3 group-hover:text-amber-600 dark:group-hover:text-amber-400 transition-colors dark:text-white leading-tight"
+                initial={{ opacity: 0, x: -10 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: 0.2 }}
+            >
+                {title}
+            </motion.h3>
+            <motion.p
+                className="text-sm md:text-base text-gray-600 dark:text-gray-300 mb-4 md:mb-6 flex-grow leading-relaxed"
+                initial={{ opacity: 0 }}
+                whileInView={{ opacity: 1 }}
+                viewport={{ once: true }}
+                transition={{ delay: 0.3 }}
+            >
+                {description}
+            </motion.p>
+            <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: 0.4 }}
+            >
+                <Link href={link} className="inline-flex items-center text-sm md:text-base text-amber-600 dark:text-amber-400 hover:text-amber-700 dark:hover:text-amber-300 font-semibold group/link mt-auto">
+                    {action}
+                    <motion.div
+                        className="ml-2"
+                        animate={{ x: [0, 3, 0] }}
+                        transition={{ repeat: Infinity, duration: 2.5 }}
+                    >
+                        <ArrowRight className="w-4 h-4 transform group-hover/link:translate-x-1 transition-transform" />
+                    </motion.div>
+                </Link>
+            </motion.div>
         </div>
     </motion.div>
 );
 
-const StatisticCard = ({ icon: Icon, value, label }) => (
+const StatisticCard = ({ icon: Icon, value, label, suffix = '+', color = 'from-amber-500 to-purple-500' }) => (
     <motion.div
-        whileHover={{ scale: 1.05 }}
-        className="bg-white dark:bg-gray-800 p-3 sm:p-6 rounded-xl shadow-lg border border-gray-100 dark:border-gray-700"
+        initial={{ opacity: 0, scale: 0.8, y: 20 }}
+        whileInView={{ opacity: 1, scale: 1, y: 0 }}
+        viewport={{ once: true, margin: "-50px" }}
+        transition={{ duration: 0.6, type: "spring", stiffness: 100 }}
+        whileHover={{
+            scale: 1.08,
+            y: -8,
+            transition: { type: "spring", stiffness: 300 }
+        }}
+        className="relative bg-white dark:bg-gray-800 p-4 md:p-6 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 text-center group overflow-hidden"
     >
-        <Icon className="w-5 h-5 sm:w-8 sm:h-8 text-amber-500 dark:text-amber-400 mb-2 sm:mb-4" />
-        <div className="text-xl sm:text-3xl font-bold text-gray-800 dark:text-white mb-1 sm:mb-2">
-            <AnimatedCounter target={value} />
+        {/* Gradient de fond animé */}
+        <motion.div
+            className={`absolute inset-0 bg-gradient-to-br ${color} opacity-0 group-hover:opacity-10 transition-opacity duration-500`}
+            initial={{ scale: 0, rotate: 180 }}
+            whileHover={{ scale: 1, rotate: 0 }}
+            transition={{ duration: 0.6 }}
+        />
+
+        {/* Cercle décoratif animé */}
+        <motion.div
+            className={`absolute -top-10 -right-10 w-20 h-20 bg-gradient-to-br ${color} rounded-full opacity-10`}
+            animate={{
+                scale: [1, 1.2, 1],
+                rotate: [0, 180, 360]
+            }}
+            transition={{
+                duration: 8,
+                repeat: Infinity,
+                ease: "linear"
+            }}
+        />
+
+        <div className="relative z-10">
+            <motion.div
+                initial={{ scale: 0, rotate: -180 }}
+                whileInView={{ scale: 1, rotate: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
+                whileHover={{
+                    rotate: [0, -15, 15, 0],
+                    scale: 1.2,
+                    transition: { duration: 0.6 }
+                }}
+                className="relative"
+            >
+                {/* Halo lumineux autour de l'icône */}
+                <motion.div
+                    className={`absolute inset-0 bg-gradient-to-r ${color} rounded-full blur-md opacity-0 group-hover:opacity-50`}
+                    animate={{
+                        scale: [1, 1.3, 1],
+                    }}
+                    transition={{
+                        duration: 2,
+                        repeat: Infinity,
+                        ease: "easeInOut"
+                    }}
+                />
+                <div className={`relative p-3 rounded-full bg-gradient-to-r ${color} mb-3 md:mb-4 mx-auto w-fit shadow-lg`}>
+                    <Icon className="w-6 h-6 md:w-8 md:h-8 text-white" />
+                </div>
+            </motion.div>
+
+            <motion.div
+                className="text-2xl md:text-4xl font-bold text-gray-800 dark:text-white mb-1 md:mb-2"
+                initial={{ opacity: 0, scale: 0.5 }}
+                whileInView={{ opacity: 1, scale: 1 }}
+                viewport={{ once: true }}
+                transition={{ delay: 0.4, type: "spring" }}
+            >
+                <motion.span
+                    className={`bg-gradient-to-r ${color} text-transparent bg-clip-text`}
+                    animate={{
+                        backgroundPosition: ['0% 50%', '100% 50%', '0% 50%'],
+                    }}
+                    transition={{
+                        duration: 3,
+                        repeat: Infinity,
+                        ease: "linear"
+                    }}
+                >
+                    <AnimatedCounter target={value} suffix={suffix} />
+                </motion.span>
+            </motion.div>
+
+            <motion.p
+                className="text-xs md:text-sm text-gray-600 dark:text-gray-300 font-semibold leading-tight"
+                initial={{ opacity: 0, y: 10 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: 0.6 }}
+            >
+                {label}
+            </motion.p>
         </div>
-        <p className="text-xs sm:text-base text-gray-600 dark:text-gray-300">{label}</p>
+
+        {/* Particules flottantes */}
+        <motion.div
+            className="absolute top-2 left-2 w-1 h-1 bg-amber-400 rounded-full opacity-60"
+            animate={{
+                y: [0, -20, 0],
+                opacity: [0.6, 1, 0.6],
+                scale: [1, 1.5, 1]
+            }}
+            transition={{
+                duration: 3,
+                repeat: Infinity,
+                delay: 0.5
+            }}
+        />
+        <motion.div
+            className="absolute bottom-3 right-3 w-1.5 h-1.5 bg-purple-400 rounded-full opacity-60"
+            animate={{
+                y: [0, -15, 0],
+                opacity: [0.6, 1, 0.6],
+                scale: [1, 1.2, 1]
+            }}
+            transition={{
+                duration: 4,
+                repeat: Infinity,
+                delay: 1
+            }}
+        />
     </motion.div>
 );
 
-// Nouveau composant pour le Call-to-Action avec image
+// Composant Call-to-Action ultra-compact avec glassmorphism et animations premium
 const ImageCallToAction = () => {
     const { t } = useTranslation();
     return (
-        <div className="bg-gradient-to-r from-amber-100 to-purple-100 dark:from-amber-900/20 dark:to-purple-900/20 rounded-2xl overflow-hidden shadow-xl mb-8 sm:mb-20 border-2 border-amber-200 dark:border-amber-700">
-            {/* Layout mobile: empilé avec grande image */}
+        <div className="relative bg-gradient-to-br from-amber-50 via-purple-50 to-rose-50 dark:from-amber-900/20 dark:via-purple-900/20 dark:to-rose-900/20 rounded-3xl overflow-hidden shadow-2xl border border-amber-200/50 dark:border-amber-700/50 backdrop-blur-sm">
+            {/* Effet glassmorphism avec gradients animés */}
+            <motion.div
+                className="absolute inset-0 bg-gradient-to-r from-amber-400/10 via-purple-400/10 to-rose-400/10"
+                animate={{
+                    background: [
+                        'linear-gradient(45deg, rgba(245,158,11,0.1) 0%, rgba(168,85,247,0.1) 50%, rgba(244,63,94,0.1) 100%)',
+                        'linear-gradient(135deg, rgba(168,85,247,0.1) 0%, rgba(244,63,94,0.1) 50%, rgba(245,158,11,0.1) 100%)',
+                        'linear-gradient(225deg, rgba(244,63,94,0.1) 0%, rgba(245,158,11,0.1) 50%, rgba(168,85,247,0.1) 100%)',
+                        'linear-gradient(315deg, rgba(245,158,11,0.1) 0%, rgba(168,85,247,0.1) 50%, rgba(244,63,94,0.1) 100%)'
+                    ]
+                }}
+                transition={{ duration: 8, repeat: Infinity, ease: "linear" }}
+            />
+
+            {/* Particules flottantes décoratives */}
+            <motion.div
+                className="absolute top-4 left-4 w-2 h-2 bg-gradient-to-r from-amber-400 to-orange-400 rounded-full opacity-60"
+                animate={{
+                    y: [0, -20, 0],
+                    x: [0, 10, 0],
+                    scale: [1, 1.5, 1],
+                    opacity: [0.6, 1, 0.6]
+                }}
+                transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+            />
+            <motion.div
+                className="absolute top-8 right-6 w-1.5 h-1.5 bg-gradient-to-r from-purple-400 to-pink-400 rounded-full opacity-60"
+                animate={{
+                    y: [0, -15, 0],
+                    x: [0, -8, 0],
+                    scale: [1, 1.3, 1],
+                    opacity: [0.6, 1, 0.6]
+                }}
+                transition={{ duration: 5, repeat: Infinity, ease: "easeInOut", delay: 1 }}
+            />
+
+            {/* Layout mobile ultra-compact */}
             <div className="block md:hidden">
-                <div className="p-4 sm:p-6">
-                    <h2 className="text-xl sm:text-2xl font-bold mb-3 bg-gradient-to-r from-amber-500 to-purple-500 text-transparent bg-clip-text text-center">
-                        {t('cta_image.title')}
-                    </h2>
-
-                    {/* Grande image sur mobile */}
-                    <div className="relative h-80 sm:h-96 w-full rounded-xl shadow-md overflow-hidden border-2 border-amber-300 dark:border-amber-700 bg-white dark:bg-gray-800 mb-4">
-                        <div className="absolute right-0 top-1/2 transform -translate-y-1/2 z-20">
-                            <ChevronRight className="w-12 h-12 sm:w-16 sm:h-16 text-amber-500 dark:text-amber-400 transform rotate-180" />
-                        </div>
-                        <div className="flex items-center justify-center h-full">
-                            <img
-                                src="/cvs.png"
-                                alt="CV Professionnel"
-                                className="h-auto max-w-[90%] object-contain dark:opacity-90 dark:brightness-90"
-                            />
-                        </div>
-                    </div>
-
-                    <p className="text-sm sm:text-base text-gray-600 dark:text-gray-300 mb-4 text-center">
-                        {t('hero.description')}
-                    </p>
-                    <div className="flex justify-center">
-                        <Link
-                            href={route('register')}
-                            className="inline-flex items-center px-5 py-3 rounded-full text-sm sm:text-base font-medium bg-gradient-to-r from-amber-500 to-purple-500 text-white hover:from-amber-600 hover:to-purple-600 shadow-md hover:shadow-lg transition-all"
+                <div className="p-4 relative z-10">
+                    {/* Titre avec gradient animé */}
+                    <motion.h2
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.6 }}
+                        className="text-xl font-bold mb-4 text-center leading-tight"
+                    >
+                        <motion.span
+                            className="bg-gradient-to-r from-amber-600 via-purple-600 to-rose-600 text-transparent bg-clip-text"
+                            animate={{
+                                backgroundPosition: ['0% 50%', '100% 50%', '0% 50%'],
+                            }}
+                            transition={{
+                                duration: 4,
+                                repeat: Infinity,
+                                ease: "linear"
+                            }}
                         >
-                            {t('cta_image.button')}
-                            <ArrowRight className="ml-2 w-4 h-4" />
-                        </Link>
+                            {t('cta_image.title')}
+                        </motion.span>
+                    </motion.h2>
+
+                    {/* Container des 2 images avec glassmorphism */}
+                    <div className="flex space-x-2 mb-4">
+                        {/* Image conversation (gauche) */}
+                        <motion.div
+                            initial={{ opacity: 0, x: -30, scale: 0.9 }}
+                            animate={{ opacity: 1, x: 0, scale: 1 }}
+                            transition={{ delay: 0.2, duration: 0.6 }}
+                            className="relative flex-1 h-32 rounded-2xl shadow-lg overflow-hidden border border-white/20 dark:border-gray-700/50 backdrop-blur-md bg-white/80 dark:bg-gray-800/80"
+                        >
+                            <motion.div
+                                className="absolute inset-0 bg-gradient-to-br from-amber-500/20 to-purple-500/20 z-10"
+                                animate={{ opacity: [0.2, 0.4, 0.2] }}
+                                transition={{ duration: 3, repeat: Infinity }}
+                            />
+                            <div className="absolute left-1 top-1/2 transform -translate-y-1/2 z-20">
+                                <motion.div
+                                    animate={{
+                                        x: [0, 4, 0],
+                                        scale: [1, 1.1, 1]
+                                    }}
+                                    transition={{ repeat: Infinity, duration: 2.5, ease: "easeInOut" }}
+                                >
+                                    <div className="p-1 rounded-full bg-gradient-to-r from-amber-500 to-orange-500 shadow-lg">
+                                        <ChevronRight className="w-4 h-4 text-white" />
+                                    </div>
+                                </motion.div>
+                            </div>
+                            <div className="flex items-center justify-center h-full p-2">
+                                <motion.img
+                                    whileHover={{ scale: 1.05 }}
+                                    transition={{ type: "spring", stiffness: 300 }}
+                                    src="/call.png"
+                                    alt="Conversation IA"
+                                    className="max-h-full max-w-full object-contain dark:opacity-90 dark:brightness-90 filter drop-shadow-md"
+                                />
+                            </div>
+                        </motion.div>
+
+                        {/* Flèche centrale premium */}
+                        <motion.div
+                            initial={{ opacity: 0, scale: 0 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            transition={{ delay: 0.4, duration: 0.4 }}
+                            className="flex items-center justify-center"
+                        >
+                            <motion.div
+                                animate={{
+                                    x: [0, 6, 0],
+                                    rotate: [0, 10, 0],
+                                    scale: [1, 1.2, 1]
+                                }}
+                                transition={{
+                                    repeat: Infinity,
+                                    duration: 3,
+                                    ease: "easeInOut"
+                                }}
+                                className="relative"
+                            >
+                                {/* Halo lumineux */}
+                                <motion.div
+                                    className="absolute inset-0 bg-gradient-to-r from-amber-500 to-purple-500 rounded-full blur-md"
+                                    animate={{ scale: [1, 1.4, 1], opacity: [0.5, 0.8, 0.5] }}
+                                    transition={{ duration: 2, repeat: Infinity }}
+                                />
+                                <div className="relative p-2 rounded-full bg-gradient-to-r from-amber-500 via-purple-500 to-rose-500 shadow-lg">
+                                    <ArrowRight className="w-3 h-3 text-white" />
+                                </div>
+                            </motion.div>
+                        </motion.div>
+
+                        {/* Image CV (droite) */}
+                        <motion.div
+                            initial={{ opacity: 0, x: 30, scale: 0.9 }}
+                            animate={{ opacity: 1, x: 0, scale: 1 }}
+                            transition={{ delay: 0.3, duration: 0.6 }}
+                            className="relative flex-1 h-32 rounded-2xl shadow-lg overflow-hidden border border-white/20 dark:border-gray-700/50 backdrop-blur-md bg-white/80 dark:bg-gray-800/80"
+                        >
+                            <motion.div
+                                className="absolute inset-0 bg-gradient-to-bl from-purple-500/20 to-rose-500/20 z-10"
+                                animate={{ opacity: [0.2, 0.4, 0.2] }}
+                                transition={{ duration: 3, repeat: Infinity, delay: 1 }}
+                            />
+                            <div className="absolute right-1 top-1/2 transform -translate-y-1/2 z-20">
+                                <motion.div
+                                    animate={{
+                                        x: [0, -4, 0],
+                                        scale: [1, 1.1, 1]
+                                    }}
+                                    transition={{ repeat: Infinity, duration: 2.5, ease: "easeInOut" }}
+                                >
+                                    <div className="p-1 rounded-full bg-gradient-to-r from-purple-500 to-rose-500 shadow-lg">
+                                        <ChevronRight className="w-4 h-4 text-white transform rotate-180" />
+                                    </div>
+                                </motion.div>
+                            </div>
+                            <div className="flex items-center justify-center h-full p-2">
+                                <motion.img
+                                    whileHover={{ scale: 1.05 }}
+                                    transition={{ type: "spring", stiffness: 300 }}
+                                    src="/cvs.png"
+                                    alt="CV Professionnel"
+                                    className="max-h-full max-w-full object-contain dark:opacity-90 dark:brightness-90 filter drop-shadow-md"
+                                />
+                            </div>
+                        </motion.div>
                     </div>
+
+                    {/* Description compacte */}
+                    <motion.p
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.5, duration: 0.6 }}
+                        className="text-sm text-gray-700 dark:text-gray-300 mb-4 text-center leading-relaxed px-1"
+                    >
+                        {t('hero.description')}
+                    </motion.p>
+
+                    {/* Bouton CTA premium */}
+                    <motion.div
+                        initial={{ opacity: 0, y: 20, scale: 0.9 }}
+                        animate={{ opacity: 1, y: 0, scale: 1 }}
+                        transition={{ delay: 0.7, duration: 0.6, type: "spring" }}
+                        className="flex justify-center"
+                    >
+                        <motion.div
+                            whileHover={{ scale: 1.05 }}
+                            whileTap={{ scale: 0.95 }}
+                            className="relative"
+                        >
+                            <Link
+                                href={route('register')}
+                                className="relative inline-flex items-center px-6 py-3 rounded-2xl text-sm font-bold bg-gradient-to-r from-amber-500 via-purple-500 to-rose-500 text-white shadow-lg hover:shadow-xl transition-all group overflow-hidden"
+                            >
+                                {/* Effet de brillance */}
+                                <motion.div
+                                    className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent -skew-x-12"
+                                    initial={{ x: "-100%" }}
+                                    animate={{ x: "200%" }}
+                                    transition={{
+                                        repeat: Infinity,
+                                        duration: 3,
+                                        ease: "easeInOut",
+                                        repeatDelay: 2
+                                    }}
+                                />
+
+                                <motion.div
+                                    animate={{
+                                        rotate: [0, 360],
+                                        scale: [1, 1.2, 1]
+                                    }}
+                                    transition={{
+                                        repeat: Infinity,
+                                        duration: 4,
+                                        ease: "easeInOut"
+                                    }}
+                                    className="relative z-10"
+                                >
+                                    <Star className="mr-2 w-4 h-4" />
+                                </motion.div>
+                                <span className="relative z-10">{t('cta_image.button')}</span>
+                                <motion.div
+                                    className="ml-2 relative z-10"
+                                    animate={{ x: [0, 3, 0] }}
+                                    transition={{ repeat: Infinity, duration: 2 }}
+                                >
+                                    <ArrowRight className="w-4 h-4" />
+                                </motion.div>
+                            </Link>
+                        </motion.div>
+                    </motion.div>
                 </div>
             </div>
 
-            {/* Layout desktop: 3 colonnes bien équilibrées */}
+            {/* Layout desktop avec glassmorphism */}
             <div className="hidden md:flex md:flex-row md:items-stretch">
-                {/* Image gauche (conversation) */}
-                <div className="w-1/3 p-6 flex items-center justify-center relative">
-                    <div className="relative h-80 w-full rounded-xl shadow-md overflow-hidden border border-amber-300 dark:border-amber-700 bg-white dark:bg-gray-800">
-                        <div className="absolute inset-0 bg-gradient-to-r from-amber-500/20 to-purple-500/20 z-10"></div>
+                {/* Image gauche avec effet premium */}
+                <motion.div
+                    initial={{ opacity: 0, x: -50, rotateY: -15 }}
+                    animate={{ opacity: 1, x: 0, rotateY: 0 }}
+                    transition={{ delay: 0.2, duration: 0.8, type: "spring" }}
+                    className="w-1/3 p-6 flex items-center justify-center relative"
+                >
+                    <div className="relative h-80 w-full rounded-2xl shadow-xl overflow-hidden border border-white/20 dark:border-gray-700/50 backdrop-blur-md bg-white/80 dark:bg-gray-800/80">
+                        <motion.div
+                            className="absolute inset-0 bg-gradient-to-br from-amber-500/20 to-purple-500/20 z-10"
+                            animate={{ opacity: [0.2, 0.4, 0.2] }}
+                            transition={{ duration: 4, repeat: Infinity }}
+                        />
                         <div className="absolute left-0 top-1/2 transform -translate-y-1/2 z-20">
-                            <ChevronRight className="w-16 h-16 text-amber-500 dark:text-amber-400" />
+                            <motion.div
+                                animate={{
+                                    x: [0, 12, 0],
+                                    scale: [1, 1.2, 1]
+                                }}
+                                transition={{
+                                    repeat: Infinity,
+                                    duration: 3,
+                                    ease: "easeInOut"
+                                }}
+                                className="relative"
+                            >
+                                <motion.div
+                                    className="absolute inset-0 bg-gradient-to-r from-amber-500 to-orange-500 rounded-full blur-lg"
+                                    animate={{ scale: [1, 1.5, 1], opacity: [0.3, 0.6, 0.3] }}
+                                    transition={{ duration: 2, repeat: Infinity }}
+                                />
+                                <div className="relative p-3 rounded-full bg-gradient-to-r from-amber-500 to-orange-500 shadow-lg">
+                                    <ChevronRight className="w-12 h-12 text-white" />
+                                </div>
+                            </motion.div>
                         </div>
                         <div className="flex items-center justify-center h-full p-3">
-                            <img
+                            <motion.img
+                                initial={{ scale: 0.8, opacity: 0 }}
+                                animate={{ scale: 1, opacity: 1 }}
+                                transition={{ delay: 0.6, duration: 0.6 }}
+                                whileHover={{
+                                    scale: 1.05,
+                                    rotateY: 5,
+                                    transition: { type: "spring", stiffness: 300 }
+                                }}
                                 src="/call.png"
                                 alt="Conversation IA"
-                                className="max-h-full max-w-full object-contain rounded-lg dark:opacity-90 dark:brightness-90 z-5"
+                                className="max-h-full max-w-full object-contain rounded-lg dark:opacity-90 dark:brightness-90 z-5 filter drop-shadow-xl"
                             />
                         </div>
                     </div>
-                </div>
+                </motion.div>
 
-                {/* Contenu central */}
-                <div className="w-1/3 p-8 flex flex-col justify-center items-center text-center">
-                    <h2 className="text-2xl lg:text-3xl font-bold mb-6 bg-gradient-to-r from-amber-500 to-purple-500 text-transparent bg-clip-text">
-                        {t('cta_image.title')}
-                    </h2>
-                    <p className="text-base text-gray-600 dark:text-gray-300 mb-8">
-                        {t('hero.description')}
-                    </p>
-                    <Link
-                        href={route('register')}
-                        className="inline-flex items-center px-6 py-3 rounded-full text-base font-medium bg-gradient-to-r from-amber-500 to-purple-500 text-white hover:from-amber-600 hover:to-purple-600 shadow-md hover:shadow-lg transition-all"
+                {/* Contenu central premium */}
+                <motion.div
+                    initial={{ opacity: 0, y: 30, scale: 0.95 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    transition={{ delay: 0.4, duration: 0.8, type: "spring" }}
+                    className="w-1/3 p-8 flex flex-col justify-center items-center text-center relative"
+                >
+                    <motion.h2
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.6, duration: 0.6 }}
+                        className="text-2xl lg:text-3xl font-bold mb-6"
                     >
-                        {t('cta_image.button')}
-                        <ArrowRight className="ml-2 w-4 h-4" />
-                    </Link>
-                </div>
+                        <motion.span
+                            className="bg-gradient-to-r from-amber-500 via-purple-500 to-rose-500 text-transparent bg-clip-text"
+                            animate={{
+                                backgroundPosition: ['0% 50%', '100% 50%', '0% 50%'],
+                            }}
+                            transition={{
+                                duration: 4,
+                                repeat: Infinity,
+                                ease: "linear"
+                            }}
+                        >
+                            {t('cta_image.title')}
+                        </motion.span>
+                    </motion.h2>
+                    <motion.p
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        transition={{ delay: 0.8, duration: 0.6 }}
+                        className="text-base text-gray-600 dark:text-gray-300 mb-8 leading-relaxed"
+                    >
+                        {t('hero.description')}
+                    </motion.p>
+                    <motion.div
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 1, duration: 0.6 }}
+                    >
+                        <motion.div
+                            whileHover={{ scale: 1.05 }}
+                            whileTap={{ scale: 0.95 }}
+                        >
+                            <Link
+                                href={route('register')}
+                                className="relative inline-flex items-center px-8 py-4 rounded-2xl text-lg font-bold bg-gradient-to-r from-amber-500 via-purple-500 to-rose-500 text-white shadow-xl hover:shadow-2xl transition-all group overflow-hidden"
+                            >
+                                <motion.div
+                                    className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent -skew-x-12"
+                                    initial={{ x: "-100%" }}
+                                    animate={{ x: "200%" }}
+                                    transition={{
+                                        repeat: Infinity,
+                                        duration: 3,
+                                        ease: "easeInOut",
+                                        repeatDelay: 2
+                                    }}
+                                />
+                                <span className="relative z-10">{t('cta_image.button')}</span>
+                                <motion.div
+                                    className="ml-3 relative z-10"
+                                    animate={{ x: [0, 5, 0] }}
+                                    transition={{ repeat: Infinity, duration: 2.5 }}
+                                >
+                                    <ArrowRight className="w-5 h-5" />
+                                </motion.div>
+                            </Link>
+                        </motion.div>
+                    </motion.div>
+                </motion.div>
 
-                {/* Image droite (CV) */}
-                <div className="w-1/3 p-6 flex items-center justify-center relative">
-                    <div className="relative h-80 w-full rounded-xl shadow-md overflow-hidden border border-amber-300 dark:border-amber-700 bg-white dark:bg-gray-800">
+                {/* Image droite premium */}
+                <motion.div
+                    initial={{ opacity: 0, x: 50, rotateY: 15 }}
+                    animate={{ opacity: 1, x: 0, rotateY: 0 }}
+                    transition={{ delay: 0.6, duration: 0.8, type: "spring" }}
+                    className="w-1/3 p-6 flex items-center justify-center relative"
+                >
+                    <div className="relative h-80 w-full rounded-2xl shadow-xl overflow-hidden border border-white/20 dark:border-gray-700/50 backdrop-blur-md bg-white/80 dark:bg-gray-800/80">
+                        <motion.div
+                            className="absolute inset-0 bg-gradient-to-bl from-purple-500/20 to-rose-500/20 z-10"
+                            animate={{ opacity: [0.2, 0.4, 0.2] }}
+                            transition={{ duration: 4, repeat: Infinity, delay: 1 }}
+                        />
                         <div className="absolute right-0 top-1/2 transform -translate-y-1/2 z-20">
-                            <ChevronRight className="w-16 h-16 text-amber-500 dark:text-amber-400 transform rotate-180" />
+                            <motion.div
+                                animate={{
+                                    x: [0, -12, 0],
+                                    scale: [1, 1.2, 1]
+                                }}
+                                transition={{
+                                    repeat: Infinity,
+                                    duration: 3,
+                                    ease: "easeInOut"
+                                }}
+                                className="relative"
+                            >
+                                <motion.div
+                                    className="absolute inset-0 bg-gradient-to-r from-purple-500 to-rose-500 rounded-full blur-lg"
+                                    animate={{ scale: [1, 1.5, 1], opacity: [0.3, 0.6, 0.3] }}
+                                    transition={{ duration: 2, repeat: Infinity }}
+                                />
+                                <div className="relative p-3 rounded-full bg-gradient-to-r from-purple-500 to-rose-500 shadow-lg">
+                                    <ChevronRight className="w-12 h-12 text-white transform rotate-180" />
+                                </div>
+                            </motion.div>
                         </div>
                         <div className="flex items-center justify-center h-full p-3">
-                            <img
+                            <motion.img
+                                initial={{ scale: 0.8, opacity: 0 }}
+                                animate={{ scale: 1, opacity: 1 }}
+                                transition={{ delay: 1, duration: 0.6 }}
+                                whileHover={{
+                                    scale: 1.05,
+                                    rotateY: -5,
+                                    transition: { type: "spring", stiffness: 300 }
+                                }}
                                 src="/cvs.png"
                                 alt="CV Professionnel"
-                                className="max-h-full max-w-full object-contain rounded-lg dark:opacity-90 dark:brightness-90"
+                                className="max-h-full max-w-full object-contain rounded-lg dark:opacity-90 dark:brightness-90 filter drop-shadow-xl"
                             />
                         </div>
                     </div>
-                </div>
+                </motion.div>
             </div>
         </div>
     );
@@ -226,6 +731,7 @@ export default function Welcome() {
     const opacity = useTransform(scrollYProgress, [0, 0.2], [1, 0]);
     const y = useTransform(scrollYProgress, [0, 0.2], [0, -50]);
     const { t } = useTranslation();
+
     const structuredData = {
         "@context": "https://schema.org",
         "@type": "WebApplication",
@@ -250,6 +756,7 @@ export default function Welcome() {
             }
         }
     };
+
     const features = [
         {
             icon: FileText,
@@ -284,38 +791,42 @@ export default function Welcome() {
     const statistics = [
         {
             icon: Users,
-            value: 50000,
-            label: t('stats.users')
+            value: 1300,
+            label: t('stats.users'),
+            suffix: '+',
+            color: 'from-blue-500 to-purple-500'
         },
         {
             icon: Award,
-            value: 95,
-            label: t('stats.satisfaction')
+            value: 100,
+            label: t('stats.satisfaction'),
+            suffix: '%',
+            color: 'from-green-500 to-emerald-500'
         },
         {
             icon: Trophy,
-            value: 75000,
-            label: t('stats.cvs')
+            value: 100,
+            label: t('stats.availability'),
+            suffix: '%',
+            color: 'from-amber-500 to-orange-500'
         },
         {
             icon: Terminal,
-            value: 99,
-            label: t('stats.availability')
+            value: 100,
+            label: 'Satisfaction garantie',
+            suffix: '%',
+            color: 'from-purple-500 to-pink-500'
         }
     ];
 
     return (
         <GuestLayout>
-
             <Head>
-                {/* Balises Titre et Description de Base (Bilingues et Optimisées) */}
+                {/* Toutes les balises HEAD restent identiques */}
                 <title>Guidy | Créez un CV Professionnel en 5 Minutes avec l'IA | Resume Builder</title>
                 <meta name="description" content="Créez gratuitement un CV optimisé ATS avec notre IA. Templates internationaux, conseils de carrière personnalisés et préparation aux entretiens. Available in English. Professional resumes in minutes!" />
                 <meta name="keywords" content="CV IA, CV ATS, resume builder, AI CV, lettre de motivation, cover letter, préparation entretien, interview preparation, template CV, modèle CV, international resume, conseil carrière, career advice, emploi international, global job search, CV Canada, CV France, CV USA, Africa CV, UK resume, carrieres internationales, CV francophone, anglophone CV" />
-
-                {/* Balises de contrôle et techniques */}
                 <meta charSet="utf-8" />
-
                 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes" />
                 <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
                 <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1, noodp, noydir" />
@@ -340,17 +851,14 @@ export default function Welcome() {
                 <meta name="rating" content="general" />
                 <meta name="copyright" content="© 2025 Guidy" />
 
-                {/* Canonical - URL unique */}
                 <link rel="canonical" href="https://guidy.com" />
 
-                {/* Balises régionales et géographiques */}
                 <meta name="geo.placename" content="Worldwide" />
                 <meta name="geo.region" content="US, CA, FR, CM, GB, BE, CH, SN, CI, IN, NG, AU" />
                 <meta name="geo.position" content="0;0" />
                 <meta name="ICBM" content="0, 0" />
                 <meta name="language" content="English, French" />
 
-                {/* Open Graph / Facebook avec chemins corrects pour les images */}
                 <meta property="og:type" content="website" />
                 <meta property="og:site_name" content="Guidy" />
                 <meta property="og:title" content="Guidy | Créez un CV professionnel en 5 min | Create your resume now" />
@@ -364,7 +872,6 @@ export default function Welcome() {
                 <meta property="og:locale" content="fr_FR" />
                 <meta property="og:locale:alternate" content="en_US" />
 
-                {/* Twitter Card avec chemins corrects pour les images */}
                 <meta name="twitter:card" content="summary_large_image" />
                 <meta name="twitter:site" content="@guidyai" />
                 <meta name="twitter:creator" content="@guidyai" />
@@ -377,22 +884,18 @@ export default function Welcome() {
                 <meta name="twitter:label2" content="Perfect for" />
                 <meta name="twitter:data2" content="Global Job Seekers" />
 
-                {/* Autres réseaux sociaux et plateformes */}
                 <meta property="linkedin:title" content="Guidy - Create Your Professional Resume in 5 Minutes | AI-Powered" />
                 <meta property="linkedin:description" content="AI-powered resume creation and career development platform. Optimize your job search with Guidy's professional templates." />
                 <meta property="linkedin:image" content="/image.png" />
 
-                {/* Partage Messaging Apps */}
                 <meta property="og:whatsapp:title" content="Guidy - Créateur de CV IA" />
                 <meta property="og:whatsapp:text" content="Crée ton CV professionnel en 5 minutes avec l'IA! CV optimisé pour tous les pays." />
 
-                {/* Balises supplémentaires pour mobile et PWA */}
                 <meta name="format-detection" content="email=no,address=no,date=no" />
                 <meta name="mobile-web-app-capable" content="yes" />
                 <meta name="msapplication-tap-highlight" content="no" />
                 <meta name="msapplication-starturl" content="https://guidy.com" />
 
-                {/* Préchargement de ressources */}
                 <link rel="preconnect" href="https://fonts.googleapis.com" />
                 <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
                 <link rel="preconnect" href="https://www.google-analytics.com" />
@@ -400,11 +903,10 @@ export default function Welcome() {
                 <link rel="dns-prefetch" href="https://www.google-analytics.com" />
                 <link rel="preload" href="/image.png" as="image" fetchPriority="high" />
 
-                {/* Favicon et App Icons avec vos fichiers actuels */}
                 <link rel="icon" href="/ai.png" />
                 <link rel="apple-touch-icon" href="/ai.png" />
 
-                {/* Données structurées principales pour l'application web */}
+                {/* Toutes les données structurées restent identiques */}
                 <script type="application/ld+json">
                     {JSON.stringify({
                         "@context": "https://schema.org",
@@ -701,165 +1203,583 @@ export default function Welcome() {
                     })}
                 </script>
             </Head>
-            <div className="opacity-25"><FluidCursorEffect  zIndex={100} /></div>
 
-            <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white dark:from-gray-900 dark:to-gray-800">
+            <div className="opacity-25"><FluidCursorEffect zIndex={100} /></div>
 
+            <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-amber-50/30 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 relative overflow-hidden">
+                {/* Éléments décoratifs de fond */}
+                <div className="absolute inset-0 overflow-hidden pointer-events-none">
+                    {/* Gradients flottants */}
+                    <motion.div
+                        className="absolute top-20 left-10 w-72 h-72 bg-gradient-to-r from-amber-400/20 to-orange-400/20 rounded-full blur-3xl"
+                        animate={{
+                            x: [0, 50, 0],
+                            y: [0, -30, 0],
+                            scale: [1, 1.2, 1],
+                        }}
+                        transition={{
+                            duration: 8,
+                            repeat: Infinity,
+                            ease: "easeInOut"
+                        }}
+                    />
+                    <motion.div
+                        className="absolute top-40 right-20 w-96 h-96 bg-gradient-to-r from-purple-400/20 to-pink-400/20 rounded-full blur-3xl"
+                        animate={{
+                            x: [0, -40, 0],
+                            y: [0, 40, 0],
+                            scale: [1, 1.1, 1],
+                        }}
+                        transition={{
+                            duration: 10,
+                            repeat: Infinity,
+                            ease: "easeInOut",
+                            delay: 2
+                        }}
+                    />
+                    <motion.div
+                        className="absolute bottom-20 left-1/3 w-64 h-64 bg-gradient-to-r from-rose-400/20 to-amber-400/20 rounded-full blur-3xl"
+                        animate={{
+                            x: [0, 30, 0],
+                            y: [0, -20, 0],
+                            scale: [1, 1.3, 1],
+                        }}
+                        transition={{
+                            duration: 12,
+                            repeat: Infinity,
+                            ease: "easeInOut",
+                            delay: 4
+                        }}
+                    />
 
-                <main className="pt-24">
+                    {/* Particules flottantes */}
+                    {[...Array(6)].map((_, i) => (
+                        <motion.div
+                            key={i}
+                            className={`absolute w-2 h-2 bg-gradient-to-r ${
+                                i % 3 === 0 ? 'from-amber-400 to-orange-400' :
+                                    i % 3 === 1 ? 'from-purple-400 to-pink-400' :
+                                        'from-rose-400 to-amber-400'
+                            } rounded-full opacity-60`}
+                            style={{
+                                top: `${20 + (i * 15)}%`,
+                                left: `${10 + (i * 12)}%`,
+                            }}
+                            animate={{
+                                y: [0, -50, 0],
+                                x: [0, 20, 0],
+                                opacity: [0.6, 1, 0.6],
+                                scale: [1, 1.5, 1],
+                            }}
+                            transition={{
+                                duration: 5 + i,
+                                repeat: Infinity,
+                                ease: "easeInOut",
+                                delay: i * 0.8
+                            }}
+                        />
+                    ))}
+                </div>
+                <main className="pt-20 md:pt-24 relative z-10">
                     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-
+                        {/* Badges de confiance */}
                         <motion.div
-                            initial={{ opacity: 0, scale: 0.5 }}
-                            animate={{ opacity: 1, scale: 1 }}
-                            transition={{ duration: 0.5 }}
-                            className="mb-6"
-                        >
-                            <span className="bg-amber-100 dark:bg-amber-900/40 text-amber-800 dark:text-amber-300 px-4 py-2 rounded-full text-sm font-medium">
-                                {t('hero.badge')}
-                            </span>
-                        </motion.div>
-
-                        <div className="mb-16 bg-amber-50 dark:bg-amber-900/10 p-2 rounded-2xl shadow-md" id="cta-forced">
-                            <ImageCallToAction />
-                        </div>
-
-                        <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6 mb-12 sm:mb-16">
-                            {features.map((feature, index) => (
-                                <FeatureCard
-                                    key={index}
-                                    icon={feature.icon}
-                                    title={feature.title}
-                                    description={feature.description}
-                                    action={feature.action}
-                                    link={feature.link}
-                                />
-                            ))}
-                        </div>
-
-                        <motion.div
-                            className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6 mb-12 sm:mb-16"
+                            className="mb-8 md:mb-12"
                             initial={{ opacity: 0, y: 20 }}
                             whileInView={{ opacity: 1, y: 0 }}
                             viewport={{ once: true }}
+                            transition={{ duration: 0.6, delay: 0.2 }}
                         >
-                            {statistics.map((stat, index) => (
-                                <StatisticCard
+                            <div className="flex flex-wrap justify-center items-center gap-4 md:gap-8">
+                                <motion.div
+                                    className="flex items-center space-x-2 bg-white/80 dark:bg-gray-800/80 backdrop-blur-md rounded-full px-4 py-2 shadow-lg border border-gray-200/50 dark:border-gray-700/50"
+                                    whileHover={{ scale: 1.05, y: -2 }}
+                                    transition={{ type: "spring", stiffness: 300 }}
+                                >
+                                    <motion.div
+                                        animate={{ scale: [1, 1.2, 1] }}
+                                        transition={{ repeat: Infinity, duration: 2 }}
+                                    >
+                                        <Star className="w-4 h-4 text-amber-500" />
+                                    </motion.div>
+                                    <span className="text-sm font-semibold text-gray-700 dark:text-gray-300">
+                                        +1300 utilisateurs satisfaits
+                                    </span>
+                                </motion.div>
+
+                                <motion.div
+                                    className="flex items-center space-x-2 bg-white/80 dark:bg-gray-800/80 backdrop-blur-md rounded-full px-4 py-2 shadow-lg border border-gray-200/50 dark:border-gray-700/50"
+                                    whileHover={{ scale: 1.05, y: -2 }}
+                                    transition={{ type: "spring", stiffness: 300 }}
+                                >
+                                    <motion.div
+                                        animate={{ rotate: [0, 360] }}
+                                        transition={{ repeat: Infinity, duration: 3, ease: "linear" }}
+                                    >
+                                        <Award className="w-4 h-4 text-green-500" />
+                                    </motion.div>
+                                    <span className="text-sm font-semibold text-gray-700 dark:text-gray-300">
+                                        100% satisfaction garantie
+                                    </span>
+                                </motion.div>
+
+                                <motion.div
+                                    className="flex items-center space-x-2 bg-white/80 dark:bg-gray-800/80 backdrop-blur-md rounded-full px-4 py-2 shadow-lg border border-gray-200/50 dark:border-gray-700/50"
+                                    whileHover={{ scale: 1.05, y: -2 }}
+                                    transition={{ type: "spring", stiffness: 300 }}
+                                >
+                                    <motion.div
+                                        animate={{
+                                            scale: [1, 1.1, 1],
+                                            opacity: [0.8, 1, 0.8]
+                                        }}
+                                        transition={{ repeat: Infinity, duration: 2.5 }}
+                                    >
+                                        <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                                    </motion.div>
+                                    <span className="text-sm font-semibold text-gray-700 dark:text-gray-300">
+                                        100% disponible
+                                    </span>
+                                </motion.div>
+                            </div>
+                        </motion.div>
+
+                        {/* Badge hero avec animation progressive */}
+                        <motion.div
+                            initial={{ opacity: 0, scale: 0.8, y: -30 }}
+                            animate={{ opacity: 1, scale: 1, y: 0 }}
+                            transition={{ duration: 0.8, type: "spring", stiffness: 100 }}
+                            className="mb-8 text-center"
+                        >
+                            <motion.span
+                                className="inline-flex items-center bg-gradient-to-r from-amber-100 to-purple-100 dark:from-amber-900/40 dark:to-purple-900/40 text-amber-800 dark:text-amber-300 px-6 py-3 rounded-full text-sm md:text-base font-semibold border border-amber-200 dark:border-amber-700 shadow-lg"
+                                whileHover={{
+                                    scale: 1.05,
+                                    boxShadow: "0 10px 25px rgba(245, 158, 11, 0.3)"
+                                }}
+                                animate={{
+                                    y: [0, -2, 0],
+                                }}
+                                transition={{
+                                    y: { repeat: Infinity, duration: 3, ease: "easeInOut" }
+                                }}
+                            >
+                                <motion.div
+                                    animate={{ rotate: [0, 10, -10, 0] }}
+                                    transition={{ repeat: Infinity, duration: 4 }}
+                                >
+                                    <Sparkles className="w-4 h-4 mr-2" />
+                                </motion.div>
+                                {t('hero.badge')}
+                            </motion.span>
+                        </motion.div>
+
+                        {/* Call-to-Action principal avec espacement amélioré */}
+                        <motion.div
+                            className="mb-12 md:mb-20"
+                            initial={{ opacity: 0, y: 50 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ delay: 0.3, duration: 0.8 }}
+                        >
+                            <ImageCallToAction />
+                        </motion.div>
+
+                        {/* Grid des fonctionnalités avec animations séquentielles */}
+                        <motion.div
+                            initial={{ opacity: 0 }}
+                            whileInView={{ opacity: 1 }}
+                            viewport={{ once: true, margin: "-100px" }}
+                            transition={{ duration: 0.6 }}
+                            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 mb-12 md:mb-20"
+                        >
+                            {features.map((feature, index) => (
+                                <motion.div
                                     key={index}
-                                    icon={stat.icon}
-                                    value={stat.value}
-                                    label={stat.label}
-                                />
+                                    initial={{ opacity: 0, y: 50, scale: 0.9 }}
+                                    whileInView={{ opacity: 1, y: 0, scale: 1 }}
+                                    viewport={{ once: true, margin: "-50px" }}
+                                    transition={{
+                                        delay: index * 0.15,
+                                        duration: 0.6,
+                                        type: "spring",
+                                        stiffness: 100
+                                    }}
+                                >
+                                    <FeatureCard
+                                        icon={feature.icon}
+                                        title={feature.title}
+                                        description={feature.description}
+                                        action={feature.action}
+                                        link={feature.link}
+                                    />
+                                </motion.div>
                             ))}
                         </motion.div>
 
-                        <div className="text-center pb-16">
+                        {/* Statistiques avec animations en vague */}
+                        <motion.div
+                            className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6 mb-12 md:mb-20"
+                            initial={{ opacity: 0 }}
+                            whileInView={{ opacity: 1 }}
+                            viewport={{ once: true, margin: "-100px" }}
+                            transition={{ duration: 0.6 }}
+                        >
+                            {statistics.map((stat, index) => (
+                                <motion.div
+                                    key={index}
+                                    initial={{ opacity: 0, scale: 0.5, rotateY: 180 }}
+                                    whileInView={{ opacity: 1, scale: 1, rotateY: 0 }}
+                                    viewport={{ once: true, margin: "-50px" }}
+                                    transition={{
+                                        delay: index * 0.2,
+                                        duration: 0.8,
+                                        type: "spring",
+                                        stiffness: 100
+                                    }}
+                                >
+                                    <StatisticCard
+                                        icon={stat.icon}
+                                        value={stat.value}
+                                        label={stat.label}
+                                        suffix={stat.suffix}
+                                        color={stat.color}
+                                    />
+                                </motion.div>
+                            ))}
+                        </motion.div>
+
+                        {/* CTA final avec animations complexes */}
+                        <motion.div
+                            className="text-center pb-16 md:pb-20"
+                            initial={{ opacity: 0, y: 50 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            viewport={{ once: true, margin: "-100px" }}
+                            transition={{ duration: 0.8 }}
+                        >
                             <motion.div
                                 className="mb-8"
-                                initial={{ opacity: 0, y: 20 }}
-                                whileInView={{ opacity: 1, y: 0 }}
+                                initial={{ opacity: 0, scale: 0.8, rotateX: -30 }}
+                                whileInView={{ opacity: 1, scale: 1, rotateX: 0 }}
                                 viewport={{ once: true }}
+                                transition={{ delay: 0.2, duration: 0.6, type: "spring" }}
                             >
-                                <span className="bg-amber-100 dark:bg-amber-900/40 text-amber-800 dark:text-amber-300 px-4 py-2 rounded-full text-sm font-medium">
+                                <motion.span
+                                    className="inline-flex items-center bg-gradient-to-r from-purple-100 to-amber-100 dark:from-purple-900/40 dark:to-amber-900/40 text-purple-800 dark:text-purple-300 px-6 py-3 rounded-full text-sm md:text-base font-semibold border border-purple-200 dark:border-purple-700 shadow-lg"
+                                    whileHover={{
+                                        scale: 1.1,
+                                        rotate: [0, -2, 2, 0],
+                                        transition: { duration: 0.3 }
+                                    }}
+                                    animate={{
+                                        boxShadow: [
+                                            "0 4px 15px rgba(168, 85, 247, 0.2)",
+                                            "0 8px 25px rgba(168, 85, 247, 0.4)",
+                                            "0 4px 15px rgba(168, 85, 247, 0.2)"
+                                        ]
+                                    }}
+                                    transition={{
+                                        boxShadow: { repeat: Infinity, duration: 3 }
+                                    }}
+                                >
+                                    <motion.div
+                                        animate={{
+                                            rotateY: [0, 360],
+                                            scale: [1, 1.2, 1]
+                                        }}
+                                        transition={{
+                                            repeat: Infinity,
+                                            duration: 4,
+                                            ease: "easeInOut"
+                                        }}
+                                    >
+                                        <Trophy className="w-4 h-4 mr-2" />
+                                    </motion.div>
                                     {t('cta.badge')}
-                                </span>
+                                </motion.span>
                             </motion.div>
                             <motion.div
-                                initial={{ opacity: 0, scale: 0.8 }}
-                                whileInView={{ opacity: 1, scale: 1 }}
+                                initial={{ opacity: 0, scale: 0.7, y: 30 }}
+                                whileInView={{ opacity: 1, scale: 1, y: 0 }}
                                 viewport={{ once: true }}
+                                transition={{ delay: 0.4, duration: 0.8, type: "spring", stiffness: 100 }}
                             >
-                                <Link
-                                    href={route('register')}
-                                    className="inline-flex items-center bg-gradient-to-r from-amber-500 to-purple-500 text-white px-8 py-4 rounded-full text-lg font-medium hover:from-amber-600 hover:to-purple-600 shadow-lg hover:shadow-xl transition-all"
+                                <motion.div
+                                    whileHover={{ scale: 1.05 }}
+                                    whileTap={{ scale: 0.95 }}
                                 >
-                                    <Star className="w-5 h-5 mr-2" />
-                                    {t('cta.button')}
-                                </Link>
+                                    <Link
+                                        href={route('register')}
+                                        className="inline-flex items-center bg-gradient-to-r from-amber-500 via-purple-500 to-amber-500 text-white px-8 md:px-10 py-4 md:py-5 rounded-2xl text-lg md:text-xl font-bold hover:from-amber-600 hover:via-purple-600 hover:to-amber-600 shadow-xl hover:shadow-2xl transition-all transform group relative overflow-hidden"
+                                    >
+                                        {/* Effet de brillance qui traverse le bouton */}
+                                        <motion.div
+                                            className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent -skew-x-12"
+                                            initial={{ x: "-100%" }}
+                                            animate={{ x: "200%" }}
+                                            transition={{
+                                                repeat: Infinity,
+                                                duration: 3,
+                                                ease: "easeInOut",
+                                                repeatDelay: 2
+                                            }}
+                                        />
+
+                                        <motion.div
+                                            animate={{
+                                                rotate: [0, 360],
+                                                scale: [1, 1.2, 1]
+                                            }}
+                                            transition={{
+                                                repeat: Infinity,
+                                                duration: 3,
+                                                ease: "easeInOut"
+                                            }}
+                                        >
+                                            <Star className="w-5 h-5 md:w-6 md:h-6 mr-3 group-hover:rotate-12 transition-transform relative z-10" />
+                                        </motion.div>
+                                        <span className="relative z-10">{t('cta.button')}</span>
+                                        <motion.div
+                                            className="ml-3 relative z-10"
+                                            animate={{ x: [0, 5, 0] }}
+                                            transition={{ repeat: Infinity, duration: 2.5 }}
+                                        >
+                                            <ArrowRight className="w-5 h-5 md:w-6 md:h-6 group-hover:translate-x-1 transition-transform" />
+                                        </motion.div>
+                                    </Link>
+                                </motion.div>
                             </motion.div>
-                        </div>
+                        </motion.div>
                     </div>
                 </main>
 
-                <footer className="bg-white dark:bg-gray-900 border-t border-gray-100 dark:border-gray-800">
-                    <div className="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
-                        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-                            <div className="col-span-1 md:col-span-2">
-                                <div className="flex items-center space-x-2 mb-4">
-                                    <Sparkles className="w-6 h-6 text-amber-500 dark:text-amber-400" />
-                                    <span className="font-bold text-xl bg-gradient-to-r from-amber-500 to-purple-500 text-transparent bg-clip-text">
+                {/* Footer avec animations progressives */}
+                <footer className="bg-gradient-to-br from-white to-gray-50 dark:from-gray-900 dark:to-gray-800 border-t border-gray-100 dark:border-gray-700">
+                    <div className="max-w-7xl mx-auto py-12 md:py-16 px-4 sm:px-6 lg:px-8">
+                        <motion.div
+                            className="grid grid-cols-1 md:grid-cols-4 gap-8 md:gap-12"
+                            initial={{ opacity: 0, y: 30 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            viewport={{ once: true, margin: "-50px" }}
+                            transition={{ duration: 0.6 }}
+                        >
+                            {/* Logo et description avec animation */}
+                            <motion.div
+                                className="col-span-1 md:col-span-2"
+                                initial={{ opacity: 0, x: -30 }}
+                                whileInView={{ opacity: 1, x: 0 }}
+                                viewport={{ once: true }}
+                                transition={{ delay: 0.2, duration: 0.6 }}
+                            >
+                                <motion.div
+                                    className="flex items-center space-x-3 mb-6"
+                                    whileHover={{ scale: 1.05 }}
+                                    transition={{ type: "spring", stiffness: 400 }}
+                                >
+                                    <motion.div
+                                        className="p-2 rounded-xl bg-gradient-to-r from-amber-500 to-purple-500 shadow-lg"
+                                        whileHover={{
+                                            rotate: [0, -10, 10, 0],
+                                            scale: 1.1
+                                        }}
+                                        transition={{ duration: 0.5 }}
+                                    >
+                                        <motion.div
+                                            animate={{
+                                                rotate: [0, 360],
+                                            }}
+                                            transition={{
+                                                duration: 10,
+                                                repeat: Infinity,
+                                                ease: "linear"
+                                            }}
+                                        >
+                                            <Sparkles className="w-6 h-6 md:w-7 md:h-7 text-white" />
+                                        </motion.div>
+                                    </motion.div>
+                                    <span className="font-bold text-xl md:text-2xl bg-gradient-to-r from-amber-500 via-purple-500 to-amber-500 text-transparent bg-clip-text">
                                         {t('brand')}
                                     </span>
-                                </div>
-                                <div className="flex space-x-4">
-                                    <a
+                                </motion.div>
+                                <motion.p
+                                    className="text-gray-600 dark:text-gray-300 mb-6 leading-relaxed max-w-md"
+                                    initial={{ opacity: 0 }}
+                                    whileInView={{ opacity: 1 }}
+                                    viewport={{ once: true }}
+                                    transition={{ delay: 0.4 }}
+                                >
+                                    {t('hero.description')}
+                                </motion.p>
+                                <motion.div
+                                    className="flex space-x-4"
+                                    initial={{ opacity: 0, y: 20 }}
+                                    whileInView={{ opacity: 1, y: 0 }}
+                                    viewport={{ once: true }}
+                                    transition={{ delay: 0.6 }}
+                                >
+                                    <motion.a
                                         href="mailto:guidy.makeitreall@gmail.com"
-                                        className="text-gray-400 hover:text-amber-500 dark:text-gray-500 dark:hover:text-amber-400"
+                                        className="p-3 rounded-xl bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:bg-amber-100 dark:hover:bg-amber-900/20 hover:text-amber-600 dark:hover:text-amber-400 transition-all"
+                                        whileHover={{
+                                            scale: 1.15,
+                                            rotate: 5,
+                                            y: -2
+                                        }}
+                                        whileTap={{ scale: 0.95 }}
+                                        initial={{ scale: 0 }}
+                                        whileInView={{ scale: 1 }}
+                                        viewport={{ once: true }}
+                                        transition={{ delay: 0.7, type: "spring" }}
                                     >
-                                        <Mail className="h-6 w-6" />
-                                    </a>
-                                    <a
+                                        <Mail className="h-5 w-5 md:h-6 md:w-6" />
+                                    </motion.a>
+                                    <motion.a
                                         href="https://wa.me/237693427913"
-                                        className="text-gray-400 hover:text-amber-500 dark:text-gray-500 dark:hover:text-amber-400"
+                                        className="p-3 rounded-xl bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:bg-green-100 dark:hover:bg-green-900/20 hover:text-green-600 dark:hover:text-green-400 transition-all"
+                                        whileHover={{
+                                            scale: 1.15,
+                                            rotate: -5,
+                                            y: -2
+                                        }}
+                                        whileTap={{ scale: 0.95 }}
+                                        initial={{ scale: 0 }}
+                                        whileInView={{ scale: 1 }}
+                                        viewport={{ once: true }}
+                                        transition={{ delay: 0.8, type: "spring" }}
                                     >
-                                        <MessageSquare className="h-6 w-6" />
-                                    </a>
-                                </div>
-                            </div>
+                                        <MessageSquare className="h-5 w-5 md:h-6 md:w-6" />
+                                    </motion.a>
+                                </motion.div>
+                            </motion.div>
 
-                            <div>
-                                <h3 className="text-sm font-semibold text-gray-600 dark:text-gray-300">{t('footer.services.title')}</h3>
-                                <ul className="mt-4 space-y-2">
-                                    <li>
-                                        <Link href="#" className="text-gray-500 hover:text-amber-600 dark:text-gray-400 dark:hover:text-amber-400">
-                                            {t('footer.services.resume')}
-                                        </Link>
-                                    </li>
-                                    <li>
-                                        <Link href="#" className="text-gray-500 hover:text-amber-600 dark:text-gray-400 dark:hover:text-amber-400">
-                                            {t('footer.services.advisor')}
-                                        </Link>
-                                    </li>
-                                    <li>
-                                        <Link href="#" className="text-gray-500 hover:text-amber-600 dark:text-gray-400 dark:hover:text-amber-400">
-                                            {t('footer.services.interview')}
-                                        </Link>
-                                    </li>
+                            {/* Services avec animation décalée */}
+                            <motion.div
+                                initial={{ opacity: 0, y: 30 }}
+                                whileInView={{ opacity: 1, y: 0 }}
+                                viewport={{ once: true }}
+                                transition={{ delay: 0.3, duration: 0.6 }}
+                            >
+                                <motion.h3
+                                    className="text-sm md:text-base font-bold text-gray-800 dark:text-gray-200 mb-4 md:mb-6"
+                                    initial={{ opacity: 0, x: -10 }}
+                                    whileInView={{ opacity: 1, x: 0 }}
+                                    viewport={{ once: true }}
+                                    transition={{ delay: 0.4 }}
+                                >
+                                    {t('footer.services.title')}
+                                </motion.h3>
+                                <ul className="space-y-3">
+                                    {[
+                                        t('footer.services.resume'),
+                                        t('footer.services.advisor'),
+                                        t('footer.services.interview')
+                                    ].map((service, index) => (
+                                        <motion.li
+                                            key={index}
+                                            initial={{ opacity: 0, x: -20 }}
+                                            whileInView={{ opacity: 1, x: 0 }}
+                                            viewport={{ once: true }}
+                                            transition={{ delay: 0.5 + index * 0.1 }}
+                                        >
+                                            <motion.div
+                                                whileHover={{ x: 5 }}
+                                                transition={{ type: "spring", stiffness: 300 }}
+                                            >
+                                                <Link href="#" className="text-gray-600 dark:text-gray-400 hover:text-amber-600 dark:hover:text-amber-400 transition-colors font-medium">
+                                                    {service}
+                                                </Link>
+                                            </motion.div>
+                                        </motion.li>
+                                    ))}
                                 </ul>
-                            </div>
+                            </motion.div>
 
-                            <div>
-                                <h3 className="text-sm font-semibold text-gray-600 dark:text-gray-300">{t('footer.legal.title')}</h3>
-                                <ul className="mt-4 space-y-2">
-                                    <li>
-                                        <Link href="/privacy" className="text-gray-500 hover:text-amber-600 dark:text-gray-400 dark:hover:text-amber-400">
-                                            {t('footer.legal.privacy')}
-                                        </Link>
-                                    </li>
-                                    <li>
-                                        <Link href="/terms" className="text-gray-500 hover:text-amber-600 dark:text-gray-400 dark:hover:text-amber-400">
-                                            {t('footer.legal.terms')}
-                                        </Link>
-                                    </li>
-                                    <li>
-                                        <Link href="/cookies" className="text-gray-500 hover:text-amber-600 dark:text-gray-400 dark:hover:text-amber-400">
-                                            {t('footer.legal.cookies')}
-                                        </Link>
-                                    </li>
-                                    <li>
-                                        <Link href="/mentions-legales" className="text-gray-500 hover:text-amber-600 dark:text-gray-400 dark:hover:text-amber-400">
-                                            {t('footer.legal.mentions')}
-                                        </Link>
-                                    </li>
+                            {/* Légal avec animation décalée */}
+                            <motion.div
+                                initial={{ opacity: 0, y: 30 }}
+                                whileInView={{ opacity: 1, y: 0 }}
+                                viewport={{ once: true }}
+                                transition={{ delay: 0.4, duration: 0.6 }}
+                            >
+                                <motion.h3
+                                    className="text-sm md:text-base font-bold text-gray-800 dark:text-gray-200 mb-4 md:mb-6"
+                                    initial={{ opacity: 0, x: -10 }}
+                                    whileInView={{ opacity: 1, x: 0 }}
+                                    viewport={{ once: true }}
+                                    transition={{ delay: 0.5 }}
+                                >
+                                    {t('footer.legal.title')}
+                                </motion.h3>
+                                <ul className="space-y-3">
+                                    {[
+                                        { text: t('footer.legal.privacy'), href: '/privacy' },
+                                        { text: t('footer.legal.terms'), href: '/terms' },
+                                        { text: t('footer.legal.cookies'), href: '/cookies' },
+                                        { text: t('footer.legal.mentions'), href: '/mentions-legales' }
+                                    ].map((item, index) => (
+                                        <motion.li
+                                            key={index}
+                                            initial={{ opacity: 0, x: -20 }}
+                                            whileInView={{ opacity: 1, x: 0 }}
+                                            viewport={{ once: true }}
+                                            transition={{ delay: 0.6 + index * 0.1 }}
+                                        >
+                                            <motion.div
+                                                whileHover={{ x: 5 }}
+                                                transition={{ type: "spring", stiffness: 300 }}
+                                            >
+                                                <Link href={item.href} className="text-gray-600 dark:text-gray-400 hover:text-amber-600 dark:hover:text-amber-400 transition-colors font-medium">
+                                                    {item.text}
+                                                </Link>
+                                            </motion.div>
+                                        </motion.li>
+                                    ))}
                                 </ul>
-                            </div>
-                        </div>
+                            </motion.div>
+                        </motion.div>
 
-                        <div className="mt-8 pt-8 border-t border-gray-200 dark:border-gray-700">
-                            <p className="text-center text-gray-400 dark:text-gray-500">
-                                © {new Date().getFullYear()} {t('brand')}. {t('footer.copyright')}
-                            </p>
-                        </div>
+                        {/* Copyright avec séparateur amélioré et animations */}
+                        <motion.div
+                            className="mt-12 pt-8 border-t border-gray-200 dark:border-gray-700"
+                            initial={{ opacity: 0, y: 20 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            viewport={{ once: true }}
+                            transition={{ delay: 0.8, duration: 0.6 }}
+                        >
+                            <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
+                                <motion.p
+                                    className="text-center md:text-left text-gray-500 dark:text-gray-400 font-medium"
+                                    initial={{ opacity: 0, x: -20 }}
+                                    whileInView={{ opacity: 1, x: 0 }}
+                                    viewport={{ once: true }}
+                                    transition={{ delay: 0.9 }}
+                                >
+                                    © {new Date().getFullYear()} {t('brand')}. {t('footer.copyright')}
+                                </motion.p>
+                                <motion.div
+                                    className="flex items-center space-x-2 text-gray-400 dark:text-gray-500"
+                                    initial={{ opacity: 0, x: 20 }}
+                                    whileInView={{ opacity: 1, x: 0 }}
+                                    viewport={{ once: true }}
+                                    transition={{ delay: 1 }}
+                                >
+                                    <span className="text-xs md:text-sm">Made with</span>
+                                    <motion.div
+                                        animate={{
+                                            scale: [1, 1.3, 1],
+                                            rotate: [0, 10, -10, 0]
+                                        }}
+                                        transition={{
+                                            repeat: Infinity,
+                                            duration: 3,
+                                            ease: "easeInOut"
+                                        }}
+                                    >
+                                        <Star className="w-4 h-4 text-amber-500" />
+                                    </motion.div>
+                                    <span className="text-xs md:text-sm">by Guidy Team</span>
+                                </motion.div>
+                            </div>
+                        </motion.div>
                     </div>
                 </footer>
             </div>

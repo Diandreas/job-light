@@ -14,7 +14,7 @@ export default function Login({ status, canResetPassword }: { status?: string, c
     const { data, setData, post, processing, errors, reset } = useForm({
         email: '',
         password: '',
-        remember: false,
+        remember: true, // Toujours true
     });
 
     useEffect(() => {
@@ -168,24 +168,7 @@ export default function Login({ status, canResetPassword }: { status?: string, c
                     </motion.div>
 
                     {/* Remember Me */}
-                    <motion.div
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        transition={{ delay: 0.6 }}
-                        className="flex items-center space-x-2"
-                    >
-                        <Checkbox
-                            id="remember"
-                            checked={data.remember}
-                            onCheckedChange={(checked) => setData('remember', checked as boolean)}
-                        />
-                        <label
-                            htmlFor="remember"
-                            className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                        >
-                            {t('auth.login.remember')}
-                        </label>
-                    </motion.div>
+                    {/* SUPPRIMÉ: case à cocher "Se souvenir de moi" */}
 
                     {/* Actions */}
                     <motion.div

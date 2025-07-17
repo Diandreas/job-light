@@ -26,7 +26,7 @@ export const useMedian = () => {
             // Import dynamique du package NPM
             import('median-js-bridge').then((MedianModule) => {
                 const MedianInstance = MedianModule.default;
-                setMedian(MedianInstance);
+                setMedian(MedianInstance as MedianAPI);
 
                 MedianInstance.onReady(() => {
                     console.log('✅ Median JavaScript Bridge est prêt');

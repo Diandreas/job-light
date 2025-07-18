@@ -875,7 +875,7 @@ export default function Authenticated({ user, header, children, hideHeaderOnMobi
                                         className="flex items-center gap-1 text-gray-500 hover:text-amber-500 transition-colors"
                                     >
                                         <RefreshCw className="h-3 w-3 sm:h-4 sm:w-4" />
-                                        <span>{t('sponsorship.code.renewal.renewCode')}</span>
+                                        <span>{t('sponsorship.code.renewal.sponsorCode')}</span>
                                     </button>
 
                                     <a

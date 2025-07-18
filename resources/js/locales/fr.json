@@ -1,9 +1,16 @@
 {
-
     "tutorial": {
         "welcome": {
             "title": "Bienvenue dans votre espace CV !",
             "description": "Nous allons vous guider à travers les différentes sections pour créer un CV professionnel. Vous pouvez passer ce tutoriel à tout moment ou le relancer depuis le bouton d'aide."
+        },
+        "navbar": {
+            "title": "Navigation principale",
+            "description": "Utilisez cette barre de navigation pour accéder aux différentes fonctionnalités de l'application."
+        },
+        "cvNavigation": {
+            "title": "Navigation du CV",
+            "description": "Naviguez entre les différentes sections de votre CV pour organiser vos informations."
         },
         "progress": {
             "title": "Suivez votre progression",
@@ -15,7 +22,7 @@
         },
         "sidebar": {
             "title": "Navigation par sections",
-            "description": "Naviguez entre les différentes sections de votre CV. Les points verts indiquent les sections complétées. Sur mobile, seules les icônes sont visibles."
+            "description": "Naviguez entre les différentes sections de votre CV. Les points verts indiquent les sections complétées. Cliquez sur une section pour y accéder directement."
         },
         "personalInfo": {
             "title": "Commencez par vos informations",
@@ -25,16 +32,20 @@
             "title": "Naviguez entre les sections",
             "description": "Utilisez ces boutons pour passer d'une section à l'autre. Le bouton 'Suivant' n'est activé que quand la section actuelle est complétée. À la fin, vous pourrez choisir un design !"
         },
+        "tabbar": {
+            "title": "Navigation mobile",
+            "description": "Sur mobile, utilisez cette barre pour naviguer rapidement entre les sections."
+        },
         "step": "Étape",
         "of": "sur",
         "previous": "Précédent",
         "next": "Suivant",
         "skip": "Passer",
         "finish": "Terminer",
-        "restart": "Revoir le tutoriel",
+        "close": "Fermer",
+        "restart": "Relancer le tutoriel",
         "help": "Aide"
     },
-
     "brand": "Guidy",
     "nav": {
         "login": "Connexion",

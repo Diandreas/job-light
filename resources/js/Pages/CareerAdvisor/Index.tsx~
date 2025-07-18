@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useForm } from '@inertiajs/react';
 import { useTranslation } from 'react-i18next';
 import { Button } from "@/Components/ui/button";
@@ -52,7 +52,7 @@ import axios from 'axios';
 
 const TOKEN_LIMIT = 2000;
 
-// Ajout du nouveau service "Rapport de stage"
+// Service "Rapport de stage" coming soon
 const REPORT_SERVICE = {
     id: 'internship-report',
     icon: FileSpreadsheet,
@@ -65,7 +65,228 @@ const REPORT_SERVICE = {
     releaseDate: '20 juin 2025'
 };
 
-// Modification des composants ServiceCard pour gérer les services "Coming Soon"
+// Hook personnalisé pour gérer le comportement de l'input
+const useInputBehavior = () => {
+    const [inputHeight, setInputHeight] = useState(40);
+    const inputRef = useRef(null);
+
+    const adjustHeight = useCallback((element) => {
+        if (!element) return;
+
+        element.style.height = 'auto';
+        const newHeight = Math.min(Math.max(element.scrollHeight, 40), 60); // Réduit de 80 à 60
+        element.style.height = `${newHeight}px`;
+        setInputHeight(newHeight);
+    }, []);
+
+    const handleInputChange = useCallback((event, setData) => {
+        const textarea = event.target;
+        const newValue = textarea.value;
+        setData('question', newValue);
+        adjustHeight(textarea);
+    }, [adjustHeight]);
+
+    const focusInput = useCallback(() => {
+        if (inputRef.current) {
+            inputRef.current.focus();
+        }
+    }, []);
+
+    return {
+        inputRef,
+        inputHeight,
+        handleInputChange,
+        focusInput,
+        adjustHeight
+    };
+};
+
+// Composant d'input amélioré réutilisable
+const ChatInput = ({
+                       value,
+                       onChange,
+                       onSubmit,
+                       placeholder,
+                       disabled,
+                       isLoading,
+                       cost,
+                       service,
+                       showSuggestions = false,
+                       suggestions = [],
+                       variant = "default", // "default" | "minimal" | "floating"
+                       onKeyDown
+                   }) => {
+    const { inputRef, handleInputChange } = useInputBehavior();
+    const [isFocused, setIsFocused] = useState(false);
+    const { t } = useTranslation();
+
+    const inputVariants = {
+        default: "min-h-[40px] max-h-[60px] border-2 border-gray-200 dark:border-gray-700 focus:border-amber-500 dark:focus:border-amber-400 rounded-xl shadow-sm focus:shadow-md focus:ring-4 focus:ring-amber-500/10",
+        minimal: "min-h-[36px] max-h-[60px] border border-gray-200 dark:border-gray-700 focus:border-amber-500 dark:focus:border-amber-400 rounded-lg focus:ring-2 focus:ring-amber-500/20",
+        floating: "min-h-[44px] max-h-[60px] border-2 border-gray-300 dark:border-gray-600 focus:border-amber-500 dark:focus:border-amber-400 rounded-2xl shadow-lg focus:shadow-xl backdrop-blur-sm bg-white/90 dark:bg-gray-800/90"
+    };
+
+    return (
+        <div className="space-y-3">
+            <form onSubmit={onSubmit}>
+                <div className="relative group">
+                    <Textarea
+                        ref={inputRef}
+                        value={value}
+                        onChange={(e) => handleInputChange(e, onChange)}
+                        onKeyDown={onKeyDown || ((e) => {
+                            if (e.key === 'Enter' && !e.shiftKey) {
+                                e.preventDefault();
+                                if (value.trim() && !disabled) {
+                                    onSubmit(e);
+                                }
+                            }
+                        })}
+                        onFocus={() => setIsFocused(true)}
+                        onBlur={() => setIsFocused(false)}
+                        placeholder={placeholder}
+                        className={`w-full pr-20 pl-4 py-3 resize-none text-sm bg-white dark:bg-gray-800 transition-all ${inputVariants[variant]} hide-scrollbar`}
+                        disabled={disabled}
+                        maxLength={2000}
+                        style={{
+                            scrollbarWidth: 'none',
+                            msOverflowStyle: 'none'
+                        }}
+                    />
+
+                    {/* Focus indicator */}
+                    <div className={`absolute inset-0 rounded-xl pointer-events-none transition-opacity duration-200 ${
+                        isFocused ? 'opacity-100' : 'opacity-0'
+                    } bg-gradient-to-r from-amber-500/5 to-purple-500/5`} />
+
+                    {/* Boutons d'action */}
+                    <div className="absolute right-3 bottom-3 flex gap-2">
+                        {/* Indicateur de coût avec animation */}
+                        <motion.div
+                            initial={{ scale: 0.9, opacity: 0 }}
+                            animate={{ scale: 1, opacity: 1 }}
+                            className="flex items-center gap-1 px-2 py-1 bg-gradient-to-r from-amber-50 to-amber-100 dark:from-amber-900/20 dark:to-amber-800/20 border border-amber-200 dark:border-amber-700 rounded-lg shadow-sm"
+                        >
+                            <Coins className="h-3 w-3 text-amber-600 dark:text-amber-400" />
+                            <span className="text-xs font-medium text-amber-700 dark:text-amber-300">
+                                -{cost}
+                            </span>
+                        </motion.div>
+
+                        {/* Bouton d'envoi avec états visuels */}
+                        <Button
+                            type="submit"
+                            size="sm"
+                            disabled={disabled || !value.trim()}
+                            className={`h-8 w-8 p-0 rounded-lg shadow-md transition-all transform ${
+                                disabled || !value.trim()
+                                    ? 'opacity-50 cursor-not-allowed'
+                                    : 'bg-gradient-to-r from-amber-500 to-purple-500 hover:from-amber-600 hover:to-purple-600 hover:shadow-lg hover:scale-105 active:scale-95'
+                            }`}
+                        >
+                            {isLoading ? (
+                                <motion.div
+                                    animate={{ rotate: 360 }}
+                                    transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                                >
+                                    <Loader className="h-4 w-4 text-white" />
+                                </motion.div>
+                            ) : (
+                                <Send className="h-4 w-4 text-white" />
+                            )}
+                        </Button>
+                    </div>
+
+                    {/* Indicateur de progression de frappe */}
+                    {value.length > 0 && (
+                        <div className="absolute bottom-1 left-3 right-20">
+                            <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-0.5">
+                                <motion.div
+                                    initial={{ width: 0 }}
+                                    animate={{ width: `${(value.length / 2000) * 100}%` }}
+                                    className={`h-0.5 rounded-full transition-colors ${
+                                        value.length > 1800
+                                            ? 'bg-red-500'
+                                            : value.length > 1500
+                                                ? 'bg-yellow-500'
+                                                : 'bg-amber-500'
+                                    }`}
+                                />
+                            </div>
+                        </div>
+                    )}
+                </div>
+
+                {/* Informations et suggestions */}
+                <AnimatePresence>
+                    {(value.length > 0 || showSuggestions) && (
+                        <motion.div
+                            initial={{ opacity: 0, height: 0 }}
+                            animate={{ opacity: 1, height: 'auto' }}
+                            exit={{ opacity: 0, height: 0 }}
+                            className="space-y-2"
+                        >
+                            {/* Barre d'informations */}
+                            {value.length > 0 && (
+                                <div className="flex justify-between items-center text-xs px-1">
+                                    <div className="flex items-center gap-3">
+                                        <span className="text-gray-500 dark:text-gray-400">
+                                            {value.length}/2000
+                                        </span>
+                                        {value.length > 1500 && (
+                                            <motion.span
+                                                initial={{ opacity: 0, x: -10 }}
+                                                animate={{ opacity: 1, x: 0 }}
+                                                className={`flex items-center gap-1 ${
+                                                    value.length > 1800 ? 'text-red-500' : 'text-yellow-500'
+                                                }`}
+                                            >
+                                                <Clock className="h-3 w-3" />
+                                                {value.length > 1800 ? 'Limite atteinte' : 'Proche de la limite'}
+                                            </motion.span>
+                                        )}
+                                    </div>
+                                    <div className="flex items-center gap-2 text-gray-500 dark:text-gray-400">
+                                        <kbd className="px-1.5 py-0.5 text-[10px] font-mono bg-gray-100 dark:bg-gray-700 rounded border">
+                                            ⏎
+                                        </kbd>
+                                        <span>Envoyer</span>
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* Suggestions */}
+                            {showSuggestions && suggestions.length > 0 && value.length === 0 && (
+                                <div className="space-y-2">
+                                    <p className="text-xs text-gray-500 dark:text-gray-400 text-center">
+                                        Suggestions pour {service} :
+                                    </p>
+                                    <div className="flex flex-wrap gap-2 justify-center">
+                                        {suggestions.slice(0, 3).map((suggestion, index) => (
+                                            <motion.button
+                                                key={index}
+                                                initial={{ opacity: 0, y: 10 }}
+                                                animate={{ opacity: 1, y: 0 }}
+                                                transition={{ delay: index * 0.1 }}
+                                                onClick={() => onChange('question', suggestion)}
+                                                className="px-3 py-1.5 text-xs bg-gray-100 dark:bg-gray-800 hover:bg-amber-50 dark:hover:bg-amber-900/20 border border-gray-200 dark:border-gray-700 hover:border-amber-300 dark:hover:border-amber-600 rounded-lg transition-all text-gray-700 dark:text-gray-300 hover:text-amber-700 dark:hover:text-amber-300 hover:shadow-sm"
+                                            >
+                                                {suggestion.substring(0, 40)}
+                                                {suggestion.length > 40 ? '...' : ''}
+                                            </motion.button>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
+                        </motion.div>
+                    )}
+                </AnimatePresence>
+            </form>
+        </div>
+    );
+};
+
+// Services cards améliorés
 const EnhancedServiceCard = ({ service, isSelected, onClick }) => {
     const { t } = useTranslation();
     const isComingSoon = service.comingSoon === true;
@@ -113,7 +334,6 @@ const EnhancedServiceCard = ({ service, isSelected, onClick }) => {
 
             {isComingSoon && (
                 <div className="absolute inset-0 bg-gradient-to-b from-transparent via-white/90 to-white/95 dark:via-gray-900/90 dark:to-gray-900/95 flex flex-col items-center justify-end py-3">
-                    <div className="absolute top-0 left-0 right-0 bg-gradient-to-b from-transparent to-transparent h-14"></div>
                     <div className="text-center max-w-[85%] z-10">
                         <h3 className="font-medium text-sm mb-1 text-gray-900 dark:text-gray-100">
                             {t(`${service.title}`)}
@@ -131,7 +351,6 @@ const EnhancedServiceCard = ({ service, isSelected, onClick }) => {
     );
 };
 
-// Modification pour la version mobile
 const EnhancedMobileServiceCard = ({ service, isSelected, onClick }) => {
     const { t } = useTranslation();
     const isComingSoon = service.comingSoon === true;
@@ -161,17 +380,13 @@ const EnhancedMobileServiceCard = ({ service, isSelected, onClick }) => {
             </div>
 
             {isComingSoon && (
-                <div className="absolute inset-0 bg-gradient-to-b from-transparent via-white/90 to-white/95 dark:via-gray-900/90 dark:to-gray-900/95 flex flex-col items-center justify-end py-3">
-                    <div className="absolute top-0 left-0 right-0 bg-gradient-to-b from-transparent to-transparent h-14"></div>
+                <div className="absolute inset-0 bg-gradient-to-b from-transparent via-white/90 to-white/95 dark:via-gray-900/90 dark:to-gray-900/95 flex flex-col items-center justify-end py-2">
                     <div className="text-center max-w-[85%] z-10">
-                        <h3 className="font-medium text-sm mb-1 text-gray-900 dark:text-gray-100">
-                            {t(`${service.title}`)}
-                        </h3>
-                        <Badge className="bg-amber-500 text-white dark:bg-amber-600 dark:text-white mb-1 px-2 py-1 text-xs">
+                        <Badge className="bg-amber-500 text-white dark:bg-amber-600 dark:text-white mb-1 px-1.5 py-0.5 text-[10px]">
                             {t('career_advisor.coming_soon.badge')}
                         </Badge>
-                        <p className="text-xs text-gray-600 dark:text-gray-400">
-                            {t('career_advisor.coming_soon.available_from', { date: service.releaseDate })}
+                        <p className="text-[10px] text-gray-600 dark:text-gray-400">
+                            {service.releaseDate}
                         </p>
                     </div>
                 </div>
@@ -188,7 +403,6 @@ const countUserQuestions = (messages) => {
     return messages?.filter(msg => msg.role === 'user').length || 0;
 };
 
-// Fonction pour extraire un JSON valide de présentation du contenu
 const extractValidJsonFromMessage = (content) => {
     try {
         const jsonMatch = content.match(/\{[\s\S]*\}/);
@@ -262,7 +476,6 @@ const ChatHistoryCard = ({ chat, isActive, onSelect, onDelete }) => {
                 </div>
             </div>
 
-            {/* Tooltip-triggered "Delete" button */}
             <TooltipProvider>
                 <Tooltip>
                     <TooltipTrigger asChild>
@@ -341,12 +554,19 @@ export default function Index({ auth, userInfo, chatHistories }) {
         };
     }, []);
 
+    // Scroll amélioré avec gestion de l'input
     useEffect(() => {
         if (scrollRef.current) {
             const scrollElement = scrollRef.current;
-            scrollElement.scrollTop = scrollElement.scrollHeight;
+            const scrollToBottom = () => {
+                scrollElement.scrollTo({
+                    top: scrollElement.scrollHeight,
+                    behavior: 'smooth'
+                });
+            };
+            setTimeout(scrollToBottom, 100);
         }
-    }, [activeChat?.messages, tempMessage]);
+    }, [activeChat?.messages, tempMessage, data.question]);
 
     useEffect(() => {
         setLanguage(i18n.language);
@@ -379,7 +599,6 @@ export default function Index({ auth, userInfo, chatHistories }) {
     };
 
     const handleServiceSelection = (service) => {
-        // Ne pas permettre la sélection des services marqués comme "coming soon"
         if (service.comingSoon) {
             toast({
                 title: t('career_advisor.coming_soon.badge'),
@@ -395,7 +614,6 @@ export default function Index({ auth, userInfo, chatHistories }) {
             setData('question', '');
             setData('contextId', crypto.randomUUID());
         }
-        // Fermer le sidebar mobile après sélection
         setIsMobileSidebarOpen(false);
     };
 
@@ -415,7 +633,6 @@ export default function Index({ auth, userInfo, chatHistories }) {
                 messages: chatData.messages || []
             });
             setData('contextId', chatData.context_id);
-            // Fermer le sidebar mobile après sélection
             setIsMobileSidebarOpen(false);
         } catch (error) {
             console.error('Error loading chat:', error);
@@ -484,7 +701,6 @@ export default function Index({ auth, userInfo, chatHistories }) {
 
         setIsLoading(true);
 
-        // Ajouter le message utilisateur immédiatement
         const userMessage = {
             role: 'user',
             content: data.question,
@@ -497,7 +713,6 @@ export default function Index({ auth, userInfo, chatHistories }) {
             messages: updatedMessages
         }));
 
-        // Vider le champ immédiatement pour une meilleure UX
         setData('question', '');
 
         // Messages temporaires de réflexion
@@ -509,7 +724,6 @@ export default function Index({ auth, userInfo, chatHistories }) {
             isThinking: true
         });
 
-        // Nettoyer l'ancien interval s'il existe
         if (thinkingIntervalRef.current) {
             clearInterval(thinkingIntervalRef.current);
         }
@@ -603,7 +817,6 @@ export default function Index({ auth, userInfo, chatHistories }) {
         setIsExporting(true);
 
         try {
-            // Cas spécial PowerPoint : toujours généré côté client
             if (format === 'pptx') {
                 console.log('🎨 Génération PowerPoint côté client');
 
@@ -617,7 +830,6 @@ export default function Index({ auth, userInfo, chatHistories }) {
                         try {
                             const pptxBlob = await PowerPointService.generateFromJSON(jsonData);
 
-                            // Téléchargement direct sans passer par Median
                             const url = window.URL.createObjectURL(pptxBlob);
                             const link = document.createElement('a');
                             link.href = url;
@@ -653,11 +865,9 @@ export default function Index({ auth, userInfo, chatHistories }) {
                 return;
             }
 
-            // Pour PDF et DOCX : utiliser Median si disponible
             if (isAndroidApp && isReady) {
                 console.log('🚀 Utilisation du téléchargement natif Android pour', format);
 
-                // Créer URL directe compatible avec Median
                 const downloadUrl = createDirectDownloadUrl('/career-advisor/export-direct', {
                     contextId: activeChat.context_id,
                     format: format,
@@ -684,14 +894,12 @@ export default function Index({ auth, userInfo, chatHistories }) {
                     throw new Error('Échec du téléchargement natif');
                 }
             } else {
-                // Fallback vers le téléchargement web classique
                 console.log('🌐 Utilisation du téléchargement web pour', format);
                 await handleExportWeb(format);
             }
         } catch (error) {
             console.error('❌ Erreur lors de l\'export:', error);
 
-            // En cas d'erreur avec Median, essayer le fallback web (sauf pour PowerPoint)
             if (isAndroidApp && format !== 'pptx') {
                 console.log('🔄 Tentative de fallback vers téléchargement web');
                 try {
@@ -716,77 +924,10 @@ export default function Index({ auth, userInfo, chatHistories }) {
         }
     };
 
-    const handlePrint = async () => {
-        if (!activeChat) return;
-
-        setIsPrinting(true);
-
-        try {
-            // Si on est dans l'app Android native avec Median
-            if (isAndroidApp && isReady) {
-                console.log('🖨️ Utilisation de l\'impression native Android');
-
-                // Créer une URL d'impression optimisée pour mobile
-                const printUrl = createDirectDownloadUrl('/career-advisor/print-direct', {
-                    contextId: activeChat.context_id,
-                    print_mode: 'mobile',
-                    show_save_button: true,
-                    auto_print: false
-                });
-
-                const result = await printDocument(printUrl, {
-                    useShare: true, // Utiliser le partage natif
-                    openInBrowser: false
-                });
-
-                if (result.success) {
-                    toast({
-                        title: '📱 Impression native initiée',
-                        description: 'Options de partage/impression Android ouvertes',
-                        variant: 'default'
-                    });
-                } else {
-                    throw new Error('Échec de l\'impression native');
-                }
-            } else {
-                // Fallback vers l'impression web classique
-                console.log('🌐 Utilisation de l\'impression web');
-                await handlePrintWeb();
-            }
-        } catch (error) {
-            console.error('❌ Erreur lors de l\'impression:', error);
-
-            // En cas d'erreur avec Median, essayer le fallback web
-            if (isAndroidApp) {
-                console.log('🔄 Tentative de fallback vers impression web');
-                try {
-                    await handlePrintWeb();
-                } catch (fallbackError) {
-                    console.error('❌ Erreur fallback impression:', fallbackError);
-                    toast({
-                        title: t('career_advisor.messages.error'),
-                        description: t('career_advisor.messages.print_error'),
-                        variant: "destructive",
-                    });
-                }
-            } else {
-                toast({
-                    title: t('career_advisor.messages.error'),
-                    description: t('career_advisor.messages.print_error'),
-                    variant: "destructive",
-                });
-            }
-        } finally {
-            setIsPrinting(false);
-        }
-    };
-
-    // Méthodes fallback web classiques
     const handleExportWeb = async (format) => {
         console.log('📄 Export web classique:', format);
 
         if (format === 'pptx') {
-            // PowerPoint : toujours généré côté client
             const lastAiMessage = activeChat.messages
                 .filter(msg => msg.role === 'assistant')
                 .pop();
@@ -822,7 +963,6 @@ export default function Index({ auth, userInfo, chatHistories }) {
             throw new Error('Aucun contenu de présentation valide trouvé');
         }
 
-        // Pour PDF et DOCX : requête POST classique
         const response = await axios.post('/career-advisor/export', {
             contextId: activeChat.context_id,
             format
@@ -843,26 +983,6 @@ export default function Index({ auth, userInfo, chatHistories }) {
         });
     };
 
-    const handlePrintWeb = async () => {
-        console.log('🖨️ Impression web classique');
-
-        const printUrl = `/career-advisor/print?contextId=${activeChat.context_id}&print_mode=pdf&show_save_button=true&auto_print=false`;
-        const printWindow = window.open(printUrl, '_blank');
-
-        if (printWindow) {
-            printWindow.onload = () => {
-                setTimeout(() => {
-                    printWindow.print();
-                }, 500);
-            };
-
-            toast({
-                title: '🌐 Impression web initiée',
-                description: 'Une nouvelle fenêtre va s\'ouvrir pour l\'impression avec option de sauvegarde PDF'
-            });
-        }
-    };
-
     const createNewChat = () => {
         setActiveChat(null);
         setData('contextId', crypto.randomUUID());
@@ -870,15 +990,6 @@ export default function Index({ auth, userInfo, chatHistories }) {
         setIsMobileSidebarOpen(false);
     };
 
-    // Auto-resize textarea compact
-    const handleInputChange = (event) => {
-        const textarea = event.target;
-        setData('question', textarea.value);
-        textarea.style.height = 'auto';
-        textarea.style.height = `${Math.min(textarea.scrollHeight, 80)}px`; // Limit to 80px height
-    };
-
-    // Handle keyboard shortcuts
     const handleKeyDown = (e) => {
         if (e.key === 'Enter' && !e.shiftKey) {
             e.preventDefault();
@@ -889,7 +1000,7 @@ export default function Index({ auth, userInfo, chatHistories }) {
     };
 
     return (
-        <AuthenticatedLayout user={auth.user}>
+        <AuthenticatedLayout user={auth.user} hideHeaderOnMobile={true}>
             {/* Rendre l'effet de curseur plus subtil */}
             <div className="opacity-20"><FluidCursorEffect zIndex={100} /></div>
 
@@ -916,9 +1027,9 @@ export default function Index({ auth, userInfo, chatHistories }) {
                 </div>
             </div>
 
-            <div className="h-[calc(100vh-4rem)] flex bg-gray-50 dark:bg-gray-900"> {/* Hauteur ajustée pour header et footer */}
+            <div className="h-[calc(100vh-100px)] md:h-screen flex bg-gray-50 dark:bg-gray-900"> {/* 100px = header mobile (40px) + tab bar (60px) */}
                 {/* Sidebar Desktop - Collapsible */}
-                <div className={`hidden lg:flex ${isSidebarCollapsed ? 'lg:w-16' : 'lg:w-64'}  bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-800 flex-col transition-all duration-300`}>
+                <div className={`hidden lg:flex ${isSidebarCollapsed ? 'lg:w-16' : 'lg:w-64'} bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-800 flex-col transition-all duration-300`}>
                     {/* En-tête sidebar avec titre et wallet */}
                     <div className="p-3 border-b border-gray-200 dark:border-gray-800 flex-shrink-0">
                         <div className={`flex items-center ${isSidebarCollapsed ? 'justify-center' : 'gap-2'} mb-3`}>
@@ -1190,137 +1301,105 @@ export default function Index({ auth, userInfo, chatHistories }) {
 
                     {/* Services ou Chat */}
                     {!activeChat ? (
-                        <div className="flex-1 flex flex-col justify-between p-3 overflow-hidden">
-                            {/* Services section */}
-                            <div className="mb-auto">
-                                <div className="text-center mb-6">
-                                    <motion.div
-                                        initial={{ scale: 0.9, opacity: 0 }}
-                                        animate={{ scale: 1, opacity: 1 }}
-                                        transition={{ duration: 0.4, type: "spring" }}
-                                        className="mb-3"
-                                    >
-                                        <div className="w-20 h-22 bg-gradient-to-r from-amber-500 to-purple-500 rounded-xl mx-auto flex items-center justify-center mb-2.5 shadow-md">
-                                            <Brain className="h-7 w-7 text-white" />
-                                            <img src="/mascot/mas.png" alt="" />
-                                        </div>
-                                    </motion.div>
-                                    <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-2">
-                                        {t('career_advisor.services.choose')}
-                                    </h2>
-                                    <p className="text-sm text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
-                                        {t('career_advisor.services.description')}
-                                    </p>
-                                </div>
+                        <div className="flex-1 flex flex-col min-h-0">
+                            {/* Section services */}
+                            <div className="flex-1 overflow-y-auto pb-6">
+                                <div className="px-3 py-6">
+                                    <div className="text-center mb-6">
+                                        <motion.div
+                                            initial={{ scale: 0.9, opacity: 0 }}
+                                            animate={{ scale: 1, opacity: 1 }}
+                                            transition={{ duration: 0.4, type: "spring" }}
+                                            className="mb-3"
+                                        >
+                                            <div className="w-20 h-20 bg-gradient-to-r from-amber-500 to-purple-500 rounded-xl mx-auto flex items-center justify-center mb-2.5 shadow-md overflow-hidden">
+                                                <img src="/mascot/mas.png" alt="AI Assistant" className="w-16 h-16 object-contain" />
+                                            </div>
+                                        </motion.div>
+                                        <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-2">
+                                            {t('career_advisor.services.choose')}
+                                        </h2>
+                                        <p className="text-sm text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
+                                            {t('career_advisor.services.description')}
+                                        </p>
+                                    </div>
 
-                                {/* Grille de services plus compacte */}
-                                <div className="hidden lg:grid grid-cols-2 xl:grid-cols-3 gap-3 px-2">
-                                    {/* Services existants */}
-                                    {SERVICES.map(service => (
+                                    {/* Grille de services plus compacte */}
+                                    <div className="hidden lg:grid grid-cols-2 xl:grid-cols-3 gap-3 px-2 mb-8">
+                                        {/* Services existants */}
+                                        {SERVICES.map(service => (
+                                            <EnhancedServiceCard
+                                                key={service.id}
+                                                service={service}
+                                                isSelected={selectedService.id === service.id}
+                                                onClick={() => handleServiceSelection(service)}
+                                            />
+                                        ))}
+                                        {/* Nouveau service "coming soon" */}
                                         <EnhancedServiceCard
-                                            key={service.id}
-                                            service={service}
-                                            isSelected={selectedService.id === service.id}
-                                            onClick={() => handleServiceSelection(service)}
+                                            service={REPORT_SERVICE}
+                                            isSelected={false}
+                                            onClick={() => handleServiceSelection(REPORT_SERVICE)}
                                         />
-                                    ))}
-                                    {/* Nouveau service "coming soon" */}
-                                    <EnhancedServiceCard
-                                        service={REPORT_SERVICE}
-                                        isSelected={false}
-                                        onClick={() => handleServiceSelection(REPORT_SERVICE)}
-                                    />
-                                </div>
+                                    </div>
 
-                                {/* Services Mobile - 2 par ligne */}
-                                <div className="lg:hidden grid grid-cols-2 gap-2 px-2">
-                                    {/* Services existants */}
-                                    {SERVICES.map(service => (
+                                    {/* Services Mobile - 2 par ligne */}
+                                    <div className="lg:hidden grid grid-cols-2 gap-2 px-2 mb-8">
+                                        {/* Services existants */}
+                                        {SERVICES.map(service => (
+                                            <EnhancedMobileServiceCard
+                                                key={service.id}
+                                                service={service}
+                                                isSelected={selectedService.id === service.id}
+                                                onClick={() => handleServiceSelection(service)}
+                                            />
+                                        ))}
+                                        {/* Nouveau service "coming soon" */}
                                         <EnhancedMobileServiceCard
-                                            key={service.id}
-                                            service={service}
-                                            isSelected={selectedService.id === service.id}
-                                            onClick={() => handleServiceSelection(service)}
+                                            service={REPORT_SERVICE}
+                                            isSelected={false}
+                                            onClick={() => handleServiceSelection(REPORT_SERVICE)}
                                         />
-                                    ))}
-                                    {/* Nouveau service "coming soon" */}
-                                    <EnhancedMobileServiceCard
-                                        service={REPORT_SERVICE}
-                                        isSelected={false}
-                                        onClick={() => handleServiceSelection(REPORT_SERVICE)}
-                                    />
+                                    </div>
                                 </div>
                             </div>
 
-                            {/* Input pour commencer directement */}
-                            <div className="max-w-4xl mx-auto w-full mt-2 px-2">
-                                <form onSubmit={handleSubmit} className="relative">
-                                    <Textarea
-                                        ref={inputRef}
-                                        value={data.question}
-                                        onChange={handleInputChange}
-                                        onKeyDown={handleKeyDown}
-                                        placeholder={t('career_advisor.sidebar.ask_question', { service: t(`services.${selectedService.id}.title`) })}
-                                        className=" min-h-[48px] max-h-[80px] pr-20 pl-10 py-3 resize-none border border-gray-200 dark:border-gray-700 focus:border-amber-500 dark:focus:border-amber-400 rounded-lg text-sm bg-white dark:bg-gray-800 shadow-sm"
-                                        disabled={isLoading}
-                                        maxLength={2000}
-                                    />
-
-                                    {/* Icône du service sélectionné */}
-                                    <div className="absolute left-3 top-3.5 text-gray-400 dark:text-gray-500">
-                                        <selectedService.icon className="h-4 w-4" />
-                                    </div>
-
-                                    <div className="absolute right-2 bottom-2 flex gap-1">
-                                        {/* Raccourci touches */}
-                                        <TooltipProvider>
-                                            <Tooltip>
-                                                <TooltipTrigger asChild>
-                                                    <div className="border border-gray-200 dark:border-gray-700 rounded-md px-1.5 py-0.5 bg-gray-50 dark:bg-gray-800 flex items-center">
-                                                        <kbd className="text-[10px] text-gray-500 dark:text-gray-400 font-mono">⏎</kbd>
-                                                    </div>
-                                                </TooltipTrigger>
-                                                <TooltipContent side="top">
-                                                    <p className="text-xs">{t('career_advisor.sidebar.enter_to_send')}</p>
-                                                </TooltipContent>
-                                            </Tooltip>
-                                        </TooltipProvider>
-
-                                        {/* Indicateur de coût compact */}
-                                        <div className="flex items-center gap-1 px-1.5 py-0.5 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-md">
-                                            <Coins className="h-3 w-3 text-amber-600 dark:text-amber-400" />
-                                            <span className="text-xs text-amber-700 dark:text-amber-300">
-                                                {selectedService.cost}
+                            {/* Zone d'input principale fixe en bas */}
+                            <div className="flex-shrink-0 bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-800 shadow-lg">
+                                <div className="max-w-4xl mx-auto px-3 py-4">
+                                    {/* Indicateur de service sélectionné */}
+                                    <div className="flex items-center justify-center gap-2 mb-3">
+                                        <div className="flex items-center gap-2 px-3 py-1.5 bg-gradient-to-r from-amber-50 to-purple-50 dark:from-amber-900/20 dark:to-purple-900/20 border border-amber-200 dark:border-amber-700 rounded-full">
+                                            <selectedService.icon className="h-4 w-4 text-amber-600 dark:text-amber-400" />
+                                            <span className="text-sm font-medium text-gray-900 dark:text-gray-100">
+                                                {t(`services.${selectedService.id}.title`)}
                                             </span>
+                                            <div className="flex items-center gap-1 ml-2 px-2 py-0.5 bg-amber-100 dark:bg-amber-800/30 rounded-full">
+                                                <Coins className="h-3 w-3 text-amber-600 dark:text-amber-400" />
+                                                <span className="text-xs font-medium text-amber-700 dark:text-amber-300">
+                                                    {selectedService.cost}
+                                                </span>
+                                            </div>
                                         </div>
-                                        <Button
-                                            type="submit"
-                                            size="sm"
-                                            disabled={processing || isLoading || !data.question.trim()}
-                                            className="h-6 w-6 bg-gradient-to-r from-amber-500 to-purple-500 hover:from-amber-600 hover:to-purple-600 text-white p-0 rounded-md shadow-sm transition-all disabled:opacity-50"
-                                        >
-                                            {isLoading ? (
-                                                <motion.div
-                                                    animate={{ rotate: 360 }}
-                                                    transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-                                                >
-                                                    <Loader className="h-3 w-3" />
-                                                </motion.div>
-                                            ) : (
-                                                <Send className="h-3 w-3" />
-                                            )}
-                                        </Button>
                                     </div>
-                                </form>
 
-                                {/* Compteur de caractères discret */}
-                                {data.question.length > 0 && (
-                                    <div className="text-right mt-1 pr-1">
-                                        <span className="text-[10px] text-gray-400 dark:text-gray-500">
-                                            {data.question.length}/2000
-                                        </span>
-                                    </div>
-                                )}
+                                    <ChatInput
+                                        value={data.question}
+                                        onChange={setData}
+                                        onSubmit={handleSubmit}
+                                        placeholder={t('career_advisor.sidebar.ask_question', {
+                                            service: t(`services.${selectedService.id}.title`)
+                                        })}
+                                        disabled={isLoading}
+                                        isLoading={isLoading}
+                                        cost={selectedService.cost}
+                                        service={t(`services.${selectedService.id}.title`)}
+                                        showSuggestions={true}
+                                        suggestions={DEFAULT_PROMPTS[selectedService.id] || []}
+                                        variant="floating"
+                                        onKeyDown={handleKeyDown}
+                                    />
+                                </div>
                             </div>
                         </div>
                     ) : (
@@ -1393,12 +1472,11 @@ export default function Index({ auth, userInfo, chatHistories }) {
                                 </div>
                             </div>
 
-                            {/* Zone de messages avec hauteur fixe optimisée */}
-                            <div className="flex-1 min-h-0">
-                                <ScrollArea className="h-[calc(100vh-150px)]" ref={scrollRef}>
-                                    <div className="max-w-4xl mx-auto space-y-3 p-3">
+                            {/* Zone de messages avec hauteur optimisée */}
+                            <div className="flex-1 min-h-0 pb-2">
+                                <ScrollArea className="h-full" ref={scrollRef}>
+                                    <div className="max-w-4xl mx-auto space-y-3 p-3 pb-4">
                                         <AnimatePresence mode="popLayout">
-                                            {/* Optimisation de l'affichage avec animations */}
                                             {(activeChat?.messages || []).map((message, index) => (
                                                 <motion.div
                                                     key={`message-${index}`}
@@ -1436,61 +1514,22 @@ export default function Index({ auth, userInfo, chatHistories }) {
                                 </ScrollArea>
                             </div>
 
-                            {/* Zone de saisie compacte */}
-                            <div className="relative px-3 py-1.5 flex-shrink-0 border-t border-gray-200 dark:border-gray-800">
-                                <form onSubmit={handleSubmit} className="max-w-4xl mx-auto">
-                                    <div className="relative">
-                                        <Textarea
-                                            ref={inputRef}
-                                            value={data.question}
-                                            onChange={handleInputChange}
-                                            onKeyDown={handleKeyDown}
-                                            placeholder={t(`services.${selectedService.id}.placeholder`)}
-                                            className=" min-h-[40px] max-h-[80px] pr-20 pl-3 py-2 resize-none border border-gray-200 dark:border-gray-700 focus:border-amber-500 dark:focus:border-amber-400 rounded-lg text-sm bg-white dark:bg-gray-800 transition-all"
-                                            disabled={isLoading}
-                                            maxLength={2000}
-                                        />
-                                        <div className="absolute right-2 bottom-2 flex gap-1">
-                                            {/* Indicateur de coût compact */}
-                                            <div className="flex items-center gap-1 px-1.5 py-0.5 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-md">
-                                                <Coins className="h-3 w-3 text-amber-600 dark:text-amber-400" />
-                                                <span className="text-xs text-amber-700 dark:text-amber-300">
-                                                    -{selectedService.cost}
-                                                </span>
-                                            </div>
-                                            <Button
-                                                type="submit"
-                                                size="sm"
-                                                disabled={processing || isLoading || !data.question.trim()}
-                                                className="h-6 w-6 bg-gradient-to-r from-amber-500 to-purple-500 hover:from-amber-600 hover:to-purple-600 text-white p-0 rounded-md shadow-sm transition-all disabled:opacity-50"
-                                            >
-                                                {isLoading ? (
-                                                    <motion.div
-                                                        animate={{ rotate: 360 }}
-                                                        transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-                                                    >
-                                                        <Loader className="h-3 w-3" />
-                                                    </motion.div>
-                                                ) : (
-                                                    <Send className="h-3 w-3" />
-                                                )}
-                                            </Button>
-                                        </div>
-                                    </div>
-
-                                    {/* Mini-barre d'informations */}
-                                    <div className="flex justify-between items-center text-xs px-0.5 mt-1">
-                                        <span className="text-gray-500 dark:text-gray-400 text-[10px]">
-                                            {data.question.length}/2000
-                                        </span>
-                                        {data.question.length > 0 && (
-                                            <span className="text-gray-400 dark:text-gray-500 text-[10px] flex items-center gap-1">
-                                                <kbd className="px-1 py-0 text-[10px] font-mono bg-gray-100 dark:bg-gray-700 rounded">⏎</kbd>
-                                                {t('career_advisor.sidebar.enter_to_send')}
-                                            </span>
-                                        )}
-                                    </div>
-                                </form>
+                            {/* Zone de saisie fixe */}
+                            <div className="flex-shrink-0 bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-800">
+                                <div className="max-w-4xl mx-auto px-3 py-3">
+                                    <ChatInput
+                                        value={data.question}
+                                        onChange={setData}
+                                        onSubmit={handleSubmit}
+                                        placeholder={t(`services.${selectedService.id}.placeholder`)}
+                                        disabled={isLoading}
+                                        isLoading={isLoading}
+                                        cost={selectedService.cost}
+                                        service={t(`services.${selectedService.id}.title`)}
+                                        variant="minimal"
+                                        onKeyDown={handleKeyDown}
+                                    />
+                                </div>
                             </div>
                         </div>
                     )}
@@ -1525,7 +1564,39 @@ export default function Index({ auth, userInfo, chatHistories }) {
                     </AlertDialogFooter>
                 </AlertDialogContent>
             </AlertDialog>
+
+            {/* Styles CSS supplémentaires */}
+            <style jsx>{`
+                .hide-scrollbar {
+                    scrollbar-width: none;
+                    -ms-overflow-style: none;
+                }
+                .hide-scrollbar::-webkit-scrollbar {
+                    display: none;
+                }
+                .smooth-focus {
+                    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+                }
+                .smooth-focus:focus {
+                    transform: translateY(-1px);
+                }
+                @media (max-width: 768px) {
+                    .mobile-input {
+                        font-size: 16px;
+                    }
+                }
+                .focus-visible:focus-visible {
+                    outline: 2px solid #f59e0b;
+                    outline-offset: 2px;
+                }
+                .interactive-hover {
+                    transition: all 0.15s ease-out;
+                }
+                .interactive-hover:hover {
+                    transform: translateY(-0.5px);
+                    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+                }
+            `}</style>
         </AuthenticatedLayout>
     );
 }
-

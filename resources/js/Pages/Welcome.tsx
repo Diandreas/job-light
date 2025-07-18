@@ -125,59 +125,85 @@ const StatisticCard = ({ icon: Icon, value, label }) => (
 );
 
 // Composant Call-to-Action amélioré pour mobile
+// Composant Call-to-Action optimisé pour mobile compact
 const ImageCallToAction = () => {
     const { t } = useTranslation();
     return (
         <div className="bg-gradient-to-br from-amber-50 via-purple-50 to-amber-100 dark:from-amber-900/20 dark:via-purple-900/20 dark:to-amber-900/30 rounded-3xl overflow-hidden shadow-2xl border-2 border-amber-200 dark:border-amber-700">
-            {/* Layout mobile optimisé */}
+
+            {/* Layout mobile compact - NOUVEAU */}
             <div className="block md:hidden">
-                <div className="p-6">
-                    {/* Titre plus accrocheur */}
+                <div className="p-4">
+                    {/* Titre plus compact */}
                     <motion.h2
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
-                        className="text-2xl font-bold mb-4 bg-gradient-to-r from-amber-600 via-purple-600 to-amber-600 text-transparent bg-clip-text text-center leading-tight"
+                        className="text-xl font-bold mb-4 bg-gradient-to-r from-amber-600 via-purple-600 to-amber-600 text-transparent bg-clip-text text-center leading-tight"
                     >
                         {t('cta_image.title')}
                     </motion.h2>
 
-                    {/* Image optimisée mobile avec animations */}
+                    {/* Container des deux images en ligne */}
                     <motion.div
                         initial={{ scale: 0.9, opacity: 0 }}
                         animate={{ scale: 1, opacity: 1 }}
                         transition={{ delay: 0.2 }}
-                        className="relative h-72 w-full rounded-2xl shadow-xl overflow-hidden border-2 border-amber-300 dark:border-amber-700 bg-gradient-to-br from-white to-amber-50 dark:from-gray-800 dark:to-gray-700 mb-6"
+                        className="flex gap-3 mb-4"
                     >
-                        <div className="absolute inset-0 bg-gradient-to-r from-amber-500/10 to-purple-500/10 z-10"></div>
-                        <div className="absolute right-4 top-1/2 transform -translate-y-1/2 z-20">
-                            <motion.div
-                                animate={{ x: [0, -5, 0] }}
-                                transition={{ repeat: Infinity, duration: 2 }}
-                            >
-                                <ChevronRight className="w-10 h-10 text-amber-500 dark:text-amber-400 transform rotate-180" />
-                            </motion.div>
+                        {/* Image conversation (gauche) */}
+                        <div className="flex-1 relative h-40 rounded-xl shadow-lg overflow-hidden border border-amber-300 dark:border-amber-700 bg-gradient-to-br from-white to-amber-50 dark:from-gray-800 dark:to-gray-700">
+                            <div className="absolute inset-0 bg-gradient-to-r from-amber-500/10 to-purple-500/10 z-10"></div>
+                            <div className="absolute left-1 top-1/2 transform -translate-y-1/2 z-20">
+                                <motion.div
+                                    animate={{ x: [0, 3, 0] }}
+                                    transition={{ repeat: Infinity, duration: 2 }}
+                                >
+                                    <ChevronRight className="w-6 h-6 text-amber-500 dark:text-amber-400" />
+                                </motion.div>
+                            </div>
+                            <div className="flex items-center justify-center h-full p-2">
+                                <motion.img
+                                    whileHover={{ scale: 1.05 }}
+                                    src="/call.png"
+                                    alt="Conversation IA"
+                                    className="h-auto max-w-[90%] object-contain dark:opacity-90 dark:brightness-90 filter drop-shadow-md"
+                                />
+                            </div>
                         </div>
-                        <div className="flex items-center justify-center h-full p-4">
-                            <motion.img
-                                whileHover={{ scale: 1.05 }}
-                                src="/cvs.png"
-                                alt="CV Professionnel"
-                                className="h-auto max-w-[85%] object-contain dark:opacity-90 dark:brightness-90 filter drop-shadow-lg"
-                            />
+
+                        {/* Image CV (droite) */}
+                        <div className="flex-1 relative h-40 rounded-xl shadow-lg overflow-hidden border border-amber-300 dark:border-amber-700 bg-gradient-to-br from-white to-amber-50 dark:from-gray-800 dark:to-gray-700">
+                            <div className="absolute inset-0 bg-gradient-to-r from-purple-500/10 to-amber-500/10 z-10"></div>
+                            <div className="absolute right-1 top-1/2 transform -translate-y-1/2 z-20">
+                                <motion.div
+                                    animate={{ x: [0, -3, 0] }}
+                                    transition={{ repeat: Infinity, duration: 2 }}
+                                >
+                                    <ChevronRight className="w-6 h-6 text-amber-500 dark:text-amber-400 transform rotate-180" />
+                                </motion.div>
+                            </div>
+                            <div className="flex items-center justify-center h-full p-2">
+                                <motion.img
+                                    whileHover={{ scale: 1.05 }}
+                                    src="/cvs.png"
+                                    alt="CV Professionnel"
+                                    className="h-auto max-w-[90%] object-contain dark:opacity-90 dark:brightness-90 filter drop-shadow-md"
+                                />
+                            </div>
                         </div>
                     </motion.div>
 
-                    {/* Description avec meilleur espacement */}
+                    {/* Description compacte */}
                     <motion.p
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                         transition={{ delay: 0.4 }}
-                        className="text-base text-gray-700 dark:text-gray-300 mb-6 text-center leading-relaxed px-2"
+                        className="text-sm text-gray-700 dark:text-gray-300 mb-4 text-center leading-relaxed"
                     >
                         {t('hero.description')}
                     </motion.p>
 
-                    {/* Bouton CTA amélioré */}
+                    {/* Bouton CTA compact */}
                     <motion.div
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
@@ -186,17 +212,17 @@ const ImageCallToAction = () => {
                     >
                         <Link
                             href={route('register')}
-                            className="inline-flex items-center px-8 py-4 rounded-2xl text-base font-bold bg-gradient-to-r from-amber-500 to-purple-500 text-white hover:from-amber-600 hover:to-purple-600 shadow-xl hover:shadow-2xl transition-all transform hover:scale-105 active:scale-95"
+                            className="inline-flex items-center px-6 py-3 rounded-xl text-sm font-bold bg-gradient-to-r from-amber-500 to-purple-500 text-white hover:from-amber-600 hover:to-purple-600 shadow-lg hover:shadow-xl transition-all transform hover:scale-105 active:scale-95"
                         >
-                            <Star className="mr-2 w-5 h-5" />
+                            <Star className="mr-2 w-4 h-4" />
                             {t('cta_image.button')}
-                            <ArrowRight className="ml-2 w-5 h-5" />
+                            <ArrowRight className="ml-2 w-4 h-4" />
                         </Link>
                     </motion.div>
                 </div>
             </div>
 
-            {/* Layout desktop inchangé mais amélioré */}
+            {/* Layout desktop inchangé */}
             <div className="hidden md:flex md:flex-row md:items-stretch">
                 {/* Image gauche (conversation) */}
                 <motion.div
@@ -226,7 +252,7 @@ const ImageCallToAction = () => {
                     </div>
                 </motion.div>
 
-                {/* Contenu central amélioré */}
+                {/* Contenu central */}
                 <motion.div
                     initial={{ opacity: 0, y: 30 }}
                     animate={{ opacity: 1, y: 0 }}
@@ -278,7 +304,6 @@ const ImageCallToAction = () => {
         </div>
     );
 };
-
 export default function Welcome() {
     const { scrollYProgress } = useScroll();
     const opacity = useTransform(scrollYProgress, [0, 0.2], [1, 0]);

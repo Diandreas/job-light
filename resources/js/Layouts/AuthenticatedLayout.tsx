@@ -253,7 +253,7 @@ export default function Authenticated({ user, header, children, hideHeaderOnMobi
         const cvSideMenuItems = getCvSideMenuItems(t);
 
         return (
-            <div className="sticky top-12 sm:top-16 z-30 md:hidden bg-white/80 dark:bg-gray-900/90 backdrop-blur-md border-b border-amber-100 dark:border-gray-700">
+            <div className="relative w-full sm:top-16 z-30 md:hidden bg-white/80 dark:bg-gray-900/90 backdrop-blur-md border-b border-amber-100 dark:border-gray-700">
                 <div className="flex h-9">
                     {cvSideMenuItems.map((item, index) => (
                         <Link

@@ -1,7 +1,12 @@
 import React from 'react';
 import { Link, usePage } from '@inertiajs/react';
 import { useTranslation } from 'react-i18next';
-import { Folder, Brain, MessageSquare, RefreshCw } from 'lucide-react';
+import {
+    FolderOpen,
+    Sparkles,
+    MessageSquare,
+    LogIn
+} from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { motion } from 'framer-motion';
 import { useMediaQuery } from '@/lib/hooks';
@@ -11,100 +16,324 @@ interface MobileTabBarProps {
     isGuest?: boolean;
 }
 
-export const MobileTabBar: React.FC<MobileTabBarProps> = ({
-                                                              onRenewCodeClick,
-                                                              isGuest = false
-                                                          }) => {
+interface TabItem {
+    name: string;
+    href: string;
+    icon: React.ComponentType<{ className?: string }>;
+    active: boolean;
+    onClick?: () => void;
+    testId?: string;
+}
+
+export const MobileTabBar: React.FC<MobileTabBarProps> = ({ onRenewCodeClick, isGuest = false }) => {
     const { t } = useTranslation();
     const { url } = usePage();
     const isMobile = useMediaQuery('(max-width: 768px)');
 
     if (!isMobile) return null;
 
-    // Tabs principaux pour l'application
-    const tabs = [
+    const authTabs: TabItem[] = [
         {
             name: t('menu.createCV'),
             href: route('cv-infos.index'),
-            icon: Folder,
-            active: url.includes('/cv-infos') || url.includes('/userCvModels')
+            icon: FolderOpen,
+            active: url.includes('/cv-infos'),
+            testId: 'mobile-tab-cv'
         },
         {
             name: t('menu.assistant'),
             href: route('career-advisor.index'),
-            icon: Brain,
-            active: url.includes('/career-advisor')
+            icon: Sparkles,
+            active: url.includes('/career-advisor'),
+            testId: 'mobile-tab-assistant'
         },
         {
             name: 'Support',
             href: route('support'),
             icon: MessageSquare,
-            active: url.includes('/support')
-        },
-        {
-            name: t('sponsorship.code.renewal.renewCode', 'Renouveler'),
-            href: '#',
-            icon: RefreshCw,
-            active: false,
-            onClick: onRenewCodeClick
+            active: url.includes('/support'),
+            testId: 'mobile-tab-support'
         }
     ];
 
-    // Filtrer les onglets si besoin
-    const visibleTabs = isGuest
-        ? tabs.filter(tab => tab.name === 'Support')
-        : tabs;
+    const guestTabs: TabItem[] = [
+        {
+            name: 'Support',
+            href: route('support'),
+            icon: MessageSquare,
+            active: url.includes('/support'),
+            testId: 'mobile-tab-support'
+        },
+        {
+            name: t('auth.login.value', 'Connexion'),
+            href: route('login'),
+            icon: LogIn,
+            active: url.includes('/login'),
+            testId: 'mobile-tab-login'
+        }
+    ];
+
+    const tabs = isGuest ? guestTabs : authTabs;
 
     return (
-        <>
-            <div className="fixed bottom-0 left-0 right-0 z-50 md:hidden bg-white/90 dark:bg-gray-900/90 backdrop-blur-md border-t border-amber-100 dark:border-gray-700">
-                <div className="flex items-center justify-around h-14">
-                    {visibleTabs.map((tab) => (
-                        tab.onClick ? (
-                            <button
-                                key={tab.name}
-                                onClick={tab.onClick}
-                                className="flex flex-col items-center justify-center w-1/4 h-full relative"
-                            >
-                                <tab.icon className={cn(
-                                    "h-5 w-5",
-                                    tab.active ? "text-amber-500 dark:text-amber-400" : "text-gray-600 dark:text-gray-300"
-                                )} />
-                                <span className="text-xs font-medium mt-1 truncate max-w-[80px] text-gray-600 dark:text-gray-300">
-                  {tab.name}
-                </span>
-                            </button>
-                        ) : (
-                            <Link
-                                key={tab.name}
-                                href={tab.href}
-                                className="flex flex-col items-center justify-center w-1/4 h-full relative"
-                            >
-                                <tab.icon className={cn(
-                                    "h-5 w-5",
-                                    tab.active ? "text-amber-500 dark:text-amber-400" : "text-gray-600 dark:text-gray-300"
-                                )} />
-                                <span className={cn(
-                                    "text-xs font-medium mt-1 truncate max-w-[80px]",
-                                    tab.active ? "text-amber-500 dark:text-amber-400" : "text-gray-600 dark:text-gray-300"
-                                )}>
-                  {tab.name}
-                </span>
+        <div
+            className="fixed bottom-0 left-0 right-0 z-50 bg-white/98 dark:bg-gray-900/98 backdrop-blur-xl border-t border-gray-200/60 dark:border-gray-700/60 shadow-2xl"
+            data-testid="mobile-tab-bar"
+            role="tablist"
+            aria-label="Navigation mobile"
+        >
+            <div className="safe-area-inset-bottom">
+                <div className="flex items-center justify-around h-14 px-4 gap-3">
+                    {tabs.map((tab, index) => {
+                        const Wrapper = tab.onClick ? 'button' : Link;
+                        const props = {
+                            key: tab.name,
+                            ...(tab.onClick ? { onClick: tab.onClick } : { href: tab.href }),
+                            title: tab.name,
+                            'data-testid': tab.testId,
+                            'data-tutorial-step': `mobile-tab-${index}`,
+                            id: `mobile-tab-${tab.name.toLowerCase().replace(/\s+/g, '-')}`,
+                            role: tab.onClick ? 'button' : 'tab',
+                            'aria-selected': tab.active,
+                            'aria-label': tab.name,
+                            className: cn(
+                                "relative flex items-center justify-center w-12 h-12 py-2 px-2 transition-all duration-500 rounded-2xl overflow-hidden group",
+                                // Fond blanc ultra-réaliste avec effet 3D
+                                "bg-gradient-to-br from-white via-gray-50/80 to-gray-100/60",
+                                "dark:bg-gradient-to-br dark:from-gray-800 dark:via-gray-750 dark:to-gray-700",
+                                // Ombres 3D ultra-réalistes
+                                "shadow-[0_8px_32px_rgba(0,0,0,0.12),0_4px_16px_rgba(0,0,0,0.08),0_2px_8px_rgba(0,0,0,0.04),inset_0_1px_2px_rgba(255,255,255,0.8),inset_0_-1px_2px_rgba(0,0,0,0.1)]",
+                                "dark:shadow-[0_8px_32px_rgba(0,0,0,0.4),0_4px_16px_rgba(0,0,0,0.25),0_2px_8px_rgba(0,0,0,0.15),inset_0_1px_2px_rgba(255,255,255,0.15),inset_0_-1px_2px_rgba(0,0,0,0.3)]",
+                                // Bordures 3D
+                                "border border-gray-200/80 dark:border-gray-600/50",
+                                "before:absolute before:inset-0 before:rounded-2xl before:border before:border-white/60 before:dark:border-white/20 before:pointer-events-none",
+                                // États interactifs améliorés
+                                "hover:shadow-[0_12px_48px_rgba(0,0,0,0.18),0_6px_24px_rgba(0,0,0,0.12),0_3px_12px_rgba(0,0,0,0.08),inset_0_2px_4px_rgba(255,255,255,0.9),inset_0_-2px_4px_rgba(0,0,0,0.15)]",
+                                "dark:hover:shadow-[0_12px_48px_rgba(0,0,0,0.5),0_6px_24px_rgba(0,0,0,0.35),0_3px_12px_rgba(0,0,0,0.25),inset_0_2px_4px_rgba(255,255,255,0.2),inset_0_-2px_4px_rgba(0,0,0,0.4)]",
+                                "hover:scale-110 hover:-translate-y-2",
+                                "active:scale-95 active:translate-y-0",
+                                "active:shadow-[0_4px_16px_rgba(0,0,0,0.15),0_2px_8px_rgba(0,0,0,0.1),inset_0_3px_6px_rgba(0,0,0,0.2)]",
+                                "dark:active:shadow-[0_4px_16px_rgba(0,0,0,0.3),0_2px_8px_rgba(0,0,0,0.2),inset_0_3px_6px_rgba(0,0,0,0.4)]",
+                                // Styles selon l'état actif
+                                tab.active
+                                    ? "bg-gradient-to-br from-amber-50 via-amber-25 to-white dark:from-amber-900/30 dark:via-amber-800/20 dark:to-gray-800 border-amber-200/80 dark:border-amber-600/50 shadow-[0_8px_32px_rgba(245,158,11,0.2),0_4px_16px_rgba(245,158,11,0.1),inset_0_1px_2px_rgba(255,255,255,0.9),inset_0_-1px_2px_rgba(245,158,11,0.2)]"
+                                    : "",
+                                // Animation pulse pour l'état actif
+                                tab.active ? "animate-pulse-subtle" : "",
+                                // Focus pour accessibilité
+                                "focus:outline-none focus:ring-4 focus:ring-amber-500/50 focus:ring-offset-2 focus:ring-offset-white dark:focus:ring-offset-gray-900"
+                            )
+                        };
+
+                        // @ts-ignore
+                        return React.createElement(
+                            Wrapper,
+                            // @ts-ignore
+                            props,
+                            <div className="relative flex items-center justify-center group-hover:scale-105 transition-transform duration-300">
+                                {/* Reflets multiples pour effet 3D ultra-réaliste */}
+                                <div className="absolute inset-0 pointer-events-none">
+                                    {/* Reflet principal */}
+                                    <div className="absolute inset-0 bg-gradient-to-b from-white/60 via-white/20 to-transparent dark:from-white/30 dark:via-white/10 rounded-2xl" />
+                                    {/* Reflet latéral */}
+                                    <div className="absolute inset-0 bg-gradient-to-r from-white/30 via-transparent to-white/30 dark:from-white/15 dark:via-transparent dark:to-white/15 rounded-2xl" />
+                                    {/* Reflet de mouvement */}
+                                    <div className="absolute inset-0 bg-gradient-to-br from-transparent via-white/20 to-transparent dark:via-white/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-2xl animate-shimmer" />
+                                </div>
+
+                                {/* Icône avec effet 3D */}
+                                <div className="relative">
+                                    <tab.icon className={cn(
+                                        "h-6 w-6 transition-all duration-300 z-10 relative",
+                                        // Ombre portée sur l'icône
+                                        "drop-shadow-[0_2px_4px_rgba(0,0,0,0.1)] dark:drop-shadow-[0_2px_4px_rgba(0,0,0,0.3)]",
+                                        tab.active
+                                            ? "scale-125 text-amber-600 dark:text-amber-400 drop-shadow-[0_4px_8px_rgba(245,158,11,0.3)]"
+                                            : "text-gray-600 dark:text-gray-400 group-hover:text-gray-700 dark:group-hover:text-gray-300 group-hover:scale-110"
+                                    )} />
+
+                                    {/* Halo lumineux pour l'icône active */}
+                                    {tab.active && (
+                                        <div className="absolute inset-0 bg-amber-400/20 dark:bg-amber-500/30 rounded-full blur-lg animate-pulse" />
+                                    )}
+                                </div>
+
+                                {/* Indicateur actif ultra-3D */}
                                 {tab.active && (
                                     <motion.div
-                                        layoutId="activeTab"
-                                        className="absolute -top-1 w-1 h-1 rounded-full bg-amber-500"
-                                        transition={{ type: 'spring', stiffness: 400, damping: 30 }}
-                                    />
+                                        layoutId="activeIndicator"
+                                        className="absolute -top-2 left-1/2 transform -translate-x-1/2 w-2 h-2 z-20"
+                                        transition={{ type: 'spring', stiffness: 600, damping: 25 }}
+                                    >
+                                        <div className="relative w-full h-full">
+                                            {/* Indicateur principal */}
+                                            <div className="absolute inset-0 bg-gradient-to-br from-amber-400 via-amber-500 to-amber-600 dark:from-amber-500 dark:via-amber-400 dark:to-amber-300 rounded-full shadow-[0_4px_12px_rgba(245,158,11,0.6)] dark:shadow-[0_4px_12px_rgba(245,158,11,0.8)]" />
+                                            {/* Reflet sur l'indicateur */}
+                                            <div className="absolute inset-0 bg-gradient-to-br from-white/80 via-white/40 to-transparent rounded-full" />
+                                            {/* Halo lumineux */}
+                                            <div className="absolute inset-0 bg-amber-400/60 dark:bg-amber-500/80 rounded-full blur-sm animate-pulse" />
+                                        </div>
+                                    </motion.div>
                                 )}
-                            </Link>
-                        )
-                    ))}
+
+                                {/* Effet de pression 3D amélioré */}
+                                <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black/10 dark:to-black/20 rounded-2xl opacity-0 group-active:opacity-100 transition-opacity duration-200 pointer-events-none" />
+
+                                {/* Effet de soulèvement */}
+                                <div className="absolute inset-0 bg-gradient-to-t from-transparent via-transparent to-white/20 dark:to-white/10 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
+                            </div>
+                        );
+                    })}
                 </div>
             </div>
-
-            {/* Espace en bas pour éviter que le contenu soit caché par la barre d'onglets */}
-            <div className="md:hidden h-14"></div>
-        </>
+        </div>
     );
 };
+
+// Styles CSS améliorés à ajouter dans global.css
+const styles = `
+.safe-area-inset-bottom {
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+@supports (padding: max(0px)) {
+  .safe-area-inset-bottom {
+    padding-bottom: max(env(safe-area-inset-bottom), 0px);
+  }
+}
+
+/* Animation pulse subtile */
+@keyframes pulse-subtle {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.95; transform: scale(1.02); }
+}
+
+.animate-pulse-subtle {
+  animation: pulse-subtle 3s ease-in-out infinite;
+}
+
+/* Animation shimmer */
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+.animate-shimmer {
+  background-size: 200% 100%;
+  animation: shimmer 2s ease-in-out infinite;
+}
+
+/* Styles 3D personnalisés ultra-réalistes */
+.tab-3d-ultra {
+  position: relative;
+  background: linear-gradient(145deg, #ffffff 0%, #f8fafc 50%, #f1f5f9 100%);
+  box-shadow:
+    0 20px 60px rgba(0, 0, 0, 0.1),
+    0 10px 30px rgba(0, 0, 0, 0.08),
+    0 5px 15px rgba(0, 0, 0, 0.06),
+    inset 0 2px 4px rgba(255, 255, 255, 0.9),
+    inset 0 -2px 4px rgba(0, 0, 0, 0.1),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  transform-style: preserve-3d;
+}
+
+.tab-3d-ultra:hover {
+  transform: translateY(-8px) scale(1.05);
+  box-shadow:
+    0 30px 80px rgba(0, 0, 0, 0.15),
+    0 15px 40px rgba(0, 0, 0, 0.12),
+    0 8px 20px rgba(0, 0, 0, 0.08),
+    inset 0 3px 6px rgba(255, 255, 255, 0.95),
+    inset 0 -3px 6px rgba(0, 0, 0, 0.15),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.5);
+}
+
+.tab-3d-ultra:active {
+  transform: translateY(-2px) scale(0.98);
+  box-shadow:
+    0 10px 30px rgba(0, 0, 0, 0.12),
+    0 5px 15px rgba(0, 0, 0, 0.08),
+    inset 0 4px 8px rgba(0, 0, 0, 0.2),
+    inset 0 -1px 2px rgba(255, 255, 255, 0.8);
+}
+
+/* Mode sombre ultra-réaliste */
+.dark .tab-3d-ultra {
+  background: linear-gradient(145deg, #374151 0%, #1f2937 50%, #111827 100%);
+  box-shadow:
+    0 20px 60px rgba(0, 0, 0, 0.4),
+    0 10px 30px rgba(0, 0, 0, 0.3),
+    0 5px 15px rgba(0, 0, 0, 0.25),
+    inset 0 2px 4px rgba(255, 255, 255, 0.2),
+    inset 0 -2px 4px rgba(0, 0, 0, 0.4),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.dark .tab-3d-ultra:hover {
+  box-shadow:
+    0 30px 80px rgba(0, 0, 0, 0.5),
+    0 15px 40px rgba(0, 0, 0, 0.4),
+    0 8px 20px rgba(0, 0, 0, 0.3),
+    inset 0 3px 6px rgba(255, 255, 255, 0.25),
+    inset 0 -3px 6px rgba(0, 0, 0, 0.5),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.2);
+}
+
+/* Animations pour les tutoriels */
+.tutorial-highlight {
+  animation: tutorial-pulse 2s ease-in-out infinite;
+  position: relative;
+}
+
+.tutorial-highlight::before {
+  content: '';
+  position: absolute;
+  inset: -4px;
+  background: linear-gradient(45deg, #3b82f6, #8b5cf6, #06b6d4, #3b82f6);
+  border-radius: 20px;
+  z-index: -1;
+  animation: tutorial-gradient 3s ease-in-out infinite;
+}
+
+@keyframes tutorial-pulse {
+  0%, 100% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.4);
+  }
+  50% {
+    transform: scale(1.05);
+    box-shadow: 0 0 0 10px rgba(59, 130, 246, 0);
+  }
+}
+
+@keyframes tutorial-gradient {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+
+/* Responsive et accessibilité */
+@media (max-width: 480px) {
+  .tab-3d-ultra {
+    padding: 0.5rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tab-3d-ultra,
+  .animate-pulse-subtle,
+  .animate-shimmer,
+  .tutorial-highlight {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+
+/* Focus visible amélioré */
+.tab-3d-ultra:focus-visible {
+  outline: 3px solid #3b82f6;
+  outline-offset: 2px;
+}
+`;

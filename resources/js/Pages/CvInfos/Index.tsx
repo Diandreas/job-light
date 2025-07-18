@@ -55,8 +55,8 @@ const PERSONAL_INFO_FIELDS = [
     { label: "GitHub", key: "github", icon: Github }
 ];
 
-// Hook pour gérer le scroll et le positionnement
-const useElementPosition = (targetSelector: string) => {
+// Hook pour gérer le scroll et le positionnement avec sélecteurs dynamiques et stabilité
+const useElementPosition = (targetSelector: string | null, isNavigationStep: boolean = false) => {
     const [elementRect, setElementRect] = useState<DOMRect | null>(null);
     const [isVisible, setIsVisible] = useState(false);
 
@@ -67,42 +67,147 @@ const useElementPosition = (targetSelector: string) => {
             return;
         }
 
-        const element = document.querySelector(targetSelector);
+        // Fonction pour essayer plusieurs stratégies de sélection
+        const findElement = () => {
+            // Stratégie 1: Sélecteur direct
+            let element = document.querySelector(targetSelector);
+
+            if (!element) {
+                // Stratégie 2: Sélecteurs alternatifs selon les cas
+                if (targetSelector.includes('sidebar')) {
+                    // Essayer de cibler directement les barres latérales visibles
+                    if (targetSelector.includes('w-11')) {
+                        // Mobile sidebar
+                        element = document.querySelector('[data-tutorial="sidebar"].w-11') ||
+                            document.querySelector('[data-tutorial="sidebar"]:not(.hidden)');
+                    } else {
+                        // Desktop sidebar
+                        element = document.querySelector('[data-tutorial="sidebar"].hidden.md\\:block') ||
+                            document.querySelector('[data-tutorial="sidebar"].hidden');
+                    }
+                } else if (targetSelector.includes('nav') && targetSelector.includes('mx-auto')) {
+                    // Pour la navbar desktop
+                    element = document.querySelector('nav .mx-auto') ||
+                        document.querySelector('nav .container') ||
+                        document.querySelector('nav div:first-child');
+                } else if (targetSelector.includes('sticky.top-12')) {
+                    // Pour la navigation CV mobile
+                    element = document.querySelector('.sticky.top-12') ||
+                        document.querySelector('.sticky[class*="top-"]') ||
+                        document.querySelector('.bg-white\\/80.dark\\:bg-gray-900\\/90');
+                } else if (targetSelector.includes('aside.hidden.md')) {
+                    // Pour la sidebar CV desktop
+                    element = document.querySelector('aside.hidden.md\\:block') ||
+                        document.querySelector('aside[class*="hidden"][class*="md:block"]') ||
+                        document.querySelector('aside .sticky');
+                } else if (targetSelector.includes('mobile-tab-bar')) {
+                    // Pour la TabBar mobile avec classe spécifique
+                    element = document.querySelector('.mobile-tab-bar') ||
+                        document.querySelector('[class*="mobile-tab-bar"]');
+                }
+            }
+
+            if (!element) {
+                // Stratégie 3: Fallback plus générique
+                if (targetSelector.includes('sidebar')) {
+                    element = document.querySelector('[data-tutorial="sidebar"]');
+                } else if (targetSelector.includes('nav')) {
+                    element = document.querySelector('nav') || document.querySelector('.sticky.top-0');
+                } else if (targetSelector.includes('sticky')) {
+                    element = document.querySelector('.sticky') || document.querySelector('[class*="sticky"]');
+                } else if (targetSelector.includes('aside')) {
+                    element = document.querySelector('aside') || document.querySelector('[class*="w-48"]');
+                } else if (targetSelector.includes('mobile-tab-bar')) {
+                    // Pour la TabBar mobile - chercher la classe spécifique
+                    element = document.querySelector('.mobile-tab-bar') ||
+                        document.querySelector('[class*="mobile-tab"]');
+                }
+            }
+
+            return element;
+        };
+
+        const element = findElement();
+
         if (element) {
             const rect = element.getBoundingClientRect();
             setElementRect(rect);
 
-            // Vérifier si l'élément est visible dans le viewport
+            // Vérifier si l'élément est visible dans le viewport avec plus de tolérance
             const windowHeight = window.innerHeight;
             const windowWidth = window.innerWidth;
-            const isInView = rect.top >= 0 && rect.left >= 0 &&
-                rect.bottom <= windowHeight && rect.right <= windowWidth;
+            const threshold = 150; // Zone de tolérance augmentée
 
-            if (!isInView) {
-                // Faire défiler pour rendre l'élément visible
-                element.scrollIntoView({
-                    behavior: 'smooth',
-                    block: 'center',
-                    inline: 'center'
-                });
+            const isInView = rect.top >= -threshold && rect.left >= -threshold &&
+                rect.bottom <= windowHeight + threshold && rect.right <= windowWidth + threshold &&
+                rect.width > 0 && rect.height > 0; // S'assurer que l'élément a une taille
 
-                // Attendre que le scroll soit terminé pour mettre à jour la position
-                setTimeout(() => {
-                    const newRect = element.getBoundingClientRect();
-                    setElementRect(newRect);
+            if (!isInView || rect.width === 0 || rect.height === 0) {
+                // Ne pas faire de scroll automatique pour l'étape navigation pour éviter les changements
+                if (!isNavigationStep) {
+                    // Faire défiler pour rendre l'élément visible
+                    element.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'center',
+                        inline: 'center'
+                    });
+
+                    // Attendre que le scroll soit terminé pour mettre à jour la position
+                    setTimeout(() => {
+                        const newRect = element.getBoundingClientRect();
+                        if (newRect.width > 0 && newRect.height > 0) {
+                            setElementRect(newRect);
+                            setIsVisible(true);
+                        }
+                    }, 600); // Temps plus long pour le scroll
+                } else {
+                    // Pour navigation, accepter la position actuelle
                     setIsVisible(true);
-                }, 300);
+                }
             } else {
                 setIsVisible(true);
             }
         } else {
-            setElementRect(null);
-            setIsVisible(false);
+            // L'élément n'existe pas encore, attendre un peu et réessayer
+            let retryCount = 0;
+            const maxRetries = isNavigationStep ? 5 : 10; // Moins de retries pour navigation
+
+            const retryFind = () => {
+                if (retryCount >= maxRetries) {
+                    console.warn('Impossible de trouver l\'élément:', targetSelector);
+                    setElementRect(null);
+                    setIsVisible(false);
+                    return;
+                }
+
+                retryCount++;
+                setTimeout(() => {
+                    const retryElement = findElement();
+                    if (retryElement) {
+                        const rect = retryElement.getBoundingClientRect();
+                        if (rect.width > 0 && rect.height > 0) {
+                            setElementRect(rect);
+                            setIsVisible(true);
+                        } else {
+                            retryFind(); // Réessayer si l'élément n'a pas de taille
+                        }
+                    } else {
+                        retryFind(); // Réessayer si l'élément n'existe toujours pas
+                    }
+                }, 100 * retryCount); // Délai progressif
+            };
+
+            retryFind();
         }
-    }, [targetSelector]);
+    }, [targetSelector, isNavigationStep]);
 
     useEffect(() => {
         updatePosition();
+
+        // Pas d'event listeners pour les changements automatiques sur l'étape navigation
+        if (isNavigationStep) {
+            return;
+        }
 
         const handleResize = () => updatePosition();
         const handleScroll = () => updatePosition();
@@ -114,7 +219,7 @@ const useElementPosition = (targetSelector: string) => {
             window.removeEventListener('resize', handleResize);
             window.removeEventListener('scroll', handleScroll);
         };
-    }, [updatePosition]);
+    }, [updatePosition, isNavigationStep]);
 
     return { elementRect, isVisible, updatePosition };
 };
@@ -129,8 +234,8 @@ const TutorialOverlay = ({ targetRect, children }: { targetRect: DOMRect | null,
         );
     }
 
-    // Calculer les dimensions pour créer le "trou"
-    const padding = 8;
+    // Calculer les dimensions pour créer le "trou" avec plus de padding pour certains éléments
+    const padding = 12; // Augmenté pour une meilleure visibilité
     const x = targetRect.left - padding;
     const y = targetRect.top - padding;
     const width = targetRect.width + (padding * 2);
@@ -148,12 +253,12 @@ const TutorialOverlay = ({ targetRect, children }: { targetRect: DOMRect | null,
         clipPath: `polygon(
             0% 0%,
             0% 100%,
-            ${x}px 100%,
-            ${x}px ${y}px,
-            ${x + width}px ${y}px,
-            ${x + width}px ${y + height}px,
-            ${x}px ${y + height}px,
-            ${x}px 100%,
+            ${Math.max(0, x)}px 100%,
+            ${Math.max(0, x)}px ${Math.max(0, y)}px,
+            ${Math.min(window.innerWidth, x + width)}px ${Math.max(0, y)}px,
+            ${Math.min(window.innerWidth, x + width)}px ${Math.min(window.innerHeight, y + height)}px,
+            ${Math.max(0, x)}px ${Math.min(window.innerHeight, y + height)}px,
+            ${Math.max(0, x)}px 100%,
             100% 100%,
             100% 0%
         )`,
@@ -163,10 +268,10 @@ const TutorialOverlay = ({ targetRect, children }: { targetRect: DOMRect | null,
     // Ajouter un contour doré autour de l'élément highlighted
     const highlightStyle = {
         position: 'fixed' as const,
-        top: y,
-        left: x,
-        width: width,
-        height: height,
+        top: Math.max(0, y),
+        left: Math.max(0, x),
+        width: Math.min(window.innerWidth - Math.max(0, x), width),
+        height: Math.min(window.innerHeight - Math.max(0, y), height),
         border: '3px solid #f59e0b',
         borderRadius: '8px',
         boxShadow: '0 0 20px rgba(245, 158, 11, 0.5)',
@@ -214,6 +319,23 @@ const Tutorial = ({ isVisible, onComplete, currentSection, onNavigateToSection }
             action: null
         },
         {
+            id: 'navbar',
+            title: t('tutorial.navbar.title'),
+            description: t('tutorial.navbar.description'),
+            target: () => isMobile ? null : 'nav .mx-auto', // Cibler la navbar principale
+            action: null,
+            skipOnMobile: true
+        },
+        {
+            id: 'cvNavigation',
+            title: t('tutorial.cvNavigation.title'),
+            description: t('tutorial.cvNavigation.description'),
+            target: () => isMobile
+                ? '.sticky.top-12' // Mobile CV nav
+                : 'aside.hidden.md\\:block', // Desktop CV sidebar
+            action: null
+        },
+        {
             id: 'progress',
             title: t('tutorial.progress.title'),
             description: t('tutorial.progress.description'),
@@ -231,7 +353,9 @@ const Tutorial = ({ isVisible, onComplete, currentSection, onNavigateToSection }
             id: 'sidebar',
             title: t('tutorial.sidebar.title'),
             description: t('tutorial.sidebar.description'),
-            target: '[data-tutorial="sidebar"]',
+            target: () => isMobile
+                ? '.w-11[data-tutorial="sidebar"]'     // Mobile sidebar spécifique
+                : '.hidden.md\\:block[data-tutorial="sidebar"]',  // Desktop sidebar spécifique
             action: null
         },
         {
@@ -246,51 +370,172 @@ const Tutorial = ({ isVisible, onComplete, currentSection, onNavigateToSection }
             title: t('tutorial.navigation.title'),
             description: t('tutorial.navigation.description'),
             target: '[data-tutorial="navigation"]',
-            action: null
+            action: () => {
+                // Seulement naviguer si on n'est pas déjà sur personalInfo
+                if (currentSection !== 'personalInfo') {
+                    onNavigateToSection('personalInfo');
+                    return new Promise(resolve => {
+                        setTimeout(resolve, 1200); // Temps d'attente pour le changement de section
+                    });
+                }
+                // Si on est déjà sur la bonne section, attendre juste un peu pour la stabilité
+                return new Promise(resolve => {
+                    setTimeout(resolve, 300);
+                });
+            }
+        },
+        {
+            id: 'tabbar',
+            title: t('tutorial.tabbar.title'),
+            description: t('tutorial.tabbar.description'),
+            target: () => isMobile ? '.mobile-tab-bar' : null, // TabBar mobile avec classe spécifique
+            action: null,
+            skipOnDesktop: true
         }
     ];
 
     const currentStepData = tutorialSteps[currentStep];
-    const { elementRect, isVisible: elementVisible, updatePosition } = useElementPosition(currentStepData.target);
 
-    // Détecter si on est sur mobile
+    // Calculer le target dynamiquement
+    const getTargetSelector = () => {
+        if (typeof currentStepData.target === 'function') {
+            return currentStepData.target();
+        }
+        return currentStepData.target;
+    };
+
+    // Calculer le nombre total d'étapes visibles
+    const getVisibleStepsCount = () => {
+        return tutorialSteps.filter(step =>
+            !((isMobile && step.skipOnMobile) || (!isMobile && step.skipOnDesktop))
+        ).length;
+    };
+
+    // Calculer l'index d'étape visible actuel
+    const getVisibleStepIndex = () => {
+        let visibleIndex = 1;
+        for (let i = 0; i < currentStep; i++) {
+            if (!((isMobile && tutorialSteps[i].skipOnMobile) || (!isMobile && tutorialSteps[i].skipOnDesktop))) {
+                visibleIndex++;
+            }
+        }
+        return visibleIndex;
+    };
+
+    const { elementRect, isVisible: elementVisible, updatePosition } = useElementPosition(
+        getTargetSelector(),
+        currentStepData.id === 'navigation'
+    );
+
+    // Détecter si on est sur mobile et forcer la mise à jour du target
     useEffect(() => {
         const checkMobile = () => {
-            setIsMobile(window.innerWidth < 768);
+            const newIsMobile = window.innerWidth < 768;
+            if (newIsMobile !== isMobile) {
+                setIsMobile(newIsMobile);
+                // Forcer une mise à jour de la position quand on change de mode
+                setTimeout(() => updatePosition(), 100);
+            }
         };
 
         checkMobile();
         window.addEventListener('resize', checkMobile);
         return () => window.removeEventListener('resize', checkMobile);
-    }, []);
+    }, [isMobile, updatePosition]);
 
-    // Mettre à jour la position quand l'étape change
+    // Effet séparé pour gérer le skip automatique
     useEffect(() => {
-        if (currentStepData.target) {
-            updatePosition();
+        const shouldSkip = (isMobile && currentStepData.skipOnMobile) || (!isMobile && currentStepData.skipOnDesktop);
+
+        if (shouldSkip) {
+            // Sauter automatiquement cette étape
+            setTimeout(() => {
+                let nextStepIndex = currentStep + 1;
+                while (nextStepIndex < tutorialSteps.length) {
+                    const stepData = tutorialSteps[nextStepIndex];
+                    if ((isMobile && stepData.skipOnMobile) || (!isMobile && stepData.skipOnDesktop)) {
+                        nextStepIndex++;
+                        continue;
+                    }
+                    break;
+                }
+                if (nextStepIndex < tutorialSteps.length) {
+                    setCurrentStep(nextStepIndex);
+                }
+            }, 100);
         }
-    }, [currentStep, updatePosition, currentStepData.target]);
+    }, [isMobile, currentStepData.skipOnMobile, currentStepData.skipOnDesktop, currentStep, tutorialSteps]);
+
+    // Mettre à jour la position quand l'étape change ou le mode mobile change
+    useEffect(() => {
+        const target = getTargetSelector();
+        if (target) {
+            // Délai spécial pour l'étape navigation pour s'assurer de la stabilité
+            const delay = currentStepData.id === 'navigation' ? 2000 : 200; // Encore plus long pour navigation
+            setTimeout(() => updatePosition(), delay);
+        }
+    }, [currentStep, isMobile, updatePosition]);
+
+    // Bloquer les mises à jour automatiques pendant l'étape navigation pour éviter les changements
+    useEffect(() => {
+        if (currentStepData.id === 'navigation') {
+            // Empêcher les mises à jour automatiques de position pendant cette étape
+            const interval = setInterval(() => {
+                // Ne pas appeler updatePosition automatiquement sur cette étape
+            }, 1000);
+
+            return () => clearInterval(interval);
+        }
+    }, [currentStepData.id]);
 
     const nextStep = async () => {
         if (currentStepData.action) {
             setIsAnimating(true);
             await currentStepData.action();
+            // Attendre un peu plus longtemps pour les actions qui changent de section
+            // Mais éviter updatePosition pour l'étape navigation pour éviter les conflits
             setTimeout(() => {
                 setIsAnimating(false);
-                updatePosition();
-            }, 500);
+                if (currentStepData.id !== 'navigation') {
+                    updatePosition();
+                }
+            }, 800); // Augmenté encore plus pour la stabilité
         }
 
-        if (currentStep < tutorialSteps.length - 1) {
-            setCurrentStep(currentStep + 1);
+        let nextStepIndex = currentStep + 1;
+
+        // Sauter les étapes qui ne sont pas compatibles avec le mode actuel
+        while (nextStepIndex < tutorialSteps.length) {
+            const nextStepData = tutorialSteps[nextStepIndex];
+            if ((isMobile && nextStepData.skipOnMobile) || (!isMobile && nextStepData.skipOnDesktop)) {
+                nextStepIndex++;
+                continue;
+            }
+            break;
+        }
+
+        if (nextStepIndex < tutorialSteps.length) {
+            setCurrentStep(nextStepIndex);
         } else {
             handleComplete();
         }
     };
 
     const prevStep = () => {
-        if (currentStep > 0) {
-            setCurrentStep(currentStep - 1);
+        let prevStepIndex = currentStep - 1;
+
+        // Sauter les étapes qui ne sont pas compatibles avec le mode actuel
+        while (prevStepIndex >= 0) {
+            const prevStepData = tutorialSteps[prevStepIndex];
+            if ((isMobile && prevStepData.skipOnMobile) || (!isMobile && prevStepData.skipOnDesktop)) {
+                prevStepIndex--;
+                continue;
+            }
+            break;
+        }
+
+        if (prevStepIndex >= 0) {
+            setCurrentStep(prevStepIndex);
         }
     };
 
@@ -309,8 +554,8 @@ const Tutorial = ({ isVisible, onComplete, currentSection, onNavigateToSection }
         const cardHeight = 400; // hauteur approximative
 
         // Zones de sécurité pour éviter les barres de navigation
-        const topSafeZone = isMobile ? 100 : 80; // navbar + mobile nav
-        const bottomSafeZone = isMobile ? 80 : 20; // mobile tab bar
+        const topSafeZone = isMobile ? 140 : 80; // Augmenté pour mobile (navbar + cvNav)
+        const bottomSafeZone = isMobile ? 140 : 20; // Augmenté pour mobile tab bar (maintenant à la fin)
         const availableHeight = window.innerHeight - topSafeZone - bottomSafeZone;
 
         if (!elementRect) {
@@ -416,7 +661,7 @@ const Tutorial = ({ isVisible, onComplete, currentSection, onNavigateToSection }
                                     {currentStepData.title}
                                 </h3>
                                 <p className="text-xs text-gray-500 mt-1">
-                                    {t('tutorial.step')} {currentStep + 1} {t('tutorial.of')} {tutorialSteps.length}
+                                    {t('tutorial.step')} {getVisibleStepIndex()} {t('tutorial.of')} {getVisibleStepsCount()}
                                 </p>
                             </div>
                         </div>
@@ -435,7 +680,7 @@ const Tutorial = ({ isVisible, onComplete, currentSection, onNavigateToSection }
                         <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
                             <div
                                 className="bg-gradient-to-r from-amber-500 to-purple-500 h-2 rounded-full transition-all duration-300"
-                                style={{ width: `${((currentStep + 1) / tutorialSteps.length) * 100}%` }}
+                                style={{ width: `${(getVisibleStepIndex() / getVisibleStepsCount()) * 100}%` }}
                             />
                         </div>
                     </div>
@@ -461,12 +706,12 @@ const Tutorial = ({ isVisible, onComplete, currentSection, onNavigateToSection }
                                     >
                                         {isAnimating ? (
                                             <div className="w-4 h-4 animate-spin border-2 border-white border-t-transparent rounded-full mr-2" />
-                                        ) : currentStep === tutorialSteps.length - 1 ? (
+                                        ) : (getVisibleStepIndex() === getVisibleStepsCount()) ? (
                                             <Check className="w-4 h-4 mr-2" />
                                         ) : (
                                             <ArrowRight className="w-4 h-4 mr-2" />
                                         )}
-                                        {currentStep === tutorialSteps.length - 1 ? t('tutorial.finish') : t('tutorial.next')}
+                                        {(getVisibleStepIndex() === getVisibleStepsCount()) ? t('tutorial.finish') : t('tutorial.next')}
                                     </Button>
                                     {currentStep > 0 && (
                                         <Button
@@ -525,12 +770,12 @@ const Tutorial = ({ isVisible, onComplete, currentSection, onNavigateToSection }
                                     >
                                         {isAnimating ? (
                                             <div className="w-4 h-4 animate-spin border-2 border-white border-t-transparent rounded-full mr-1" />
-                                        ) : currentStep === tutorialSteps.length - 1 ? (
+                                        ) : (getVisibleStepIndex() === getVisibleStepsCount()) ? (
                                             <Check className="w-4 h-4 mr-1" />
                                         ) : (
                                             <ArrowRight className="w-4 h-4 mr-1" />
                                         )}
-                                        {currentStep === tutorialSteps.length - 1 ? t('tutorial.finish') : t('tutorial.next')}
+                                        {(getVisibleStepIndex() === getVisibleStepsCount()) ? t('tutorial.finish') : t('tutorial.next')}
                                     </Button>
                                 </div>
                             </>
@@ -586,19 +831,19 @@ const ImportButton = ({ onImport, isImporting, isCompact = false }) => {
     );
 };
 
-// Composant WelcomeCard - toujours visible avec bouton tutoriel
+// Composant WelcomeCard - réduit pour économiser l'espace
 const WelcomeCard = ({ onStartTutorial }) => {
     const { t } = useTranslation();
 
     return (
-        <Card className="bg-gradient-to-r from-amber-50 to-purple-50 dark:from-gray-800 dark:to-gray-900 border-none mb-3 sm:mb-4">
-            <CardContent className="p-3 sm:p-4">
-                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4">
-                    <div className="space-y-1 sm:space-y-2 w-full">
-                        <h3 className="text-base sm:text-lg font-semibold text-gray-800 dark:text-white">
+        <Card className="bg-gradient-to-r from-amber-50 to-purple-50 dark:from-gray-800 dark:to-gray-900 border-none mb-2 sm:mb-3">
+            <CardContent className="p-2 sm:p-3">
+                <div className="flex items-center justify-between gap-2 sm:gap-3">
+                    <div className="min-w-0 flex-1">
+                        <h3 className="text-sm sm:text-base font-semibold text-gray-800 dark:text-white truncate">
                             {t('cv.interface.welcome.title')}
                         </h3>
-                        <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-300">
+                        <p className="text-xs text-gray-600 dark:text-gray-300 hidden sm:block">
                             {t('cv.interface.welcome.subtitle')}
                         </p>
                     </div>
@@ -606,9 +851,9 @@ const WelcomeCard = ({ onStartTutorial }) => {
                         onClick={onStartTutorial}
                         variant="outline"
                         size="sm"
-                        className="border-amber-200 hover:bg-amber-50 text-amber-700 whitespace-nowrap w-full sm:w-auto flex-shrink-0"
+                        className="border-amber-200 hover:bg-amber-50 text-amber-700 whitespace-nowrap flex-shrink-0 h-7 text-xs px-2 sm:h-8 sm:px-3 sm:text-sm"
                     >
-                        <Play className="w-4 h-4 mr-2" />
+                        <Play className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
                         <span className="hidden sm:inline">{t('tutorial.restart')}</span>
                         <span className="sm:hidden">{t('tutorial.help')}</span>
                     </Button>
@@ -1413,6 +1658,8 @@ export default function CvInterface({ auth, cvInformation: initialCvInformation 
 
     return (
         <AuthenticatedLayout user={auth.user}>
+
+
             <Head title={t('cv.interface.title')} />
 
             {/* Tutoriel */}
@@ -1527,23 +1774,23 @@ export default function CvInterface({ auth, cvInformation: initialCvInformation 
                     </Card>
 
                     {/* Call-to-action pour les utilisateurs qui ont terminé la dernière étape */}
-                    {completionStatus.hobby && (
-                        <div className="mt-4 sm:mt-6 text-center">
-                            <Link href={route('userCvModels.index')}>
-                                <Button className="w-full bg-gradient-to-r from-amber-500 to-purple-500 hover:from-amber-600 hover:to-purple-600 dark:from-amber-400 dark:to-purple-400 text-white p-2 sm:p-4 rounded-lg shadow-md sm:shadow-lg group">
-                                    <div className="flex flex-col items-center gap-1 sm:gap-2">
-                                        <Sparkles className="h-4 w-4 sm:h-5 sm:w-5 group-hover:animate-spin" />
-                                        <span className="text-sm sm:text-base font-medium">
-                                            {t('cv.interface.cta.title')}
-                                        </span>
-                                        <span className="text-xs sm:text-sm opacity-90">
-                                            {t('cv.interface.cta.subtitle')}
-                                        </span>
-                                    </div>
-                                </Button>
-                            </Link>
-                        </div>
-                    )}
+                    {/*{completionStatus.hobby && (*/}
+                    {/*    <div className="mt-4 sm:mt-6 text-center">*/}
+                    {/*        <Link href={route('userCvModels.index')}>*/}
+                    {/*            <Button className="w-full bg-gradient-to-r from-amber-500 to-purple-500 hover:from-amber-600 hover:to-purple-600 dark:from-amber-400 dark:to-purple-400 text-white p-2 sm:p-4 rounded-lg shadow-md sm:shadow-lg group">*/}
+                    {/*                <div className="flex flex-col items-center gap-1 sm:gap-2">*/}
+                    {/*                    <Sparkles className="h-4 w-4 sm:h-5 sm:w-5 group-hover:animate-spin" />*/}
+                    {/*                    <span className="text-sm sm:text-base font-medium">*/}
+                    {/*                        {t('cv.interface.cta.title')}*/}
+                    {/*                    </span>*/}
+                    {/*                    <span className="text-xs sm:text-sm opacity-90">*/}
+                    {/*                        {t('cv.interface.cta.subtitle')}*/}
+                    {/*                    </span>*/}
+                    {/*                </div>*/}
+                    {/*            </Button>*/}
+                    {/*        </Link>*/}
+                    {/*    </div>*/}
+                    {/*)}*/}
                 </div>
             </div>
         </AuthenticatedLayout>

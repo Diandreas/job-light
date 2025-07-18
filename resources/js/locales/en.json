@@ -1034,6 +1034,45 @@
                     "Collect your earnings"
                 ]
             }
+        },
+        "code": {
+            "renewal": {
+                "title": "Referral Code Renewal",
+                "description": "Manage or renew your referral code to continue enjoying benefits.",
+                "tabs": {
+                    "current": "My current code",
+                    "new": "New code"
+                },
+                "sponsorCode": "Referral code",
+                "sponsor": "Sponsor",
+                "validity": "Validity",
+                "expired": "Expired",
+                "expires": "Expires on",
+                "renewFor30Days": "Renew for 30 days",
+                "noSponsorYet": "You don't have a sponsor yet.",
+                "canApplyCodeInNewTab": "You can apply a code in the 'New code' tab.",
+                "noReferralCodeYet": "You don't have a referral code yet.",
+                "visitSponsorshipPage": "Go to the sponsorship page to get one.",
+                "newSponsorCode": "New sponsor code",
+                "enterCodePlaceholder": "Enter your sponsor's code...",
+                "validityInfo": "The code will be valid for 30 days from activation.",
+                "applyCode": "Apply code",
+                "yourCodeToShare": "Your code to share",
+                "code": "Code",
+                "shareCodeWithFriends": "Share this code with your friends so they can enjoy benefits.",
+                "viewAllDetails": "View all details",
+                "success": "Code renewed successfully!",
+                "successDescription": "Your referral code has been renewed for 30 days.",
+                "newCodeApplied": "New code applied!",
+                "newCodeAppliedDescription": "The new referral code has been applied successfully.",
+                "error": "Error renewing the code.",
+                "applyError": "Error applying the code.",
+                "enterCode": "Please enter a referral code."
+            },
+            "expired": "Expired",
+            "almostExpired": "Expiring soon",
+            "valid": "Valid",
+            "renewCode": "Renew code"
         }
     },
     "pages": {

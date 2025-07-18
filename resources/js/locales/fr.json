@@ -1034,6 +1034,45 @@
                     "Collectez vos gains"
                 ]
             }
+        },
+        "code": {
+            "renewal": {
+                "title": "Renouvellement du code de parrainage",
+                "description": "Gérez ou renouvelez votre code de parrainage pour continuer à bénéficier des avantages.",
+                "tabs": {
+                    "current": "Mon code actuel",
+                    "new": "Nouveau code"
+                },
+                "sponsorCode": "Code de parrainage",
+                "sponsor": "Parrain",
+                "validity": "Validité",
+                "expired": "Expiré",
+                "expires": "Expire le",
+                "renewFor30Days": "Renouveler pour 30 jours",
+                "noSponsorYet": "Vous n'avez pas encore de parrain.",
+                "canApplyCodeInNewTab": "Vous pouvez appliquer un code dans l'onglet 'Nouveau code'.",
+                "noReferralCodeYet": "Vous n'avez pas encore de code de parrainage.",
+                "visitSponsorshipPage": "Rendez-vous sur la page de parrainage pour en obtenir un.",
+                "newSponsorCode": "Nouveau code de parrainage",
+                "enterCodePlaceholder": "Entrez le code de votre parrain...",
+                "validityInfo": "Le code sera valable 30 jours à compter de l'activation.",
+                "applyCode": "Appliquer le code",
+                "yourCodeToShare": "Votre code à partager",
+                "code": "Code",
+                "shareCodeWithFriends": "Partagez ce code avec vos amis pour qu'ils bénéficient d'avantages.",
+                "viewAllDetails": "Voir tous les détails",
+                "success": "Code renouvelé avec succès !",
+                "successDescription": "Votre code de parrainage a été renouvelé pour 30 jours.",
+                "newCodeApplied": "Nouveau code appliqué !",
+                "newCodeAppliedDescription": "Le nouveau code de parrainage a été appliqué avec succès.",
+                "error": "Erreur lors du renouvellement du code.",
+                "applyError": "Erreur lors de l'application du code.",
+                "enterCode": "Veuillez entrer un code de parrainage."
+            },
+            "expired": "Expiré",
+            "almostExpired": "Expire bientôt",
+            "valid": "Valide",
+            "renewCode": "Renouveler le code"
         }
     },
     "pages": {

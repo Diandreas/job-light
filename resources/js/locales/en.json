@@ -4,6 +4,14 @@
             "title": "Welcome to your CV workspace!",
             "description": "We'll guide you through the different sections to create a professional CV. You can skip this tutorial at any time or restart it from the help button."
         },
+        "navbar": {
+            "title": "Main navigation",
+            "description": "Use this navigation bar to access different application features."
+        },
+        "cvNavigation": {
+            "title": "CV Navigation",
+            "description": "Navigate between different CV sections to organize your information."
+        },
         "progress": {
             "title": "Track your progress",
             "description": "This bar shows your advancement. Each completed section increases your percentage. Aim for 100% for a complete CV!"
@@ -14,7 +22,7 @@
         },
         "sidebar": {
             "title": "Section navigation",
-            "description": "Navigate between different CV sections. Green dots indicate completed sections. On mobile, only icons are visible."
+            "description": "Navigate between different CV sections. Green dots indicate completed sections. Click on a section to access it directly."
         },
         "personalInfo": {
             "title": "Start with your information",
@@ -24,13 +32,18 @@
             "title": "Navigate between sections",
             "description": "Use these buttons to move from one section to another. The 'Next' button is only enabled when the current section is completed. At the end, you'll be able to choose a design!"
         },
+        "tabbar": {
+            "title": "Mobile navigation",
+            "description": "On mobile, use this bar to quickly navigate between sections."
+        },
         "step": "Step",
         "of": "of",
         "previous": "Previous",
         "next": "Next",
         "skip": "Skip",
         "finish": "Finish",
-        "restart": "View tutorial",
+        "close": "Close",
+        "restart": "Restart tutorial",
         "help": "Help"
     },
     "brand": "Guidy",

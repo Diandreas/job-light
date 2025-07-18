@@ -134,7 +134,14 @@ const getCvSideMenuItems = (t: (key: string) => string) => [
     }
 ];
 
-export default function Authenticated({ user, header, children }: PropsWithChildren<{ user: UserType, header?: React.ReactNode }>) {
+interface AuthenticatedProps {
+    user: UserType;
+    header?: React.ReactNode;
+    hideHeaderOnMobile?: boolean; // Nouvelle prop pour masquer le header sur mobile
+    children: React.ReactNode;
+}
+
+export default function Authenticated({ user, header, children, hideHeaderOnMobile = false }: PropsWithChildren<AuthenticatedProps>) {
     const { t, i18n } = useTranslation();
     const { url } = usePage();
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -143,6 +150,12 @@ export default function Authenticated({ user, header, children }: PropsWithChild
     const [isJobPortalDialogOpen, setIsJobPortalDialogOpen] = useState(false);
     const showNav = ['cv-infos.show', 'cv-infos.index', 'userCvModels.index'].includes(route().current());
     const cvSideMenuItems = getCvSideMenuItems(t);
+
+    // Détecter si on est sur la page career-advisor
+    const isCareerAdvisorPage = route().current('career-advisor.index');
+
+    // Décider si on doit masquer le header sur mobile
+    const shouldHideHeaderOnMobile = hideHeaderOnMobile || isCareerAdvisorPage;
 
     const handleJobPortalClick = (e: React.MouseEvent) => {
         e.preventDefault();
@@ -660,22 +673,26 @@ export default function Authenticated({ user, header, children }: PropsWithChild
             </Head>
             <div className="min-h-screen flex flex-col bg-gradient-to-br from-gray-50 to-amber-50 dark:from-gray-950 dark:to-gray-900 transition-colors">
                 <Toaster />
-                <nav className="sticky top-0 z-50 bg-white/80 dark:bg-gray-900/90 backdrop-blur-md shadow-sm border-b border-amber-100 dark:border-gray-700">
+
+                {/* Header principal - Conditionnel sur mobile */}
+                <nav className={cn(
+                    "sticky top-0 z-50 bg-white/80 dark:bg-gray-900/90 backdrop-blur-md shadow-sm border-b border-amber-100 dark:border-gray-700",
+                    shouldHideHeaderOnMobile && "hidden md:block" // Masquer sur mobile si nécessaire
+                )}>
                     <div className="mx-auto px-3 sm:px-6">
                         <div className="flex h-12 sm:h-16 items-center justify-between">
                             <div className="flex items-center gap-2 sm:gap-4">
                                 <Link href="/" className="flex items-center gap-1.5 sm:gap-2">
                                     <Sparkles className="h-4 w-4 sm:h-6 sm:w-6 text-amber-500 dark:text-amber-400" />
                                     <span className="font-bold text-base sm:text-2xl bg-gradient-to-r from-amber-500 to-purple-500 dark:from-amber-400 dark:to-purple-400 text-transparent bg-clip-text">
-                                        { route().current('career-advisor.index') ? 'Guidy AI' : t('brand')}
+                                        {isCareerAdvisorPage ? 'Guidy AI' : t('brand')}
                                     </span>
-                                    {route().current('career-advisor.index') && (
+                                    {isCareerAdvisorPage && (
                                         <Badge variant="secondary" className="text-xs px-1.5 py-0 h-4 bg-amber-50 text-amber-600 dark:bg-amber-900/30 dark:text-amber-300">
                                             <Sparkles className="w-2.5 h-2.5 mr-0.5" />
                                             {t('components.sidebar.pro_badge')}
                                         </Badge>
                                     )}
-
                                 </Link>
                             </div>
 
@@ -735,13 +752,55 @@ export default function Authenticated({ user, header, children }: PropsWithChild
                     </div>
                 </nav>
 
+                {/* Header mobile spécial pour career-advisor - plus compact */}
+                {isCareerAdvisorPage && shouldHideHeaderOnMobile && (
+                    <div className="md:hidden sticky top-0 z-50 bg-white/95 dark:bg-gray-900/95 backdrop-blur-md border-b border-gray-200 dark:border-gray-700">
+                        <div className="flex items-center justify-between px-3 py-1.5"> {/* Réduit padding */}
+                            <div className="flex items-center gap-2">
+                                <Sparkles className="h-4 w-4 text-amber-500 dark:text-amber-400" />
+                                <span className="font-bold text-base bg-gradient-to-r from-amber-500 to-purple-500 text-transparent bg-clip-text">
+                                    Guidy AI
+                                </span>
+                                <Badge variant="secondary" className="text-[10px] px-1 py-0 h-3.5 bg-amber-50 text-amber-600 dark:bg-amber-900/30 dark:text-amber-300">
+                                    <Sparkles className="w-2 h-2 mr-0.5" />
+                                    PRO
+                                </Badge>
+                            </div>
+                            <div className="flex items-center gap-2">
+                                <TokenDisplay />
+                                <ThemeToggle />
+                                <Dropdown>
+                                    <Dropdown.Trigger>
+                                        <Button variant="ghost" className="p-0 h-6 w-6"> {/* Plus petit */}
+                                            <div className="h-5 w-5 rounded-full bg-gradient-to-r from-amber-500 to-purple-500 flex items-center justify-center">
+                                                <span className="text-white font-medium text-[10px]">
+                                                    {user.name.charAt(0).toUpperCase()}
+                                                </span>
+                                            </div>
+                                        </Button>
+                                    </Dropdown.Trigger>
+                                    {/*@ts-ignore*/}
+                                    <Dropdown.Content className="bg-white dark:bg-gray-900 dark:border-gray-700">
+                                        <Dropdown.Link href={route('profile.edit')} className="text-gray-700 dark:text-gray-900 hover:bg-amber-50 dark:hover:bg-amber-500/20 text-xs py-1.5 px-2">
+                                            {t('profile.edit')}
+                                        </Dropdown.Link>
+                                        <Dropdown.Link href={route('logout')} method="post" as="button" className="text-gray-700 dark:text-gray-900 hover:bg-amber-50 dark:hover:bg-amber-500/20 text-xs py-1.5 px-2">
+                                            {t('auth.logout')}
+                                        </Dropdown.Link>
+                                    </Dropdown.Content>
+                                </Dropdown>
+                            </div>
+                        </div>
+                    </div>
+                )}
+
                 <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
                     <SheetContent side="right" className="bg-white dark:bg-gray-900 w-[250px] sm:w-[300px] border-amber-100 dark:border-gray-700 p-3 sm:p-4">
                         <SheetHeader className="text-left">
                             <SheetTitle className="flex items-center gap-1.5 sm:gap-2 text-base sm:text-lg">
                                 <Sparkles className="h-4 w-4 sm:h-5 sm:w-4 text-amber-500 dark:text-amber-400" />
                                 <span className="bg-gradient-to-r from-amber-500 to-purple-500 dark:from-amber-400 dark:to-purple-400 text-transparent bg-clip-text">
-                                    {route().current('career-advisor.index') ? 'Guidy AI ' : t('menu.title')}
+                                    {isCareerAdvisorPage ? 'Guidy AI ' : t('menu.title')}
                                 </span>
                             </SheetTitle>
                         </SheetHeader>
@@ -756,9 +815,9 @@ export default function Authenticated({ user, header, children }: PropsWithChild
                     </SheetContent>
                 </Sheet>
 
-                {showNav && <MobileNav />}
+                {showNav && !isCareerAdvisorPage && <MobileNav />}
 
-                {header && (
+                {header && !isCareerAdvisorPage && (
                     <header className="bg-white/80 dark:bg-gray-900/90 backdrop-blur-md border-b border-amber-100 dark:border-gray-700">
                         <div className="mx-auto py-2 sm:py-6 px-3 sm:px-6 lg:px-8">
                             {header}
@@ -766,8 +825,8 @@ export default function Authenticated({ user, header, children }: PropsWithChild
                     </header>
                 )}
 
-                <div className="flex">
-                    {showNav && (
+                <div className="flex flex-1">
+                    {showNav && !isCareerAdvisorPage && (
                         <aside className="hidden md:block w-48 sm:w-64 bg-white/80 dark:bg-gray-900/90 backdrop-blur-md border-r border-amber-100 dark:border-gray-700 min-h-screen">
                             <div className="sticky top-16 p-3 sm:p-4">
                                 <div className="mb-3 sm:mb-6">
@@ -784,53 +843,58 @@ export default function Authenticated({ user, header, children }: PropsWithChild
                         </aside>
                     )}
 
-                    <main className="flex-1 min-w-0">
+                    <main className={cn(
+                        "flex-1 min-w-0",
+                        isCareerAdvisorPage && "h-screen" // Hauteur full screen pour career-advisor
+                    )}>
                         {children}
                     </main>
                 </div>
 
-                {/* Footer normal - caché sur mobile, visible sur desktop */}
-                <footer className="hidden md:block mt-auto py-3 sm:py-4 border-t border-amber-100 dark:border-gray-700">
-                    <div className="mx-auto px-3 sm:px-6 flex flex-col sm:flex-row justify-between items-center gap-2 sm:gap-4">
-                        <div className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm text-gray-500 dark:text-gray-400">
-                            <Sparkles className="h-3 w-3 sm:h-4 sm:w-4 text-amber-500 dark:text-amber-400" />
-                            <span>© {new Date().getFullYear()} {t('brand')}</span>
-                        </div>
+                {/* Footer normal - caché pour career-advisor */}
+                {!isCareerAdvisorPage && (
+                    <footer className="hidden md:block mt-auto py-3 sm:py-4 border-t border-amber-100 dark:border-gray-700">
+                        <div className="mx-auto px-3 sm:px-6 flex flex-col sm:flex-row justify-between items-center gap-2 sm:gap-4">
+                            <div className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm text-gray-500 dark:text-gray-400">
+                                <Sparkles className="h-3 w-3 sm:h-4 sm:w-4 text-amber-500 dark:text-amber-400" />
+                                <span>© {new Date().getFullYear()} {t('brand')}</span>
+                            </div>
 
-                        <div className="flex items-center gap-4 text-xs sm:text-sm">
-                            <div className="flex items-center gap-4">
-                                <Link
-                                    href={route('support')}
-                                    className="flex items-center gap-1 text-gray-500 hover:text-amber-500 transition-colors"
-                                >
-                                    <MessageSquare className="h-3 w-3 sm:h-4 sm:w-4" />
-                                    <span>Support</span>
-                                </Link>
+                            <div className="flex items-center gap-4 text-xs sm:text-sm">
+                                <div className="flex items-center gap-4">
+                                    <Link
+                                        href={route('support')}
+                                        className="flex items-center gap-1 text-gray-500 hover:text-amber-500 transition-colors"
+                                    >
+                                        <MessageSquare className="h-3 w-3 sm:h-4 sm:w-4" />
+                                        <span>Support</span>
+                                    </Link>
 
-                                <button
-                                    onClick={() => setIsReferralDialogOpen(true)}
-                                    className="flex items-center gap-1 text-gray-500 hover:text-amber-500 transition-colors"
-                                >
-                                    <RefreshCw className="h-3 w-3 sm:h-4 sm:w-4" />
-                                    <span>{t('sponsorship.code.renewal.renewCode')}</span>
-                                </button>
+                                    <button
+                                        onClick={() => setIsReferralDialogOpen(true)}
+                                        className="flex items-center gap-1 text-gray-500 hover:text-amber-500 transition-colors"
+                                    >
+                                        <RefreshCw className="h-3 w-3 sm:h-4 sm:w-4" />
+                                        <span>{t('sponsorship.code.renewal.renewCode')}</span>
+                                    </button>
 
-                                <a
-                                    href="mailto:guidy.makeitreall@gmail.com"
-                                    className="flex items-center gap-1 text-gray-500 hover:text-amber-500 transition-colors"
-                                >
-                                    <Mail className="h-3 w-3 sm:h-4 sm:w-4" />
-                                    <span className="hidden sm:inline">Contact</span>
-                                </a>
+                                    <a
+                                        href="mailto:guidy.makeitreall@gmail.com"
+                                        className="flex items-center gap-1 text-gray-500 hover:text-amber-500 transition-colors"
+                                    >
+                                        <Mail className="h-3 w-3 sm:h-4 sm:w-4" />
+                                        <span className="hidden sm:inline">Contact</span>
+                                    </a>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                </footer>
+                    </footer>
+                )}
 
                 <ReferralCodeRenewal />
                 <JobPortalComingSoonDialog />
 
-                {/* Mobile Tab Bar - s'affiche seulement sur mobile */}
+                {/* Mobile Tab Bar - toujours visible sur mobile */}
                 <div className="md:hidden">
                     <MobileTabBar onRenewCodeClick={() => setIsReferralDialogOpen(true)} />
                 </div>

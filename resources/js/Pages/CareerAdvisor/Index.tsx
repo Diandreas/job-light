@@ -1004,28 +1004,6 @@ export default function Index({ auth, userInfo, chatHistories }) {
             {/* Rendre l'effet de curseur plus subtil */}
             <div className="opacity-20"><FluidCursorEffect zIndex={100} /></div>
 
-            {/* Indicateur de statut Median */}
-            <div className="fixed top-4 right-4 z-50">
-                <div className="flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400 bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm px-2 py-1 rounded-lg border border-gray-200 dark:border-gray-700">
-                    {isAndroidApp ? (
-                        <>
-                            <Smartphone className="h-3 w-3 text-green-500" />
-                            <span>Mode natif Android</span>
-                            {isReady ? (
-                                <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
-                            ) : (
-                                <div className="w-2 h-2 bg-orange-500 rounded-full animate-pulse" />
-                            )}
-                        </>
-                    ) : (
-                        <>
-                            <Monitor className="h-3 w-3 text-blue-500" />
-                            <span>Mode web</span>
-                            <div className="w-2 h-2 bg-blue-500 rounded-full" />
-                        </>
-                    )}
-                </div>
-            </div>
 
             <div className="h-[calc(100vh-100px)] md:h-screen flex bg-gray-50 dark:bg-gray-900"> {/* 100px = header mobile (40px) + tab bar (60px) */}
                 {/* Sidebar Desktop - Collapsible */}

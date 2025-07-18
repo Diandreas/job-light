@@ -17,9 +17,7 @@ import { useMedian } from '@/Hooks/useMedian';
 import axios from 'axios';
 
 // Liste des modèles sans bouton de téléchargement
-// const MODELS_WITHOUT_DOWNLOAD = [10, 14, 12, 19, 18];
 const MODELS_WITHOUT_DOWNLOAD = [10, 12, 13, 17, 14, 19, 22, 4, 8, 21, 25, 26];
-
 
 const InfoCard = ({ icon: Icon, title, value, type = "default" }) => {
     const styles = {
@@ -85,7 +83,7 @@ const NoModelSelected = ({ user }) => {
 export default function Show({ auth, cvInformation, selectedCvModel }) {
     const { t, i18n } = useTranslation();
     const { toast } = useToast();
-    const { isReady, isAndroidApp, downloadFile, printDocument } = useMedian();
+    const { isReady, isAndroidApp, downloadFile, printDocument, createDirectDownloadUrl, isUrlCompatible } = useMedian();
     const iframeRef = useRef(null);
     const [isLoading, setIsLoading] = useState(false);
     const [isDownloading, setIsDownloading] = useState(false);
@@ -157,12 +155,24 @@ export default function Show({ auth, cvInformation, selectedCvModel }) {
             if (isAndroidApp && isReady) {
                 console.log('🚀 Téléchargement CV natif Android');
 
-                const downloadUrl = new URL(route('cv.download', selectedCvModel.id), window.location.origin);
-                downloadUrl.searchParams.set('locale', i18n.language);
+                // Créer une URL directe compatible avec Median
+                const downloadUrl = createDirectDownloadUrl(
+                    route('cv.download.direct', selectedCvModel.id),
+                    {
+                        locale: i18n.language,
+                        direct: true
+                    }
+                );
 
-                const result = await downloadFile(downloadUrl.toString(), {
+                // Vérifier que l'URL est compatible
+                if (!isUrlCompatible(downloadUrl)) {
+                    throw new Error('URL non compatible avec Median');
+                }
+
+                const result = await downloadFile(downloadUrl, {
                     filename: `CV-${auth.user.name}.pdf`,
-                    open: true
+                    open: true,
+                    forceDownload: true
                 });
 
                 if (result.success) {
@@ -207,32 +217,6 @@ export default function Show({ auth, cvInformation, selectedCvModel }) {
         }
     };
 
-    // Méthode fallback web classique
-    const handleDownloadWeb = async () => {
-        console.log('📄 Téléchargement web classique');
-
-        const response = await axios.get(route('cv.download', selectedCvModel?.id), {
-            responseType: 'blob',
-            params: { locale: i18n.language }
-        });
-
-        const blob = new Blob([response.data], { type: 'application/pdf' });
-        const url = window.URL.createObjectURL(blob);
-        const link = document.createElement('a');
-        link.href = url;
-        link.download = `CV-${auth.user.name}.pdf`;
-        document.body.appendChild(link);
-        link.click();
-        window.URL.revokeObjectURL(url);
-        document.body.removeChild(link);
-
-        toast({
-            title: '🌐 Téléchargement web réussi',
-            description: t('cv_preview.export.download_success_description'),
-            variant: 'default'
-        });
-    };
-
     const handlePrint = async () => {
         if (!canAccessFeatures && !hasDownloaded) {
             return toast({
@@ -265,18 +249,26 @@ export default function Show({ auth, cvInformation, selectedCvModel }) {
             if (isAndroidApp && isReady) {
                 console.log('🖨️ Impression CV native Android');
 
-                const printUrl = new URL(route('cv.preview', selectedCvModel.id), window.location.origin);
-                printUrl.searchParams.set('locale', i18n.language);
-                printUrl.searchParams.set('print_mode', 'pdf');
-                printUrl.searchParams.set('show_save_button', 'true');
-                printUrl.searchParams.set('auto_print', 'false');
+                // Créer une URL d'impression optimisée pour mobile
+                const printUrl = createDirectDownloadUrl(
+                    route('cv.preview.print', selectedCvModel.id),
+                    {
+                        locale: i18n.language,
+                        print_mode: 'mobile',
+                        show_save_button: true,
+                        auto_print: false
+                    }
+                );
 
-                const result = await printDocument(printUrl.toString());
+                const result = await printDocument(printUrl, {
+                    useShare: true, // Utiliser le partage natif qui inclut l'impression
+                    openInBrowser: false
+                });
 
                 if (result.success) {
                     toast({
                         title: '📱 Impression CV initiée',
-                        description: 'La boîte de dialogue d\'impression va s\'ouvrir avec option de sauvegarde PDF',
+                        description: 'Options de partage/impression Android ouvertes',
                         variant: 'default'
                     });
                 } else {
@@ -315,7 +307,33 @@ export default function Show({ auth, cvInformation, selectedCvModel }) {
         }
     };
 
-    // Méthode fallback web classique
+    // Méthode fallback web classique pour téléchargement
+    const handleDownloadWeb = async () => {
+        console.log('📄 Téléchargement web classique');
+
+        const response = await axios.get(route('cv.download', selectedCvModel?.id), {
+            responseType: 'blob',
+            params: { locale: i18n.language }
+        });
+
+        const blob = new Blob([response.data], { type: 'application/pdf' });
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `CV-${auth.user.name}.pdf`;
+        document.body.appendChild(link);
+        link.click();
+        window.URL.revokeObjectURL(url);
+        document.body.removeChild(link);
+
+        toast({
+            title: '🌐 Téléchargement web réussi',
+            description: t('cv_preview.export.download_success_description'),
+            variant: 'default'
+        });
+    };
+
+    // Méthode fallback web classique pour impression
     const handlePrintWeb = async () => {
         console.log('🖨️ Impression web classique');
 
@@ -353,29 +371,7 @@ export default function Show({ auth, cvInformation, selectedCvModel }) {
     return (
         <AuthenticatedLayout user={auth.user}>
             <Head title={t('cv_preview.title')} />
-
-            {/* Indicateur de statut Median */}
-            <div className="fixed top-4 right-4 z-50">
-                <div className="flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400 bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm px-2 py-1 rounded-lg border border-gray-200 dark:border-gray-700">
-                    {isAndroidApp ? (
-                        <>
-                            <Smartphone className="h-3 w-3 text-green-500" />
-                            <span>Mode natif Android</span>
-                            {isReady ? (
-                                <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
-                            ) : (
-                                <div className="w-2 h-2 bg-orange-500 rounded-full animate-pulse" />
-                            )}
-                        </>
-                    ) : (
-                        <>
-                            <Monitor className="h-3 w-3 text-blue-500" />
-                            <span>Mode web</span>
-                            <div className="w-2 h-2 bg-blue-500 rounded-full" />
-                        </>
-                    )}
-                </div>
-            </div>
+            
 
             <div className="w-full p-4 md:p-6 space-y-6">
                 <motion.div

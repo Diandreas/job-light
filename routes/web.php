@@ -94,8 +94,16 @@ Route::prefix('api')->middleware(['auth'])->group(function () {
     Route::delete('/exports/{export}', [DocumentExportController::class, 'destroy']);
 });
 Route::middleware(['auth'])->group(function () {
+
     Route::post('/api/cv/update-color', [CvColorController::class, 'updateColor'])->name('cv.updateColor');
-    Route::post('/career-advisor/export', [CareerAdvisorController::class, 'export'])
+
+    // Route pour réinitialiser la couleur à la valeur par défaut
+    Route::post('/api/cv-color/reset', [CvColorController::class, 'resetColor'])
+        ->name('cv-color.reset');
+
+    // Route pour récupérer la couleur actuelle
+    Route::get('/api/cv-color/current', [CvColorController::class, 'getCurrentColor'])
+        ->name('cv-color.current');    Route::post('/career-advisor/export', [CareerAdvisorController::class, 'export'])
         ->name('career-advisor.export');
     Route::post('/api/process-question-cost', [PaymentController::class, 'processQuestionCost']);
     Route::get('/api/check-download-status/{modelId}', [PaymentController::class, 'checkDownloadStatus']);
@@ -246,5 +254,7 @@ Route::get('/cv/download-direct/{id}', [CvInfosController::class, 'downloadPdfDi
 Route::get('/cv/preview-print/{id}', [CvInfosController::class, 'previewPrint']);
 // Route de test pour vérifier le schéma de la base de données
 Route::get('/test-db-schema', [App\Http\Controllers\TestDbController::class, 'testSchema']);
+
+
 
 require __DIR__.'/auth.php';

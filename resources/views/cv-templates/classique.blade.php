@@ -8,10 +8,26 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ $cvInformation['personalInformation']['firstName'] ?? 'CV' }} - CV</title>
     <style>
+        @php
+            $primaryColor = $cvInformation['primary_color'] ?? '#3498db';
+            // Générer des variations de la couleur primaire
+            $primaryColorRgb = sscanf($primaryColor, "#%02x%02x%02x");
+            $lightColor = sprintf("#%02x%02x%02x",
+                min(255, $primaryColorRgb[0] + 60),
+                min(255, $primaryColorRgb[1] + 60),
+                min(255, $primaryColorRgb[2] + 60)
+            );
+            $veryLightColor = sprintf("#%02x%02x%02x",
+                min(255, $primaryColorRgb[0] + 100),
+                min(255, $primaryColorRgb[1] + 100),
+                min(255, $primaryColorRgb[2] + 100)
+            );
+        @endphp
+
         @page {
-            margin: 5mm; 
+            margin: 5mm;
             padding: 0;
-            size: A4; 
+            size: A4;
         }
         * { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -37,7 +53,7 @@
             position: relative;
             min-height: 25mm;
             margin-bottom: 4mm;
-            border-bottom: 0.4mm solid #3498db;
+            border-bottom: 0.4mm solid {{ $primaryColor }};
             padding-bottom: 3mm;
         }
 
@@ -72,7 +88,7 @@
 
         h2 {
             font-size: 12pt;
-            color: #3498db;
+            color: {{ $primaryColor }};
             border-bottom: 0.2mm solid #e0e0e0;
             padding-bottom: 0.8mm;
             margin-bottom: 2mm;
@@ -107,12 +123,12 @@
 
         .contact-icon {
             margin-right: 1mm;
-            color: #3498db;
+            color: {{ $primaryColor }};
             font-size: 9pt;
         }
 
-        section { 
-            margin-bottom: 4mm; 
+        section {
+            margin-bottom: 4mm;
             page-break-inside: avoid;
         }
 
@@ -151,7 +167,7 @@
         .date {
             text-align: right;
             font-size: 9pt;
-            color: #3498db;
+            color: {{ $primaryColor }};
             width: 25%;
             font-weight: bold;
         }
@@ -190,20 +206,20 @@
             margin-bottom: 4mm;
             font-size: 10pt;
             line-height: 1.3;
-            border-left: 1mm solid #3498db;
+            border-left: 1mm solid {{ $primaryColor }};
         }
 
         /* Language section styling */
         .languages-section {
             margin-bottom: 3mm;
         }
-        
+
         .language-items {
             display: flex;
             flex-wrap: wrap;
             gap: 1.5mm;
         }
-        
+
         .language-item {
             background-color: #f8f9fa;
             border: 0.2mm solid #e0e0e0;
@@ -215,33 +231,33 @@
             margin-right: 1mm;
             display: inline-block;
         }
-        
+
         .language-level {
-            color: #3498db;
+            color: {{ $primaryColor }};
             margin-left: 1mm;
             font-style: italic;
             font-weight: 600;
         }
 
         @media print {
-        
+
             body {
                 margin: 0;
                 padding: 0;
                 width: 210mm;
                 height: 297mm;
             }
-            
+
             .cv-container {
                 margin: 0 auto;
                 padding-top: 5mm;
                 box-shadow: none;
             }
-            
-            section { 
-                page-break-inside: avoid; 
+
+            section {
+                page-break-inside: avoid;
             }
-            
+
             .page-break {
                 page-break-before: always;
             }

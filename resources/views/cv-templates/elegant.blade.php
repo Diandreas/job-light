@@ -1,13 +1,29 @@
 @extends('layouts.cv')
 
 @section('content')
-<!DOCTYPE html>
+    <!DOCTYPE html>
 <html lang="{{ $currentLocale }}">
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ $cvInformation['personalInformation']['firstName'] ?? 'CV' }} - CV</title>
     <style>
+        @php
+            $primaryColor = $cvInformation['primary_color'] ?? '#8E44AD';
+            // Générer des variations de la couleur primaire
+            $primaryColorRgb = sscanf($primaryColor, "#%02x%02x%02x");
+            $lightColor = sprintf("#%02x%02x%02x",
+                min(255, $primaryColorRgb[0] + 80),
+                min(255, $primaryColorRgb[1] + 80),
+                min(255, $primaryColorRgb[2] + 80)
+            );
+            $veryLightColor = sprintf("#%02x%02x%02x",
+                min(255, $primaryColorRgb[0] + 120),
+                min(255, $primaryColorRgb[1] + 120),
+                min(255, $primaryColorRgb[2] + 120)
+            );
+        @endphp
+
         /* Page Setup */
         @page {
             margin: 10mm;
@@ -46,7 +62,7 @@
             justify-content: space-between;
             align-items: center;
             margin-bottom: 6mm;
-            border-bottom: 0.3mm solid #8E44AD;
+            border-bottom: 0.3mm solid {{ $primaryColor }};
             padding-bottom: 4mm;
         }
 
@@ -63,7 +79,7 @@
         .name {
             font-size: 21pt;
             font-weight: 300;
-            color: #8E44AD;
+            color: {{ $primaryColor }};
             margin-bottom: 1mm;
             letter-spacing: 0.5pt;
         }
@@ -82,7 +98,7 @@
             height: 30mm;
             overflow: hidden;
             border-radius: 50%;
-            border: 0.5mm solid #8E44AD;
+            border: 0.5mm solid {{ $primaryColor }};
         }
 
         .photo-container img {
@@ -144,14 +160,14 @@
         .section-title {
             font-size: 12pt;
             font-weight: normal;
-            color: #8E44AD;
+            color: {{ $primaryColor }};
             text-transform: uppercase;
             margin-bottom: 3mm;
             letter-spacing: 0.5pt;
             position: relative;
             padding-bottom: 1mm;
         }
-        
+
         .section-title:after {
             content: '';
             position: absolute;
@@ -159,7 +175,7 @@
             left: 0;
             width: 12mm;
             height: 0.3mm;
-            background-color: #8E44AD;
+            background-color: {{ $primaryColor }};
         }
 
         /* Experience Item */
@@ -182,7 +198,7 @@
 
         .date {
             font-size: 10pt;
-            color: #8E44AD;
+            color: {{ $primaryColor }};
             font-weight: 600;
             font-style: italic;
         }
@@ -216,11 +232,11 @@
         }
 
         .skill-item {
-            background-color: #F9F5FD;
+            background-color: {{ $veryLightColor }};
             padding: 1mm 2mm;
             border-radius: 1.5mm;
             font-size: 10pt;
-            color: #8E44AD;
+            color: {{ $primaryColor }};
         }
 
         /* Language Section */
@@ -230,17 +246,17 @@
             gap: 1.5mm;
             margin-top: 2mm;
         }
-        
+
         .language-item {
-            background-color: #F9F5FD;
+            background-color: {{ $veryLightColor }};
             border-radius: 1.5mm;
             padding: 1mm 2mm;
             font-size: 10pt;
-            color: #8E44AD;
+            color: {{ $primaryColor }};
             display: flex;
             align-items: center;
         }
-        
+
         .language-level {
             color: #777777;
             margin-left: 1mm;
@@ -264,7 +280,7 @@
 
         .hobby-item:before {
             content: "•";
-            color: #8E44AD;
+            color: {{ $primaryColor }};
             position: absolute;
             left: 0;
         }
@@ -276,16 +292,16 @@
                 height: 297mm;
                 font-size: 11pt;
             }
-            
+
             .cv-container {
                 width: 100%;
                 height: auto;
             }
-            
+
             .section-title {
                 break-after: avoid;
             }
-            
+
             .experience-item {
                 break-inside: avoid;
             }
@@ -302,7 +318,7 @@
                 {{ $currentLocale === 'fr' ? $cvInformation['professions'][0]['name'] : $cvInformation['professions'][0]['name_en'] }}
             </div>
         </div>
-        
+
         <div class="header-photo">
             @if($cvInformation['personalInformation']['photo'])
                 <div class="photo-container">

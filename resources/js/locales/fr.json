@@ -1,4 +1,22 @@
 {
+    "common": {
+        "save": "Enregistrer",
+        "saving": "Enregistrement...",
+        "cancel": "Annuler",
+        "error": "Erreur"
+    },
+    "cv_color": {
+        "customize_color": "Personnaliser la couleur",
+        "choose_color": "Choisissez une couleur",
+        "recommended_colors": "Couleurs recommandées",
+        "click_to_select": "Cliquez sur une couleur pour la sélectionner",
+        "or_custom": "ou personnalisée",
+        "selected_color": "Couleur sélectionnée",
+        "success_title": "Couleur enregistrée",
+        "success_message": "La couleur du CV a été mise à jour avec succès",
+        "error_title": "Erreur",
+        "error_message": "Impossible d'enregistrer la couleur. Veuillez réessayer."
+    },
     "tutorial": {
         "welcome": {
             "title": "Bienvenue dans votre espace CV !",

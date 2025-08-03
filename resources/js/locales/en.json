@@ -1,4 +1,22 @@
 {
+    "common": {
+        "save": "Save",
+        "saving": "Saving...",
+        "cancel": "Cancel",
+        "error": "Error"
+    },
+    "cv_color": {
+        "customize_color": "Customize color",
+        "choose_color": "Choose a color",
+        "recommended_colors": "Recommended colors",
+        "click_to_select": "Click on a color to select it",
+        "or_custom": "or custom",
+        "selected_color": "Selected color",
+        "success_title": "Color saved",
+        "success_message": "CV color has been updated successfully",
+        "error_title": "Error",
+        "error_message": "Could not save color. Please try again."
+    },
     "tutorial": {
         "welcome": {
             "title": "Welcome to your CV workspace!",

@@ -8,6 +8,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ $cvInformation['personalInformation']['firstName'] ?? 'CV' }} - CV</title>
     <style>
+        @php
+            $primaryColor = $cvInformation['primary_color'] ?? '#1F497D';
+            // Générer des variations de la couleur primaire
+            $primaryColorRgb = sscanf($primaryColor, "#%02x%02x%02x");
+            $lightColor = sprintf("#%02x%02x%02x",
+                min(255, $primaryColorRgb[0] + 40),
+                min(255, $primaryColorRgb[1] + 40),
+                min(255, $primaryColorRgb[2] + 40)
+            );
+        @endphp
+
         @page {
             margin: 15mm;
             padding: 0;
@@ -44,14 +55,14 @@
         .header {
             margin-bottom: 6mm;
             text-align: center;
-            border-bottom: 0.8mm solid #1F497D;
+            border-bottom: 0.8mm solid {{ $primaryColor }};
             padding-bottom: 4mm;
         }
 
         .name {
             font-size: 18pt;
             font-weight: bold;
-            color: #1F497D;
+            color: {{ $primaryColor }};
             margin-bottom: 2mm;
             font-family: 'Times New Roman', 'DejaVu Serif', serif;
             letter-spacing: 0.3mm;
@@ -83,7 +94,7 @@
             height: 30mm;
             overflow: hidden;
             border-radius: 1mm;
-            border: 0.5mm solid #1F497D;
+            border: 0.5mm solid {{ $primaryColor }};
             margin: 0 auto 3mm auto;
         }
 
@@ -101,10 +112,10 @@
         .section-title {
             font-size: 14pt;
             font-weight: bold;
-            color: #1F497D;
+            color: {{ $primaryColor }};
             margin-bottom: 2mm;
             text-transform: uppercase;
-            border-bottom: 0.3mm solid #1F497D;
+            border-bottom: 0.3mm solid {{ $primaryColor }};
             padding-bottom: 1mm;
             letter-spacing: 0.2mm;
         }
@@ -130,7 +141,7 @@
             width: 25%;
             padding-right: 2mm;
             font-weight: bold;
-            color: #1F497D;
+            color: {{ $primaryColor }};
         }
 
         .exp-content-cell {
@@ -215,7 +226,7 @@
 
         .skill-level {
             font-size: 11pt;
-            color: #1F497D;
+            color: {{ $primaryColor }};
             font-style: italic;
         }
 
@@ -223,34 +234,34 @@
         .language-table {
             width: 100%;
         }
-        
+
         .language-row {
             border-bottom: 0.1mm solid #EEEEEE;
         }
-        
+
         .language-row:last-child {
             border-bottom: none;
         }
-        
+
         .language-name-cell {
             width: 60%;
             padding: 1.5mm 0;
         }
-        
+
         .language-level-cell {
             width: 40%;
             text-align: right;
             padding: 1.5mm 0;
         }
-        
+
         .language-name {
             font-size: 11pt;
             color: #333333;
         }
-        
+
         .language-level {
             font-size: 11pt;
-            color: #1F497D;
+            color: {{ $primaryColor }};
             font-style: italic;
         }
 
@@ -262,12 +273,12 @@
             text-align: center;
             margin-top: 6mm;
         }
-        
+
         .hobbies-container {
             text-align: center;
             width: 100%;
         }
-        
+
         .hobby-item {
             display: inline-block;
             font-size: 10pt;
@@ -431,4 +442,4 @@
 </div>
 </body>
 </html>
-@endsection 
+@endsection

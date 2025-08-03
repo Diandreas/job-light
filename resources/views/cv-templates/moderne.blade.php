@@ -8,6 +8,22 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ $cvInformation['personalInformation']['firstName'] ?? 'CV' }} - CV</title>
     <style>
+        @php
+            $primaryColor = $cvInformation['primary_color'] ?? '#1ABC9C';
+            // Générer des variations de la couleur primaire
+            $primaryColorRgb = sscanf($primaryColor, "#%02x%02x%02x");
+            $lightColor = sprintf("#%02x%02x%02x",
+                min(255, $primaryColorRgb[0] + 30),
+                min(255, $primaryColorRgb[1] + 30),
+                min(255, $primaryColorRgb[2] + 30)
+            );
+            $veryLightColor = sprintf("#%02x%02x%02x",
+                min(255, $primaryColorRgb[0] + 60),
+                min(255, $primaryColorRgb[1] + 60),
+                min(255, $primaryColorRgb[2] + 60)
+            );
+        @endphp
+
         @page {
             margin: 15mm;
             padding: 0;
@@ -64,7 +80,7 @@
         .name {
             font-size: 15pt;
             font-weight: 700;
-            color: #1ABC9C;
+            color: {{ $primaryColor }};
             margin-bottom: 1.5mm;
             letter-spacing: -0.5pt;
         }
@@ -83,7 +99,7 @@
         }
 
         .contact-icon {
-            color: #1ABC9C;
+            color: {{ $primaryColor }};
             margin-right: 1mm;
         }
 
@@ -93,7 +109,7 @@
             height: 28mm;
             overflow: hidden;
             border-radius: 2mm;
-            border: 0.5mm solid #1ABC9C;
+            border: 0.5mm solid {{ $primaryColor }};
         }
 
         .photo-container img {
@@ -110,7 +126,7 @@
         .section-title {
             font-size: 13pt;
             font-weight: bold;
-            color: #1ABC9C;
+            color: {{ $primaryColor }};
             text-transform: uppercase;
             margin-bottom: 2.5mm;
             padding-bottom: 1mm;
@@ -140,7 +156,7 @@
 
         .date-box {
             background-color: #F8F9FA;
-            border-left: 0.5mm solid #1ABC9C;
+            border-left: 0.5mm solid {{ $primaryColor }};
             padding: 1.5mm;
             font-size: 9.5pt;
             color: #7F8C8D;
@@ -160,7 +176,7 @@
         }
 
         .company-name {
-            color: #1ABC9C;
+            color: {{ $primaryColor }};
             font-weight: 600;
             font-size: 10.5pt;
             line-height: 1.1;
@@ -211,7 +227,7 @@
 
         .skill-item:before, .hobby-item:before {
             content: "•";
-            color: #1ABC9C;
+            color: {{ $primaryColor }};
             margin-right: 1mm;
         }
 
@@ -223,7 +239,7 @@
         }
 
         .language-title {
-            color: #1ABC9C;
+            color: {{ $primaryColor }};
             font-weight: 600;
             font-size: 13pt;
             margin-bottom: 1.5mm;
@@ -242,7 +258,7 @@
         }
 
         .language-level {
-            color: #1ABC9C;
+            color: {{ $primaryColor }};
             font-weight: 600;
         }
     </style>

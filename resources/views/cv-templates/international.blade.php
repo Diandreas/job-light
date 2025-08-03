@@ -1,23 +1,42 @@
 @extends('layouts.cv')
 
 @section('content')
-<!DOCTYPE html>
+    <!DOCTYPE html>
 <html lang="{{ $currentLocale }}">
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ $cvInformation['personalInformation']['firstName'] ?? 'CV' }} - CV</title>
     <style>
+        @php
+            $primaryColor = $cvInformation['primary_color'] ?? '#2c3e50';
+            $secondaryColor = $cvInformation['primary_color'] ?? '#3498db';
+            $accentColor = $cvInformation['primary_color'] ?? '#e74c3c';
+
+            // Générer des variations de la couleur primaire
+            $primaryColorRgb = sscanf($primaryColor, "#%02x%02x%02x");
+            $lightColor = sprintf("#%02x%02x%02x",
+                min(255, $primaryColorRgb[0] + 80),
+                min(255, $primaryColorRgb[1] + 80),
+                min(255, $primaryColorRgb[2] + 80)
+            );
+            $veryLightColor = sprintf("#%02x%02x%02x",
+                min(255, $primaryColorRgb[0] + 120),
+                min(255, $primaryColorRgb[1] + 120),
+                min(255, $primaryColorRgb[2] + 120)
+            );
+        @endphp
+
         /* Modern CV Variables */
         :root {
-            --primary-color: #2c3e50;
-            --secondary-color: #3498db;
-            --light-color: #ecf0f1;
-            --dark-color: #2c3e50;
+            --primary-color: {{ $primaryColor }};
+            --secondary-color: {{ $secondaryColor }};
+            --light-color: {{ $lightColor }};
+            --dark-color: {{ $primaryColor }};
             --text-color: #333333;
             --text-light: #7f8c8d;
             --border-color: #bdc3c7;
-            --accent-color: #e74c3c;
+            --accent-color: {{ $accentColor }};
             --section-spacing: 5mm;
         }
 
@@ -373,16 +392,16 @@
                 width: 210mm;
                 height: 297mm;
             }
-            
+
             .cv-container {
                 width: 100%;
                 height: auto;
             }
-            
+
             .section {
                 break-inside: avoid;
             }
-            
+
             .experience-item, .education-item {
                 break-inside: avoid;
             }
@@ -405,7 +424,7 @@
                     @endif
                 </div>
             </div>
-            
+
             <div class="contact-info">
                 @if($cvInformation['personalInformation']['email'])
                     <div class="contact-item">
@@ -413,21 +432,21 @@
                         {{ $cvInformation['personalInformation']['email'] }}
                     </div>
                 @endif
-                
+
                 @if($cvInformation['personalInformation']['phone'])
                     <div class="contact-item">
                         <span class="contact-label">{{ $currentLocale === 'fr' ? 'Tél:' : 'Phone:' }}</span>
                         {{ $cvInformation['personalInformation']['phone'] }}
                     </div>
                 @endif
-                
+
                 @if($cvInformation['personalInformation']['address'])
                     <div class="contact-item">
                         <span class="contact-label">{{ $currentLocale === 'fr' ? 'Adresse:' : 'Address:' }}</span>
                         {{ $cvInformation['personalInformation']['address'] }}
                     </div>
                 @endif
-                
+
                 @if($cvInformation['personalInformation']['linkedin'])
                     <div class="contact-item">
                         <span class="contact-label">LinkedIn:</span>
@@ -436,7 +455,7 @@
                 @endif
             </div>
         </div>
-        
+
         <div class="header-right">
             @if($cvInformation['personalInformation']['photo'])
                 <div class="photo-container">
@@ -574,7 +593,7 @@
                                                 {{ $currentLocale === 'fr' ? 'Présent' : 'Present' }}
                                             @endif
                                         </div>
-                                        
+
                                         @php
                                             $start = \Carbon\Carbon::parse($experience['date_start']);
                                             $end = $experience['date_end'] ? \Carbon\Carbon::parse($experience['date_end']) : \Carbon\Carbon::now();
@@ -588,18 +607,18 @@
                                                 $duration .= $diff->m . ' mo';
                                             }
                                         @endphp
-                                        
+
                                         @if($duration)
                                             <div class="experience-duration">({{ $duration }})</div>
                                         @endif
-                                        
+
                                         @if(!empty($experience['city']) || !empty($experience['country']))
                                             <div class="experience-location">
                                                 {{ $experience['city'] ?? '' }}{{ !empty($experience['city']) && !empty($experience['country']) ? ', ' : '' }}{{ $experience['country'] ?? '' }}
                                             </div>
                                         @endif
                                     </div>
-                                    
+
                                     <div class="experience-content">
                                         <div class="experience-title">{{ $experience['name'] }}</div>
                                         <div class="experience-company">{{ $experience['InstitutionName'] }}</div>
@@ -621,9 +640,9 @@
 
     <!-- Footer -->
     <div class="footer">
-        {{ $currentLocale === 'fr' ? 'Curriculum Vitae International - ' : 'International Curriculum Vitae - ' }} 
-        {{ $cvInformation['personalInformation']['firstName'] }} | 
-        {{ $currentLocale === 'fr' ? 'Dernière mise à jour : ' : 'Last Updated: ' }} 
+        {{ $currentLocale === 'fr' ? 'Curriculum Vitae International - ' : 'International Curriculum Vitae - ' }}
+        {{ $cvInformation['personalInformation']['firstName'] }} |
+        {{ $currentLocale === 'fr' ? 'Dernière mise à jour : ' : 'Last Updated: ' }}
         {{ \Carbon\Carbon::now()->locale($currentLocale)->isoFormat('DD MMMM YYYY') }}
     </div>
 </div>

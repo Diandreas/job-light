@@ -14,6 +14,7 @@ class CvInfo extends Model
         'surname',
         'address_id',
         'profession_id',
+        'primary_color',
     ];
 
     public function user(): BelongsTo

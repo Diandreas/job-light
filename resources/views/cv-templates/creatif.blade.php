@@ -8,6 +8,27 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ $cvInformation['personalInformation']['firstName'] ?? 'CV' }} - CV</title>
     <style>
+        @php
+            $primaryColor = $cvInformation['primary_color'] ?? '#3498db';
+            // Générer des variations de la couleur primaire
+            $primaryColorRgb = sscanf($primaryColor, "#%02x%02x%02x");
+            $lightColor = sprintf("#%02x%02x%02x",
+                min(255, $primaryColorRgb[0] + 50),
+                min(255, $primaryColorRgb[1] + 50),
+                min(255, $primaryColorRgb[2] + 50)
+            );
+            $veryLightColor = sprintf("rgba(%d, %d, %d, 0.1)",
+                $primaryColorRgb[0],
+                $primaryColorRgb[1],
+                $primaryColorRgb[2]
+            );
+            $ultraLightColor = sprintf("rgba(%d, %d, %d, 0.15)",
+                min(255, $primaryColorRgb[0] + 50),
+                min(255, $primaryColorRgb[1] + 50),
+                min(255, $primaryColorRgb[2] + 50)
+            );
+        @endphp
+
         @page {
             margin: 5mm;
             padding: 0;
@@ -39,7 +60,7 @@
 
         .sidebar {
             width: 60mm;
-            background-color: #3498db;
+            background-color: {{ $primaryColor }};
             color: white;
         }
 
@@ -75,7 +96,7 @@
         .language-section {
             margin-top: 3mm;
             padding: 3mm;
-            background-color: rgba(255, 255, 255, 0.1);
+            background-color: {{ $ultraLightColor }};
             border-radius: 2mm;
             border-left: 1mm solid rgba(255, 255, 255, 0.3);
         }
@@ -119,7 +140,7 @@
 
         .header-name {
             font-size: 16pt;
-            color: #3498db;
+            color: {{ $primaryColor }};
             text-transform: uppercase;
             margin-bottom: 2mm;
         }
@@ -132,17 +153,16 @@
 
         .main-section-title {
             font-size: 14pt;
-            color: #3498db;
+            color: {{ $primaryColor }};
             text-transform: uppercase;
             padding-bottom: 1mm;
-            border-bottom: 0.3mm solid #3498db;
-            /* margin: 4mm 0; */
+            border-bottom: 0.3mm solid {{ $primaryColor }};
         }
 
         .summary-box {
             background: #f5f6fa;
             padding: 3mm;
-            border-left: 1mm solid #3498db;
+            border-left: 1mm solid {{ $primaryColor }};
             margin-bottom: 4mm;
             font-size: 11pt;
             line-height: 1.15;
@@ -164,7 +184,7 @@
         .experience-company {
             font-size: 11pt;
             font-style: italic;
-            color: #3498db;
+            color: {{ $primaryColor }};
         }
 
         .experience-date {

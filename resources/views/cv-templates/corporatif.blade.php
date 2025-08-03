@@ -8,6 +8,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ $cvInformation['personalInformation']['firstName'] ?? 'CV' }} - CV</title>
     <style>
+        @php
+            $primaryColor = $cvInformation['primary_color'] ?? '#FFA500';
+            // Générer des variations de la couleur primaire
+            $primaryColorRgb = sscanf($primaryColor, "#%02x%02x%02x");
+            $darkColor = sprintf("#%02x%02x%02x",
+                max(0, $primaryColorRgb[0] - 40),
+                max(0, $primaryColorRgb[1] - 40),
+                max(0, $primaryColorRgb[2] - 40)
+            );
+        @endphp
+
         @page {
             margin: 0;
             padding: 0;
@@ -47,7 +58,7 @@
             left: 50mm;
             height: 8mm;
             width: 35mm;
-            background-color: #FFA500;
+            background-color: {{ $primaryColor }};
         }
 
         /* Layout */
@@ -158,7 +169,7 @@
             content: "•";
             position: absolute;
             left: 0;
-            color: #FFA500;
+            color: {{ $primaryColor }};
             font-weight: bold;
         }
 
@@ -231,7 +242,7 @@
             content: "•";
             position: absolute;
             left: 0;
-            color: #FFA500;
+            color: {{ $primaryColor }};
             font-weight: bold;
         }
 
@@ -256,7 +267,7 @@
         .contact-icon {
             width: 5mm;
             height: 5mm;
-            background-color: #FFA500;
+            background-color: {{ $primaryColor }};
             border-radius: 50%;
             display: flex;
             justify-content: center;
@@ -330,7 +341,7 @@
                             <div class="degree">{{ $experience['name'] }}</div>
                             <div class="school">{{ $experience['InstitutionName'] }}</div>
                             <div class="education-date">
-                                {{ \Carbon\Carbon::parse($experience['date_start'])->locale($currentLocale)->isoFormat('MMM YYYY') }} - 
+                                {{ \Carbon\Carbon::parse($experience['date_start'])->locale($currentLocale)->isoFormat('MMM YYYY') }} -
                                 @if($experience['date_end'])
                                     {{ \Carbon\Carbon::parse($experience['date_end'])->locale($currentLocale)->isoFormat('MMM YYYY') }}
                                 @else
@@ -361,7 +372,7 @@
                             $currentLocale === 'fr' ? 'Technique' : 'Technical'
                         ];
                         $skillsByCategory = [];
-                        
+
                         // Distribute skills across categories
                         $i = 0;
                         foreach($cvInformation['competences'] as $skill) {
@@ -391,7 +402,7 @@
                     <div class="section-heading">
                         {{ $currentLocale === 'fr' ? 'LANGUES' : 'LANGUAGES' }}
                     </div>
-                    
+
                     <ul class="expertise-list">
                         @foreach($cvInformation['languages'] ?? [] as $language)
                             <li>
@@ -404,14 +415,14 @@
                     </ul>
                 </div>
             @endif
-            
+
             {{-- Hobbies Section if space permits --}}
             @if(!empty($cvInformation['hobbies']))
                 <div class="left-section">
                     <div class="section-heading">
                         {{ $currentLocale === 'fr' ? 'CENTRES D\'INTÉRÊT' : 'HOBBIES' }}
                     </div>
-                    
+
                     <ul class="expertise-list">
                         @foreach($cvInformation['hobbies'] as $hobby)
                             <li>{{ $currentLocale === 'fr' ? $hobby['name'] : $hobby['name_en'] }}</li>
@@ -483,7 +494,7 @@
                             <div class="experience-header">
                                 <div class="job-title">{{ $experience['name'] }}</div>
                                 <div class="job-date">
-                                    {{ \Carbon\Carbon::parse($experience['date_start'])->locale($currentLocale)->isoFormat('MMM YYYY') }} - 
+                                    {{ \Carbon\Carbon::parse($experience['date_start'])->locale($currentLocale)->isoFormat('MMM YYYY') }} -
                                     @if($experience['date_end'])
                                         {{ \Carbon\Carbon::parse($experience['date_end'])->locale($currentLocale)->isoFormat('MMM YYYY') }}
                                     @else
@@ -494,13 +505,13 @@
                             <div class="company">{{ $experience['InstitutionName'] }}</div>
                             <div class="job-description">
                                 {{ $experience['description'] }}
-                                
+
                                 @if($experience['output'])
                                     <ul class="job-bullets">
                                         @php
                                             $bullets = explode("\n", $experience['output']);
                                         @endphp
-                                        
+
                                         @foreach($bullets as $bullet)
                                             @if(trim($bullet) !== '')
                                                 <li>{{ trim($bullet) }}</li>

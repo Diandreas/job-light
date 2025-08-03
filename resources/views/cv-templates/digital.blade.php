@@ -1,18 +1,34 @@
 @extends('layouts.cv')
 
 @section('content')
-<!DOCTYPE html>
+    <!DOCTYPE html>
 <html lang="{{ $currentLocale }}">
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ $cvInformation['personalInformation']['firstName'] ?? 'CV' }} - CV</title>
     <style>
-        @page { 
-            margin: 4mm; 
-            size: A4; 
+        @php
+            $primaryColor = $cvInformation['primary_color'] ?? '#00BCD4';
+            // Générer des variations de la couleur primaire
+            $primaryColorRgb = sscanf($primaryColor, "#%02x%02x%02x");
+            $darkColor = sprintf("#%02x%02x%02x",
+                max(0, $primaryColorRgb[0] - 30),
+                max(0, $primaryColorRgb[1] - 30),
+                max(0, $primaryColorRgb[2] - 30)
+            );
+            $lightColor = sprintf("#%02x%02x%02x",
+                min(255, $primaryColorRgb[0] + 50),
+                min(255, $primaryColorRgb[1] + 50),
+                min(255, $primaryColorRgb[2] + 50)
+            );
+        @endphp
+
+        @page {
+            margin: 4mm;
+            size: A4;
         }
-        
+
         body {
             font-family: 'DejaVu Sans', sans-serif;
             line-height: 1.2;
@@ -24,21 +40,21 @@
             print-color-adjust: exact !important;
             color-adjust: exact !important;
         }
-        
+
         /* Layout principal */
         .cv-container {
             width: 210mm;
             min-height: 297mm;
             display: flex;
         }
-        
+
         /* Colonne principale (gauche) */
         .main-column {
             width: 140mm;
             background-color: #ffffff;
             position: relative;
         }
-        
+
         /* Colonne latérale (droite) */
         .side-column {
             width: 70mm;
@@ -46,13 +62,13 @@
             color: #ffffff;
             padding: 0;
         }
-        
+
         /* Section photo et entête */
         .header-section {
             position: relative;
             height: 75mm;
         }
-        
+
         .photo-container {
             position: absolute;
             top: 15mm;
@@ -65,43 +81,43 @@
             background-color: #ffffff;
             z-index: 2;
         }
-        
+
         .photo-container img {
             width: 100%;
             height: 100%;
             object-fit: cover;
         }
-        
+
         .name-title-band {
             position: absolute;
             top: 35mm;
             left: 70mm;
             right: 0;
-            background-color: #ff9800;
+            background-color: {{ $primaryColor }};
             color: white;
             padding: 5mm 10mm 5mm 10mm;
             z-index: 1;
         }
-        
+
         .name {
             font-size: 18pt;
             font-weight: bold;
             text-transform: uppercase;
             margin-bottom: 1mm;
         }
-        
+
         .profession {
             font-size: 14pt;
             text-transform: uppercase;
         }
-        
+
         /* Sections principales */
         .main-section {
             padding: 0 15mm;
         }
-        
+
         .main-section-title {
-            background-color: #ff9800;
+            background-color: {{ $primaryColor }};
             color: white;
             text-transform: uppercase;
             font-weight: bold;
@@ -109,58 +125,58 @@
             font-size: 14pt;
             margin: 5mm 0;
         }
-        
+
         /* Expérience et éducation */
         .timeline-item {
             display: flex;
             margin-bottom: 6mm;
         }
-        
+
         .timeline-marker {
             flex: 0 0 5mm;
             padding-top: 2mm;
         }
-        
+
         .timeline-marker-dot {
             width: 3mm;
             height: 3mm;
-            background-color: #ff9800;
+            background-color: {{ $primaryColor }};
         }
-        
+
         .timeline-content {
             flex: 1;
             padding-left: 3mm;
         }
-        
+
         .timeline-years {
             color: #333;
             font-weight: bold;
             margin-bottom: 1mm;
         }
-        
+
         .timeline-title {
             font-weight: bold;
             text-transform: uppercase;
             margin-bottom: 1mm;
         }
-        
+
         .timeline-place {
             margin-bottom: 1mm;
         }
-        
+
         .timeline-description {
             font-size: 8.5pt;
             color: #666;
             text-align: justify;
         }
-        
+
         /* Sections latérales */
         .side-section {
             padding: 15mm 10mm;
         }
-        
+
         .side-section-title {
-            border: 1px solid #ff9800;
+            border: 1px solid {{ $primaryColor }};
             color: white;
             text-transform: uppercase;
             font-weight: bold;
@@ -169,23 +185,23 @@
             margin-bottom: 8mm;
             text-align: center;
         }
-        
+
         /* Informations de contact */
         .contact-item {
             display: flex;
             margin-bottom: 5mm;
             align-items: flex-start;
         }
-        
+
         .contact-icon {
             flex: 0 0 8mm;
             padding-top: 1mm;
         }
-        
+
         .contact-icon-circle {
             width: 6mm;
             height: 6mm;
-            background-color: #ff9800;
+            background-color: {{ $primaryColor }};
             border-radius: 50%;
             display: flex;
             justify-content: center;
@@ -194,39 +210,39 @@
             color: white;
             font-weight: bold;
         }
-        
+
         .contact-text {
             flex: 1;
             font-size: 9pt;
         }
-        
+
         /* Compétences sans barre de progression */
         .skill-item {
             margin-bottom: 3mm;
             display: flex;
             align-items: center;
         }
-        
+
         .skill-dot {
             width: 2.5mm;
             height: 2.5mm;
-            background-color: #ff9800;
+            background-color: {{ $primaryColor }};
             margin-right: 3mm;
             flex-shrink: 0;
         }
-        
+
         .skill-name {
             font-weight: normal;
             flex: 1;
         }
-        
+
         /* Réseaux sociaux */
         .social-icons {
             display: flex;
             justify-content: center;
             margin-top: 15mm;
         }
-        
+
         .social-icon {
             width: 8mm;
             height: 8mm;
@@ -236,13 +252,13 @@
             justify-content: center;
             align-items: center;
         }
-        
+
         /* Pour respecter les marges sur la deuxième page */
         .page-break {
             page-break-before: always;
             margin-top: 0;
         }
-        
+
         .second-page {
             padding-top: 15mm;
         }
@@ -271,7 +287,7 @@
         <!-- Section Éducation -->
         <div class="main-section">
             <div class="main-section-title">{{ $currentLocale === 'fr' ? 'ÉDUCATION' : 'EDUCATION' }}</div>
-            
+
             @foreach($cvInformation['experiences'] ?? [] as $experience)
                 @if(isset($experience['experience_categories_id']) && $experience['experience_categories_id'] == 1)
                     <div class="timeline-item">
@@ -280,7 +296,7 @@
                         </div>
                         <div class="timeline-content">
                             <div class="timeline-years">
-                                {{ \Carbon\Carbon::parse($experience['date_start'])->format('Y') }} - 
+                                {{ \Carbon\Carbon::parse($experience['date_start'])->format('Y') }} -
                                 @if($experience['date_end'])
                                     {{ \Carbon\Carbon::parse($experience['date_end'])->format('Y') }}
                                 @else
@@ -304,7 +320,7 @@
         <!-- Section Expérience -->
         <div class="main-section">
             <div class="main-section-title">{{ $currentLocale === 'fr' ? 'EXPÉRIENCE' : 'EXPERIENCE' }}</div>
-            
+
             @foreach($cvInformation['experiences'] ?? [] as $experience)
                 @if(isset($experience['experience_categories_id']) && $experience['experience_categories_id'] == 2)
                     <div class="timeline-item">
@@ -313,7 +329,7 @@
                         </div>
                         <div class="timeline-content">
                             <div class="timeline-years">
-                                {{ \Carbon\Carbon::parse($experience['date_start'])->format('Y') }} - 
+                                {{ \Carbon\Carbon::parse($experience['date_start'])->format('Y') }} -
                                 @if($experience['date_end'])
                                     {{ \Carbon\Carbon::parse($experience['date_end'])->format('Y') }}
                                 @else
@@ -340,7 +356,7 @@
         <!-- Section Contact -->
         <div class="side-section">
             <div class="side-section-title">{{ $currentLocale === 'fr' ? 'CONTACT' : 'CONTACT ME' }}</div>
-            
+
             @if($cvInformation['personalInformation']['address'])
                 <div class="contact-item">
                     <div class="contact-icon">
@@ -352,7 +368,7 @@
                     </div>
                 </div>
             @endif
-            
+
             @if($cvInformation['personalInformation']['email'] || $cvInformation['personalInformation']['linkedin'])
                 <div class="contact-item">
                     <div class="contact-icon">
@@ -369,7 +385,7 @@
                     </div>
                 </div>
             @endif
-            
+
             @if($cvInformation['personalInformation']['phone'])
                 <div class="contact-item">
                     <div class="contact-icon">
@@ -381,7 +397,7 @@
                     </div>
                 </div>
             @endif
-            
+
             <!-- Résumé / Profil -->
             @if(!empty($cvInformation['summaries']))
                 <div class="contact-item" style="margin-top: 10mm;">
@@ -395,7 +411,7 @@
         <!-- Section Compétences -->
         <div class="side-section" style="padding-top: 0;">
             <div class="side-section-title">{{ $currentLocale === 'fr' ? 'COMPÉTENCES' : 'PRO SKILLS' }}</div>
-            
+
             @if(!empty($cvInformation['competences']))
                 @foreach($cvInformation['competences'] as $competence)
                     <div class="skill-item">
@@ -406,12 +422,12 @@
                     </div>
                 @endforeach
             @endif
-            
+
             <!-- Section Langues -->
             @if(isset($cvInformation['languages']) && count($cvInformation['languages']) > 0)
                 <div style="margin-top: 15mm;">
                     <div class="side-section-title">{{ $currentLocale === 'fr' ? 'LANGUES' : 'LANGUAGES' }}</div>
-                    
+
                     @foreach($cvInformation['languages'] ?? [] as $language)
                         <div class="skill-item">
                             <div class="skill-dot"></div>
@@ -425,12 +441,12 @@
                     @endforeach
                 </div>
             @endif
-            
+
             <!-- Centres d'intérêt -->
             @if(!empty($cvInformation['hobbies']))
                 <div style="margin-top: 15mm;">
                     <div class="side-section-title">{{ $currentLocale === 'fr' ? 'CENTRES D\'INTÉRÊT' : 'HOBBIES' }}</div>
-                    
+
                     @foreach($cvInformation['hobbies'] as $hobby)
                         <div class="skill-item">
                             <div class="skill-dot"></div>
@@ -441,8 +457,6 @@
                     @endforeach
                 </div>
             @endif
-            
-    
         </div>
     </div>
 </div>

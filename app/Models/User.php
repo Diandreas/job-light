@@ -28,6 +28,7 @@ class User extends Authenticatable
         'surname',
         'create_time',
         'numberOfChild',
+        'primary_color',
         'maritalStatus',
         'github',
         'linkedin',

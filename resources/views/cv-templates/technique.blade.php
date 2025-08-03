@@ -1,13 +1,30 @@
 @extends('layouts.cv')
 
 @section('content')
-<!DOCTYPE html>
+    <!DOCTYPE html>
 <html lang="{{ $currentLocale }}">
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ $cvInformation['personalInformation']['firstName'] ?? 'CV' }} - CV</title>
     <style>
+        @php
+            $primaryColor = $cvInformation['primary_color'] ?? '#00BCD4';
+            // Générer des variations de la couleur primaire
+            $primaryColorRgb = sscanf($primaryColor, "#%02x%02x%02x");
+            $darkColor = sprintf("#%02x%02x%02x",
+                max(0, $primaryColorRgb[0] - 40),
+                max(0, $primaryColorRgb[1] - 40),
+                max(0, $primaryColorRgb[2] - 40)
+            );
+            $lightColor = sprintf("#%02x%02x%02x%02x",
+                min(255, $primaryColorRgb[0] + 50),
+                min(255, $primaryColorRgb[1] + 50),
+                min(255, $primaryColorRgb[2] + 50),
+                26 // Alpha pour transparence
+            );
+        @endphp
+
         /* Print Settings */
         @page {
             size: A4;
@@ -80,7 +97,7 @@
         .header-line {
             width: 35mm;
             height: 1mm;
-            background-color: #00BCD4;
+            background-color: {{ $primaryColor }};
             margin-bottom: 3mm;
         }
 
@@ -91,7 +108,7 @@
             overflow: hidden;
             border-radius: 2mm;
             margin: 0 auto 5mm auto;
-            border: 0.5mm solid #00BCD4;
+            border: 0.5mm solid {{ $primaryColor }};
         }
 
         .photo-container img {
@@ -108,7 +125,7 @@
         .section-title {
             font-size::10pt;
             font-weight: bold;
-            color: #00BCD4;
+            color: {{ $primaryColor }};
             margin-bottom: 2mm;
             text-transform: uppercase;
             border-bottom: 0.3mm solid #E0E0E0;
@@ -118,7 +135,7 @@
         .sidebar-section-title {
             font-size: 10pt;
             font-weight: bold;
-            color: #00BCD4;
+            color: {{ $primaryColor }};
             text-transform: uppercase;
             margin-bottom: 2mm;
             padding-bottom: 1mm;
@@ -136,7 +153,7 @@
         }
 
         .contact-label {
-            color: #00BCD4;
+            color: {{ $primaryColor }};
             font-weight: bold;
             margin-right: 1mm;
             font-size: 8pt;
@@ -156,7 +173,7 @@
             margin-bottom: 5mm;
             padding: 2mm;
             background-color: #F5F5F5;
-            border-left: 1mm solid #00BCD4;
+            border-left: 1mm solid {{ $primaryColor }};
         }
 
         /* Experience Styling */
@@ -195,7 +212,7 @@
 
         .experience-date {
             font-size: 8pt;
-            color: #00BCD4;
+            color: {{ $primaryColor }};
             font-weight: bold;
             text-align: right;
         }
@@ -233,7 +250,7 @@
 
         .skill-bar {
             height: 100%;
-            background-color: #00BCD4;
+            background-color: {{ $primaryColor }};
             border-radius: 0.75mm;
         }
 
@@ -247,29 +264,29 @@
         .language-item {
             margin-bottom: 2mm;
         }
-        
+
         .language-name {
             font-size: 8pt;
             color: #ECEFF1;
             margin-bottom: 1mm;
         }
-        
+
         .language-level {
             font-size: 7pt;
             color: #B0BEC5;
             font-style: italic;
         }
-        
+
         .language-bar-container {
             height: 1.5mm;
             background-color: #455A64;
             border-radius: 0.75mm;
             margin-top: 1mm;
         }
-        
+
         .language-bar {
             height: 100%;
-            background-color: #00BCD4;
+            background-color: {{ $primaryColor }};
             border-radius: 0.75mm;
         }
 
@@ -294,8 +311,8 @@
         }
 
         .tech-tag {
-            background-color: #E0F7FA;
-            color: #00838F;
+            background-color: {{ $lightColor }};
+            color: {{ $darkColor }};
             font-size: 7pt;
             padding: 0.5mm 1mm;
             border-radius: 1mm;
@@ -309,7 +326,7 @@
                 margin: 0;
                 padding: 0;
             }
-            
+
             .cv-container {
                 position: absolute;
                 top: 0;
@@ -320,15 +337,15 @@
                 page-break-after: avoid;
                 overflow: hidden;
             }
-            
+
             .sidebar {
                 break-inside: avoid;
             }
-            
+
             .main-content {
                 break-inside: avoid;
             }
-            
+
             .experience-item {
                 break-inside: avoid;
             }
@@ -410,10 +427,10 @@
                             <div class="language-bar-container">
                                 @php
                                     $levelWidth = 60; // Default percentage
-                                    
+
                                     if (isset($language['level'])) {
                                         $level = strtolower($language['level']);
-                                        
+
                                         if (strpos($level, 'débutant') !== false || strpos($level, 'beginner') !== false) {
                                             $levelWidth = 25;
                                         } elseif (strpos($level, 'intermédiaire') !== false || strpos($level, 'intermediate') !== false) {

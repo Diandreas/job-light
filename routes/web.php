@@ -4,6 +4,7 @@ use App\Http\Controllers\{AddressController,
     CareerAdvisorController,
     ChatHistoryController,
     CompetenceController,
+    CvColorController,
     CvInfosController,
     CvModelController,
     DocumentExportController,
@@ -93,6 +94,7 @@ Route::prefix('api')->middleware(['auth'])->group(function () {
     Route::delete('/exports/{export}', [DocumentExportController::class, 'destroy']);
 });
 Route::middleware(['auth'])->group(function () {
+    Route::post('/api/cv/update-color', [CvColorController::class, 'updateColor'])->name('cv.updateColor');
     Route::post('/career-advisor/export', [CareerAdvisorController::class, 'export'])
         ->name('career-advisor.export');
     Route::post('/api/process-question-cost', [PaymentController::class, 'processQuestionCost']);

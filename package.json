@@ -67,6 +67,7 @@
         "notchpay.js": "^1.0.1",
         "pptxgenjs": "^4.0.0",
         "print-js": "^1.6.0",
+        "react-colorful": "^5.6.1",
         "react-day-picker": "^8.10.1",
         "react-hook-form": "^7.51.4",
         "react-i18next": "^15.4.0",

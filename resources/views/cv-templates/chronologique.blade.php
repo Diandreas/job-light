@@ -8,6 +8,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ $cvInformation['personalInformation']['firstName'] ?? 'CV' }} - CV</title>
     <style>
+        @php
+            $primaryColor = $cvInformation['primary_color'] ?? '#333333';
+            // Générer des variations de la couleur primaire
+            $primaryColorRgb = sscanf($primaryColor, "#%02x%02x%02x");
+            $lightColor = sprintf("#%02x%02x%02x",
+                min(255, $primaryColorRgb[0] + 60),
+                min(255, $primaryColorRgb[1] + 60),
+                min(255, $primaryColorRgb[2] + 60)
+            );
+        @endphp
+
         @page {
             margin: 15mm;
             padding: 0;
@@ -18,7 +29,7 @@
             font-family: Arial, 'DejaVu Sans', sans-serif;
             line-height: 1.2;
             font-size: 10pt;
-            color: #333333;
+            color: {{ $primaryColor }};
             margin: 0;
             padding: 0;
             -webkit-print-color-adjust: exact;
@@ -33,7 +44,7 @@
         /* En-tête */
         .header {
             width: 100%;
-            border-bottom: 0.2mm solid #333333;
+            border-bottom: 0.2mm solid {{ $primaryColor }};
             padding-bottom: 3mm;
             margin-bottom: 4mm;
         }
@@ -75,7 +86,7 @@
             height: 25mm;
             border-radius: 50%;
             overflow: hidden;
-            border: 0.3mm solid #333333;
+            border: 0.3mm solid {{ $primaryColor }};
         }
 
         .profile-photo img {
@@ -91,11 +102,11 @@
             padding: 2mm;
             background-color: #F8F9FA;
             border-radius: 1.5mm;
-            border-left: 1.5mm solid #333333;
+            border-left: 1.5mm solid {{ $primaryColor }};
         }
 
         .language-title {
-            color: #333333;
+            color: {{ $primaryColor }};
             font-size: 11pt;
             font-weight: bold;
             margin-bottom: 1.5mm;
@@ -112,7 +123,7 @@
         .language-item {
             margin-bottom: 0;
             font-size: 9pt;
-            color: #333333;
+            color: {{ $primaryColor }};
             background-color: #ffffff;
             padding: 0.8mm 1.5mm;
             border-radius: 1mm;
@@ -143,7 +154,7 @@
 
         .timeline-content {
             position: relative;
-            border-left: 0.3mm solid #333333;
+            border-left: 0.3mm solid {{ $primaryColor }};
             padding-left: 3mm;
             padding-bottom: 3mm;
         }
@@ -154,7 +165,7 @@
             top: 1mm;
             width: 2mm;
             height: 2mm;
-            background-color: #333333;
+            background-color: {{ $primaryColor }};
             border-radius: 50%;
         }
 
@@ -167,7 +178,7 @@
             font-size: 12pt;
             font-weight: bold;
             margin-bottom: 3mm;
-            color: #333333;
+            color: {{ $primaryColor }};
             text-transform: uppercase;
         }
 
@@ -195,7 +206,7 @@
         .bottom-section {
             margin-top: 4mm;
             padding-top: 3mm;
-            border-top: 0.2mm solid #333333;
+            border-top: 0.2mm solid {{ $primaryColor }};
         }
 
         .skills-hobbies-container {
@@ -232,7 +243,7 @@
             background-color: #f8f8f8;
             padding: 2.5mm;
             margin-bottom: 4mm;
-            border-left: 1mm solid #333333;
+            border-left: 1mm solid {{ $primaryColor }};
             text-align: justify;
             font-size: 9.5pt;
             line-height: 1.2;

@@ -11,6 +11,7 @@ use App\Models\Competence;
 use App\Models\Hobby;
 use App\Models\Language;
 use App\Models\Summary;
+use App\Services\ColorContrastService;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -114,6 +115,7 @@ class CvInfosController extends Controller
 
         return $view;
     }
+
     public function previewCv($id)
     {
         $user = Auth::user();
@@ -152,6 +154,7 @@ class CvInfosController extends Controller
 
         return $view;
     }
+
     public function updatePhoto(Request $request)
     {
         Log::info('=== Photo Upload Started ===');
@@ -301,25 +304,24 @@ class CvInfosController extends Controller
         }
 
         // Récupérer les langues de l'utilisateur avec leur niveau de maîtrise
-        // Récupérer les langues de l'utilisateur avec leur niveau de maîtrise
         $languages = $user->languages()
-        ->select(['languages.id', 'languages.name', 'languages.name_en'])
-        ->withPivot('language_level')
-        ->get()
-        ->map(function($language) {
-            return [
-                'id' => $language->id,
-                'name' => $language->name ?? '',
-                'name_en' => $language->name_en ?? '',
-                'level' => $language->pivot->language_level, // Ajout de la clé 'level' directement
-                'pivot' => [
-                    'user_id' => $language->pivot->user_id,
-                    'language_id' => $language->pivot->language_id,
-                    'language_level' => $language->pivot->language_level
-                ]
-            ];
-        })
-        ->toArray();
+            ->select(['languages.id', 'languages.name', 'languages.name_en'])
+            ->withPivot('language_level')
+            ->get()
+            ->map(function($language) {
+                return [
+                    'id' => $language->id,
+                    'name' => $language->name ?? '',
+                    'name_en' => $language->name_en ?? '',
+                    'level' => $language->pivot->language_level, // Ajout de la clé 'level' directement
+                    'pivot' => [
+                        'user_id' => $language->pivot->user_id,
+                        'language_id' => $language->pivot->language_id,
+                        'language_level' => $language->pivot->language_level
+                    ]
+                ];
+            })
+            ->toArray();
 
         $baseInfo = [
             'hobbies' => array_merge(
@@ -339,6 +341,11 @@ class CvInfosController extends Controller
                     ];
                 }, $user->manual_hobbies) : []
             ),
+
+            // Gestion améliorée de la couleur primaire
+            'primary_color' => $user->primary_color ?? '#3498db',
+            'has_custom_color' => !is_null($user->primary_color),
+            'contrast_colors' => ColorContrastService::generateContrastColors($user->primary_color ?? '#3498db'),
 
             'competences' => array_merge(
                 collect($user->competences()->select(['id', 'name', 'name_en', 'description'])->get())->map(function($competence) {

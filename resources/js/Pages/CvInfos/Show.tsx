@@ -453,6 +453,7 @@ export default function Show({ auth, cvInformation, selectedCvModel }) {
         );
     }
 
+    // @ts-ignore
     return (
         <AuthenticatedLayout user={auth.user}>
             <Head title={t('cv_preview.title')} />
@@ -553,6 +554,7 @@ export default function Show({ auth, cvInformation, selectedCvModel }) {
                                     <div className="flex items-center gap-2">
                                         <ColorPicker
                                             defaultColor={currentColor}
+                                            //@ts-ignore
                                             onColorSaved={handleColorSaved}
                                         />
 

@@ -313,8 +313,8 @@
     "cv_models": {
         "title": "CV Models Collection",
         "back": "Back",
-        "export_cv": "Export CV",
-        "export": "Export",
+        "export_cv": "Export Resume",
+        "export": "Show my Resume",
         "search_placeholder": "Search...",
         "models": "models",
         "active": "Active",

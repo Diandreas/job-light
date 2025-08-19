@@ -6,7 +6,7 @@ import { Toaster } from "@/Components/ui/toaster";
 import { ThemeToggle } from '@/Components/ThemeToggle';
 import { MobileTabBar } from '@/Components/MobileTabBar';
 import {
-    Folder, Star, Eye, Menu, X, Brain, Layout,
+    Folder, Star, Eye, Menu, X, Brain, Layout, Users,
     ChevronRight, ChevronLeft, Sparkles, LucideIcon, Coins,
     Globe, Mail, Phone, MapPin, Linkedin, Github, MessageSquare,
     MenuIcon, ChevronDown, ChevronUp, Home, BookCopy, Award,
@@ -181,6 +181,18 @@ export default function Authenticated({ user, header, children, hideHeaderOnMobi
             href: route('career-advisor.index'),
             icon: Brain,
             active: route().current('career-advisor.index')
+        },
+        {
+            name: t('menu.portfolio'),
+            href: route('portfolio.index'),
+            icon: Eye,
+            active: route().current('portfolio.*')
+        },
+        {
+            name: 'Recherche Profils',
+            href: route('company-portal.profiles'),
+            icon: Users,
+            active: route().current('company-portal.*')
         },
         {
             name: (

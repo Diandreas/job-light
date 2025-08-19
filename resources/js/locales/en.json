@@ -1560,5 +1560,38 @@
             "title": "Coming Soon!",
             "description": "We're working hard to bring you our new job portal feature. Stay tuned for exciting opportunities in your career journey!"
         }
+    },
+    "errors": {
+        "404": {
+            "title": "Page Not Found",
+            "description": "Sorry, the page you're looking for doesn't exist. It might have been moved, deleted, or you entered the wrong URL.",
+            "suggestion": "Don't worry, let's get you back on track!"
+        },
+        "500": {
+            "title": "Server Error",
+            "description": "Oops! Something went wrong on our servers. Our team has been notified and is working to fix this issue.",
+            "suggestion": "Please try again in a few moments."
+        },
+        "403": {
+            "title": "Access Forbidden",
+            "description": "You don't have permission to access this resource. Please check your credentials or contact an administrator.",
+            "suggestion": "If you believe this is an error, please contact support."
+        },
+        "503": {
+            "title": "Service Unavailable",
+            "description": "Our service is temporarily unavailable due to maintenance or high traffic. We're working to restore it as quickly as possible.",
+            "suggestion": "Please try again in a few minutes."
+        },
+        "actions": {
+            "back": "Go Back",
+            "home": "Back to Home",
+            "refresh": "Refresh Page",
+            "contact": "Contact Support"
+        },
+        "quickLinks": {
+            "dashboard": "Return to your personal workspace",
+            "cv": "Manage your CV information",
+            "jobs": "Discover opportunities"
+        }
     }
 }

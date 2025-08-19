@@ -268,6 +268,14 @@ Route::middleware(['auth', 'verified'])->group(function () {
         // Route pour initialiser les niveaux de parrainage
         Route::post('/referral-levels/initialize', [\App\Http\Controllers\Admin\ReferralLevelController::class, 'initialize'])
             ->name('referral-levels.initialize');
+
+        // Routes manquantes pour l'admin
+        Route::get('/analytics', [\App\Http\Controllers\Admin\AnalyticsController::class, 'index'])
+            ->name('analytics');
+        Route::get('/audit-logs', [\App\Http\Controllers\Admin\AuditLogController::class, 'index'])
+            ->name('audit-logs');
+        Route::get('/settings', [\App\Http\Controllers\Admin\SettingsController::class, 'index'])
+            ->name('settings');
     });
 
 
@@ -304,6 +312,17 @@ Route::get('/cv/preview-print/{id}', [CvInfosController::class, 'previewPrint'])
 // Route de test pour vérifier le schéma de la base de données
 Route::get('/test-db-schema', [App\Http\Controllers\TestDbController::class, 'testSchema']);
 
-
+// Routes de test pour les pages d'erreur (en développement uniquement)
+if (app()->environment('local')) {
+    Route::get('/test-errors/{code}', function ($code) {
+        $validCodes = [404, 500, 403, 503];
+        
+        if (!in_array((int)$code, $validCodes)) {
+            abort(404);
+        }
+        
+        abort((int)$code);
+    })->where('code', '[0-9]+')->name('test.errors');
+}
 
 require __DIR__.'/auth.php';

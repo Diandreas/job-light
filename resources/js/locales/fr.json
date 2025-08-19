@@ -1560,5 +1560,38 @@
             "title": "Bientôt disponible !",
             "description": "Nous travaillons activement pour vous proposer notre nouvelle fonctionnalité de portail d'emploi. Restez à l'écoute pour des opportunités passionnantes dans votre parcours professionnel !"
         }
+    },
+    "errors": {
+        "404": {
+            "title": "Page Introuvable",
+            "description": "Désolé, la page que vous recherchez n'existe pas. Elle a peut-être été déplacée, supprimée, ou vous avez saisi une URL incorrecte.",
+            "suggestion": "Ne vous inquiétez pas, remettons-vous sur la bonne voie !"
+        },
+        "500": {
+            "title": "Erreur Serveur",
+            "description": "Oups ! Quelque chose s'est mal passé sur nos serveurs. Notre équipe a été notifiée et travaille à résoudre ce problème.",
+            "suggestion": "Veuillez réessayer dans quelques instants."
+        },
+        "403": {
+            "title": "Accès Interdit",
+            "description": "Vous n'avez pas les permissions nécessaires pour accéder à cette ressource. Veuillez vérifier vos identifiants ou contacter un administrateur.",
+            "suggestion": "Si vous pensez qu'il s'agit d'une erreur, veuillez contacter le support."
+        },
+        "503": {
+            "title": "Service Indisponible",
+            "description": "Notre service est temporairement indisponible en raison de maintenance ou d'un trafic élevé. Nous travaillons à le rétablir le plus rapidement possible.",
+            "suggestion": "Veuillez réessayer dans quelques minutes."
+        },
+        "actions": {
+            "back": "Retour",
+            "home": "Retour à l'accueil",
+            "refresh": "Actualiser la page",
+            "contact": "Contacter le support"
+        },
+        "quickLinks": {
+            "dashboard": "Retour à votre espace personnel",
+            "cv": "Gérer vos informations CV",
+            "jobs": "Découvrir les opportunités"
+        }
     }
 }

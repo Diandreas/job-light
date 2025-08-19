@@ -56,8 +56,7 @@ export default function AdminLayout({ user, header, children }: AdminLayoutProps
         { 
             name: 'Entreprises', 
             href: '/admin/companies', 
-            icon: Building2,
-            badge: '3' // Exemple de badge pour les entreprises en attente
+            icon: Building2
         },
         {
             name: 'Gestion Contenu',
@@ -69,6 +68,9 @@ export default function AdminLayout({ user, header, children }: AdminLayoutProps
                 { name: 'Hobbies', href: '/admin/hobbies', icon: Heart },
                 { name: 'Professions', href: '/admin/professions', icon: Briefcase },
                 { name: 'Catégories Exp.', href: '/admin/experience-categories', icon: Briefcase },
+                { name: 'Catégories Prof.', href: '/admin/profession-categories', icon: Briefcase },
+                { name: 'Missions Prof.', href: '/admin/profession-missions', icon: Briefcase },
+                { name: 'Niveaux Parrainage', href: '/admin/referral-levels', icon: Award },
             ]
         },
         { 

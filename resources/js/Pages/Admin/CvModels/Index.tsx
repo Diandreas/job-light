@@ -94,7 +94,7 @@ export default function CvModelIndex({ cvModels, auth }: Props) {
                 <div className="flex justify-between items-center">
                     <h2 className="text-3xl font-bold tracking-tight">Gestion des Modèles de CV</h2>
                     <Button asChild className="bg-primary hover:bg-primary/90">
-                        <Link href={route('cv-models.create')}>
+                        <Link href={route('admin.cv-models.create')}>
                             <Plus className="mr-2 h-4 w-4" /> Nouveau Modèle
                         </Link>
                     </Button>

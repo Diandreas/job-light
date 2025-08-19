@@ -2,7 +2,7 @@
 
 namespace App\Enums;
 
-enum /ProfileVisibility: string
+enum ProfileVisibility: string
 {
     case PRIVATE = 'private';
     case COMPANY_PORTAL = 'company_portal';

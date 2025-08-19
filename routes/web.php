@@ -206,6 +206,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::middleware('can:access-admin')->group(function () {
         // Admin prefix routes
         Route::prefix('admin')->name('admin.')->group(function () {
+            Route::get('/dashboard', function () {
+                return Inertia::render('Admin/Dashboard/Index');
+            })->name('dashboard.index');
             Route::get('/analytics', [AnalyticsController::class, 'index'])->name('analytics.index');
             Route::get('/audit-logs', [AuditLogController::class, 'index'])->name('audit-logs.index');
             Route::get('/companies', [CompanyManagementController::class, 'index'])->name('companies.index');

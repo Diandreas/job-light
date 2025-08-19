@@ -27,7 +27,10 @@ use App\Http\Controllers\{AddressController,
     UserHobbyController,
     UserProfessionsController,
     UserlanguageController,
-    Admin\ReferralLevelController};
+    Admin\ReferralLevelController,
+    Admin\AnalyticsController,
+    Admin\AuditLogController,
+    Admin\CompanyManagementController};
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -201,6 +204,14 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     // Admin-only routes
     Route::middleware('can:access-admin')->group(function () {
+        // Admin prefix routes
+        Route::prefix('admin')->name('admin.')->group(function () {
+            Route::get('/analytics', [AnalyticsController::class, 'index'])->name('analytics.index');
+            Route::get('/audit-logs', [AuditLogController::class, 'index'])->name('audit-logs.index');
+            Route::get('/companies', [CompanyManagementController::class, 'index'])->name('companies.index');
+            Route::get('/companies/{company}', [CompanyManagementController::class, 'show'])->name('companies.show');
+            Route::put('/companies/{company}', [CompanyManagementController::class, 'update'])->name('companies.update');
+        });
 
         Route::resources([
             'experience-categories' => ExperienceCategoryController::class,

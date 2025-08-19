@@ -6,7 +6,7 @@ use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
-use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Gate;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -25,7 +25,6 @@ class AppServiceProvider extends ServiceProvider
     {
         // Définir la longueur par défaut des chaînes
         Schema::defaultStringLength(191);
-
         Route::aliasMiddleware('check.print', \App\Http\Middleware\CheckPrintAccess::class);
     }
 

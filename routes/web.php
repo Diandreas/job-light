@@ -3,6 +3,7 @@
 use App\Http\Controllers\{AddressController,
     CareerAdvisorController,
     ChatHistoryController,
+    CompanyPortalController,
     CompetenceController,
     CvColorController,
     CvInfosController,
@@ -119,6 +120,24 @@ Route::get('/portfolio/{identifier}', [PortfolioController::class, 'show'])
     ->name('portfolio.show')
     ->where('identifier', '.*');
 
+// Company Authentication Routes
+Route::prefix('company')->name('company.')->group(function () {
+    Route::get('/login', [App\Http\Controllers\Auth\CompanyAuthController::class, 'showLoginForm'])->name('login');
+    Route::post('/login', [App\Http\Controllers\Auth\CompanyAuthController::class, 'login']);
+    Route::get('/register', [App\Http\Controllers\Auth\CompanyAuthController::class, 'showRegistrationForm'])->name('register');
+    Route::post('/register', [App\Http\Controllers\Auth\CompanyAuthController::class, 'register']);
+    Route::post('/logout', [App\Http\Controllers\Auth\CompanyAuthController::class, 'logout'])->name('logout');
+});
+
+// Company Portal Routes
+Route::prefix('company-portal')->name('company-portal.')->group(function () {
+    Route::get('/', [CompanyPortalController::class, 'index'])->name('index');
+    Route::get('/profiles', [CompanyPortalController::class, 'profiles'])->name('profiles');
+    Route::get('/profile/{identifier}', [CompanyPortalController::class, 'showProfile'])
+        ->name('profile.show')
+        ->where('identifier', '.*');
+});
+
 Route::middleware(['auth', 'verified'])->group(function () {
 
     Route::delete('/experiences/{experience}/attachment', [ExperienceController::class, 'deleteAttachment'])
@@ -200,8 +219,39 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/sponsorship/code-info', [SponsorshipController::class, 'getReferralCodeInfo'])->name('sponsorship.code-info');
 
     // Admin-only routes
-    Route::middleware('can:access-admin')->group(function () {
+    Route::middleware('can:access-admin')->prefix('admin')->name('admin.')->group(function () {
+        // Admin index - redirect to dashboard
+        Route::get('/', function () {
+            return redirect()->route('admin.dashboard');
+        })->name('index');
+        
+        // Dashboard
+        Route::get('/dashboard', [\App\Http\Controllers\Admin\DashboardController::class, 'index'])
+            ->name('dashboard');
 
+        // Gestion des utilisateurs
+        Route::resource('users', \App\Http\Controllers\Admin\UserManagementController::class);
+        Route::post('/users/{user}/toggle-status', [\App\Http\Controllers\Admin\UserManagementController::class, 'toggleStatus'])
+            ->name('users.toggle-status');
+        Route::post('/users/{user}/reset-password', [\App\Http\Controllers\Admin\UserManagementController::class, 'resetPassword'])
+            ->name('users.reset-password');
+        Route::get('/users-export', [\App\Http\Controllers\Admin\UserManagementController::class, 'exportUsers'])
+            ->name('users.export');
+
+        // Gestion des entreprises
+        Route::resource('companies', \App\Http\Controllers\Admin\CompanyManagementController::class);
+        Route::post('/companies/{company}/approve', [\App\Http\Controllers\Admin\CompanyManagementController::class, 'approve'])
+            ->name('companies.approve');
+        Route::post('/companies/{company}/reject', [\App\Http\Controllers\Admin\CompanyManagementController::class, 'reject'])
+            ->name('companies.reject');
+        Route::get('/companies/pending-approvals', [\App\Http\Controllers\Admin\CompanyManagementController::class, 'pendingApprovals'])
+            ->name('companies.pending-approvals');
+        Route::post('/companies/bulk-action', [\App\Http\Controllers\Admin\CompanyManagementController::class, 'bulkAction'])
+            ->name('companies.bulk-action');
+        Route::get('/companies-export', [\App\Http\Controllers\Admin\CompanyManagementController::class, 'exportCompanies'])
+            ->name('companies.export');
+
+        // Gestion du contenu existant avec préfixe admin
         Route::resources([
             'experience-categories' => ExperienceCategoryController::class,
             'profession-categories' => ProfessionCategoryController::class,
@@ -213,12 +263,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
         ]);
 
         // Routes pour la gestion des niveaux de parrainage
-        Route::resource('referral-levels', \App\Http\Controllers\Admin\ReferralLevelController::class)
-            ->names('admin.referral-levels');
+        Route::resource('referral-levels', \App\Http\Controllers\Admin\ReferralLevelController::class);
 
         // Route pour initialiser les niveaux de parrainage
         Route::post('/referral-levels/initialize', [\App\Http\Controllers\Admin\ReferralLevelController::class, 'initialize'])
-            ->name('admin.referral-levels.initialize');
+            ->name('referral-levels.initialize');
     });
 
 

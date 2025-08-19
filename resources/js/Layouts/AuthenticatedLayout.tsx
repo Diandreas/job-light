@@ -165,9 +165,9 @@ export default function Authenticated({ user, header, children, hideHeaderOnMobi
     const mainMenuItems: MenuItem[] = [
         {
             name: t('menu.admin'),
-            href: route('dashboard'),
+            href: route('admin.dashboard'),
             icon: Layout,
-            active: route().current('dashboard'),
+            active: route().current('admin.*'),
             adminOnly: true
         },
         {

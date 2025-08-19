@@ -21,8 +21,30 @@ class PortfolioController extends Controller
             ->orWhere('email', $identifier)
             ->firstOrFail();
 
+        $portfolioSettings = $user->portfolioSettings;
+        $currentUser = auth()->user();
+        $isCompany = auth()->guard('company')->check();
+        
+        if ($portfolioSettings) {
+            $visibility = $portfolioSettings->visibility;
+            
+            if ($visibility === \App\Enums\ProfileVisibility::PRIVATE) {
+                if (!$currentUser || $currentUser->id !== $user->id) {
+                    abort(403, 'Ce profil est privé.');
+                }
+            } elseif ($visibility === \App\Enums\ProfileVisibility::COMPANY_PORTAL) {
+                if (!$isCompany && (!$currentUser || $currentUser->id !== $user->id)) {
+                    abort(403, 'Ce profil est accessible uniquement aux entreprises.');
+                }
+            } elseif ($visibility === \App\Enums\ProfileVisibility::COMMUNITY) {
+                if (!$currentUser && !$isCompany) {
+                    abort(403, 'Ce profil est accessible uniquement aux membres de la communauté.');
+                }
+            }
+        }
+
         $portfolio = $this->getPortfolioData($user);
-//dd($portfolio);
+
         return Inertia::render('Portfolio/Show', [
             'portfolio' => $portfolio,
             'identifier' => $user->identifier,
@@ -53,6 +75,7 @@ class PortfolioController extends Controller
             'show_hobbies' => 'boolean',
             'show_summary' => 'boolean',
             'show_contact_info' => 'boolean',
+            'visibility' => 'required|in:private,company_portal,community,public',
             'profile_picture' => 'nullable|image|max:1024', // 1MB Max
         ]);
 
@@ -66,6 +89,7 @@ class PortfolioController extends Controller
                 'show_hobbies',
                 'show_summary',
                 'show_contact_info',
+                'visibility',
             ])
         );
 
@@ -78,7 +102,21 @@ class PortfolioController extends Controller
         return redirect()->route('portfolio.edit')->with('success', 'Portfolio mis à jour avec succès.');
     }
 
-    private function getPortfolioData($user)
+
+    private function createDefaultSettings($user)
+    {
+        return $user->portfolioSettings()->create([
+            'design' => 'professional',
+            'show_experiences' => true,
+            'show_competences' => true,
+            'show_hobbies' => true,
+            'show_summary' => true,
+            'show_contact_info' => true,
+            'visibility' => 'private',
+        ]);
+    }
+
+    public function getPortfolioData($user)
     {
         $settings = $user->portfolioSettings ?? $this->createDefaultSettings($user);
 
@@ -120,18 +158,7 @@ class PortfolioController extends Controller
             'show_competences' => $settings->show_competences,
             'show_hobbies' => $settings->show_hobbies,
             'show_summary' => $settings->show_summary,
+            'visibility' => $settings->visibility,
         ];
-    }
-
-    private function createDefaultSettings($user)
-    {
-        return $user->portfolioSettings()->create([
-            'design' => 'professional',
-            'show_experiences' => true,
-            'show_competences' => true,
-            'show_hobbies' => true,
-            'show_summary' => true,
-            'show_contact_info' => true,
-        ]);
     }
 }

@@ -17,6 +17,7 @@ class PortfolioSettings extends Model
         'show_hobbies',
         'show_summary',
         'show_contact_info',
+        'visibility',
     ];
 
     protected $casts = [
@@ -25,6 +26,7 @@ class PortfolioSettings extends Model
         'show_hobbies' => 'boolean',
         'show_summary' => 'boolean',
         'show_contact_info' => 'boolean',
+        'visibility' => \App\Enums\ProfileVisibility::class,
     ];
 
     public function user()

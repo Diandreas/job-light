@@ -85,7 +85,7 @@ const ModelCard = ({ model, isActive, onSelect, onAdd, onPreview, loading, inCat
     const [imageLoaded, setImageLoaded] = useState(false);
 
     const cardClass = viewMode === 'list'
-        ? "flex flex-row h-32 sm:h-40"
+        ? "flex flex-row h-36 sm:h-40"
         : "flex flex-col h-full";
 
     const imageClass = viewMode === 'list'
@@ -199,16 +199,16 @@ const ModelCard = ({ model, isActive, onSelect, onAdd, onPreview, loading, inCat
             </div>
 
             {/* Contenu de la carte */}
-            <div className={`p-3 ${viewMode === 'list' ? 'flex-1 flex flex-col justify-between' : 'mt-auto'}`}>
+            <div className={`${viewMode === 'list' ? 'p-2 sm:p-3' : 'p-3'} ${viewMode === 'list' ? 'flex-1 flex flex-col justify-between' : 'mt-auto'}`}>
                 {viewMode === 'list' && (
-                    <div className="mb-3">
-                        <h3 className="font-bold text-sm sm:text-base text-gray-900 dark:text-white line-clamp-2 mb-1">
+                    <div className="mb-2">
+                        <h3 className="font-bold text-xs sm:text-sm text-gray-900 dark:text-white line-clamp-2 mb-1">
                             {model.name}
                         </h3>
                         {model.price > 0 && (
-                            <div className="flex items-center gap-1.5">
-                                <Coins className="w-3.5 h-3.5 text-amber-500" />
-                                <p className="text-xs sm:text-sm text-amber-600 dark:text-amber-400 font-medium">
+                            <div className="flex items-center gap-1">
+                                <Coins className="w-3 h-3 text-amber-500" />
+                                <p className="text-xs text-amber-600 dark:text-amber-400 font-medium">
                                     {model.price.toLocaleString()}
                                 </p>
                             </div>
@@ -220,7 +220,7 @@ const ModelCard = ({ model, isActive, onSelect, onAdd, onPreview, loading, inCat
                     <motion.div whileTap={{ scale: 0.95 }}>
                         <Button
                             variant={isActive ? "outline" : "default"}
-                            className={`w-full transition-all duration-200 ${isActive
+                            className={`w-full transition-all duration-200 ${viewMode === 'list' ? 'h-8 text-xs' : ''} ${isActive
                                 ? 'border-amber-200 dark:border-amber-700 text-amber-700 dark:text-amber-400 hover:bg-amber-50 dark:hover:bg-amber-900/20'
                                 : 'bg-gradient-to-r from-amber-500 to-purple-500 hover:from-amber-600 hover:to-purple-600 text-white shadow-lg hover:shadow-xl'
                             }`}
@@ -231,22 +231,22 @@ const ModelCard = ({ model, isActive, onSelect, onAdd, onPreview, loading, inCat
                                 <motion.div
                                     animate={{ rotate: 360 }}
                                     transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-                                    className="w-4 h-4 mr-1.5 border-2 border-current border-t-transparent rounded-full"
+                                    className="w-3 h-3 mr-1 border-2 border-current border-t-transparent rounded-full"
                                 />
                             ) : isActive ? (
-                                <CheckCircle className="w-4 h-4 mr-1.5" />
+                                <CheckCircle className={`${viewMode === 'list' ? 'w-3 h-3' : 'w-4 h-4'} mr-1`} />
                             ) : (
-                                <Star className="w-4 h-4 mr-1.5" />
+                                <Star className={`${viewMode === 'list' ? 'w-3 h-3' : 'w-4 h-4'} mr-1`} />
                             )}
                             {isActive ? t('cv_models.selected') : t('cv_models.select')}
                         </Button>
                     </motion.div>
                 ) : (
-                    <div className="flex flex-col gap-2">
-                        <motion.div whileTap={{ scale: 0.95 }}>
+                    <div className={`flex gap-2 ${viewMode === 'list' ? 'flex-row' : 'flex-col'}`}>
+                        <motion.div whileTap={{ scale: 0.95 }} className={viewMode === 'list' ? 'flex-1' : ''}>
                             <Button
                                 variant={isActive ? "outline" : "default"}
-                                className={`w-full transition-all duration-200 ${isActive
+                                className={`w-full transition-all duration-200 ${viewMode === 'list' ? 'h-8 text-xs' : ''} ${isActive
                                     ? 'border-amber-200 dark:border-amber-700 text-amber-700 dark:text-amber-400 hover:bg-amber-50 dark:hover:bg-amber-900/20'
                                     : 'bg-gradient-to-r from-amber-500 to-purple-500 hover:from-amber-600 hover:to-purple-600 text-white shadow-lg hover:shadow-xl'
                                 }`}
@@ -257,25 +257,25 @@ const ModelCard = ({ model, isActive, onSelect, onAdd, onPreview, loading, inCat
                                     <motion.div
                                         animate={{ rotate: 360 }}
                                         transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-                                        className="w-4 h-4 mr-1.5 border-2 border-current border-t-transparent rounded-full"
+                                        className="w-3 h-3 mr-1 border-2 border-current border-t-transparent rounded-full"
                                     />
                                 ) : isActive ? (
-                                    <CheckCircle className="w-4 h-4 mr-1.5" />
+                                    <CheckCircle className={`${viewMode === 'list' ? 'w-3 h-3' : 'w-4 h-4'} mr-1`} />
                                 ) : (
-                                    <Star className="w-4 h-4 mr-1.5" />
+                                    <Star className={`${viewMode === 'list' ? 'w-3 h-3' : 'w-4 h-4'} mr-1`} />
                                 )}
                                 {isActive ? t('cv_models.selected') : t('cv_models.use')}
                             </Button>
                         </motion.div>
-                        <motion.div whileTap={{ scale: 0.95 }}>
+                        <motion.div whileTap={{ scale: 0.95 }} className={viewMode === 'list' ? 'flex-1' : ''}>
                             <Button
                                 variant="outline"
-                                className="w-full border-amber-200 dark:border-amber-700 text-amber-700 dark:text-amber-400 hover:bg-amber-50 dark:hover:bg-amber-900/20 transition-all duration-200"
+                                className={`w-full border-amber-200 dark:border-amber-700 text-amber-700 dark:text-amber-400 hover:bg-amber-50 dark:hover:bg-amber-900/20 transition-all duration-200 ${viewMode === 'list' ? 'h-8 text-xs' : ''}`}
                                 disabled={loading}
                                 onClick={() => onAdd(model)}
                             >
-                                <PlusCircle className="w-4 h-4 mr-1.5" />
-                                {t('cv_models.add_to_catalog')}
+                                <PlusCircle className={`${viewMode === 'list' ? 'w-3 h-3' : 'w-4 h-4'} mr-1`} />
+                                {viewMode === 'list' ? t('cv_models.add') : t('cv_models.add_to_catalog')}
                             </Button>
                         </motion.div>
                     </div>
@@ -579,34 +579,34 @@ export default function CvModelsIndex({ auth, userCvModels, availableCvModels, m
 
             <AnimatePresence>
 
-                    <motion.div
-                        initial={{ x: -100, opacity: 0 }}
-                        animate={{ x: 0, opacity: 1 }}
-                        exit={{ x: -100, opacity: 0 }}
-                        transition={{
-                            type: "spring",
-                            stiffness: 100,
-                            damping: 20,
-                            duration: 0.5
-                        }}
-                        className="fixed right-0 top-1/2 -translate-y-1/2 z-50"
-                    >
-                        <Link href="/cv-infos/show">
-                            <motion.div
-                                whileHover={{
-                                    scale: 1.05,
-                                    x: 10
-                                }}
-                                whileTap={{ scale: 0.95 }}
-                            >
-                                <Button className="bg-gradient-to-r from-amber-500 to-purple-500 hover:from-amber-600 hover:to-purple-600 text-white h-12 px-4 text-sm shadow-lg hover:shadow-xl transition-all duration-200 rounded-l-full rounded-r-none">
-                                    <FileText className="w-5 h-5 mr-2" />
-                                    <span className="hidden sm:inline">{t('cv_models.export_cv')}</span>
-                                    <span className="sm:hidden">{t('cv_models.export')}</span>
-                                </Button>
-                            </motion.div>
-                        </Link>
-                    </motion.div>
+                <motion.div
+                    initial={{ x: -100, opacity: 0 }}
+                    animate={{ x: 0, opacity: 1 }}
+                    exit={{ x: -100, opacity: 0 }}
+                    transition={{
+                        type: "spring",
+                        stiffness: 100,
+                        damping: 20,
+                        duration: 0.5
+                    }}
+                    className="fixed right-0 top-1/2 -translate-y-1/2 z-50"
+                >
+                    <Link href="/cv-infos/show">
+                        <motion.div
+                            whileHover={{
+                                scale: 1.05,
+                                x: 10
+                            }}
+                            whileTap={{ scale: 0.95 }}
+                        >
+                            <Button className="bg-gradient-to-r from-amber-500 to-purple-500 hover:from-amber-600 hover:to-purple-600 text-white h-12 px-4 text-sm shadow-lg hover:shadow-xl transition-all duration-200 rounded-l-full rounded-r-none">
+                                <FileText className="w-5 h-5 mr-2" />
+                                <span className="hidden sm:inline">{t('cv_models.export_cv')}</span>
+                                <span className="sm:hidden">{t('cv_models.export')}</span>
+                            </Button>
+                        </motion.div>
+                    </Link>
+                </motion.div>
             </AnimatePresence>
             <div className="min-h-screen bg-gradient-to-b from-amber-50/30 dark:from-gray-900 to-white dark:to-gray-800 pb-16">
                 <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-3 sm:py-6">
@@ -665,7 +665,7 @@ export default function CvModelsIndex({ auth, userCvModels, availableCvModels, m
                                     </SelectContent>
                                 </Select>
 
-                                 {/*Sélecteur de vue*/}
+                                {/*Sélecteur de vue*/}
                                 <ToggleGroup type="single" value={viewMode} onValueChange={setViewMode}>
                                     <ToggleGroupItem value="grid" aria-label="Vue grille" className="border-amber-100 dark:border-gray-700">
                                         <Grid3X3 className="w-4 h-4" />

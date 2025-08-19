@@ -5,6 +5,7 @@ import { Button } from "@/Components/ui/button";
 import { Card, CardHeader, CardTitle, CardContent } from "@/Components/ui/card";
 import { Input } from "@/Components/ui/input";
 import { Switch } from "@/Components/ui/switch";
+import VisibilitySelector from "@/Components/ui/VisibilitySelector";
 import {
     Briefcase, Award, Heart, FileText,
     Contact, Upload, Palette
@@ -20,8 +21,36 @@ export default function Edit({ auth, portfolio, settings }) {
         show_hobbies: settings.show_hobbies || false,
         show_summary: settings.show_summary || false,
         show_contact_info: settings.show_contact_info || false,
+        visibility: settings.visibility || 'private',
         profile_picture: null,
     });
+
+    const visibilityOptions = [
+        {
+            value: 'private',
+            label: 'Privé',
+            description: 'Profil visible uniquement par vous. Idéal pour générer votre CV en toute discrétion.',
+            icon: '🔒'
+        },
+        {
+            value: 'company_portal',
+            label: 'Portail Entreprise',
+            description: 'Visible uniquement aux entreprises enregistrées. Parfait pour les opportunités d\'emploi.',
+            icon: '🏢'
+        },
+        {
+            value: 'community',
+            label: 'Communauté',
+            description: 'Visible par tous les utilisateurs de la plateforme. Idéal pour les collaborations entre professionnels.',
+            icon: '👥'
+        },
+        {
+            value: 'public',
+            label: 'Public',
+            description: 'Visible par tous sur internet. Maximum de visibilité comme un portfolio public.',
+            icon: '🌐'
+        }
+    ];
 
     const onSubmit = (e) => {
         e.preventDefault();
@@ -115,6 +144,12 @@ export default function Edit({ auth, portfolio, settings }) {
                                         </Label>
                                     </div>
                                 </div>
+
+                                <VisibilitySelector
+                                    value={data.visibility}
+                                    onChange={(value) => setData('visibility', value)}
+                                    options={visibilityOptions}
+                                />
 
                                 <Button
                                     type="submit"

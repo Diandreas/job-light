@@ -11,12 +11,10 @@ class PortfolioSettings extends Model
 
     protected $fillable = [
         'user_id',
-        'design',
+        'layout',
         'show_experiences',
         'show_competences',
         'show_hobbies',
-        'show_summary',
-        'show_contact_info',
         'visibility',
     ];
 
@@ -24,8 +22,6 @@ class PortfolioSettings extends Model
         'show_experiences' => 'boolean',
         'show_competences' => 'boolean',
         'show_hobbies' => 'boolean',
-        'show_summary' => 'boolean',
-        'show_contact_info' => 'boolean',
         'visibility' => \App\Enums\ProfileVisibility::class,
     ];
 

@@ -88,55 +88,25 @@ const AnimatedCounter = ({ target, duration = 2000 }) => {
     return <span>{count.toLocaleString()}+</span>;
 };
 
-const FeatureCard = ({ icon: Icon, title, description, action, link, color, bgColor, premium }) => (
-    <motion.div
-        whileHover={{ y: -8, scale: 1.03 }}
-        whileTap={{ scale: 0.97 }}
-        className={`relative bg-white dark:bg-gray-800 rounded-2xl p-4 md:p-6 shadow-lg border border-gray-100 dark:border-gray-700 overflow-hidden group h-full transition-all duration-300 hover:shadow-2xl ${bgColor ? `hover:bg-gradient-to-br hover:${bgColor}` : ''}`}
-    >
-        <div className={`absolute inset-0 bg-gradient-to-r ${color ? color.replace('from-', 'from-').replace('to-', 'to-') + '/10' : 'from-amber-500/10 to-purple-500/10'} dark:opacity-50 opacity-0 group-hover:opacity-100 transition-opacity duration-300`} />
-        <div className="relative z-10 h-full flex flex-col">
-            <div className="flex justify-between items-start mb-3 md:mb-4">
-                <div className={`p-2 md:p-3 rounded-xl bg-gradient-to-r ${color || 'from-amber-500 to-purple-500'} transform group-hover:rotate-6 transition-transform duration-300 shadow-lg`}>
-                    <Icon className="w-5 h-5 md:w-6 md:h-6 text-white" />
-                </div>
-                {premium && (
-                    <motion.div
-                        initial={{ scale: 0 }}
-                        animate={{ scale: 1 }}
-                        className="px-2 py-1 bg-gradient-to-r from-yellow-400 to-orange-400 text-xs font-bold text-white rounded-full shadow-sm"
-                    >
-                        PRO
-                    </motion.div>
-                )}
-            </div>
-            <h3 className="text-base md:text-xl font-bold mb-2 md:mb-3 group-hover:text-amber-600 dark:group-hover:text-amber-400 transition-colors dark:text-white leading-tight">{title}</h3>
-            <p className="text-sm md:text-base text-gray-600 dark:text-gray-300 mb-4 md:mb-6 flex-grow leading-relaxed">{description}</p>
-            {action && link && (
-                <Link href={link} className="inline-flex items-center text-sm md:text-base text-amber-600 dark:text-amber-400 hover:text-amber-700 dark:hover:text-amber-300 font-semibold group/link mt-auto">
-                    {action}
-                    <ArrowRight className="ml-2 w-4 h-4 transform group-hover/link:translate-x-1 transition-transform" />
-                </Link>
-            )}
-        </div>
-    </motion.div>
-);
-
-const AdditionalFeatureCard = ({ icon: Icon, title, description, color, bgColor }) => (
+const FeatureCard = ({ icon: Icon, title, description, action, link }) => (
     <motion.div
         whileHover={{ y: -5, scale: 1.02 }}
         whileTap={{ scale: 0.98 }}
-        className={`relative bg-white dark:bg-gray-800 rounded-xl p-4 shadow-md border border-gray-100 dark:border-gray-700 overflow-hidden group transition-all duration-300 hover:shadow-lg ${bgColor ? `hover:bg-gradient-to-br hover:${bgColor}` : ''}`}
+        className="relative bg-white dark:bg-gray-800 rounded-2xl p-4 md:p-6 shadow-lg border border-gray-100 dark:border-gray-700 overflow-hidden group h-full"
     >
-        <div className={`absolute inset-0 bg-gradient-to-r ${color}/10 dark:opacity-50 opacity-0 group-hover:opacity-100 transition-opacity duration-300`} />
-        <div className="relative z-10 flex items-start space-x-3">
-            <div className={`p-2 rounded-lg bg-gradient-to-r ${color} transform group-hover:scale-110 transition-transform duration-300 shadow-sm flex-shrink-0`}>
-                <Icon className="w-4 h-4 text-white" />
+        <div className="absolute inset-0 bg-gradient-to-r from-amber-500/10 to-purple-500/10 dark:from-amber-500/5 dark:to-purple-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+        <div className="relative z-10 h-full flex flex-col">
+            <div className="flex justify-between items-start mb-3 md:mb-4">
+                <div className="p-2 md:p-3 rounded-xl bg-gradient-to-r from-amber-500 to-purple-500 transform group-hover:rotate-6 transition-transform duration-300 shadow-lg">
+                    <Icon className="w-5 h-5 md:w-6 md:h-6 text-white" />
+                </div>
             </div>
-            <div className="flex-1 min-w-0">
-                <h4 className="text-sm font-semibold mb-1 group-hover:text-amber-600 dark:group-hover:text-amber-400 transition-colors dark:text-white leading-tight">{title}</h4>
-                <p className="text-xs text-gray-600 dark:text-gray-300 leading-relaxed">{description}</p>
-            </div>
+            <h3 className="text-base md:text-xl font-bold mb-2 md:mb-3 group-hover:text-amber-600 dark:group-hover:text-amber-400 transition-colors dark:text-white leading-tight">{title}</h3>
+            <p className="text-sm md:text-base text-gray-600 dark:text-gray-300 mb-4 md:mb-6 flex-grow leading-relaxed">{description}</p>
+            <Link href={link} className="inline-flex items-center text-sm md:text-base text-amber-600 dark:text-amber-400 hover:text-amber-700 dark:hover:text-amber-300 font-semibold group/link mt-auto">
+                {action}
+                <ArrowRight className="ml-2 w-4 h-4 transform group-hover/link:translate-x-1 transition-transform" />
+            </Link>
         </div>
     </motion.div>
 );
@@ -371,85 +341,28 @@ export default function Welcome() {
             title: t('features.cv_designer.title'),
             description: t('features.cv_designer.description'),
             action: t('features.cv_designer.action'),
-            link: route('register'),
-            color: 'from-blue-500 to-cyan-500',
-            bgColor: 'from-blue-50 to-cyan-50 dark:from-blue-950/50 dark:to-cyan-950/50',
-            premium: false
+            link: route('register')
         },
         {
             icon: Brain,
             title: t('features.career_advisor.title'),
             description: t('features.career_advisor.description'),
             action: t('features.career_advisor.action'),
-            link: route('register'),
-            color: 'from-purple-500 to-pink-500',
-            bgColor: 'from-purple-50 to-pink-50 dark:from-purple-950/50 dark:to-pink-950/50',
-            premium: true
+            link: route('register')
         },
         {
             icon: PenTool,
             title: t('features.cover_letter.title'),
             description: t('features.cover_letter.description'),
             action: t('features.cover_letter.action'),
-            link: route('register'),
-            color: 'from-green-500 to-emerald-500',
-            bgColor: 'from-green-50 to-emerald-50 dark:from-green-950/50 dark:to-emerald-950/50',
-            premium: false
+            link: route('register')
         },
         {
             icon: MessageSquare,
             title: t('features.interview_coach.title'),
             description: t('features.interview_coach.description'),
             action: t('features.interview_coach.action'),
-            link: route('register'),
-            color: 'from-orange-500 to-red-500',
-            bgColor: 'from-orange-50 to-red-50 dark:from-orange-950/50 dark:to-red-950/50',
-            premium: true
-        }
-    ];
-
-    const additionalFeatures = [
-        {
-            icon: Globe,
-            title: "Portfolio Builder",
-            description: "Create stunning online portfolios to showcase your work and skills professionally.",
-            color: 'from-teal-500 to-blue-500',
-            bgColor: 'from-teal-50 to-blue-50 dark:from-teal-950/50 dark:to-blue-950/50'
-        },
-        {
-            icon: Users,
-            title: "Company Portal",
-            description: "Access exclusive company profiles and connect with potential employers.",
-            color: 'from-indigo-500 to-purple-500',
-            bgColor: 'from-indigo-50 to-purple-50 dark:from-indigo-950/50 dark:to-purple-950/50'
-        },
-        {
-            icon: Award,
-            title: "Skill Assessment",
-            description: "Validate your competencies with AI-powered skill assessments and certifications.",
-            color: 'from-yellow-500 to-orange-500',
-            bgColor: 'from-yellow-50 to-orange-50 dark:from-yellow-950/50 dark:to-orange-950/50'
-        },
-        {
-            icon: Terminal,
-            title: "ATS Optimization",
-            description: "Ensure your CV passes Applicant Tracking Systems with our optimization tools.",
-            color: 'from-gray-500 to-slate-500',
-            bgColor: 'from-gray-50 to-slate-50 dark:from-gray-950/50 dark:to-slate-950/50'
-        },
-        {
-            icon: Star,
-            title: "Referral System",
-            description: "Earn rewards by referring friends and build your professional network.",
-            color: 'from-pink-500 to-rose-500',
-            bgColor: 'from-pink-50 to-rose-50 dark:from-pink-950/50 dark:to-rose-950/50'
-        },
-        {
-            icon: Globe,
-            title: "Multi-language Support",
-            description: "Create CVs in multiple languages with region-specific formatting and standards.",
-            color: 'from-cyan-500 to-teal-500',
-            bgColor: 'from-cyan-50 to-teal-50 dark:from-cyan-950/50 dark:to-teal-950/50'
+            link: route('register')
         }
     ];
 
@@ -884,105 +797,31 @@ export default function Welcome() {
                             <ImageCallToAction />
                         </div>
 
-                        {/* Core Features Section */}
+                        {/* Grid des fonctionnalités optimisé mobile */}
                         <motion.div
                             initial={{ opacity: 0, y: 40 }}
                             whileInView={{ opacity: 1, y: 0 }}
                             viewport={{ once: true }}
                             transition={{ duration: 0.6, staggerChildren: 0.1 }}
-                            className="mb-16 md:mb-24"
+                            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 mb-12 md:mb-20"
                         >
-                            <div className="text-center mb-12">
-                                <motion.h2 
-                                    className="text-2xl md:text-4xl font-bold mb-4 bg-gradient-to-r from-amber-600 via-purple-600 to-amber-600 bg-clip-text text-transparent"
+                            {features.map((feature, index) => (
+                                <motion.div
+                                    key={index}
                                     initial={{ opacity: 0, y: 20 }}
                                     whileInView={{ opacity: 1, y: 0 }}
                                     viewport={{ once: true }}
+                                    transition={{ delay: index * 0.1 }}
                                 >
-                                    🚀 Core Features
-                                </motion.h2>
-                                <motion.p 
-                                    className="text-gray-600 dark:text-gray-300 max-w-2xl mx-auto"
-                                    initial={{ opacity: 0, y: 20 }}
-                                    whileInView={{ opacity: 1, y: 0 }}
-                                    viewport={{ once: true }}
-                                    transition={{ delay: 0.1 }}
-                                >
-                                    Everything you need to accelerate your career with AI-powered tools
-                                </motion.p>
-                            </div>
-                            
-                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
-                                {features.map((feature, index) => (
-                                    <motion.div
-                                        key={index}
-                                        initial={{ opacity: 0, y: 20 }}
-                                        whileInView={{ opacity: 1, y: 0 }}
-                                        viewport={{ once: true }}
-                                        transition={{ delay: index * 0.1 }}
-                                    >
-                                        <FeatureCard
-                                            icon={feature.icon}
-                                            title={feature.title}
-                                            description={feature.description}
-                                            action={feature.action}
-                                            link={feature.link}
-                                            color={feature.color}
-                                            bgColor={feature.bgColor}
-                                            premium={feature.premium}
-                                        />
-                                    </motion.div>
-                                ))}
-                            </div>
-                        </motion.div>
-
-                        {/* Additional Features Section */}
-                        <motion.div
-                            initial={{ opacity: 0, y: 40 }}
-                            whileInView={{ opacity: 1, y: 0 }}
-                            viewport={{ once: true }}
-                            transition={{ duration: 0.6, staggerChildren: 0.1 }}
-                            className="mb-16 md:mb-24"
-                        >
-                            <div className="text-center mb-12">
-                                <motion.h2 
-                                    className="text-2xl md:text-4xl font-bold mb-4 bg-gradient-to-r from-purple-600 via-amber-600 to-purple-600 bg-clip-text text-transparent"
-                                    initial={{ opacity: 0, y: 20 }}
-                                    whileInView={{ opacity: 1, y: 0 }}
-                                    viewport={{ once: true }}
-                                >
-                                    ✨ Advanced Tools
-                                </motion.h2>
-                                <motion.p 
-                                    className="text-gray-600 dark:text-gray-300 max-w-2xl mx-auto"
-                                    initial={{ opacity: 0, y: 20 }}
-                                    whileInView={{ opacity: 1, y: 0 }}
-                                    viewport={{ once: true }}
-                                    transition={{ delay: 0.1 }}
-                                >
-                                    Professional tools to give you the competitive edge in today's job market
-                                </motion.p>
-                            </div>
-                            
-                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
-                                {additionalFeatures.map((feature, index) => (
-                                    <motion.div
-                                        key={index}
-                                        initial={{ opacity: 0, y: 20 }}
-                                        whileInView={{ opacity: 1, y: 0 }}
-                                        viewport={{ once: true }}
-                                        transition={{ delay: index * 0.1 }}
-                                    >
-                                        <AdditionalFeatureCard
-                                            icon={feature.icon}
-                                            title={feature.title}
-                                            description={feature.description}
-                                            color={feature.color}
-                                            bgColor={feature.bgColor}
-                                        />
-                                    </motion.div>
-                                ))}
-                            </div>
+                                    <FeatureCard
+                                        icon={feature.icon}
+                                        title={feature.title}
+                                        description={feature.description}
+                                        action={feature.action}
+                                        link={feature.link}
+                                    />
+                                </motion.div>
+                            ))}
                         </motion.div>
 
                         {/* Statistiques avec animations séquentielles */}

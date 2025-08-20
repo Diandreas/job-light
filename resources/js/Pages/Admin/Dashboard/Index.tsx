@@ -1,385 +1,459 @@
+import React from 'react';
 import { Head } from '@inertiajs/react';
 import AdminLayout from '@/Layouts/AdminLayout';
-import { Card, CardContent, CardHeader, CardTitle } from '@/Components/ui/card';
-import { Badge } from '@/Components/ui/badge';
-import { Button } from '@/Components/ui/button';
-import { motion } from 'framer-motion';
+import { Card, CardContent, CardHeader, CardTitle } from "@/Components/ui/card";
+import { Badge } from "@/Components/ui/badge";
+import { Button } from "@/Components/ui/button";
 import { 
     Users, 
+    Building2, 
     FileText, 
-    TrendingUp, 
-    DollarSign, 
-    Activity, 
-    Eye,
-    Award,
-    Heart,
-    Briefcase,
-    ArrowUp,
-    ArrowDown,
-    MoreHorizontal,
-    Bell,
-    Calendar,
+    Eye, 
+    DollarSign,
+    TrendingUp,
+    TrendingDown,
+    AlertCircle,
     Clock,
-    Zap,
-    Target,
-    Globe,
-    Shield
+    CheckCircle
 } from 'lucide-react';
+import { Line, Doughnut } from 'react-chartjs-2';
+import {
+    Chart as ChartJS,
+    CategoryScale,
+    LinearScale,
+    PointElement,
+    LineElement,
+    ArcElement,
+    Title,
+    Tooltip,
+    Legend,
+} from 'chart.js';
 
-interface DashboardStats {
-    totalUsers: number;
-    totalCvs: number;
-    totalRevenue: number;
-    activeUsers: number;
-    userGrowth: number;
-    cvGrowth: number;
-    revenueGrowth: number;
-    activityGrowth: number;
+ChartJS.register(
+    CategoryScale,
+    LinearScale,
+    PointElement,
+    LineElement,
+    ArcElement,
+    Title,
+    Tooltip,
+    Legend
+);
+
+interface Stats {
+    users: {
+        total: number;
+        today: number;
+        thisMonth: number;
+        growth: number;
+    };
+    companies: {
+        total: number;
+        approved: number;
+        pending: number;
+        today: number;
+    };
+    cvs: {
+        total: number;
+        today: number;
+        thisMonth: number;
+    };
+    portfolios: {
+        total: number;
+        public: number;
+        company_portal: number;
+        community: number;
+        private: number;
+    };
+    revenue: {
+        total: number;
+        thisMonth: number;
+        todayTransactions: number;
+    };
 }
 
-interface RecentActivity {
+interface Charts {
+    userRegistrations: {
+        labels: string[];
+        data: number[];
+    };
+    companyRegistrations: {
+        labels: string[];
+        data: number[];
+    };
+    revenueChart: {
+        labels: string[];
+        data: number[];
+    };
+    portfolioVisibility: {
+        labels: string[];
+        data: number[];
+    };
+}
+
+interface Activity {
     id: number;
-    type: string;
-    user: string;
     action: string;
-    time: string;
-    status: 'success' | 'warning' | 'info';
+    description: string;
+    admin: string;
+    user?: string;
+    model: string;
+    created_at: string;
+    created_at_full: string;
 }
 
-interface Props {
-    stats?: DashboardStats;
-    recentActivities?: RecentActivity[];
+interface PendingActions {
+    pendingCompanies: number;
+    todayRegistrations: number;
+    recentPayments: number;
+    systemAlerts: number;
 }
 
-export default function Index({ stats, recentActivities }: Props) {
-    // Mock data for demo purposes
-    const mockStats: DashboardStats = {
-        totalUsers: 12543,
-        totalCvs: 8921,
-        totalRevenue: 45230,
-        activeUsers: 1234,
-        userGrowth: 12.5,
-        cvGrowth: 8.3,
-        revenueGrowth: 23.1,
-        activityGrowth: 15.7
+export default function AdminDashboard({ 
+    auth, 
+    stats, 
+    charts, 
+    recentActivities, 
+    pendingActions 
+}: {
+    auth: any;
+    stats: Stats;
+    charts: Charts;
+    recentActivities: Activity[];
+    pendingActions: PendingActions;
+}) {
+    // Configuration des graphiques
+    const lineChartOptions = {
+        responsive: true,
+        plugins: {
+            legend: {
+                position: 'top' as const,
+            },
+        },
+        scales: {
+            y: {
+                beginAtZero: true,
+            },
+        },
     };
 
-    const mockActivities: RecentActivity[] = [
-        {
-            id: 1,
-            type: 'user_registration',
-            user: 'John Doe',
-            action: 'Created new account',
-            time: '2 minutes ago',
-            status: 'success'
-        },
-        {
-            id: 2,
-            type: 'cv_creation',
-            user: 'Jane Smith',
-            action: 'Generated CV with AI',
-            time: '5 minutes ago',
-            status: 'info'
-        },
-        {
-            id: 3,
-            type: 'payment',
-            user: 'Mike Johnson',
-            action: 'Upgraded to Premium',
-            time: '12 minutes ago',
-            status: 'success'
-        },
-        {
-            id: 4,
-            type: 'system',
-            user: 'System',
-            action: 'Database backup completed',
-            time: '1 hour ago',
-            status: 'info'
-        }
-    ];
-
-    const currentStats = stats || mockStats;
-    const activities = recentActivities || mockActivities;
-
-    const statCards = [
-        {
-            title: 'Total Users',
-            value: currentStats.totalUsers.toLocaleString(),
-            change: currentStats.userGrowth,
-            icon: Users,
-            color: 'from-blue-500 to-cyan-500',
-            bgColor: 'from-blue-50 to-cyan-50 dark:from-blue-950/50 dark:to-cyan-950/50'
-        },
-        {
-            title: 'CVs Created',
-            value: currentStats.totalCvs.toLocaleString(),
-            change: currentStats.cvGrowth,
-            icon: FileText,
-            color: 'from-green-500 to-emerald-500',
-            bgColor: 'from-green-50 to-emerald-50 dark:from-green-950/50 dark:to-emerald-950/50'
-        },
-        {
-            title: 'Revenue',
-            value: `$${currentStats.totalRevenue.toLocaleString()}`,
-            change: currentStats.revenueGrowth,
-            icon: DollarSign,
-            color: 'from-purple-500 to-pink-500',
-            bgColor: 'from-purple-50 to-pink-50 dark:from-purple-950/50 dark:to-pink-950/50'
-        },
-        {
-            title: 'Active Users',
-            value: currentStats.activeUsers.toLocaleString(),
-            change: currentStats.activityGrowth,
-            icon: Activity,
-            color: 'from-orange-500 to-red-500',
-            bgColor: 'from-orange-50 to-red-50 dark:from-orange-950/50 dark:to-red-950/50'
-        }
-    ];
-
-    const quickActions = [
-        {
-            title: 'Manage Users',
-            description: 'View and manage user accounts',
-            icon: Users,
-            href: '/admin/users',
-            color: 'from-blue-500 to-cyan-500'
-        },
-        {
-            title: 'CV Templates',
-            description: 'Manage CV templates and designs',
-            icon: FileText,
-            href: '/cv-models',
-            color: 'from-green-500 to-emerald-500'
-        },
-        {
-            title: 'Analytics',
-            description: 'View detailed analytics',
-            icon: TrendingUp,
-            href: '/admin/analytics',
-            color: 'from-purple-500 to-pink-500'
-        },
-        {
-            title: 'System Logs',
-            description: 'Monitor system activity',
-            icon: Shield,
-            href: '/admin/audit-logs',
-            color: 'from-orange-500 to-red-500'
-        }
-    ];
-
-    const getActivityIcon = (type: string) => {
-        switch (type) {
-            case 'user_registration': return Users;
-            case 'cv_creation': return FileText;
-            case 'payment': return DollarSign;
-            case 'system': return Shield;
-            default: return Bell;
-        }
+    const userRegistrationData = {
+        labels: charts.userRegistrations.labels,
+        datasets: [
+            {
+                label: 'Inscriptions utilisateurs',
+                data: charts.userRegistrations.data,
+                borderColor: 'rgb(59, 130, 246)',
+                backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                tension: 0.3,
+            },
+        ],
     };
 
-    const getStatusColor = (status: string) => {
-        switch (status) {
-            case 'success': return 'bg-green-100 text-green-800 dark:bg-green-900/50 dark:text-green-300';
-            case 'warning': return 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/50 dark:text-yellow-300';
-            case 'info': return 'bg-blue-100 text-blue-800 dark:bg-blue-900/50 dark:text-blue-300';
-            default: return 'bg-gray-100 text-gray-800 dark:bg-gray-900/50 dark:text-gray-300';
-        }
+    const companyRegistrationData = {
+        labels: charts.companyRegistrations.labels,
+        datasets: [
+            {
+                label: 'Inscriptions entreprises',
+                data: charts.companyRegistrations.data,
+                borderColor: 'rgb(16, 185, 129)',
+                backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                tension: 0.3,
+            },
+        ],
+    };
+
+    const revenueData = {
+        labels: charts.revenueChart.labels,
+        datasets: [
+            {
+                label: 'Revenus (€)',
+                data: charts.revenueChart.data,
+                borderColor: 'rgb(245, 158, 11)',
+                backgroundColor: 'rgba(245, 158, 11, 0.1)',
+                tension: 0.3,
+            },
+        ],
+    };
+
+    const portfolioVisibilityData = {
+        labels: charts.portfolioVisibility.labels,
+        datasets: [
+            {
+                data: charts.portfolioVisibility.data,
+                backgroundColor: [
+                    'rgba(239, 68, 68, 0.8)',   // Private - rouge
+                    'rgba(59, 130, 246, 0.8)',   // Company Portal - bleu
+                    'rgba(147, 51, 234, 0.8)',   // Community - violet
+                    'rgba(16, 185, 129, 0.8)',   // Public - vert
+                ],
+                borderWidth: 2,
+            },
+        ],
+    };
+
+    const getActionBadge = (action: string) => {
+        const variants: Record<string, { color: string; text: string }> = {
+            created: { color: 'bg-green-100 text-green-800', text: 'Créé' },
+            updated: { color: 'bg-blue-100 text-blue-800', text: 'Modifié' },
+            deleted: { color: 'bg-red-100 text-red-800', text: 'Supprimé' },
+            approved: { color: 'bg-emerald-100 text-emerald-800', text: 'Approuvé' },
+            rejected: { color: 'bg-orange-100 text-orange-800', text: 'Rejeté' },
+        };
+
+        const variant = variants[action] || { color: 'bg-gray-100 text-gray-800', text: action };
+        
+        return (
+            <Badge className={`${variant.color} text-xs`}>
+                {variant.text}
+            </Badge>
+        );
     };
 
     return (
         <AdminLayout
-            header={
-                <div className="flex items-center space-x-4">
-                    <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-500 via-purple-500 to-amber-600 flex items-center justify-center shadow-lg">
-                        <TrendingUp className="w-6 h-6 text-white" />
-                    </div>
-                    <div>
-                        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Dashboard</h1>
-                        <p className="text-sm text-gray-500 dark:text-gray-400">Welcome back, Admin</p>
-                    </div>
-                </div>
-            }
+            user={auth.user}
+            header={<h2 className="font-semibold text-xl text-gray-800">Tableau de Bord</h2>}
         >
-            <Head title="Admin Dashboard" />
-            
-            <div className="space-y-8">
-                {/* Welcome Banner */}
-                <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    className="relative bg-gradient-to-r from-amber-500 via-purple-500 to-amber-600 rounded-2xl p-6 md:p-8 text-white overflow-hidden"
-                >
-                    <div className="absolute inset-0 bg-black/10"></div>
-                    <div className="relative z-10">
-                        <div className="flex items-center justify-between">
-                            <div>
-                                <h2 className="text-2xl md:text-3xl font-bold mb-2">Welcome to Guidy Admin</h2>
-                                <p className="text-amber-100 text-lg">
-                                    {new Date().toLocaleDateString('en-US', { 
-                                        weekday: 'long', 
-                                        year: 'numeric', 
-                                        month: 'long', 
-                                        day: 'numeric' 
-                                    })}
-                                </p>
-                            </div>
-                            <div className="hidden md:flex items-center space-x-4">
-                                <div className="text-right">
-                                    <p className="text-sm text-amber-100">System Status</p>
-                                    <div className="flex items-center space-x-2">
-                                        <div className="w-3 h-3 bg-green-400 rounded-full animate-pulse"></div>
-                                        <span className="font-semibold">All Systems Operational</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div className="absolute -right-10 -bottom-10 w-32 h-32 bg-white/10 rounded-full blur-xl"></div>
-                    <div className="absolute -left-10 -top-10 w-24 h-24 bg-white/10 rounded-full blur-xl"></div>
-                </motion.div>
+            <Head title="Dashboard Administrateur" />
 
-                {/* Stats Grid */}
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                    {statCards.map((stat, index) => (
-                        <motion.div
-                            key={stat.title}
-                            initial={{ opacity: 0, y: 20 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ delay: index * 0.1 }}
-                        >
-                            <Card className={`relative overflow-hidden hover:shadow-xl transition-all duration-300 bg-gradient-to-br ${stat.bgColor} border-0`}>
-                                <CardContent className="p-6">
-                                    <div className="flex items-center justify-between mb-4">
-                                        <div className={`w-12 h-12 rounded-xl bg-gradient-to-r ${stat.color} flex items-center justify-center shadow-lg`}>
-                                            <stat.icon className="w-6 h-6 text-white" />
-                                        </div>
-                                        <div className="flex items-center space-x-1">
-                                            {stat.change > 0 ? (
-                                                <ArrowUp className="w-4 h-4 text-green-500" />
-                                            ) : (
-                                                <ArrowDown className="w-4 h-4 text-red-500" />
-                                            )}
-                                            <span className={`text-sm font-semibold ${stat.change > 0 ? 'text-green-500' : 'text-red-500'}`}>
-                                                {Math.abs(stat.change)}%
+            <div className="py-6">
+                {/* Statistiques principales */}
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                    <Card>
+                        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                            <CardTitle className="text-sm font-medium">
+                                Utilisateurs
+                            </CardTitle>
+                            <Users className="h-4 w-4 text-muted-foreground" />
+                        </CardHeader>
+                        <CardContent>
+                            <div className="text-2xl font-bold">{stats.users.total.toLocaleString()}</div>
+                            <div className="flex items-center text-xs text-muted-foreground">
+                                {stats.users.growth >= 0 ? (
+                                    <TrendingUp className="mr-1 h-3 w-3 text-green-500" />
+                                ) : (
+                                    <TrendingDown className="mr-1 h-3 w-3 text-red-500" />
+                                )}
+                                <span className={stats.users.growth >= 0 ? 'text-green-500' : 'text-red-500'}>
+                                    {stats.users.growth}%
+                                </span>
+                                <span className="ml-1">ce mois</span>
+                            </div>
+                            <p className="text-xs text-muted-foreground">
+                                +{stats.users.today} aujourd'hui
+                            </p>
+                        </CardContent>
+                    </Card>
+
+                    <Card>
+                        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                            <CardTitle className="text-sm font-medium">
+                                Entreprises
+                            </CardTitle>
+                            <Building2 className="h-4 w-4 text-muted-foreground" />
+                        </CardHeader>
+                        <CardContent>
+                            <div className="text-2xl font-bold">{stats.companies.total}</div>
+                            <div className="text-xs text-muted-foreground">
+                                {stats.companies.approved} approuvées, {stats.companies.pending} en attente
+                            </div>
+                            <p className="text-xs text-muted-foreground">
+                                +{stats.companies.today} aujourd'hui
+                            </p>
+                        </CardContent>
+                    </Card>
+
+                    <Card>
+                        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                            <CardTitle className="text-sm font-medium">
+                                CVs Créés
+                            </CardTitle>
+                            <FileText className="h-4 w-4 text-muted-foreground" />
+                        </CardHeader>
+                        <CardContent>
+                            <div className="text-2xl font-bold">{stats.cvs.total.toLocaleString()}</div>
+                            <p className="text-xs text-muted-foreground">
+                                +{stats.cvs.today} aujourd'hui
+                            </p>
+                            <p className="text-xs text-muted-foreground">
+                                {stats.cvs.thisMonth} ce mois
+                            </p>
+                        </CardContent>
+                    </Card>
+
+                    <Card>
+                        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                            <CardTitle className="text-sm font-medium">
+                                Revenus
+                            </CardTitle>
+                            <DollarSign className="h-4 w-4 text-muted-foreground" />
+                        </CardHeader>
+                        <CardContent>
+                            <div className="text-2xl font-bold">
+                                {stats.revenue.total.toLocaleString()} €
+                            </div>
+                            <p className="text-xs text-muted-foreground">
+                                {stats.revenue.thisMonth.toLocaleString()} € ce mois
+                            </p>
+                            <p className="text-xs text-muted-foreground">
+                                {stats.revenue.todayTransactions} transactions aujourd'hui
+                            </p>
+                        </CardContent>
+                    </Card>
+                </div>
+
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+                    {/* Actions en attente */}
+                    <Card>
+                        <CardHeader>
+                            <CardTitle className="flex items-center gap-2">
+                                <AlertCircle className="h-5 w-5" />
+                                Actions Requises
+                            </CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                            <div className="space-y-4">
+                                {pendingActions.pendingCompanies > 0 && (
+                                    <div className="flex items-center justify-between p-3 bg-orange-50 rounded-lg">
+                                        <div className="flex items-center gap-2">
+                                            <Building2 className="h-4 w-4 text-orange-600" />
+                                            <span className="text-sm font-medium">
+                                                {pendingActions.pendingCompanies} entreprise(s) en attente d'approbation
                                             </span>
                                         </div>
+                                        <Button size="sm" asChild>
+                                            <a href="/admin/companies?status=pending">Voir</a>
+                                        </Button>
                                     </div>
-                                    <div>
-                                        <p className="text-2xl font-bold text-gray-900 dark:text-white mb-1">
-                                            {stat.value}
-                                        </p>
-                                        <p className="text-sm text-gray-600 dark:text-gray-400">
-                                            {stat.title}
-                                        </p>
+                                )}
+
+                                {pendingActions.todayRegistrations > 0 && (
+                                    <div className="flex items-center justify-between p-3 bg-blue-50 rounded-lg">
+                                        <div className="flex items-center gap-2">
+                                            <Users className="h-4 w-4 text-blue-600" />
+                                            <span className="text-sm font-medium">
+                                                {pendingActions.todayRegistrations} nouveaux utilisateurs aujourd'hui
+                                            </span>
+                                        </div>
+                                        <Button size="sm" variant="outline" asChild>
+                                            <a href="/admin/users">Voir</a>
+                                        </Button>
                                     </div>
-                                </CardContent>
-                            </Card>
-                        </motion.div>
-                    ))}
+                                )}
+
+                                {(pendingActions.pendingCompanies === 0 && pendingActions.todayRegistrations === 0) && (
+                                    <div className="flex items-center gap-2 p-3 bg-green-50 rounded-lg">
+                                        <CheckCircle className="h-4 w-4 text-green-600" />
+                                        <span className="text-sm text-green-800">
+                                            Aucune action requise pour le moment
+                                        </span>
+                                    </div>
+                                )}
+                            </div>
+                        </CardContent>
+                    </Card>
+
+                    {/* Répartition des portfolios */}
+                    <Card>
+                        <CardHeader>
+                            <CardTitle>Visibilité des Portfolios</CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                            <div className="h-64">
+                                <Doughnut 
+                                    data={portfolioVisibilityData}
+                                    options={{
+                                        responsive: true,
+                                        maintainAspectRatio: false,
+                                        plugins: {
+                                            legend: {
+                                                position: 'bottom' as const,
+                                            },
+                                        },
+                                    }}
+                                />
+                            </div>
+                        </CardContent>
+                    </Card>
                 </div>
 
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                    {/* Recent Activity */}
-                    <motion.div
-                        initial={{ opacity: 0, x: -20 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        transition={{ delay: 0.4 }}
-                        className="lg:col-span-2"
-                    >
-                        <Card className="h-full">
-                            <CardHeader className="flex flex-row items-center justify-between">
-                                <CardTitle className="flex items-center space-x-2">
-                                    <Activity className="w-5 h-5 text-amber-500" />
-                                    <span>Recent Activity</span>
-                                </CardTitle>
-                                <Button variant="ghost" size="sm">
-                                    <MoreHorizontal className="w-4 h-4" />
-                                </Button>
-                            </CardHeader>
-                            <CardContent>
-                                <div className="space-y-4">
-                                    {activities.map((activity, index) => {
-                                        const IconComponent = getActivityIcon(activity.type);
-                                        return (
-                                            <motion.div
-                                                key={activity.id}
-                                                initial={{ opacity: 0, x: -10 }}
-                                                animate={{ opacity: 1, x: 0 }}
-                                                transition={{ delay: 0.5 + index * 0.1 }}
-                                                className="flex items-center space-x-4 p-3 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors"
-                                            >
-                                                <div className="w-10 h-10 rounded-lg bg-gradient-to-r from-amber-500 to-purple-500 flex items-center justify-center shadow-sm">
-                                                    <IconComponent className="w-5 h-5 text-white" />
-                                                </div>
-                                                <div className="flex-1 min-w-0">
-                                                    <p className="text-sm font-medium text-gray-900 dark:text-white truncate">
-                                                        {activity.user}
-                                                    </p>
-                                                    <p className="text-sm text-gray-500 dark:text-gray-400 truncate">
-                                                        {activity.action}
-                                                    </p>
-                                                </div>
-                                                <div className="flex items-center space-x-2">
-                                                    <Badge className={getStatusColor(activity.status)}>
-                                                        {activity.status}
-                                                    </Badge>
-                                                    <span className="text-xs text-gray-400">
-                                                        {activity.time}
-                                                    </span>
-                                                </div>
-                                            </motion.div>
-                                        );
-                                    })}
-                                </div>
-                            </CardContent>
-                        </Card>
-                    </motion.div>
+                {/* Graphiques de tendances */}
+                <div className="grid grid-cols-1 xl:grid-cols-2 gap-8 mb-8">
+                    <Card>
+                        <CardHeader>
+                            <CardTitle>Inscriptions Utilisateurs (30 derniers jours)</CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                            <div className="h-64">
+                                <Line 
+                                    data={userRegistrationData} 
+                                    options={{
+                                        ...lineChartOptions,
+                                        maintainAspectRatio: false,
+                                    }} 
+                                />
+                            </div>
+                        </CardContent>
+                    </Card>
 
-                    {/* Quick Actions */}
-                    <motion.div
-                        initial={{ opacity: 0, x: 20 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        transition={{ delay: 0.6 }}
-                    >
-                        <Card className="h-full">
-                            <CardHeader>
-                                <CardTitle className="flex items-center space-x-2">
-                                    <Zap className="w-5 h-5 text-amber-500" />
-                                    <span>Quick Actions</span>
-                                </CardTitle>
-                            </CardHeader>
-                            <CardContent>
-                                <div className="space-y-3">
-                                    {quickActions.map((action, index) => (
-                                        <motion.a
-                                            key={action.title}
-                                            href={action.href}
-                                            initial={{ opacity: 0, y: 10 }}
-                                            animate={{ opacity: 1, y: 0 }}
-                                            transition={{ delay: 0.7 + index * 0.1 }}
-                                            className="block p-4 rounded-xl border border-gray-200 dark:border-gray-700 hover:shadow-md hover:border-amber-300 dark:hover:border-amber-600 transition-all duration-200 group"
-                                        >
-                                            <div className="flex items-center space-x-3">
-                                                <div className={`w-10 h-10 rounded-lg bg-gradient-to-r ${action.color} flex items-center justify-center shadow-sm group-hover:scale-110 transition-transform`}>
-                                                    <action.icon className="w-5 h-5 text-white" />
-                                                </div>
-                                                <div className="flex-1">
-                                                    <h4 className="font-semibold text-gray-900 dark:text-white group-hover:text-amber-600 dark:group-hover:text-amber-400 transition-colors">
-                                                        {action.title}
-                                                    </h4>
-                                                    <p className="text-sm text-gray-500 dark:text-gray-400">
-                                                        {action.description}
-                                                    </p>
-                                                </div>
-                                            </div>
-                                        </motion.a>
-                                    ))}
-                                </div>
-                            </CardContent>
-                        </Card>
-                    </motion.div>
+                    <Card>
+                        <CardHeader>
+                            <CardTitle>Revenus (30 derniers jours)</CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                            <div className="h-64">
+                                <Line 
+                                    data={revenueData} 
+                                    options={{
+                                        ...lineChartOptions,
+                                        maintainAspectRatio: false,
+                                    }} 
+                                />
+                            </div>
+                        </CardContent>
+                    </Card>
                 </div>
+
+                {/* Activités récentes */}
+                <Card>
+                    <CardHeader>
+                        <CardTitle className="flex items-center gap-2">
+                            <Clock className="h-5 w-5" />
+                            Activités Récentes
+                        </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                        <div className="space-y-4">
+                            {recentActivities.map((activity) => (
+                                <div key={activity.id} className="flex items-center justify-between p-3 hover:bg-gray-50 rounded-lg">
+                                    <div className="flex items-center gap-3">
+                                        {getActionBadge(activity.action)}
+                                        <div>
+                                            <p className="text-sm font-medium">
+                                                {activity.description}
+                                            </p>
+                                            <p className="text-xs text-gray-600">
+                                                Par {activity.admin}
+                                                {activity.user && ` • Utilisateur: ${activity.user}`}
+                                            </p>
+                                        </div>
+                                    </div>
+                                    <div className="text-right">
+                                        <p className="text-xs text-gray-500">{activity.created_at}</p>
+                                        <p className="text-xs text-gray-400">{activity.created_at_full}</p>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                        
+                        {recentActivities.length === 0 && (
+                            <p className="text-center text-gray-500 py-8">
+                                Aucune activité récente
+                            </p>
+                        )}
+                    </CardContent>
+                </Card>
             </div>
         </AdminLayout>
     );

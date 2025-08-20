@@ -1842,5 +1842,139 @@
             "interests": "Centres d'intérêt",
             "education": "Formation académique principale ou diplôme le plus élevé"
         }
+    },
+    "admin_dashboard": {
+        "welcome": {
+            "title": "Bienvenue dans Guidy Admin",
+            "date_format": "fr-FR",
+            "system_status": "État du système",
+            "all_systems_operational": "Tous les systèmes fonctionnent"
+        },
+        "stats": {
+            "total_users": "Total des utilisateurs",
+            "cvs_created": "CV créés",
+            "revenue": "Revenus",
+            "active_users": "Utilisateurs actifs"
+        },
+        "quick_actions": {
+            "title": "Actions rapides",
+            "manage_users": "Gérer les utilisateurs",
+            "manage_users_desc": "Voir et gérer les comptes utilisateur",
+            "cv_templates": "Modèles de CV", 
+            "cv_templates_desc": "Gérer les modèles et designs de CV",
+            "analytics": "Analytiques",
+            "analytics_desc": "Voir les analytiques détaillées",
+            "system_logs": "Journaux système",
+            "system_logs_desc": "Surveiller l'activité du système"
+        },
+        "recent_activity": {
+            "title": "Activité récente",
+            "user_registration": "Nouveau compte créé",
+            "cv_creation": "CV généré avec l'IA",
+            "payment": "Mise à niveau vers Premium",
+            "system": "Sauvegarde de base de données terminée",
+            "status": {
+                "success": "succès",
+                "warning": "avertissement", 
+                "info": "info"
+            }
+        }
+    },
+    "welcome_page": {
+        "language_selector": {
+            "french": "Français",
+            "english": "English"
+        },
+        "features": {
+            "portfolio_builder": {
+                "title": "Créateur de Portfolio",
+                "description": "Créez des portfolios en ligne époustouflants pour présenter votre travail et vos compétences de manière professionnelle."
+            },
+            "company_portal": {
+                "title": "Portail Entreprise", 
+                "description": "Accédez aux profils d'entreprises exclusifs et connectez-vous avec des employeurs potentiels."
+            },
+            "skill_validation": {
+                "title": "Validation de Compétences",
+                "description": "Validez vos compétences avec des évaluations et certifications alimentées par l'IA."
+            },
+            "ats_optimization": {
+                "title": "Optimisation ATS",
+                "description": "Assurez-vous que votre CV passe les systèmes de suivi des candidatures avec nos outils d'optimisation."
+            },
+            "referral_system": {
+                "title": "Système de Parrainage", 
+                "description": "Gagnez des récompenses en parrainant des amis et développez votre réseau professionnel."
+            },
+            "international_cv": {
+                "title": "CV International",
+                "description": "Créez des CV en plusieurs langues avec un formatage et des standards spécifiques à chaque région."
+            }
+        },
+        "meta": {
+            "application_description": "Assistant IA pour la création de CV et le développement de carrière",
+            "application_category": "BusinessApplication",
+            "operating_system": "Web",
+            "contact_type": "service client",
+            "available_languages": ["French", "English"],
+            "author": "Guidy",
+            "generator": "Guidy AI Resume Platform",
+            "copyright": "© 2025 Guidy",
+            "geo_placename": "Mondial",
+            "language": "Anglais, Français"
+        },
+        "faq": {
+            "how_it_works_fr": "Comment fonctionne le créateur de CV IA de Guidy?",
+            "how_it_works_answer_fr": "Guidy utilise l'IA avancée pour analyser votre expérience professionnelle et créer des CV adaptés à votre région et secteur cibles. Saisissez simplement vos informations, sélectionnez vos préférences, et notre IA génère des CV professionnels compatibles ATS en quelques minutes. Nos templates sont optimisés pour maximiser votre taux de réponse.",
+            "how_it_works_en": "How does Guidy's AI resume builder work?",
+            "how_it_works_answer_en": "Guidy uses advanced AI to analyze your professional experience and create tailored resumes optimized for your target region and industry. Simply input your details, select your preferences, and our AI generates professional, ATS-friendly resumes in minutes. Our templates are optimized to maximize your response rate from recruiters.",
+            "availability_fr": "Est-ce que Guidy est disponible dans mon pays?",
+            "availability_answer_fr": "Oui! Guidy est disponible dans le monde entier avec des optimisations spécifiques pour l'Amérique du Nord, l'Europe, l'Afrique et les marchés anglophones mondiaux. Notre plateforme prend en charge l'anglais et le français avec des modèles adaptés à chaque région, respectant les normes locales de recrutement.",
+            "availability_en": "Is Guidy available in my country?",
+            "availability_answer_en": "Yes! Guidy is available worldwide with specific optimizations for North America, Europe, Africa, and global English-speaking markets. Our platform supports English and French languages with region-specific templates that follow local recruitment standards and employer expectations.",
+            "free_fr": "Est-ce que Guidy est gratuit?",
+            "free_answer_fr": "Oui, Guidy propose une version gratuite qui vous permet de créer des CV professionnels et d'accéder aux fonctionnalités de base. Vous pouvez créer autant de CV que vous souhaitez, les télécharger en PDF et accéder à nos conseils de base sans frais. Des options premium sont disponibles pour des fonctionnalités avancées.",
+            "free_en": "Is Guidy free to use?",
+            "free_answer_en": "Yes, Guidy offers a free version that allows you to create professional resumes and access basic features. You can create as many resumes as you want, download them as PDFs, and access our basic career advice at no cost. Premium options are available for advanced features and personalized guidance.",
+            "ats_optimized_fr": "Les CV créés avec Guidy sont-ils optimisés pour les ATS?",
+            "ats_optimized_answer_fr": "Absolument! Tous nos modèles de CV sont conçus pour être parfaitement compatibles avec les systèmes ATS (Applicant Tracking Systems) utilisés par les recruteurs. Notre IA analyse les offres d'emploi pour suggérer les mots-clés pertinents à inclure dans votre CV, augmentant ainsi vos chances de passer les filtres automatiques.",
+            "ats_optimized_en": "Are Guidy's resumes optimized for ATS?",
+            "ats_optimized_answer_en": "Absolutely! All our resume templates are designed to be perfectly compatible with ATS (Applicant Tracking Systems) used by recruiters. Our AI analyzes job postings to suggest relevant keywords to include in your resume, increasing your chances of passing automatic filters."
+        }
+    },
+    "color_picker": {
+        "colors": {
+            "blue_corporate": "Bleu Corporate",
+            "green_tech": "Vert Tech", 
+            "violet_creative": "Violet Créatif",
+            "orange_dynamic": "Orange Dynamique",
+            "rose_modern": "Rose Moderne",
+            "indigo_professional": "Indigo Professionnel",
+            "blue_turquoise": "Bleu Turquoise",
+            "green_emerald": "Vert Émeraude",
+            "red_elegant": "Rouge Élégant",
+            "gray_modern": "Gris Moderne",
+            "blue_night": "Bleu Nuit",
+            "violet_dark": "Violet Foncé"
+        }
+    },
+    "mobile_tab_bar": {
+        "support": "Support",
+        "new_code": "Nouveau Code"
+    },
+    "message_bubble": {
+        "user_avatar_alt": "Utilisateur",
+        "share_preview_alt": "Aperçu du message à partager"
+    },
+    "experience_controller": {
+        "unauthorized_modify": "Non autorisé à modifier cette expérience",
+        "attachment_deleted_success": "Pièce jointe supprimée avec succès",
+        "cannot_delete_attachment": "Impossible de supprimer la pièce jointe",
+        "request_start_log": "Début de la requête store",
+        "attach_experience_user": "Attacher l'expérience à l'utilisateur",
+        "experience_created_success": "Expérience créée avec succès",
+        "error_occurred_creation": "Une erreur est survenue lors de la création",
+        "experience_updated_success": "Expérience mise à jour avec succès",
+        "experience_deleted_success": "Expérience supprimée avec succès"
     }
 }

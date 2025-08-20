@@ -13,15 +13,15 @@ class CompanyPortalController extends Controller
 {
     public function __construct()
     {
-        $this->middleware(['auth:company']);
+        $this->middleware('auth');
     }
 
     public function index()
     {
-        $company = Auth::guard('company')->user();
+        $user = Auth::user();
         
         return Inertia::render('CompanyPortal/Index', [
-            'company' => $company,
+            'user' => $user,
         ]);
     }
 

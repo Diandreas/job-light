@@ -154,4 +154,47 @@ class PaymentController extends Controller
             ],
         ]);
     }
+
+    public function checkDownloadStatus($modelId)
+    {
+        try {
+            $user = auth()->user();
+            
+            // Vérifier si l'utilisateur a déjà téléchargé ce modèle
+            $hasDownloaded = Payment::where('user_id', $user->id)
+                ->where('transaction_id', 'like', "%model_{$modelId}%")
+                ->where('status', 'completed')
+                ->exists();
+
+            return response()->json([
+                'hasDownloaded' => $hasDownloaded,
+                'modelId' => $modelId
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Error checking download status', [
+                'error' => $e->getMessage(),
+                'modelId' => $modelId,
+                'user_id' => auth()->id()
+            ]);
+
+            return response()->json(['error' => 'Unable to check download status'], 500);
+        }
+    }
+
+    public function getBalance()
+    {
+        try {
+            $user = auth()->user();
+            return response()->json([
+                'balance' => $user->wallet_balance ?? 0
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Error getting wallet balance', [
+                'error' => $e->getMessage(),
+                'user_id' => auth()->id()
+            ]);
+
+            return response()->json(['error' => 'Unable to get balance'], 500);
+        }
+    }
 }

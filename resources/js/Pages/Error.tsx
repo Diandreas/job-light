@@ -95,13 +95,13 @@ export default function Error({ status }: Props) {
     return (
         <GuestLayout>
             <Head title={`${status} - ${config.title}`} />
-            <div className={`min-h-screen bg-gradient-to-br ${config.bgGradient} relative overflow-hidden`}>
+            <div className={`min-h-screen bg-gradient-to-br ${config.bgGradient} dark:from-gray-900 dark:to-gray-800 relative overflow-hidden`}>
                 {/* Background Pattern */}
-                <div className="absolute inset-0 opacity-10">
-                    <div className="absolute top-10 left-10 w-20 h-20 bg-current rounded-full"></div>
-                    <div className="absolute top-40 right-20 w-16 h-16 bg-current rounded-full"></div>
-                    <div className="absolute bottom-20 left-1/4 w-12 h-12 bg-current rounded-full"></div>
-                    <div className="absolute bottom-40 right-1/3 w-8 h-8 bg-current rounded-full"></div>
+                <div className="absolute inset-0 opacity-10 dark:opacity-5">
+                    <div className="absolute top-10 left-10 w-20 h-20 bg-current rounded-full dark:bg-white"></div>
+                    <div className="absolute top-40 right-20 w-16 h-16 bg-current rounded-full dark:bg-white"></div>
+                    <div className="absolute bottom-20 left-1/4 w-12 h-12 bg-current rounded-full dark:bg-white"></div>
+                    <div className="absolute bottom-40 right-1/3 w-8 h-8 bg-current rounded-full dark:bg-white"></div>
                 </div>
 
                 <div className="relative z-10 min-h-screen flex items-center justify-center px-4 sm:px-6 lg:px-8">
@@ -120,7 +120,7 @@ export default function Error({ status }: Props) {
                                 className="mb-8"
                             >
                                 <div className="relative inline-block">
-                                    <span className="text-8xl sm:text-9xl font-bold text-gray-800 dark:text-gray-200 relative z-10">
+                                    <span className="text-8xl sm:text-9xl font-bold text-gray-800 dark:text-gray-100 relative z-10 bg-gradient-to-br from-gray-900 to-gray-600 dark:from-gray-100 dark:to-gray-300 bg-clip-text text-transparent">
                                         {status}
                                     </span>
                                     <motion.div
@@ -128,7 +128,7 @@ export default function Error({ status }: Props) {
                                         transition={{ duration: 20, repeat: Infinity, ease: 'linear' }}
                                         className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 -z-10"
                                     >
-                                        <IconComponent className={`w-32 h-32 ${config.iconColor} opacity-20`} />
+                                        <IconComponent className={`w-32 h-32 ${config.iconColor} dark:text-gray-400 opacity-20 dark:opacity-30`} />
                                     </motion.div>
                                 </div>
                             </motion.div>
@@ -164,7 +164,7 @@ export default function Error({ status }: Props) {
                                     onClick={() => window.history.back()}
                                     variant="outline"
                                     size="lg"
-                                    className="bg-white/80 backdrop-blur-sm hover:bg-white border-gray-300 text-gray-700 hover:text-gray-900 shadow-lg"
+                                    className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm hover:bg-white dark:hover:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-200 hover:text-gray-900 dark:hover:text-white shadow-lg dark:shadow-xl"
                                 >
                                     <ArrowLeft className="w-4 h-4 mr-2" />
                                     {t('errors.actions.back', 'Retour')}
@@ -172,7 +172,7 @@ export default function Error({ status }: Props) {
 
                                 <Button
                                     onClick={() => window.location.href = '/'}
-                                    className="bg-gradient-to-r from-amber-500 to-purple-600 hover:from-amber-600 hover:to-purple-700 text-white shadow-lg"
+                                    className="bg-gradient-to-r from-amber-500 to-purple-600 hover:from-amber-600 hover:to-purple-700 dark:from-amber-400 dark:to-purple-500 dark:hover:from-amber-500 dark:hover:to-purple-600 text-white shadow-lg dark:shadow-xl"
                                     size="lg"
                                 >
                                     <Home className="w-4 h-4 mr-2" />
@@ -184,7 +184,7 @@ export default function Error({ status }: Props) {
                                         onClick={() => window.location.reload()}
                                         variant="outline"
                                         size="lg"
-                                        className="bg-white/80 backdrop-blur-sm hover:bg-white border-gray-300 text-gray-700 hover:text-gray-900 shadow-lg"
+                                        className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm hover:bg-white dark:hover:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-200 hover:text-gray-900 dark:hover:text-white shadow-lg dark:shadow-xl"
                                     >
                                         <RefreshCw className="w-4 h-4 mr-2" />
                                         {t('errors.actions.refresh', 'Actualiser')}
@@ -211,15 +211,15 @@ export default function Error({ status }: Props) {
                                                 initial={{ opacity: 0, y: 20 }}
                                                 animate={{ opacity: 1, y: 0 }}
                                                 transition={{ delay: 0.9 + index * 0.1 }}
-                                                className="group p-4 bg-white/60 backdrop-blur-sm rounded-xl border border-gray-200 hover:border-amber-300 hover:bg-white/80 transition-all duration-300 shadow-md hover:shadow-lg"
+                                                className="group p-4 bg-white/60 dark:bg-gray-800/60 backdrop-blur-sm rounded-xl border border-gray-200 dark:border-gray-700 hover:border-amber-300 dark:hover:border-amber-500 hover:bg-white/80 dark:hover:bg-gray-800/80 transition-all duration-300 shadow-md dark:shadow-lg hover:shadow-lg dark:hover:shadow-xl"
                                             >
                                                 <div className="flex items-center space-x-3">
-                                                    <link.icon className="w-5 h-5 text-amber-600 group-hover:text-amber-700" />
+                                                    <link.icon className="w-5 h-5 text-amber-600 dark:text-amber-400 group-hover:text-amber-700 dark:group-hover:text-amber-300" />
                                                     <div className="text-left">
-                                                        <div className="font-medium text-gray-900 group-hover:text-amber-700">
+                                                        <div className="font-medium text-gray-900 dark:text-white group-hover:text-amber-700 dark:group-hover:text-amber-300">
                                                             {link.name}
                                                         </div>
-                                                        <div className="text-sm text-gray-600">
+                                                        <div className="text-sm text-gray-600 dark:text-gray-400">
                                                             {link.description}
                                                         </div>
                                                     </div>
@@ -244,7 +244,7 @@ export default function Error({ status }: Props) {
                                     onClick={() => window.location.href = '/support'}
                                     variant="ghost"
                                     size="sm"
-                                    className="text-gray-600 hover:text-amber-600 hover:bg-amber-50"
+                                    className="text-gray-600 dark:text-gray-400 hover:text-amber-600 dark:hover:text-amber-400 hover:bg-amber-50 dark:hover:bg-amber-900/20"
                                 >
                                     <Mail className="w-4 h-4 mr-2" />
                                     {t('errors.actions.contact', 'Contacter le support')}
@@ -258,14 +258,14 @@ export default function Error({ status }: Props) {
                 <motion.div
                     animate={{ y: [-10, 10, -10] }}
                     transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
-                    className="absolute top-20 right-10 text-6xl opacity-20"
+                    className="absolute top-20 right-10 text-6xl opacity-20 dark:opacity-30"
                 >
                     {config.illustration}
                 </motion.div>
                 <motion.div
                     animate={{ y: [10, -10, 10] }}
                     transition={{ duration: 6, repeat: Infinity, ease: 'easeInOut' }}
-                    className="absolute bottom-20 left-10 text-4xl opacity-20"
+                    className="absolute bottom-20 left-10 text-4xl opacity-20 dark:opacity-30"
                 >
                     💼
                 </motion.div>

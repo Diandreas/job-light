@@ -15,7 +15,7 @@ import { Label } from "@/Components/ui/label";
 
 export default function Edit({ auth, portfolio, settings }) {
     const { data, setData, put, processing } = useForm({
-        design: settings.design || 'professional',
+        layout: settings.layout || 'professional',
         show_experiences: settings.show_experiences || false,
         show_competences: settings.show_competences || false,
         show_hobbies: settings.show_hobbies || false,
@@ -92,16 +92,43 @@ export default function Edit({ auth, portfolio, settings }) {
                                         Thème :
                                     </Label>
                                     <Select
-                                        value={data.design}
-                                        onValueChange={(value) => setData('design', value)}
+                                        value={data.layout}
+                                        onValueChange={(value) => setData('layout', value)}
                                     >
                                         <SelectTrigger className="h-8">
-                                            <SelectValue placeholder="Choisir" />
+                                            <SelectValue placeholder="Choisir un style" />
                                         </SelectTrigger>
                                         <SelectContent>
-                                            <SelectItem value="intuitive">Moderne</SelectItem>
-                                            <SelectItem value="professional">Business</SelectItem>
-                                            <SelectItem value="user-friendly">Créatif</SelectItem>
+                                            <SelectItem value="professional">
+                                                <div className="flex items-center gap-2">
+                                                    <div className="w-3 h-3 bg-gray-500 rounded"></div>
+                                                    Business & Professionnel
+                                                </div>
+                                            </SelectItem>
+                                            <SelectItem value="intuitive">
+                                                <div className="flex items-center gap-2">
+                                                    <div className="w-3 h-3 bg-blue-500 rounded"></div>
+                                                    Intuitif & Moderne
+                                                </div>
+                                            </SelectItem>
+                                            <SelectItem value="user-friendly">
+                                                <div className="flex items-center gap-2">
+                                                    <div className="w-3 h-3 bg-green-500 rounded"></div>
+                                                    Convivial & Accessible
+                                                </div>
+                                            </SelectItem>
+                                            <SelectItem value="creative">
+                                                <div className="flex items-center gap-2">
+                                                    <div className="w-3 h-3 bg-gradient-to-r from-purple-500 to-pink-500 rounded"></div>
+                                                    Créatif & Artistique
+                                                </div>
+                                            </SelectItem>
+                                            <SelectItem value="modern">
+                                                <div className="flex items-center gap-2">
+                                                    <div className="w-3 h-3 bg-gray-900 rounded"></div>
+                                                    Sombre & Minimaliste
+                                                </div>
+                                            </SelectItem>
                                         </SelectContent>
                                     </Select>
                                 </div>

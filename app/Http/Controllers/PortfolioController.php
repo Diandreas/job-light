@@ -12,7 +12,13 @@ class PortfolioController extends Controller
 {
     public function index()
     {
-        return Inertia::render('Portfolio/Index');
+        $user = auth()->user();
+
+        return Inertia::render('Portfolio/Index', [
+            'auth' => [
+                'user' => $user
+            ]
+        ]);
     }
 
     public function show($identifier)
@@ -24,10 +30,10 @@ class PortfolioController extends Controller
         $portfolioSettings = $user->portfolioSettings;
         $currentUser = auth()->user();
         $isCompany = auth()->guard('company')->check();
-        
+
         if ($portfolioSettings) {
             $visibility = $portfolioSettings->visibility;
-            
+
             if ($visibility === \App\Enums\ProfileVisibility::PRIVATE) {
                 if (!$currentUser || $currentUser->id !== $user->id) {
                     abort(403, 'Ce profil est privé.');
@@ -47,7 +53,7 @@ class PortfolioController extends Controller
 
         return Inertia::render('Portfolio/Show', [
             'portfolio' => $portfolio,
-            'identifier' => $user->identifier,
+            'identifier' => $user->username ?? $user->email,
         ]);
     }
 
@@ -69,12 +75,10 @@ class PortfolioController extends Controller
 
         // Validation...
         $request->validate([
-            'design' => 'required|in:intuitive,professional,user-friendly',
+            'layout' => 'required|in:intuitive,professional,user-friendly,creative,modern',
             'show_experiences' => 'boolean',
             'show_competences' => 'boolean',
             'show_hobbies' => 'boolean',
-            'show_summary' => 'boolean',
-            'show_contact_info' => 'boolean',
             'visibility' => 'required|in:private,company_portal,community,public',
             'profile_picture' => 'nullable|image|max:1024', // 1MB Max
         ]);
@@ -83,12 +87,10 @@ class PortfolioController extends Controller
         $user->portfolioSettings()->updateOrCreate(
             ['user_id' => $user->id],
             $request->only([
-                'design',
+                'layout',
                 'show_experiences',
                 'show_competences',
                 'show_hobbies',
-                'show_summary',
-                'show_contact_info',
                 'visibility',
             ])
         );
@@ -96,7 +98,7 @@ class PortfolioController extends Controller
         // Handle profile picture upload
         if ($request->hasFile('profile_picture')) {
             $path = $request->file('profile_picture')->store('profile_pictures', 'public');
-            $user->update(['profile_picture' => $path]);
+            $user->update(['photo' => $path]);
         }
 
         return redirect()->route('portfolio.edit')->with('success', 'Portfolio mis à jour avec succès.');
@@ -106,12 +108,10 @@ class PortfolioController extends Controller
     private function createDefaultSettings($user)
     {
         return $user->portfolioSettings()->create([
-            'design' => 'professional',
+            'layout' => 'professional',
             'show_experiences' => true,
             'show_competences' => true,
             'show_hobbies' => true,
-            'show_summary' => true,
-            'show_contact_info' => true,
             'visibility' => 'private',
         ]);
     }
@@ -124,40 +124,46 @@ class PortfolioController extends Controller
             'personalInfo' => [
                 'id' => $user->id,
                 'name' => $user->name,
+                'title' => $user->full_profession ?? 'Professionnel',
                 'email' => $user->email,
                 'username' => $user->username,
                 'phone' => $user->phone_number,
                 'address' => $user->address,
                 'github' => $user->github,
                 'linkedin' => $user->linkedin,
-                'profile_picture' => $user->profile_picture ? Storage::url($user->profile_picture) : null,
+                'profile_picture' => $user->photo ? Storage::url($user->photo) : null,
             ],
             'experiences' => $settings->show_experiences ? $user->experiences()
-                ->join('experience_categories', 'experiences.experience_categories_id', '=', 'experience_categories.id')
-                ->join('attachments', 'experiences.attachment_id', '=', 'attachments.id')
+                ->leftJoin('experience_categories', 'experiences.experience_categories_id', '=', 'experience_categories.id')
+                ->leftJoin('attachments', 'experiences.attachment_id', '=', 'attachments.id')
                 ->select('experiences.*',
                     'experience_categories.name as category_name',
+                    'experience_categories.ranking as category_ranking',
                     'attachments.name as attachment_name',
                     'attachments.path as attachment_path',
                     'attachments.format as attachment_format',
                     'attachments.size as attachment_size')
                 ->orderBy('experience_categories.ranking', 'asc')
+                ->orderBy('experiences.created_at', 'desc')
                 ->get()
                 ->map(function ($experience) {
                     $experience->attachment_path = $experience->attachment_path ? Storage::url($experience->attachment_path) : null;
+                    $experience->category_name = $experience->category_name ?? 'Expérience';
                     return $experience;
                 })
                 ->toArray() : [],
             'competences' => $settings->show_competences ? $user->competences()->take(3)->get()->toArray() : [],
             'hobbies' => $settings->show_hobbies ? $user->hobbies()->take(3)->get()->toArray() : [],
-            'summary' => $settings->show_summary ? ($user->selected_summary ? [$user->selected_summary->toArray()] : []) : [],
+            'summary' => [
+                'description' => 'Passionné par mon domaine, je mets mes compétences au service de projets innovants et challengeants.'
+            ],
             'professions' => $user->profession()->take(2)->get()->toArray(),
-            'design' => $settings->design,
-            'show_contact_info' => $settings->show_contact_info,
+            'design' => $settings->layout ?? 'professional',
+            'show_contact_info' => true,
             'show_experiences' => $settings->show_experiences,
             'show_competences' => $settings->show_competences,
             'show_hobbies' => $settings->show_hobbies,
-            'show_summary' => $settings->show_summary,
+            'show_summary' => true,
             'visibility' => $settings->visibility,
         ];
     }

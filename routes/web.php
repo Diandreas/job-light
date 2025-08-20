@@ -3,7 +3,6 @@
 use App\Http\Controllers\{AddressController,
     CareerAdvisorController,
     ChatHistoryController,
-    CompanyPortalController,
     CompetenceController,
     CvColorController,
     CvInfosController,
@@ -28,7 +27,10 @@ use App\Http\Controllers\{AddressController,
     UserHobbyController,
     UserProfessionsController,
     UserlanguageController,
-    Admin\ReferralLevelController};
+    Admin\ReferralLevelController,
+    Admin\AnalyticsController,
+    Admin\AuditLogController,
+    Admin\CompanyManagementController};
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -120,24 +122,6 @@ Route::get('/portfolio/{identifier}', [PortfolioController::class, 'show'])
     ->name('portfolio.show')
     ->where('identifier', '.*');
 
-// Company Authentication Routes
-Route::prefix('company')->name('company.')->group(function () {
-    Route::get('/login', [App\Http\Controllers\Auth\CompanyAuthController::class, 'showLoginForm'])->name('login');
-    Route::post('/login', [App\Http\Controllers\Auth\CompanyAuthController::class, 'login']);
-    Route::get('/register', [App\Http\Controllers\Auth\CompanyAuthController::class, 'showRegistrationForm'])->name('register');
-    Route::post('/register', [App\Http\Controllers\Auth\CompanyAuthController::class, 'register']);
-    Route::post('/logout', [App\Http\Controllers\Auth\CompanyAuthController::class, 'logout'])->name('logout');
-});
-
-// Company Portal Routes
-Route::prefix('company-portal')->name('company-portal.')->group(function () {
-    Route::get('/', [CompanyPortalController::class, 'index'])->name('index');
-    Route::get('/profiles', [CompanyPortalController::class, 'profiles'])->name('profiles');
-    Route::get('/profile/{identifier}', [CompanyPortalController::class, 'showProfile'])
-        ->name('profile.show')
-        ->where('identifier', '.*');
-});
-
 Route::middleware(['auth', 'verified'])->group(function () {
 
     Route::delete('/experiences/{experience}/attachment', [ExperienceController::class, 'deleteAttachment'])
@@ -219,39 +203,19 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/sponsorship/code-info', [SponsorshipController::class, 'getReferralCodeInfo'])->name('sponsorship.code-info');
 
     // Admin-only routes
-    Route::middleware('can:access-admin')->prefix('admin')->name('admin.')->group(function () {
-        // Admin index - redirect to dashboard
-        Route::get('/', function () {
-            return redirect()->route('admin.dashboard');
-        })->name('index');
-        
-        // Dashboard
-        Route::get('/dashboard', [\App\Http\Controllers\Admin\DashboardController::class, 'index'])
-            ->name('dashboard');
+    Route::middleware('can:access-admin')->group(function () {
+        // Admin prefix routes
+        Route::prefix('admin')->name('admin.')->group(function () {
+            Route::get('/dashboard', function () {
+                return Inertia::render('Admin/Dashboard/Index');
+            })->name('dashboard.index');
+            Route::get('/analytics', [AnalyticsController::class, 'index'])->name('analytics.index');
+            Route::get('/audit-logs', [AuditLogController::class, 'index'])->name('audit-logs.index');
+            Route::get('/companies', [CompanyManagementController::class, 'index'])->name('companies.index');
+            Route::get('/companies/{company}', [CompanyManagementController::class, 'show'])->name('companies.show');
+            Route::put('/companies/{company}', [CompanyManagementController::class, 'update'])->name('companies.update');
+        });
 
-        // Gestion des utilisateurs
-        Route::resource('users', \App\Http\Controllers\Admin\UserManagementController::class);
-        Route::post('/users/{user}/toggle-status', [\App\Http\Controllers\Admin\UserManagementController::class, 'toggleStatus'])
-            ->name('users.toggle-status');
-        Route::post('/users/{user}/reset-password', [\App\Http\Controllers\Admin\UserManagementController::class, 'resetPassword'])
-            ->name('users.reset-password');
-        Route::get('/users-export', [\App\Http\Controllers\Admin\UserManagementController::class, 'exportUsers'])
-            ->name('users.export');
-
-        // Gestion des entreprises
-        Route::resource('companies', \App\Http\Controllers\Admin\CompanyManagementController::class);
-        Route::post('/companies/{company}/approve', [\App\Http\Controllers\Admin\CompanyManagementController::class, 'approve'])
-            ->name('companies.approve');
-        Route::post('/companies/{company}/reject', [\App\Http\Controllers\Admin\CompanyManagementController::class, 'reject'])
-            ->name('companies.reject');
-        Route::get('/companies/pending-approvals', [\App\Http\Controllers\Admin\CompanyManagementController::class, 'pendingApprovals'])
-            ->name('companies.pending-approvals');
-        Route::post('/companies/bulk-action', [\App\Http\Controllers\Admin\CompanyManagementController::class, 'bulkAction'])
-            ->name('companies.bulk-action');
-        Route::get('/companies-export', [\App\Http\Controllers\Admin\CompanyManagementController::class, 'exportCompanies'])
-            ->name('companies.export');
-
-        // Gestion du contenu existant avec préfixe admin
         Route::resources([
             'experience-categories' => ExperienceCategoryController::class,
             'profession-categories' => ProfessionCategoryController::class,
@@ -263,19 +227,12 @@ Route::middleware(['auth', 'verified'])->group(function () {
         ]);
 
         // Routes pour la gestion des niveaux de parrainage
-        Route::resource('referral-levels', \App\Http\Controllers\Admin\ReferralLevelController::class);
+        Route::resource('referral-levels', \App\Http\Controllers\Admin\ReferralLevelController::class)
+            ->names('admin.referral-levels');
 
         // Route pour initialiser les niveaux de parrainage
         Route::post('/referral-levels/initialize', [\App\Http\Controllers\Admin\ReferralLevelController::class, 'initialize'])
-            ->name('referral-levels.initialize');
-
-        // Routes manquantes pour l'admin
-        Route::get('/analytics', [\App\Http\Controllers\Admin\AnalyticsController::class, 'index'])
-            ->name('analytics');
-        Route::get('/audit-logs', [\App\Http\Controllers\Admin\AuditLogController::class, 'index'])
-            ->name('audit-logs');
-        Route::get('/settings', [\App\Http\Controllers\Admin\SettingsController::class, 'index'])
-            ->name('settings');
+            ->name('admin.referral-levels.initialize');
     });
 
 
@@ -312,17 +269,6 @@ Route::get('/cv/preview-print/{id}', [CvInfosController::class, 'previewPrint'])
 // Route de test pour vérifier le schéma de la base de données
 Route::get('/test-db-schema', [App\Http\Controllers\TestDbController::class, 'testSchema']);
 
-// Routes de test pour les pages d'erreur (en développement uniquement)
-if (app()->environment('local')) {
-    Route::get('/test-errors/{code}', function ($code) {
-        $validCodes = [404, 500, 403, 503];
-        
-        if (!in_array((int)$code, $validCodes)) {
-            abort(404);
-        }
-        
-        abort((int)$code);
-    })->where('code', '[0-9]+')->name('test.errors');
-}
+
 
 require __DIR__.'/auth.php';

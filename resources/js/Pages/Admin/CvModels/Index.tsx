@@ -1,42 +1,11 @@
-import React, { useState } from 'react';
-import { Link } from '@inertiajs/react';
-import { router } from '@inertiajs/react';
-import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
-import {
-    Table,
-    TableBody,
-    TableCell,
-    TableHead,
-    TableHeader,
-    TableRow,
-} from "@/Components/ui/table";
-import {
-    Card,
-    CardContent,
-    CardDescription,
-    CardHeader,
-    CardTitle,
-} from "@/Components/ui/card";
-import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuLabel,
-    DropdownMenuTrigger,
-} from "@/Components/ui/dropdown-menu";
-import { Button } from "@/Components/ui/button";
-import {
-    AlertDialog,
-    AlertDialogAction,
-    AlertDialogCancel,
-    AlertDialogContent,
-    AlertDialogDescription,
-    AlertDialogFooter,
-    AlertDialogHeader,
-    AlertDialogTitle,
-} from "@/Components/ui/alert-dialog";
-import { Plus, MoreVertical, Eye, Edit, Trash2 } from 'lucide-react';
-import { Badge } from "@/Components/ui/badge";
+import { Head, Link, router } from '@inertiajs/react';
+import AdminLayout from '@/Layouts/AdminLayout';
+import { Card, CardContent, CardHeader, CardTitle } from '@/Components/ui/card';
+import { Button } from '@/Components/ui/button';
+import { Input } from '@/Components/ui/input';
+import { Badge } from '@/Components/ui/badge';
+import { useState } from 'react';
+import { Search, Plus, Edit, Trash2, Eye, FileText, DollarSign } from 'lucide-react';
 
 interface CvModel {
     id: number;
@@ -44,173 +13,187 @@ interface CvModel {
     description: string;
     price: number;
     previewImagePath: string;
+    templatePath: string;
+    created_at: string;
+    updated_at: string;
 }
 
 interface Props {
-    cvModels: CvModel[];
-    auth: {
-        user: any;
+    cvModels: {
+        data: CvModel[];
+        links: any[];
+        current_page: number;
+        last_page: number;
+    };
+    filters: {
+        search?: string;
     };
 }
 
-export default function CvModelIndex({ cvModels, auth }: Props) {
-    const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
-    const [selectedModelId, setSelectedModelId] = useState<number | null>(null);
+export default function Index({ cvModels, filters }: Props) {
+    const [search, setSearch] = useState(filters.search || '');
 
-    const handleDelete = (id: number) => {
-        router.delete(route('cv-models.destroy', id));
+    const handleSearch = () => {
+        router.get('/cv-models', {
+            search,
+        }, {
+            preserveState: true,
+            replace: true,
+        });
     };
 
-    const formatPrice = (price: number) => {
-        return new Intl.NumberFormat('fr-FR', {
-            style: 'currency',
-            currency: 'XOF',
-            minimumFractionDigits: 0,
-            maximumFractionDigits: 0
-        }).format(price)
-            .replace('XOF', 'FCFA')
-            .replace(',', ' '); // Pour un meilleur formatage des grands nombres
+    const handleDelete = (cvModel: CvModel) => {
+        if (confirm(`Are you sure you want to delete "${cvModel.name}"?`)) {
+            router.delete(`/cv-models/${cvModel.id}`);
+        }
     };
-
-    if (!cvModels) {
-        return (
-            <AuthenticatedLayout
-                user={auth.user}
-                header={
-                    <h2 className="text-3xl font-bold tracking-tight">Gestion des Modèles de CV</h2>
-                }
-            >
-                <div className="h-[400px] flex items-center justify-center">
-                    <div className="animate-spin rounded-full h-12 w-12 border-4 border-primary border-t-transparent"></div>
-                </div>
-            </AuthenticatedLayout>
-        );
-    }
 
     return (
-        <AuthenticatedLayout
-            user={auth.user}
-            header={
-                <div className="flex justify-between items-center">
-                    <h2 className="text-3xl font-bold tracking-tight">Gestion des Modèles de CV</h2>
-                    <Button asChild className="bg-primary hover:bg-primary/90">
-                        <Link href={route('admin.cv-models.create')}>
-                            <Plus className="mr-2 h-4 w-4" /> Nouveau Modèle
-                        </Link>
-                    </Button>
+        <AdminLayout>
+            <Head title="CV Models Management" />
+            
+            <div className="space-y-6">
+                <div className="flex items-center justify-between">
+                    <div className="flex items-center">
+                        <FileText className="mr-3 h-8 w-8 text-amber-500" />
+                        <h1 className="text-3xl font-bold text-gray-900 dark:text-white">CV Models</h1>
+                    </div>
+                    <Link href="/cv-models/create">
+                        <Button>
+                            <Plus className="mr-2 h-4 w-4" />
+                            Add CV Model
+                        </Button>
+                    </Link>
                 </div>
-            }
-        >
-            <div className="container mx-auto py-6">
-                <Card className="shadow-md">
-                    <CardHeader className="border-b">
-                        <CardTitle className="text-2xl">Modèles de CV</CardTitle>
-                        <CardDescription>
-                            Gérez vos modèles de CV personnalisés et leurs tarifs.
-                        </CardDescription>
-                    </CardHeader>
-                    <CardContent className="p-0">
-                        <Table>
-                            <TableHeader>
-                                <TableRow className="bg-muted/50">
-                                    <TableHead className="w-[100px]">Aperçu</TableHead>
-                                    <TableHead>Nom</TableHead>
-                                    <TableHead>Description</TableHead>
-                                    <TableHead>Tarif</TableHead>
-                                    <TableHead className="text-right">Actions</TableHead>
-                                </TableRow>
-                            </TableHeader>
-                            <TableBody>
-                                {cvModels.map((model) => (
-                                    <TableRow key={model.id} className="hover:bg-muted/50">
-                                        <TableCell>
-                                            <div className="relative h-16 w-16 overflow-hidden rounded-lg border">
-                                                <img
-                                                    src={`/storage/${model.previewImagePath}`}
-                                                    alt={model.name}
-                                                    className="object-cover h-full w-full"
-                                                />
-                                            </div>
-                                        </TableCell>
-                                        <TableCell className="font-medium">{model.name}</TableCell>
-                                        <TableCell className="max-w-[300px] truncate">
-                                            {model.description}
-                                        </TableCell>
-                                        <TableCell>
-                                            <Badge variant={model.price === 0 ? "secondary" : "default"}>
-                                                {model.price === 0 ? "Gratuit" : formatPrice(model.price)}
-                                            </Badge>
-                                        </TableCell>
-                                        <TableCell className="text-right">
-                                            <DropdownMenu>
-                                                <DropdownMenuTrigger asChild>
-                                                    <Button variant="ghost" size="icon" className="h-8 w-8">
-                                                        <MoreVertical className="h-4 w-4" />
-                                                    </Button>
-                                                </DropdownMenuTrigger>
-                                                <DropdownMenuContent align="end" className="w-48">
-                                                    <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                                                    <DropdownMenuItem asChild>
-                                                        <Link href={route('cv-models.show', model.id)} className="flex items-center">
-                                                            <Eye className="mr-2 h-4 w-4" /> Aperçu complet
-                                                        </Link>
-                                                    </DropdownMenuItem>
-                                                    <DropdownMenuItem asChild>
-                                                        <Link href={route('cv-models.edit', model.id)} className="flex items-center">
-                                                            <Edit className="mr-2 h-4 w-4" /> Modifier
-                                                        </Link>
-                                                    </DropdownMenuItem>
-                                                    <DropdownMenuItem
-                                                        className="text-destructive focus:text-destructive flex items-center"
-                                                        onClick={() => {
-                                                            setSelectedModelId(model.id);
-                                                            setIsDeleteDialogOpen(true);
-                                                        }}
-                                                    >
-                                                        <Trash2 className="mr-2 h-4 w-4" /> Supprimer
-                                                    </DropdownMenuItem>
-                                                </DropdownMenuContent>
-                                            </DropdownMenu>
-                                        </TableCell>
-                                    </TableRow>
-                                ))}
-                                {cvModels.length === 0 && (
-                                    <TableRow>
-                                        <TableCell colSpan={5} className="text-center py-8 text-muted-foreground">
-                                            Aucun modèle de CV disponible
-                                        </TableCell>
-                                    </TableRow>
-                                )}
-                            </TableBody>
-                        </Table>
+
+                {/* Search */}
+                <Card>
+                    <CardContent className="pt-6">
+                        <div className="flex items-center space-x-2">
+                            <div className="relative flex-1">
+                                <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                                <Input
+                                    placeholder="Search CV models..."
+                                    value={search}
+                                    onChange={(e) => setSearch(e.target.value)}
+                                    className="pl-9"
+                                    onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
+                                />
+                            </div>
+                            <Button onClick={handleSearch}>Search</Button>
+                        </div>
                     </CardContent>
                 </Card>
-            </div>
 
-            <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
-                <AlertDialogContent>
-                    <AlertDialogHeader>
-                        <AlertDialogTitle>Confirmer la suppression</AlertDialogTitle>
-                        <AlertDialogDescription>
-                            Cette action est irréversible. Le modèle de CV et tous ses fichiers associés seront définitivement supprimés.
-                        </AlertDialogDescription>
-                    </AlertDialogHeader>
-                    <AlertDialogFooter>
-                        <AlertDialogCancel>Annuler</AlertDialogCancel>
-                        <AlertDialogAction
-                            onClick={() => {
-                                if (selectedModelId) {
-                                    handleDelete(selectedModelId);
-                                }
-                                setIsDeleteDialogOpen(false);
-                            }}
-                            className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-                        >
-                            Supprimer
-                        </AlertDialogAction>
-                    </AlertDialogFooter>
-                </AlertDialogContent>
-            </AlertDialog>
-        </AuthenticatedLayout>
+                {/* CV Models Grid */}
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                    {cvModels.data.map((model) => (
+                        <Card key={model.id} className="overflow-hidden">
+                            <div className="aspect-[3/4] relative">
+                                {model.previewImagePath ? (
+                                    <img
+                                        src={`/storage/${model.previewImagePath}`}
+                                        alt={`${model.name} preview`}
+                                        className="w-full h-full object-cover"
+                                    />
+                                ) : (
+                                    <div className="w-full h-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center">
+                                        <FileText className="h-16 w-16 text-gray-400" />
+                                    </div>
+                                )}
+                                <div className="absolute top-2 right-2">
+                                    <Badge className="bg-white/90 text-gray-800">
+                                        <DollarSign className="h-3 w-3 mr-1" />
+                                        {model.price}
+                                    </Badge>
+                                </div>
+                            </div>
+                            <CardContent className="p-4">
+                                <div className="space-y-2">
+                                    <h3 className="font-semibold text-lg text-gray-900 dark:text-white truncate">
+                                        {model.name}
+                                    </h3>
+                                    <p className="text-sm text-gray-500 dark:text-gray-400 line-clamp-2">
+                                        {model.description || 'No description available'}
+                                    </p>
+                                    <div className="flex items-center justify-between pt-2">
+                                        <span className="text-xs text-gray-400">
+                                            {new Date(model.created_at).toLocaleDateString()}
+                                        </span>
+                                        <div className="flex items-center space-x-1">
+                                            <Link href={`/cv-models/${model.id}`}>
+                                                <Button size="sm" variant="outline">
+                                                    <Eye className="h-3 w-3" />
+                                                </Button>
+                                            </Link>
+                                            <Link href={`/cv-models/${model.id}/edit`}>
+                                                <Button size="sm" variant="outline">
+                                                    <Edit className="h-3 w-3" />
+                                                </Button>
+                                            </Link>
+                                            <Button 
+                                                size="sm" 
+                                                variant="destructive"
+                                                onClick={() => handleDelete(model)}
+                                            >
+                                                <Trash2 className="h-3 w-3" />
+                                            </Button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </CardContent>
+                        </Card>
+                    ))}
+                </div>
+
+                {/* Empty State */}
+                {cvModels.data.length === 0 && (
+                    <Card>
+                        <CardContent className="py-16">
+                            <div className="text-center">
+                                <FileText className="mx-auto h-12 w-12 text-gray-400" />
+                                <h3 className="mt-2 text-sm font-semibold text-gray-900 dark:text-white">
+                                    No CV models found
+                                </h3>
+                                <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+                                    Get started by creating a new CV model.
+                                </p>
+                                <div className="mt-6">
+                                    <Link href="/cv-models/create">
+                                        <Button>
+                                            <Plus className="mr-2 h-4 w-4" />
+                                            Add CV Model
+                                        </Button>
+                                    </Link>
+                                </div>
+                            </div>
+                        </CardContent>
+                    </Card>
+                )}
+
+                {/* Pagination */}
+                {cvModels.links && cvModels.data.length > 0 && (
+                    <div className="flex items-center justify-between">
+                        <div className="text-sm text-gray-700 dark:text-gray-300">
+                            Page {cvModels.current_page} of {cvModels.last_page}
+                        </div>
+                        <div className="flex space-x-1">
+                            {cvModels.links.map((link, index) => (
+                                <Link
+                                    key={index}
+                                    href={link.url}
+                                    className={`px-3 py-2 text-sm rounded-md ${
+                                        link.active
+                                            ? 'bg-amber-500 text-white'
+                                            : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700'
+                                    }`}
+                                    dangerouslySetInnerHTML={{ __html: link.label }}
+                                />
+                            ))}
+                        </div>
+                    </div>
+                )}
+            </div>
+        </AdminLayout>
     );
 }

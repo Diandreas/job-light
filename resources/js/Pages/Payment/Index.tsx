@@ -71,7 +71,7 @@ const PaymentMethodsInfo = {
     ]
 };
 
-const NotchPayButton = ({ pack, onSuccess }) => {
+const CinetPayButton = ({ pack, onSuccess }) => {
     const [loading, setLoading] = useState(false);
     const { toast } = useToast();
     const { t } = useTranslation();
@@ -79,7 +79,11 @@ const NotchPayButton = ({ pack, onSuccess }) => {
     const handlePayment = async () => {
         try {
             setLoading(true);
-            const response = await fetch('/api/notchpay/initialize', {
+
+            // Générer un ID de transaction unique
+            const transactionId = `tokens_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+
+            const response = await fetch('/api/cinetpay/initialize', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -91,10 +95,18 @@ const NotchPayButton = ({ pack, onSuccess }) => {
                 },
                 credentials: 'include',
                 body: JSON.stringify({
-                    tokens: pack.tokens + pack.bonusTokens,
+                    transaction_id: transactionId,
                     amount: pack.priceFCFA,
-                    // @ts-ignore
-                    email: window?.auth?.user?.email
+                    currency: 'XOF', // FCFA
+                    description: `Achat de ${pack.tokens + pack.bonusTokens} tokens`,
+                    customer_name: window?.auth?.user?.name || 'Utilisateur',
+                    customer_surname: window?.auth?.user?.surname || '',
+                    customer_email: window?.auth?.user?.email || '',
+                    customer_phone_number: window?.auth?.user?.phone || '',
+                    notify_url: `${window.location.origin}/api/cinetpay/notify`,
+                    return_url: `${window.location.origin}/api/cinetpay/return`,
+                    channels: 'ALL',
+                    lang: 'fr'
                 })
             });
 
@@ -105,8 +117,9 @@ const NotchPayButton = ({ pack, onSuccess }) => {
 
             const result = await response.json();
 
-            if (result.success && result.authorization_url) {
-                window.location.href = result.authorization_url;
+            if (result.success && result.payment_url) {
+                // Rediriger vers la page de paiement CinetPay
+                window.location.href = result.payment_url;
             } else {
                 throw new Error(t('payment.errors.initialization'));
             }
@@ -127,7 +140,7 @@ const NotchPayButton = ({ pack, onSuccess }) => {
         <button
             onClick={handlePayment}
             disabled={loading}
-            className={`w-full py-3 px-4 rounded-lg font-medium text-white bg-gradient-to-r from-purple-600 to-purple-800 hover:from-purple-700 hover:to-purple-900 transition-all duration-200 flex items-center justify-center gap-2 ${loading ? 'opacity-75 cursor-not-allowed' : ''}`}
+            className={`w-full py-3 px-4 rounded-lg font-medium text-white bg-gradient-to-r from-green-600 to-blue-600 hover:from-green-700 hover:to-blue-700 transition-all duration-200 flex items-center justify-center gap-2 ${loading ? 'opacity-75 cursor-not-allowed' : ''}`}
         >
             {loading ? (
                 <>
@@ -137,7 +150,7 @@ const NotchPayButton = ({ pack, onSuccess }) => {
             ) : (
                 <>
                     <Smartphone className="w-5 h-5" />
-                    <span>{t('payment.payWithMobile')}</span>
+                    <span>{t('payment.payWithCinetPay')}</span>
                 </>
             )}
         </button>
@@ -253,7 +266,7 @@ const PaymentTabs = ({ pack, onSuccess }) => {
                 <div className="text-2xl font-bold text-center">
                     {pack.priceFCFA.toLocaleString()} FCFA
                 </div>
-                <NotchPayButton pack={pack} onSuccess={onSuccess} />
+                <CinetPayButton pack={pack} onSuccess={onSuccess} />
                 <div className="flex items-center justify-center gap-4 mt-2">
                     {PaymentMethodsInfo.mobileMoneyLogos.map((logo, index) => (
                         <img

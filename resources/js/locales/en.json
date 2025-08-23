@@ -1426,6 +1426,7 @@
         "total": "Total",
         "unitPrice": "Unit price",
         "payWithMobile": "Pay with Mobile Money",
+        "payWithCinetPay": "Pay with CinetPay",
         "processing": "Processing...",
         "tabs": {
             "mobileMoney": "Mobile Money",

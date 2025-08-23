@@ -12,7 +12,7 @@ use App\Http\Controllers\{AddressController,
     ExperienceController,
     HobbyController,
     LanguageController,
-    NotchPayController,
+    CinetPayController,
     PaymentController,
     PayPalController,
     PersonalInformationController,
@@ -64,9 +64,10 @@ Route::get('/blog', [App\Http\Controllers\BlogController::class, 'index'])->name
 Route::get('/', function () {
     return Inertia::render('Welcome');
 })->name('welcome');
-Route::get('/payment/callback', [NotchPayController::class, 'handleCallback'])->name('payment.callback');
-Route::post('/api/notchpay/initialize', [NotchPayController::class, 'initializePayment']);
-Route::post('/api/notchpay/webhook', [NotchPayController::class, 'handleWebhook']);
+// Routes CinetPay
+Route::post('/api/cinetpay/notify', [CinetPayController::class, 'notify']); // Webhook public
+Route::get('/payment/callback', [CinetPayController::class, 'return'])->name('payment.callback');
+Route::get('/api/cinetpay/return', [CinetPayController::class, 'return']);
 Route::post('/api/cv/analyze', [CareerAdvisorController::class, 'analyzeCV'])
     ->name('cv.analyze')
     ->middleware(['auth']);
@@ -97,6 +98,9 @@ Route::prefix('api')->middleware(['auth'])->group(function () {
     Route::delete('/exports/{export}', [DocumentExportController::class, 'destroy']);
 });
 Route::middleware(['auth'])->group(function () {
+
+    // Route CinetPay d'initialisation (nécessite une authentification)
+    Route::post('/api/cinetpay/initialize', [CinetPayController::class, 'initialize']);
 
     Route::post('/api/cv/update-color', [CvColorController::class, 'updateColor'])->name('cv.updateColor');
 
@@ -208,12 +212,16 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::prefix('admin')->name('admin.')->group(function () {
             Route::get('/dashboard', function () {
                 return Inertia::render('Admin/Dashboard/Index');
-            })->name('dashboard.index');
+            })->name('dashboard');
             Route::get('/analytics', [AnalyticsController::class, 'index'])->name('analytics.index');
             Route::get('/audit-logs', [AuditLogController::class, 'index'])->name('audit-logs.index');
             Route::get('/companies', [CompanyManagementController::class, 'index'])->name('companies.index');
             Route::get('/companies/{company}', [CompanyManagementController::class, 'show'])->name('companies.show');
             Route::put('/companies/{company}', [CompanyManagementController::class, 'update'])->name('companies.update');
+            
+            // User management routes
+            Route::resource('users', \App\Http\Controllers\Admin\UserManagementController::class);
+            Route::get('/users/export', [\App\Http\Controllers\Admin\UserManagementController::class, 'export'])->name('users.export');
         });
 
         Route::resources([

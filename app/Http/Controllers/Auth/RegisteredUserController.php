@@ -13,6 +13,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Str;
 use Illuminate\Validation\Rules;
 use Illuminate\Validation\ValidationException;
 use Inertia\Inertia;
@@ -35,6 +36,23 @@ class RegisteredUserController extends Controller
     }
 
     /**
+     * Generate a unique username from the given name
+     */
+    private function generateUniqueUsername(string $name): string
+    {
+        $baseUsername = Str::slug($name);
+        $username = $baseUsername;
+        $counter = 1;
+
+        while (User::where('username', $username)->exists()) {
+            $username = $baseUsername . '_' . $counter;
+            $counter++;
+        }
+
+        return $username;
+    }
+
+    /**
      * Handle an incoming registration request.
      *
      * @throws ValidationException
@@ -52,6 +70,7 @@ class RegisteredUserController extends Controller
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
+            'username' => $this->generateUniqueUsername($request->name),
         ]);
 
         event(new Registered($user));

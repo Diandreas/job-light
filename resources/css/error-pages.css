@@ -9,7 +9,7 @@
     position: absolute;
     inset: 0;
     opacity: 0.1;
-    background-image: 
+    background-image:
         radial-gradient(circle at 25% 25%, rgba(250, 204, 21, 0.3) 0%, transparent 50%),
         radial-gradient(circle at 75% 75%, rgba(168, 85, 247, 0.3) 0%, transparent 50%);
     animation: float 6s ease-in-out infinite;
@@ -28,18 +28,24 @@
 }
 
 @keyframes float {
-    0%, 100% {
+
+    0%,
+    100% {
         transform: translateY(0px);
     }
+
     50% {
         transform: translateY(-20px);
     }
 }
 
 @keyframes float-gentle {
-    0%, 100% {
+
+    0%,
+    100% {
         transform: translateY(0px) rotate(0deg);
     }
+
     50% {
         transform: translateY(-10px) rotate(5deg);
     }
@@ -68,6 +74,7 @@
     from {
         transform: rotate(0deg);
     }
+
     to {
         transform: rotate(360deg);
     }
@@ -100,11 +107,11 @@
     .error-page {
         padding: 1rem;
     }
-    
+
     .error-floating-element {
         display: none;
     }
-    
+
     .error-number {
         font-size: 4rem;
     }
@@ -116,9 +123,9 @@
         background: rgba(30, 30, 30, 0.7);
         border: 1px solid rgba(255, 255, 255, 0.1);
     }
-    
+
     .error-background-pattern {
-        background-image: 
+        background-image:
             radial-gradient(circle at 25% 25%, rgba(250, 204, 21, 0.1) 0%, transparent 50%),
             radial-gradient(circle at 75% 75%, rgba(168, 85, 247, 0.1) 0%, transparent 50%);
     }

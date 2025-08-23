@@ -62,7 +62,7 @@ export default function Index({ auth, errorCodes }: Props) {
                             <div className="mb-6">
                                 <h1 className="text-2xl font-bold mb-2">Test des Pages d'Erreur</h1>
                                 <p className="text-gray-600">
-                                    Cliquez sur les boutons ci-dessous pour tester les différentes pages d'erreur. 
+                                    Cliquez sur les boutons ci-dessous pour tester les différentes pages d'erreur.
                                     Cette fonctionnalité est disponible uniquement en mode développement.
                                 </p>
                             </div>
@@ -108,8 +108,8 @@ export default function Index({ auth, errorCodes }: Props) {
                                     <h3 className="font-medium text-amber-800">Note importante</h3>
                                 </div>
                                 <p className="text-sm text-amber-700">
-                                    Ces tests ouvrent les pages d'erreur dans de nouveaux onglets. 
-                                    Les pages d'erreur utilisent maintenant un design moderne avec animations 
+                                    Ces tests ouvrent les pages d'erreur dans de nouveaux onglets.
+                                    Les pages d'erreur utilisent maintenant un design moderne avec animations
                                     et sont entièrement bilingues (français/anglais).
                                 </p>
                             </div>

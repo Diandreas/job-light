@@ -1561,5 +1561,421 @@
             "title": "Bientôt disponible !",
             "description": "Nous travaillons activement pour vous proposer notre nouvelle fonctionnalité de portail d'emploi. Restez à l'écoute pour des opportunités passionnantes dans votre parcours professionnel !"
         }
+    },
+    "portfolio": {
+        "show": {
+            "sections": {
+                "about": "À propos de moi",
+                "professional_journey": "Parcours professionnel",
+                "skills": "Compétences",
+                "interests": "Centres d'intérêt",
+                "summary": "Résumé",
+                "professional_experiences": "Expériences professionnelles",
+                "my_story": "Mon histoire",
+                "my_journey": "Mon parcours",
+                "what_i_can_do": "Ce que je sais faire",
+                "what_i_love": "Ce que j'aime"
+            },
+            "preview": {
+                "title": "Prévisualisation du document",
+                "description": "Si le document ne s'affiche pas, <a href=\"{pdfPath}\" target=\"_blank\" rel=\"noopener noreferrer\" className=\"text-blue-500 hover:underline\">cliquez ici pour l'ouvrir dans un nouvel onglet</a>.",
+                "button": "Prévisualiser",
+                "view_document": "Voir le document"
+            },
+            "dates": {
+                "present": "Présent"
+            }
+        },
+        "edit": {
+            "title": "Configuration du Portfolio",
+            "header": "Configuration",
+            "customization": "Personnalisation",
+            "theme": "Thème :",
+            "choose": "Choisir",
+            "themes": {
+                "modern": "Moderne",
+                "business": "Business",
+                "creative": "Créatif"
+            },
+            "display_options": "Options d'affichage",
+            "experiences": "Expériences",
+            "skills": "Compétences",
+            "interests": "Centres d'intérêt",
+            "summary": "Résumé",
+            "contact": "Contact",
+            "save_changes": "Enregistrer les modifications"
+        },
+        "index": {
+            "link_copied": "Lien copié !",
+            "link_description": "Le lien de votre portfolio a été copié dans le presse-papier.",
+            "shared_portfolio": "Portfolio partagé",
+            "manage_portfolio": "Gérer mon Portfolio",
+            "live_preview": "Prévisualisation en direct",
+            "portfolio_preview": "Prévisualisation du portfolio"
+        }
+    },
+    "admin": {
+        "cv_models": {
+            "create": {
+                "title": "Créer un nouveau modèle de CV",
+                "name_label": "Nom du modèle",
+                "preview_alt": "Aperçu"
+            },
+            "edit": {
+                "title": "Modifier le modèle de CV",
+                "name_label": "Nom du modèle",
+                "preview_alt": "Aperçu"
+            }
+        }
+    },
+    "support": {
+        "tutorial": {
+            "description": "Découvrez nos tutoriels détaillés et guides vidéo pour maîtriser toutes les fonctionnalités",
+            "availability": "Nouvelles vidéos chaque semaine"
+        },
+        "contact": {
+            "describe_problem": "Veuillez décrire votre problème avant de soumettre.",
+            "success_message": "Votre ticket de support a été soumis avec succès ! Notre équipe vous répondra bientôt.",
+            "error_message": "Une erreur est survenue lors de la soumission de votre ticket. Veuillez réessayer.",
+            "placeholder": "Décrivez votre problème en détail...",
+            "error_title": "Erreur",
+            "success_title": "Succès"
+        }
+    },
+    "cv_interface": {
+        "downloading": "Télécharge...",
+        "pdf_button": "PDF",
+        "reset_color": "Réinitialiser la couleur par défaut",
+        "file_preparation": "Préparation du fichier...",
+        "updating_info": "Mise à jour des informations...",
+        "preparation_error": "Erreur lors de la préparation du fichier",
+        "no_additional_details": "Pas de détails supplémentaires"
+    },
+    "console_messages": {
+        "android_download": "🚀 Téléchargement CV natif Android",
+        "web_download": "🌐 Utilisation du téléchargement web",
+        "fallback_attempt": "🔄 Tentative de fallback vers téléchargement web",
+        "web_classic_download": "📄 Téléchargement web classique",
+        "download_success": "📱 CV téléchargé",
+        "download_description": "Le CV a été téléchargé et ouvert automatiquement",
+        "download_failed": "Échec du téléchargement natif",
+        "print_initiated": "📱 Impression CV initiée",
+        "web_download_success": "🌐 Téléchargement web réussi",
+        "web_print_initiated": "🌐 Impression web initiée",
+        "print_description": "Une nouvelle fenêtre va s'ouvrir pour l'impression avec option de sauvegarde PDF",
+        "median_ready": "✅ Median JavaScript Bridge est prêt",
+        "download_successful": "✅ Téléchargement réussi",
+        "print_initiated_options": "✅ Impression initiée avec options PDF",
+        "native_download": "🚀 Téléchargement natif avec Median",
+        "native_download_success": "✅ Téléchargement natif réussi",
+        "native_share_initiated": "✅ Partage natif initié",
+        "external_opening_initiated": "✅ Ouverture externe initiée",
+        "powerpoint_generation": "🎨 Génération PowerPoint côté client",
+        "android_native_download": "🚀 Utilisation du téléchargement natif Android pour",
+        "web_download_for": "🌐 Utilisation du téléchargement web pour",
+        "fallback_web_download": "🔄 Tentative de fallback vers téléchargement web"
+    },
+    "ai_components": {
+        "service_cost": "Coût du service",
+        "generate_powerpoint": "Générer PowerPoint",
+        "thinking_animation": "IA est en train de réfléchir",
+        "payment_modal": "Paiement du modèle",
+        "attachments_empty": "Aucune pièce jointe disponible",
+        "result_section": "Résultat",
+        "attachment_section": "Pièce jointe",
+        "invalid_presentation_content": "Aucun contenu de présentation valide trouvé"
+    },
+    "auth_components": {
+        "referral_notice": "Vous avez été parrainé(e) ! Des avantages vous attendent.",
+        "language_french": "Français"
+    },
+    "profile_components": {
+        "phone_label": "Téléphone"
+    },
+    "cv_templates": {
+        "present": "Présent",
+        "skills": "Compétences",
+        "interests": "Centres d'intérêt"
+    },
+    "sponsorship_extras": {
+        "code_validity": "Validité du code",
+        "how_it_works": "Comment ça marche?",
+        "benefits": {
+            "exclusive_cv_templates": "• Accès à des modèles de CV exclusifs",
+            "quick_start": "• Démarrage rapide avec des conseils personnalisés"
+        },
+        "progress_levels": {
+            "experienced_sponsor": "Parrain expérimenté",
+            "beginner_sponsor": "Parrain débutant",
+            "vip_events": "Accès aux événements VIP",
+            "special_badge": "Badge spécial sur le profil"
+        },
+        "status": {
+            "expired": "Expiré"
+        }
+    },
+    "inputs": {
+        "placeholders": {
+            "add_skills": "Saisissez une compétence...",
+            "add_hobbies": "Ajoutez vos passions, hobbies, intérêts...",
+            "add_profession": "Saisissez votre profession..."
+        },
+        "help_texts": {
+            "skills_help": "Saisissez une compétence et appuyez sur le bouton ou la touche Entrée pour ajouter. Les compétences non reconnues seront ajoutées manuellement.",
+            "hobbies_help": "Saisissez un hobby et appuyez sur le bouton ou Entrée pour ajouter.",
+            "profession_help": "Saisissez votre profession. Si elle existe dans notre base de données, elle sera automatiquement reconnue.",
+            "select_level": "Sélectionnez votre niveau pour",
+            "start_typing": "Commencez à taper pour rechercher une langue.",
+            "choose_level": "Choisissez votre niveau de maîtrise de cette langue."
+        },
+        "empty_states": {
+            "no_languages": "Aucune langue ajoutée",
+            "add_first_skills": "Ajoutez vos premières compétences"
+        }
+    },
+    "exports": {
+        "chat": {
+            "question": "Question:",
+            "answer": "Réponse:",
+            "generated_by": "Généré via: Guidy Assistant IA",
+            "document_footer": "Document généré par Guidy - Assistant IA pour votre carrière",
+            "conversation_title": "Conversation IA générée via Guidy",
+            "link_copied": "Lien copié dans le presse-papier"
+        },
+        "print": {
+            "mobile_optimized": "Styles d'impression optimisés mobile",
+            "action_buttons": "Boutons d'action (masqués à l'impression)",
+            "touch_gestures": "Ajouter des gestes tactiles si nécessaire",
+            "median_detection": "Détection de Median et adaptation",
+            "median_optimizations": "Optimisations spécifiques pour Median",
+            "hide_elements": "Masquer certains éléments si dans l'app"
+        }
+    },
+    "language_levels": {
+        "beginner_fr": "Débutant",
+        "elementary_fr": "Élémentaire", 
+        "intermediate_fr": "Intermédiaire",
+        "upper_intermediate_fr": "Intermédiaire avancé",
+        "advanced_fr": "Avancé",
+        "proficiency_fr": "Maîtrise"
+    },
+    "backend_messages": {
+        "summary": {
+            "created_success": "Résumé créé avec succès",
+            "updated_success": "Résumé modifié avec succès",
+            "deleted_success": "Résumé supprimé avec succès",
+            "selected_success": "Résumé sélectionné avec succès",
+            "unauthorized_edit": "Vous ne pouvez modifier que votre résumé actuel"
+        },
+        "portfolio": {
+            "updated_success": "Portfolio mis à jour avec succès"
+        },
+        "career_advisor": {
+            "chat_error": "Impossible de récupérer la conversation",
+            "conversation_deleted": "Conversation supprimée avec succès",
+            "preview_unavailable": "Aperçu non disponible",
+            "career_advice": "Conseil carrière",
+            "powerpoint_presentation": "Présentation PowerPoint"
+        },
+        "ai_service": {
+            "career_advice_prompt": "Vous êtes un conseiller carrière professionnel utilisant les informations du profil pour donner des conseils personnalisés.",
+            "cover_letter_prompt": "Vous êtes un expert en rédaction professionnelle spécialisé dans les lettres de motivation.",
+            "interview_prep_prompt": "Vous êtes un recruteur expérimenté conduisant des simulations d'entretien.",
+            "resume_review_prompt": "Vous êtes un expert en CV analysant et optimisant les profils professionnels.",
+            "linkedin_opt_prompt": "Vous êtes un expert LinkedIn optimisant les profils professionnels.",
+            "salary_nego_prompt": "Vous êtes un expert en négociation salariale."
+        },
+        "document_generator": {
+            "interview_preparation": "Préparation Entretien",
+            "unsupported_format": "Format non supporté"
+        },
+        "prompt_builder": {
+            "experiences": "Expériences:",
+            "skills": "Compétences:",
+            "education": "Formation:",
+            "not_specified": "Non spécifié",
+            "general": "Général",
+            "current": "actuel"
+        },
+        "errors": {
+            "referral_level_determination": "Erreur lors de la détermination du niveau de parrainage",
+            "next_referral_level_determination": "Erreur lors de la détermination du prochain niveau de parrainage",
+            "chat_retrieval": "Erreur lors de la récupération du chat",
+            "user_creation": "Erreur lors de la création de l'utilisateur",
+            "user_update": "Erreur lors de la mise à jour de l'utilisateur",
+            "login_failure": "Échec de la connexion après Auth::login()",
+            "commission_rate_retrieval": "Erreur lors de la récupération du taux de commission",
+            "attachment_deletion": "Erreur lors de la suppression de la pièce jointe",
+            "experience_update": "Erreur lors de la mise à jour de l'expérience",
+            "experience_deletion": "Erreur lors de la suppression de l'expérience",
+            "cv_model_update": "Erreur lors de la mise à jour du modèle CV",
+            "unauthorized": "Non autorisé",
+            "unauthorized_summary_edit": "Vous ne pouvez modifier que votre résumé actuel"
+        },
+        "validation": {
+            "required_experience_field": "Champ expérience requis manquant",
+            "invalid_start_date": "Format de date_debut invalide",
+            "invalid_end_date": "Format de date_fin invalide",
+            "invalid_category": "Catégorie invalide"
+        },
+        "linkedin": {
+            "basic_auth_attempt": "Tentative avec authentification dans l'en-tête Basic",
+            "fallback_attempt": "Première tentative échouée, essai avec client_id et client_secret dans le corps"
+        },
+        "geo_location": {
+            "country_detection": "Nécessite l'installation du package geoip"
+        },
+        "user_data": {
+            "full_name": "Nom complet",
+            "email": "Email",
+            "address": "Adresse complète",
+            "phone": "Téléphone",
+            "linkedin": "LinkedIn",
+            "resume": "Résumé professionnel (200 mots maximum)",
+            "experiences": "Expériences",
+            "job_title": "Titre du poste",
+            "company": "Entreprise/Institution",
+            "start_date": "Date de début",
+            "end_date": "Date de fin",
+            "description": "Description des responsabilités",
+            "output": "Résultats/réalisations",
+            "skills": "Compétences",
+            "interests": "Centres d'intérêt",
+            "education": "Formation académique principale ou diplôme le plus élevé"
+        }
+    },
+    "admin_dashboard": {
+        "welcome": {
+            "title": "Bienvenue dans Guidy Admin",
+            "date_format": "fr-FR",
+            "system_status": "État du système",
+            "all_systems_operational": "Tous les systèmes fonctionnent"
+        },
+        "stats": {
+            "total_users": "Total des utilisateurs",
+            "cvs_created": "CV créés",
+            "revenue": "Revenus",
+            "active_users": "Utilisateurs actifs"
+        },
+        "quick_actions": {
+            "title": "Actions rapides",
+            "manage_users": "Gérer les utilisateurs",
+            "manage_users_desc": "Voir et gérer les comptes utilisateur",
+            "cv_templates": "Modèles de CV", 
+            "cv_templates_desc": "Gérer les modèles et designs de CV",
+            "analytics": "Analytiques",
+            "analytics_desc": "Voir les analytiques détaillées",
+            "system_logs": "Journaux système",
+            "system_logs_desc": "Surveiller l'activité du système"
+        },
+        "recent_activity": {
+            "title": "Activité récente",
+            "user_registration": "Nouveau compte créé",
+            "cv_creation": "CV généré avec l'IA",
+            "payment": "Mise à niveau vers Premium",
+            "system": "Sauvegarde de base de données terminée",
+            "status": {
+                "success": "succès",
+                "warning": "avertissement", 
+                "info": "info"
+            }
+        }
+    },
+    "welcome_page": {
+        "language_selector": {
+            "french": "Français",
+            "english": "English"
+        },
+        "features": {
+            "portfolio_builder": {
+                "title": "Créateur de Portfolio",
+                "description": "Créez des portfolios en ligne époustouflants pour présenter votre travail et vos compétences de manière professionnelle."
+            },
+            "company_portal": {
+                "title": "Portail Entreprise", 
+                "description": "Accédez aux profils d'entreprises exclusifs et connectez-vous avec des employeurs potentiels."
+            },
+            "skill_validation": {
+                "title": "Validation de Compétences",
+                "description": "Validez vos compétences avec des évaluations et certifications alimentées par l'IA."
+            },
+            "ats_optimization": {
+                "title": "Optimisation ATS",
+                "description": "Assurez-vous que votre CV passe les systèmes de suivi des candidatures avec nos outils d'optimisation."
+            },
+            "referral_system": {
+                "title": "Système de Parrainage", 
+                "description": "Gagnez des récompenses en parrainant des amis et développez votre réseau professionnel."
+            },
+            "international_cv": {
+                "title": "CV International",
+                "description": "Créez des CV en plusieurs langues avec un formatage et des standards spécifiques à chaque région."
+            }
+        },
+        "meta": {
+            "application_description": "Assistant IA pour la création de CV et le développement de carrière",
+            "application_category": "BusinessApplication",
+            "operating_system": "Web",
+            "contact_type": "service client",
+            "available_languages": ["French", "English"],
+            "author": "Guidy",
+            "generator": "Guidy AI Resume Platform",
+            "copyright": "© 2025 Guidy",
+            "geo_placename": "Mondial",
+            "language": "Anglais, Français"
+        },
+        "faq": {
+            "how_it_works_fr": "Comment fonctionne le créateur de CV IA de Guidy?",
+            "how_it_works_answer_fr": "Guidy utilise l'IA avancée pour analyser votre expérience professionnelle et créer des CV adaptés à votre région et secteur cibles. Saisissez simplement vos informations, sélectionnez vos préférences, et notre IA génère des CV professionnels compatibles ATS en quelques minutes. Nos templates sont optimisés pour maximiser votre taux de réponse.",
+            "how_it_works_en": "How does Guidy's AI resume builder work?",
+            "how_it_works_answer_en": "Guidy uses advanced AI to analyze your professional experience and create tailored resumes optimized for your target region and industry. Simply input your details, select your preferences, and our AI generates professional, ATS-friendly resumes in minutes. Our templates are optimized to maximize your response rate from recruiters.",
+            "availability_fr": "Est-ce que Guidy est disponible dans mon pays?",
+            "availability_answer_fr": "Oui! Guidy est disponible dans le monde entier avec des optimisations spécifiques pour l'Amérique du Nord, l'Europe, l'Afrique et les marchés anglophones mondiaux. Notre plateforme prend en charge l'anglais et le français avec des modèles adaptés à chaque région, respectant les normes locales de recrutement.",
+            "availability_en": "Is Guidy available in my country?",
+            "availability_answer_en": "Yes! Guidy is available worldwide with specific optimizations for North America, Europe, Africa, and global English-speaking markets. Our platform supports English and French languages with region-specific templates that follow local recruitment standards and employer expectations.",
+            "free_fr": "Est-ce que Guidy est gratuit?",
+            "free_answer_fr": "Oui, Guidy propose une version gratuite qui vous permet de créer des CV professionnels et d'accéder aux fonctionnalités de base. Vous pouvez créer autant de CV que vous souhaitez, les télécharger en PDF et accéder à nos conseils de base sans frais. Des options premium sont disponibles pour des fonctionnalités avancées.",
+            "free_en": "Is Guidy free to use?",
+            "free_answer_en": "Yes, Guidy offers a free version that allows you to create professional resumes and access basic features. You can create as many resumes as you want, download them as PDFs, and access our basic career advice at no cost. Premium options are available for advanced features and personalized guidance.",
+            "ats_optimized_fr": "Les CV créés avec Guidy sont-ils optimisés pour les ATS?",
+            "ats_optimized_answer_fr": "Absolument! Tous nos modèles de CV sont conçus pour être parfaitement compatibles avec les systèmes ATS (Applicant Tracking Systems) utilisés par les recruteurs. Notre IA analyse les offres d'emploi pour suggérer les mots-clés pertinents à inclure dans votre CV, augmentant ainsi vos chances de passer les filtres automatiques.",
+            "ats_optimized_en": "Are Guidy's resumes optimized for ATS?",
+            "ats_optimized_answer_en": "Absolutely! All our resume templates are designed to be perfectly compatible with ATS (Applicant Tracking Systems) used by recruiters. Our AI analyzes job postings to suggest relevant keywords to include in your resume, increasing your chances of passing automatic filters."
+        }
+    },
+    "color_picker": {
+        "colors": {
+            "blue_corporate": "Bleu Corporate",
+            "green_tech": "Vert Tech", 
+            "violet_creative": "Violet Créatif",
+            "orange_dynamic": "Orange Dynamique",
+            "rose_modern": "Rose Moderne",
+            "indigo_professional": "Indigo Professionnel",
+            "blue_turquoise": "Bleu Turquoise",
+            "green_emerald": "Vert Émeraude",
+            "red_elegant": "Rouge Élégant",
+            "gray_modern": "Gris Moderne",
+            "blue_night": "Bleu Nuit",
+            "violet_dark": "Violet Foncé"
+        }
+    },
+    "mobile_tab_bar": {
+        "support": "Support",
+        "new_code": "Nouveau Code"
+    },
+    "message_bubble": {
+        "user_avatar_alt": "Utilisateur",
+        "share_preview_alt": "Aperçu du message à partager"
+    },
+    "experience_controller": {
+        "unauthorized_modify": "Non autorisé à modifier cette expérience",
+        "attachment_deleted_success": "Pièce jointe supprimée avec succès",
+        "cannot_delete_attachment": "Impossible de supprimer la pièce jointe",
+        "request_start_log": "Début de la requête store",
+        "attach_experience_user": "Attacher l'expérience à l'utilisateur",
+        "experience_created_success": "Expérience créée avec succès",
+        "error_occurred_creation": "Une erreur est survenue lors de la création",
+        "experience_updated_success": "Expérience mise à jour avec succès",
+        "experience_deleted_success": "Expérience supprimée avec succès"
     }
 }

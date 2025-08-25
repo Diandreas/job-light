@@ -376,6 +376,11 @@ class User extends Authenticatable
         return $this->hasOne(PortfolioSettings::class);
     }
 
+    public function portfolioSections()
+    {
+        return $this->hasMany(PortfolioSection::class)->orderBy('order_index');
+    }
+
     /**
      * Get the sponsor of this user
      */

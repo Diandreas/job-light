@@ -26,7 +26,7 @@ return [
     'environment' => env('CINETPAY_ENVIRONMENT', 'test'),
 
     // Devise par défaut
-    'default_currency' => env('CINETPAY_DEFAULT_CURRENCY', 'XOF'),
+    'default_currency' => env('CINETPAY_DEFAULT_CURRENCY', 'XAF'),
 
     // Langue par défaut
     'default_language' => env('CINETPAY_DEFAULT_LANGUAGE', 'fr'),

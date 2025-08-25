@@ -32,7 +32,7 @@ class CinetPayController extends Controller
             $request->validate([
                 'transaction_id' => 'required|string|max:255',
                 'amount' => 'required|numeric|min:100',
-                'currency' => 'required|string|in:XOF,XAF,CDF,GNF',
+                'currency' => 'required|string|in:XAF,XOF,CDF,GNF',
                 'description' => 'required|string|max:255',
                 'customer_name' => 'required|string|max:255',
                 'customer_surname' => 'nullable|string|max:255',
@@ -269,12 +269,12 @@ class CinetPayController extends Controller
             $tokensToAdd = $this->calculateTokensFromAmount($payment->amount);
             
             // Mettre à jour le solde de l'utilisateur
-            $user->increment('tokens', $tokensToAdd);
+            $user->increment('wallet_balance', $tokensToAdd);
             
             Log::info('User balance updated', [
                 'user_id' => $user->id,
                 'tokens_added' => $tokensToAdd,
-                'new_balance' => $user->tokens
+                'new_balance' => $user->wallet_balance
             ]);
 
         } catch (\Exception $e) {
@@ -291,8 +291,14 @@ class CinetPayController extends Controller
      */
     private function calculateTokensFromAmount($amount)
     {
-        // Logique à adapter selon votre grille tarifaire
-        // Exemple simple : 1 token = 100 FCFA
-        return floor($amount / 100);
+        // Grille tarifaire basée sur les packs définis dans le frontend
+        $packs = [
+            600 => 10,     // Starter: 600 FCFA = 10 tokens
+            1200 => 25,    // Plus: 1200 FCFA = 25 tokens (20 + 5 bonus)
+            3000 => 60,    // Pro: 3000 FCFA = 60 tokens (50 + 10 bonus)
+            6000 => 130    // Ultimate: 6000 FCFA = 130 tokens (100 + 30 bonus)
+        ];
+        
+        return $packs[$amount] ?? floor($amount / 60); // Fallback: 1 token = 60 FCFA
     }
 }

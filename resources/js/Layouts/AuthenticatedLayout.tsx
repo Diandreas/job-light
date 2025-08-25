@@ -10,7 +10,7 @@ import {
     ChevronRight, ChevronLeft, Sparkles, LucideIcon, Coins,
     Globe, Mail, Phone, MapPin, Linkedin, Github, MessageSquare,
     MenuIcon, ChevronDown, ChevronUp, Home, BookCopy, Award,
-    Calendar, Sun, Moon, Languages, RefreshCw, CheckCircle
+    Calendar, Sun, Moon, Languages, RefreshCw, CheckCircle, User
 } from 'lucide-react';
 import Dropdown from '@/Components/Dropdown';
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/Components/ui/sheet";
@@ -175,6 +175,12 @@ export default function Authenticated({ user, header, children, hideHeaderOnMobi
             href: route('cv-infos.index'),
             icon: Folder,
             active: route().current('cv-infos.index')
+        },
+        {
+            name: 'Portfolio',
+            href: route('portfolio.index'),
+            icon: User,
+            active: route().current('portfolio.edit') || route().current('portfolio.index')
         },
         {
             name: t('menu.assistant'),

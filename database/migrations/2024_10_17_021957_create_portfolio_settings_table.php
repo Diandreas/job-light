@@ -11,17 +11,19 @@ return new class extends Migration
      */
     public function up(): void
     {
-//        Schema::create('portfolio_settings', function (Blueprint $table) {
-//            $table->id();
-//            $table->foreignId('user_id')->constrained()->onDelete('cascade');
-//            $table->enum('design', ['intuitive', 'professional', 'user-friendly'])->default('professional');
-//            $table->boolean('show_experiences')->default(true);
-//            $table->boolean('show_competences')->default(true);
-//            $table->boolean('show_hobbies')->default(true);
-//            $table->boolean('show_summary')->default(true);
-//            $table->boolean('show_contact_info')->default(true);
-//            $table->timestamps();
-//        });
+        if (!Schema::hasTable('portfolio_settings')) {
+            Schema::create('portfolio_settings', function (Blueprint $table) {
+                $table->id();
+                $table->foreignId('user_id')->constrained()->onDelete('cascade');
+                $table->enum('design', ['intuitive', 'professional', 'user-friendly', 'modern'])->default('professional');
+                $table->boolean('show_experiences')->default(true);
+                $table->boolean('show_competences')->default(true);
+                $table->boolean('show_hobbies')->default(true);
+                $table->boolean('show_summary')->default(true);
+                $table->boolean('show_contact_info')->default(true);
+                $table->timestamps();
+            });
+        }
     }
 
     /**

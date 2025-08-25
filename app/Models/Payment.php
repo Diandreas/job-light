@@ -12,15 +12,23 @@ class Payment extends Model
     protected $fillable = [
         'user_id',
         'amount',
+        'currency',
+        'description',
         'status',
         'payment_method',
         'transaction_id',
+        'external_id',
+        'external_data',
+        'completed_at',
         'metadata'
     ];
 
 
     protected $casts = [
         'amount' => 'decimal:2',
+        'completed_at' => 'datetime',
+        'metadata' => 'array',
+        'external_data' => 'array'
     ];
 
     public function user()

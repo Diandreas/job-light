@@ -35,17 +35,17 @@ export const MobileTabBar: React.FC<MobileTabBarProps> = ({ onRenewCodeClick, is
             active: url.includes('/cv-infos')
         },
         {
+            name: 'Portfolio',
+            href: route('portfolio.index'),
+            icon: User,
+            active: url.includes('/portfolio')
+        },
+        {
             name: t('menu.assistant'),
             href: route('career-advisor.index'),
             icon: Brain,
             active: url.includes('/career-advisor')
         },
-        // {
-        //     name: t('menu.profile'),
-        //     href: route('profile.edit'),
-        //     icon: User,
-        //     active: url.includes('/profile')
-        // },
         {
             name: 'Support',
             href: route('support'),

@@ -120,6 +120,13 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/portfolio', [PortfolioController::class, 'index'])->name('portfolio.index');
     Route::get('/portfolio/edit', [PortfolioController::class, 'edit'])->name('portfolio.edit');
     Route::put('/portfolio', [PortfolioController::class, 'update'])->name('portfolio.update');
+    
+    // Portfolio sections management
+    Route::post('/portfolio/sections', [PortfolioController::class, 'createSection'])->name('portfolio.sections.create');
+    Route::put('/portfolio/sections/{section}', [PortfolioController::class, 'updateSection'])->name('portfolio.sections.update');
+    Route::delete('/portfolio/sections/{section}', [PortfolioController::class, 'deleteSection'])->name('portfolio.sections.delete');
+    Route::put('/portfolio/sections/{section}/toggle', [PortfolioController::class, 'toggleSectionActive'])->name('portfolio.sections.toggle');
+    Route::post('/portfolio/sections/order', [PortfolioController::class, 'updateSectionOrder'])->name('portfolio.sections.order');
 });
 
 Route::get('/portfolio/{identifier}', [PortfolioController::class, 'show'])

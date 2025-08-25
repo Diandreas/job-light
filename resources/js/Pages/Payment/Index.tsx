@@ -71,7 +71,7 @@ const PaymentMethodsInfo = {
     ]
 };
 
-const CinetPayButton = ({ pack, onSuccess }) => {
+const CinetPayButton = ({ pack, onSuccess, user }) => {
     const [loading, setLoading] = useState(false);
     const { toast } = useToast();
     const { t } = useTranslation();
@@ -87,22 +87,18 @@ const CinetPayButton = ({ pack, onSuccess }) => {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'X-XSRF-TOKEN': decodeURIComponent(document.cookie
-                        .split('; ')
-                        .find(row => row.startsWith('XSRF-TOKEN='))
-                        ?.split('=')[1] || ''),
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '',
                     'Accept': 'application/json',
                 },
-                credentials: 'include',
                 body: JSON.stringify({
                     transaction_id: transactionId,
                     amount: pack.priceFCFA,
-                    currency: 'XOF', // FCFA
+                    currency: 'XAF', // FCFA
                     description: `Achat de ${pack.tokens + pack.bonusTokens} tokens`,
-                    customer_name: window?.auth?.user?.name || 'Utilisateur',
-                    customer_surname: window?.auth?.user?.surname || '',
-                    customer_email: window?.auth?.user?.email || '',
-                    customer_phone_number: window?.auth?.user?.phone || '',
+                    customer_name: user?.name || 'Utilisateur',
+                    customer_surname: user?.surname || '',
+                    customer_email: user?.email || '',
+                    customer_phone_number: user?.phone || '',
                     notify_url: `${window.location.origin}/api/cinetpay/notify`,
                     return_url: `${window.location.origin}/api/cinetpay/return`,
                     channels: 'ALL',
@@ -246,7 +242,7 @@ function cn(...classes) {
     return classes.filter(Boolean).join(' ');
 }
 
-const PaymentTabs = ({ pack, onSuccess }) => {
+const PaymentTabs = ({ pack, onSuccess, user }) => {
     const { t } = useTranslation();
 
     return (
@@ -266,7 +262,7 @@ const PaymentTabs = ({ pack, onSuccess }) => {
                 <div className="text-2xl font-bold text-center">
                     {pack.priceFCFA.toLocaleString()} FCFA
                 </div>
-                <CinetPayButton pack={pack} onSuccess={onSuccess} />
+                <CinetPayButton pack={pack} onSuccess={onSuccess} user={user} />
                 <div className="flex items-center justify-center gap-4 mt-2">
                     {PaymentMethodsInfo.mobileMoneyLogos.map((logo, index) => (
                         <img
@@ -431,6 +427,7 @@ export default function Index({ auth, paypalConfig }) {
                                                     <PaymentTabs
                                                         pack={pack}
                                                         onSuccess={handlePaymentSuccess}
+                                                        user={auth.user}
                                                     />
                                                 </div>
                                             </div>

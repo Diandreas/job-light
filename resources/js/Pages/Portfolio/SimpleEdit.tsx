@@ -8,7 +8,7 @@ import { Switch } from "@/Components/ui/switch";
 import { Label } from "@/Components/ui/label";
 import { Badge } from "@/Components/ui/badge";
 import {
-    Palette, Eye, Save, RefreshCw, Crown, QrCode, Share,
+    Palette, Eye, Save, RefreshCw, Crown, QrCode, Share, 
     Briefcase, Award, Heart, FileText, Contact, Settings, Zap
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -26,7 +26,7 @@ export default function SimpleEdit({ auth, portfolio, settings, cvData }) {
         show_experiences: settings.show_experiences ?? (cvData?.experiences?.length > 0),
         show_competences: settings.show_competences ?? (cvData?.skills?.length > 0),
         show_hobbies: settings.show_hobbies ?? (cvData?.hobbies?.length > 0),
-        show_summary: settings.show_summary ?? Boolean(cvData?.summary),
+        show_summary: settings.show_summary ?? Boolean(cvData?.summary || cvData?.summaries?.[0]?.description),
         show_contact_info: settings.show_contact_info ?? Boolean(cvData?.email || cvData?.phone),
     });
 
@@ -64,7 +64,7 @@ export default function SimpleEdit({ auth, portfolio, settings, cvData }) {
         { key: 'experiences', icon: Briefcase, label: 'Expériences', count: cvData?.experiences?.length || 0 },
         { key: 'competences', icon: Award, label: 'Compétences', count: cvData?.skills?.length || 0 },
         { key: 'hobbies', icon: Heart, label: 'Centres d\'intérêt', count: cvData?.hobbies?.length || 0 },
-        { key: 'summary', icon: FileText, label: 'Résumé', count: cvData?.summary ? 1 : 0 },
+        { key: 'summary', icon: FileText, label: 'Résumé', count: (cvData?.summary || cvData?.summaries?.[0]?.description) ? 1 : 0 },
         { key: 'contact_info', icon: Contact, label: 'Contact', count: (cvData?.email ? 1 : 0) + (cvData?.phone ? 1 : 0) },
     ];
 
@@ -82,7 +82,7 @@ export default function SimpleEdit({ auth, portfolio, settings, cvData }) {
                             Auto
                         </Badge>
                     </div>
-
+                    
                     {/* Actions Desktop */}
                     <div className="hidden md:flex gap-2">
                         <Button
@@ -111,7 +111,7 @@ export default function SimpleEdit({ auth, portfolio, settings, cvData }) {
 
             <div className="py-3 md:py-6">
                 <div className="mx-auto max-w-5xl px-3 md:px-6">
-
+                    
                     {/* QR Code Modal */}
                     <AnimatePresence>
                         {showQR && (
@@ -126,15 +126,15 @@ export default function SimpleEdit({ auth, portfolio, settings, cvData }) {
                                     <CardContent className="p-6 text-center">
                                         <h3 className="font-bold mb-4 text-gray-900">Partager votre Portfolio</h3>
                                         <div className="mb-4">
-                                            <img
-                                                src={generateQRCode()}
-                                                alt="QR Code"
+                                            <img 
+                                                src={generateQRCode()} 
+                                                alt="QR Code" 
                                                 className="mx-auto mb-4 rounded-lg shadow-md"
                                             />
                                             <p className="text-xs text-gray-600 break-all">{portfolioUrl}</p>
                                         </div>
-
-                                        <div className="grid grid-cols-3 gap-2">
+                                        
+                                        <div className="grid grid-cols-3 gap-2 mb-4">
                                             <Button size="sm" onClick={() => sharePortfolio('linkedin')} className="bg-blue-600 hover:bg-blue-700">
                                                 LinkedIn
                                             </Button>
@@ -145,11 +145,11 @@ export default function SimpleEdit({ auth, portfolio, settings, cvData }) {
                                                 Facebook
                                             </Button>
                                         </div>
-
-                                        <Button
-                                            variant="outline"
+                                        
+                                        <Button 
+                                            variant="outline" 
                                             onClick={() => setShowQR(false)}
-                                            className="w-full mt-4"
+                                            className="w-full"
                                         >
                                             Fermer
                                         </Button>
@@ -160,10 +160,10 @@ export default function SimpleEdit({ auth, portfolio, settings, cvData }) {
                     </AnimatePresence>
 
                     <div className={cn("grid gap-4", previewMode ? "lg:grid-cols-3" : "lg:grid-cols-1")}>
-
+                        
                         {/* Configuration Principale */}
                         <div className={cn("space-y-4", previewMode ? "lg:col-span-2" : "lg:col-span-1")}>
-
+                            
                             {/* Bouton Sauvegarder Sticky Mobile */}
                             <div className="sticky top-4 z-20 md:hidden">
                                 <Button
@@ -196,8 +196,8 @@ export default function SimpleEdit({ auth, portfolio, settings, cvData }) {
                                     variant={previewMode ? "default" : "outline"}
                                     className={cn(
                                         "flex-1",
-                                        previewMode
-                                            ? "bg-gradient-to-r from-purple-500 to-amber-500"
+                                        previewMode 
+                                            ? "bg-gradient-to-r from-purple-500 to-amber-500" 
                                             : "border-purple-300 text-purple-700"
                                     )}
                                 >
@@ -207,7 +207,7 @@ export default function SimpleEdit({ auth, portfolio, settings, cvData }) {
                             </div>
 
                             <form onSubmit={onSubmit} id="portfolio-form" className="space-y-4">
-
+                                
                                 {/* Design Selection - Compact */}
                                 <Card className="border-l-4 border-l-amber-400 shadow-md">
                                     <CardContent className="p-4">
@@ -220,7 +220,7 @@ export default function SimpleEdit({ auth, portfolio, settings, cvData }) {
                                                 <p className="text-xs text-gray-600">Choisissez votre template et couleurs</p>
                                             </div>
                                         </div>
-
+                                        
                                         <DesignSelector
                                             currentDesign={data.design}
                                             onDesignChange={(design) => setData('design', design)}
@@ -253,7 +253,7 @@ export default function SimpleEdit({ auth, portfolio, settings, cvData }) {
                                 </Card>
 
                                 {/* Sections du Portfolio - Ultra Compact */}
-                                < Card className="border-l-4 border-l-purple-400 shadow-md" >
+                                <Card className="border-l-4 border-l-purple-400 shadow-md">
                                     <CardContent className="p-4">
                                         <div className="flex items-center gap-3 mb-4">
                                             <div className="p-2 rounded-full bg-gradient-to-r from-purple-500 to-amber-500">
@@ -264,7 +264,7 @@ export default function SimpleEdit({ auth, portfolio, settings, cvData }) {
                                                 <p className="text-xs text-gray-600">Activez les éléments de votre portfolio</p>
                                             </div>
                                         </div>
-
+                                        
                                         <div className="space-y-2">
                                             {quickSections.map(({ key, icon: Icon, label, count }) => (
                                                 <div
@@ -303,8 +303,8 @@ export default function SimpleEdit({ auth, portfolio, settings, cvData }) {
                                             </div>
                                         )}
                                     </CardContent>
-                                </Card >
-                            </form >
+                                </Card>
+                            </form>
 
                             {/* Bouton Sauvegarder Desktop Sticky */}
                             <div className="hidden md:block sticky bottom-6 z-20">
@@ -340,7 +340,7 @@ export default function SimpleEdit({ auth, portfolio, settings, cvData }) {
                                             </h3>
                                             <p className="text-xs text-gray-600">Portfolio en temps réel</p>
                                         </div>
-
+                                        
                                         <div className="aspect-[3/4] w-full overflow-hidden rounded-lg bg-gray-100 border-2 border-purple-200">
                                             <iframe
                                                 ref={previewRef}
@@ -351,8 +351,8 @@ export default function SimpleEdit({ auth, portfolio, settings, cvData }) {
                                                 loading="lazy"
                                             />
                                         </div>
-
-                                        <Button
+                                        
+                                        <Button 
                                             onClick={() => window.open(portfolioUrl, '_blank')}
                                             variant="outline"
                                             size="sm"
@@ -365,6 +365,7 @@ export default function SimpleEdit({ auth, portfolio, settings, cvData }) {
                                 </Card>
                             </motion.div>
                         )}
+
                     </div>
                 </div>
             </div>

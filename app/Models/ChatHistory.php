@@ -9,6 +9,7 @@ class ChatHistory extends Model
     protected $fillable = [
         'user_id',
         'context_id',
+        'context',
         'messages',
         'service_id',
         'tokens_used'

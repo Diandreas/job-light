@@ -1,9 +1,10 @@
-import { Head, Link } from '@inertiajs/react';
+import { Head, Link, usePage } from '@inertiajs/react';
 import AdminLayout from '@/Layouts/AdminLayout';
 import { Card, CardContent, CardHeader, CardTitle } from '@/Components/ui/card';
 import { Button } from '@/Components/ui/button';
 import { Badge } from '@/Components/ui/badge';
 import { ArrowLeft, Edit, FileText, DollarSign, Image } from 'lucide-react';
+import { PageProps } from '@/types';
 
 interface CvModel {
     id: number;
@@ -21,10 +22,12 @@ interface Props {
 }
 
 export default function Show({ cvModel }: Props) {
+    const { auth } = usePage<PageProps>().props;
+
     return (
         <AdminLayout>
             <Head title={`CV Model: ${cvModel.name}`} />
-            
+
             <div className="space-y-6">
                 <div className="flex items-center justify-between">
                     <div className="flex items-center space-x-4">
@@ -93,7 +96,7 @@ export default function Show({ cvModel }: Props) {
                                         {cvModel.name}
                                     </p>
                                 </div>
-                                
+
                                 <div>
                                     <label className="text-sm font-medium text-gray-500 dark:text-gray-400">
                                         Description
@@ -158,7 +161,7 @@ export default function Show({ cvModel }: Props) {
                                         </span>
                                         <Badge variant="secondary">#{cvModel.id}</Badge>
                                     </div>
-                                    
+
                                     <div className="flex items-center justify-between">
                                         <span className="text-sm font-medium text-gray-500 dark:text-gray-400">
                                             Preview Image
@@ -167,7 +170,7 @@ export default function Show({ cvModel }: Props) {
                                             {cvModel.previewImagePath ? "Available" : "Missing"}
                                         </Badge>
                                     </div>
-                                    
+
                                     <div className="flex items-center justify-between">
                                         <span className="text-sm font-medium text-gray-500 dark:text-gray-400">
                                             Template File

@@ -1,4 +1,4 @@
-import { Head, Link, router } from '@inertiajs/react';
+import { Head, usePage, Link, router } from '@inertiajs/react';
 import AdminLayout from '@/Layouts/AdminLayout';
 import { Card, CardContent, CardHeader, CardTitle } from '@/Components/ui/card';
 import { Button } from '@/Components/ui/button';
@@ -58,7 +58,7 @@ export default function Index({ referralLevels, filters }: Props) {
     return (
         <AdminLayout>
             <Head title="Referral Levels Management" />
-            
+
             <div className="space-y-6">
                 <div className="flex items-center justify-between">
                     <div className="flex items-center">
@@ -153,8 +153,8 @@ export default function Index({ referralLevels, filters }: Props) {
                                                 </div>
                                             </td>
                                             <td className="px-6 py-4 whitespace-nowrap">
-                                                <Badge 
-                                                    className={level.is_active 
+                                                <Badge
+                                                    className={level.is_active
                                                         ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300'
                                                         : 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300'
                                                     }
@@ -169,8 +169,8 @@ export default function Index({ referralLevels, filters }: Props) {
                                                             <Edit className="h-4 w-4" />
                                                         </Button>
                                                     </Link>
-                                                    <Button 
-                                                        size="sm" 
+                                                    <Button
+                                                        size="sm"
                                                         variant="destructive"
                                                         onClick={() => handleDelete(level)}
                                                     >
@@ -197,11 +197,10 @@ export default function Index({ referralLevels, filters }: Props) {
                                 <Link
                                     key={index}
                                     href={link.url}
-                                    className={`px-3 py-2 text-sm rounded-md ${
-                                        link.active
+                                    className={`px-3 py-2 text-sm rounded-md ${link.active
                                             ? 'bg-amber-500 text-white'
                                             : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700'
-                                    }`}
+                                        }`}
                                     dangerouslySetInnerHTML={{ __html: link.label }}
                                 />
                             ))}

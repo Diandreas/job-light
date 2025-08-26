@@ -28,6 +28,7 @@ interface AuditLog {
 }
 
 interface Props {
+    auth: { user: any };
     auditLogs: {
         data: AuditLog[];
         links: any[];
@@ -43,7 +44,7 @@ interface Props {
     modelTypes: string[];
 }
 
-export default function Index({ auditLogs, filters, actions, modelTypes }: Props) {
+export default function Index({ auth, auditLogs, filters, actions, modelTypes }: Props) {
     const [search, setSearch] = useState(filters.search || '');
     const [action, setAction] = useState(filters.action || '');
     const [modelType, setModelType] = useState(filters.model_type || '');
@@ -82,7 +83,7 @@ export default function Index({ auditLogs, filters, actions, modelTypes }: Props
     return (
         <AdminLayout>
             <Head title="Audit Logs" />
-            
+
             <div className="space-y-6">
                 <div className="flex items-center justify-between">
                     <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Audit Logs</h1>
@@ -111,7 +112,7 @@ export default function Index({ auditLogs, filters, actions, modelTypes }: Props
                                     />
                                 </div>
                             </div>
-                            
+
                             <div className="space-y-2">
                                 <label className="text-sm font-medium">Action</label>
                                 <Select value={action} onValueChange={setAction}>
@@ -128,7 +129,7 @@ export default function Index({ auditLogs, filters, actions, modelTypes }: Props
                                     </SelectContent>
                                 </Select>
                             </div>
-                            
+
                             <div className="space-y-2">
                                 <label className="text-sm font-medium">Model Type</label>
                                 <Select value={modelType} onValueChange={setModelType}>
@@ -145,7 +146,7 @@ export default function Index({ auditLogs, filters, actions, modelTypes }: Props
                                     </SelectContent>
                                 </Select>
                             </div>
-                            
+
                             <div className="space-y-2">
                                 <label className="text-sm font-medium">Actions</label>
                                 <div className="flex space-x-2">
@@ -236,11 +237,10 @@ export default function Index({ auditLogs, filters, actions, modelTypes }: Props
                                 <Link
                                     key={index}
                                     href={link.url}
-                                    className={`px-3 py-2 text-sm rounded-md ${
-                                        link.active
+                                    className={`px-3 py-2 text-sm rounded-md ${link.active
                                             ? 'bg-amber-500 text-white'
                                             : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700'
-                                    }`}
+                                        }`}
                                     dangerouslySetInnerHTML={{ __html: link.label }}
                                 />
                             ))}

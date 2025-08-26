@@ -74,12 +74,12 @@ export default function SimpleEdit({ auth, portfolio, settings, cvData }) {
         <AuthenticatedLayout
             user={auth.user}
             header={
-                <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+                <div className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
                     <div className="flex items-center gap-2">
-                        <h2 className="text-xl md:text-2xl font-bold bg-gradient-to-r from-amber-500 to-purple-500 text-transparent bg-clip-text">
+                        <h2 className="text-lg md:text-xl font-bold bg-gradient-to-r from-amber-500 to-purple-500 text-transparent bg-clip-text">
                             Portfolio Express
                         </h2>
-                        <Badge className="bg-gradient-to-r from-amber-500/20 to-purple-500/20 text-amber-700 border-amber-300">
+                        <Badge className="bg-gradient-to-r from-amber-500/20 to-purple-500/20 text-amber-700 border-amber-300 text-xs px-2 py-0.5">
                             <Zap className="h-3 w-3 mr-1" />
                             Auto
                         </Badge>
@@ -91,18 +91,21 @@ export default function SimpleEdit({ auth, portfolio, settings, cvData }) {
                             onClick={() => setShowQR(!showQR)}
                             variant="outline"
                             size="sm"
-                            className="border-amber-300 text-amber-700 hover:bg-amber-50"
+                            className="border-amber-300 text-amber-700 hover:bg-amber-50 h-8 px-3"
                         >
-                            <QrCode className="h-4 w-4 mr-2" />
-                            QR Code
+                            <QrCode className="h-3 w-3 mr-1" />
+                            QR
                         </Button>
                         <Button
                             onClick={() => setPreviewMode(!previewMode)}
                             variant={previewMode ? "default" : "outline"}
                             size="sm"
-                            className={previewMode ? "bg-gradient-to-r from-amber-500 to-purple-500" : "border-purple-300 text-purple-700 hover:bg-purple-50"}
+                            className={cn(
+                                "h-8 px-3",
+                                previewMode ? "bg-gradient-to-r from-amber-500 to-purple-500" : "border-purple-300 text-purple-700 hover:bg-purple-50"
+                            )}
                         >
-                            <Eye className="h-4 w-4 mr-2" />
+                            <Eye className="h-3 w-3 mr-1" />
                             {previewMode ? 'Masquer' : 'Aperçu'}
                         </Button>
                     </div>

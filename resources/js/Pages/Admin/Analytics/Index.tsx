@@ -18,15 +18,16 @@ interface MonthlyUser {
 }
 
 interface Props {
+    auth: { user: any };
     stats: Stats;
     monthlyUsers: MonthlyUser[];
 }
 
-export default function Index({ stats, monthlyUsers }: Props) {
+export default function Index({ auth, stats, monthlyUsers }: Props) {
     return (
         <AdminLayout>
             <Head title="Analytics" />
-            
+
             <div className="space-y-6">
                 <div className="flex items-center justify-between">
                     <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Analytics</h1>
@@ -98,10 +99,10 @@ export default function Index({ stats, monthlyUsers }: Props) {
                                 <div key={index} className="flex items-center justify-between">
                                     <span className="text-sm font-medium">{item.month}</span>
                                     <div className="flex items-center space-x-2">
-                                        <div 
+                                        <div
                                             className="bg-amber-500 h-2 rounded"
-                                            style={{ 
-                                                width: `${Math.max(10, (item.count / Math.max(...monthlyUsers.map(u => u.count))) * 200)}px` 
+                                            style={{
+                                                width: `${Math.max(10, (item.count / Math.max(...monthlyUsers.map(u => u.count))) * 200)}px`
                                             }}
                                         />
                                         <span className="text-sm text-muted-foreground w-8 text-right">

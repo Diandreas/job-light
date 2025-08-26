@@ -1,4 +1,4 @@
-import { Head, Link, router } from '@inertiajs/react';
+import { Head, usePage, Link, router } from '@inertiajs/react';
 import AdminLayout from '@/Layouts/AdminLayout';
 import { Card, CardContent, CardHeader, CardTitle } from '@/Components/ui/card';
 import { Button } from '@/Components/ui/button';
@@ -48,7 +48,7 @@ export default function Index({ experienceCategories, filters }: Props) {
     return (
         <AdminLayout>
             <Head title="Experience Categories Management" />
-            
+
             <div className="space-y-6">
                 <div className="flex items-center justify-between">
                     <div className="flex items-center">
@@ -129,8 +129,8 @@ export default function Index({ experienceCategories, filters }: Props) {
                                                             <Edit className="h-4 w-4" />
                                                         </Button>
                                                     </Link>
-                                                    <Button 
-                                                        size="sm" 
+                                                    <Button
+                                                        size="sm"
                                                         variant="destructive"
                                                         onClick={() => handleDelete(category)}
                                                     >
@@ -157,11 +157,10 @@ export default function Index({ experienceCategories, filters }: Props) {
                                 <Link
                                     key={index}
                                     href={link.url}
-                                    className={`px-3 py-2 text-sm rounded-md ${
-                                        link.active
+                                    className={`px-3 py-2 text-sm rounded-md ${link.active
                                             ? 'bg-amber-500 text-white'
                                             : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700'
-                                    }`}
+                                        }`}
                                     dangerouslySetInnerHTML={{ __html: link.label }}
                                 />
                             ))}

@@ -4,12 +4,12 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/Components/ui/card';
 import { Badge } from '@/Components/ui/badge';
 import { Button } from '@/Components/ui/button';
 import { motion } from 'framer-motion';
-import { 
-    Users, 
-    FileText, 
-    TrendingUp, 
-    DollarSign, 
-    Activity, 
+import {
+    Users,
+    FileText,
+    TrendingUp,
+    DollarSign,
+    Activity,
     Eye,
     Award,
     Heart,
@@ -202,7 +202,7 @@ export default function Index({ stats, recentActivities }: Props) {
             }
         >
             <Head title="Admin Dashboard" />
-            
+
             <div className="space-y-8">
                 {/* Welcome Banner */}
                 <motion.div
@@ -216,11 +216,11 @@ export default function Index({ stats, recentActivities }: Props) {
                             <div>
                                 <h2 className="text-2xl md:text-3xl font-bold mb-2">Welcome to Guidy Admin</h2>
                                 <p className="text-amber-100 text-lg">
-                                    {new Date().toLocaleDateString('en-US', { 
-                                        weekday: 'long', 
-                                        year: 'numeric', 
-                                        month: 'long', 
-                                        day: 'numeric' 
+                                    {new Date().toLocaleDateString('en-US', {
+                                        weekday: 'long',
+                                        year: 'numeric',
+                                        month: 'long',
+                                        day: 'numeric'
                                     })}
                                 </p>
                             </div>

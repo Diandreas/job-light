@@ -19,6 +19,7 @@ interface CvModel {
 }
 
 interface Props {
+    auth: { user: any };
     cvModels: {
         data: CvModel[];
         links: any[];
@@ -30,7 +31,7 @@ interface Props {
     };
 }
 
-export default function Index({ cvModels, filters }: Props) {
+export default function Index({ auth, cvModels, filters }: Props) {
     const [search, setSearch] = useState(filters.search || '');
 
     const handleSearch = () => {
@@ -51,7 +52,7 @@ export default function Index({ cvModels, filters }: Props) {
     return (
         <AdminLayout>
             <Head title="CV Models Management" />
-            
+
             <div className="space-y-6">
                 <div className="flex items-center justify-between">
                     <div className="flex items-center">
@@ -131,8 +132,8 @@ export default function Index({ cvModels, filters }: Props) {
                                                     <Edit className="h-3 w-3" />
                                                 </Button>
                                             </Link>
-                                            <Button 
-                                                size="sm" 
+                                            <Button
+                                                size="sm"
                                                 variant="destructive"
                                                 onClick={() => handleDelete(model)}
                                             >
@@ -182,11 +183,10 @@ export default function Index({ cvModels, filters }: Props) {
                                 <Link
                                     key={index}
                                     href={link.url}
-                                    className={`px-3 py-2 text-sm rounded-md ${
-                                        link.active
+                                    className={`px-3 py-2 text-sm rounded-md ${link.active
                                             ? 'bg-amber-500 text-white'
                                             : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700'
-                                    }`}
+                                        }`}
                                     dangerouslySetInnerHTML={{ __html: link.label }}
                                 />
                             ))}

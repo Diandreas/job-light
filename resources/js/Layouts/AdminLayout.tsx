@@ -1,12 +1,12 @@
 import { useState, PropsWithChildren, ReactNode } from 'react';
 import { Head, Link, usePage } from '@inertiajs/react';
 import { useTranslation } from 'react-i18next';
-import { User as UserType } from '@/types';
-import { 
-    Menu, 
-    X, 
-    Users, 
-    Settings, 
+import { User as UserType, PageProps } from '@/types';
+import {
+    Menu,
+    X,
+    Users,
+    Settings,
     BarChart3,
     FileText,
     Briefcase,
@@ -35,7 +35,6 @@ import Dropdown from '@/Components/Dropdown';
 import { motion, AnimatePresence } from 'framer-motion';
 
 interface Props {
-    user: UserType;
     header?: ReactNode;
     children: ReactNode;
 }
@@ -49,8 +48,10 @@ interface MenuItem {
     description?: string;
 }
 
-export default function AdminLayout({ user, header, children }: PropsWithChildren<Props>) {
+export default function AdminLayout({ header, children }: PropsWithChildren<Props>) {
     const { t } = useTranslation();
+    const { auth } = usePage<PageProps>().props;
+    const user = auth.user;
     const [sidebarOpen, setSidebarOpen] = useState(false);
     const { url } = usePage();
 
@@ -162,11 +163,11 @@ export default function AdminLayout({ user, header, children }: PropsWithChildre
     return (
         <div className="min-h-screen bg-gradient-to-br from-slate-50 via-amber-50/30 to-purple-50/20 dark:from-gray-950 dark:via-amber-950/20 dark:to-purple-950/10">
             <Head title="Admin Panel - Guidy" />
-            
+
             {/* Mobile Overlay */}
             <AnimatePresence>
                 {sidebarOpen && (
-                    <motion.div 
+                    <motion.div
                         className="fixed inset-0 z-40 lg:hidden"
                         initial="closed"
                         animate="open"
@@ -181,7 +182,7 @@ export default function AdminLayout({ user, header, children }: PropsWithChildre
             {/* Mobile Sidebar */}
             <AnimatePresence>
                 {sidebarOpen && (
-                    <motion.div 
+                    <motion.div
                         className="fixed inset-y-0 left-0 z-50 w-80 lg:hidden"
                         initial="closed"
                         animate="open"
@@ -215,7 +216,7 @@ export default function AdminLayout({ user, header, children }: PropsWithChildre
                                     <X className="h-5 w-5" />
                                 </Button>
                             </div>
-                            
+
                             {/* Mobile Navigation */}
                             <nav className="flex-1 overflow-y-auto py-4 px-3">
                                 <div className="space-y-1">
@@ -291,7 +292,7 @@ export default function AdminLayout({ user, header, children }: PropsWithChildre
                                 <p className="text-sm text-gray-500 dark:text-gray-400">Control Center</p>
                             </div>
                         </div>
-                        
+
                         {/* Quick Stats */}
                         <div className="grid grid-cols-2 gap-3">
                             <div className="bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-950/50 dark:to-emerald-950/50 p-3 rounded-xl border border-green-200/50 dark:border-green-800/30">
@@ -314,7 +315,7 @@ export default function AdminLayout({ user, header, children }: PropsWithChildre
                             </div>
                         </div>
                     </div>
-                    
+
                     {/* Desktop Navigation */}
                     <nav className="flex-1 overflow-y-auto py-4 px-4">
                         <div className="space-y-2">
@@ -342,7 +343,7 @@ export default function AdminLayout({ user, header, children }: PropsWithChildre
                                             <div className="flex items-center justify-between">
                                                 <span className="truncate">{item.name}</span>
                                                 {item.badge && (
-                                                    <motion.span 
+                                                    <motion.span
                                                         className="ml-2 px-2 py-0.5 text-xs font-medium bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-full shadow-sm"
                                                         whileHover={{ scale: 1.1 }}
                                                         whileTap={{ scale: 0.95 }}
@@ -375,7 +376,7 @@ export default function AdminLayout({ user, header, children }: PropsWithChildre
             {/* Main Content Area */}
             <div className="lg:pl-80 flex flex-col flex-1">
                 {/* Top Navigation Bar */}
-                <motion.div 
+                <motion.div
                     className="sticky top-0 z-30 bg-white/80 dark:bg-gray-900/80 backdrop-blur-xl border-b border-amber-200/50 dark:border-amber-800/30 shadow-sm"
                     initial={{ y: -20, opacity: 0 }}
                     animate={{ y: 0, opacity: 1 }}
@@ -392,10 +393,10 @@ export default function AdminLayout({ user, header, children }: PropsWithChildre
                             >
                                 <Menu className="h-5 w-5" />
                             </Button>
-                            
+
                             {/* Page Header */}
                             {header && (
-                                <motion.div 
+                                <motion.div
                                     className="flex items-center space-x-3"
                                     initial={{ x: -10, opacity: 0 }}
                                     animate={{ x: 0, opacity: 1 }}
@@ -406,7 +407,7 @@ export default function AdminLayout({ user, header, children }: PropsWithChildre
                                 </motion.div>
                             )}
                         </div>
-                        
+
                         {/* Right Side Actions */}
                         <div className="flex items-center space-x-3">
                             {/* Search Button */}
@@ -418,7 +419,7 @@ export default function AdminLayout({ user, header, children }: PropsWithChildre
                                 <Search className="h-4 w-4 mr-2" />
                                 <span className="text-sm">Search</span>
                             </Button>
-                            
+
                             {/* Notifications */}
                             <Button
                                 variant="ghost"
@@ -428,7 +429,7 @@ export default function AdminLayout({ user, header, children }: PropsWithChildre
                                 <Bell className="h-4 w-4" />
                                 <span className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full border border-white dark:border-gray-900"></span>
                             </Button>
-                            
+
                             {/* User Menu */}
                             <Dropdown>
                                 <Dropdown.Trigger>
@@ -451,7 +452,7 @@ export default function AdminLayout({ user, header, children }: PropsWithChildre
                                     </Button>
                                 </Dropdown.Trigger>
 
-                                <Dropdown.Content className="w-48">
+                                <Dropdown.Content contentClasses="py-1 bg-white w-48">
                                     <div className="px-3 py-2 border-b border-gray-100 dark:border-gray-700">
                                         <p className="text-sm font-medium text-gray-700 dark:text-gray-200">
                                             {user?.name || 'Admin'}
@@ -481,7 +482,7 @@ export default function AdminLayout({ user, header, children }: PropsWithChildre
 
                 {/* Main Content */}
                 <main className="flex-1 relative">
-                    <motion.div 
+                    <motion.div
                         className="p-4 sm:p-6 lg:p-8"
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
@@ -489,7 +490,7 @@ export default function AdminLayout({ user, header, children }: PropsWithChildre
                     >
                         {children}
                     </motion.div>
-                    
+
                     {/* Decorative Elements */}
                     <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-bl from-amber-100/20 via-purple-100/20 to-transparent rounded-full blur-3xl -z-10"></div>
                     <div className="absolute bottom-0 left-0 w-96 h-96 bg-gradient-to-tr from-purple-100/20 via-amber-100/20 to-transparent rounded-full blur-3xl -z-10"></div>

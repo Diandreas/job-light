@@ -329,6 +329,20 @@ export default function CreativeDesign({
                                                                 {safeText(exp.description)}
                                                             </p>
                                                         )}
+                                                        {exp.attachment_path && (
+                                                            <div className="mt-3">
+                                                                <a 
+                                                                    href={exp.attachment_path}
+                                                                    target="_blank"
+                                                                    rel="noopener noreferrer"
+                                                                    className="inline-flex items-center gap-2 px-3 py-2 bg-gradient-to-r from-amber-100 to-purple-100 hover:from-amber-200 hover:to-purple-200 rounded-lg text-sm text-gray-700 transition-all duration-300 transform hover:scale-105"
+                                                                >
+                                                                    <FileText className="w-4 h-4" />
+                                                                    {exp.attachment_name || 'Voir le document'}
+                                                                    <ExternalLink className="w-3 h-3" />
+                                                                </a>
+                                                            </div>
+                                                        )}
                                                     </div>
                                                 </div>
                                             </CardContent>

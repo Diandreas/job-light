@@ -290,7 +290,7 @@ class PortfolioController extends Controller
             ],
             'experiences' => $settings->show_experiences ? $user->experiences()
                 ->join('experience_categories', 'experiences.experience_categories_id', '=', 'experience_categories.id')
-                ->join('attachments', 'experiences.attachment_id', '=', 'attachments.id')
+                ->leftJoin('attachments', 'experiences.attachment_id', '=', 'attachments.id')
                 ->select('experiences.*',
                     'experience_categories.name as category_name',
                     'attachments.name as attachment_name',

@@ -183,6 +183,20 @@ export default function MinimalDesign({
                                                 {safeText(exp.description)}
                                             </p>
                                         )}
+                                        {exp.attachment_path && (
+                                            <div className="mt-3">
+                                                <a 
+                                                    href={exp.attachment_path}
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
+                                                    className="inline-flex items-center gap-2 px-3 py-1.5 border border-gray-300 hover:border-gray-400 rounded text-sm text-gray-700 hover:text-gray-900 transition-colors"
+                                                >
+                                                    <FileText className="w-4 h-4" />
+                                                    {exp.attachment_name || 'Voir le document'}
+                                                    <ExternalLink className="w-3 h-3" />
+                                                </a>
+                                            </div>
+                                        )}
                                     </div>
                                 </motion.div>
                             ))}

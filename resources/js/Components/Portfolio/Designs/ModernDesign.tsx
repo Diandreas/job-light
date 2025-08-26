@@ -296,6 +296,20 @@ export default function ModernDesign({
                                                                 {safeText(exp.description)}
                                                             </p>
                                                         )}
+                                                        {exp.attachment_path && (
+                                                            <div className="mt-3">
+                                                                <a 
+                                                                    href={exp.attachment_path}
+                                                                    target="_blank"
+                                                                    rel="noopener noreferrer"
+                                                                    className="inline-flex items-center gap-2 px-4 py-2 bg-white/10 hover:bg-white/20 backdrop-blur-sm border border-white/20 rounded-lg text-sm text-white transition-all duration-300"
+                                                                >
+                                                                    <FileText className="w-4 h-4" />
+                                                                    {exp.attachment_name || 'Voir le document'}
+                                                                    <ExternalLink className="w-3 h-3" />
+                                                                </a>
+                                                            </div>
+                                                        )}
                                                     </div>
                                                     
                                                     <Badge 

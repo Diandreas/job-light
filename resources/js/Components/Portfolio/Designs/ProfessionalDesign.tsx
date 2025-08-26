@@ -190,20 +190,72 @@ export default function ProfessionalDesign({
                                                     <div className="bg-slate-50 rounded-lg p-4">
                                                         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-2">
                                                             <h3 className="text-lg font-semibold text-slate-800">
-                                                                {exp.poste || exp.title}
+                                                                {exp.name}
                                                             </h3>
                                                             <Badge variant="secondary" className="w-fit">
-                                                                {exp.periode || exp.period}
+                                                                {exp.date_start && exp.date_end ? 
+                                                                    `${new Date(exp.date_start).toLocaleDateString('fr-FR', { month: 'short', year: 'numeric' })} - ${new Date(exp.date_end).toLocaleDateString('fr-FR', { month: 'short', year: 'numeric' })}` :
+                                                                    exp.date_start ? 
+                                                                        `${new Date(exp.date_start).toLocaleDateString('fr-FR', { month: 'short', year: 'numeric' })} - Présent` :
+                                                                        'Période non spécifiée'
+                                                                }
                                                             </Badge>
                                                         </div>
                                                         <p className="text-slate-600 font-medium mb-2">
-                                                            {exp.entreprise || exp.company}
+                                                            {exp.InstitutionName}
                                                         </p>
                                                         {exp.description && (
-                                                            <p className="text-slate-600 text-sm leading-relaxed">
+                                                            <p className="text-slate-600 text-sm leading-relaxed mb-3">
                                                                 {safeText(exp.description)}
                                                             </p>
                                                         )}
+
+                                                        {/* Dates précises */}
+                                                        {(exp.date_start || exp.date_end) && (
+                                                            <div className="flex items-center gap-2 text-xs text-slate-500 mb-2">
+                                                                <Calendar className="w-3 h-3" />
+                                                                <span>
+                                                                    {exp.date_start && new Date(exp.date_start).toLocaleDateString('fr-FR')}
+                                                                    {exp.date_start && exp.date_end && ' - '}
+                                                                    {exp.date_end && new Date(exp.date_end).toLocaleDateString('fr-FR')}
+                                                                </span>
+                                                            </div>
+                                                        )}
+
+                                                        {/* Institution si différente de l'entreprise */}
+                                                        {exp.output && (
+                                                            <div className="flex items-center gap-2 text-xs text-slate-500 mb-2">
+                                                                <MapPin className="w-3 h-3" />
+                                                                <span>Résultats: {exp.output}</span>
+                                                            </div>
+                                                        )}
+
+                                                        {/* Catégorie */}
+                                                        {exp.category_name && (
+                                                            <div className="mb-3">
+                                                                <Badge variant="outline" className="text-xs">
+                                                                    {exp.category_name}
+                                                                </Badge>
+                                                            </div>
+                                                        )}
+
+                                                        {/* Références */}
+                                                        {exp.references && exp.references.length > 0 && (
+                                                            <div className="mt-3 p-3 bg-slate-50 rounded-lg">
+                                                                <h4 className="text-sm font-medium text-slate-700 mb-2">Références :</h4>
+                                                                <div className="space-y-2">
+                                                                    {exp.references.map((ref, refIndex) => (
+                                                                        <div key={refIndex} className="text-xs text-slate-600">
+                                                                            <div className="font-medium">{ref.name}</div>
+                                                                            {ref.function && <div>Fonction: {ref.function}</div>}
+                                                                            {ref.email && <div>Email: {ref.email}</div>}
+                                                                            {ref.telephone && <div>Tél: {ref.telephone}</div>}
+                                                                        </div>
+                                                                    ))}
+                                                                </div>
+                                                            </div>
+                                                        )}
+
                                                         {exp.attachment_path && (
                                                             <div className="mt-3">
                                                                 <a 
@@ -320,6 +372,42 @@ export default function ProfessionalDesign({
                                                 >
                                                     {typeof hobby === 'string' ? hobby : hobby.name || hobby.hobby}
                                                 </Badge>
+                                            ))}
+                                        </div>
+                                    </CardContent>
+                                </Card>
+                            </motion.section>
+                        )}
+
+                        {/* Langues */}
+                        {settings.show_languages && cvData?.languages?.length > 0 && (
+                            <motion.section
+                                initial={{ opacity: 0, y: 20 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                transition={{ delay: 1.15 }}
+                            >
+                                <Card className="shadow-sm">
+                                    <CardContent className="p-6">
+                                        <div className="flex items-center gap-3 mb-4">
+                                            <div 
+                                                className="p-2 rounded-lg"
+                                                style={{ backgroundColor: `${primaryColor}15` }}
+                                            >
+                                                <Globe className="w-5 h-5" style={{ color: primaryColor }} />
+                                            </div>
+                                            <h3 className="text-lg font-bold text-slate-800">Langues</h3>
+                                        </div>
+                                        
+                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                                            {cvData.languages.map((lang, index) => (
+                                                <div key={index} className="flex items-center justify-between p-3 bg-slate-50 rounded-lg">
+                                                    <span className="font-medium text-slate-700">{lang.name}</span>
+                                                    {lang.pivot?.language_level && (
+                                                        <span className="text-sm text-slate-500 px-2 py-1 bg-white rounded">
+                                                            {lang.pivot.language_level}
+                                                        </span>
+                                                    )}
+                                                </div>
                                             ))}
                                         </div>
                                     </CardContent>

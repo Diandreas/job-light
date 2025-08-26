@@ -169,20 +169,56 @@ export default function MinimalDesign({
                                     <div className="mb-6">
                                         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-2">
                                             <h3 className="text-xl font-medium text-gray-900">
-                                                {exp.poste || exp.title}
+                                                {exp.name}
                                             </h3>
                                             <span className="text-sm text-gray-500 mt-1 sm:mt-0">
-                                                {exp.periode || exp.period}
+                                                {exp.date_start && exp.date_end ? 
+                                                    `${new Date(exp.date_start).toLocaleDateString('fr-FR', { month: 'short', year: 'numeric' })} - ${new Date(exp.date_end).toLocaleDateString('fr-FR', { month: 'short', year: 'numeric' })}` :
+                                                    exp.date_start ? 
+                                                        `${new Date(exp.date_start).toLocaleDateString('fr-FR', { month: 'short', year: 'numeric' })} - Présent` :
+                                                        'Période non spécifiée'
+                                                }
                                             </span>
                                         </div>
                                         <p className="text-gray-600 font-normal mb-3">
-                                            {exp.entreprise || exp.company}
+                                            {exp.InstitutionName}
                                         </p>
                                         {exp.description && (
-                                            <p className="text-gray-600 text-sm leading-relaxed">
+                                            <p className="text-gray-600 text-sm leading-relaxed mb-3">
                                                 {safeText(exp.description)}
                                             </p>
                                         )}
+
+                                        {/* Informations détaillées */}
+                                        <div className="space-y-1 text-xs text-gray-500 mb-3">
+                                            {(exp.date_start || exp.date_end) && (
+                                                <div>📅 {exp.date_start && new Date(exp.date_start).toLocaleDateString('fr-FR')}{exp.date_start && exp.date_end && ' - '}{exp.date_end && new Date(exp.date_end).toLocaleDateString('fr-FR')}</div>
+                                            )}
+                                            {exp.output && (
+                                                <div>📈 Résultats: {exp.output}</div>
+                                            )}
+                                            {exp.category_name && (
+                                                <div>🏷️ Catégorie: {exp.category_name}</div>
+                                            )}
+                                        </div>
+
+                                        {/* Références */}
+                                        {exp.references && exp.references.length > 0 && (
+                                            <div className="mt-3 p-3 bg-gray-50 rounded">
+                                                <div className="text-sm font-medium text-gray-700 mb-2">Références :</div>
+                                                <div className="space-y-1">
+                                                    {exp.references.map((ref, refIndex) => (
+                                                        <div key={refIndex} className="text-xs text-gray-600">
+                                                            <div className="font-medium">{ref.name}</div>
+                                                            {ref.function && <div>Fonction: {ref.function}</div>}
+                                                            {ref.email && <div>Email: {ref.email}</div>}
+                                                            {ref.telephone && <div>Tél: {ref.telephone}</div>}
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            </div>
+                                        )}
+
                                         {exp.attachment_path && (
                                             <div className="mt-3">
                                                 <a 
@@ -288,6 +324,39 @@ export default function MinimalDesign({
                         <p className="text-gray-700 leading-relaxed">
                             {safeText(cvData.summary) || safeText(cvData?.summaries?.[0])}
                         </p>
+                    </motion.section>
+                )}
+
+                {/* Langues */}
+                {settings.show_languages && cvData?.languages?.length > 0 && (
+                    <motion.section
+                        initial={{ opacity: 0, y: 30 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 2.15, duration: 0.8 }}
+                        className="mt-16 pt-12 border-t border-gray-100"
+                    >
+                        <h2 className="text-2xl font-light text-gray-900 mb-8" style={{ color: primaryColor }}>
+                            Langues
+                        </h2>
+                        
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            {cvData.languages.map((lang, index) => (
+                                <motion.div 
+                                    key={index}
+                                    initial={{ opacity: 0, y: 20 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    transition={{ delay: 2.3 + index * 0.1, duration: 0.5 }}
+                                    className="flex items-center justify-between p-4 bg-gray-50 hover:bg-gray-100 transition-colors duration-200"
+                                >
+                                    <span className="font-medium text-gray-800">{lang.name}</span>
+                                    {lang.pivot?.language_level && (
+                                        <span className="text-sm text-gray-600 px-3 py-1 border border-gray-300 rounded">
+                                            {lang.pivot.language_level}
+                                        </span>
+                                    )}
+                                </motion.div>
+                            ))}
+                        </div>
                     </motion.section>
                 )}
                 

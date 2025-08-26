@@ -9,7 +9,7 @@ import { Label } from "@/Components/ui/label";
 import { Badge } from "@/Components/ui/badge";
 import {
     Palette, Eye, Save, RefreshCw, Crown, QrCode, Share,
-    Briefcase, Award, Heart, FileText, Contact, Settings, Zap
+    Briefcase, Award, Heart, FileText, Contact, Settings, Zap, Globe
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';
@@ -28,6 +28,7 @@ export default function SimpleEdit({ auth, portfolio, settings, cvData }) {
         show_hobbies: settings.show_hobbies ?? (cvData?.hobbies?.length > 0),
         show_summary: settings.show_summary ?? Boolean(cvData?.summary),
         show_contact_info: settings.show_contact_info ?? Boolean(cvData?.email || cvData?.phone),
+        show_languages: settings.show_languages ?? (cvData?.languages?.length > 0),
     });
 
     const previewRef = React.useRef(null);
@@ -64,6 +65,7 @@ export default function SimpleEdit({ auth, portfolio, settings, cvData }) {
         { key: 'experiences', icon: Briefcase, label: 'Expériences', count: cvData?.experiences?.length || 0 },
         { key: 'competences', icon: Award, label: 'Compétences', count: cvData?.skills?.length || 0 },
         { key: 'hobbies', icon: Heart, label: 'Centres d\'intérêt', count: cvData?.hobbies?.length || 0 },
+        { key: 'languages', icon: Globe, label: 'Langues', count: cvData?.languages?.length || 0 },
         { key: 'summary', icon: FileText, label: 'Résumé', count: cvData?.summary ? 1 : 0 },
         { key: 'contact_info', icon: Contact, label: 'Contact', count: (cvData?.email ? 1 : 0) + (cvData?.phone ? 1 : 0) },
     ];

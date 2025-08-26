@@ -9,6 +9,7 @@ use Inertia\Inertia;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\DB;
 
 class PortfolioController extends Controller
 {
@@ -90,6 +91,7 @@ class PortfolioController extends Controller
             'show_hobbies' => 'boolean',
             'show_summary' => 'boolean',
             'show_contact_info' => 'boolean',
+            'show_languages' => 'boolean',
             'show_contact_form' => 'boolean',
             'banner_image' => 'nullable|image|max:10240', // 10MB Max
             'banner_position' => 'nullable|in:top,behind_text,overlay',
@@ -123,6 +125,7 @@ class PortfolioController extends Controller
             'show_hobbies',
             'show_summary',
             'show_contact_info',
+            'show_languages',
             'show_contact_form',
             'banner_position',
             'bio',
@@ -289,19 +292,34 @@ class PortfolioController extends Controller
                 'title' => $user->full_profession,
             ],
             'experiences' => $settings->show_experiences ? $user->experiences()
+                ->with('references')
                 ->join('experience_categories', 'experiences.experience_categories_id', '=', 'experience_categories.id')
                 ->leftJoin('attachments', 'experiences.attachment_id', '=', 'attachments.id')
-                ->select('experiences.*',
+                ->select([
+                    'experiences.*',
                     'experience_categories.name as category_name',
-                    'attachments.name as attachment_name',
-                    'attachments.path as attachment_path',
-                    'attachments.format as attachment_format',
-                    'attachments.size as attachment_size')
+                    'experience_categories.name_en as category_name_en',
+                    'experience_categories.ranking as category_ranking',
+                    DB::raw('COALESCE(attachments.name, NULL) as attachment_name'),
+                    DB::raw('CASE WHEN attachments.path IS NOT NULL THEN CONCAT("/storage/", attachments.path) ELSE NULL END as attachment_path'),
+                    DB::raw('COALESCE(attachments.format, NULL) as attachment_format'),
+                    DB::raw('COALESCE(attachments.size, NULL) as attachment_size')
+                ])
                 ->orderBy('experience_categories.ranking', 'asc')
+                ->orderBy('experiences.date_start', 'desc')
                 ->get()
                 ->map(function ($experience) {
-                    $experience->attachment_path = $experience->attachment_path ? Storage::url($experience->attachment_path) : null;
-                    return $experience;
+                    $experienceArray = $experience->toArray();
+                    $experienceArray['references'] = $experience->references->map(function ($reference) {
+                        return [
+                            'id' => $reference->id,
+                            'name' => $reference->name ?? '',
+                            'function' => $reference->function ?? '',
+                            'email' => $reference->email ?? '',
+                            'telephone' => $reference->telephone ?? ''
+                        ];
+                    })->toArray();
+                    return $experienceArray;
                 })
                 ->toArray() : [],
             'competences' => $settings->show_competences ? $user->competences()->get()->toArray() : [],
@@ -309,6 +327,24 @@ class PortfolioController extends Controller
             'summary' => $settings->show_summary ? ($user->selected_summary ? $user->selected_summary->toArray() : null) : null,
             'customSections' => $user->portfolioSections()->activeOrdered()->get()->toArray(),
             'professions' => $user->profession()->take(2)->get()->toArray(),
+            
+            // Nouvelles données toujours disponibles  
+            'languages' => $user->languages()
+                ->select(['languages.id', 'languages.name', 'languages.name_en'])
+                ->withPivot('language_level')
+                ->get()
+                ->map(function ($language) {
+                    return [
+                        'id' => $language->id,
+                        'name' => $language->name,
+                        'name_en' => $language->name_en,
+                        'pivot' => [
+                            'language_level' => $language->pivot->language_level ?? null
+                        ]
+                    ];
+                })
+                ->toArray(),
+            'summaries' => $user->summaries()->get()->toArray(),
             
             // Settings de style
             'settings' => $settings->toArray(),
@@ -329,6 +365,7 @@ class PortfolioController extends Controller
             'show_competences' => $settings->show_competences,
             'show_hobbies' => $settings->show_hobbies,
             'show_summary' => $settings->show_summary,
+            'show_languages' => $settings->show_languages ?? true,
         ];
     }
 
@@ -350,6 +387,7 @@ class PortfolioController extends Controller
             'show_hobbies' => true,
             'show_summary' => true,
             'show_contact_info' => true,
+            'show_languages' => true,
         ]);
     }
 }

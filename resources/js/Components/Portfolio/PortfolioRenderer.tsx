@@ -259,6 +259,7 @@ export default function PortfolioRenderer({
             typeof processedCvData?.summary === 'string' ? processedCvData.summary : processedCvData?.summaries?.[0]?.description
         ),
         show_contact_info: settings?.show_contact_info ?? Boolean(processedCvData?.email || processedCvData?.phone),
+        show_languages: settings?.show_languages ?? Boolean(processedCvData?.languages?.length > 0),
         // Default design
         design: settings?.design || 'professional'
     }), [settings, processedCvData]);

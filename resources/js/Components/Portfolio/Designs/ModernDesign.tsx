@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import { motion, useScroll, useTransform } from 'framer-motion';
-import { 
-    User, Briefcase, Award, Heart, FileText, Contact, 
+import {
+    User, Briefcase, Award, Heart, FileText, Contact,
     Mail, Phone, MapPin, ExternalLink, ArrowRight,
-    Download, Share2, Star, Code, Lightbulb
+    Download, Share2, Star, Code, Lightbulb, Globe, Calendar
 } from 'lucide-react';
 import { Card, CardContent } from "@/Components/ui/card";
 import { Badge } from "@/Components/ui/badge";
@@ -26,24 +26,24 @@ const safeText = (value: any): string => {
     return '';
 };
 
-export default function ModernDesign({ 
-    user, 
-    cvData, 
-    settings, 
-    isPreview = false 
+export default function ModernDesign({
+    user,
+    cvData,
+    settings,
+    isPreview = false
 }: ModernDesignProps) {
-    
+
     const profilePhoto = user.photo || cvData?.profile_picture;
     const primaryColor = settings.primary_color || '#3b82f6';
     const secondaryColor = settings.secondary_color || '#8b5cf6';
-    
+
     const { scrollY } = useScroll();
     const headerY = useTransform(scrollY, [0, 300], [0, -50]);
     const headerOpacity = useTransform(scrollY, [0, 300], [1, 0.8]);
 
     return (
         <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-indigo-900 text-white">
-            
+
             {/* Background effects */}
             <div className="fixed inset-0 overflow-hidden pointer-events-none">
                 {/* Animated gradient orbs */}
@@ -79,9 +79,9 @@ export default function ModernDesign({
                         background: `radial-gradient(circle, ${secondaryColor}, transparent)`
                     }}
                 />
-                
+
                 {/* Grid pattern */}
-                <div 
+                <div
                     className="absolute inset-0 opacity-5"
                     style={{
                         backgroundImage: `radial-gradient(circle at 1px 1px, ${primaryColor} 1px, transparent 0)`,
@@ -91,13 +91,13 @@ export default function ModernDesign({
             </div>
 
             {/* Hero Section */}
-            <motion.section 
+            <motion.section
                 style={{ y: headerY, opacity: headerOpacity }}
                 className="relative z-10 min-h-screen flex items-center"
             >
                 <div className="max-w-7xl mx-auto px-6 py-12">
                     <div className="grid lg:grid-cols-2 gap-16 items-center">
-                        
+
                         {/* Content */}
                         <div className="space-y-8">
                             <motion.div
@@ -108,9 +108,9 @@ export default function ModernDesign({
                                 <div className="inline-block px-4 py-2 rounded-full bg-white/10 backdrop-blur-sm border border-white/20 mb-4">
                                     <span className="text-sm text-blue-200">👋 Bonjour, je suis</span>
                                 </div>
-                                
+
                                 <h1 className="text-5xl md:text-7xl font-bold mb-4">
-                                    <span 
+                                    <span
                                         className="bg-gradient-to-r bg-clip-text text-transparent"
                                         style={{
                                             backgroundImage: `linear-gradient(135deg, ${primaryColor}, ${secondaryColor})`
@@ -119,9 +119,9 @@ export default function ModernDesign({
                                         {user.name || `${cvData?.first_name || ''} ${cvData?.last_name || ''}`.trim()}
                                     </span>
                                 </h1>
-                                
+
                                 {(settings.tagline || cvData?.professional_title) && (
-                                    <motion.p 
+                                    <motion.p
                                         initial={{ opacity: 0, y: 20 }}
                                         animate={{ opacity: 1, y: 0 }}
                                         transition={{ delay: 0.3, duration: 0.8 }}
@@ -132,7 +132,7 @@ export default function ModernDesign({
                                 )}
 
                                 {(settings.bio || cvData?.summary) && (
-                                    <motion.p 
+                                    <motion.p
                                         initial={{ opacity: 0, y: 20 }}
                                         animate={{ opacity: 1, y: 0 }}
                                         transition={{ delay: 0.6, duration: 0.8 }}
@@ -143,7 +143,7 @@ export default function ModernDesign({
                                 )}
 
                                 {/* CTA Buttons */}
-                                <motion.div 
+                                <motion.div
                                     initial={{ opacity: 0, y: 20 }}
                                     animate={{ opacity: 1, y: 0 }}
                                     transition={{ delay: 0.9, duration: 0.8 }}
@@ -165,7 +165,7 @@ export default function ModernDesign({
                                             </a>
                                         </Button>
                                     )}
-                                    
+
                                     <Button
                                         size="lg"
                                         variant="outline"
@@ -187,19 +187,19 @@ export default function ModernDesign({
                         >
                             <div className="relative">
                                 {/* Glow effect */}
-                                <div 
+                                <div
                                     className="absolute -inset-4 rounded-full blur-2xl opacity-30"
                                     style={{
                                         background: `linear-gradient(135deg, ${primaryColor}, ${secondaryColor})`
                                     }}
                                 />
-                                
+
                                 {/* Photo container */}
                                 <div className="relative w-80 h-80 md:w-96 md:h-96 mx-auto">
                                     <div className="w-full h-full rounded-full overflow-hidden border-4 border-white/20 backdrop-blur-sm bg-white/5">
                                         {profilePhoto ? (
-                                            <img 
-                                                src={profilePhoto} 
+                                            <img
+                                                src={profilePhoto}
                                                 alt={`${user.name} - Photo de profil`}
                                                 className="w-full h-full object-cover"
                                             />
@@ -209,7 +209,7 @@ export default function ModernDesign({
                                             </div>
                                         )}
                                     </div>
-                                    
+
                                     {/* Floating elements */}
                                     <motion.div
                                         animate={{ rotate: 360 }}
@@ -218,7 +218,7 @@ export default function ModernDesign({
                                     >
                                         <Code className="w-6 h-6 text-blue-300" />
                                     </motion.div>
-                                    
+
                                     <motion.div
                                         animate={{ rotate: -360 }}
                                         transition={{ duration: 25, repeat: Infinity, ease: "linear" }}
@@ -235,7 +235,7 @@ export default function ModernDesign({
 
             {/* Main Content */}
             <div className="relative z-10">
-                
+
                 {/* Expériences avec design futuriste */}
                 {settings.show_experiences && cvData?.experiences?.length > 0 && (
                     <section className="py-20">
@@ -248,7 +248,7 @@ export default function ModernDesign({
                                 className="text-center mb-16"
                             >
                                 <h2 className="text-4xl md:text-5xl font-bold mb-4">
-                                    Mon <span 
+                                    Mon <span
                                         className="bg-gradient-to-r bg-clip-text text-transparent"
                                         style={{
                                             backgroundImage: `linear-gradient(135deg, ${primaryColor}, ${secondaryColor})`
@@ -259,7 +259,7 @@ export default function ModernDesign({
                                 </h2>
                                 <p className="text-xl text-gray-300">Découvrez mes expériences professionnelles</p>
                             </motion.div>
-                            
+
                             <div className="space-y-8">
                                 {cvData.experiences.map((exp, index) => (
                                     <motion.div
@@ -275,7 +275,7 @@ export default function ModernDesign({
                                                 <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-6">
                                                     <div className="flex-1">
                                                         <div className="flex items-start gap-4 mb-4">
-                                                            <div 
+                                                            <div
                                                                 className="p-3 rounded-lg shrink-0"
                                                                 style={{ backgroundColor: `${primaryColor}20` }}
                                                             >
@@ -283,22 +283,67 @@ export default function ModernDesign({
                                                             </div>
                                                             <div>
                                                                 <h3 className="text-2xl font-bold text-white mb-1">
-                                                                    {exp.poste || exp.title}
+                                                                    {exp.name}
                                                                 </h3>
                                                                 <p className="text-xl text-blue-300 font-medium mb-2">
-                                                                    {exp.entreprise || exp.company}
+                                                                    {exp.InstitutionName}
                                                                 </p>
                                                             </div>
                                                         </div>
-                                                        
+
                                                         {exp.description && (
-                                                            <p className="text-gray-300 leading-relaxed">
+                                                            <p className="text-gray-300 leading-relaxed mb-3">
                                                                 {safeText(exp.description)}
                                                             </p>
                                                         )}
+
+                                                        {/* Informations détaillées */}
+                                                        <div className="space-y-2 mb-3">
+                                                            {(exp.date_start || exp.date_end) && (
+                                                                <div className="flex items-center gap-2 text-xs text-gray-400">
+                                                                    <Calendar className="w-3 h-3" />
+                                                                    <span>
+                                                                        {exp.date_start && new Date(exp.date_start).toLocaleDateString('fr-FR')}
+                                                                        {exp.date_start && exp.date_end && ' - '}
+                                                                        {exp.date_end && new Date(exp.date_end).toLocaleDateString('fr-FR')}
+                                                                    </span>
+                                                                </div>
+                                                            )}
+
+                                                            {exp.output && (
+                                                                <div className="flex items-center gap-2 text-xs text-gray-400">
+                                                                    <MapPin className="w-3 h-3" />
+                                                                    <span>Institution: {exp.InstitutionName}</span>
+                                                                </div>
+                                                            )}
+
+                                                            {exp.category_name && (
+                                                                <div className="inline-block px-2 py-1 bg-white/10 backdrop-blur-sm border border-white/20 rounded text-xs text-white">
+                                                                    {exp.category_name}
+                                                                </div>
+                                                            )}
+                                                        </div>
+
+                                                        {/* Références */}
+                                                        {exp.references && exp.references.length > 0 && (
+                                                            <div className="mt-3 p-3 bg-white/5 backdrop-blur-sm border border-white/20 rounded-lg">
+                                                                <h4 className="text-sm font-medium text-white mb-2">Références :</h4>
+                                                                <div className="space-y-2">
+                                                                    {exp.references.map((ref, refIndex) => (
+                                                                        <div key={refIndex} className="text-xs text-gray-300">
+                                                                            <div className="font-medium text-white">{ref.name}</div>
+                                                                            {ref.function && <div>Fonction: {ref.function}</div>}
+                                                                            {ref.email && <div>Email: {ref.email}</div>}
+                                                                            {ref.telephone && <div>Tél: {ref.telephone}</div>}
+                                                                        </div>
+                                                                    ))}
+                                                                </div>
+                                                            </div>
+                                                        )}
+
                                                         {exp.attachment_path && (
                                                             <div className="mt-3">
-                                                                <a 
+                                                                <a
                                                                     href={exp.attachment_path}
                                                                     target="_blank"
                                                                     rel="noopener noreferrer"
@@ -311,15 +356,20 @@ export default function ModernDesign({
                                                             </div>
                                                         )}
                                                     </div>
-                                                    
-                                                    <Badge 
+
+                                                    <Badge
                                                         className="text-white px-4 py-2 text-sm font-medium shrink-0"
                                                         style={{
                                                             background: `linear-gradient(135deg, ${secondaryColor}80, ${primaryColor}80)`,
                                                             backdropFilter: 'blur(8px)'
                                                         }}
                                                     >
-                                                        {exp.periode || exp.period}
+                                                        {exp.date_start && exp.date_end ? 
+                                                            `${new Date(exp.date_start).toLocaleDateString('fr-FR', { month: 'short', year: 'numeric' })} - ${new Date(exp.date_end).toLocaleDateString('fr-FR', { month: 'short', year: 'numeric' })}` :
+                                                            exp.date_start ? 
+                                                                `${new Date(exp.date_start).toLocaleDateString('fr-FR', { month: 'short', year: 'numeric' })} - Présent` :
+                                                                'Période non spécifiée'
+                                                        }
                                                     </Badge>
                                                 </div>
                                             </CardContent>
@@ -343,7 +393,7 @@ export default function ModernDesign({
                                 className="text-center mb-16"
                             >
                                 <h2 className="text-4xl md:text-5xl font-bold mb-4">
-                                    Mes <span 
+                                    Mes <span
                                         className="bg-gradient-to-r bg-clip-text text-transparent"
                                         style={{
                                             backgroundImage: `linear-gradient(135deg, ${primaryColor}, ${secondaryColor})`
@@ -354,7 +404,7 @@ export default function ModernDesign({
                                 </h2>
                                 <p className="text-xl text-gray-300">Technologies et expertise</p>
                             </motion.div>
-                            
+
                             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                                 {cvData.skills.map((skill, index) => (
                                     <motion.div
@@ -363,8 +413,8 @@ export default function ModernDesign({
                                         whileInView={{ opacity: 1, scale: 1 }}
                                         viewport={{ once: true }}
                                         transition={{ delay: index * 0.05, duration: 0.5 }}
-                                        whileHover={{ 
-                                            scale: 1.05, 
+                                        whileHover={{
+                                            scale: 1.05,
                                             rotate: [0, -2, 2, 0],
                                             transition: { duration: 0.3 }
                                         }}
@@ -372,13 +422,13 @@ export default function ModernDesign({
                                     >
                                         <div className="relative p-6 rounded-xl bg-white/5 backdrop-blur-lg border border-white/10 hover:border-white/20 transition-all duration-300 text-center">
                                             {/* Glow effect on hover */}
-                                            <div 
+                                            <div
                                                 className="absolute inset-0 rounded-xl opacity-0 group-hover:opacity-20 transition-opacity duration-300 blur-xl"
                                                 style={{
                                                     background: `linear-gradient(135deg, ${primaryColor}, ${secondaryColor})`
                                                 }}
                                             />
-                                            
+
                                             <div className="relative z-10">
                                                 <Star className="w-8 h-8 mx-auto mb-3 text-yellow-400" />
                                                 <p className="text-white font-medium">
@@ -396,7 +446,7 @@ export default function ModernDesign({
                 {/* Autres sections en grid */}
                 <div className="max-w-6xl mx-auto px-6 py-20">
                     <div className="grid md:grid-cols-2 gap-12">
-                        
+
                         {/* Centres d'intérêt */}
                         {settings.show_hobbies && cvData?.hobbies?.length > 0 && (
                             <motion.div
@@ -408,7 +458,7 @@ export default function ModernDesign({
                                 <Card className="bg-white/5 backdrop-blur-lg border border-white/10 h-full">
                                     <CardContent className="p-8">
                                         <div className="flex items-center gap-3 mb-6">
-                                            <div 
+                                            <div
                                                 className="p-3 rounded-lg"
                                                 style={{ backgroundColor: `${secondaryColor}20` }}
                                             >
@@ -416,7 +466,7 @@ export default function ModernDesign({
                                             </div>
                                             <h3 className="text-2xl font-bold text-white">Centres d'Intérêt</h3>
                                         </div>
-                                        
+
                                         <div className="space-y-3">
                                             {cvData.hobbies.map((hobby, index) => (
                                                 <motion.div
@@ -427,7 +477,7 @@ export default function ModernDesign({
                                                     transition={{ delay: index * 0.1, duration: 0.5 }}
                                                     className="flex items-center gap-3 p-3 rounded-lg bg-white/5 hover:bg-white/10 transition-colors"
                                                 >
-                                                    <div 
+                                                    <div
                                                         className="w-2 h-2 rounded-full"
                                                         style={{ backgroundColor: secondaryColor }}
                                                     />
@@ -442,6 +492,44 @@ export default function ModernDesign({
                             </motion.div>
                         )}
 
+                        {/* Langues */}
+                        {settings.show_languages && cvData?.languages?.length > 0 && (
+                            <motion.div
+                                initial={{ opacity: 0, x: 50 }}
+                                whileInView={{ opacity: 1, x: 0 }}
+                                viewport={{ once: true }}
+                                transition={{ duration: 0.8 }}
+                                className="glassmorphism p-8 rounded-2xl"
+                            >
+                                <div className="flex items-center gap-4 mb-6">
+                                    <div className="p-3 bg-white/20 backdrop-blur-sm rounded-xl">
+                                        <Globe className="w-8 h-8 text-white" />
+                                    </div>
+                                    <h3 className="text-2xl font-bold text-white">Langues</h3>
+                                </div>
+
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    {cvData.languages.map((lang, index) => (
+                                        <motion.div
+                                            key={index}
+                                            initial={{ opacity: 0, y: 20 }}
+                                            whileInView={{ opacity: 1, y: 0 }}
+                                            viewport={{ once: true }}
+                                            transition={{ delay: index * 0.1, duration: 0.5 }}
+                                            className="flex items-center justify-between p-4 bg-white/10 hover:bg-white/20 backdrop-blur-sm border border-white/20 rounded-xl transition-all duration-300"
+                                        >
+                                            <span className="font-semibold text-white">{lang.name}</span>
+                                            {lang.pivot?.language_level && (
+                                                <span className="px-3 py-1 bg-white/20 backdrop-blur-sm border border-white/20 rounded-lg text-sm font-medium text-white">
+                                                    {lang.pivot.language_level}
+                                                </span>
+                                            )}
+                                        </motion.div>
+                                    ))}
+                                </div>
+                            </motion.div>
+                        )}
+
                         {/* Contact */}
                         {settings.show_contact_info && (cvData?.email || cvData?.phone || cvData?.address) && (
                             <motion.div
@@ -453,7 +541,7 @@ export default function ModernDesign({
                                 <Card className="bg-white/5 backdrop-blur-lg border border-white/10 h-full">
                                     <CardContent className="p-8">
                                         <div className="flex items-center gap-3 mb-6">
-                                            <div 
+                                            <div
                                                 className="p-3 rounded-lg"
                                                 style={{ backgroundColor: `${primaryColor}20` }}
                                             >
@@ -461,7 +549,7 @@ export default function ModernDesign({
                                             </div>
                                             <h3 className="text-2xl font-bold text-white">Contact</h3>
                                         </div>
-                                        
+
                                         <div className="space-y-6">
                                             {(cvData?.email || user.email) && (
                                                 <motion.a
@@ -469,7 +557,7 @@ export default function ModernDesign({
                                                     href={`mailto:${cvData?.email || user.email}`}
                                                     className="flex items-center gap-4 p-4 rounded-lg bg-white/5 hover:bg-white/10 transition-all duration-300 group"
                                                 >
-                                                    <div 
+                                                    <div
                                                         className="p-2 rounded-lg group-hover:scale-110 transition-transform"
                                                         style={{ backgroundColor: `${primaryColor}30` }}
                                                     >
@@ -486,7 +574,7 @@ export default function ModernDesign({
                                                     href={`tel:${cvData.phone}`}
                                                     className="flex items-center gap-4 p-4 rounded-lg bg-white/5 hover:bg-white/10 transition-all duration-300 group"
                                                 >
-                                                    <div 
+                                                    <div
                                                         className="p-2 rounded-lg group-hover:scale-110 transition-transform"
                                                         style={{ backgroundColor: `${secondaryColor}30` }}
                                                     >
@@ -502,7 +590,7 @@ export default function ModernDesign({
                                                     whileHover={{ x: 5 }}
                                                     className="flex items-center gap-4 p-4 rounded-lg bg-white/5 hover:bg-white/10 transition-all duration-300 group"
                                                 >
-                                                    <div 
+                                                    <div
                                                         className="p-2 rounded-lg group-hover:scale-110 transition-transform"
                                                         style={{ backgroundColor: `${primaryColor}30` }}
                                                     >

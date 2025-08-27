@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { motion, useScroll, useTransform } from 'framer-motion';
+import { useTranslation } from 'react-i18next';
 import {
     User, Briefcase, Award, Heart, FileText, Contact,
     Mail, Phone, MapPin, ExternalLink, ArrowRight,
@@ -32,6 +33,7 @@ export default function ModernDesign({
     settings,
     isPreview = false
 }: ModernDesignProps) {
+    const { t } = useTranslation();
 
     const profilePhoto = user.photo || cvData?.profile_picture;
     const primaryColor = settings.primary_color || '#3b82f6';
@@ -257,7 +259,7 @@ export default function ModernDesign({
                                         Parcours
                                     </span>
                                 </h2>
-                                <p className="text-xl text-gray-300">Découvrez mes expériences professionnelles</p>
+                                <p className="text-xl text-gray-300">{t('portfolio.sections.experiences')}</p>
                             </motion.div>
 
                             <div className="space-y-8">
@@ -364,9 +366,9 @@ export default function ModernDesign({
                                                             backdropFilter: 'blur(8px)'
                                                         }}
                                                     >
-                                                        {exp.date_start && exp.date_end ? 
+                                                        {exp.date_start && exp.date_end ?
                                                             `${new Date(exp.date_start).toLocaleDateString('fr-FR', { month: 'short', year: 'numeric' })} - ${new Date(exp.date_end).toLocaleDateString('fr-FR', { month: 'short', year: 'numeric' })}` :
-                                                            exp.date_start ? 
+                                                            exp.date_start ?
                                                                 `${new Date(exp.date_start).toLocaleDateString('fr-FR', { month: 'short', year: 'numeric' })} - Présent` :
                                                                 'Période non spécifiée'
                                                         }
@@ -382,7 +384,7 @@ export default function ModernDesign({
                 )}
 
                 {/* Skills avec animation interactive */}
-                {settings.show_competences && cvData?.skills?.length > 0 && (
+                {settings.show_competences && cvData?.competences?.length > 0 && (
                     <section className="py-20 bg-white/5 backdrop-blur-sm">
                         <div className="max-w-6xl mx-auto px-6">
                             <motion.div
@@ -399,14 +401,14 @@ export default function ModernDesign({
                                             backgroundImage: `linear-gradient(135deg, ${primaryColor}, ${secondaryColor})`
                                         }}
                                     >
-                                        Compétences
+                                        {t('portfolio.sections.skills')}
                                     </span>
                                 </h2>
                                 <p className="text-xl text-gray-300">Technologies et expertise</p>
                             </motion.div>
 
                             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                                {cvData.skills.map((skill, index) => (
+                                {cvData.competences.map((competence, index) => (
                                     <motion.div
                                         key={index}
                                         initial={{ opacity: 0, scale: 0.8 }}
@@ -432,7 +434,7 @@ export default function ModernDesign({
                                             <div className="relative z-10">
                                                 <Star className="w-8 h-8 mx-auto mb-3 text-yellow-400" />
                                                 <p className="text-white font-medium">
-                                                    {typeof skill === 'string' ? skill : skill.name || skill.skill}
+                                                    {typeof competence === 'string' ? competence : competence.name || competence.skill}
                                                 </p>
                                             </div>
                                         </div>
@@ -464,7 +466,7 @@ export default function ModernDesign({
                                             >
                                                 <Heart className="w-6 h-6" style={{ color: secondaryColor }} />
                                             </div>
-                                            <h3 className="text-2xl font-bold text-white">Centres d'Intérêt</h3>
+                                            <h3 className="text-2xl font-bold text-white">{t('portfolio.sections.hobbies')}</h3>
                                         </div>
 
                                         <div className="space-y-3">
@@ -505,7 +507,7 @@ export default function ModernDesign({
                                     <div className="p-3 bg-white/20 backdrop-blur-sm rounded-xl">
                                         <Globe className="w-8 h-8 text-white" />
                                     </div>
-                                    <h3 className="text-2xl font-bold text-white">Langues</h3>
+                                    <h3 className="text-2xl font-bold text-white">{t('portfolio.sections.languages')}</h3>
                                 </div>
 
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -547,7 +549,7 @@ export default function ModernDesign({
                                             >
                                                 <Contact className="w-6 h-6" style={{ color: primaryColor }} />
                                             </div>
-                                            <h3 className="text-2xl font-bold text-white">Contact</h3>
+                                            <h3 className="text-2xl font-bold text-white">{t('portfolio.sections.contact')}</h3>
                                         </div>
 
                                         <div className="space-y-6">

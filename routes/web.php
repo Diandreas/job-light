@@ -21,6 +21,7 @@ use App\Http\Controllers\{AddressController,
     ProfessionController,
     ProfessionMissionController,
     ProfileController,
+    ServiceController,
     SponsorshipController,
     SummaryController,
     UserCompetenceController,
@@ -35,6 +36,15 @@ use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
 Route::get('language/{locale}', [LanguageController::class, 'switch'])->name('language.switch');
+
+// Route pour servir les fichiers de traduction JSON
+Route::get('/lang/{locale}.json', function ($locale) {
+    $path = resource_path("../lang/{$locale}.json");
+    if (file_exists($path)) {
+        return response()->json(json_decode(file_get_contents($path), true));
+    }
+    return response()->json([]);
+});
 Route::get('/support', function () {
     return Inertia::render('Support');
 })->name('support');
@@ -127,6 +137,12 @@ Route::middleware(['auth'])->group(function () {
     Route::delete('/portfolio/sections/{section}', [PortfolioController::class, 'deleteSection'])->name('portfolio.sections.delete');
     Route::put('/portfolio/sections/{section}/toggle', [PortfolioController::class, 'toggleSectionActive'])->name('portfolio.sections.toggle');
     Route::post('/portfolio/sections/order', [PortfolioController::class, 'updateSectionOrder'])->name('portfolio.sections.order');
+    
+    // Services management
+    Route::resource('services', ServiceController::class);
+    Route::post('/services/order', [ServiceController::class, 'updateOrder'])->name('services.order');
+    Route::delete('/service-images/{image}', [ServiceController::class, 'deleteImage'])->name('service-images.delete');
+    Route::post('/services/{service}/images/order', [ServiceController::class, 'updateImageOrder'])->name('services.images.order');
 });
 
 Route::get('/portfolio/{identifier}', [PortfolioController::class, 'show'])

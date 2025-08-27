@@ -44,6 +44,7 @@ class PortfolioController extends Controller
             'identifier' => $user->identifier,
             'settings' => $portfolio['settings'] ?? [],
             'cvData' => $portfolio,
+            'orderedSections' => self::getOrderedSections($portfolio),
         ];
         
         // Debug logging
@@ -59,14 +60,16 @@ class PortfolioController extends Controller
         $settings = $user->portfolioSettings ?? new PortfolioSettings();
         $customSections = $user->portfolioSections()->activeOrdered()->get();
 
-        return Inertia::render('Portfolio/Edit', [
+        return Inertia::render('Portfolio/EditClean', [
             'portfolio' => $portfolio,
             'settings' => $settings,
             'customSections' => $customSections,
+            'services' => $user->services()->with('images')->ordered()->get(),
             'availableTypes' => PortfolioSection::getAvailableTypes(),
             'availableIcons' => PortfolioSection::getDefaultIcons(),
             'availableFonts' => PortfolioSettings::getAvailableFonts(),
             'availableHeaderStyles' => PortfolioSettings::getAvailableHeaderStyles(),
+            'groupedSections' => self::getGroupedSections($portfolio),
         ]);
     }
 
@@ -93,6 +96,9 @@ class PortfolioController extends Controller
             'show_contact_info' => 'boolean',
             'show_languages' => 'boolean',
             'show_contact_form' => 'boolean',
+            'show_services' => 'boolean',
+            'currency' => 'nullable|string|max:10',
+            'section_order' => 'nullable|array',
             'banner_image' => 'nullable|image|max:10240', // 10MB Max
             'banner_position' => 'nullable|in:top,behind_text,overlay',
             'bio' => 'nullable|string|max:1000',
@@ -127,6 +133,9 @@ class PortfolioController extends Controller
             'show_contact_info',
             'show_languages',
             'show_contact_form',
+            'show_services',
+            'currency',
+            'section_order',
             'banner_position',
             'bio',
             'tagline',
@@ -366,6 +375,12 @@ class PortfolioController extends Controller
             'show_hobbies' => $settings->show_hobbies,
             'show_summary' => $settings->show_summary,
             'show_languages' => $settings->show_languages ?? true,
+            
+            // Services (seulement si activés dans les paramètres)
+            'services' => $settings->show_services ? $user->services()->active()->with('images')->get()->toArray() : [],
+            
+            // Ordre des sections pour l'affichage
+            'section_order' => $settings->section_order ?? [],
         ];
     }
 
@@ -388,6 +403,153 @@ class PortfolioController extends Controller
             'show_summary' => true,
             'show_contact_info' => true,
             'show_languages' => true,
+            'show_services' => false,
+            'currency' => '€',
         ]);
+    }
+
+    /**
+     * Organise les sections du portfolio selon l'ordre défini
+     */
+    public static function getOrderedSections($portfolioData)
+    {
+        $sectionOrder = $portfolioData['section_order'] ?? [];
+        
+        $sections = [
+            'experiences' => [
+                'key' => 'experiences',
+                'data' => $portfolioData['experiences'] ?? [],
+                'visible' => $portfolioData['show_experiences'] ?? true,
+                'title' => 'Expériences'
+            ],
+            'competences' => [
+                'key' => 'competences',
+                'data' => $portfolioData['competences'] ?? [],
+                'visible' => $portfolioData['show_competences'] ?? true,
+                'title' => 'Compétences'
+            ],
+            'hobbies' => [
+                'key' => 'hobbies',
+                'data' => $portfolioData['hobbies'] ?? [],
+                'visible' => $portfolioData['show_hobbies'] ?? true,
+                'title' => 'Centres d\'intérêt'
+            ],
+            'languages' => [
+                'key' => 'languages',
+                'data' => $portfolioData['languages'] ?? [],
+                'visible' => $portfolioData['show_languages'] ?? true,
+                'title' => 'Langues'
+            ],
+            'summary' => [
+                'key' => 'summary',
+                'data' => $portfolioData['summary'] ?? null,
+                'visible' => $portfolioData['show_summary'] ?? true,
+                'title' => 'Résumé'
+            ],
+            'contact_info' => [
+                'key' => 'contact_info',
+                'data' => $portfolioData['personalInfo'] ?? [],
+                'visible' => $portfolioData['show_contact_info'] ?? true,
+                'title' => 'Contact'
+            ],
+            'services' => [
+                'key' => 'services',
+                'data' => $portfolioData['services'] ?? [],
+                'visible' => $portfolioData['show_services'] ?? false,
+                'title' => 'Services'
+            ]
+        ];
+
+        // Trier selon l'ordre défini
+        $orderedSections = [];
+        
+        // D'abord, ajouter les sections dans l'ordre défini
+        foreach ($sectionOrder as $sectionKey => $order) {
+            if (isset($sections[$sectionKey]) && $sections[$sectionKey]['visible']) {
+                $orderedSections[$order] = $sections[$sectionKey];
+            }
+        }
+        
+        // Ensuite, ajouter les sections non ordonnées à la fin
+        foreach ($sections as $key => $section) {
+            if (!array_key_exists($key, $sectionOrder) && $section['visible']) {
+                $orderedSections[9999 + array_search($key, array_keys($sections))] = $section;
+            }
+        }
+        
+        // Trier par clé (ordre)
+        ksort($orderedSections);
+        
+        return array_values($orderedSections);
+    }
+
+    public static function getSectionGroups($portfolioData)
+    {
+        // Définition des groupes de sections par défaut
+        $defaultGroups = [
+            'identity' => [
+                'label' => 'Identité',
+                'description' => 'Informations de base toujours affichées en premier',
+                'sections' => ['contact_info'],
+                'position' => 'header' // toujours en premier
+            ],
+            'professional' => [
+                'label' => 'Professionnel', 
+                'description' => 'Contenu principal de votre portfolio',
+                'sections' => ['experiences'],
+                'position' => 'main' // zone principale
+            ],
+            'services_special' => [
+                'label' => 'Services',
+                'description' => 'Section indépendante pour vos services',
+                'sections' => ['services'],
+                'position' => 'special' // zone spéciale
+            ],
+            'summary_special' => [
+                'label' => 'Résumé',
+                'description' => 'Votre présentation personnelle', 
+                'sections' => ['summary'],
+                'position' => 'special' // zone spéciale
+            ],
+            'personal' => [
+                'label' => 'Personnel',
+                'description' => 'Informations complémentaires et compétences',
+                'sections' => ['competences', 'languages', 'hobbies'],
+                'position' => 'sidebar' // sidebar ou zone secondaire
+            ]
+        ];
+
+        // Récupérer les groupes personnalisés depuis les settings ou utiliser les défauts
+        $settings = $portfolioData['settings'] ?? [];
+        $customGroups = $settings['section_groups'] ?? [];
+
+        // Fusionner avec les groupes par défaut
+        return array_merge($defaultGroups, $customGroups);
+    }
+
+    public static function getGroupedSections($portfolioData)
+    {
+        $sections = self::getOrderedSections($portfolioData);
+        $groups = self::getSectionGroups($portfolioData);
+        
+        $groupedSections = [];
+        
+        foreach ($groups as $groupKey => $group) {
+            $groupedSections[$groupKey] = [
+                'label' => $group['label'],
+                'description' => $group['description'],
+                'position' => $group['position'],
+                'sections' => []
+            ];
+            
+            // Ajouter les sections correspondantes au groupe
+            foreach ($sections as $section) {
+                if (in_array($section['key'], $group['sections'])) {
+                    $groupedSections[$groupKey]['sections'][] = $section;
+                }
+            }
+        }
+        
+        return $groupedSections;
     }
 }

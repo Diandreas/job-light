@@ -1561,5 +1561,114 @@
             "title": "Bientôt disponible !",
             "description": "Nous travaillons activement pour vous proposer notre nouvelle fonctionnalité de portail d'emploi. Restez à l'écoute pour des opportunités passionnantes dans votre parcours professionnel !"
         }
+    },
+    "portfolio": {
+        "sections": {
+            "experiences": "Expériences Professionnelles",
+            "summary": "À Propos",
+            "skills": "Compétences",
+            "hobbies": "Centres d'Intérêt",
+            "languages": "Langues",
+            "contact": "Contact",
+            "loading": "Chargement du portfolio...",
+            "error": {
+                "title": "Erreur de chargement",
+                "message": "Une erreur est survenue lors du chargement du portfolio.",
+                "retry": "Réessayer",
+                "dataError": "Erreur de données",
+                "dataMissing": "Les données utilisateur sont manquantes. Veuillez rafraîchir la page."
+            }
+        },
+        "controls": {
+            "share": "Partager",
+            "downloadCV": "CV PDF",
+            "openPortfolio": "Ouvrir le portfolio",
+            "copyLink": "Copier le lien"
+        },
+        "share": {
+            "title": "Partager le Portfolio",
+            "qrCode": "QR Code",
+            "socialSharing": "Partage sur les réseaux sociaux",
+            "linkedin": "LinkedIn",
+            "twitter": "Twitter",
+            "facebook": "Facebook",
+            "whatsapp": "WhatsApp"
+        },
+        "footer": {
+            "generatedBy": "Portfolio professionnel généré avec JobLight"
+        },
+        "dates": {
+            "present": "Présent",
+            "periodNotSpecified": "Période non spécifiée",
+            "to": "à"
+        },
+        "references": {
+            "title": "Références :",
+            "function": "Fonction",
+            "phone": "Tél"
+        },
+        "attachments": {
+            "viewDocument": "Voir le document"
+        },
+        "index": {
+            "title": "Portfolio Professionnel",
+            "premium": "Premium",
+            "share": "Partager",
+            "customize": "Personnaliser",
+            "premium_activated": "Premium Activé",
+            "premium_description": "Débloquez toutes les fonctionnalités premium et créez des portfolios époustouflants",
+            "quick_actions": "Actions Rapides",
+            "manage_portfolio_description": "Gérez les paramètres et l'apparence de votre portfolio",
+            "public_link_label": "Lien Public",
+            "customize_design": "Personnaliser le Design",
+            "view_public_portfolio": "Voir le Portfolio Public",
+            "manage_sections": "Gérer les Sections",
+            "live_preview": "Aperçu en Direct",
+            "online": "En ligne",
+            "preview_description": "Voyez comment votre portfolio apparaît aux visiteurs en temps réel",
+            "portfolio_preview_title": "Aperçu du Portfolio",
+            "premium_features": "Fonctionnalités Premium",
+            "premium_features_description": "Accédez aux options de personnalisation avancées et aux modèles premium",
+            "link_copied_title": "Lien Copié",
+            "link_copied_description": "Le lien de votre portfolio a été copié dans le presse-papiers",
+            "error": "Erreur",
+            "copy_error_description": "Échec de la copie du lien dans le presse-papiers",
+            "copied": "Copié",
+            "stats": {
+                "responsive": "Responsive",
+                "templates_pro": "Modèles Pro",
+                "sections": "Sections",
+                "ultra_fast": "Ultra Rapide"
+            },
+            "start_customization": "Commencer la Personnalisation",
+            "features": {
+                "templates": "Modèles Premium",
+                "templates_desc": "Choisissez parmi notre collection de modèles de portfolio professionnels",
+                "custom_sections": "Sections Personnalisées",
+                "custom_sections_desc": "Créez et organisez des sections qui correspondent à vos besoins",
+                "professional_photo": "Photo Professionnelle",
+                "professional_photo_desc": "Ajoutez des photos de haute qualité pour présenter votre travail",
+                "smooth_animations": "Animations Fluides",
+                "smooth_animations_desc": "De belles transitions et animations pour une meilleure expérience utilisateur",
+                "responsive": "Design Responsive",
+                "responsive_desc": "Affichage parfait sur tous les appareils et tailles d'écran",
+                "performance": "Haute Performance",
+                "performance_desc": "Chargement rapide et défilement fluide"
+            }
+        },
+        "edit": {
+            "portfolio_express": "Portfolio Express",
+            "quick_config": "Configuration Rapide",
+            "preview": "Aperçu",
+            "service_management": "Gestion des Services",
+            "service_management_description": "Gérez et organisez vos services professionnels",
+            "my_services": "Mes Services",
+            "your_services": "Vos Services",
+            "service_configuration": "Configuration des Services",
+            "service_reorder_tip": "Glissez-déposez pour réorganiser vos services"
+        },
+        "groups": {
+            "title": "Groupes de Portfolio"
+        }
     }
 }

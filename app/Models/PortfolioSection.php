@@ -52,6 +52,7 @@ class PortfolioSection extends Model
             'languages' => 'Langues',
             'awards' => 'Prix et distinctions',
             'testimonials' => 'Témoignages',
+            'services' => 'Services',
         ];
     }
 
@@ -69,6 +70,7 @@ class PortfolioSection extends Model
             'languages' => 'Globe',
             'awards' => 'Star',
             'testimonials' => 'MessageSquare',
+            'services' => 'Wrench',
         ];
     }
 

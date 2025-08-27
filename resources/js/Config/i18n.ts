@@ -18,24 +18,24 @@ const findClosestLanguage = (detectedLang) => {
     if (supportedLanguages.includes(detectedLang)) {
         return detectedLang;
     }
-    
+
     // If detected language starts with 'fr', use French
     if (detectedLang.startsWith('fr')) {
         return 'fr';
     }
-    
+
     // For any language starting with 'en', use English
     if (detectedLang.startsWith('en')) {
         return 'en';
     }
-    
+
     // For languages that might be variants of French (e.g., fr-CA, fr-BE)
     for (const langCode of supportedLanguages) {
         if (detectedLang.toLowerCase().startsWith(langCode.toLowerCase())) {
             return langCode;
         }
     }
-    
+
     // Default to English for all other languages
     return 'en';
 };
@@ -69,5 +69,13 @@ i18n.services.languageDetector.detect = () => {
     const detectedLang = originalDetect();
     return findClosestLanguage(detectedLang);
 };
+
+// Sync with translation.js utility when language changes
+i18n.on('languageChanged', (lng) => {
+    // Update the translation.js utility if it's available
+    if (typeof window !== 'undefined' && window.setLocale) {
+        window.setLocale(lng);
+    }
+});
 
 export default i18n;

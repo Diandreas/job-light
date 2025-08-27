@@ -13,6 +13,7 @@
         "@types/i18next": "^12.1.0",
         "@types/node": "^18.13.0",
         "@types/react": "^18.0.28",
+        "@types/react-beautiful-dnd": "^13.1.8",
         "@types/react-dom": "^18.0.10",
         "@vitejs/plugin-react": "^4.2.0",
         "autoprefixer": "^10.4.12",
@@ -26,6 +27,7 @@
         "vite": "^5.0"
     },
     "dependencies": {
+        "@hello-pangea/dnd": "^18.0.1",
         "@hookform/resolvers": "^3.3.4",
         "@paypal/paypal-js": "^8.2.0",
         "@paypal/react-paypal-js": "^8.8.2",

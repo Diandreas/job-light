@@ -14,6 +14,7 @@ import { useToast } from "@/Components/ui/use-toast";
 import { motion } from 'framer-motion';
 import { cn } from "@/lib/utils";
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
+import { __ } from '@/utils/translation';
 
 export default function Index({ auth }) {
     const { toast } = useToast();
@@ -25,26 +26,26 @@ export default function Index({ auth }) {
             await navigator.clipboard.writeText(portfolioUrl);
             setCopied(true);
             toast({
-                title: "Lien copié !",
-                description: "Le lien de votre portfolio a été copié dans le presse-papier.",
+                title: __('portfolio.index.link_copied_title'),
+                description: __('portfolio.index.link_copied_description'),
             });
             setTimeout(() => setCopied(false), 2000);
         } catch (err) {
             toast({
-                title: "Erreur",
-                description: "Impossible de copier le lien. Veuillez le sélectionner manuellement.",
+                title: __('portfolio.index.error'),
+                description: __('portfolio.index.copy_error_description'),
                 variant: "destructive",
             });
         }
     };
 
     const features = [
-        { icon: Palette, title: "4 Templates Premium", description: "Designs modernes et professionnels" },
-        { icon: Layers, title: "Sections Personnalisées", description: "Créez des sections uniques" },
-        { icon: Camera, title: "Photo Professionnelle", description: "Upload HD avec validation" },
-        { icon: Sparkles, title: "Animations Fluides", description: "Effets visuels avec Framer Motion" },
-        { icon: Globe, title: "Responsive", description: "Parfait sur mobile et desktop" },
-        { icon: Zap, title: "Performance", description: "Chargement ultra-rapide" },
+        { icon: Palette, title: __('portfolio.index.features.templates'), description: __('portfolio.index.features.templates_desc') },
+        { icon: Layers, title: __('portfolio.index.features.custom_sections'), description: __('portfolio.index.features.custom_sections_desc') },
+        { icon: Camera, title: __('portfolio.index.features.professional_photo'), description: __('portfolio.index.features.professional_photo_desc') },
+        { icon: Sparkles, title: __('portfolio.index.features.smooth_animations'), description: __('portfolio.index.features.smooth_animations_desc') },
+        { icon: Globe, title: __('portfolio.index.features.responsive'), description: __('portfolio.index.features.responsive_desc') },
+        { icon: Zap, title: __('portfolio.index.features.performance'), description: __('portfolio.index.features.performance_desc') },
     ];
 
     return (
@@ -54,11 +55,11 @@ export default function Index({ auth }) {
                 <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                     <div className="flex items-center gap-3">
                         <h2 className="text-3xl font-bold bg-gradient-to-r from-amber-500 to-purple-500 text-transparent bg-clip-text">
-                            Mon Portfolio
+                            {__('portfolio.index.title')}
                         </h2>
                         <Badge variant="secondary" className="bg-gradient-to-r from-amber-500/20 to-purple-500/20 text-amber-700 dark:text-amber-300">
                             <Crown className="h-3 w-3 mr-1" />
-                            Premium
+                            {__('portfolio.index.premium')}
                         </Badge>
                     </div>
                     <div className="flex gap-2">
@@ -70,26 +71,26 @@ export default function Index({ auth }) {
                             {copied ? (
                                 <>
                                     <Check className="h-4 w-4 text-green-500" />
-                                    <span>Copié !</span>
+                                    <span>{__('portfolio.index.copied')}</span>
                                 </>
                             ) : (
                                 <>
                                     <Share2 className="h-4 w-4" />
-                                    <span>Partager</span>
+                                    <span>{__('portfolio.index.share')}</span>
                                 </>
                             )}
                         </Button>
                         <Button asChild className="bg-gradient-to-r from-amber-500 to-purple-500 hover:from-amber-600 hover:to-purple-600">
                             <Link href={route('portfolio.edit')}>
                                 <Rocket className="h-4 w-4 mr-2" />
-                                Personnaliser
+                                {__('portfolio.index.customize')}
                             </Link>
                         </Button>
                     </div>
                 </div>
             }
         >
-            <Head title="Mon Portfolio" />
+            <Head title={__('portfolio.index.title')} />
 
             <div className="py-8 bg-gradient-to-br from-amber-50/50 to-purple-50/50 dark:from-amber-950/20 dark:to-purple-950/20">
                 <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -97,8 +98,7 @@ export default function Index({ auth }) {
                     <Alert className="mb-8 bg-gradient-to-r from-amber-50 to-purple-50 border-amber-200">
                         <Sparkles className="h-4 w-4 text-amber-500" />
                         <AlertDescription className="text-amber-800">
-                            <strong>Portfolio Premium Activé !</strong> Profitez de toutes les fonctionnalités avancées :
-                            templates professionnels, sections illimitées, et bien plus !
+                            <strong>{__('portfolio.index.premium_activated')}</strong> {__('portfolio.index.premium_description')}
                         </AlertDescription>
                     </Alert>
 
@@ -114,17 +114,17 @@ export default function Index({ auth }) {
                                 <CardHeader className="pb-4">
                                     <CardTitle className="flex items-center gap-2 text-xl">
                                         <User className="h-6 w-6 text-amber-500" />
-                                        Actions Rapides
+                                        {__('portfolio.index.quick_actions')}
                                     </CardTitle>
                                     <CardDescription>
-                                        Gérez votre portfolio en quelques clics
+                                        {__('portfolio.index.manage_portfolio_description')}
                                     </CardDescription>
                                 </CardHeader>
                                 <CardContent className="space-y-4">
                                     {/* Lien Portfolio */}
                                     <div className="space-y-2">
                                         <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                                            Lien public de votre portfolio
+                                            {__('portfolio.index.public_link_label')}
                                         </label>
                                         <div className="flex gap-2">
                                             <Input
@@ -152,7 +152,7 @@ export default function Index({ auth }) {
                                         <Button asChild className="w-full bg-gradient-to-r from-green-500 to-blue-500 hover:from-green-600 hover:to-blue-600">
                                             <Link href={route('portfolio.edit')}>
                                                 <Edit className="mr-2 h-4 w-4" />
-                                                Personnaliser le design
+                                                {__('portfolio.index.customize_design')}
                                             </Link>
                                         </Button>
 
@@ -164,14 +164,14 @@ export default function Index({ auth }) {
                                                 target="_blank"
                                             >
                                                 <ExternalLink className="mr-2 h-4 w-4" />
-                                                Voir mon portfolio public
+                                                {__('portfolio.index.view_public_portfolio')}
                                             </Link>
                                         </Button>
 
                                         <Button asChild variant="outline" className="w-full border-amber-200 hover:bg-amber-50">
                                             <Link href={route('portfolio.edit')}>
                                                 <Layers className="mr-2 h-4 w-4" />
-                                                Gérer les sections
+                                                {__('portfolio.index.manage_sections')}
                                             </Link>
                                         </Button>
                                     </div>
@@ -190,14 +190,14 @@ export default function Index({ auth }) {
                                 <CardHeader className="pb-4">
                                     <CardTitle className="flex items-center gap-2 text-xl">
                                         <Eye className="h-6 w-6 text-purple-500" />
-                                        Prévisualisation en Direct
+                                        {__('portfolio.index.live_preview')}
                                         <Badge variant="outline" className="bg-green-50 text-green-600 border-green-200">
                                             <Zap className="h-3 w-3 mr-1" />
-                                            En ligne
+                                            {__('portfolio.index.online')}
                                         </Badge>
                                     </CardTitle>
                                     <CardDescription>
-                                        Votre portfolio tel qu'il apparaît aux visiteurs
+                                        {__('portfolio.index.preview_description')}
                                     </CardDescription>
                                 </CardHeader>
                                 <CardContent className="p-0">
@@ -205,7 +205,7 @@ export default function Index({ auth }) {
                                         <iframe
                                             src={portfolioUrl}
                                             className="h-full w-full border-0"
-                                            title="Prévisualisation du portfolio"
+                                            title={__('portfolio.index.portfolio_preview_title')}
                                             loading="lazy"
                                         />
                                     </div>
@@ -225,10 +225,10 @@ export default function Index({ auth }) {
                             <CardHeader>
                                 <CardTitle className="flex items-center gap-2 text-2xl text-amber-700">
                                     <Crown className="h-6 w-6" />
-                                    Fonctionnalités Premium Incluses
+                                    {__('portfolio.index.premium_features')}
                                 </CardTitle>
                                 <CardDescription className="text-amber-600">
-                                    Tout ce dont vous avez besoin pour créer un portfolio professionnel exceptionnel
+                                    {__('portfolio.index.premium_features_description')}
                                 </CardDescription>
                             </CardHeader>
                             <CardContent>
@@ -260,19 +260,19 @@ export default function Index({ auth }) {
                                 <div className="mt-8 grid grid-cols-2 md:grid-cols-4 gap-4">
                                     <div className="text-center p-4 bg-white/60 dark:bg-gray-800/60 rounded-lg">
                                         <div className="text-2xl font-bold text-green-600">100%</div>
-                                        <div className="text-xs text-gray-600">Responsive</div>
+                                        <div className="text-xs text-gray-600">{__('portfolio.index.stats.responsive')}</div>
                                     </div>
                                     <div className="text-center p-4 bg-white/60 dark:bg-gray-800/60 rounded-lg">
                                         <div className="text-2xl font-bold text-blue-600">4</div>
-                                        <div className="text-xs text-gray-600">Templates Pro</div>
+                                        <div className="text-xs text-gray-600">{__('portfolio.index.stats.templates_pro')}</div>
                                     </div>
                                     <div className="text-center p-4 bg-white/60 dark:bg-gray-800/60 rounded-lg">
                                         <div className="text-2xl font-bold text-purple-600">∞</div>
-                                        <div className="text-xs text-gray-600">Sections</div>
+                                        <div className="text-xs text-gray-600">{__('portfolio.index.stats.sections')}</div>
                                     </div>
                                     <div className="text-center p-4 bg-white/60 dark:bg-gray-800/60 rounded-lg">
                                         <div className="text-2xl font-bold text-amber-600">⚡</div>
-                                        <div className="text-xs text-gray-600">Ultra-rapide</div>
+                                        <div className="text-xs text-gray-600">{__('portfolio.index.stats.ultra_fast')}</div>
                                     </div>
                                 </div>
 
@@ -281,7 +281,7 @@ export default function Index({ auth }) {
                                     <Button asChild size="lg" className="bg-gradient-to-r from-amber-500 to-purple-500 hover:from-amber-600 hover:to-purple-600 text-lg px-8">
                                         <Link href={route('portfolio.edit')}>
                                             <Rocket className="h-5 w-5 mr-2" />
-                                            Commencer la personnalisation
+                                            {__('portfolio.index.start_customization')}
                                             <ArrowRight className="h-5 w-5 ml-2" />
                                         </Link>
                                     </Button>

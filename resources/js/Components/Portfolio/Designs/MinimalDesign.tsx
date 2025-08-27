@@ -1,8 +1,10 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { 
-    User, Briefcase, Award, Heart, FileText, Contact, 
-    Mail, Phone, MapPin, ExternalLink, Dot
+import { useTranslation } from 'react-i18next';
+import {
+    User, Briefcase, Award, Heart, FileText, Contact,
+    Mail, Phone, MapPin, Github, Linkedin, ExternalLink,
+    Globe, Calendar
 } from 'lucide-react';
 import { Badge } from "@/Components/ui/badge";
 import { Separator } from "@/Components/ui/separator";
@@ -24,27 +26,28 @@ const safeText = (value: any): string => {
     return '';
 };
 
-export default function MinimalDesign({ 
-    user, 
-    cvData, 
-    settings, 
-    isPreview = false 
+export default function MinimalDesign({
+    user,
+    cvData,
+    settings,
+    isPreview = false
 }: MinimalDesignProps) {
-    
+    const { t } = useTranslation();
+
     const profilePhoto = user.photo || cvData?.profile_picture;
     const primaryColor = settings.primary_color || '#000000';
-    
+
     return (
         <div className="min-h-screen bg-white">
             {/* Header minimaliste */}
-            <motion.header 
+            <motion.header
                 initial={{ opacity: 0, y: -30 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.8, ease: "easeOut" }}
                 className="max-w-4xl mx-auto px-8 py-16"
             >
                 <div className="flex flex-col md:flex-row md:items-center gap-12">
-                    
+
                     {/* Photo de profil simple */}
                     <motion.div
                         initial={{ opacity: 0, scale: 0.8 }}
@@ -54,8 +57,8 @@ export default function MinimalDesign({
                     >
                         <div className="w-32 h-32 rounded-full overflow-hidden bg-gray-100 border border-gray-200">
                             {profilePhoto ? (
-                                <img 
-                                    src={profilePhoto} 
+                                <img
+                                    src={profilePhoto}
                                     alt={`${user.name} - Photo de profil`}
                                     className="w-full h-full object-cover"
                                 />
@@ -69,7 +72,7 @@ export default function MinimalDesign({
 
                     {/* Informations principales */}
                     <div className="flex-1">
-                        <motion.h1 
+                        <motion.h1
                             initial={{ opacity: 0, x: -20 }}
                             animate={{ opacity: 1, x: 0 }}
                             transition={{ delay: 0.4, duration: 0.6 }}
@@ -77,9 +80,9 @@ export default function MinimalDesign({
                         >
                             {user.name || `${cvData?.first_name || ''} ${cvData?.last_name || ''}`.trim()}
                         </motion.h1>
-                        
+
                         {(settings.tagline || cvData?.professional_title) && (
-                            <motion.p 
+                            <motion.p
                                 initial={{ opacity: 0, x: -20 }}
                                 animate={{ opacity: 1, x: 0 }}
                                 transition={{ delay: 0.6, duration: 0.6 }}
@@ -91,14 +94,14 @@ export default function MinimalDesign({
                         )}
 
                         {/* Contact simple */}
-                        <motion.div 
+                        <motion.div
                             initial={{ opacity: 0, x: -20 }}
                             animate={{ opacity: 1, x: 0 }}
                             transition={{ delay: 0.8, duration: 0.6 }}
                             className="flex flex-wrap gap-6 text-sm text-gray-500"
                         >
                             {(cvData?.email || user.email) && (
-                                <a 
+                                <a
                                     href={`mailto:${cvData?.email || user.email}`}
                                     className="hover:text-gray-900 transition-colors"
                                 >
@@ -106,7 +109,7 @@ export default function MinimalDesign({
                                 </a>
                             )}
                             {cvData?.phone && (
-                                <a 
+                                <a
                                     href={`tel:${cvData.phone}`}
                                     className="hover:text-gray-900 transition-colors"
                                 >
@@ -120,7 +123,7 @@ export default function MinimalDesign({
 
                         {/* Bio */}
                         {(settings.bio || cvData?.summary) && (
-                            <motion.p 
+                            <motion.p
                                 initial={{ opacity: 0, x: -20 }}
                                 animate={{ opacity: 1, x: 0 }}
                                 transition={{ delay: 1.0, duration: 0.6 }}
@@ -139,7 +142,7 @@ export default function MinimalDesign({
 
             {/* Main content */}
             <main className="max-w-4xl mx-auto px-8 pb-16">
-                
+
                 {/* Expériences */}
                 {settings.show_experiences && cvData?.experiences?.length > 0 && (
                     <motion.section
@@ -151,30 +154,30 @@ export default function MinimalDesign({
                         <h2 className="text-2xl font-light text-gray-900 mb-8 tracking-wide">
                             Expérience
                         </h2>
-                        
+
                         <div className="space-y-8">
                             {cvData.experiences.map((exp, index) => (
-                                <motion.div 
+                                <motion.div
                                     key={index}
                                     initial={{ opacity: 0, y: 20 }}
                                     animate={{ opacity: 1, y: 0 }}
                                     transition={{ delay: 1.4 + index * 0.1, duration: 0.6 }}
                                     className="border-l-2 border-gray-100 pl-8 relative"
                                 >
-                                    <div 
+                                    <div
                                         className="absolute -left-1.5 w-3 h-3 rounded-full bg-white border-2"
                                         style={{ borderColor: primaryColor }}
                                     />
-                                    
+
                                     <div className="mb-6">
                                         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-2">
                                             <h3 className="text-xl font-medium text-gray-900">
                                                 {exp.name}
                                             </h3>
                                             <span className="text-sm text-gray-500 mt-1 sm:mt-0">
-                                                {exp.date_start && exp.date_end ? 
+                                                {exp.date_start && exp.date_end ?
                                                     `${new Date(exp.date_start).toLocaleDateString('fr-FR', { month: 'short', year: 'numeric' })} - ${new Date(exp.date_end).toLocaleDateString('fr-FR', { month: 'short', year: 'numeric' })}` :
-                                                    exp.date_start ? 
+                                                    exp.date_start ?
                                                         `${new Date(exp.date_start).toLocaleDateString('fr-FR', { month: 'short', year: 'numeric' })} - Présent` :
                                                         'Période non spécifiée'
                                                 }
@@ -221,7 +224,7 @@ export default function MinimalDesign({
 
                                         {exp.attachment_path && (
                                             <div className="mt-3">
-                                                <a 
+                                                <a
                                                     href={exp.attachment_path}
                                                     target="_blank"
                                                     rel="noopener noreferrer"
@@ -242,20 +245,20 @@ export default function MinimalDesign({
 
                 {/* Grid pour les autres sections */}
                 <div className="grid md:grid-cols-2 gap-16">
-                    
+
                     {/* Compétences */}
-                    {settings.show_competences && cvData?.skills?.length > 0 && (
+                    {settings.show_competences && cvData?.competences?.length > 0 && (
                         <motion.section
                             initial={{ opacity: 0, y: 30 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ delay: 1.6, duration: 0.8 }}
                         >
                             <h2 className="text-2xl font-light text-gray-900 mb-6 tracking-wide">
-                                Compétences
+                                {t('portfolio.sections.skills')}
                             </h2>
-                            
+
                             <div className="space-y-3">
-                                {cvData.skills.map((skill, index) => (
+                                {cvData.competences.map((competence, index) => (
                                     <motion.div
                                         key={index}
                                         initial={{ opacity: 0, x: -10 }}
@@ -263,12 +266,12 @@ export default function MinimalDesign({
                                         transition={{ delay: 1.8 + index * 0.05, duration: 0.4 }}
                                         className="flex items-center gap-2"
                                     >
-                                        <div 
+                                        <div
                                             className="w-1.5 h-1.5 rounded-full"
                                             style={{ backgroundColor: primaryColor }}
                                         />
                                         <span className="text-gray-700 text-sm">
-                                            {typeof skill === 'string' ? skill : skill.name || skill.skill}
+                                            {typeof competence === 'string' ? competence : competence.name || competence.skill}
                                         </span>
                                     </motion.div>
                                 ))}
@@ -286,7 +289,7 @@ export default function MinimalDesign({
                             <h2 className="text-2xl font-light text-gray-900 mb-6 tracking-wide">
                                 Intérêts
                             </h2>
-                            
+
                             <div className="space-y-3">
                                 {cvData.hobbies.map((hobby, index) => (
                                     <motion.div
@@ -296,7 +299,7 @@ export default function MinimalDesign({
                                         transition={{ delay: 2.0 + index * 0.05, duration: 0.4 }}
                                         className="flex items-center gap-2"
                                     >
-                                        <div 
+                                        <div
                                             className="w-1.5 h-1.5 rounded-full"
                                             style={{ backgroundColor: primaryColor }}
                                         />
@@ -319,7 +322,7 @@ export default function MinimalDesign({
                         className="mt-16 pt-12 border-t border-gray-100"
                     >
                         <h2 className="text-2xl font-light text-gray-900 mb-6 tracking-wide">
-                            À propos
+                            {t('portfolio.sections.summary')}
                         </h2>
                         <p className="text-gray-700 leading-relaxed">
                             {safeText(cvData.summary) || safeText(cvData?.summaries?.[0])}
@@ -336,12 +339,12 @@ export default function MinimalDesign({
                         className="mt-16 pt-12 border-t border-gray-100"
                     >
                         <h2 className="text-2xl font-light text-gray-900 mb-8" style={{ color: primaryColor }}>
-                            Langues
+                            {t('portfolio.sections.languages')}
                         </h2>
-                        
+
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             {cvData.languages.map((lang, index) => (
-                                <motion.div 
+                                <motion.div
                                     key={index}
                                     initial={{ opacity: 0, y: 20 }}
                                     animate={{ opacity: 1, y: 0 }}
@@ -359,7 +362,7 @@ export default function MinimalDesign({
                         </div>
                     </motion.section>
                 )}
-                
+
                 {/* Contact détaillé si activé */}
                 {settings.show_contact_info && (cvData?.email || cvData?.phone || cvData?.address) && (
                     <motion.section
@@ -369,14 +372,14 @@ export default function MinimalDesign({
                         className="mt-16 pt-12 border-t border-gray-100"
                     >
                         <h2 className="text-2xl font-light text-gray-900 mb-6 tracking-wide">
-                            Contact
+                            {t('portfolio.sections.contact')}
                         </h2>
-                        
+
                         <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-6">
                             {(cvData?.email || user.email) && (
                                 <div className="space-y-1">
                                     <p className="text-xs uppercase tracking-wide text-gray-400">Email</p>
-                                    <a 
+                                    <a
                                         href={`mailto:${cvData?.email || user.email}`}
                                         className="text-gray-700 hover:text-gray-900 transition-colors"
                                     >
@@ -387,7 +390,7 @@ export default function MinimalDesign({
                             {cvData?.phone && (
                                 <div className="space-y-1">
                                     <p className="text-xs uppercase tracking-wide text-gray-400">Téléphone</p>
-                                    <a 
+                                    <a
                                         href={`tel:${cvData.phone}`}
                                         className="text-gray-700 hover:text-gray-900 transition-colors"
                                     >
@@ -409,7 +412,7 @@ export default function MinimalDesign({
             {/* Footer minimaliste */}
             <footer className="border-t border-gray-100 mt-16">
                 <div className="max-w-4xl mx-auto px-8 py-8">
-                    <motion.p 
+                    <motion.p
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                         transition={{ delay: 2.4, duration: 0.8 }}

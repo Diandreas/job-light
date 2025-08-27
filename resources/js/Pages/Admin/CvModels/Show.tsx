@@ -1,10 +1,9 @@
-import { Head, Link, usePage } from '@inertiajs/react';
+import { Head, Link } from '@inertiajs/react';
 import AdminLayout from '@/Layouts/AdminLayout';
 import { Card, CardContent, CardHeader, CardTitle } from '@/Components/ui/card';
 import { Button } from '@/Components/ui/button';
 import { Badge } from '@/Components/ui/badge';
 import { ArrowLeft, Edit, FileText, DollarSign, Image } from 'lucide-react';
-import { PageProps } from '@/types';
 
 interface CvModel {
     id: number;
@@ -22,8 +21,6 @@ interface Props {
 }
 
 export default function Show({ cvModel }: Props) {
-    const { auth } = usePage<PageProps>().props;
-
     return (
         <AdminLayout>
             <Head title={`CV Model: ${cvModel.name}`} />

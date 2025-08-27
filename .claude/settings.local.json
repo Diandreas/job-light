@@ -4,7 +4,13 @@
       "Bash(grep:*)",
       "Bash(npm run build:*)",
       "Bash(npm run dev:*)",
-      "Bash(find:*)"
+      "Bash(find:*)",
+      "Bash(php artisan make:model:*)",
+      "Bash(php artisan make:service:*)",
+      "Bash(php artisan make:controller:*)",
+      "Bash(php artisan make:policy:*)",
+      "Bash(php artisan:*)",
+      "Bash(npm install:*)"
     ],
     "deny": [],
     "ask": []

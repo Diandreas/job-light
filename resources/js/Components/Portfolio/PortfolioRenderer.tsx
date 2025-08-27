@@ -1,5 +1,6 @@
 import React, { Suspense } from 'react';
 import { Head } from '@inertiajs/react';
+import { useTranslation } from 'react-i18next';
 import { getDesignComponent, getDesignMetadata, DESIGN_METADATA } from './Designs';
 import { Button } from "@/Components/ui/button";
 import { Card, CardContent } from "@/Components/ui/card";
@@ -15,41 +16,49 @@ interface PortfolioRendererProps {
 }
 
 // Loading component
-const PortfolioLoader = () => (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 to-slate-100">
-        <div className="text-center">
-            <motion.div
-                animate={{ rotate: 360 }}
-                transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-                className="w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full mx-auto mb-4"
-            />
-            <p className="text-gray-600">Chargement du portfolio...</p>
+const PortfolioLoader = () => {
+    const { t } = useTranslation();
+    return (
+        <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 to-slate-100">
+            <div className="text-center">
+                <motion.div
+                    animate={{ rotate: 360 }}
+                    transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                    className="w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full mx-auto mb-4"
+                />
+                <p className="text-gray-600">{t('portfolio.sections.loading')}</p>
+            </div>
         </div>
-    </div>
-);
+    );
+};
 
 // Error fallback component
-const PortfolioError = ({ error, retry }: { error?: Error; retry?: () => void }) => (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-red-50 to-red-100">
-        <Card className="max-w-md mx-4">
-            <CardContent className="p-8 text-center">
-                <div className="text-red-500 text-6xl mb-4">⚠️</div>
-                <h2 className="text-xl font-bold text-red-800 mb-4">Erreur de chargement</h2>
-                <p className="text-red-600 mb-6">
-                    {error?.message || 'Une erreur est survenue lors du chargement du portfolio.'}
-                </p>
-                {retry && (
-                    <Button onClick={retry} variant="outline">
-                        Réessayer
-                    </Button>
-                )}
-            </CardContent>
-        </Card>
-    </div>
-);
+const PortfolioError = ({ error, retry }: { error?: Error; retry?: () => void }) => {
+    const { t } = useTranslation();
+    return (
+        <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-red-50 to-red-100">
+            <Card className="max-w-md mx-4">
+                <CardContent className="p-8 text-center">
+                    <div className="text-red-500 text-6xl mb-4">⚠️</div>
+                    <h2 className="text-xl font-bold text-red-800 mb-4">{t('portfolio.sections.error.title')}</h2>
+                    <p className="text-red-600 mb-6">
+                        {error?.message || t('portfolio.sections.error.message')}
+                    </p>
+                    {retry && (
+                        <Button onClick={retry} variant="outline">
+                            {t('portfolio.sections.error.retry')}
+                        </Button>
+                    )}
+                </CardContent>
+            </Card>
+        </div>
+    );
+};
 
 // QR Code Generator component
 const QRCodeGenerator = ({ url, isOpen, onClose }: { url: string; isOpen: boolean; onClose: () => void }) => {
+    const { t } = useTranslation();
+
     if (!isOpen) return null;
 
     const qrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(url)}`;
@@ -81,13 +90,13 @@ const QRCodeGenerator = ({ url, isOpen, onClose }: { url: string; isOpen: boolea
                 onClick={(e) => e.stopPropagation()}
             >
                 <div className="text-center">
-                    <h3 className="text-xl font-bold mb-4">Partager le Portfolio</h3>
-                    
+                    <h3 className="text-xl font-bold mb-4">{t('portfolio.share.title')}</h3>
+
                     {/* QR Code */}
                     <div className="mb-6">
-                        <img 
-                            src={qrCodeUrl} 
-                            alt="QR Code" 
+                        <img
+                            src={qrCodeUrl}
+                            alt="QR Code"
                             className="mx-auto rounded-lg shadow-md mb-3"
                         />
                         <p className="text-xs text-gray-500 break-all px-2">{url}</p>
@@ -100,28 +109,28 @@ const QRCodeGenerator = ({ url, isOpen, onClose }: { url: string; isOpen: boolea
                             onClick={() => shareOnPlatform('linkedin')}
                             className="bg-blue-600 hover:bg-blue-700 text-white"
                         >
-                            LinkedIn
+                            {t('portfolio.share.linkedin')}
                         </Button>
                         <Button
                             size="sm"
                             onClick={() => shareOnPlatform('twitter')}
                             className="bg-sky-500 hover:bg-sky-600 text-white"
                         >
-                            Twitter
+                            {t('portfolio.share.twitter')}
                         </Button>
                         <Button
                             size="sm"
                             onClick={() => shareOnPlatform('facebook')}
                             className="bg-blue-700 hover:bg-blue-800 text-white"
                         >
-                            Facebook
+                            {t('portfolio.share.facebook')}
                         </Button>
                         <Button
                             size="sm"
                             onClick={() => shareOnPlatform('whatsapp')}
                             className="bg-green-600 hover:bg-green-700 text-white"
                         >
-                            WhatsApp
+                            {t('portfolio.share.whatsapp')}
                         </Button>
                     </div>
 
@@ -132,7 +141,7 @@ const QRCodeGenerator = ({ url, isOpen, onClose }: { url: string; isOpen: boolea
                         onClick={() => navigator.clipboard.writeText(url)}
                         className="w-full"
                     >
-                        Copier le lien
+                        {t('portfolio.controls.copyLink')}
                     </Button>
                 </div>
             </motion.div>
@@ -141,54 +150,58 @@ const QRCodeGenerator = ({ url, isOpen, onClose }: { url: string; isOpen: boolea
 };
 
 // Portfolio controls component
-const PortfolioControls = ({ 
-    user, 
-    portfolioUrl, 
-    onShowQR, 
-    onDownloadCV 
-}: { 
-    user: any; 
-    portfolioUrl: string; 
-    onShowQR: () => void; 
+const PortfolioControls = ({
+    user,
+    portfolioUrl,
+    onShowQR,
+    onDownloadCV
+}: {
+    user: any;
+    portfolioUrl: string;
+    onShowQR: () => void;
     onDownloadCV?: () => void;
-}) => (
-    <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="fixed bottom-6 right-6 z-40 flex flex-col gap-2"
-    >
-        <Button
-            size="sm"
-            onClick={onShowQR}
-            className="shadow-lg hover:shadow-xl transition-all duration-300"
-            style={{ backgroundColor: '#3b82f6' }}
+}) => {
+    const { t } = useTranslation();
+
+    return (
+        <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="fixed bottom-6 right-6 z-40 flex flex-col gap-2"
         >
-            <QrCode className="w-4 h-4 mr-2" />
-            Partager
-        </Button>
-        
-        {onDownloadCV && (
             <Button
                 size="sm"
-                onClick={onDownloadCV}
+                onClick={onShowQR}
+                className="shadow-lg hover:shadow-xl transition-all duration-300"
+                style={{ backgroundColor: '#3b82f6' }}
+            >
+                <QrCode className="w-4 h-4 mr-2" />
+                {t('portfolio.controls.share')}
+            </Button>
+
+            {onDownloadCV && (
+                <Button
+                    size="sm"
+                    onClick={onDownloadCV}
+                    variant="outline"
+                    className="shadow-lg hover:shadow-xl transition-all duration-300 bg-white"
+                >
+                    <Download className="w-4 h-4 mr-2" />
+                    {t('portfolio.controls.downloadCV')}
+                </Button>
+            )}
+
+            <Button
+                size="sm"
+                onClick={() => window.open(portfolioUrl, '_blank')}
                 variant="outline"
                 className="shadow-lg hover:shadow-xl transition-all duration-300 bg-white"
             >
-                <Download className="w-4 h-4 mr-2" />
-                CV PDF
+                <ExternalLink className="w-4 h-4" />
             </Button>
-        )}
-        
-        <Button
-            size="sm"
-            onClick={() => window.open(portfolioUrl, '_blank')}
-            variant="outline"
-            className="shadow-lg hover:shadow-xl transition-all duration-300 bg-white"
-        >
-            <ExternalLink className="w-4 h-4" />
-        </Button>
-    </motion.div>
-);
+        </motion.div>
+    );
+};
 
 export default function PortfolioRenderer({
     user,
@@ -197,6 +210,7 @@ export default function PortfolioRenderer({
     isPreview = false,
     showControls = true
 }: PortfolioRendererProps) {
+    const { t } = useTranslation();
     const [showQR, setShowQR] = React.useState(false);
     const [error, setError] = React.useState<Error | null>(null);
 
@@ -206,9 +220,9 @@ export default function PortfolioRenderer({
             <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-red-50 to-red-100">
                 <div className="text-center">
                     <div className="text-red-500 text-6xl mb-4">⚠️</div>
-                    <h2 className="text-xl font-bold text-red-800 mb-4">Erreur de données</h2>
+                    <h2 className="text-xl font-bold text-red-800 mb-4">{t('portfolio.sections.error.dataError')}</h2>
                     <p className="text-red-600 mb-6">
-                        Les données utilisateur sont manquantes. Veuillez rafraîchir la page.
+                        {t('portfolio.sections.error.dataMissing')}
                     </p>
                     <div className="text-sm text-gray-500">
                         Debug: user prop is {typeof user} - {JSON.stringify(user)}
@@ -288,8 +302,8 @@ export default function PortfolioRenderer({
 
     // SEO metadata
     const seoTitle = settings?.seo_title || `${user.name || 'Utilisateur'} - Portfolio Professionnel`;
-    const summaryText = typeof processedCvData?.summary === 'string' 
-        ? processedCvData.summary 
+    const summaryText = typeof processedCvData?.summary === 'string'
+        ? processedCvData.summary
         : processedCvData?.summaries?.[0]?.description || '';
     const seoDescription = settings?.seo_description || (summaryText && summaryText.substring(0, 155)) || `Découvrez le portfolio professionnel de ${user.name || 'cet utilisateur'}`;
     const profileImage = processedCvData?.profile_picture || user.photo;
@@ -304,7 +318,7 @@ export default function PortfolioRenderer({
             <Head>
                 <title>{seoTitle}</title>
                 <meta name="description" content={seoDescription} />
-                
+
                 {/* Open Graph */}
                 <meta property="og:title" content={seoTitle} />
                 <meta property="og:description" content={seoDescription} />
@@ -312,18 +326,18 @@ export default function PortfolioRenderer({
                 <meta property="og:url" content={portfolioUrl} />
                 {profileImage && <meta property="og:image" content={profileImage} />}
                 <meta property="og:site_name" content="JobLight Portfolio" />
-                
+
                 {/* Twitter Card */}
                 <meta name="twitter:card" content="summary_large_image" />
                 <meta name="twitter:title" content={seoTitle} />
                 <meta name="twitter:description" content={seoDescription} />
                 {profileImage && <meta name="twitter:image" content={profileImage} />}
-                
+
                 {/* Additional meta */}
                 <meta name="author" content={user.name || 'Utilisateur'} />
                 <meta name="robots" content="index, follow" />
                 <link rel="canonical" href={portfolioUrl} />
-                
+
                 {/* Schema.org structured data */}
                 <script type="application/ld+json">
                     {JSON.stringify({

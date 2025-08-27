@@ -1561,5 +1561,114 @@
             "title": "Coming Soon!",
             "description": "We're working hard to bring you our new job portal feature. Stay tuned for exciting opportunities in your career journey!"
         }
+    },
+    "portfolio": {
+        "sections": {
+            "experiences": "Professional Experience",
+            "summary": "About",
+            "skills": "Skills",
+            "hobbies": "Interests",
+            "languages": "Languages",
+            "contact": "Contact",
+            "loading": "Loading portfolio...",
+            "error": {
+                "title": "Loading Error",
+                "message": "An error occurred while loading the portfolio.",
+                "retry": "Retry",
+                "dataError": "Data Error",
+                "dataMissing": "User data is missing. Please refresh the page."
+            }
+        },
+        "controls": {
+            "share": "Share",
+            "downloadCV": "CV PDF",
+            "openPortfolio": "Open portfolio",
+            "copyLink": "Copy link"
+        },
+        "share": {
+            "title": "Share Portfolio",
+            "qrCode": "QR Code",
+            "socialSharing": "Social media sharing",
+            "linkedin": "LinkedIn",
+            "twitter": "Twitter",
+            "facebook": "Facebook",
+            "whatsapp": "WhatsApp"
+        },
+        "footer": {
+            "generatedBy": "Professional portfolio generated with JobLight"
+        },
+        "dates": {
+            "present": "Present",
+            "periodNotSpecified": "Period not specified",
+            "to": "to"
+        },
+        "references": {
+            "title": "References:",
+            "function": "Function",
+            "phone": "Phone"
+        },
+        "attachments": {
+            "viewDocument": "View document"
+        },
+        "index": {
+            "title": "Professional Portfolio",
+            "premium": "Premium",
+            "share": "Share",
+            "customize": "Customize",
+            "premium_activated": "Premium Activated",
+            "premium_description": "Unlock all premium features and create stunning portfolios",
+            "quick_actions": "Quick Actions",
+            "manage_portfolio_description": "Manage your portfolio settings and appearance",
+            "public_link_label": "Public Link",
+            "customize_design": "Customize Design",
+            "view_public_portfolio": "View Public Portfolio",
+            "manage_sections": "Manage Sections",
+            "live_preview": "Live Preview",
+            "online": "Online",
+            "preview_description": "See how your portfolio looks to visitors in real-time",
+            "portfolio_preview_title": "Portfolio Preview",
+            "premium_features": "Premium Features",
+            "premium_features_description": "Access advanced customization options and premium templates",
+            "link_copied_title": "Link Copied",
+            "link_copied_description": "Your portfolio link has been copied to clipboard",
+            "error": "Error",
+            "copy_error_description": "Failed to copy link to clipboard",
+            "copied": "Copied",
+            "stats": {
+                "responsive": "Responsive",
+                "templates_pro": "Pro Templates",
+                "sections": "Sections",
+                "ultra_fast": "Ultra Fast"
+            },
+            "start_customization": "Start Customization",
+            "features": {
+                "templates": "Premium Templates",
+                "templates_desc": "Choose from our collection of professional portfolio templates",
+                "custom_sections": "Custom Sections",
+                "custom_sections_desc": "Create and organize sections that match your needs",
+                "professional_photo": "Professional Photo",
+                "professional_photo_desc": "Add high-quality photos to showcase your work",
+                "smooth_animations": "Smooth Animations",
+                "smooth_animations_desc": "Beautiful transitions and animations for better user experience",
+                "responsive": "Responsive Design",
+                "responsive_desc": "Perfect display on all devices and screen sizes",
+                "performance": "High Performance",
+                "performance_desc": "Fast loading and smooth scrolling experience"
+            }
+        },
+        "edit": {
+            "portfolio_express": "Portfolio Express",
+            "quick_config": "Quick Configuration",
+            "preview": "Preview",
+            "service_management": "Service Management",
+            "service_management_description": "Manage and organize your professional services",
+            "my_services": "My Services",
+            "your_services": "Your Services",
+            "service_configuration": "Service Configuration",
+            "service_reorder_tip": "Drag and drop to reorder your services"
+        },
+        "groups": {
+            "title": "Portfolio Groups"
+        }
     }
 }

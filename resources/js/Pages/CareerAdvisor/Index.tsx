@@ -103,19 +103,19 @@ const useInputBehavior = () => {
 
 // Composant d'input amélioré réutilisable
 const ChatInput = ({
-                       value,
-                       onChange,
-                       onSubmit,
-                       placeholder,
-                       disabled,
-                       isLoading,
-                       cost,
-                       service,
-                       showSuggestions = false,
-                       suggestions = [],
-                       variant = "default", // "default" | "minimal" | "floating"
-                       onKeyDown
-                   }) => {
+    value,
+    onChange,
+    onSubmit,
+    placeholder,
+    disabled,
+    isLoading,
+    cost,
+    service,
+    showSuggestions = false,
+    suggestions = [],
+    variant = "default", // "default" | "minimal" | "floating"
+    onKeyDown
+}) => {
     const { inputRef, handleInputChange } = useInputBehavior();
     const [isFocused, setIsFocused] = useState(false);
     const { t } = useTranslation();
@@ -155,9 +155,8 @@ const ChatInput = ({
                     />
 
                     {/* Focus indicator */}
-                    <div className={`absolute inset-0 rounded-xl pointer-events-none transition-opacity duration-200 ${
-                        isFocused ? 'opacity-100' : 'opacity-0'
-                    } bg-gradient-to-r from-amber-500/5 to-purple-500/5`} />
+                    <div className={`absolute inset-0 rounded-xl pointer-events-none transition-opacity duration-200 ${isFocused ? 'opacity-100' : 'opacity-0'
+                        } bg-gradient-to-r from-amber-500/5 to-purple-500/5`} />
 
                     {/* Boutons d'action */}
                     <div className="absolute right-3 bottom-3 flex gap-2">
@@ -178,11 +177,10 @@ const ChatInput = ({
                             type="submit"
                             size="sm"
                             disabled={disabled || !value.trim()}
-                            className={`h-8 w-8 p-0 rounded-lg shadow-md transition-all transform ${
-                                disabled || !value.trim()
-                                    ? 'opacity-50 cursor-not-allowed'
-                                    : 'bg-gradient-to-r from-amber-500 to-purple-500 hover:from-amber-600 hover:to-purple-600 hover:shadow-lg hover:scale-105 active:scale-95'
-                            }`}
+                            className={`h-8 w-8 p-0 rounded-lg shadow-md transition-all transform ${disabled || !value.trim()
+                                ? 'opacity-50 cursor-not-allowed'
+                                : 'bg-gradient-to-r from-amber-500 to-purple-500 hover:from-amber-600 hover:to-purple-600 hover:shadow-lg hover:scale-105 active:scale-95'
+                                }`}
                         >
                             {isLoading ? (
                                 <motion.div
@@ -204,13 +202,12 @@ const ChatInput = ({
                                 <motion.div
                                     initial={{ width: 0 }}
                                     animate={{ width: `${(value.length / 2000) * 100}%` }}
-                                    className={`h-0.5 rounded-full transition-colors ${
-                                        value.length > 1800
-                                            ? 'bg-red-500'
-                                            : value.length > 1500
-                                                ? 'bg-yellow-500'
-                                                : 'bg-amber-500'
-                                    }`}
+                                    className={`h-0.5 rounded-full transition-colors ${value.length > 1800
+                                        ? 'bg-red-500'
+                                        : value.length > 1500
+                                            ? 'bg-yellow-500'
+                                            : 'bg-amber-500'
+                                        }`}
                                 />
                             </div>
                         </div>
@@ -237,9 +234,8 @@ const ChatInput = ({
                                             <motion.span
                                                 initial={{ opacity: 0, x: -10 }}
                                                 animate={{ opacity: 1, x: 0 }}
-                                                className={`flex items-center gap-1 ${
-                                                    value.length > 1800 ? 'text-red-500' : 'text-yellow-500'
-                                                }`}
+                                                className={`flex items-center gap-1 ${value.length > 1800 ? 'text-red-500' : 'text-yellow-500'
+                                                    }`}
                                             >
                                                 <Clock className="h-3 w-3" />
                                                 {value.length > 1800 ? 'Limite atteinte' : 'Proche de la limite'}
@@ -298,11 +294,11 @@ const EnhancedServiceCard = ({ service, isSelected, onClick }) => {
             onClick={isComingSoon ? undefined : onClick}
             className={`cursor-${isComingSoon ? 'not-allowed' : 'pointer'} p-3.5 rounded-lg border transition-all relative overflow-hidden
                 ${isSelected
-                ? 'border-amber-400 dark:border-amber-500 bg-gradient-to-r from-amber-50 to-purple-50 dark:from-amber-500/10 dark:to-purple-500/10 shadow-sm'
-                : isComingSoon
-                    ? 'border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800'
-                    : 'border-gray-200 dark:border-gray-700 hover:border-amber-300/70 dark:hover:border-amber-500/30 bg-white dark:bg-gray-800 hover:bg-gradient-to-r hover:from-amber-50/50 hover:to-purple-50/50 dark:hover:from-amber-500/5 dark:hover:to-purple-500/5'
-            }`}
+                    ? 'border-amber-400 dark:border-amber-500 bg-gradient-to-r from-amber-50 to-purple-50 dark:from-amber-500/10 dark:to-purple-500/10 shadow-sm'
+                    : isComingSoon
+                        ? 'border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800'
+                        : 'border-gray-200 dark:border-gray-700 hover:border-amber-300/70 dark:hover:border-amber-500/30 bg-white dark:bg-gray-800 hover:bg-gradient-to-r hover:from-amber-50/50 hover:to-purple-50/50 dark:hover:from-amber-500/5 dark:hover:to-purple-500/5'
+                }`}
         >
             <div className="flex items-start justify-between mb-2.5">
                 <div className={`p-1.5 rounded-lg bg-gradient-to-r ${isComingSoon ? 'from-gray-400 to-gray-500 dark:from-gray-600 dark:to-gray-700' : 'from-amber-500 to-purple-500 dark:from-amber-400 dark:to-purple-400'}`}>
@@ -314,7 +310,7 @@ const EnhancedServiceCard = ({ service, isSelected, onClick }) => {
                             <div className={`flex items-center gap-1 text-xs font-medium ${isComingSoon
                                 ? 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400'
                                 : 'bg-amber-100 dark:bg-amber-500/20 text-amber-700 dark:text-amber-300'
-                            } px-2 py-0.5 rounded-full`}>
+                                } px-2 py-0.5 rounded-full`}>
                                 <Coins className="h-3 w-3" />
                                 <span>{service.cost}</span>
                             </div>
@@ -364,7 +360,7 @@ const EnhancedMobileServiceCard = ({ service, isSelected, onClick }) => {
                 : isComingSoon
                     ? 'border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800'
                     : 'hover:bg-amber-50/50 dark:hover:bg-amber-500/5 border-transparent dark:hover:border-amber-500/20 bg-white dark:bg-gray-800'
-            }`}
+                }`}
         >
             <div className={`p-1.5 rounded-lg bg-gradient-to-r ${isComingSoon ? 'from-gray-400 to-gray-500 dark:from-gray-600 dark:to-gray-700' : 'from-amber-500 to-purple-500 dark:from-amber-400 dark:to-purple-400'}`}>
                 <service.icon className="h-3.5 w-3.5 text-white" />
@@ -444,13 +440,13 @@ const ChatHistoryCard = ({ chat, isActive, onSelect, onDelete }) => {
             className={`relative group p-2.5 rounded-lg cursor-pointer transition-all border ${isActive
                 ? 'bg-gradient-to-r from-amber-50 to-purple-50 dark:from-amber-900/20 dark:to-purple-900/20 border-amber-300 dark:border-amber-600 shadow-sm'
                 : 'bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-800 border-gray-200 dark:border-gray-700 hover:border-amber-200 dark:hover:border-amber-800'
-            }`}
+                }`}
             onClick={() => onSelect(chat)}
         >
             <div className="pr-6">
                 <div className="flex items-start gap-1.5 mb-1">
                     <div className={`w-1 h-1 rounded-full mt-1.5 ${isActive ? 'bg-amber-500' : 'bg-gray-300 dark:bg-gray-600'
-                    }`} />
+                        }`} />
                     <h3 className="text-xs font-medium text-gray-900 dark:text-gray-100 line-clamp-1 leading-tight" title={chat.preview}>
                         {truncatedPreview}
                     </h3>
@@ -1128,7 +1124,7 @@ export default function Index({ auth, userInfo, chatHistories }) {
                                                                 className={`w-10 h-10 flex items-center justify-center rounded-full cursor-pointer ${activeChat?.context_id === chat.context_id
                                                                     ? 'bg-amber-100 dark:bg-amber-900/30 text-amber-600 dark:text-amber-300 border border-amber-300 dark:border-amber-600'
                                                                     : 'bg-white dark:bg-gray-800 text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-700 border border-gray-200 dark:border-gray-700'
-                                                                } shadow-sm transition-all duration-200`}
+                                                                    } shadow-sm transition-all duration-200`}
                                                             >
                                                                 <MessageSquare className="h-4 w-4" />
                                                             </motion.div>
@@ -1290,7 +1286,7 @@ export default function Index({ auth, userInfo, chatHistories }) {
                                             transition={{ duration: 0.4, type: "spring" }}
                                             className="mb-3"
                                         >
-                                            <div className="w-20 h-20 bg-gradient-to-r from-amber-500 to-purple-500 rounded-xl mx-auto flex items-center justify-center mb-2.5 shadow-md overflow-hidden">
+                                            <div className="w-20 h-20   rounded-xl mx-auto flex items-center justify-center mb-2.5 shadow-md overflow-hidden">
                                                 <img src="/mascot/mas.png" alt="AI Assistant" className="w-16 h-16 object-contain" />
                                             </div>
                                         </motion.div>

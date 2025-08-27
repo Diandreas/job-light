@@ -27,6 +27,8 @@ class PortfolioSettings extends Model
         'show_hobbies',
         'show_summary',
         'show_contact_info',
+        'show_services',
+        'currency',
         // Nouveaux champs
         'profile_photo',
         'banner_image',
@@ -50,6 +52,7 @@ class PortfolioSettings extends Model
         'show_contact_form' => 'boolean',
         'show_animations' => 'boolean',
         'show_social_links' => 'boolean',
+        'show_services' => 'boolean',
         'section_order' => 'array',
         'social_links' => 'array',
         'border_radius' => 'integer',

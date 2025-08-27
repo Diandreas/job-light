@@ -1,9 +1,10 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { 
-    User, Briefcase, Award, Heart, FileText, Contact, 
+import { useTranslation } from 'react-i18next';
+import {
+    User, Briefcase, Award, Heart, FileText, Contact,
     Mail, Phone, MapPin, Github, Linkedin, ExternalLink,
-    Globe, Calendar, Sparkles, Zap
+    Globe, Calendar, Sparkles, Zap, Target
 } from 'lucide-react';
 import { Card, CardContent } from "@/Components/ui/card";
 import { Badge } from "@/Components/ui/badge";
@@ -26,21 +27,22 @@ const safeText = (value: any): string => {
     return '';
 };
 
-export default function CreativeDesign({ 
-    user, 
-    cvData, 
-    settings, 
-    isPreview = false 
+export default function CreativeDesign({
+    user,
+    cvData,
+    settings,
+    isPreview = false
 }: CreativeDesignProps) {
-    
+    const { t } = useTranslation();
+
     const profilePhoto = user.photo || cvData?.profile_picture;
     const primaryColor = settings.primary_color || '#f59e0b';
     const secondaryColor = settings.secondary_color || '#8b5cf6';
-    
+
     return (
-        <div 
+        <div
             className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-orange-50"
-            style={{ 
+            style={{
                 '--primary-color': primaryColor,
                 '--secondary-color': secondaryColor,
                 '--primary-rgb': hexToRgb(primaryColor),
@@ -50,43 +52,43 @@ export default function CreativeDesign({
             {/* Animated Background Elements */}
             <div className="fixed inset-0 overflow-hidden pointer-events-none">
                 <motion.div
-                    animate={{ 
+                    animate={{
                         x: [0, 100, 0],
                         y: [0, -100, 0],
                         rotate: [0, 180, 360]
                     }}
-                    transition={{ 
+                    transition={{
                         duration: 20,
                         repeat: Infinity,
-                        ease: "linear" 
+                        ease: "linear"
                     }}
                     className="absolute top-1/4 left-1/4 w-32 h-32 rounded-full opacity-10"
                     style={{ backgroundColor: primaryColor }}
                 />
                 <motion.div
-                    animate={{ 
+                    animate={{
                         x: [0, -50, 0],
                         y: [0, 100, 0],
                         rotate: [0, -180, -360]
                     }}
-                    transition={{ 
+                    transition={{
                         duration: 25,
                         repeat: Infinity,
-                        ease: "linear" 
+                        ease: "linear"
                     }}
                     className="absolute top-3/4 right-1/3 w-24 h-24 rounded-full opacity-10"
                     style={{ backgroundColor: secondaryColor }}
                 />
                 <motion.div
-                    animate={{ 
+                    animate={{
                         x: [0, -80, 0],
                         y: [0, -50, 0],
                         scale: [1, 1.2, 1]
                     }}
-                    transition={{ 
+                    transition={{
                         duration: 15,
                         repeat: Infinity,
-                        ease: "linear" 
+                        ease: "linear"
                     }}
                     className="absolute top-1/2 right-1/4 w-16 h-16 rounded-full opacity-15"
                     style={{ backgroundColor: primaryColor }}
@@ -94,7 +96,7 @@ export default function CreativeDesign({
             </div>
 
             {/* Header Section */}
-            <motion.section 
+            <motion.section
                 initial={{ opacity: 0, scale: 0.9 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ duration: 0.8, type: "spring" }}
@@ -102,13 +104,13 @@ export default function CreativeDesign({
             >
                 <div className="max-w-6xl mx-auto px-6 py-16">
                     <div className="text-center">
-                        
+
                         {/* Photo de profil avec effet créatif */}
                         <motion.div
                             initial={{ scale: 0, rotate: -180 }}
                             animate={{ scale: 1, rotate: 0 }}
-                            transition={{ 
-                                delay: 0.3, 
+                            transition={{
+                                delay: 0.3,
                                 duration: 0.8,
                                 type: "spring",
                                 bounce: 0.4
@@ -116,15 +118,15 @@ export default function CreativeDesign({
                             className="relative inline-block mb-8"
                         >
                             <div className="relative">
-                                <div 
+                                <div
                                     className="w-40 h-40 md:w-48 md:h-48 rounded-full overflow-hidden border-4 border-white shadow-2xl relative z-10"
                                     style={{
                                         background: `linear-gradient(135deg, ${primaryColor}, ${secondaryColor})`
                                     }}
                                 >
                                     {profilePhoto ? (
-                                        <img 
-                                            src={profilePhoto} 
+                                        <img
+                                            src={profilePhoto}
                                             alt={`${user.name} - Photo de profil`}
                                             className="w-full h-full object-cover"
                                         />
@@ -134,7 +136,7 @@ export default function CreativeDesign({
                                         </div>
                                     )}
                                 </div>
-                                
+
                                 {/* Cercles décoratifs animés */}
                                 <motion.div
                                     animate={{ rotate: 360 }}
@@ -152,7 +154,7 @@ export default function CreativeDesign({
                         </motion.div>
 
                         {/* Nom avec animation de typing */}
-                        <motion.h1 
+                        <motion.h1
                             initial={{ opacity: 0, y: 30 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ delay: 0.6, duration: 0.8 }}
@@ -166,7 +168,7 @@ export default function CreativeDesign({
                         >
                             {user.name || `${cvData?.first_name || ''} ${cvData?.last_name || ''}`.trim()}
                         </motion.h1>
-                        
+
                         {/* Titre professionnel avec effet shimmer */}
                         {(settings.tagline || cvData?.professional_title) && (
                             <motion.div
@@ -175,7 +177,7 @@ export default function CreativeDesign({
                                 transition={{ delay: 0.8, duration: 0.6 }}
                                 className="relative inline-block mb-6"
                             >
-                                <div 
+                                <div
                                     className="px-6 py-3 rounded-full text-white font-semibold text-lg md:text-xl shadow-lg"
                                     style={{
                                         background: `linear-gradient(135deg, ${primaryColor}, ${secondaryColor})`
@@ -189,7 +191,7 @@ export default function CreativeDesign({
 
                         {/* Bio avec animation fade-in */}
                         {(settings.bio || cvData?.summary) && (
-                            <motion.p 
+                            <motion.p
                                 initial={{ opacity: 0, y: 20 }}
                                 animate={{ opacity: 1, y: 0 }}
                                 transition={{ delay: 1.0, duration: 0.8 }}
@@ -200,7 +202,7 @@ export default function CreativeDesign({
                         )}
 
                         {/* Contact rapide avec boutons colorés */}
-                        <motion.div 
+                        <motion.div
                             initial={{ opacity: 0, y: 30 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ delay: 1.2, duration: 0.6 }}
@@ -216,7 +218,7 @@ export default function CreativeDesign({
                                 >
                                     <a href={`mailto:${cvData?.email || user.email}`}>
                                         <Mail className="w-4 h-4 mr-2" />
-                                        Me contacter
+                                        {t('portfolio.sections.contact')}
                                     </a>
                                 </Button>
                             )}
@@ -225,7 +227,7 @@ export default function CreativeDesign({
                                     asChild
                                     variant="outline"
                                     className="border-2 hover:bg-white/90 transition-all duration-300 transform hover:scale-105"
-                                    style={{ 
+                                    style={{
                                         borderColor: primaryColor,
                                         color: primaryColor
                                     }}
@@ -243,7 +245,7 @@ export default function CreativeDesign({
 
             {/* Main Content avec cartes créatives */}
             <div className="max-w-6xl mx-auto px-6 py-12 relative z-10">
-                
+
                 {/* Expériences avec timeline créative */}
                 {settings.show_experiences && cvData?.experiences?.length > 0 && (
                     <motion.section
@@ -264,19 +266,19 @@ export default function CreativeDesign({
                                 Mon Parcours
                             </motion.div>
                         </div>
-                        
+
                         <div className="relative">
                             {/* Timeline line */}
-                            <div 
+                            <div
                                 className="absolute left-1/2 transform -translate-x-1/2 w-1 h-full rounded-full"
                                 style={{
                                     background: `linear-gradient(to bottom, ${primaryColor}, ${secondaryColor})`
                                 }}
                             />
-                            
+
                             <div className="space-y-12">
                                 {cvData.experiences.map((exp, index) => (
-                                    <motion.div 
+                                    <motion.div
                                         key={index}
                                         initial={{ opacity: 0, x: index % 2 === 0 ? -50 : 50 }}
                                         animate={{ opacity: 1, x: 0 }}
@@ -287,14 +289,14 @@ export default function CreativeDesign({
                                         )}
                                     >
                                         {/* Timeline dot */}
-                                        <div 
+                                        <div
                                             className="absolute left-1/2 transform -translate-x-1/2 w-6 h-6 rounded-full border-4 border-white shadow-lg z-10"
                                             style={{
                                                 background: `linear-gradient(135deg, ${primaryColor}, ${secondaryColor})`
                                             }}
                                         />
-                                        
-                                        <Card 
+
+                                        <Card
                                             className={cn(
                                                 "w-full max-w-md shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:scale-105",
                                                 index % 2 === 0 ? "mr-8" : "ml-8"
@@ -302,7 +304,7 @@ export default function CreativeDesign({
                                         >
                                             <CardContent className="p-6">
                                                 <div className="flex items-start gap-4">
-                                                    <div 
+                                                    <div
                                                         className="p-3 rounded-full shrink-0"
                                                         style={{ backgroundColor: `${primaryColor}15` }}
                                                     >
@@ -315,16 +317,16 @@ export default function CreativeDesign({
                                                         <p className="font-semibold mb-2" style={{ color: primaryColor }}>
                                                             {exp.InstitutionName}
                                                         </p>
-                                                        <Badge 
+                                                        <Badge
                                                             className="text-white mb-3"
                                                             style={{
                                                                 background: `linear-gradient(135deg, ${secondaryColor}, ${primaryColor})`
                                                             }}
                                                         >
                                                             <Calendar className="w-3 h-3 mr-1" />
-                                                            {exp.date_start && exp.date_end ? 
+                                                            {exp.date_start && exp.date_end ?
                                                                 `${new Date(exp.date_start).toLocaleDateString('fr-FR', { month: 'short', year: 'numeric' })} - ${new Date(exp.date_end).toLocaleDateString('fr-FR', { month: 'short', year: 'numeric' })}` :
-                                                                exp.date_start ? 
+                                                                exp.date_start ?
                                                                     `${new Date(exp.date_start).toLocaleDateString('fr-FR', { month: 'short', year: 'numeric' })} - Présent` :
                                                                     'Période non spécifiée'
                                                             }
@@ -356,7 +358,7 @@ export default function CreativeDesign({
                                                             )}
 
                                                             {exp.category_name && (
-                                                                <Badge 
+                                                                <Badge
                                                                     className="text-xs"
                                                                     style={{ backgroundColor: `${primaryColor}20`, color: primaryColor }}
                                                                 >
@@ -384,7 +386,7 @@ export default function CreativeDesign({
 
                                                         {exp.attachment_path && (
                                                             <div className="mt-3">
-                                                                <a 
+                                                                <a
                                                                     href={exp.attachment_path}
                                                                     target="_blank"
                                                                     rel="noopener noreferrer"
@@ -409,9 +411,9 @@ export default function CreativeDesign({
 
                 {/* Grid de compétences et autres sections */}
                 <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-                    
+
                     {/* Compétences avec animation de vague */}
-                    {settings.show_competences && cvData?.skills?.length > 0 && (
+                    {settings.show_competences && cvData?.competences?.length > 0 && (
                         <motion.div
                             initial={{ opacity: 0, y: 50 }}
                             animate={{ opacity: 1, y: 0 }}
@@ -430,31 +432,31 @@ export default function CreativeDesign({
                                         <Zap className="w-6 h-6" />
                                         Mes Super-Pouvoirs
                                     </motion.div>
-                                    
+
                                     <div className="flex flex-wrap gap-3">
-                                        {cvData.skills.map((skill, index) => (
+                                        {cvData.competences.map((competence, index) => (
                                             <motion.div
                                                 key={index}
                                                 initial={{ opacity: 0, scale: 0 }}
                                                 animate={{ opacity: 1, scale: 1 }}
-                                                transition={{ 
-                                                    delay: 2.0 + index * 0.1, 
+                                                transition={{
+                                                    delay: 2.0 + index * 0.1,
                                                     type: "spring",
-                                                    bounce: 0.5 
+                                                    bounce: 0.5
                                                 }}
-                                                whileHover={{ 
-                                                    scale: 1.1, 
+                                                whileHover={{
+                                                    scale: 1.1,
                                                     rotate: [0, -5, 5, 0],
                                                     transition: { duration: 0.3 }
                                                 }}
                                             >
-                                                <Badge 
+                                                <Badge
                                                     className="text-white text-sm py-2 px-4 shadow-lg hover:shadow-xl transition-all cursor-pointer"
                                                     style={{
                                                         background: `linear-gradient(135deg, ${primaryColor}${Math.floor(Math.random() * 40) + 80}, ${secondaryColor}${Math.floor(Math.random() * 40) + 80})`
                                                     }}
                                                 >
-                                                    {typeof skill === 'string' ? skill : skill.name || skill.skill}
+                                                    {typeof competence === 'string' ? competence : competence.name || competence.skill}
                                                 </Badge>
                                             </motion.div>
                                         ))}
@@ -483,7 +485,7 @@ export default function CreativeDesign({
                                         <Heart className="w-5 h-5" />
                                         Passions
                                     </motion.div>
-                                    
+
                                     <div className="space-y-3">
                                         {cvData.hobbies.map((hobby, index) => (
                                             <motion.div
@@ -494,7 +496,7 @@ export default function CreativeDesign({
                                                 whileHover={{ x: 10, transition: { duration: 0.2 } }}
                                                 className="flex items-center gap-3 p-2 rounded-lg bg-gradient-to-r from-white/50 to-transparent hover:from-white/80 transition-all cursor-pointer"
                                             >
-                                                <div 
+                                                <div
                                                     className="w-2 h-2 rounded-full"
                                                     style={{ backgroundColor: index % 2 === 0 ? primaryColor : secondaryColor }}
                                                 />
@@ -518,7 +520,7 @@ export default function CreativeDesign({
                             className="lg:col-span-1"
                         >
                             <Card className="shadow-xl hover:shadow-2xl transition-all duration-300 h-full overflow-hidden">
-                                <div 
+                                <div
                                     className="h-2"
                                     style={{
                                         background: `linear-gradient(90deg, ${primaryColor}, ${secondaryColor})`
@@ -526,7 +528,7 @@ export default function CreativeDesign({
                                 />
                                 <CardContent className="p-6">
                                     <div className="flex items-center gap-3 mb-6">
-                                        <motion.div 
+                                        <motion.div
                                             className="p-3 rounded-full"
                                             style={{ backgroundColor: `${primaryColor}15` }}
                                             whileHover={{ scale: 1.1, rotate: 360 }}
@@ -534,12 +536,12 @@ export default function CreativeDesign({
                                         >
                                             <Globe className="w-6 h-6" style={{ color: primaryColor }} />
                                         </motion.div>
-                                        <h3 className="text-xl font-bold text-gray-800">Langues</h3>
+                                        <h3 className="text-xl font-bold text-gray-800">{t('portfolio.sections.languages')}</h3>
                                     </div>
-                                    
+
                                     <div className="space-y-4">
                                         {cvData.languages.map((lang, index) => (
-                                            <motion.div 
+                                            <motion.div
                                                 key={index}
                                                 initial={{ opacity: 0, x: -20 }}
                                                 animate={{ opacity: 1, x: 0 }}
@@ -548,9 +550,9 @@ export default function CreativeDesign({
                                             >
                                                 <span className="font-semibold text-gray-700">{lang.name}</span>
                                                 {lang.pivot?.language_level && (
-                                                    <span 
+                                                    <span
                                                         className="px-3 py-1 rounded-full text-sm font-medium text-white"
-                                                        style={{ 
+                                                        style={{
                                                             background: `linear-gradient(135deg, ${primaryColor}, ${secondaryColor})`
                                                         }}
                                                     >
@@ -574,7 +576,7 @@ export default function CreativeDesign({
                             className="lg:col-span-1"
                         >
                             <Card className="shadow-xl hover:shadow-2xl transition-all duration-300 h-full overflow-hidden">
-                                <div 
+                                <div
                                     className="h-2"
                                     style={{
                                         background: `linear-gradient(90deg, ${primaryColor}, ${secondaryColor})`
@@ -589,9 +591,9 @@ export default function CreativeDesign({
                                         }}
                                     >
                                         <Contact className="w-5 h-5" />
-                                        Contact
+                                        {t('portfolio.sections.contact')}
                                     </motion.div>
-                                    
+
                                     <div className="space-y-4">
                                         {(cvData?.email || user.email) && (
                                             <motion.a
@@ -599,7 +601,7 @@ export default function CreativeDesign({
                                                 href={`mailto:${cvData?.email || user.email}`}
                                                 className="flex items-center gap-3 p-3 rounded-lg bg-gradient-to-r from-white/50 to-transparent hover:from-white/80 transition-all group"
                                             >
-                                                <div 
+                                                <div
                                                     className="p-2 rounded-full group-hover:scale-110 transition-transform"
                                                     style={{ backgroundColor: `${primaryColor}20` }}
                                                 >
@@ -616,7 +618,7 @@ export default function CreativeDesign({
                                                 href={`tel:${cvData.phone}`}
                                                 className="flex items-center gap-3 p-3 rounded-lg bg-gradient-to-r from-white/50 to-transparent hover:from-white/80 transition-all group"
                                             >
-                                                <div 
+                                                <div
                                                     className="p-2 rounded-full group-hover:scale-110 transition-transform"
                                                     style={{ backgroundColor: `${secondaryColor}20` }}
                                                 >
@@ -632,7 +634,7 @@ export default function CreativeDesign({
                                                 whileHover={{ scale: 1.02, x: 5 }}
                                                 className="flex items-center gap-3 p-3 rounded-lg bg-gradient-to-r from-white/50 to-transparent hover:from-white/80 transition-all group"
                                             >
-                                                <div 
+                                                <div
                                                     className="p-2 rounded-full group-hover:scale-110 transition-transform"
                                                     style={{ backgroundColor: `${primaryColor}20` }}
                                                 >
@@ -652,7 +654,7 @@ export default function CreativeDesign({
             </div>
 
             {/* Footer créatif */}
-            <footer 
+            <footer
                 className="mt-20 py-8 text-center relative overflow-hidden"
                 style={{
                     background: `linear-gradient(135deg, ${primaryColor}10, ${secondaryColor}10)`
@@ -679,7 +681,7 @@ export default function CreativeDesign({
 function hexToRgb(hex: string): string {
     const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
     if (!result) return '245, 158, 11'; // default amber-500 rgb
-    
+
     return [
         parseInt(result[1], 16),
         parseInt(result[2], 16),

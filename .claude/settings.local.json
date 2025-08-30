@@ -10,7 +10,8 @@
       "Bash(php artisan make:controller:*)",
       "Bash(php artisan make:policy:*)",
       "Bash(php artisan:*)",
-      "Bash(npm install:*)"
+      "Bash(npm install:*)",
+      "Bash(git checkout:*)"
     ],
     "deny": [],
     "ask": []

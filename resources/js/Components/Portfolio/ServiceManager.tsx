@@ -23,7 +23,7 @@ import {
     SelectValue,
 } from "@/Components/ui/select";
 import {
-    Plus, Edit, Trash2, GripVertical, Eye, EyeOff, Star, 
+    Plus, Edit, Trash2, GripVertical, Eye, EyeOff, Star,
     Wrench, Image as ImageIcon, Upload, ArrowUp, ArrowDown
 } from 'lucide-react';
 // import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
@@ -80,7 +80,7 @@ export default function ServiceManager({ services: initialServices, onServiceUpd
 
     const priceTypes = {
         'fixed': 'Prix fixe',
-        'hourly': 'Tarif horaire', 
+        'hourly': 'Tarif horaire',
         'daily': 'Tarif journalier',
         'project': 'Prix par projet'
     };
@@ -88,7 +88,7 @@ export default function ServiceManager({ services: initialServices, onServiceUpd
     const handleMoveService = async (serviceId: number, direction: 'up' | 'down') => {
         const currentIndex = services.findIndex(s => s.id === serviceId);
         if (currentIndex === -1) return;
-        
+
         const newIndex = direction === 'up' ? currentIndex - 1 : currentIndex + 1;
         if (newIndex < 0 || newIndex >= services.length) return;
 
@@ -145,12 +145,12 @@ export default function ServiceManager({ services: initialServices, onServiceUpd
 
     const handleEditService = async () => {
         if (!editingService) return;
-        
+
         setLoading(true);
         try {
             const formDataToSend = new FormData();
             formDataToSend.append('_method', 'PUT');
-            
+
             Object.entries(formData).forEach(([key, value]) => {
                 if (key === 'tags') {
                     formDataToSend.append(key, JSON.stringify(value));
@@ -166,7 +166,7 @@ export default function ServiceManager({ services: initialServices, onServiceUpd
             });
 
             const updatedService = response.data.service;
-            const updatedServices = services.map(s => 
+            const updatedServices = services.map(s =>
                 s.id === editingService.id ? updatedService : s
             );
             setServices(updatedServices);
@@ -228,14 +228,28 @@ export default function ServiceManager({ services: initialServices, onServiceUpd
     };
 
     const removeTag = (tagToRemove: string) => {
-        setFormData({ 
-            ...formData, 
-            tags: formData.tags.filter(tag => tag !== tagToRemove) 
+        setFormData({
+            ...formData,
+            tags: formData.tags.filter(tag => tag !== tagToRemove)
         });
     };
 
     return (
         <Card className="border-l-2 border-l-purple-400 shadow-sm">
+            {/* Debug Section - À retirer en production */}
+            <Card className="bg-orange-50 border-orange-200 mb-3">
+                <CardContent className="p-2">
+                    <div className="space-y-1 text-xs">
+                        <div className="font-semibold text-orange-800">ServiceManager Debug</div>
+                        <div><strong>Initial services:</strong> {initialServices?.length || 0}</div>
+                        <div><strong>Current services:</strong> {services?.length || 0}</div>
+                        <pre className="text-xs bg-white p-1 rounded overflow-auto max-h-20">
+                            {JSON.stringify({ initialServices, services }, null, 2)}
+                        </pre>
+                    </div>
+                </CardContent>
+            </Card>
+
             <CardContent className="p-3">
                 {/* Header ultra-compact */}
                 <div className="flex items-center justify-between mb-3">
@@ -246,7 +260,7 @@ export default function ServiceManager({ services: initialServices, onServiceUpd
                             {services.length}
                         </Badge>
                     </div>
-                    
+
                     <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
                         <DialogTrigger asChild>
                             <Button size="sm" className="h-6 px-2 bg-purple-500 hover:bg-purple-600 text-xs">
@@ -261,7 +275,7 @@ export default function ServiceManager({ services: initialServices, onServiceUpd
                                     Ajoutez un nouveau service à votre portfolio
                                 </DialogDescription>
                             </DialogHeader>
-                            <ServiceForm 
+                            <ServiceForm
                                 data={formData}
                                 onChange={setFormData}
                                 onSubmit={handleCreateService}
@@ -308,7 +322,7 @@ export default function ServiceManager({ services: initialServices, onServiceUpd
                                         <ArrowDown className="h-2 w-2" />
                                     </Button>
                                 </div>
-                                
+
                                 {service.main_image_url && (
                                     <img
                                         src={service.main_image_url}
@@ -316,7 +330,7 @@ export default function ServiceManager({ services: initialServices, onServiceUpd
                                         className="w-6 h-6 rounded object-cover"
                                     />
                                 )}
-                                
+
                                 <div className="flex-1 min-w-0">
                                     <div className="flex items-center gap-1">
                                         <span className="font-medium text-gray-900 truncate flex-1">
@@ -332,7 +346,7 @@ export default function ServiceManager({ services: initialServices, onServiceUpd
                                         )}
                                     </div>
                                 </div>
-                                
+
                                 <div className="flex gap-0.5">
                                     <Button
                                         size="sm"
@@ -365,7 +379,7 @@ export default function ServiceManager({ services: initialServices, onServiceUpd
                                 Modifiez les informations de votre service
                             </DialogDescription>
                         </DialogHeader>
-                        <ServiceForm 
+                        <ServiceForm
                             data={formData}
                             onChange={setFormData}
                             onSubmit={handleEditService}

@@ -71,6 +71,77 @@ const PaymentMethodsInfo = {
     ]
 };
 
+// NotchPay Button Component (Primary)
+const NotchPayButton = ({ pack, onSuccess, user }) => {
+    const [loading, setLoading] = useState(false);
+    const { toast } = useToast();
+    const { t } = useTranslation();
+
+    const handlePayment = async () => {
+        try {
+            setLoading(true);
+
+            const response = await fetch('/api/notchpay/initialize', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '',
+                    'Accept': 'application/json',
+                },
+                credentials: 'same-origin',
+                body: JSON.stringify({
+                    tokens: pack.tokens + pack.bonusTokens
+                })
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.message || t('payment.errors.default'));
+            }
+
+            const result = await response.json();
+
+            if (result.success && result.authorization_url) {
+                // Rediriger vers la page de paiement NotchPay
+                window.location.href = result.authorization_url;
+            } else {
+                throw new Error(t('payment.errors.initialization'));
+            }
+
+        } catch (error) {
+            console.error('Erreur de paiement NotchPay:', error);
+            toast({
+                variant: "destructive",
+                title: t('payment.errors.paymentFailed'),
+                description: error.message || t('payment.errors.processingError')
+            });
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    return (
+        <button
+            onClick={handlePayment}
+            disabled={loading}
+            className={`w-full py-3 px-4 rounded-lg font-medium text-white bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 transition-all duration-200 flex items-center justify-center gap-2 ${loading ? 'opacity-75 cursor-not-allowed' : ''}`}
+        >
+            {loading ? (
+                <>
+                    <Loader2 className="w-5 h-5 animate-spin" />
+                    <span>{t('payment.processing')}</span>
+                </>
+            ) : (
+                <>
+                    <Smartphone className="w-5 h-5" />
+                    <span>{t('payment.payWithNotchPay')}</span>
+                </>
+            )}
+        </button>
+    );
+};
+
+// CinetPay Button Component (Backup)
 const CinetPayButton = ({ pack, onSuccess, user }) => {
     const [loading, setLoading] = useState(false);
     const { toast } = useToast();
@@ -90,6 +161,7 @@ const CinetPayButton = ({ pack, onSuccess, user }) => {
                     'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '',
                     'Accept': 'application/json',
                 },
+                credentials: 'same-origin',
                 body: JSON.stringify({
                     transaction_id: transactionId,
                     amount: pack.priceFCFA,
@@ -100,7 +172,7 @@ const CinetPayButton = ({ pack, onSuccess, user }) => {
                     customer_email: user?.email || '',
                     customer_phone_number: user?.phone || '',
                     notify_url: `${window.location.origin}/api/cinetpay/notify`,
-                    return_url: `${window.location.origin}/api/cinetpay/return`,
+                    return_url: `${window.location.origin}/payment/cinetpay/callback`,
                     channels: 'ALL',
                     lang: 'fr'
                 })
@@ -262,7 +334,9 @@ const PaymentTabs = ({ pack, onSuccess, user }) => {
                 <div className="text-2xl font-bold text-center">
                     {pack.priceFCFA.toLocaleString()} FCFA
                 </div>
-                <CinetPayButton pack={pack} onSuccess={onSuccess} user={user} />
+                
+                <NotchPayButton pack={pack} onSuccess={onSuccess} user={user} />
+
                 <div className="flex items-center justify-center gap-4 mt-2">
                     {PaymentMethodsInfo.mobileMoneyLogos.map((logo, index) => (
                         <img

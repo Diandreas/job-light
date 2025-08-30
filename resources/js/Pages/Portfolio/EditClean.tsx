@@ -33,7 +33,8 @@ import {
     Palette, Eye, Save, RefreshCw, QrCode, Share,
     Briefcase, Award, Heart, FileText, Contact,
     Globe, Wrench, User, ArrowUp, ArrowDown,
-    Settings, Sparkles, Plus, Edit, Trash2
+    Settings, Sparkles, Plus, Edit, Trash2,
+    GripVertical, Layout, EyeOff
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';
@@ -78,6 +79,21 @@ const DESIGN_OPTIONS = [
     { value: 'creative', label: 'Créatif', desc: 'Coloré et dynamique' },
     { value: 'minimal', label: 'Minimal', desc: 'Simple et moderne' },
     { value: 'modern', label: 'Moderne', desc: 'Tendance et stylé' },
+    { value: 'custom', label: 'Personnalisé', desc: 'Drag & drop complet' },
+];
+
+const LAYOUT_OPTIONS = [
+    { value: '1', label: '1 Colonne', desc: 'Layout vertical' },
+    { value: '2', label: '2 Colonnes', desc: 'Layout équilibré' },
+    { value: '3', label: '3 Colonnes', desc: 'Layout compact' },
+];
+
+const DIVISION_STYLES = [
+    { value: 'moderne', label: 'Moderne', desc: 'Bordures arrondies, ombres' },
+    { value: 'soft', label: 'Soft', desc: 'Couleurs douces, espaces' },
+    { value: 'minimalist', label: 'Minimaliste', desc: 'Lignes nettes, épuré' },
+    { value: 'creative', label: 'Créatif', desc: 'Formes, couleurs vives' },
+    { value: 'corporate', label: 'Corporate', desc: 'Professionnel, structuré' },
 ];
 
 
@@ -122,7 +138,7 @@ export default function EditClean({ auth, portfolio, settings, cvData = portfoli
             },
             {
                 key: 'summary',
-                count: (cvData?.summary || cvData?.summaries?.length > 0) ? 1 : 0,
+                count: (cvData?.summary || (cvData?.summaries && cvData.summaries.length > 0)) ? 1 : 0,
                 isActive: settings.show_summary ?? true
             },
             {
@@ -158,6 +174,8 @@ export default function EditClean({ auth, portfolio, settings, cvData = portfoli
         design: settings.design || 'professional',
         primary_color: settings.primary_color || '#f59e0b',
         section_order: settings.section_order || {},
+        layout_columns: settings.layout_columns || '2',
+        division_style: settings.division_style || 'moderne',
         show_experiences: settings.show_experiences ?? true,
         show_competences: settings.show_competences ?? true,
         show_hobbies: settings.show_hobbies ?? true,
@@ -204,13 +222,21 @@ export default function EditClean({ auth, portfolio, settings, cvData = portfoli
     };
 
     const handleToggleSection = (sectionKey: string) => {
-        const updatedSections = sections.map(section =>
-            section.key === sectionKey
-                ? { ...section, isActive: !section.isActive }
-                : section
-        );
-        setSections(updatedSections);
-        setData(`show_${sectionKey}` as any, !sections.find(s => s.key === sectionKey)?.isActive);
+        setSections(prevSections => {
+            const updatedSections = prevSections.map(section =>
+                section.key === sectionKey
+                    ? { ...section, isActive: !section.isActive }
+                    : section
+            );
+            
+            // Update form data using the new state
+            const toggledSection = updatedSections.find(s => s.key === sectionKey);
+            if (toggledSection) {
+                setData(`show_${sectionKey}` as any, toggledSection.isActive);
+            }
+            
+            return updatedSections;
+        });
     };
 
     const handleCreateService = async (e) => {
@@ -345,29 +371,6 @@ export default function EditClean({ auth, portfolio, settings, cvData = portfoli
                         {/* Configuration principale */}
                         <div className={cn("space-y-6", previewMode ? "lg:col-span-2" : "lg:col-span-1")}>
 
-                            {/* Gestion rapide des services en haut */}
-                            <Card className="bg-white shadow-lg border-l-4 border-l-blue-500">
-                                <CardContent className="p-4">
-                                    <div className="flex items-center justify-between">
-                                        <div className="flex items-center gap-3">
-                                            <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center">
-                                                <Wrench className="h-5 w-5 text-white" />
-                                            </div>
-                                            <div>
-                                                <h3 className="font-semibold text-gray-900">{__('portfolio.edit.service_management')}</h3>
-                                                <p className="text-sm text-gray-500">{services?.length || 0} service{(services?.length || 0) > 1 ? 's' : ''} disponible{(services?.length || 0) > 1 ? 's' : ''}</p>
-                                            </div>
-                                        </div>
-                                        <Button
-                                            onClick={() => setShowServiceModal(true)}
-                                            className="bg-blue-500 hover:bg-blue-600 text-white"
-                                        >
-                                            <Plus className="h-4 w-4 mr-2" />
-                                            Gérer les services
-                                        </Button>
-                                    </div>
-                                </CardContent>
-                            </Card>
 
 
                             <form onSubmit={onSubmit} id="portfolio-form" className="space-y-6">
@@ -389,13 +392,8 @@ export default function EditClean({ auth, portfolio, settings, cvData = portfoli
                                         {/* Sélection du design */}
                                         <div>
                                             <Label className="text-base font-medium text-gray-700 mb-3 block">Thème du portfolio</Label>
-                                            <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
-                                                {[
-                                                    { value: 'professional', label: 'Professionnel', desc: 'Classique et épuré' },
-                                                    { value: 'creative', label: 'Créatif', desc: 'Coloré et dynamique' },
-                                                    { value: 'minimal', label: 'Minimal', desc: 'Simple et moderne' },
-                                                    { value: 'modern', label: 'Moderne', desc: 'Tendance et stylé' }
-                                                ].map((option) => (
+                                            <div className="grid grid-cols-2 lg:grid-cols-5 gap-3">
+                                                {DESIGN_OPTIONS.map((option) => (
                                                     <div
                                                         key={option.value}
                                                         className={cn(
@@ -440,77 +438,250 @@ export default function EditClean({ auth, portfolio, settings, cvData = portfoli
                                     </CardContent>
                                 </Card>
 
-                                {/* Organisation par Groupes des Sections */}
-                                <Card className="bg-white shadow-lg">
+                                {/* Mise en Page & Style */}
+                                <Card className="bg-white shadow-lg border-l-4 border-l-purple-500">
                                     <CardHeader className="pb-4">
                                         <CardTitle className="flex items-center gap-3">
-                                            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-green-500 to-emerald-600 flex items-center justify-center">
-                                                <Settings className="h-5 w-5 text-white" />
+                                            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-purple-500 to-indigo-600 flex items-center justify-center">
+                                                <Layout className="h-5 w-5 text-white" />
                                             </div>
                                             <div>
-                                                <h3 className="text-lg font-semibold text-gray-900">{__('portfolio.groups.title', {}, 'Organisation des Sections')}</h3>
-                                                <p className="text-sm text-gray-500 mt-1">Organisez vos sections par groupes logiques</p>
+                                                <h3 className="text-lg font-semibold text-gray-900">Mise en Page & Style</h3>
+                                                <p className="text-sm text-gray-500 mt-1">Configuration de l'organisation visuelle</p>
                                             </div>
                                         </CardTitle>
                                     </CardHeader>
-                                    <CardContent>
-                                        {Object.keys(groupedSections).length > 0 ? (
-                                            <SectionGroupManager
-                                                groups={groupedSections}
-                                                onGroupChange={(groupKey, sections) => {
-                                                    // Gérer les changements de groupe
-                                                    console.log('Group changed:', groupKey, sections);
-                                                }}
-                                                onSectionToggle={(sectionKey, isActive) => {
-                                                    handleToggleSection(sectionKey);
-                                                }}
-                                            />
-                                        ) : (
-                                            <div className="space-y-3">
-                                                <div className="flex items-center gap-3 mb-4">
-                                                    <Settings className="h-5 w-5 text-green-600" />
-                                                    <span className="font-medium text-gray-900">Sections du Portfolio</span>
-                                                    <Badge variant="secondary" className="text-xs">
-                                                        {sections.filter(s => s.isActive).length}/{sections.length}
-                                                    </Badge>
+                                    <CardContent className="space-y-6">
+                                        {/* Nombre de colonnes */}
+                                        <div>
+                                            <Label className="text-base font-medium text-gray-700 mb-3 block">Organisation en colonnes</Label>
+                                            <div className="grid grid-cols-3 gap-3">
+                                                {LAYOUT_OPTIONS.map((option) => (
+                                                    <div
+                                                        key={option.value}
+                                                        className={cn(
+                                                            "p-3 rounded-lg border-2 cursor-pointer transition-all hover:shadow-sm text-center",
+                                                            data.layout_columns === option.value
+                                                                ? "border-purple-500 bg-purple-50"
+                                                                : "border-gray-200 hover:border-gray-300"
+                                                        )}
+                                                        onClick={() => setData('layout_columns', option.value)}
+                                                    >
+                                                        <h4 className="font-medium text-gray-900 text-sm">{option.label}</h4>
+                                                        <p className="text-xs text-gray-500 mt-1">{option.desc}</p>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        </div>
+
+                                        {/* Style des divisions */}
+                                        <div>
+                                            <Label className="text-base font-medium text-gray-700 mb-3 block">Style des sections</Label>
+                                            <div className="grid grid-cols-2 lg:grid-cols-3 gap-3">
+                                                {DIVISION_STYLES.map((style) => (
+                                                    <div
+                                                        key={style.value}
+                                                        className={cn(
+                                                            "p-3 rounded-lg border-2 cursor-pointer transition-all hover:shadow-sm",
+                                                            data.division_style === style.value
+                                                                ? "border-purple-500 bg-purple-50"
+                                                                : "border-gray-200 hover:border-gray-300"
+                                                        )}
+                                                        onClick={() => setData('division_style', style.value)}
+                                                    >
+                                                        <h4 className="font-medium text-gray-900 text-sm">{style.label}</h4>
+                                                        <p className="text-xs text-gray-500 mt-1">{style.desc}</p>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        </div>
+
+                                        {/* Aperçu des styles */}
+                                        <div className="bg-gray-50 rounded-lg p-4">
+                                            <Label className="text-sm font-medium text-gray-700 mb-2 block">Aperçu du style "{DIVISION_STYLES.find(s => s.value === data.division_style)?.label}"</Label>
+                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                                                <div 
+                                                    className={cn(
+                                                        "p-3 bg-white transition-all",
+                                                        data.division_style === 'moderne' && "rounded-lg shadow-sm border",
+                                                        data.division_style === 'soft' && "rounded-xl shadow-none border border-gray-100",
+                                                        data.division_style === 'minimalist' && "rounded-none border-l-4 border-l-gray-300",
+                                                        data.division_style === 'creative' && "rounded-2xl shadow-md bg-gradient-to-r from-blue-50 to-purple-50",
+                                                        data.division_style === 'corporate' && "rounded-sm shadow-lg border-2 border-gray-200"
+                                                    )}
+                                                >
+                                                    <h4 className="text-sm font-semibold text-gray-800">Section Exemple</h4>
+                                                    <p className="text-xs text-gray-600 mt-1">Contenu de démonstration</p>
                                                 </div>
-                                                
-                                                <div className="grid grid-cols-1 gap-2">
-                                                    {sections.map((section, index) => {
-                                                        const IconComponent = section.icon;
-                                                        return (
-                                                            <div
-                                                                key={section.key}
-                                                                className={cn(
-                                                                    "flex items-center gap-3 p-3 bg-gray-50 rounded-lg border transition-all",
-                                                                    !section.isActive && "opacity-40"
-                                                                )}
-                                                            >
-                                                                <IconComponent className="w-5 h-5 text-green-600 shrink-0" />
-                                                                <div className="flex-1">
-                                                                    <span className="text-sm font-medium text-gray-800">
-                                                                        {section.label}
-                                                                    </span>
-                                                                </div>
-                                                                <Badge
+                                                <div 
+                                                    className={cn(
+                                                        "p-3 bg-white transition-all opacity-60",
+                                                        data.division_style === 'moderne' && "rounded-lg shadow-sm border",
+                                                        data.division_style === 'soft' && "rounded-xl shadow-none border border-gray-100",
+                                                        data.division_style === 'minimalist' && "rounded-none border-l-4 border-l-gray-300",
+                                                        data.division_style === 'creative' && "rounded-2xl shadow-md bg-gradient-to-r from-green-50 to-yellow-50",
+                                                        data.division_style === 'corporate' && "rounded-sm shadow-lg border-2 border-gray-200"
+                                                    )}
+                                                >
+                                                    <h4 className="text-sm font-semibold text-gray-800">Autre Section</h4>
+                                                    <p className="text-xs text-gray-600 mt-1">Plus de contenu</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </CardContent>
+                                </Card>
+
+                                {/* Visibilité des Sections - Interface Simplifiée */}
+                                <Card className="bg-white shadow-lg border-l-4 border-l-emerald-500">
+                                    <CardHeader className="pb-3">
+                                        <CardTitle className="flex items-center justify-between">
+                                            <div className="flex items-center gap-3">
+                                                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-500 to-green-600 flex items-center justify-center">
+                                                    <Eye className="h-5 w-5 text-white" />
+                                                </div>
+                                                <div>
+                                                    <h3 className="text-lg font-semibold text-gray-900">Visibilité des Sections</h3>
+                                                    <p className="text-sm text-gray-500 mt-1">Choisissez les sections à afficher</p>
+                                                </div>
+                                            </div>
+                                            <Badge variant="outline" className="bg-emerald-50 text-emerald-700 border-emerald-200">
+                                                {sections.filter(s => s.isActive).length}/{sections.length}
+                                            </Badge>
+                                        </CardTitle>
+                                    </CardHeader>
+                                    <CardContent className="space-y-2">
+                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                                            {sections.map((section, index) => {
+                                                const IconComponent = section.icon;
+                                                return (
+                                                    <motion.div
+                                                        key={section.key}
+                                                        initial={{ opacity: 0, scale: 0.95 }}
+                                                        animate={{ opacity: 1, scale: 1 }}
+                                                        transition={{ delay: index * 0.03 }}
+                                                        className={cn(
+                                                            "flex items-center gap-3 p-3 rounded-lg border-2 transition-all duration-200",
+                                                            section.count === 0 
+                                                                ? "cursor-not-allowed opacity-40 border-orange-200 bg-orange-50/20"
+                                                                : section.isActive 
+                                                                    ? "cursor-pointer border-emerald-200 bg-emerald-50/30 hover:border-emerald-300" 
+                                                                    : "cursor-pointer border-gray-200 bg-gray-50/30 opacity-60 hover:opacity-80"
+                                                        )}
+                                                        onClick={() => section.count > 0 && handleToggleSection(section.key)}
+                                                    >
+                                                        {/* Section Icon */}
+                                                        <div className={cn(
+                                                            "flex items-center justify-center w-8 h-8 rounded-md transition-colors shrink-0",
+                                                            section.isActive 
+                                                                ? "bg-emerald-100 text-emerald-600" 
+                                                                : "bg-gray-100 text-gray-400"
+                                                        )}>
+                                                            <IconComponent className="w-4 h-4" />
+                                                        </div>
+
+                                                        {/* Section Info */}
+                                                        <div className="flex-1 min-w-0">
+                                                            <div className="flex items-center gap-2">
+                                                                <span className={cn(
+                                                                    "text-sm font-medium truncate",
+                                                                    section.isActive ? "text-gray-900" : "text-gray-500"
+                                                                )}>
+                                                                    {section.label}
+                                                                </span>
+                                                                <Badge 
+                                                                    variant="secondary"
                                                                     className={cn(
-                                                                        "text-xs px-2 py-0.5",
-                                                                        section.count === 0 ? "bg-red-500 text-white" : "bg-green-500 text-white"
+                                                                        "text-xs px-1.5 py-0.5 shrink-0",
+                                                                        section.count === 0 
+                                                                            ? "bg-orange-100 text-orange-600" 
+                                                                            : "bg-blue-100 text-blue-600"
                                                                     )}
                                                                 >
                                                                     {section.count}
                                                                 </Badge>
-                                                                <Switch
-                                                                    checked={section.isActive}
-                                                                    onCheckedChange={() => handleToggleSection(section.key)}
-                                                                    className="data-[state=checked]:bg-green-500"
-                                                                />
                                                             </div>
-                                                        );
-                                                    })}
-                                                </div>
+                                                        </div>
+
+                                                        {/* Toggle Switch */}
+                                                        <Switch
+                                                            checked={section.isActive}
+                                                            disabled={section.count === 0}
+                                                            onCheckedChange={() => {}}
+                                                            onClick={(e) => {
+                                                                e.stopPropagation();
+                                                                if (section.count > 0) {
+                                                                    handleToggleSection(section.key);
+                                                                }
+                                                            }}
+                                                            className="data-[state=checked]:bg-emerald-500 shrink-0"
+                                                        />
+                                                    </motion.div>
+                                                );
+                                            })}
+                                        </div>
+                                        
+                                        {/* Actions rapides */}
+                                        <div className="flex items-center justify-between pt-3 border-t border-gray-100">
+                                            <div className="text-xs text-gray-500">
+                                                {sections.filter(s => s.count === 0).length > 0 && "Les sections sans contenu sont marquées en orange"}
                                             </div>
-                                        )}
+                                            <div className="flex gap-2">
+                                                <Button
+                                                    type="button"
+                                                    variant="outline"
+                                                    size="sm"
+                                                    onClick={() => {
+                                                        setSections(prevSections => {
+                                                            const updatedSections = prevSections.map(section =>
+                                                                (!section.isActive && section.count > 0)
+                                                                    ? { ...section, isActive: true }
+                                                                    : section
+                                                            );
+                                                            
+                                                            // Update form data for all changed sections
+                                                            updatedSections.forEach(section => {
+                                                                const originalSection = prevSections.find(s => s.key === section.key);
+                                                                if (originalSection && originalSection.isActive !== section.isActive) {
+                                                                    setData(`show_${section.key}` as any, section.isActive);
+                                                                }
+                                                            });
+                                                            
+                                                            return updatedSections;
+                                                        });
+                                                    }}
+                                                    className="h-7 px-2 text-xs"
+                                                >
+                                                    Afficher tout
+                                                </Button>
+                                                <Button
+                                                    type="button"
+                                                    variant="outline"
+                                                    size="sm"
+                                                    onClick={() => {
+                                                        setSections(prevSections => {
+                                                            const updatedSections = prevSections.map(section =>
+                                                                (section.isActive && section.count === 0)
+                                                                    ? { ...section, isActive: false }
+                                                                    : section
+                                                            );
+                                                            
+                                                            // Update form data for all changed sections
+                                                            updatedSections.forEach(section => {
+                                                                const originalSection = prevSections.find(s => s.key === section.key);
+                                                                if (originalSection && originalSection.isActive !== section.isActive) {
+                                                                    setData(`show_${section.key}` as any, section.isActive);
+                                                                }
+                                                            });
+                                                            
+                                                            return updatedSections;
+                                                        });
+                                                    }}
+                                                    className="h-7 px-2 text-xs"
+                                                >
+                                                    Masquer vides
+                                                </Button>
+                                            </div>
+                                        </div>
                                     </CardContent>
                                 </Card>
 

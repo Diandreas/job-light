@@ -376,13 +376,12 @@ class NotchPayController extends Controller
     {
         // This should match your frontend TOKEN_PACKS logic
         $tokenPacks = [
-            10 => 600,
-            25 => 1200,
-            60 => 3000,
-            130 => 6000,
-            400 => 18000
+            10 => 600,    // starter: 10 tokens = 600 FCFA
+            25 => 1200,   // plus: 20+5 tokens = 1200 FCFA  
+            60 => 3000,   // pro: 50+10 tokens = 3000 FCFA
+            130 => 6000,  // ultimate: 100+30 tokens = 6000 FCFA
         ];
 
-        return $tokenPacks[$tokens] ?? ($tokens * 100); // Default to 100 XAF per token
+        return $tokenPacks[$tokens] ?? ($tokens * 60); // Default to 60 XAF per token (600/10)
     }
 }

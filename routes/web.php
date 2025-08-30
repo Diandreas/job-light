@@ -12,6 +12,7 @@ use App\Http\Controllers\{AddressController,
     ExperienceController,
     HobbyController,
     LanguageController,
+    NotchPayController,
     CinetPayController,
     PaymentController,
     PayPalController,
@@ -74,10 +75,14 @@ Route::get('/blog', [App\Http\Controllers\BlogController::class, 'index'])->name
 Route::get('/', function () {
     return Inertia::render('Welcome');
 })->name('welcome');
-// Routes CinetPay
+// Routes NotchPay
+Route::post('/api/notchpay/webhook', [NotchPayController::class, 'handleWebhook'])->name('notchpay.webhook');
+Route::get('/payment/callback', [NotchPayController::class, 'handleCallback'])->name('payment.callback');
+
+// Routes CinetPay (backup option)
 Route::post('/api/cinetpay/notify', [CinetPayController::class, 'notify']); // Webhook public
-Route::get('/payment/callback', [CinetPayController::class, 'return'])->name('payment.callback');
 Route::get('/api/cinetpay/return', [CinetPayController::class, 'return']);
+Route::get('/payment/cinetpay/callback', [CinetPayController::class, 'return'])->name('payment.cinetpay.callback');
 Route::post('/api/cv/analyze', [CareerAdvisorController::class, 'analyzeCV'])
     ->name('cv.analyze')
     ->middleware(['auth']);
@@ -109,7 +114,9 @@ Route::prefix('api')->middleware(['auth'])->group(function () {
 });
 Route::middleware(['auth'])->group(function () {
 
-    // Route CinetPay d'initialisation (nécessite une authentification)
+    // Route NotchPay d'initialisation (méthode principale)
+    Route::post('/api/notchpay/initialize', [NotchPayController::class, 'initializePayment']);
+    // Route CinetPay d'initialisation (option de backup)
     Route::post('/api/cinetpay/initialize', [CinetPayController::class, 'initialize']);
 
     Route::post('/api/cv/update-color', [CvColorController::class, 'updateColor'])->name('cv.updateColor');

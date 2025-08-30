@@ -1426,8 +1426,12 @@
         "total": "Total",
         "unitPrice": "Prix unitaire",
         "payWithMobile": "Payer avec Mobile Money",
+        "payWithNotchPay": "Payer avec NotchPay",
         "payWithCinetPay": "Payer avec CinetPay",
         "processing": "Traitement en cours...",
+        "primaryMethod": "Méthode recommandée",
+        "alternativeMethod": "Méthode alternative",
+        "or": "ou",
         "tabs": {
             "mobileMoney": "Mobile Money",
             "bankCard": "Carte Bancaire"

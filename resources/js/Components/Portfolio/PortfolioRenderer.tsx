@@ -65,7 +65,7 @@ const QRCodeGenerator = ({ url, isOpen, onClose }: { url: string; isOpen: boolea
 
     const shareUrls = {
         linkedin: `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(url)}`,
-        twitter: `https://twitter.com/intent/tweet?text=${encodeURIComponent('Découvrez mon portfolio professionnel : ' + url)}`,
+        x: `https://x.com/intent/tweet?text=${encodeURIComponent('Découvrez mon portfolio professionnel : ' + url)}`,
         facebook: `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`,
         whatsapp: `https://wa.me/?text=${encodeURIComponent('Découvrez mon portfolio : ' + url)}`,
     };
@@ -113,10 +113,10 @@ const QRCodeGenerator = ({ url, isOpen, onClose }: { url: string; isOpen: boolea
                         </Button>
                         <Button
                             size="sm"
-                            onClick={() => shareOnPlatform('twitter')}
-                            className="bg-sky-500 hover:bg-sky-600 text-white"
+                            onClick={() => shareOnPlatform('x')}
+                            className="bg-black hover:bg-gray-800 text-white"
                         >
-                            {t('portfolio.share.twitter')}
+                            X (Twitter)
                         </Button>
                         <Button
                             size="sm"
@@ -153,13 +153,11 @@ const QRCodeGenerator = ({ url, isOpen, onClose }: { url: string; isOpen: boolea
 const PortfolioControls = ({
     user,
     portfolioUrl,
-    onShowQR,
-    onDownloadCV
+    onShowQR
 }: {
     user: any;
     portfolioUrl: string;
     onShowQR: () => void;
-    onDownloadCV?: () => void;
 }) => {
     const { t } = useTranslation();
 
@@ -179,17 +177,6 @@ const PortfolioControls = ({
                 {t('portfolio.controls.share')}
             </Button>
 
-            {onDownloadCV && (
-                <Button
-                    size="sm"
-                    onClick={onDownloadCV}
-                    variant="outline"
-                    className="shadow-lg hover:shadow-xl transition-all duration-300 bg-white"
-                >
-                    <Download className="w-4 h-4 mr-2" />
-                    {t('portfolio.controls.downloadCV')}
-                </Button>
-            )}
 
             <Button
                 size="sm"
@@ -293,12 +280,6 @@ export default function PortfolioRenderer({
         }
     }, [designType]);
 
-    // Handle download CV
-    const handleDownloadCV = () => {
-        // This would trigger CV generation/download
-        console.log('Download CV triggered');
-        // Implementation depends on your CV generation service
-    };
 
     // SEO metadata
     const seoTitle = settings?.seo_title || `${user.name || 'Utilisateur'} - Portfolio Professionnel`;
@@ -371,7 +352,6 @@ export default function PortfolioRenderer({
                     user={user}
                     portfolioUrl={portfolioUrl}
                     onShowQR={() => setShowQR(true)}
-                    onDownloadCV={handleDownloadCV}
                 />
             )}
 

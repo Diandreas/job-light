@@ -79,7 +79,7 @@ class PortfolioController extends Controller
 
         // Validation améliorée
         $request->validate([
-            'design' => 'required|in:professional,creative,minimal,modern',
+            'design' => 'required|in:professional,creative,minimal,modern,custom',
             'primary_color' => 'nullable|string|max:7',
             'secondary_color' => 'nullable|string|max:7',
             'background_color' => 'nullable|string|max:7',
@@ -99,6 +99,8 @@ class PortfolioController extends Controller
             'show_services' => 'boolean',
             'currency' => 'nullable|string|max:10',
             'section_order' => 'nullable|array',
+            'layout_columns' => 'nullable|in:1,2,3',
+            'division_style' => 'nullable|in:moderne,soft,minimalist,creative,corporate',
             'banner_image' => 'nullable|image|max:10240', // 10MB Max
             'banner_position' => 'nullable|in:top,behind_text,overlay',
             'bio' => 'nullable|string|max:1000',
@@ -136,6 +138,8 @@ class PortfolioController extends Controller
             'show_services',
             'currency',
             'section_order',
+            'layout_columns',
+            'division_style',
             'banner_position',
             'bio',
             'tagline',
@@ -545,7 +549,16 @@ class PortfolioController extends Controller
             // Ajouter les sections correspondantes au groupe
             foreach ($sections as $section) {
                 if (in_array($section['key'], $group['sections'])) {
-                    $groupedSections[$groupKey]['sections'][] = $section;
+                    // Mapper les données de la section avec les données du portfolio
+                    $mappedSection = [
+                        'key' => $section['key'],
+                        'label' => $section['title'],
+                        'count' => $section['count'] ?? 0,
+                        'isActive' => $section['visible'] ?? false,
+                        'data' => $section['data'] ?? []
+                    ];
+                    
+                    $groupedSections[$groupKey]['sections'][] = $mappedSection;
                 }
             }
         }

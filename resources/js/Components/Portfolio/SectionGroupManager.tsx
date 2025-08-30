@@ -4,8 +4,8 @@ import { Badge } from "@/Components/ui/badge";
 import { Switch } from "@/Components/ui/switch";
 import { Button } from "@/Components/ui/button";
 import { Label } from "@/Components/ui/label";
-import { 
-    User, Briefcase, Heart, FileText, Contact, 
+import {
+    User, Briefcase, Heart, FileText, Contact,
     Globe, Wrench, Settings, ArrowUpDown,
     ChevronUp, ChevronDown
 } from 'lucide-react';
@@ -57,10 +57,10 @@ const POSITION_LABELS = {
     sidebar: 'Complémentaire'
 };
 
-export default function SectionGroupManager({ 
-    groups, 
-    onGroupChange, 
-    onSectionToggle 
+export default function SectionGroupManager({
+    groups,
+    onGroupChange,
+    onSectionToggle
 }: SectionGroupManagerProps) {
     const [expandedGroups, setExpandedGroups] = useState<Record<string, boolean>>({});
 
@@ -80,8 +80,8 @@ export default function SectionGroupManager({
 
         if (targetIndex < 0 || targetIndex >= newSections.length) return;
 
-        [newSections[sectionIndex], newSections[targetIndex]] = 
-        [newSections[targetIndex], newSections[sectionIndex]];
+        [newSections[sectionIndex], newSections[targetIndex]] =
+            [newSections[targetIndex], newSections[sectionIndex]];
 
         onGroupChange(groupKey, newSections);
     };
@@ -91,24 +91,38 @@ export default function SectionGroupManager({
             <div className="flex items-center gap-2 mb-4">
                 <Settings className="h-5 w-5 text-gray-600" />
                 <h3 className="text-lg font-semibold text-gray-900">
-                    {__('portfolio.groups.title', {}, 'Organisation par Groupes')}
+                    {__('portfolio.groups.title')}
                 </h3>
                 <Badge variant="secondary" className="text-xs">
                     {Object.keys(groups).length} groupes
                 </Badge>
             </div>
 
+            {/* Debug Section - À retirer en production */}
+            <Card className="bg-red-50 border-red-200">
+                <CardContent>
+                    <div className="space-y-2 text-sm">
+                        <div className="font-semibold text-red-800">SectionGroupManager Debug</div>
+                        <div><strong>Groups count:</strong> {Object.keys(groups).length}</div>
+                        <div><strong>Groups keys:</strong> {Object.keys(groups).join(', ')}</div>
+                        <pre className="text-xs bg-white p-2 rounded overflow-auto max-h-40">
+                            {JSON.stringify(groups, null, 2)}
+                        </pre>
+                    </div>
+                </CardContent>
+            </Card>
+
             <div className="grid gap-4">
                 {Object.entries(groups).map(([groupKey, group]) => {
                     const isExpanded = expandedGroups[groupKey] ?? true;
                     const activeSections = group.sections.filter(s => s.isActive).length;
-                    
+
                     return (
-                        <Card 
-                            key={groupKey} 
+                        <Card
+                            key={groupKey}
                             className={cn("shadow-sm", POSITION_COLORS[group.position])}
                         >
-                            <CardHeader 
+                            <CardHeader
                                 className="pb-3 cursor-pointer hover:bg-gray-50 transition-colors"
                                 onClick={() => toggleGroup(groupKey)}
                             >
@@ -117,8 +131,8 @@ export default function SectionGroupManager({
                                         <div className="flex flex-col">
                                             <CardTitle className="text-base flex items-center gap-2">
                                                 {group.label}
-                                                <Badge 
-                                                    variant="outline" 
+                                                <Badge
+                                                    variant="outline"
                                                     className="text-xs px-2 py-0.5"
                                                 >
                                                     {POSITION_LABELS[group.position]}
@@ -130,7 +144,7 @@ export default function SectionGroupManager({
                                         </div>
                                     </div>
                                     <div className="flex items-center gap-3">
-                                        <Badge 
+                                        <Badge
                                             className={cn(
                                                 "text-xs px-2 py-1",
                                                 activeSections > 0 ? "bg-green-500 text-white" : "bg-gray-400 text-white"
@@ -138,8 +152,8 @@ export default function SectionGroupManager({
                                         >
                                             {activeSections}/{group.sections.length}
                                         </Badge>
-                                        {isExpanded ? 
-                                            <ChevronUp className="h-4 w-4 text-gray-500" /> : 
+                                        {isExpanded ?
+                                            <ChevronUp className="h-4 w-4 text-gray-500" /> :
                                             <ChevronDown className="h-4 w-4 text-gray-500" />
                                         }
                                     </div>
@@ -151,7 +165,7 @@ export default function SectionGroupManager({
                                     <div className="space-y-2">
                                         {group.sections.map((section, index) => {
                                             const IconComponent = SECTION_ICONS[section.key] || Settings;
-                                            
+
                                             return (
                                                 <div
                                                     key={section.key}

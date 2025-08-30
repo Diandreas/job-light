@@ -30,6 +30,7 @@ class ServiceController extends Controller
         ]);
     }
 
+
     public function store(Request $request)
     {
         $request->validate([
@@ -286,6 +287,7 @@ class ServiceController extends Controller
         // Supprimer l'enregistrement en base
         $image->delete();
     }
+
 
     private $service;
 }

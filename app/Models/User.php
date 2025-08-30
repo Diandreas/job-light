@@ -421,4 +421,12 @@ class User extends Authenticatable
             ->withPivot('language_level')
             ->withTimestamps();
     }
+
+    /**
+     * Get the portfolio visits for the user.
+     */
+    public function portfolioVisits()
+    {
+        return $this->hasMany(PortfolioVisit::class);
+    }
 }

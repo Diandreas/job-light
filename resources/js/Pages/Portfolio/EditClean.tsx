@@ -40,6 +40,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import ServiceManager from '@/Components/Portfolio/ServiceManager';
 import SectionGroupManager from '@/Components/Portfolio/SectionGroupManager';
+import EnhancedQRCode from '@/Components/Portfolio/EnhancedQRCode';
 
 
 interface Section {
@@ -84,7 +85,7 @@ const DESIGN_OPTIONS = [
 
 
 
-export default function EditClean({ auth, portfolio, settings, cvData = portfolio, customSections, services, groupedSections = {} }) {
+export default function EditClean({ auth, portfolio, settings, cvData = portfolio, customSections, services, groupedSections = {}, portfolioStats }) {
     const [previewMode, setPreviewMode] = useState(false);
     const [showQR, setShowQR] = useState(false);
 
@@ -160,6 +161,15 @@ export default function EditClean({ auth, portfolio, settings, cvData = portfoli
     });
 
     const portfolioUrl = `${window.location.origin}/portfolio/${auth.user.username || auth.user.email}`;
+
+    // Utiliser les vraies statistiques du backend ou des valeurs par défaut
+    const defaultStats = {
+        views: 0,
+        shares: 0,
+        lastViewed: new Date().toLocaleDateString('fr-FR'),
+        isPublic: true
+    };
+    const realPortfolioStats = portfolioStats || defaultStats;
 
     const onSubmit = (e) => {
         e.preventDefault();
@@ -260,45 +270,14 @@ export default function EditClean({ auth, portfolio, settings, cvData = portfoli
             <div className="py-6">
                 <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
 
-                    {/* QR Code Modal */}
-                    <AnimatePresence>
-                        {showQR && (
-                            <motion.div
-                                initial={{ opacity: 0 }}
-                                animate={{ opacity: 1 }}
-                                exit={{ opacity: 0 }}
-                                className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4"
-                                onClick={() => setShowQR(false)}
-                            >
-                                <motion.div
-                                    initial={{ scale: 0.9, opacity: 0 }}
-                                    animate={{ scale: 1, opacity: 1 }}
-                                    exit={{ scale: 0.9, opacity: 0 }}
-                                    className="bg-white rounded-xl p-6 max-w-sm w-full shadow-xl"
-                                    onClick={(e) => e.stopPropagation()}
-                                >
-                                    <h3 className="font-semibold text-lg text-center mb-4">Partager votre Portfolio</h3>
-                                    <div className="text-center mb-4">
-                                        <img
-                                            src={generateQRCode()}
-                                            alt="QR Code"
-                                            className="mx-auto mb-3 rounded-lg shadow-md"
-                                        />
-                                        <p className="text-xs text-gray-600 break-all bg-gray-50 p-2 rounded">
-                                            {portfolioUrl}
-                                        </p>
-                                    </div>
-                                    <Button
-                                        variant="outline"
-                                        onClick={() => setShowQR(false)}
-                                        className="w-full"
-                                    >
-                                        Fermer
-                                    </Button>
-                                </motion.div>
-                            </motion.div>
-                        )}
-                    </AnimatePresence>
+                    {/* Enhanced QR Code Modal */}
+                    <EnhancedQRCode
+                        url={portfolioUrl}
+                        isOpen={showQR}
+                        onClose={() => setShowQR(false)}
+                        user={auth.user}
+                        portfolioStats={realPortfolioStats}
+                    />
 
                     <div className={cn("grid gap-8", previewMode ? "lg:grid-cols-3" : "lg:grid-cols-1")}>
 

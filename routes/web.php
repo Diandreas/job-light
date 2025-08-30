@@ -145,6 +145,10 @@ Route::middleware(['auth'])->group(function () {
     Route::put('/portfolio/sections/{section}/toggle', [PortfolioController::class, 'toggleSectionActive'])->name('portfolio.sections.toggle');
     Route::post('/portfolio/sections/order', [PortfolioController::class, 'updateSectionOrder'])->name('portfolio.sections.order');
     
+    // Portfolio statistics and sharing
+    Route::get('/portfolio/stats', [PortfolioController::class, 'getStats'])->name('portfolio.stats');
+    Route::post('/portfolio/share', [PortfolioController::class, 'recordShare'])->name('portfolio.share');
+    
     // Services management
     Route::resource('services', ServiceController::class);
     Route::post('/services/order', [ServiceController::class, 'updateOrder'])->name('services.order');

@@ -1591,12 +1591,39 @@
         },
         "share": {
             "title": "Partager le Portfolio",
+            "subtitle": "Créé avec Guidy ✨",
             "qrCode": "QR Code",
             "socialSharing": "Partage sur les réseaux sociaux",
             "linkedin": "LinkedIn",
             "twitter": "Twitter",
             "facebook": "Facebook",
-            "whatsapp": "WhatsApp"
+            "whatsapp": "WhatsApp",
+            "email": "Email",
+            "copy": "Copier",
+            "copied": "Copié !",
+            "download": "Télécharger QR",
+            "viewPortfolio": "Voir Portfolio",
+            "stats": {
+                "views": "Vues",
+                "shares": "Partages",
+                "status": "Statut",
+                "engagement": "Engagement",
+                "public": "Public",
+                "private": "Privé",
+                "active": "Actif",
+                "lastViewed": "Dernière visite",
+                "shareRate": "de taux de partage"
+            },
+            "tips": {
+                "title": "Conseils de partage",
+                "linkedin": "Partagez sur LinkedIn pour plus de visibilité professionnelle",
+                "qrCard": "Utilisez le QR code sur vos cartes de visite",
+                "emailSignature": "Ajoutez le lien dans votre signature email"
+            },
+            "status": {
+                "online": "Portfolio en ligne",
+                "ready": "Prêt à être partagé"
+            }
         },
         "footer": {
             "generatedBy": "Portfolio professionnel généré avec JobLight"

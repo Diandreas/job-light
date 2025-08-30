@@ -6,6 +6,8 @@ import { Button } from "@/Components/ui/button";
 import { Card, CardContent } from "@/Components/ui/card";
 import { QrCode, Share2, Download, ExternalLink } from 'lucide-react';
 import { motion } from 'framer-motion';
+import EnhancedQRCode from './EnhancedQRCode';
+import EnhancedShareControls from './EnhancedShareControls';
 
 interface PortfolioRendererProps {
     user: any;
@@ -55,99 +57,13 @@ const PortfolioError = ({ error, retry }: { error?: Error; retry?: () => void })
     );
 };
 
-// QR Code Generator component
-const QRCodeGenerator = ({ url, isOpen, onClose }: { url: string; isOpen: boolean; onClose: () => void }) => {
-    const { t } = useTranslation();
-
-    if (!isOpen) return null;
-
-    const qrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(url)}`;
-
-    const shareUrls = {
-        linkedin: `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(url)}`,
-        x: `https://x.com/intent/tweet?text=${encodeURIComponent('Découvrez mon portfolio professionnel : ' + url)}`,
-        facebook: `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`,
-        whatsapp: `https://wa.me/?text=${encodeURIComponent('Découvrez mon portfolio : ' + url)}`,
-    };
-
-    const shareOnPlatform = (platform: keyof typeof shareUrls) => {
-        window.open(shareUrls[platform], '_blank', 'width=600,height=400');
-    };
-
-    return (
-        <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4"
-            onClick={onClose}
-        >
-            <motion.div
-                initial={{ scale: 0.9, opacity: 0 }}
-                animate={{ scale: 1, opacity: 1 }}
-                exit={{ scale: 0.9, opacity: 0 }}
-                className="bg-white rounded-xl shadow-2xl max-w-sm w-full p-6"
-                onClick={(e) => e.stopPropagation()}
-            >
-                <div className="text-center">
-                    <h3 className="text-xl font-bold mb-4">{t('portfolio.share.title')}</h3>
-
-                    {/* QR Code */}
-                    <div className="mb-6">
-                        <img
-                            src={qrCodeUrl}
-                            alt="QR Code"
-                            className="mx-auto rounded-lg shadow-md mb-3"
-                        />
-                        <p className="text-xs text-gray-500 break-all px-2">{url}</p>
-                    </div>
-
-                    {/* Social sharing buttons */}
-                    <div className="grid grid-cols-2 gap-3 mb-6">
-                        <Button
-                            size="sm"
-                            onClick={() => shareOnPlatform('linkedin')}
-                            className="bg-blue-600 hover:bg-blue-700 text-white"
-                        >
-                            {t('portfolio.share.linkedin')}
-                        </Button>
-                        <Button
-                            size="sm"
-                            onClick={() => shareOnPlatform('x')}
-                            className="bg-black hover:bg-gray-800 text-white"
-                        >
-                            X (Twitter)
-                        </Button>
-                        <Button
-                            size="sm"
-                            onClick={() => shareOnPlatform('facebook')}
-                            className="bg-blue-700 hover:bg-blue-800 text-white"
-                        >
-                            {t('portfolio.share.facebook')}
-                        </Button>
-                        <Button
-                            size="sm"
-                            onClick={() => shareOnPlatform('whatsapp')}
-                            className="bg-green-600 hover:bg-green-700 text-white"
-                        >
-                            {t('portfolio.share.whatsapp')}
-                        </Button>
-                    </div>
-
-                    {/* Copy link */}
-                    <Button
-                        size="sm"
-                        variant="outline"
-                        onClick={() => navigator.clipboard.writeText(url)}
-                        className="w-full"
-                    >
-                        {t('portfolio.controls.copyLink')}
-                    </Button>
-                </div>
-            </motion.div>
-        </motion.div>
-    );
-};
+// Portfolio stats (you might want to fetch this from your backend)
+const getPortfolioStats = (user: any) => ({
+    views: Math.floor(Math.random() * 100) + 50, // Replace with real data
+    shares: Math.floor(Math.random() * 20) + 5,   // Replace with real data
+    lastViewed: new Date().toLocaleDateString('fr-FR'),
+    isPublic: true
+});
 
 // Portfolio controls component
 const PortfolioControls = ({
@@ -346,20 +262,23 @@ export default function PortfolioRenderer({
                 />
             </Suspense>
 
-            {/* Portfolio Controls */}
+            {/* Enhanced Portfolio Controls */}
             {showControls && !isPreview && (
-                <PortfolioControls
+                <EnhancedShareControls
                     user={user}
                     portfolioUrl={portfolioUrl}
                     onShowQR={() => setShowQR(true)}
+                    portfolioStats={getPortfolioStats(user)}
                 />
             )}
 
-            {/* QR Code Modal */}
-            <QRCodeGenerator
+            {/* Enhanced QR Code Modal */}
+            <EnhancedQRCode
                 url={portfolioUrl}
                 isOpen={showQR}
                 onClose={() => setShowQR(false)}
+                user={user}
+                portfolioStats={getPortfolioStats(user)}
             />
         </>
     );

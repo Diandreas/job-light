@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use App\Models\PortfolioSettings;
 use App\Models\PortfolioSection;
+use App\Services\PortfolioStatsService;
 use Inertia\Inertia;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -23,6 +24,14 @@ class PortfolioController extends Controller
         $user = User::where('username', $identifier)
             ->orWhere('email', $identifier)
             ->firstOrFail();
+
+        // Enregistrer la visite du portfolio
+        $statsService = new PortfolioStatsService();
+        $statsService->recordVisit($user, [
+            'source' => 'portfolio_view',
+            'user_agent' => request()->userAgent(),
+            'referrer' => request()->header('referer')
+        ]);
 
         $portfolio = $this->getPortfolioData($user);
 //dd($portfolio);
@@ -59,6 +68,10 @@ class PortfolioController extends Controller
         $portfolio = $this->getPortfolioData($user);
         $settings = $user->portfolioSettings ?? new PortfolioSettings();
         $customSections = $user->portfolioSections()->activeOrdered()->get();
+        
+        // Obtenir les statistiques du portfolio
+        $statsService = new PortfolioStatsService();
+        $portfolioStats = $statsService->getStats($user);
 
         return Inertia::render('Portfolio/EditClean', [
             'portfolio' => $portfolio,
@@ -70,6 +83,7 @@ class PortfolioController extends Controller
             'availableFonts' => PortfolioSettings::getAvailableFonts(),
             'availableHeaderStyles' => PortfolioSettings::getAvailableHeaderStyles(),
             'groupedSections' => self::getGroupedSections($portfolio),
+            'portfolioStats' => $portfolioStats,
         ]);
     }
 
@@ -564,5 +578,49 @@ class PortfolioController extends Controller
         }
         
         return $groupedSections;
+    }
+
+    /**
+     * Obtenir les statistiques du portfolio
+     */
+    public function getStats()
+    {
+        $user = auth()->user();
+        $statsService = new PortfolioStatsService();
+        
+        return response()->json($statsService->getStats($user));
+    }
+
+    /**
+     * Enregistrer un partage de portfolio
+     */
+    public function recordShare(Request $request)
+    {
+        $request->validate([
+            'platform' => 'required|string|in:linkedin,twitter,facebook,whatsapp,email,qr_code,copy',
+            'metadata' => 'nullable|array'
+        ]);
+
+        $user = auth()->user();
+        $statsService = new PortfolioStatsService();
+        
+        $result = $statsService->recordShare(
+            $user, 
+            $request->platform, 
+            $request->metadata ?? []
+        );
+
+        if ($result) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Partage enregistré avec succès',
+                'stats' => $statsService->getStats($user)
+            ]);
+        }
+
+        return response()->json([
+            'success' => false,
+            'message' => 'Erreur lors de l\'enregistrement du partage'
+        ], 500);
     }
 }

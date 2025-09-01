@@ -23,7 +23,7 @@ import { MessageBubble } from '@/Components/ai/MessageBubble';
 import { ServiceCard, MobileServiceCard } from '@/Components/ai/ServiceCard';
 import { SERVICES, DEFAULT_PROMPTS } from '@/Components/ai/constants';
 import { PowerPointService } from '@/Components/ai/PresentationService';
-import ServiceSelector from '@/Components/ai/specialized/ServiceSelector';
+// import ServiceSelector from '@/Components/ai/specialized/ServiceSelector';
 import { Avatar, AvatarFallback, AvatarImage } from "@/Components/ui/avatar";
 import { Badge } from "@/Components/ui/badge";
 import { Separator } from "@/Components/ui/separator";
@@ -1420,31 +1420,25 @@ export default function Index({ auth, userInfo, chatHistories }) {
                                         </p>
                                     </div>
 
-                                    {/* Interface améliorée avec étapes immersives */}
-                                    {useEnhancedInterface ? (
-                                        <div className="px-2">
-                                            <ServiceSelector
-                                                userInfo={userInfo}
-                                                onServiceSubmit={handleEnhancedServiceSubmit}
-                                                isLoading={isLoading}
-                                                walletBalance={walletBalance}
-                                            />
-                                            
-                                            {/* Toggle vers interface classique */}
-                                            <div className="text-center mt-8">
-                                                <Button
-                                                    variant="ghost"
-                                                    size="sm"
-                                                    onClick={() => setUseEnhancedInterface(false)}
-                                                    className="text-gray-500 hover:text-gray-700"
-                                                >
-                                                    Utiliser l'interface classique
-                                                </Button>
+                                    {/* Interface classique uniquement (ServiceSelector temporairement désactivé) */}
+                                    <div className="px-2">
+                                        {/* Notification interface améliorée */}
+                                        <div className="mb-6 p-4 bg-gradient-to-r from-amber-50 to-purple-50 border border-amber-200 rounded-lg text-center">
+                                            <div className="flex items-center justify-center gap-2 mb-2">
+                                                <Sparkles className="w-5 h-5 text-amber-600" />
+                                                <span className="font-semibold text-amber-800">
+                                                    Nouvelles Expériences IA
+                                                </span>
+                                                <Badge className="bg-amber-100 text-amber-700">
+                                                    🚧 Beta
+                                                </Badge>
                                             </div>
+                                            <p className="text-sm text-amber-600 mb-3">
+                                                Les interfaces spécialisées et artefacts interactifs sont en cours de finalisation.
+                                                Profitez déjà de l'interface actuelle améliorée !
+                                            </p>
                                         </div>
-                                    ) : (
-                                        <>
-                                            {/* Interface classique */}
+                                        {/* Interface classique */}
                                         <div className="hidden lg:grid grid-cols-2 xl:grid-cols-3 gap-3 px-2 mb-8">
                                             {SERVICES.map(service => (
                                                 <EnhancedServiceCard
@@ -1476,20 +1470,7 @@ export default function Index({ auth, userInfo, chatHistories }) {
                                                 onClick={() => handleServiceSelection(REPORT_SERVICE)}
                                             />
                                         </div>
-                                            
-                                            {/* Toggle vers interface améliorée */}
-                                            <div className="text-center">
-                                                <Button
-                                                    variant="outline"
-                                                    onClick={() => setUseEnhancedInterface(true)}
-                                                    className="bg-gradient-to-r from-amber-50 to-purple-50 border-amber-200 hover:from-amber-100 hover:to-purple-100"
-                                                >
-                                                    <Sparkles className="w-4 h-4 mr-2" />
-                                                    Essayer les nouvelles expériences IA immersives
-                                                </Button>
-                                            </div>
-                                        </>
-                                    )}
+                                    </div>
                                 </div>
                             </div>
 

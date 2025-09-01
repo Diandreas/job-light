@@ -14,11 +14,11 @@ import {
 } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from "@/Components/ui/avatar";
 
-// Import des artefacts spécialisés (temporairement désactivés pour éviter erreurs)
-// import CareerRoadmapArtifact from './artifacts/CareerRoadmapArtifact';
-// import CVHeatmapArtifact from './artifacts/CVHeatmapArtifact';
-// import JobAnalyzerArtifact from './artifacts/JobAnalyzerArtifact';
-// import InterviewReportArtifact from './artifacts/InterviewReportArtifact';
+// Import des artefacts spécialisés
+import CareerRoadmapArtifact from './artifacts/CareerRoadmapArtifact';
+import CVHeatmapArtifact from './artifacts/CVHeatmapArtifact';
+import JobAnalyzerArtifact from './artifacts/JobAnalyzerArtifact';
+import InterviewReportArtifact from './artifacts/InterviewReportArtifact';
 
 interface EnhancedMessageBubbleProps {
     message: {
@@ -242,27 +242,28 @@ export default function EnhancedMessageBubble({ message, onArtifactAction }: Enh
         </div>
     );
 
-    // Rendu de l'artefact principal (placeholder temporaire)
+    // Rendu de l'artefact principal
     const renderArtifact = () => {
         if (!artifactType || !showArtifacts) return null;
 
-        // Placeholder simple pour éviter erreurs d'import
-        return (
-            <div className="text-center py-6 bg-amber-50 rounded-lg border border-amber-200">
-                <div className="w-12 h-12 bg-gradient-to-r from-amber-500 to-purple-500 rounded-full flex items-center justify-center mx-auto mb-3">
-                    <Sparkles className="w-6 h-6 text-white" />
-                </div>
-                <h4 className="font-bold text-amber-800 mb-2">
-                    Artefact {artifactType} Détecté
-                </h4>
-                <p className="text-sm text-amber-600 mb-3">
-                    Interface interactive basée sur votre conversation
-                </p>
-                <Badge className="bg-amber-100 text-amber-700">
-                    🚧 En développement final
-                </Badge>
-            </div>
-        );
+        const artifactProps = {
+            data: structuredData,
+            messageContent: message.content,
+            onAction: onArtifactAction
+        };
+
+        switch (artifactType) {
+            case 'career-roadmap':
+                return <CareerRoadmapArtifact {...artifactProps} />;
+            case 'cv-heatmap':
+                return <CVHeatmapArtifact {...artifactProps} />;
+            case 'job-analyzer':
+                return <JobAnalyzerArtifact {...artifactProps} />;
+            case 'interview-report':
+                return <InterviewReportArtifact {...artifactProps} />;
+            default:
+                return null;
+        }
     };
 
     return (

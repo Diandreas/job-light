@@ -2,6 +2,11 @@ import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import ReactMarkdown from 'react-markdown';
 import { Share2, Download, X, Copy, Check, Presentation, User, MoreHorizontal, Sparkles } from 'lucide-react';
+import { ArtifactDetector, ArtifactData } from './artifacts/ArtifactDetector';
+import InteractiveTable from './artifacts/InteractiveTable';
+import ScoreDashboard from './artifacts/ScoreDashboard';
+import InteractiveChecklist from './artifacts/InteractiveChecklist';
+import SimpleChart from './artifacts/SimpleChart';
 import html2canvas from 'html2canvas';
 import { PowerPointService } from '@/Components/ai/PresentationService';
 import { Button } from "@/Components/ui/button";
@@ -29,9 +34,10 @@ interface MessageBubbleProps {
         isLatest?: boolean;
         isThinking?: boolean;
     };
+    serviceId?: string;
 }
 
-export const MessageBubble: React.FC<MessageBubbleProps> = ({ message }) => {
+export const MessageBubble: React.FC<MessageBubbleProps> = ({ message, serviceId }) => {
     const { t } = useTranslation();
     const isUser = message.role === 'user';
     const isThinking = message.isThinking || false;
@@ -42,6 +48,8 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({ message }) => {
     const [copied, setCopied] = useState(false);
     const [isGeneratingPPTX, setIsGeneratingPPTX] = useState(false);
     const [isPPTXSuccess, setIsPPTXSuccess] = useState(false);
+    const [artifacts, setArtifacts] = useState<ArtifactData[]>([]);
+    const [cleanContent, setCleanContent] = useState('');
     const messageRef = useRef<HTMLDivElement>(null);
     const bubbleRef = useRef<HTMLDivElement>(null);
     const { toast } = useToast();
@@ -138,7 +146,15 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({ message }) => {
 
             if (currentIndex >= cleanContent.length) {
                 clearInterval(typingInterval);
-                setTimeout(() => setIsTypingComplete(true), 100);
+                setTimeout(() => {
+                    setIsTypingComplete(true);
+                    // Détecter les artefacts une fois l'animation terminée
+                    if (!isUser && !isThinking) {
+                        const detectedArtifacts = ArtifactDetector.detectArtifacts(message.content, serviceId);
+                        setArtifacts(detectedArtifacts);
+                        setCleanContent(ArtifactDetector.cleanContentForDisplay(message.content, detectedArtifacts));
+                    }
+                }, 100);
             }
         }, 10);
 
@@ -469,7 +485,7 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({ message }) => {
                                 )
                             }}
                         >
-                            {displayContent}
+                            {artifacts.length > 0 && cleanContent ? cleanContent : displayContent}
                         </ReactMarkdown>
                     )}
 
@@ -507,6 +523,56 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({ message }) => {
                                 )}
                                 <span>{t('components.messageBubble.presentation.button')}</span>
                             </Button>
+                        </div>
+                    )}
+
+                    {/* Artefacts interactifs */}
+                    {!isUser && isTypingComplete && artifacts.length > 0 && (
+                        <div className="mt-3 space-y-3">
+                            {artifacts.map((artifact, index) => (
+                                <motion.div
+                                    key={index}
+                                    initial={{ opacity: 0, y: 10 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    transition={{ delay: index * 0.2 }}
+                                >
+                                    {artifact.type === 'table' && (
+                                        <InteractiveTable
+                                            title={artifact.title}
+                                            headers={artifact.data.headers}
+                                            rows={artifact.data.rows}
+                                            exportable={artifact.data.exportable}
+                                            sortable={artifact.data.sortable}
+                                            filterable={artifact.data.filterable}
+                                        />
+                                    )}
+                                    
+                                    {artifact.type === 'score' && (
+                                        <ScoreDashboard
+                                            title={artifact.title}
+                                            data={artifact.data}
+                                            serviceId={serviceId}
+                                        />
+                                    )}
+                                    
+                                    {artifact.type === 'checklist' && (
+                                        <InteractiveChecklist
+                                            title={artifact.title}
+                                            items={artifact.data.items}
+                                            completable={artifact.data.completable}
+                                            editable={artifact.metadata?.interactive}
+                                        />
+                                    )}
+                                    
+                                    {artifact.type === 'chart' && (
+                                        <SimpleChart
+                                            title={artifact.title}
+                                            data={artifact.data}
+                                            interactive={artifact.metadata?.interactive}
+                                        />
+                                    )}
+                                </motion.div>
+                            ))}
                         </div>
                     )}
                 </motion.div>

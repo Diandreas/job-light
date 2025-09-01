@@ -14,6 +14,7 @@ import CareerAdviceWizard from './CareerAdviceWizard';
 import CoverLetterGenerator from './CoverLetterGenerator';
 import ResumeAnalyzer from './ResumeAnalyzer';
 import InterviewSimulator from './InterviewSimulator';
+import { generateTestArtifacts } from '../artifacts/ExampleResponses';
 
 interface ServiceSelectorProps {
     userInfo: any;
@@ -233,28 +234,50 @@ export default function ServiceSelector({ userInfo, onServiceSubmit, isLoading, 
                                         ))}
                                     </div>
                                     
-                                    <Button
-                                        onClick={() => handleServiceSelect(service.id)}
-                                        disabled={!canAfford || !service.component}
-                                        className={`w-full ${service.component && canAfford ? 'bg-gradient-to-r from-amber-500 to-purple-500 hover:from-amber-600 hover:to-purple-600' : 'bg-gray-400'}`}
-                                    >
-                                        {!service.component ? (
-                                            <>
-                                                <Zap className="w-4 h-4 mr-2" />
-                                                Bientôt disponible
-                                            </>
-                                        ) : !canAfford ? (
-                                            <>
-                                                Tokens insuffisants
-                                            </>
-                                        ) : (
-                                            <>
-                                                <Target className="w-4 h-4 mr-2" />
-                                                Commencer
-                                                <ArrowRight className="w-4 h-4 ml-2" />
-                                            </>
+                                    <div className="space-y-2">
+                                        <Button
+                                            onClick={() => handleServiceSelect(service.id)}
+                                            disabled={!canAfford || !service.component}
+                                            className={`w-full ${service.component && canAfford ? 'bg-gradient-to-r from-amber-500 to-purple-500 hover:from-amber-600 hover:to-purple-600' : 'bg-gray-400'}`}
+                                        >
+                                            {!service.component ? (
+                                                <>
+                                                    <Zap className="w-4 h-4 mr-2" />
+                                                    Bientôt disponible
+                                                </>
+                                            ) : !canAfford ? (
+                                                <>
+                                                    Tokens insuffisants
+                                                </>
+                                            ) : (
+                                                <>
+                                                    <Target className="w-4 h-4 mr-2" />
+                                                    Commencer
+                                                    <ArrowRight className="w-4 h-4 ml-2" />
+                                                </>
+                                            )}
+                                        </Button>
+                                        
+                                        {/* Bouton de test des artefacts */}
+                                        {service.component && canAfford && (
+                                            <Button
+                                                variant="outline"
+                                                size="sm"
+                                                onClick={() => {
+                                                    const testResponse = generateTestArtifacts(service.id);
+                                                    onServiceSubmit(service.id, { 
+                                                        prompt: "Test des artefacts interactifs",
+                                                        mockResponse: testResponse,
+                                                        isTest: true 
+                                                    });
+                                                }}
+                                                className="w-full text-xs border-amber-200 text-amber-700 hover:bg-amber-50"
+                                            >
+                                                <Sparkles className="w-3 h-3 mr-1" />
+                                                Tester les artefacts
+                                            </Button>
                                         )}
-                                    </Button>
+                                    </div>
                                 </CardContent>
                             </Card>
                         </motion.div>

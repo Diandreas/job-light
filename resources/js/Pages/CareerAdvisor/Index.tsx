@@ -1001,7 +1001,43 @@ export default function Index({ auth, userInfo, chatHistories }) {
 
     // Handler pour les services avec interfaces spécialisées
     const handleEnhancedServiceSubmit = async (serviceId: string, data: any) => {
-        if (walletBalance < SERVICES.find(s => s.id === serviceId)?.cost || 0) {
+        const service = SERVICES.find(s => s.id === serviceId);
+        
+        // Gérer les tests d'artefacts
+        if (data.isTest && data.mockResponse) {
+            const contextId = crypto.randomUUID();
+            
+            const newChat = {
+                context_id: contextId,
+                service_id: serviceId,
+                created_at: new Date().toISOString(),
+                messages: [
+                    {
+                        role: 'user',
+                        content: data.prompt,
+                        timestamp: new Date().toISOString()
+                    },
+                    {
+                        role: 'assistant',
+                        content: data.mockResponse,
+                        timestamp: new Date().toISOString(),
+                        isLatest: true
+                    }
+                ]
+            };
+
+            setUserChats(prev => [newChat, ...prev]);
+            setActiveChat(newChat);
+            
+            toast({
+                title: "Test d'artefacts",
+                description: `Démonstration des artefacts pour ${service?.title}`,
+            });
+            return;
+        }
+
+        // Logique normale pour les vraies requêtes
+        if (walletBalance < service?.cost || 0) {
             toast({
                 title: "Solde insuffisant",
                 description: "Vous n'avez pas assez de tokens pour ce service",
@@ -1013,11 +1049,8 @@ export default function Index({ auth, userInfo, chatHistories }) {
         setIsLoading(true);
         
         try {
-            // Créer un nouveau chat pour ce service
             const contextId = crypto.randomUUID();
-            const service = SERVICES.find(s => s.id === serviceId);
             
-            // Utiliser le prompt généré par l'interface spécialisée
             const response = await axios.post('/career-advisor/chat', {
                 message: data.prompt || data.finalPrompt || JSON.stringify(data),
                 contextId: contextId,
@@ -1027,7 +1060,6 @@ export default function Index({ auth, userInfo, chatHistories }) {
             });
 
             if (response.data.message) {
-                // Créer le nouveau chat avec la réponse
                 const newChat = {
                     context_id: contextId,
                     service_id: serviceId,
@@ -1041,16 +1073,15 @@ export default function Index({ auth, userInfo, chatHistories }) {
                         {
                             role: 'assistant',
                             content: response.data.message,
-                            timestamp: new Date().toISOString()
+                            timestamp: new Date().toISOString(),
+                            isLatest: true
                         }
                     ]
                 };
 
-                // Ajouter à la liste et activer
                 setUserChats(prev => [newChat, ...prev]);
                 setActiveChat(newChat);
                 
-                // Mettre à jour le solde
                 setWalletBalance(prev => prev - service.cost);
                 setTokensUsed(prev => prev + (response.data.tokens || 0));
 
@@ -1686,6 +1717,7 @@ Voici l'évaluation détaillée de votre CV :
                                                                 ...message,
                                                                 isLatest: index === (activeChat?.messages || []).length - 1
                                                             }}
+                                                            serviceId={selectedService.id}
                                                         />
                                                     )}
                                                 </motion.div>
@@ -1713,6 +1745,7 @@ Voici l'évaluation détaillée de votre CV :
                                                                 ...tempMessage,
                                                                 isLatest: true
                                                             }}
+                                                            serviceId={selectedService.id}
                                                         />
                                                     )}
                                                 </motion.div>

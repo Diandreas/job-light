@@ -267,7 +267,7 @@ export default function JobPortalIndex({ auth, jobs = { data: [], links: [], met
                                                 <SelectValue placeholder="Tous les types" />
                                             </SelectTrigger>
                                             <SelectContent>
-                                                <SelectItem value="">Tous les types</SelectItem>
+                                                <SelectItem value="all">Tous les types</SelectItem>
                                                 {EMPLOYMENT_TYPES.map(type => (
                                                     <SelectItem key={type.value} value={type.value}>
                                                         {type.label}
@@ -289,7 +289,7 @@ export default function JobPortalIndex({ auth, jobs = { data: [], links: [], met
                                                 <SelectValue placeholder="Tous les niveaux" />
                                             </SelectTrigger>
                                             <SelectContent>
-                                                <SelectItem value="">Tous les niveaux</SelectItem>
+                                                <SelectItem value="all">Tous les niveaux</SelectItem>
                                                 {EXPERIENCE_LEVELS.map(level => (
                                                     <SelectItem key={level.value} value={level.value}>
                                                         {level.label}

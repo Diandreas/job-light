@@ -46,11 +46,11 @@ class JobPortalController extends Controller
             $query->where('location', 'like', "%{$request->location}%");
         }
 
-        if ($request->filled('employment_type')) {
+        if ($request->filled('employment_type') && $request->employment_type !== 'all') {
             $query->where('employment_type', $request->employment_type);
         }
 
-        if ($request->filled('experience_level')) {
+        if ($request->filled('experience_level') && $request->experience_level !== 'all') {
             $query->where('experience_level', $request->experience_level);
         }
 
@@ -208,7 +208,7 @@ class JobPortalController extends Controller
             $query->where('address', 'like', "%{$request->location}%");
         }
 
-        if ($request->filled('experience_years')) {
+        if ($request->filled('experience_years') && $request->experience_years !== 'all') {
             // Calculer l'expérience basée sur les dates d'expérience
             $minYears = (int) $request->experience_years;
             $query->whereHas('experiences', function($q) use ($minYears) {

@@ -200,7 +200,7 @@ export default function Profiles({ auth, profiles = { data: [], links: [], meta:
                                                 <SelectValue placeholder="Expérience" />
                                             </SelectTrigger>
                                             <SelectContent>
-                                                <SelectItem value="">Toute expérience</SelectItem>
+                                                <SelectItem value="all">Toute expérience</SelectItem>
                                                 <SelectItem value="1">1+ an</SelectItem>
                                                 <SelectItem value="3">3+ ans</SelectItem>
                                                 <SelectItem value="5">5+ ans</SelectItem>

@@ -24,7 +24,7 @@ interface EnhancedMessageBubbleProps {
     message: {
         role: 'user' | 'assistant';
         content: string;
-        timestamp: Date;
+        timestamp: Date | string;
         serviceId?: string;
         isLatest?: boolean;
         isThinking?: boolean;
@@ -465,10 +465,19 @@ export default function EnhancedMessageBubble({ message, onArtifactAction }: Enh
 
                 {/* Timestamp */}
                 <div className={`text-xs text-gray-500 mt-2 ${isUser ? 'text-right' : 'text-left'}`}>
-                    {message.timestamp.toLocaleTimeString('fr-FR', { 
-                        hour: '2-digit', 
-                        minute: '2-digit' 
-                    })}
+                    {(() => {
+                        try {
+                            const timestamp = typeof message.timestamp === 'string' 
+                                ? new Date(message.timestamp) 
+                                : message.timestamp;
+                            return timestamp.toLocaleTimeString('fr-FR', { 
+                                hour: '2-digit', 
+                                minute: '2-digit' 
+                            });
+                        } catch (error) {
+                            return 'Maintenant';
+                        }
+                    })()}
                 </div>
             </div>
 

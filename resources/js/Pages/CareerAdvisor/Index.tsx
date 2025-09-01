@@ -1611,6 +1611,50 @@ export default function Index({ auth, userInfo, chatHistories }) {
                                             {useEnhancedBubbles ? 'Artefacts ON' : 'Artefacts OFF'}
                                         </span>
                                     </Button>
+
+                                    {/* Bouton test artefacts (temporaire) */}
+                                    {useEnhancedBubbles && (
+                                        <Button
+                                            variant="outline"
+                                            size="sm"
+                                            onClick={() => {
+                                                // Ajouter un message de test avec artefact
+                                                const testMessage = {
+                                                    role: 'assistant' as const,
+                                                    content: `## Analyse de votre profil professionnel
+
+Voici l'évaluation détaillée de votre CV :
+
+| Section | Score | Statut |
+|---------|-------|--------|
+| Informations personnelles | 85/100 | Bon |
+| Résumé professionnel | 65/100 | À améliorer |
+| Expériences | 90/100 | Excellent |
+| Compétences | 70/100 | Bon |
+
+### Actions recommandées :
+• Améliorer le résumé professionnel avec des mots-clés sectoriels
+• Ajouter 2-3 compétences techniques manquantes
+• Optimiser la mise en forme pour les ATS
+• Quantifier davantage les réalisations
+
+**Score global : 77/100** - Votre CV est bon mais peut être optimisé pour maximiser vos chances.`,
+                                                    timestamp: new Date().toISOString(),
+                                                    serviceId: selectedService.id,
+                                                    isLatest: true
+                                                };
+                                                
+                                                setActiveChat({
+                                                    ...activeChat,
+                                                    messages: [...(activeChat?.messages || []), testMessage]
+                                                });
+                                            }}
+                                            className="h-7 px-2 bg-purple-50 border-purple-200 text-purple-700"
+                                        >
+                                            <Zap className="h-3 w-3 mr-1" />
+                                            <span className="hidden sm:inline text-xs">Test</span>
+                                        </Button>
+                                    )}
                                 </div>
                             </div>
 

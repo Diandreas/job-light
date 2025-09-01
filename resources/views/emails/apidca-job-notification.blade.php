@@ -164,7 +164,7 @@
                     </p>
                 @endif
 
-                <a href="{{ route('job.show', $job->id) }}" class="cta-button">
+                <a href="{{ route('job-portal.show', $job->id) }}" class="cta-button">
                     Voir l'offre complète →
                 </a>
             </div>

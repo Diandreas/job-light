@@ -104,7 +104,7 @@
             </div>
 
             <div style="text-align: center; margin: 25px 0;">
-                <a href="{{ route('job-portal.applications', $job->id) }}" class="btn">
+                <a href="{{ route('job-portal.applications', $job) }}" class="btn">
                     Voir toutes les candidatures
                 </a>
             </div>

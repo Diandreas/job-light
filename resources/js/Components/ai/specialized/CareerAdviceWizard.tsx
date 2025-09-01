@@ -113,14 +113,6 @@ export default function CareerAdviceWizard({ onSubmit, userInfo, isLoading }: Ca
         }
     };
 
-    const toggleArrayItem = (array: string[], item: string, setter: (items: string[]) => void) => {
-        if (array.includes(item)) {
-            setter(array.filter(i => i !== item));
-        } else {
-            setter([...array, item]);
-        }
-    };
-
     const generateCareerAdvicePrompt = (data: CareerAdviceData) => {
         return `Voici ma situation professionnelle actuelle :
 

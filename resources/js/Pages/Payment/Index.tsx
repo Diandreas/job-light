@@ -335,7 +335,7 @@ const PaymentTabs = ({ pack, onSuccess, user }) => {
                     {pack.priceFCFA.toLocaleString()} FCFA
                 </div>
                 
-                <NotchPayButton pack={pack} onSuccess={onSuccess} user={user} />
+                <CinetPayButton pack={pack} onSuccess={onSuccess} user={user} />
 
                 <div className="flex items-center justify-center gap-4 mt-2">
                     {PaymentMethodsInfo.mobileMoneyLogos.map((logo, index) => (

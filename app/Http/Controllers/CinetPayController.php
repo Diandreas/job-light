@@ -46,6 +46,11 @@ class CinetPayController extends Controller
                 'invoice_data' => 'nullable|array'
             ]);
 
+            // Extraire les tokens de la description pour les stocker en métadonnées
+            $tokensMatch = [];
+            preg_match('/(\d+)\s+tokens/', $request->description, $tokensMatch);
+            $tokens = isset($tokensMatch[1]) ? (int)$tokensMatch[1] : 0;
+
             // Créer l'enregistrement de paiement dans la base de données
             $payment = Payment::create([
                 'user_id' => auth()->id(),
@@ -55,7 +60,10 @@ class CinetPayController extends Controller
                 'description' => $request->description,
                 'status' => 'pending',
                 'payment_method' => 'cinetpay',
-                'metadata' => json_encode($request->all())
+                'metadata' => json_encode([
+                    'tokens' => $tokens,
+                    'request_data' => $request->all()
+                ])
             ]);
 
             // Préparer les données pour CinetPay
@@ -142,15 +150,21 @@ class CinetPayController extends Controller
             Log::info('CinetPay notification received', $request->all());
 
             // Vérifier que la notification contient les paramètres requis
-            if (!$request->has('cpm_trans_id')) {
-                Log::warning('CinetPay notification missing cpm_trans_id');
-                return response('Missing transaction ID', 400);
+            if (!$request->has('cpm_trans_id') || !$request->has('cpm_site_id')) {
+                Log::warning('CinetPay notification missing required parameters');
+                return response('Missing required parameters', 400);
             }
 
             $transactionId = $request->cpm_trans_id;
             $siteId = $request->cpm_site_id;
 
-            // Vérifier le statut du paiement
+            // Vérifier que le site_id correspond
+            if ($siteId != $this->siteId) {
+                Log::warning('Invalid site_id in notification', ['received' => $siteId, 'expected' => $this->siteId]);
+                return response('Invalid site_id', 400);
+            }
+
+            // Chercher le paiement dans notre base
             $payment = Payment::where('transaction_id', $transactionId)->first();
             
             if (!$payment) {
@@ -158,39 +172,46 @@ class CinetPayController extends Controller
                 return response('Payment not found', 404);
             }
 
-            // Vérifier que le paiement n'a pas déjà été traité
+            // Si le paiement est déjà traité avec succès, ne rien faire
             if ($payment->status === 'completed') {
                 Log::info('Payment already processed', ['transaction_id' => $transactionId]);
-                return response('OK');
+                return response('OK', 200);
             }
 
-            // Vérifier le statut du paiement auprès de CinetPay
+            // ÉTAPE IMPORTANTE: Vérifier le statut du paiement auprès de CinetPay
+            // (Comme recommandé dans la doc: ne jamais faire confiance aux données POST)
             $statusResponse = Http::post($this->baseUrl . '/payment/check', [
                 'apikey' => $this->apiKey,
-                'site_id' => $siteId,
+                'site_id' => $this->siteId,
                 'transaction_id' => $transactionId
             ]);
 
             if ($statusResponse->successful()) {
                 $statusResult = $statusResponse->json();
                 
+                Log::info('CinetPay status check response', $statusResult);
+
                 if ($statusResult['code'] === '00') {
-                    // Paiement réussi
-                    $payment->update([
-                        'status' => 'completed',
-                        'completed_at' => now(),
-                        'external_data' => json_encode($statusResult)
-                    ]);
+                    // Paiement réussi (status: ACCEPTED)
+                    if ($statusResult['data']['status'] === 'ACCEPTED') {
+                        $payment->update([
+                            'status' => 'completed',
+                            'completed_at' => now(),
+                            'external_data' => json_encode($statusResult)
+                        ]);
 
-                    // Mettre à jour le solde de l'utilisateur si nécessaire
-                    $this->updateUserBalance($payment);
+                        // Mettre à jour le solde de l'utilisateur
+                        $this->updateUserBalance($payment);
 
-                    Log::info('Payment completed successfully', [
-                        'transaction_id' => $transactionId,
-                        'payment_id' => $payment->id
-                    ]);
-                } else {
-                    // Paiement échoué
+                        Log::info('Payment completed successfully', [
+                            'transaction_id' => $transactionId,
+                            'payment_id' => $payment->id,
+                            'amount' => $statusResult['data']['amount'],
+                            'payment_method' => $statusResult['data']['payment_method']
+                        ]);
+                    }
+                } else if ($statusResult['code'] === '627' || $statusResult['data']['status'] === 'REFUSED') {
+                    // Paiement refusé/annulé
                     $payment->update([
                         'status' => 'failed',
                         'external_data' => json_encode($statusResult)
@@ -199,17 +220,25 @@ class CinetPayController extends Controller
                     Log::warning('Payment failed', [
                         'transaction_id' => $transactionId,
                         'code' => $statusResult['code'],
-                        'message' => $statusResult['message'] ?? 'Unknown error'
+                        'message' => $statusResult['message'] ?? 'Transaction refused'
                     ]);
+                } else {
+                    // Statut en attente (WAITING_FOR_CUSTOMER, etc.)
+                    Log::info('Payment still pending', [
+                        'transaction_id' => $transactionId,
+                        'status' => $statusResult['data']['status'] ?? 'Unknown'
+                    ]);
+                    // Ne pas mettre à jour le statut pour les paiements en attente
                 }
             } else {
-                Log::error('Failed to check payment status', [
+                Log::error('Failed to check payment status with CinetPay API', [
                     'transaction_id' => $transactionId,
                     'response' => $statusResponse->body()
                 ]);
             }
 
-            return response('OK');
+            // Toujours retourner 200 OK pour confirmer la réception de la notification
+            return response('OK', 200);
 
         } catch (\Exception $e) {
             Log::error('CinetPay notification error', [
@@ -264,17 +293,25 @@ class CinetPayController extends Controller
     {
         try {
             $user = $payment->user;
+            $metadata = json_decode($payment->metadata, true);
             
-            // Calculer les tokens à ajouter (logique métier à adapter selon vos besoins)
-            $tokensToAdd = $this->calculateTokensFromAmount($payment->amount);
+            // Priorité aux métadonnées du paiement initial, sinon calcul depuis le montant
+            if (isset($metadata['tokens'])) {
+                $tokensToAdd = $metadata['tokens'];
+            } else {
+                $tokensToAdd = $this->calculateTokensFromAmount($payment->amount);
+            }
             
             // Mettre à jour le solde de l'utilisateur
+            $oldBalance = $user->wallet_balance;
             $user->increment('wallet_balance', $tokensToAdd);
             
             Log::info('User balance updated', [
                 'user_id' => $user->id,
                 'tokens_added' => $tokensToAdd,
-                'new_balance' => $user->wallet_balance
+                'old_balance' => $oldBalance,
+                'new_balance' => $user->wallet_balance,
+                'payment_amount' => $payment->amount
             ]);
 
         } catch (\Exception $e) {

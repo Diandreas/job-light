@@ -13,5 +13,8 @@ class VerifyCsrfToken extends Middleware
      */
     protected $except = [
         'api/*', // Exclure toutes les routes API de la vérification CSRF
+        'payment/*', // Exclure toutes les routes de paiement
+        'payment/cinetpay/callback',
+        'payment/callback',
     ];
 }

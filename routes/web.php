@@ -82,7 +82,9 @@ Route::get('/payment/callback', [NotchPayController::class, 'handleCallback'])->
 // Routes CinetPay (backup option)
 Route::post('/api/cinetpay/notify', [CinetPayController::class, 'notify']); // Webhook public
 Route::get('/api/cinetpay/return', [CinetPayController::class, 'return']);
-Route::get('/payment/cinetpay/callback', [CinetPayController::class, 'return'])->name('payment.cinetpay.callback');
+Route::match(['GET', 'POST'], '/payment/cinetpay/callback', [CinetPayController::class, 'return'])
+    ->name('payment.cinetpay.callback')
+    ->withoutMiddleware(['web']);
 Route::post('/api/cv/analyze', [CareerAdvisorController::class, 'analyzeCV'])
     ->name('cv.analyze')
     ->middleware(['auth']);

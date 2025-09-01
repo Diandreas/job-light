@@ -15,6 +15,10 @@ import InteractiveTable from './InteractiveTable';
 import ScoreDashboard from './ScoreDashboard';
 import InteractiveChecklist from './InteractiveChecklist';
 import SimpleChart from './SimpleChart';
+import CvHeatmap from './CvHeatmap';
+import InterviewTimer from './InterviewTimer';
+import CareerRoadmap from './CareerRoadmap';
+import AtsAnalyzer from './AtsAnalyzer';
 
 interface ArtifactSidebarProps {
     artifacts: ArtifactData[];
@@ -30,7 +34,10 @@ const ARTIFACT_ICONS = {
     checklist: CheckCircle,
     chart: TrendingUp,
     roadmap: TrendingUp,
-    dashboard: BarChart3
+    dashboard: BarChart3,
+    heatmap: Eye,
+    timer: CheckCircle,
+    'cv-analysis': BarChart3
 };
 
 export default function ArtifactSidebar({ 
@@ -193,6 +200,54 @@ export default function ArtifactSidebar({
                                                 title={currentArtifact.title}
                                                 data={currentArtifact.data}
                                                 interactive={currentArtifact.metadata?.interactive}
+                                            />
+                                        )}
+                                        
+                                        {currentArtifact.type === 'heatmap' && (
+                                            <CvHeatmap
+                                                title={currentArtifact.title}
+                                                sections={currentArtifact.data.sections}
+                                                globalScore={currentArtifact.data.globalScore}
+                                            />
+                                        )}
+                                        
+                                        {currentArtifact.type === 'timer' && (
+                                            <InterviewTimer
+                                                title={currentArtifact.title}
+                                                duration={currentArtifact.data.duration}
+                                                questions={currentArtifact.data.questions}
+                                                currentQuestion={currentArtifact.data.currentQuestion}
+                                                onQuestionChange={(index) => {
+                                                    // Callback pour changer de question
+                                                    console.log('Question changed to:', index);
+                                                }}
+                                                onTimeUp={() => {
+                                                    console.log('Interview time up!');
+                                                }}
+                                            />
+                                        )}
+                                        
+                                        {currentArtifact.type === 'roadmap' && (
+                                            <CareerRoadmap
+                                                title={currentArtifact.title}
+                                                steps={currentArtifact.data.steps}
+                                                currentPosition={currentArtifact.data.currentPosition}
+                                                targetPosition={currentArtifact.data.targetPosition}
+                                                timeframe={currentArtifact.data.timeframe}
+                                                successProbability={currentArtifact.data.successProbability}
+                                            />
+                                        )}
+                                        
+                                        {currentArtifact.type === 'dashboard' && (
+                                            <AtsAnalyzer
+                                                title={currentArtifact.title}
+                                                globalScore={currentArtifact.data.globalScore}
+                                                keywords={currentArtifact.data.keywords}
+                                                suggestions={currentArtifact.data.suggestions}
+                                                originalText={currentArtifact.data.originalText}
+                                                onTextUpdate={(newText) => {
+                                                    console.log('Text updated:', newText);
+                                                }}
                                             />
                                         )}
                                     </motion.div>

@@ -3,7 +3,7 @@
  */
 
 export interface ArtifactData {
-    type: 'table' | 'chart' | 'score' | 'checklist' | 'roadmap' | 'heatmap' | 'dashboard';
+    type: 'table' | 'chart' | 'score' | 'checklist' | 'roadmap' | 'heatmap' | 'dashboard' | 'timer' | 'cv-analysis';
     title: string;
     data: any;
     metadata?: {
@@ -39,6 +39,10 @@ export class ArtifactDetector {
         // 5. Détecter les roadmaps/timelines
         const roadmaps = this.detectRoadmaps(content);
         artifacts.push(...roadmaps);
+
+        // 6. Détecter les artefacts spécialisés selon le service
+        const specialized = this.detectSpecializedArtifacts(content, serviceId);
+        artifacts.push(...specialized);
 
         return artifacts;
     }
@@ -367,5 +371,366 @@ export class ArtifactDetector {
         cleanContent = cleanContent.replace(/\n\s*\n\s*\n/g, '\n\n');
 
         return cleanContent.trim();
+    }
+
+    /**
+     * Détecter les artefacts spécialisés selon le service IA
+     */
+    private static detectSpecializedArtifacts(content: string, serviceId?: string): ArtifactData[] {
+        const artifacts: ArtifactData[] = [];
+
+        switch (serviceId) {
+            case 'resume-review':
+                // Détecter les analyses de CV avec sections
+                if (content.includes('Structure') && content.includes('Contenu') && content.includes('Mots-clés')) {
+                    const cvSections = this.parseCvSections(content);
+                    if (cvSections.length > 0) {
+                        artifacts.push({
+                            type: 'heatmap',
+                            title: 'Analyse Visuelle du CV',
+                            data: {
+                                sections: cvSections,
+                                globalScore: this.extractGlobalScore(content) || 75
+                            },
+                            metadata: {
+                                exportable: true,
+                                interactive: true,
+                                service: serviceId
+                            }
+                        });
+                    }
+                }
+                break;
+
+            case 'interview-prep':
+                // Détecter les simulations d'entretien avec questions
+                if (content.includes('Question') && content.includes('Performance')) {
+                    const questions = this.parseInterviewQuestions(content);
+                    if (questions.length > 0) {
+                        artifacts.push({
+                            type: 'timer',
+                            title: 'Simulateur d\'Entretien',
+                            data: {
+                                duration: 30, // 30 minutes par défaut
+                                questions,
+                                currentQuestion: 0
+                            },
+                            metadata: {
+                                exportable: true,
+                                interactive: true,
+                                service: serviceId
+                            }
+                        });
+                    }
+                }
+                break;
+
+            case 'cover-letter':
+                // Détecter les analyses ATS
+                if (content.includes('ATS') && content.includes('Score')) {
+                    const keywords = this.parseAtsKeywords(content);
+                    const suggestions = this.extractRecommendations(content);
+                    
+                    if (keywords.length > 0) {
+                        artifacts.push({
+                            type: 'dashboard',
+                            title: 'Analyseur ATS',
+                            data: {
+                                globalScore: this.extractGlobalScore(content) || 75,
+                                keywords,
+                                suggestions,
+                                originalText: this.extractOriginalText(content)
+                            },
+                            metadata: {
+                                exportable: true,
+                                interactive: true,
+                                service: serviceId
+                            }
+                        });
+                    }
+                }
+                break;
+
+            case 'career-advice':
+                // Détecter les roadmaps de carrière
+                if (content.includes('├─') || content.includes('└─') || content.includes('Progression')) {
+                    const roadmapSteps = this.parseCareerRoadmap(content);
+                    if (roadmapSteps.length > 0) {
+                        artifacts.push({
+                            type: 'roadmap',
+                            title: 'Feuille de Route Carrière',
+                            data: {
+                                steps: roadmapSteps,
+                                currentPosition: this.extractCurrentPosition(content),
+                                targetPosition: this.extractTargetPosition(content),
+                                timeframe: this.extractTimeframe(content),
+                                successProbability: this.extractSuccessProbability(content) || 75
+                            },
+                            metadata: {
+                                exportable: true,
+                                interactive: true,
+                                service: serviceId
+                            }
+                        });
+                    }
+                }
+                break;
+        }
+
+        return artifacts;
+    }
+
+    /**
+     * Parser les sections de CV pour la heatmap
+     */
+    private static parseCvSections(content: string): any[] {
+        const sections = [];
+        const sectionNames = ['En-tête', 'Résumé', 'Expériences', 'Compétences', 'Formation'];
+        
+        sectionNames.forEach((name, index) => {
+            // Chercher le score de cette section
+            const scoreRegex = new RegExp(`${name}[\\s:]*([\\d]+)(?:/100|%)`, 'i');
+            const match = scoreRegex.exec(content);
+            const score = match ? parseInt(match[1]) : 60 + Math.random() * 30;
+            
+            sections.push({
+                name,
+                score: Math.round(score),
+                recommendations: this.extractSectionRecommendations(content, name),
+                position: { x: 0, y: index * 60, width: 100, height: 50 },
+                priority: score < 60 ? 'high' : score < 80 ? 'medium' : 'low'
+            });
+        });
+
+        return sections;
+    }
+
+    /**
+     * Parser les questions d'entretien
+     */
+    private static parseInterviewQuestions(content: string): any[] {
+        const questions = [];
+        const questionRegex = /Question\s+(\d+)[:\s]*(.+?)(?=Question\s+\d+|$)/gs;
+        let match;
+        let questionId = 1;
+
+        while ((match = questionRegex.exec(content)) !== null) {
+            const [, number, text] = match;
+            questions.push({
+                id: questionId++,
+                text: text.trim().substring(0, 200),
+                category: this.guessQuestionCategory(text),
+                expectedTime: 120, // 2 minutes par défaut
+                answered: false
+            });
+        }
+
+        // Si pas de questions détectées, créer des questions par défaut
+        if (questions.length === 0) {
+            questions.push(
+                {
+                    id: 1,
+                    text: "Pouvez-vous vous présenter en quelques minutes ?",
+                    category: 'hr',
+                    expectedTime: 180,
+                    answered: false
+                },
+                {
+                    id: 2,
+                    text: "Pourquoi ce poste vous intéresse-t-il ?",
+                    category: 'behavioral',
+                    expectedTime: 120,
+                    answered: false
+                },
+                {
+                    id: 3,
+                    text: "Décrivez-moi un défi technique que vous avez résolu.",
+                    category: 'technical',
+                    expectedTime: 180,
+                    answered: false
+                }
+            );
+        }
+
+        return questions;
+    }
+
+    /**
+     * Parser la roadmap de carrière
+     */
+    private static parseCareerRoadmap(content: string): any[] {
+        const steps = [];
+        const timelineRegex = /(?:├─|└─)\s*([^:]+):\s*(.+)/g;
+        let match;
+        let stepId = 1;
+
+        while ((match = timelineRegex.exec(content)) !== null) {
+            const [, timeframe, description] = match;
+            steps.push({
+                id: `step-${stepId++}`,
+                timeframe: timeframe.trim(),
+                title: this.extractStepTitle(description),
+                description: description.trim(),
+                actions: this.extractStepActions(content, description),
+                completed: false,
+                difficulty: 'medium',
+                impact: 'medium',
+                category: this.guessStepCategory(description)
+            });
+        }
+
+        return steps;
+    }
+
+    // Méthodes utilitaires pour les artefacts spécialisés
+    private static extractSectionRecommendations(content: string, sectionName: string): string[] {
+        const recommendations = [];
+        const lines = content.split('\n');
+        
+        for (let i = 0; i < lines.length; i++) {
+            const line = lines[i].toLowerCase();
+            if (line.includes(sectionName.toLowerCase()) && line.includes('•')) {
+                // Récupérer les recommandations qui suivent
+                for (let j = i + 1; j < Math.min(i + 5, lines.length); j++) {
+                    const recLine = lines[j].trim();
+                    if (recLine.startsWith('•') || recLine.startsWith('-')) {
+                        recommendations.push(recLine.substring(1).trim());
+                    }
+                }
+                break;
+            }
+        }
+        
+        return recommendations.slice(0, 3);
+    }
+
+    private static guessQuestionCategory(text: string): string {
+        const lower = text.toLowerCase();
+        if (lower.includes('technique') || lower.includes('code') || lower.includes('algorithme')) {
+            return 'technical';
+        }
+        if (lower.includes('équipe') || lower.includes('conflit') || lower.includes('difficulté')) {
+            return 'behavioral';
+        }
+        if (lower.includes('entreprise') || lower.includes('poste') || lower.includes('motivation')) {
+            return 'hr';
+        }
+        return 'situational';
+    }
+
+    private static guessStepCategory(description: string): string {
+        const lower = description.toLowerCase();
+        if (lower.includes('certification') || lower.includes('formation')) return 'certification';
+        if (lower.includes('compétence') || lower.includes('skill')) return 'skill';
+        if (lower.includes('poste') || lower.includes('promotion')) return 'position';
+        if (lower.includes('réseau') || lower.includes('contact')) return 'network';
+        return 'skill';
+    }
+
+    private static extractStepTitle(description: string): string {
+        const words = description.split(' ');
+        return words.slice(0, 4).join(' ');
+    }
+
+    private static extractStepActions(content: string, stepDescription: string): string[] {
+        // Logique simplifiée pour extraire les actions liées à une étape
+        return [
+            "Rechercher les opportunités",
+            "Préparer les documents nécessaires", 
+            "Planifier la mise en œuvre"
+        ];
+    }
+
+    private static extractCurrentPosition(content: string): string {
+        const positionRegex = /(?:position|poste)\s+(?:actuel|current)[:\s]*([^.\n]+)/i;
+        const match = positionRegex.exec(content);
+        return match ? match[1].trim() : 'Position actuelle';
+    }
+
+    private static extractTargetPosition(content: string): string {
+        const targetRegex = /(?:objectif|target|cible)[:\s]*([^.\n]+)/i;
+        const match = targetRegex.exec(content);
+        return match ? match[1].trim() : 'Objectif carrière';
+    }
+
+    private static extractTimeframe(content: string): string {
+        const timeRegex = /(?:dans|en|sur)\s+(\d+\s*(?:mois|ans?|années?))/i;
+        const match = timeRegex.exec(content);
+        return match ? match[1] : '2-3 ans';
+    }
+
+    private static extractSuccessProbability(content: string): number | null {
+        const probRegex = /(?:probabilité|chance|succès)[:\s]*(\d+)%/i;
+        const match = probRegex.exec(content);
+        return match ? parseInt(match[1]) : null;
+    }
+
+    private static extractGlobalScore(content: string): number | null {
+        const scoreRegex = /(?:score|note)(?:\s+global)?[:\s]*(\d+)(?:\/100|%)/i;
+        const match = scoreRegex.exec(content);
+        return match ? parseInt(match[1]) : null;
+    }
+
+    /**
+     * Parser les mots-clés ATS
+     */
+    private static parseAtsKeywords(content: string): any[] {
+        const keywords = [];
+        
+        // Chercher les tableaux de mots-clés
+        const keywordTableRegex = /\|\s*([^|]+)\s*\|\s*([^|]+)\s*\|\s*([^|]+)\s*\|\s*([^|]+)\s*\|/g;
+        let match;
+
+        while ((match = keywordTableRegex.exec(content)) !== null) {
+            const [, keyword, detected, expected, status] = match;
+            
+            if (keyword.toLowerCase().includes('mot-clé') || keyword.toLowerCase().includes('keyword')) {
+                continue; // Skip header row
+            }
+
+            const detectedNum = parseInt(detected.replace(/[^\d]/g, '')) || 0;
+            const expectedNum = parseInt(expected.replace(/[^\d]/g, '')) || 1;
+            
+            let keywordStatus = 'good';
+            if (status.includes('✅') || status.toLowerCase().includes('optimal')) {
+                keywordStatus = 'optimal';
+            } else if (status.includes('❌') || status.toLowerCase().includes('manquant')) {
+                keywordStatus = 'missing';
+            } else if (status.includes('⚠️') || status.toLowerCase().includes('excessif')) {
+                keywordStatus = 'excessive';
+            }
+
+            keywords.push({
+                keyword: keyword.trim(),
+                detected: detectedNum,
+                expected: expectedNum,
+                status: keywordStatus,
+                impact: keywordStatus === 'missing' ? 10 : keywordStatus === 'optimal' ? 5 : 3
+            });
+        }
+
+        // Si pas de tableau détecté, créer des mots-clés par défaut
+        if (keywords.length === 0) {
+            const commonKeywords = ['React', 'JavaScript', 'Leadership', 'Innovation', 'Agile'];
+            commonKeywords.forEach(kw => {
+                const mentions = (content.toLowerCase().match(new RegExp(kw.toLowerCase(), 'g')) || []).length;
+                keywords.push({
+                    keyword: kw,
+                    detected: mentions,
+                    expected: 2,
+                    status: mentions >= 2 ? 'optimal' : mentions > 0 ? 'good' : 'missing',
+                    impact: mentions === 0 ? 8 : 3
+                });
+            });
+        }
+
+        return keywords;
+    }
+
+    private static extractOriginalText(content: string): string {
+        // Extraire le texte original de la lettre de motivation s'il est présent
+        const textRegex = /(?:lettre|text|contenu)[:\s]*\n([\s\S]+?)(?:\n\n|\n##|\n\*\*|$)/i;
+        const match = textRegex.exec(content);
+        return match ? match[1].trim() : "Votre lettre de motivation optimisée sera affichée ici...";
     }
 }

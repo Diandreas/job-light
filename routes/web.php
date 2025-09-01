@@ -365,7 +365,7 @@ Route::prefix('guest-cv')->name('guest-cv.')->group(function () {
 });
 
 // Routes Job Portal
-Route::prefix('jobs')->name('job-portal.')->group(function () {
+Route::prefix('job-portal')->name('job-portal.')->group(function () {
     // Pages publiques
     Route::get('/', [App\Http\Controllers\JobPortalController::class, 'index'])->name('index');
     Route::get('/{job}', [App\Http\Controllers\JobPortalController::class, 'show'])->name('show');

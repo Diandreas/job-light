@@ -222,7 +222,7 @@ export default function GuestCvBuilder({
                                 <h1 className="text-2xl font-bold bg-gradient-to-r from-amber-600 to-purple-600 bg-clip-text text-transparent">
                                     Créateur de CV Gratuit
                                 </h1>
-                                <Badge variant="secondary" className="bg-green-100 text-green-800">
+                                <Badge variant="secondary" className="bg-amber-50 text-amber-700 border-amber-200">
                                     <Star className="w-3 h-3 mr-1" />
                                     Sans inscription
                                 </Badge>

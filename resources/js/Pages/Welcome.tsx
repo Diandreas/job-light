@@ -249,7 +249,7 @@ const ImageCallToAction = () => {
                     >
                         <a
                             href="/guest-cv"
-                            className="inline-flex items-center px-6 py-3 rounded-xl text-sm font-bold bg-gradient-to-r from-blue-500 to-cyan-500 text-white hover:from-blue-600 hover:to-cyan-600 shadow-lg hover:shadow-xl transition-all transform hover:scale-105 active:scale-95"
+                            className="inline-flex items-center px-6 py-3 rounded-xl text-sm font-bold bg-white text-amber-600 border-2 border-amber-500 hover:bg-amber-50 shadow-lg hover:shadow-xl transition-all transform hover:scale-105 active:scale-95"
                         >
                             <FileText className="mr-2 w-4 h-4" />
                             Essayer sans inscription
@@ -398,8 +398,8 @@ export default function Welcome() {
             description: t('features.cv_designer.description'),
             action: 'Essayer maintenant',
             link: '/guest-cv',
-            color: 'from-blue-500 to-cyan-500',
-            bgColor: 'from-blue-50 to-cyan-50 dark:from-blue-950/50 dark:to-cyan-950/50',
+            color: 'from-amber-500 to-purple-500',
+            bgColor: 'from-amber-50 to-purple-50 dark:from-amber-950/50 dark:to-purple-950/50',
             premium: false
         },
         {
@@ -1065,7 +1065,7 @@ export default function Welcome() {
                             >
                                 <a
                                     href="/guest-cv"
-                                    className="inline-flex items-center bg-gradient-to-r from-blue-500 to-cyan-500 text-white px-6 md:px-8 py-3 md:py-4 rounded-2xl text-base md:text-lg font-bold hover:from-blue-600 hover:to-cyan-600 shadow-xl hover:shadow-2xl transition-all transform hover:scale-105 active:scale-95 group"
+                                    className="inline-flex items-center bg-white text-amber-600 border-2 border-amber-500 px-6 md:px-8 py-3 md:py-4 rounded-2xl text-base md:text-lg font-bold hover:bg-amber-50 shadow-xl hover:shadow-2xl transition-all transform hover:scale-105 active:scale-95 group"
                                 >
                                     <FileText className="w-4 h-4 md:w-5 md:h-5 mr-2 md:mr-3" />
                                     Essayer sans inscription

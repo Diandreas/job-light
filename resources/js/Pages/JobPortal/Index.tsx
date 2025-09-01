@@ -154,7 +154,7 @@ export default function JobPortalIndex({ auth, jobs, stats, topCompanies, filter
 
             <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
                 {/* Hero Section */}
-                <div className="bg-gradient-to-r from-blue-600 to-purple-600 text-white">
+                <div className="bg-gradient-to-r from-amber-500 to-purple-500 text-white">
                     <div className="max-w-7xl mx-auto px-4 py-16 sm:px-6 lg:px-8">
                         <div className="text-center">
                             <motion.h1

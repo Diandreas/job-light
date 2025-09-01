@@ -227,7 +227,7 @@ export default function JobShow({ auth, job, hasApplied, similarJobs, canApply }
                                             ) : (
                                                 <Dialog open={showApplicationDialog} onOpenChange={setShowApplicationDialog}>
                                                     <DialogTrigger asChild>
-                                                        <Button size="lg" className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700">
+                                                        <Button size="lg" className="bg-gradient-to-r from-amber-500 to-purple-500 hover:from-amber-600 hover:to-purple-600">
                                                             <Send className="w-4 h-4 mr-2" />
                                                             Postuler maintenant
                                                         </Button>
@@ -277,7 +277,7 @@ export default function JobShow({ auth, job, hasApplied, similarJobs, canApply }
                                                                 <Button 
                                                                     type="submit" 
                                                                     disabled={processing || data.cover_letter.length < 100}
-                                                                    className="bg-gradient-to-r from-blue-600 to-purple-600"
+                                                                    className="bg-gradient-to-r from-amber-500 to-purple-500 hover:from-amber-600 hover:to-purple-600"
                                                                 >
                                                                     {processing ? 'Envoi...' : 'Envoyer ma candidature'}
                                                                 </Button>

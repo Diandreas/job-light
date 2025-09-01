@@ -158,7 +158,7 @@ Créez une lettre de motivation personnalisée qui met en valeur mon profil pour
             {/* Header */}
             <div className="text-center mb-8">
                 <div className="flex items-center justify-center gap-3 mb-4">
-                    <div className="p-3 rounded-xl bg-gradient-to-r from-green-500 to-blue-500">
+                    <div className="p-3 rounded-xl bg-gradient-to-r from-amber-500 to-purple-500">
                         <FileText className="w-8 h-8 text-white" />
                     </div>
                     <div>
@@ -461,12 +461,12 @@ Créez une lettre de motivation personnalisée qui met en valeur mon profil pour
 
             {/* Bouton de génération */}
             <div className="text-center">
-                <Button
-                    onClick={handleSubmit}
-                    disabled={!isFormValid() || isLoading}
-                    size="lg"
-                    className="bg-gradient-to-r from-green-500 to-blue-500 hover:from-green-600 hover:to-blue-600 px-8"
-                >
+                                    <Button
+                        onClick={handleSubmit}
+                        disabled={!isFormValid() || isLoading}
+                        size="lg"
+                        className="bg-gradient-to-r from-amber-500 to-purple-500 hover:from-amber-600 hover:to-purple-600 px-8"
+                    >
                     {isLoading ? (
                         <>
                             <Loader2 className="w-5 h-5 mr-2 animate-spin" />

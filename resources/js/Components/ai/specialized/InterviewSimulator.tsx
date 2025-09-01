@@ -162,7 +162,7 @@ Commencez par vous présenter comme recruteur, puis posez la première question.
             {/* Header avec timer */}
             <div className="text-center mb-8">
                 <div className="flex items-center justify-center gap-4 mb-6">
-                    <div className="p-3 rounded-xl bg-gradient-to-r from-orange-500 to-red-500">
+                    <div className="p-3 rounded-xl bg-gradient-to-r from-amber-500 to-purple-500">
                         <MessageSquare className="w-8 h-8 text-white" />
                     </div>
                     <div>
@@ -508,12 +508,12 @@ Commencez par vous présenter comme recruteur, puis posez la première question.
             {/* Bouton de démarrage */}
             {!simulationStarted && (
                 <div className="text-center">
-                    <Button
-                        onClick={handleStartSimulation}
-                        disabled={!isFormValid() || isLoading}
-                        size="lg"
-                        className="bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 px-8"
-                    >
+                                            <Button
+                            onClick={handleStartSimulation}
+                            disabled={!isFormValid() || isLoading}
+                            size="lg"
+                            className="bg-gradient-to-r from-amber-500 to-purple-500 hover:from-amber-600 hover:to-purple-600 px-8"
+                        >
                         {isLoading ? (
                             <>
                                 <Timer className="w-5 h-5 mr-2 animate-pulse" />

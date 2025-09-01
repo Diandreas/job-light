@@ -29,7 +29,7 @@ const ENHANCED_SERVICES = [
         title: 'Conseil de Carrière Personnalisé',
         description: 'Assistant intelligent qui analyse votre profil et vos objectifs pour créer un plan de carrière sur mesure',
         cost: 3,
-        color: 'blue',
+        color: 'amber',
         features: ['Analyse de profil', 'Plan de carrière', 'Recommandations', 'Suivi objectifs'],
         component: CareerAdviceWizard
     },
@@ -39,7 +39,7 @@ const ENHANCED_SERVICES = [
         title: 'Générateur de Lettre de Motivation',
         description: 'Créez des lettres personnalisées et optimisées ATS en analysant automatiquement les offres d\'emploi',
         cost: 5,
-        color: 'green',
+        color: 'purple',
         features: ['Analyse d\'offre', 'Optimisation ATS', 'Personnalisation', 'Multiple versions'],
         component: CoverLetterGenerator
     },
@@ -49,7 +49,7 @@ const ENHANCED_SERVICES = [
         title: 'Analyseur de CV Avancé',
         description: 'Audit complet avec scoring détaillé, recommandations visuelles et comparaison sectorielle',
         cost: 4,
-        color: 'purple',
+        color: 'amber',
         features: ['Score détaillé', 'Heatmap', 'Benchmarking', 'Recommandations'],
         component: ResumeAnalyzer
     },
@@ -59,7 +59,7 @@ const ENHANCED_SERVICES = [
         title: 'Simulateur d\'Entretien Immersif',
         description: 'Simulations réalistes avec questions adaptées au secteur et feedback détaillé de performance',
         cost: 5,
-        color: 'orange',
+        color: 'purple',
         features: ['Simulation réaliste', 'Questions sectorielles', 'Timer', 'Feedback détaillé'],
         component: InterviewSimulator
     },
@@ -69,7 +69,7 @@ const ENHANCED_SERVICES = [
         title: 'Créateur de Portfolio Présentation',
         description: 'Transformez vos projets en présentations professionnelles pour impressionner les recruteurs',
         cost: 8,
-        color: 'indigo',
+        color: 'amber',
         features: ['Templates pro', 'Projets showcase', 'Export PowerPoint', 'Design adaptatif'],
         component: null // À implémenter si nécessaire
     }
@@ -236,7 +236,7 @@ export default function ServiceSelector({ userInfo, onServiceSubmit, isLoading, 
                                     <Button
                                         onClick={() => handleServiceSelect(service.id)}
                                         disabled={!canAfford || !service.component}
-                                        className={`w-full ${service.component ? colors.button : 'bg-gray-400'}`}
+                                        className={`w-full ${service.component && canAfford ? 'bg-gradient-to-r from-amber-500 to-purple-500 hover:from-amber-600 hover:to-purple-600' : 'bg-gray-400'}`}
                                     >
                                         {!service.component ? (
                                             <>

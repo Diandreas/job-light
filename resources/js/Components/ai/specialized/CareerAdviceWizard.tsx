@@ -150,9 +150,9 @@ Pouvez-vous me donner des conseils personnalisés pour atteindre mes objectifs d
             <div className="mb-6">
                 <div className="flex items-center justify-between mb-4">
                     <div className="flex items-center gap-3">
-                        <div className="p-2 rounded-xl bg-gradient-to-r from-blue-500 to-purple-500">
-                            <Brain className="w-6 h-6 text-white" />
-                        </div>
+                                            <div className="p-2 rounded-xl bg-gradient-to-r from-amber-500 to-purple-500">
+                        <Brain className="w-6 h-6 text-white" />
+                    </div>
                         <div>
                             <h2 className="text-xl font-bold text-gray-800 dark:text-gray-200">
                                 Assistant Carrière Personnalisé
@@ -162,7 +162,7 @@ Pouvez-vous me donner des conseils personnalisés pour atteindre mes objectifs d
                             </p>
                         </div>
                     </div>
-                    <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200">
+                    <Badge variant="outline" className="bg-amber-50 text-amber-700 border-amber-200">
                         <Sparkles className="w-3 h-3 mr-1" />
                         IA Personnalisée
                     </Badge>
@@ -328,8 +328,8 @@ Pouvez-vous me donner des conseils personnalisés pour atteindre mes objectifs d
                                                     )}
                                                     className={`p-2 text-xs rounded-lg border transition-all ${
                                                         formData.priorities.includes(priority)
-                                                            ? 'bg-blue-100 border-blue-300 text-blue-700'
-                                                            : 'bg-gray-50 border-gray-200 text-gray-600 hover:bg-blue-50'
+                                                            ? 'bg-amber-100 border-amber-300 text-amber-700'
+                                                            : 'bg-gray-50 border-gray-200 text-gray-600 hover:bg-amber-50'
                                                     }`}
                                                 >
                                                     {priority}
@@ -478,7 +478,7 @@ Pouvez-vous me donner des conseils personnalisés pour atteindre mes objectifs d
                         <Button
                             onClick={handleNext}
                             disabled={!isStepValid() || isLoading}
-                            className="flex items-center gap-2 bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600"
+                            className="flex items-center gap-2 bg-gradient-to-r from-amber-500 to-purple-500 hover:from-amber-600 hover:to-purple-600"
                         >
                             {currentStep === WIZARD_STEPS.length - 1 ? (
                                 <>

@@ -189,7 +189,7 @@ Donnez-moi une analyse détaillée avec :
             {/* Header avec score actuel */}
             <div className="text-center mb-8">
                 <div className="flex items-center justify-center gap-4 mb-6">
-                    <div className="p-3 rounded-xl bg-gradient-to-r from-purple-500 to-pink-500">
+                    <div className="p-3 rounded-xl bg-gradient-to-r from-amber-500 to-purple-500">
                         <PenTool className="w-8 h-8 text-white" />
                     </div>
                     <div>
@@ -440,12 +440,12 @@ Donnez-moi une analyse détaillée avec :
 
             {/* Bouton d'analyse */}
             <div className="text-center">
-                <Button
-                    onClick={handleSubmit}
-                    disabled={isLoading}
-                    size="lg"
-                    className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 px-8"
-                >
+                                    <Button
+                        onClick={handleSubmit}
+                        disabled={isLoading}
+                        size="lg"
+                        className="bg-gradient-to-r from-amber-500 to-purple-500 hover:from-amber-600 hover:to-purple-600 px-8"
+                    >
                     {isLoading ? (
                         <>
                             <RefreshCw className="w-5 h-5 mr-2 animate-spin" />

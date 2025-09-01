@@ -93,7 +93,7 @@ export default function ApidcaIndex({ templates, recentJobs, stats, isApidcaMemb
 
             <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-amber-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
                 {/* Hero Section */}
-                <div className="relative overflow-hidden bg-gradient-to-r from-blue-600 to-blue-800 text-white">
+                <div className="relative overflow-hidden bg-gradient-to-r from-amber-500 to-purple-500 text-white">
                     <div className="absolute inset-0 bg-black/10"></div>
                     <div className="relative max-w-7xl mx-auto px-4 py-16 sm:px-6 lg:px-8">
                         <div className="text-center">

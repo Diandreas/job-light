@@ -270,7 +270,7 @@ export default function MyApplications({ auth, applications }: MyApplicationsPro
                                 Vous n'avez pas encore postulé à des offres d'emploi
                             </p>
                             <Link href={route('job-portal.index')}>
-                                <Button className="bg-gradient-to-r from-blue-600 to-purple-600">
+                                <Button className="bg-gradient-to-r from-amber-500 to-purple-500 hover:from-amber-600 hover:to-purple-600">
                                     <TrendingUp className="w-4 h-4 mr-2" />
                                     Découvrir les offres
                                 </Button>

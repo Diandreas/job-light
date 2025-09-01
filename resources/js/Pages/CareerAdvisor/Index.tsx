@@ -16,7 +16,7 @@ import {
     MessageSquare, Calendar, History, Menu, Send, Plus,
     FileText, Presentation, ChevronDown, FileSpreadsheet,
     FileInput, MessageCircleQuestion, PenTool, Sparkles, ChevronRight, ChevronLeft,
-    Smartphone, Monitor
+    Smartphone, Monitor, Zap
 } from 'lucide-react';
 import { MessageBubble } from '@/Components/ai/MessageBubble';
 import EnhancedMessageBubble from '@/Components/ai/enhanced/EnhancedMessageBubble';

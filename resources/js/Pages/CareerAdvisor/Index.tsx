@@ -19,11 +19,11 @@ import {
     Smartphone, Monitor, Zap
 } from 'lucide-react';
 import { MessageBubble } from '@/Components/ai/MessageBubble';
-import EnhancedMessageBubble from '@/Components/ai/enhanced/EnhancedMessageBubble';
+// import EnhancedMessageBubble from '@/Components/ai/enhanced/EnhancedMessageBubble';
 import { ServiceCard, MobileServiceCard } from '@/Components/ai/ServiceCard';
 import { SERVICES, DEFAULT_PROMPTS } from '@/Components/ai/constants';
 import { PowerPointService } from '@/Components/ai/PresentationService';
-import ServiceSelector from '@/Components/ai/specialized/ServiceSelector';
+// import ServiceSelector from '@/Components/ai/specialized/ServiceSelector';
 import { Avatar, AvatarFallback, AvatarImage } from "@/Components/ui/avatar";
 import { Badge } from "@/Components/ui/badge";
 import { Separator } from "@/Components/ui/separator";
@@ -1420,76 +1420,57 @@ export default function Index({ auth, userInfo, chatHistories }) {
                                         </p>
                                     </div>
 
-                                    {/* Interface améliorée ou classique */}
-                                    {useEnhancedInterface ? (
-                                        <div className="px-2">
-                                            <ServiceSelector
-                                                userInfo={userInfo}
-                                                onServiceSubmit={handleEnhancedServiceSubmit}
-                                                isLoading={isLoading}
-                                                walletBalance={walletBalance}
-                                            />
-                                            
-                                            {/* Toggle vers interface classique */}
-                                            <div className="text-center mt-8">
-                                                <Button
-                                                    variant="ghost"
-                                                    size="sm"
-                                                    onClick={() => setUseEnhancedInterface(false)}
-                                                    className="text-gray-500 hover:text-gray-700"
-                                                >
-                                                    Utiliser l'interface classique
-                                                </Button>
+                                    {/* Interface classique uniquement (ServiceSelector temporairement désactivé) */}
+                                    <div className="px-2">
+                                        {/* Notification interface améliorée */}
+                                        <div className="mb-6 p-4 bg-gradient-to-r from-amber-50 to-purple-50 border border-amber-200 rounded-lg text-center">
+                                            <div className="flex items-center justify-center gap-2 mb-2">
+                                                <Sparkles className="w-5 h-5 text-amber-600" />
+                                                <span className="font-semibold text-amber-800">
+                                                    Nouvelles Expériences IA
+                                                </span>
+                                                <Badge className="bg-amber-100 text-amber-700">
+                                                    🚧 Beta
+                                                </Badge>
                                             </div>
+                                            <p className="text-sm text-amber-600 mb-3">
+                                                Les interfaces spécialisées et artefacts interactifs sont en cours de finalisation.
+                                                Profitez déjà de l'interface actuelle améliorée !
+                                            </p>
                                         </div>
-                                    ) : (
-                                        <>
-                                            {/* Interface classique */}
-                                            <div className="hidden lg:grid grid-cols-2 xl:grid-cols-3 gap-3 px-2 mb-8">
-                                                {SERVICES.map(service => (
-                                                    <EnhancedServiceCard
-                                                        key={service.id}
-                                                        service={service}
-                                                        isSelected={selectedService.id === service.id}
-                                                        onClick={() => handleServiceSelection(service)}
-                                                    />
-                                                ))}
+                                        {/* Interface classique */}
+                                        <div className="hidden lg:grid grid-cols-2 xl:grid-cols-3 gap-3 px-2 mb-8">
+                                            {SERVICES.map(service => (
                                                 <EnhancedServiceCard
-                                                    service={REPORT_SERVICE}
-                                                    isSelected={false}
-                                                    onClick={() => handleServiceSelection(REPORT_SERVICE)}
+                                                    key={service.id}
+                                                    service={service}
+                                                    isSelected={selectedService.id === service.id}
+                                                    onClick={() => handleServiceSelection(service)}
                                                 />
-                                            </div>
+                                            ))}
+                                            <EnhancedServiceCard
+                                                service={REPORT_SERVICE}
+                                                isSelected={false}
+                                                onClick={() => handleServiceSelection(REPORT_SERVICE)}
+                                            />
+                                        </div>
 
-                                            <div className="lg:hidden grid grid-cols-2 gap-2 px-2 mb-8">
-                                                {SERVICES.map(service => (
-                                                    <EnhancedMobileServiceCard
-                                                        key={service.id}
-                                                        service={service}
-                                                        isSelected={selectedService.id === service.id}
-                                                        onClick={() => handleServiceSelection(service)}
-                                                    />
-                                                ))}
+                                        <div className="lg:hidden grid grid-cols-2 gap-2 px-2 mb-8">
+                                            {SERVICES.map(service => (
                                                 <EnhancedMobileServiceCard
-                                                    service={REPORT_SERVICE}
-                                                    isSelected={false}
-                                                    onClick={() => handleServiceSelection(REPORT_SERVICE)}
+                                                    key={service.id}
+                                                    service={service}
+                                                    isSelected={selectedService.id === service.id}
+                                                    onClick={() => handleServiceSelection(service)}
                                                 />
-                                            </div>
-                                            
-                                            {/* Toggle vers interface améliorée */}
-                                            <div className="text-center">
-                                                <Button
-                                                    variant="outline"
-                                                    onClick={() => setUseEnhancedInterface(true)}
-                                                    className="bg-gradient-to-r from-amber-50 to-purple-50 border-amber-200 hover:from-amber-100 hover:to-purple-100"
-                                                >
-                                                    <Sparkles className="w-4 h-4 mr-2" />
-                                                    Essayer la nouvelle expérience IA
-                                                </Button>
-                                            </div>
-                                        </>
-                                    )}
+                                            ))}
+                                            <EnhancedMobileServiceCard
+                                                service={REPORT_SERVICE}
+                                                isSelected={false}
+                                                onClick={() => handleServiceSelection(REPORT_SERVICE)}
+                                            />
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
 
@@ -1671,22 +1652,29 @@ Voici l'évaluation détaillée de votre CV :
                                                     exit={{ opacity: 0 }}
                                                     transition={{ duration: 0.2 }}
                                                 >
-                                                    {useEnhancedBubbles ? (
-                                                        <EnhancedMessageBubble
-                                                            message={{
-                                                                ...message,
-                                                                serviceId: selectedService.id,
-                                                                isLatest: index === (activeChat?.messages || []).length - 1
-                                                            }}
-                                                            onArtifactAction={handleArtifactAction}
-                                                        />
-                                                    ) : (
-                                                        <MessageBubble
-                                                            message={{
-                                                                ...message,
-                                                                isLatest: index === (activeChat?.messages || []).length - 1
-                                                            }}
-                                                        />
+                                                    <MessageBubble
+                                                        message={{
+                                                            ...message,
+                                                            isLatest: index === (activeChat?.messages || []).length - 1
+                                                        }}
+                                                    />
+                                                    {/* EnhancedMessageBubble temporairement désactivé pour éviter erreurs */}
+                                                    {useEnhancedBubbles && message.role === 'assistant' && (
+                                                        <div className="mt-2 p-3 bg-amber-50 border border-amber-200 rounded-lg">
+                                                            <div className="flex items-center gap-2 mb-2">
+                                                                <Sparkles className="w-4 h-4 text-amber-600" />
+                                                                <span className="text-sm font-medium text-amber-800">
+                                                                    Mode Artefacts Activé
+                                                                </span>
+                                                                <Badge className="bg-amber-100 text-amber-700 text-xs">
+                                                                    🚧 Beta
+                                                                </Badge>
+                                                            </div>
+                                                            <p className="text-xs text-amber-600">
+                                                                Les artefacts interactifs (tableaux, graphiques, actions) 
+                                                                seront bientôt disponibles pour cette conversation.
+                                                            </p>
+                                                        </div>
                                                     )}
                                                 </motion.div>
                                             ))}
@@ -1698,23 +1686,12 @@ Voici l'évaluation détaillée de votre CV :
                                                     exit={{ opacity: 0 }}
                                                     transition={{ duration: 0.2 }}
                                                 >
-                                                    {useEnhancedBubbles ? (
-                                                        <EnhancedMessageBubble
-                                                            message={{
-                                                                ...tempMessage,
-                                                                serviceId: selectedService.id,
-                                                                isLatest: true
-                                                            }}
-                                                            onArtifactAction={handleArtifactAction}
-                                                        />
-                                                    ) : (
-                                                        <MessageBubble
-                                                            message={{
-                                                                ...tempMessage,
-                                                                isLatest: true
-                                                            }}
-                                                        />
-                                                    )}
+                                                    <MessageBubble
+                                                        message={{
+                                                            ...tempMessage,
+                                                            isLatest: true
+                                                        }}
+                                                    />
                                                 </motion.div>
                                             )}
                                         </AnimatePresence>

@@ -66,11 +66,26 @@ Route::get('/mentions-legales', function () {
 })->name('mentions-legales');
 
 
+// Routes Blog avec SEO
+Route::prefix('blog')->name('blog.')->group(function () {
+    // Liste des articles
+    Route::get('/', [App\Http\Controllers\BlogController::class, 'index'])->name('index');
+    
+    // Article spécifique
+    Route::get('/{slug}', [App\Http\Controllers\BlogController::class, 'show'])->name('show');
+    
+    // SEO et feeds
+    Route::get('/sitemap.xml', [App\Http\Controllers\BlogController::class, 'sitemap'])->name('sitemap');
+    Route::get('/rss.xml', [App\Http\Controllers\BlogController::class, 'rss'])->name('rss');
+    
+    // API recherche
+    Route::get('/api/search', [App\Http\Controllers\BlogController::class, 'search'])->name('search');
+});
+
+// Ancien article (redirection pour compatibilité)
 Route::get('/blog/comparaison', function () {
     return view('blog-comparaison-autonome');
 })->name('blog.comparaison-autonome');
-
-Route::get('/blog', [App\Http\Controllers\BlogController::class, 'index'])->name('blog.index');
 
 Route::get('/', function () {
     return Inertia::render('Welcome');
@@ -263,6 +278,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
             Route::get('/companies', [CompanyManagementController::class, 'index'])->name('companies.index');
             Route::get('/companies/{company}', [CompanyManagementController::class, 'show'])->name('companies.show');
             Route::put('/companies/{company}', [CompanyManagementController::class, 'update'])->name('companies.update');
+            
+            // Gestion du blog
+            Route::resource('blog', \App\Http\Controllers\Admin\BlogManagementController::class);
+            Route::get('/blog-stats', [\App\Http\Controllers\Admin\BlogManagementController::class, 'seoStats'])->name('blog.stats');
             
             // User management routes
             Route::resource('users', \App\Http\Controllers\Admin\UserManagementController::class);

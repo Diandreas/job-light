@@ -24,6 +24,9 @@ import { ServiceCard, MobileServiceCard } from '@/Components/ai/ServiceCard';
 import { SERVICES, DEFAULT_PROMPTS } from '@/Components/ai/constants';
 import { PowerPointService } from '@/Components/ai/PresentationService';
 import ServiceSelector from '@/Components/ai/specialized/ServiceSelector';
+import ArtifactSidebar from '@/Components/ai/artifacts/ArtifactSidebar';
+import { ArtifactData } from '@/Components/ai/artifacts/ArtifactDetector';
+import { cn } from '@/lib/utils';
 import { Avatar, AvatarFallback, AvatarImage } from "@/Components/ui/avatar";
 import { Badge } from "@/Components/ui/badge";
 import { Separator } from "@/Components/ui/separator";
@@ -533,6 +536,9 @@ export default function Index({ auth, userInfo, chatHistories }) {
     const [isPrinting, setIsPrinting] = useState(false);
     const [useEnhancedInterface, setUseEnhancedInterface] = useState(true); // Nouvelle interface par défaut
     const [useEnhancedBubbles, setUseEnhancedBubbles] = useState(true); // Nouvelles bulles avec artefacts
+    const [artifactSidebarOpen, setArtifactSidebarOpen] = useState(false);
+    const [currentArtifacts, setCurrentArtifacts] = useState<ArtifactData[]>([]);
+    const [currentArtifactContent, setCurrentArtifactContent] = useState<string>('');
     const scrollRef = useRef(null);
     const inputRef = useRef(null);
     const thinkingIntervalRef = useRef(null);
@@ -1103,6 +1109,13 @@ export default function Index({ auth, userInfo, chatHistories }) {
         }
     };
 
+    // Handler pour les artefacts détectés
+    const handleArtifactsDetected = (artifacts: ArtifactData[], content: string) => {
+        setCurrentArtifacts(artifacts);
+        setCurrentArtifactContent(content);
+        setArtifactSidebarOpen(true);
+    };
+
     // Handler pour les actions d'artefacts
     const handleArtifactAction = async (action: string, data: any) => {
         console.log('Artifact action:', action, data);
@@ -1154,7 +1167,10 @@ export default function Index({ auth, userInfo, chatHistories }) {
             <div className="opacity-20"><FluidCursorEffect zIndex={100} /></div>
 
 
-            <div className="h-[calc(100vh-100px)] md:h-screen flex bg-gray-50 dark:bg-gray-900"> {/* 100px = header mobile (40px) + tab bar (60px) */}
+            <div className={cn(
+                "h-[calc(100vh-100px)] md:h-screen flex bg-gray-50 dark:bg-gray-900 transition-all duration-300",
+                artifactSidebarOpen ? "mr-96" : ""
+            )}> {/* 100px = header mobile (40px) + tab bar (60px) */}
                 {/* Sidebar Desktop - Collapsible */}
                 <div className={`hidden lg:flex ${isSidebarCollapsed ? 'lg:w-16' : 'lg:w-64'} bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-800 flex-col transition-all duration-300`}>
                     {/* En-tête sidebar avec titre et wallet */}
@@ -1589,6 +1605,25 @@ export default function Index({ auth, userInfo, chatHistories }) {
                                         </div>
                                     </div>
 
+                                    {/* Bouton artefacts */}
+                                    {currentArtifacts.length > 0 && (
+                                        <Button
+                                            variant="outline"
+                                            size="sm"
+                                            onClick={() => setArtifactSidebarOpen(true)}
+                                            className={cn(
+                                                "h-7 px-2 mr-2",
+                                                artifactSidebarOpen ? "bg-amber-100 text-amber-700 border-amber-300" : ""
+                                            )}
+                                        >
+                                            <Sparkles className="h-3 w-3 mr-1" />
+                                            <span className="hidden sm:inline text-xs">Artefacts</span>
+                                            <Badge variant="secondary" className="ml-1 h-4 px-1 text-xs bg-amber-500 text-white">
+                                                {currentArtifacts.length}
+                                            </Badge>
+                                        </Button>
+                                    )}
+
                                     {/* Bouton export compact */}
                                     <DropdownMenu>
                                         <DropdownMenuTrigger asChild>
@@ -1718,6 +1753,7 @@ Voici l'évaluation détaillée de votre CV :
                                                                 isLatest: index === (activeChat?.messages || []).length - 1
                                                             }}
                                                             serviceId={selectedService.id}
+                                                            onArtifactsDetected={handleArtifactsDetected}
                                                         />
                                                     )}
                                                 </motion.div>
@@ -1746,6 +1782,7 @@ Voici l'évaluation détaillée de votre CV :
                                                                 isLatest: true
                                                             }}
                                                             serviceId={selectedService.id}
+                                                            onArtifactsDetected={handleArtifactsDetected}
                                                         />
                                                     )}
                                                 </motion.div>
@@ -1838,6 +1875,15 @@ Voici l'évaluation détaillée de votre CV :
                     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
                 }
             `}</style>
+
+            {/* Sidebar d'artefacts */}
+            <ArtifactSidebar
+                artifacts={currentArtifacts}
+                isOpen={artifactSidebarOpen}
+                onClose={() => setArtifactSidebarOpen(false)}
+                serviceId={selectedService.id}
+                messageContent={currentArtifactContent}
+            />
         </AuthenticatedLayout>
     );
 }

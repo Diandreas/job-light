@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import ReactMarkdown from 'react-markdown';
-import { Share2, Download, X, Copy, Check, Presentation, User, MoreHorizontal, Sparkles } from 'lucide-react';
+import { Share2, Download, X, Copy, Check, Presentation, User, MoreHorizontal, Sparkles, ChevronRight } from 'lucide-react';
 import { ArtifactDetector, ArtifactData } from './artifacts/ArtifactDetector';
 import InteractiveTable from './artifacts/InteractiveTable';
 import ScoreDashboard from './artifacts/ScoreDashboard';
@@ -35,9 +35,10 @@ interface MessageBubbleProps {
         isThinking?: boolean;
     };
     serviceId?: string;
+    onArtifactsDetected?: (artifacts: ArtifactData[], content: string) => void;
 }
 
-export const MessageBubble: React.FC<MessageBubbleProps> = ({ message, serviceId }) => {
+export const MessageBubble: React.FC<MessageBubbleProps> = ({ message, serviceId, onArtifactsDetected }) => {
     const { t } = useTranslation();
     const isUser = message.role === 'user';
     const isThinking = message.isThinking || false;
@@ -152,7 +153,13 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({ message, serviceId
                     if (!isUser && !isThinking) {
                         const detectedArtifacts = ArtifactDetector.detectArtifacts(message.content, serviceId);
                         setArtifacts(detectedArtifacts);
-                        setCleanContent(ArtifactDetector.cleanContentForDisplay(message.content, detectedArtifacts));
+                        const cleaned = ArtifactDetector.cleanContentForDisplay(message.content, detectedArtifacts);
+                        setCleanContent(cleaned);
+                        
+                        // Notifier le parent des artefacts détectés
+                        if (detectedArtifacts.length > 0 && onArtifactsDetected) {
+                            onArtifactsDetected(detectedArtifacts, message.content);
+                        }
                     }
                 }, 100);
             }
@@ -526,54 +533,30 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({ message, serviceId
                         </div>
                     )}
 
-                    {/* Artefacts interactifs */}
+                    {/* Indicateur d'artefacts */}
                     {!isUser && isTypingComplete && artifacts.length > 0 && (
-                        <div className="mt-3 space-y-3">
-                            {artifacts.map((artifact, index) => (
-                                <motion.div
-                                    key={index}
-                                    initial={{ opacity: 0, y: 10 }}
-                                    animate={{ opacity: 1, y: 0 }}
-                                    transition={{ delay: index * 0.2 }}
-                                >
-                                    {artifact.type === 'table' && (
-                                        <InteractiveTable
-                                            title={artifact.title}
-                                            headers={artifact.data.headers}
-                                            rows={artifact.data.rows}
-                                            exportable={artifact.data.exportable}
-                                            sortable={artifact.data.sortable}
-                                            filterable={artifact.data.filterable}
-                                        />
-                                    )}
-                                    
-                                    {artifact.type === 'score' && (
-                                        <ScoreDashboard
-                                            title={artifact.title}
-                                            data={artifact.data}
-                                            serviceId={serviceId}
-                                        />
-                                    )}
-                                    
-                                    {artifact.type === 'checklist' && (
-                                        <InteractiveChecklist
-                                            title={artifact.title}
-                                            items={artifact.data.items}
-                                            completable={artifact.data.completable}
-                                            editable={artifact.metadata?.interactive}
-                                        />
-                                    )}
-                                    
-                                    {artifact.type === 'chart' && (
-                                        <SimpleChart
-                                            title={artifact.title}
-                                            data={artifact.data}
-                                            interactive={artifact.metadata?.interactive}
-                                        />
-                                    )}
-                                </motion.div>
-                            ))}
-                        </div>
+                        <motion.div
+                            initial={{ opacity: 0, scale: 0.9 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            className="mt-3 p-3 rounded-lg bg-gradient-to-r from-amber-50 to-purple-50 border border-amber-200"
+                        >
+                            <div className="flex items-center gap-3">
+                                <div className="p-2 rounded-lg bg-gradient-to-r from-amber-500 to-purple-500">
+                                    <Sparkles className="w-4 h-4 text-white" />
+                                </div>
+                                <div className="flex-1">
+                                    <div className="font-medium text-amber-800 text-sm">
+                                        {artifacts.length} artefact{artifacts.length > 1 ? 's' : ''} interactif{artifacts.length > 1 ? 's' : ''} détecté{artifacts.length > 1 ? 's' : ''}
+                                    </div>
+                                    <div className="text-xs text-amber-600">
+                                        {artifacts.map(a => a.title).join(', ')}
+                                    </div>
+                                </div>
+                                <div className="text-amber-600">
+                                    <ChevronRight className="w-5 h-5" />
+                                </div>
+                            </div>
+                        </motion.div>
                     )}
                 </motion.div>
 

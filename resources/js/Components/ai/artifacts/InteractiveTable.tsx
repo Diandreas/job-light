@@ -210,7 +210,7 @@ export default function InteractiveTable({
                                     >
                                         {row.map((cell, cellIndex) => (
                                             <td key={cellIndex} className="py-2 px-3 text-gray-600 dark:text-gray-400">
-                                                {this.formatCell(cell, headers[cellIndex])}
+                                                {formatCell(cell, headers[cellIndex])}
                                             </td>
                                         ))}
                                     </motion.tr>
@@ -232,8 +232,10 @@ export default function InteractiveTable({
         </motion.div>
     );
 
-    // Formater les cellules selon le type de données
-    private static formatCell(cell: string, header: string): React.ReactNode {
+}
+
+// Formater les cellules selon le type de données
+const formatCell = (cell: string, header: string): React.ReactNode => {
         // Détecter les pourcentages
         if (cell.includes('%')) {
             const percentage = parseInt(cell.replace('%', ''));
@@ -275,5 +277,4 @@ export default function InteractiveTable({
         }
 
         return cell;
-    }
-}
+};

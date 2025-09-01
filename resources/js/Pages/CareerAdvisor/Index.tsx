@@ -22,6 +22,7 @@ import { MessageBubble } from '@/Components/ai/MessageBubble';
 import { ServiceCard, MobileServiceCard } from '@/Components/ai/ServiceCard';
 import { SERVICES, DEFAULT_PROMPTS } from '@/Components/ai/constants';
 import { PowerPointService } from '@/Components/ai/PresentationService';
+import ServiceSelector from '@/Components/ai/specialized/ServiceSelector';
 import { Avatar, AvatarFallback, AvatarImage } from "@/Components/ui/avatar";
 import { Badge } from "@/Components/ui/badge";
 import { Separator } from "@/Components/ui/separator";
@@ -529,6 +530,7 @@ export default function Index({ auth, userInfo, chatHistories }) {
     const [isSidebarCollapsed, setSidebarCollapsed] = useState(false);
     const [isExporting, setIsExporting] = useState(false);
     const [isPrinting, setIsPrinting] = useState(false);
+    const [useEnhancedInterface, setUseEnhancedInterface] = useState(true); // Nouvelle interface par défaut
     const scrollRef = useRef(null);
     const inputRef = useRef(null);
     const thinkingIntervalRef = useRef(null);
@@ -995,6 +997,79 @@ export default function Index({ auth, userInfo, chatHistories }) {
         }
     };
 
+    // Handler pour les services avec interfaces spécialisées
+    const handleEnhancedServiceSubmit = async (serviceId: string, data: any) => {
+        if (walletBalance < SERVICES.find(s => s.id === serviceId)?.cost || 0) {
+            toast({
+                title: "Solde insuffisant",
+                description: "Vous n'avez pas assez de tokens pour ce service",
+                variant: "destructive"
+            });
+            return;
+        }
+
+        setIsLoading(true);
+        
+        try {
+            // Créer un nouveau chat pour ce service
+            const contextId = crypto.randomUUID();
+            const service = SERVICES.find(s => s.id === serviceId);
+            
+            // Utiliser le prompt généré par l'interface spécialisée
+            const response = await axios.post('/career-advisor/chat', {
+                message: data.prompt || data.finalPrompt || JSON.stringify(data),
+                contextId: contextId,
+                language: language,
+                serviceId: serviceId,
+                history: []
+            });
+
+            if (response.data.message) {
+                // Créer le nouveau chat avec la réponse
+                const newChat = {
+                    context_id: contextId,
+                    service_id: serviceId,
+                    created_at: new Date().toISOString(),
+                    messages: [
+                        {
+                            role: 'user',
+                            content: data.prompt || data.finalPrompt || 'Demande personnalisée',
+                            timestamp: new Date().toISOString()
+                        },
+                        {
+                            role: 'assistant',
+                            content: response.data.message,
+                            timestamp: new Date().toISOString()
+                        }
+                    ]
+                };
+
+                // Ajouter à la liste et activer
+                setUserChats(prev => [newChat, ...prev]);
+                setActiveChat(newChat);
+                
+                // Mettre à jour le solde
+                setWalletBalance(prev => prev - service.cost);
+                setTokensUsed(prev => prev + (response.data.tokens || 0));
+
+                toast({
+                    title: "Analyse terminée !",
+                    description: `Votre ${service.title.toLowerCase()} personnalisé est prêt`,
+                });
+            }
+
+        } catch (error) {
+            console.error('Enhanced service error:', error);
+            toast({
+                title: "Erreur",
+                description: "Une erreur est survenue lors du traitement",
+                variant: "destructive"
+            });
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
     return (
         <AuthenticatedLayout user={auth.user} hideHeaderOnMobile={true}>
             {/* Rendre l'effet de curseur plus subtil */}
@@ -1298,43 +1373,76 @@ export default function Index({ auth, userInfo, chatHistories }) {
                                         </p>
                                     </div>
 
-                                    {/* Grille de services plus compacte */}
-                                    <div className="hidden lg:grid grid-cols-2 xl:grid-cols-3 gap-3 px-2 mb-8">
-                                        {/* Services existants */}
-                                        {SERVICES.map(service => (
-                                            <EnhancedServiceCard
-                                                key={service.id}
-                                                service={service}
-                                                isSelected={selectedService.id === service.id}
-                                                onClick={() => handleServiceSelection(service)}
+                                    {/* Interface améliorée ou classique */}
+                                    {useEnhancedInterface ? (
+                                        <div className="px-2">
+                                            <ServiceSelector
+                                                userInfo={userInfo}
+                                                onServiceSubmit={handleEnhancedServiceSubmit}
+                                                isLoading={isLoading}
+                                                walletBalance={walletBalance}
                                             />
-                                        ))}
-                                        {/* Nouveau service "coming soon" */}
-                                        <EnhancedServiceCard
-                                            service={REPORT_SERVICE}
-                                            isSelected={false}
-                                            onClick={() => handleServiceSelection(REPORT_SERVICE)}
-                                        />
-                                    </div>
+                                            
+                                            {/* Toggle vers interface classique */}
+                                            <div className="text-center mt-8">
+                                                <Button
+                                                    variant="ghost"
+                                                    size="sm"
+                                                    onClick={() => setUseEnhancedInterface(false)}
+                                                    className="text-gray-500 hover:text-gray-700"
+                                                >
+                                                    Utiliser l'interface classique
+                                                </Button>
+                                            </div>
+                                        </div>
+                                    ) : (
+                                        <>
+                                            {/* Interface classique */}
+                                            <div className="hidden lg:grid grid-cols-2 xl:grid-cols-3 gap-3 px-2 mb-8">
+                                                {SERVICES.map(service => (
+                                                    <EnhancedServiceCard
+                                                        key={service.id}
+                                                        service={service}
+                                                        isSelected={selectedService.id === service.id}
+                                                        onClick={() => handleServiceSelection(service)}
+                                                    />
+                                                ))}
+                                                <EnhancedServiceCard
+                                                    service={REPORT_SERVICE}
+                                                    isSelected={false}
+                                                    onClick={() => handleServiceSelection(REPORT_SERVICE)}
+                                                />
+                                            </div>
 
-                                    {/* Services Mobile - 2 par ligne */}
-                                    <div className="lg:hidden grid grid-cols-2 gap-2 px-2 mb-8">
-                                        {/* Services existants */}
-                                        {SERVICES.map(service => (
-                                            <EnhancedMobileServiceCard
-                                                key={service.id}
-                                                service={service}
-                                                isSelected={selectedService.id === service.id}
-                                                onClick={() => handleServiceSelection(service)}
-                                            />
-                                        ))}
-                                        {/* Nouveau service "coming soon" */}
-                                        <EnhancedMobileServiceCard
-                                            service={REPORT_SERVICE}
-                                            isSelected={false}
-                                            onClick={() => handleServiceSelection(REPORT_SERVICE)}
-                                        />
-                                    </div>
+                                            <div className="lg:hidden grid grid-cols-2 gap-2 px-2 mb-8">
+                                                {SERVICES.map(service => (
+                                                    <EnhancedMobileServiceCard
+                                                        key={service.id}
+                                                        service={service}
+                                                        isSelected={selectedService.id === service.id}
+                                                        onClick={() => handleServiceSelection(service)}
+                                                    />
+                                                ))}
+                                                <EnhancedMobileServiceCard
+                                                    service={REPORT_SERVICE}
+                                                    isSelected={false}
+                                                    onClick={() => handleServiceSelection(REPORT_SERVICE)}
+                                                />
+                                            </div>
+                                            
+                                            {/* Toggle vers interface améliorée */}
+                                            <div className="text-center">
+                                                <Button
+                                                    variant="outline"
+                                                    onClick={() => setUseEnhancedInterface(true)}
+                                                    className="bg-gradient-to-r from-amber-50 to-purple-50 border-amber-200 hover:from-amber-100 hover:to-purple-100"
+                                                >
+                                                    <Sparkles className="w-4 h-4 mr-2" />
+                                                    Essayer la nouvelle expérience IA
+                                                </Button>
+                                            </div>
+                                        </>
+                                    )}
                                 </div>
                             </div>
 

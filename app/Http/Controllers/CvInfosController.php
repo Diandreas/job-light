@@ -387,6 +387,66 @@ class CvInfosController extends Controller
         return $baseInfo;
     }
 
+    /**
+     * Génération d'aperçu live pour desktop
+     */
+    public function livePreview(Request $request)
+    {
+        $request->validate([
+            'modelId' => 'required|integer|exists:cv_models,id',
+            'cvData' => 'array'
+        ]);
+
+        try {
+            $user = auth()->user();
+            $cvModel = CvModel::findOrFail($request->modelId);
+            
+            // Utiliser les données actuelles de l'utilisateur si cvData n'est pas fourni
+            $cvInformation = $request->has('cvData') 
+                ? $this->mergeCvDataWithUserData($user, $request->cvData)
+                : $this->getCommonCvInformation($user);
+            
+            $groupedData = $this->groupExperiencesByCategory($cvInformation['experiences']);
+            $locale = $request->get('locale', app()->getLocale());
+
+            // Générer la vue HTML
+            $html = view("cv-templates." . $cvModel->viewPath, [
+                'cvInformation' => $cvInformation,
+                'experiencesByCategory' => $groupedData['experiences'],
+                'categoryTranslations' => $groupedData['translations'],
+                'showPrintButton' => false,
+                'cvModel' => $cvModel,
+                'currentLocale' => $locale,
+                'isLivePreview' => true
+            ])->render();
+
+            return response()->json([
+                'success' => true,
+                'html' => $html,
+                'modelName' => $cvModel->name,
+                'timestamp' => now()->timestamp
+            ]);
+
+        } catch (\Exception $e) {
+            Log::error('Live preview error: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Erreur lors de la génération de l\'aperçu'
+            ], 500);
+        }
+    }
+
+    /**
+     * Fusionner les données partielles avec les données utilisateur
+     */
+    private function mergeCvDataWithUserData($user, $partialData)
+    {
+        $baseData = $this->getCommonCvInformation($user);
+        
+        // Fusionner les données modifiées avec les données de base
+        return array_merge($baseData, $partialData);
+    }
+
     public function index()
     {
         $user = auth()->user();
@@ -401,6 +461,7 @@ class CvInfosController extends Controller
             'experienceCategories' => ExperienceCategory::all()->toArray(),
             'allsummaries' => $user->summaries()->get()->toArray(),
             'availableLanguages' => Language::select(['id', 'name', 'name_en'])->get()->toArray(),
+            'availableCvModels' => CvModel::select(['id', 'name', 'description', 'previewImagePath', 'price'])->get()->toArray(),
         ]);
 
         return Inertia::render('CvInfos/Index', [

@@ -105,7 +105,13 @@ Route::prefix('career-advisor')->group(function () {
     Route::post('/export', [CareerAdvisorController::class, 'export'])->name('career-advisor.export');
     Route::delete('/chats/{contextId}', [CareerAdvisorController::class, 'destroyChat'])->name('career-advisor.destroy');
 });
-Route::get('/cv/{id}/download', [CvInfosController::class, 'downloadPdf'])->name('cv.download');
+    Route::get('/cv/{id}/download', [CvInfosController::class, 'downloadPdf'])->name('cv.download');
+
+// Live Preview Route (authentifié)
+Route::post('/api/cv/live-preview', [CvInfosController::class, 'livePreview'])
+    ->name('cv.preview.live')
+    ->middleware(['auth']);
+
 // Chat History Routes
 Route::prefix('api')->middleware(['auth'])->group(function () {
     Route::get('/chat-history/{contextId}', [ChatHistoryController::class, 'show']);

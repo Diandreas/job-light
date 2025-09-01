@@ -238,8 +238,16 @@ const ImageCallToAction = () => {
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: 0.6 }}
-                        className="flex justify-center"
+                        className="flex flex-col sm:flex-row gap-3 justify-center"
                     >
+                        <Link
+                            href={route('guest-cv.index')}
+                            className="inline-flex items-center px-6 py-3 rounded-xl text-sm font-bold bg-gradient-to-r from-blue-500 to-cyan-500 text-white hover:from-blue-600 hover:to-cyan-600 shadow-lg hover:shadow-xl transition-all transform hover:scale-105 active:scale-95"
+                        >
+                            <FileText className="mr-2 w-4 h-4" />
+                            Essayer sans inscription
+                            <ArrowRight className="ml-2 w-4 h-4" />
+                        </Link>
                         <Link
                             href={route('register')}
                             className="inline-flex items-center px-6 py-3 rounded-xl text-sm font-bold bg-gradient-to-r from-amber-500 to-purple-500 text-white hover:from-amber-600 hover:to-purple-600 shadow-lg hover:shadow-xl transition-all transform hover:scale-105 active:scale-95"

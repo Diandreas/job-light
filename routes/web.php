@@ -83,6 +83,11 @@ Route::get('/payment/callback', [NotchPayController::class, 'handleCallback'])->
 Route::post('/api/cinetpay/notify', [CinetPayController::class, 'notify']); // Webhook public
 Route::get('/api/cinetpay/return', [CinetPayController::class, 'return']);
 Route::get('/payment/cinetpay/callback', [CinetPayController::class, 'return'])->name('payment.cinetpay.callback');
+
+// Routes CinetPay pour paiements guest
+Route::post('/api/cinetpay/guest/initialize', [App\Http\Controllers\GuestPaymentController::class, 'initializeGuestPayment'])->name('guest-payment.cinetpay.initialize');
+Route::post('/api/cinetpay/guest/notify', [App\Http\Controllers\GuestPaymentController::class, 'notifyGuest'])->name('guest-payment.cinetpay.notify');
+Route::get('/api/cinetpay/guest/return', [App\Http\Controllers\GuestPaymentController::class, 'returnGuest'])->name('guest-payment.cinetpay.return');
 Route::post('/api/cv/analyze', [CareerAdvisorController::class, 'analyzeCV'])
     ->name('cv.analyze')
     ->middleware(['auth']);
@@ -310,6 +315,29 @@ Route::get('/cv/download-direct/{id}', [CvInfosController::class, 'downloadPdfDi
 Route::get('/cv/preview-print/{id}', [CvInfosController::class, 'previewPrint']);
 // Route de test pour vérifier le schéma de la base de données
 Route::get('/test-db-schema', [App\Http\Controllers\TestDbController::class, 'testSchema']);
+
+// Routes Guest CV (sans authentification)
+Route::prefix('guest-cv')->name('guest-cv.')->group(function () {
+    // Page principale de création CV guest
+    Route::get('/', [App\Http\Controllers\GuestCvController::class, 'index'])->name('index');
+    
+    // Prévisualisation CV (public)
+    Route::post('/preview', [App\Http\Controllers\GuestCvController::class, 'preview'])->name('preview');
+    
+    // Initier paiement pour téléchargement
+    Route::post('/payment/initiate', [App\Http\Controllers\GuestCvController::class, 'initiatePayment'])->name('payment.initiate');
+    
+    // Confirmer paiement
+    Route::post('/payment/confirm', [App\Http\Controllers\GuestCvController::class, 'confirmPayment'])->name('payment.confirm');
+    
+    // Télécharger PDF (après paiement)
+    Route::post('/download', [App\Http\Controllers\GuestCvController::class, 'generatePdf'])->name('download');
+    
+    // Migration des données vers compte utilisateur (après inscription)
+    Route::middleware(['auth'])->group(function () {
+        Route::post('/migrate', [App\Http\Controllers\GuestCvController::class, 'migrateGuestData'])->name('migrate');
+    });
+});
 
 // Routes APIDCA Partnership
 Route::prefix('apidca')->name('apidca.')->group(function () {

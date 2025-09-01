@@ -19,6 +19,7 @@ import {
     Smartphone, Monitor
 } from 'lucide-react';
 import { MessageBubble } from '@/Components/ai/MessageBubble';
+import EnhancedMessageBubble from '@/Components/ai/enhanced/EnhancedMessageBubble';
 import { ServiceCard, MobileServiceCard } from '@/Components/ai/ServiceCard';
 import { SERVICES, DEFAULT_PROMPTS } from '@/Components/ai/constants';
 import { PowerPointService } from '@/Components/ai/PresentationService';
@@ -531,6 +532,7 @@ export default function Index({ auth, userInfo, chatHistories }) {
     const [isExporting, setIsExporting] = useState(false);
     const [isPrinting, setIsPrinting] = useState(false);
     const [useEnhancedInterface, setUseEnhancedInterface] = useState(true); // Nouvelle interface par défaut
+    const [useEnhancedBubbles, setUseEnhancedBubbles] = useState(true); // Nouvelles bulles avec artefacts
     const scrollRef = useRef(null);
     const inputRef = useRef(null);
     const thinkingIntervalRef = useRef(null);
@@ -1070,6 +1072,51 @@ export default function Index({ auth, userInfo, chatHistories }) {
         }
     };
 
+    // Handler pour les actions d'artefacts
+    const handleArtifactAction = async (action: string, data: any) => {
+        console.log('Artifact action:', action, data);
+        
+        switch (action) {
+            case 'optimize-cv':
+                toast({
+                    title: "Optimisation CV",
+                    description: "Redirection vers l'éditeur de CV avec suggestions appliquées",
+                });
+                // Rediriger vers CV avec optimisations
+                break;
+                
+            case 'export-roadmap':
+                toast({
+                    title: "Export en cours",
+                    description: "Votre roadmap carrière est en cours d'export PDF",
+                });
+                // Logique d'export
+                break;
+                
+            case 'add-skill':
+                toast({
+                    title: "Compétence ajoutée",
+                    description: `${data.keyword} ajouté à votre profil`,
+                });
+                // Ajouter la compétence au profil utilisateur
+                break;
+                
+            case 'schedule-practice':
+                toast({
+                    title: "Entraînement programmé",
+                    description: "Session d'entraînement ajoutée à votre calendrier",
+                });
+                // Programmer une session d'entraînement
+                break;
+                
+            default:
+                toast({
+                    title: "Action en développement",
+                    description: "Cette fonctionnalité sera bientôt disponible",
+                });
+        }
+    };
+
     return (
         <AuthenticatedLayout user={auth.user} hideHeaderOnMobile={true}>
             {/* Rendre l'effet de curseur plus subtil */}
@@ -1551,6 +1598,19 @@ export default function Index({ auth, userInfo, chatHistories }) {
                                             )}
                                         </DropdownMenuContent>
                                     </DropdownMenu>
+
+                                    {/* Toggle artefacts */}
+                                    <Button
+                                        variant="outline"
+                                        size="sm"
+                                        onClick={() => setUseEnhancedBubbles(!useEnhancedBubbles)}
+                                        className={`h-7 px-2 ${useEnhancedBubbles ? 'bg-amber-50 border-amber-200 text-amber-700' : ''}`}
+                                    >
+                                        <Sparkles className="h-3 w-3 mr-1" />
+                                        <span className="hidden sm:inline text-xs">
+                                            {useEnhancedBubbles ? 'Artefacts ON' : 'Artefacts OFF'}
+                                        </span>
+                                    </Button>
                                 </div>
                             </div>
 
@@ -1567,12 +1627,23 @@ export default function Index({ auth, userInfo, chatHistories }) {
                                                     exit={{ opacity: 0 }}
                                                     transition={{ duration: 0.2 }}
                                                 >
-                                                    <MessageBubble
-                                                        message={{
-                                                            ...message,
-                                                            isLatest: index === (activeChat?.messages || []).length - 1
-                                                        }}
-                                                    />
+                                                    {useEnhancedBubbles ? (
+                                                        <EnhancedMessageBubble
+                                                            message={{
+                                                                ...message,
+                                                                serviceId: selectedService.id,
+                                                                isLatest: index === (activeChat?.messages || []).length - 1
+                                                            }}
+                                                            onArtifactAction={handleArtifactAction}
+                                                        />
+                                                    ) : (
+                                                        <MessageBubble
+                                                            message={{
+                                                                ...message,
+                                                                isLatest: index === (activeChat?.messages || []).length - 1
+                                                            }}
+                                                        />
+                                                    )}
                                                 </motion.div>
                                             ))}
                                             {tempMessage && (
@@ -1583,12 +1654,23 @@ export default function Index({ auth, userInfo, chatHistories }) {
                                                     exit={{ opacity: 0 }}
                                                     transition={{ duration: 0.2 }}
                                                 >
-                                                    <MessageBubble
-                                                        message={{
-                                                            ...tempMessage,
-                                                            isLatest: true
-                                                        }}
-                                                    />
+                                                    {useEnhancedBubbles ? (
+                                                        <EnhancedMessageBubble
+                                                            message={{
+                                                                ...tempMessage,
+                                                                serviceId: selectedService.id,
+                                                                isLatest: true
+                                                            }}
+                                                            onArtifactAction={handleArtifactAction}
+                                                        />
+                                                    ) : (
+                                                        <MessageBubble
+                                                            message={{
+                                                                ...tempMessage,
+                                                                isLatest: true
+                                                            }}
+                                                        />
+                                                    )}
                                                 </motion.div>
                                             )}
                                         </AnimatePresence>

@@ -75,7 +75,7 @@ const STATUS_CONFIG = {
     }
 };
 
-export default function MyApplications({ auth, applications }: MyApplicationsProps) {
+export default function MyApplications({ auth, applications = { data: [], links: [], meta: { total: 0, last_page: 1 } } }: MyApplicationsProps) {
     const { t } = useTranslation();
 
     const formatSalary = (min: number, max: number, currency: string) => {

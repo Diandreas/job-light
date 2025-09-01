@@ -67,7 +67,7 @@ interface JobShowProps {
     canApply: boolean;
 }
 
-export default function JobShow({ auth, job, hasApplied, similarJobs, canApply }: JobShowProps) {
+export default function JobShow({ auth, job, hasApplied = false, similarJobs = [], canApply = false }: JobShowProps) {
     const { t } = useTranslation();
     const { toast } = useToast();
     const [showApplicationDialog, setShowApplicationDialog] = useState(false);

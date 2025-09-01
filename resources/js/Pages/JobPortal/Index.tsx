@@ -94,7 +94,7 @@ const EXPERIENCE_LEVELS = [
     { value: 'executive', label: 'Exécutif' }
 ];
 
-export default function JobPortalIndex({ auth, jobs, stats, topCompanies, filters }: JobPortalIndexProps) {
+export default function JobPortalIndex({ auth, jobs = { data: [], links: [], meta: { total: 0, last_page: 1 } }, stats = { total_jobs: 0, companies_hiring: 0, remote_jobs: 0, new_this_week: 0 }, topCompanies = [], filters = {} }: JobPortalIndexProps) {
     const { t } = useTranslation();
     const [showFilters, setShowFilters] = useState(false);
     const [showPostJobDialog, setShowPostJobDialog] = useState(false);

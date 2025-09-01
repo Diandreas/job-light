@@ -364,10 +364,12 @@ Route::prefix('guest-cv')->name('guest-cv.')->group(function () {
     });
 });
 
-// Routes Job Portal
+// Routes Job Portal (temporairement en Coming Soon)
 Route::prefix('job-portal')->name('job-portal.')->group(function () {
-    // Pages publiques
-    Route::get('/', [App\Http\Controllers\JobPortalController::class, 'index'])->name('index');
+    // Pages publiques - Coming Soon temporaire
+    Route::get('/', function() {
+        return \Inertia\Inertia::render('JobPortal/ComingSoon');
+    })->name('index');
     Route::get('/{job}', [App\Http\Controllers\JobPortalController::class, 'show'])->name('show');
     
     // API publique
@@ -375,9 +377,13 @@ Route::prefix('job-portal')->name('job-portal.')->group(function () {
     
     // Routes authentifiées
     Route::middleware(['auth'])->group(function () {
-        // Candidatures
-        Route::post('/{job}/apply', [App\Http\Controllers\JobPortalController::class, 'apply'])->name('apply');
-        Route::get('/my/applications', [App\Http\Controllers\JobPortalController::class, 'myApplications'])->name('my-applications');
+        // Candidatures - Coming Soon temporaire
+        Route::post('/{job}/apply', function() {
+            return response()->json(['message' => 'Fonctionnalité bientôt disponible']);
+        })->name('apply');
+        Route::get('/my/applications', function() {
+            return \Inertia\Inertia::render('JobPortal/ComingSoon');
+        })->name('my-applications');
         
         // Publication d'offres
         Route::post('/create', [App\Http\Controllers\JobPortalController::class, 'createJob'])->name('create');
@@ -385,8 +391,10 @@ Route::prefix('job-portal')->name('job-portal.')->group(function () {
         Route::get('/{job}/applications', [App\Http\Controllers\JobPortalController::class, 'jobApplications'])->name('applications');
         Route::patch('/applications/{application}/status', [App\Http\Controllers\JobPortalController::class, 'updateApplicationStatus'])->name('applications.update-status');
         
-        // Recherche de profils (entreprises)
-        Route::get('/search/profiles', [App\Http\Controllers\JobPortalController::class, 'searchProfiles'])->name('profiles');
+        // Recherche de profils (entreprises) - Coming Soon temporaire
+        Route::get('/search/profiles', function() {
+            return \Inertia\Inertia::render('JobPortal/ComingSoon');
+        })->name('profiles');
     });
 });
 

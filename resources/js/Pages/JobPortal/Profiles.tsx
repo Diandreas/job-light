@@ -64,7 +64,7 @@ interface ProfilesProps {
     canAccessProfiles: boolean;
 }
 
-export default function Profiles({ auth, profiles, filters, canAccessProfiles }: ProfilesProps) {
+export default function Profiles({ auth, profiles = { data: [], links: [], meta: { total: 0, last_page: 1 } }, filters = {}, canAccessProfiles = false }: ProfilesProps) {
     const { t } = useTranslation();
 
     const { data, setData, get, processing } = useForm({

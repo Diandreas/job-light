@@ -364,6 +364,40 @@ Route::prefix('guest-cv')->name('guest-cv.')->group(function () {
     });
 });
 
+// Routes Job Portal
+Route::prefix('jobs')->name('job-portal.')->group(function () {
+    // Pages publiques
+    Route::get('/', [App\Http\Controllers\JobPortalController::class, 'index'])->name('index');
+    Route::get('/{job}', [App\Http\Controllers\JobPortalController::class, 'show'])->name('show');
+    
+    // API publique
+    Route::get('/api/search-suggestions', [App\Http\Controllers\JobPortalController::class, 'searchSuggestions'])->name('search-suggestions');
+    
+    // Routes authentifiées
+    Route::middleware(['auth'])->group(function () {
+        // Candidatures
+        Route::post('/{job}/apply', [App\Http\Controllers\JobPortalController::class, 'apply'])->name('apply');
+        Route::get('/my/applications', [App\Http\Controllers\JobPortalController::class, 'myApplications'])->name('my-applications');
+        
+        // Publication d'offres
+        Route::post('/create', [App\Http\Controllers\JobPortalController::class, 'createJob'])->name('create');
+        Route::get('/my/jobs', [App\Http\Controllers\JobPortalController::class, 'myJobs'])->name('my-jobs');
+        Route::get('/{job}/applications', [App\Http\Controllers\JobPortalController::class, 'jobApplications'])->name('applications');
+        Route::patch('/applications/{application}/status', [App\Http\Controllers\JobPortalController::class, 'updateApplicationStatus'])->name('applications.update-status');
+        
+        // Recherche de profils (entreprises)
+        Route::get('/search/profiles', [App\Http\Controllers\JobPortalController::class, 'searchProfiles'])->name('profiles');
+    });
+});
+
+// Routes Abonnement Entreprise
+Route::prefix('company')->name('company.')->middleware(['auth'])->group(function () {
+    Route::get('/subscription-plans', [App\Http\Controllers\CompanySubscriptionController::class, 'plans'])->name('subscription-plans');
+    Route::post('/subscribe', [App\Http\Controllers\CompanySubscriptionController::class, 'subscribe'])->name('subscribe');
+    Route::post('/subscription/confirm', [App\Http\Controllers\CompanySubscriptionController::class, 'confirmSubscription'])->name('subscription.confirm');
+    Route::get('/usage', [App\Http\Controllers\CompanySubscriptionController::class, 'usage'])->name('usage');
+});
+
 // Routes APIDCA Partnership
 Route::prefix('apidca')->name('apidca.')->group(function () {
     // Page publique APIDCA

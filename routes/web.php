@@ -311,6 +311,31 @@ Route::get('/cv/preview-print/{id}', [CvInfosController::class, 'previewPrint'])
 // Route de test pour vérifier le schéma de la base de données
 Route::get('/test-db-schema', [App\Http\Controllers\TestDbController::class, 'testSchema']);
 
-
+// Routes APIDCA Partnership
+Route::prefix('apidca')->name('apidca.')->group(function () {
+    // Page publique APIDCA
+    Route::get('/', [App\Http\Controllers\ApidcaController::class, 'index'])->name('index');
+    
+    // Désabonnement public (avec token)
+    Route::get('/unsubscribe/{user}', [App\Http\Controllers\ApidcaController::class, 'unsubscribe'])
+        ->name('unsubscribe');
+    
+    // Routes authentifiées
+    Route::middleware(['auth'])->group(function () {
+        // Inscription comme membre APIDCA
+        Route::post('/join', [App\Http\Controllers\ApidcaController::class, 'joinApidca'])
+            ->name('join');
+        
+        // Publication d'offres (membres APIDCA seulement)
+        Route::post('/jobs', [App\Http\Controllers\ApidcaController::class, 'postJob'])
+            ->name('jobs.store');
+    });
+    
+    // Routes admin
+    Route::middleware(['auth', 'can:access-admin'])->group(function () {
+        Route::get('/stats', [App\Http\Controllers\ApidcaController::class, 'stats'])
+            ->name('stats');
+    });
+});
 
 require __DIR__.'/auth.php';

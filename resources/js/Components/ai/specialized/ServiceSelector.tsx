@@ -6,14 +6,14 @@ import { Card, CardHeader, CardTitle, CardContent } from '@/Components/ui/card';
 import { Badge } from '@/Components/ui/badge';
 import {
     Brain, FileText, MessageSquare, PenTool, Presentation,
-    ArrowRight, Sparkles, Star, Zap, Target
+    ArrowRight, Sparkles, Star, Zap, Target, RefreshCw
 } from 'lucide-react';
 
-// Import des interfaces spécialisées
-import CareerAdviceWizard from './CareerAdviceWizard';
-import CoverLetterGenerator from './CoverLetterGenerator';
-import ResumeAnalyzer from './ResumeAnalyzer';
-import InterviewSimulator from './InterviewSimulator';
+// Import des interfaces spécialisées (temporairement commentés pour éviter erreurs)
+// import CareerAdviceWizard from './CareerAdviceWizard';
+// import CoverLetterGenerator from './CoverLetterGenerator';  
+// import ResumeAnalyzer from './ResumeAnalyzer';
+// import InterviewSimulator from './InterviewSimulator';
 
 interface ServiceSelectorProps {
     userInfo: any;
@@ -31,7 +31,7 @@ const ENHANCED_SERVICES = [
         cost: 3,
         color: 'amber',
         features: ['Analyse de profil', 'Plan de carrière', 'Recommandations', 'Suivi objectifs'],
-        component: CareerAdviceWizard
+        component: 'CareerAdviceWizard' // String temporaire
     },
     {
         id: 'cover-letter',
@@ -41,7 +41,7 @@ const ENHANCED_SERVICES = [
         cost: 5,
         color: 'purple',
         features: ['Analyse d\'offre', 'Optimisation ATS', 'Personnalisation', 'Multiple versions'],
-        component: CoverLetterGenerator
+        component: 'CoverLetterGenerator' // String temporaire
     },
     {
         id: 'resume-review',
@@ -51,7 +51,7 @@ const ENHANCED_SERVICES = [
         cost: 4,
         color: 'amber',
         features: ['Score détaillé', 'Heatmap', 'Benchmarking', 'Recommandations'],
-        component: ResumeAnalyzer
+        component: 'ResumeAnalyzer' // String temporaire
     },
     {
         id: 'interview-prep',
@@ -61,7 +61,7 @@ const ENHANCED_SERVICES = [
         cost: 5,
         color: 'purple',
         features: ['Simulation réaliste', 'Questions sectorielles', 'Timer', 'Feedback détaillé'],
-        component: InterviewSimulator
+        component: 'InterviewSimulator' // String temporaire
     },
     {
         id: 'presentation-ppt',
@@ -79,6 +79,7 @@ export default function ServiceSelector({ userInfo, onServiceSubmit, isLoading, 
     const { t } = useTranslation();
     const [selectedService, setSelectedService] = useState<string | null>(null);
     const [showServiceInterface, setShowServiceInterface] = useState(false);
+    const [serviceRequest, setServiceRequest] = useState('');
 
 
 
@@ -120,37 +121,205 @@ export default function ServiceSelector({ userInfo, onServiceSubmit, isLoading, 
     // Si une interface spécialisée est active, l'afficher
     if (showServiceInterface && selectedService) {
         const service = ENHANCED_SERVICES.find(s => s.id === selectedService);
-        const SpecializedComponent = service?.component;
 
-        if (SpecializedComponent) {
-            return (
-                <div className="space-y-6">
-                    {/* Header avec retour */}
-                    <div className="flex items-center justify-between">
-                        <Button
-                            variant="outline"
-                            onClick={handleBack}
-                            className="flex items-center gap-2"
-                        >
-                            <ArrowRight className="w-4 h-4 rotate-180" />
-                            Retour aux services
-                        </Button>
-                        
-                        <Badge variant="outline" className="bg-amber-50 text-amber-700">
-                            <Star className="w-3 h-3 mr-1" />
-                            {service.cost} tokens
-                        </Badge>
-                    </div>
-
-                    {/* Interface spécialisée */}
-                    <SpecializedComponent
-                        userInfo={userInfo}
-                        onSubmit={handleServiceSubmit}
-                        isLoading={isLoading}
-                    />
+        return (
+            <div className="space-y-6">
+                {/* Header avec retour */}
+                <div className="flex items-center justify-between">
+                    <Button
+                        variant="outline"
+                        onClick={handleBack}
+                        className="flex items-center gap-2"
+                    >
+                        <ArrowRight className="w-4 h-4 rotate-180" />
+                        Retour aux services
+                    </Button>
+                    
+                    <Badge variant="outline" className="bg-amber-50 text-amber-700">
+                        <Star className="w-3 h-3 mr-1" />
+                        {service.cost} tokens
+                    </Badge>
                 </div>
-            );
-        }
+
+                {/* Interface spécialisée simplifiée */}
+                <Card className="bg-gradient-to-r from-amber-50 to-purple-50 border-amber-200">
+                    <CardContent className="p-8 text-center">
+                        <div className="w-16 h-16 bg-gradient-to-r from-amber-500 to-purple-500 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                            <service.icon className="w-8 h-8 text-white" />
+                        </div>
+                        
+                        <h2 className="text-2xl font-bold text-amber-800 mb-3">
+                            {service.title}
+                        </h2>
+                        
+                        <p className="text-amber-600 mb-6 max-w-md mx-auto">
+                            {service.description}
+                        </p>
+
+                        {/* Features du service */}
+                        <div className="grid grid-cols-2 gap-3 mb-6 max-w-sm mx-auto">
+                            {service.features.map(feature => (
+                                <div key={feature} className="bg-white rounded-lg p-3 border border-amber-200">
+                                    <div className="text-sm text-amber-700 font-medium">
+                                        ✨ {feature}
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+
+                        {/* Formulaire spécialisé par service */}
+                        <div className="max-w-lg mx-auto space-y-4">
+                            {service.id === 'career-advice' && (
+                                <div className="space-y-3">
+                                    <div>
+                                        <label className="block text-sm font-medium text-amber-800 mb-2">
+                                            🎯 Votre situation actuelle
+                                        </label>
+                                        <textarea
+                                            className="w-full p-3 border border-amber-200 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
+                                            rows={3}
+                                            placeholder="Ex: Je suis développeur junior depuis 2 ans, je veux évoluer vers un poste de tech lead..."
+                                            onChange={(e) => setServiceRequest(e.target.value)}
+                                        />
+                                    </div>
+                                    <div className="grid grid-cols-2 gap-3 text-xs">
+                                        <div className="bg-white p-2 rounded border border-amber-200">
+                                            <strong>💡 Incluez :</strong><br/>
+                                            • Votre poste actuel<br/>
+                                            • Vos objectifs<br/>
+                                            • Vos défis
+                                        </div>
+                                        <div className="bg-white p-2 rounded border border-amber-200">
+                                            <strong>🎯 Résultat :</strong><br/>
+                                            • Plan de carrière<br/>
+                                            • Actions concrètes<br/>
+                                            • Timeline personnalisée
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+
+                            {service.id === 'cover-letter' && (
+                                <div className="space-y-3">
+                                    <div>
+                                        <label className="block text-sm font-medium text-amber-800 mb-2">
+                                            📋 Offre d'emploi cible
+                                        </label>
+                                        <textarea
+                                            className="w-full p-3 border border-amber-200 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
+                                            rows={4}
+                                            placeholder="Collez ici l'annonce complète (titre, entreprise, description, exigences)..."
+                                            onChange={(e) => setServiceRequest(e.target.value)}
+                                        />
+                                    </div>
+                                    <div className="grid grid-cols-2 gap-3 text-xs">
+                                        <div className="bg-white p-2 rounded border border-amber-200">
+                                            <strong>📝 L'IA va :</strong><br/>
+                                            • Analyser l'offre<br/>
+                                            • Extraire les mots-clés<br/>
+                                            • Personnaliser la lettre
+                                        </div>
+                                        <div className="bg-white p-2 rounded border border-amber-200">
+                                            <strong>🎯 Vous obtenez :</strong><br/>
+                                            • Lettre optimisée ATS<br/>
+                                            • Score de matching<br/>
+                                            • Suggestions d'amélioration
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+
+                            {service.id === 'resume-review' && (
+                                <div className="space-y-3">
+                                    <div>
+                                        <label className="block text-sm font-medium text-amber-800 mb-2">
+                                            🎯 Objectifs d'optimisation
+                                        </label>
+                                        <textarea
+                                            className="w-full p-3 border border-amber-200 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
+                                            rows={3}
+                                            placeholder="Ex: Je vise un poste de Product Manager dans une startup tech. Mon CV doit passer les filtres ATS..."
+                                            onChange={(e) => setServiceRequest(e.target.value)}
+                                        />
+                                    </div>
+                                    <div className="grid grid-cols-2 gap-3 text-xs">
+                                        <div className="bg-white p-2 rounded border border-amber-200">
+                                            <strong>🔍 Analyse :</strong><br/>
+                                            • Score par section<br/>
+                                            • Compatibilité ATS<br/>
+                                            • Benchmarking secteur
+                                        </div>
+                                        <div className="bg-white p-2 rounded border border-amber-200">
+                                            <strong>📊 Résultat :</strong><br/>
+                                            • Heatmap visuelle<br/>
+                                            • Recommandations<br/>
+                                            • Plan d'optimisation
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+
+                            {service.id === 'interview-prep' && (
+                                <div className="space-y-3">
+                                    <div>
+                                        <label className="block text-sm font-medium text-amber-800 mb-2">
+                                            🎤 Détails de l'entretien
+                                        </label>
+                                        <textarea
+                                            className="w-full p-3 border border-amber-200 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
+                                            rows={4}
+                                            placeholder="Ex: Entretien technique pour poste de Senior Developer chez TechCorp. Durée 1h, focus sur React/Node.js..."
+                                            onChange={(e) => setServiceRequest(e.target.value)}
+                                        />
+                                    </div>
+                                    <div className="grid grid-cols-2 gap-3 text-xs">
+                                        <div className="bg-white p-2 rounded border border-amber-200">
+                                            <strong>🎭 Simulation :</strong><br/>
+                                            • Questions adaptées<br/>
+                                            • Timer réaliste<br/>
+                                            • Feedback temps réel
+                                        </div>
+                                        <div className="bg-white p-2 rounded border border-amber-200">
+                                            <strong>📈 Rapport :</strong><br/>
+                                            • Score par compétence<br/>
+                                            • Points d'amélioration<br/>
+                                            • Plan d'entraînement
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+                            
+                            <Button 
+                                onClick={() => {
+                                    if (serviceRequest.trim()) {
+                                        handleServiceSubmit({
+                                            prompt: serviceRequest,
+                                            serviceType: service.id,
+                                            userInfo: userInfo
+                                        });
+                                    }
+                                }}
+                                disabled={isLoading || !serviceRequest.trim()}
+                                className="w-full bg-gradient-to-r from-amber-500 to-purple-500 hover:from-amber-600 hover:to-purple-600"
+                                size="lg"
+                            >
+                                {isLoading ? (
+                                    <>
+                                        <RefreshCw className="w-4 h-4 mr-2 animate-spin" />
+                                        Génération...
+                                    </>
+                                ) : (
+                                    <>
+                                        <Target className="w-4 h-4 mr-2" />
+                                        Générer avec l'IA
+                                    </>
+                                )}
+                            </Button>
+                        </div>
+                    </CardContent>
+                </Card>
+            </div>
+        );
     }
 
     // Sélecteur de services par défaut
@@ -235,15 +404,10 @@ export default function ServiceSelector({ userInfo, onServiceSubmit, isLoading, 
                                     
                                     <Button
                                         onClick={() => handleServiceSelect(service.id)}
-                                        disabled={!canAfford || !service.component}
-                                        className={`w-full ${service.component && canAfford ? 'bg-gradient-to-r from-amber-500 to-purple-500 hover:from-amber-600 hover:to-purple-600' : 'bg-gray-400'}`}
+                                        disabled={!canAfford}
+                                        className={`w-full ${canAfford ? 'bg-gradient-to-r from-amber-500 to-purple-500 hover:from-amber-600 hover:to-purple-600' : 'bg-gray-400'}`}
                                     >
-                                        {!service.component ? (
-                                            <>
-                                                <Zap className="w-4 h-4 mr-2" />
-                                                Bientôt disponible
-                                            </>
-                                        ) : !canAfford ? (
+                                        {!canAfford ? (
                                             <>
                                                 Tokens insuffisants
                                             </>

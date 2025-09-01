@@ -87,7 +87,7 @@ export default function MyApplications({ auth, applications }: MyApplicationsPro
 
     const getStatusStats = () => {
         const stats = {
-            total: applications.data.length,
+            total: applications?.data?.length || 0,
             pending: 0,
             reviewed: 0,
             shortlisted: 0,
@@ -95,7 +95,7 @@ export default function MyApplications({ auth, applications }: MyApplicationsPro
             hired: 0
         };
 
-        applications.data.forEach(app => {
+        applications?.data?.forEach(app => {
             stats[app.status]++;
         });
 
@@ -126,7 +126,7 @@ export default function MyApplications({ auth, applications }: MyApplicationsPro
                                 Mes Candidatures
                             </h1>
                             <p className="text-gray-600 dark:text-gray-400">
-                                Suivez l'état de vos {applications.meta.total} candidature{applications.meta.total > 1 ? 's' : ''}
+                                Suivez l'état de vos {applications?.meta?.total || 0} candidature{(applications?.meta?.total || 0) > 1 ? 's' : ''}
                             </p>
                         </div>
                     </div>
@@ -166,7 +166,7 @@ export default function MyApplications({ auth, applications }: MyApplicationsPro
                     </div>
 
                     {/* Liste des candidatures */}
-                    {applications.data.length > 0 ? (
+                    {applications?.data && applications.data.length > 0 ? (
                         <div className="space-y-4">
                             {applications.data.map((application, index) => {
                                 const statusConfig = STATUS_CONFIG[application.status];
@@ -279,10 +279,10 @@ export default function MyApplications({ auth, applications }: MyApplicationsPro
                     )}
 
                     {/* Pagination */}
-                    {applications.meta.last_page > 1 && (
+                    {applications?.meta?.last_page > 1 && (
                         <div className="flex justify-center mt-8">
                             <div className="flex items-center gap-2">
-                                {applications.links.map((link, index) => (
+                                {applications?.links?.map((link, index) => (
                                     <Link
                                         key={index}
                                         href={link.url || '#'}

@@ -405,7 +405,7 @@ export default function JobPortalIndex({ auth, jobs, stats, topCompanies, filter
                                         Offres d'emploi
                                     </h2>
                                     <p className="text-gray-600 dark:text-gray-400">
-                                        {jobs.meta.total} offre{jobs.meta.total > 1 ? 's' : ''} trouvée{jobs.meta.total > 1 ? 's' : ''}
+                                        {jobs?.meta?.total || 0} offre{(jobs?.meta?.total || 0) > 1 ? 's' : ''} trouvée{(jobs?.meta?.total || 0) > 1 ? 's' : ''}
                                     </p>
                                 </div>
 
@@ -431,7 +431,7 @@ export default function JobPortalIndex({ auth, jobs, stats, topCompanies, filter
 
                             {/* Liste des offres */}
                             <div className="space-y-4">
-                                {jobs.data.map((job, index) => (
+                                {jobs?.data?.map((job, index) => (
                                     <motion.div
                                         key={job.id}
                                         initial={{ opacity: 0, y: 20 }}
@@ -521,10 +521,10 @@ export default function JobPortalIndex({ auth, jobs, stats, topCompanies, filter
                             </div>
 
                             {/* Pagination */}
-                            {jobs.meta.last_page > 1 && (
+                            {jobs?.meta?.last_page > 1 && (
                                 <div className="flex justify-center mt-8">
                                     <div className="flex items-center gap-2">
-                                        {jobs.links.map((link, index) => (
+                                        {jobs?.links?.map((link, index) => (
                                             <Link
                                                 key={index}
                                                 href={link.url || '#'}
@@ -541,7 +541,7 @@ export default function JobPortalIndex({ auth, jobs, stats, topCompanies, filter
                             )}
 
                             {/* Message si aucune offre */}
-                            {jobs.data.length === 0 && (
+                            {(!jobs?.data || jobs.data.length === 0) && (
                                 <div className="text-center py-12">
                                     <div className="w-16 h-16 bg-gray-200 dark:bg-gray-700 rounded-full flex items-center justify-center mx-auto mb-4">
                                         <Search className="w-8 h-8 text-gray-400" />

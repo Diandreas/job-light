@@ -234,13 +234,13 @@ export default function Profiles({ auth, profiles, filters, canAccessProfiles }:
                     {/* Résultats */}
                     <div className="mb-6">
                         <p className="text-gray-600 dark:text-gray-400">
-                            {profiles.meta.total} profil{profiles.meta.total > 1 ? 's' : ''} trouvé{profiles.meta.total > 1 ? 's' : ''}
+                            {profiles?.meta?.total || 0} profil{(profiles?.meta?.total || 0) > 1 ? 's' : ''} trouvé{(profiles?.meta?.total || 0) > 1 ? 's' : ''}
                         </p>
                     </div>
 
                     {/* Grille des profils */}
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                        {profiles.data.map((profile, index) => (
+                        {profiles?.data?.map((profile, index) => (
                             <motion.div
                                 key={profile.id}
                                 initial={{ opacity: 0, y: 20 }}
@@ -372,10 +372,10 @@ export default function Profiles({ auth, profiles, filters, canAccessProfiles }:
                     </div>
 
                     {/* Pagination */}
-                    {profiles.meta.last_page > 1 && (
+                    {profiles?.meta?.last_page > 1 && (
                         <div className="flex justify-center mt-8">
                             <div className="flex items-center gap-2">
-                                {profiles.links.map((link, index) => (
+                                {profiles?.links?.map((link, index) => (
                                     <Link
                                         key={index}
                                         href={link.url || '#'}
@@ -392,7 +392,7 @@ export default function Profiles({ auth, profiles, filters, canAccessProfiles }:
                     )}
 
                     {/* Message si aucun profil */}
-                    {profiles.data.length === 0 && (
+                    {(!profiles?.data || profiles.data.length === 0) && (
                         <div className="text-center py-12">
                             <div className="w-16 h-16 bg-gray-200 dark:bg-gray-700 rounded-full flex items-center justify-center mx-auto mb-4">
                                 <Users className="w-8 h-8 text-gray-400" />

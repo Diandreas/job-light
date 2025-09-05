@@ -79,7 +79,7 @@ class PortfolioController extends Controller
 
         // Validation améliorée
         $request->validate([
-            'design' => 'required|in:professional,creative,minimal,modern,custom',
+            'design' => 'required|in:professional,creative,minimal,modern',
             'primary_color' => 'nullable|string|max:7',
             'secondary_color' => 'nullable|string|max:7',
             'background_color' => 'nullable|string|max:7',

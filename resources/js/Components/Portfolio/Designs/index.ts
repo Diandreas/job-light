@@ -3,15 +3,13 @@ import ProfessionalDesign from './ProfessionalDesign';
 import CreativeDesign from './CreativeDesign';
 import MinimalDesign from './MinimalDesign';
 import ModernDesign from './ModernDesign';
-import CustomDesign from './CustomDesign';
 
 // Export all designs
 export {
     ProfessionalDesign,
     CreativeDesign,
     MinimalDesign,
-    ModernDesign,
-    CustomDesign
+    ModernDesign
 };
 
 // Design mapping for dynamic imports
@@ -19,8 +17,7 @@ export const PORTFOLIO_DESIGNS = {
     professional: ProfessionalDesign,
     creative: CreativeDesign,
     minimal: MinimalDesign,
-    modern: ModernDesign,
-    custom: CustomDesign
+    modern: ModernDesign
 } as const;
 
 // Design metadata
@@ -57,14 +54,6 @@ export const DESIGN_METADATA = {
         colors: ['#3b82f6', '#8b5cf6', '#1e40af'],
         icon: '🚀'
     },
-    custom: {
-        name: 'Personnalisé',
-        description: 'Design entièrement customisable avec drag & drop des sections',
-        preview: '/images/designs/custom-preview.png',
-        features: ['Drag & Drop sections', 'Ordre personnalisé', 'Mode édition live', 'Contrôle total'],
-        colors: ['#3b82f6', '#059669', '#7c3aed'],
-        icon: '🎯'
-    }
 };
 
 // Types

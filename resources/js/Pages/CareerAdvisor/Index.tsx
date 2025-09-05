@@ -18,7 +18,7 @@ import {
     FileInput, MessageCircleQuestion, PenTool, Sparkles, ChevronRight, ChevronLeft,
     Smartphone, Monitor, Zap
 } from 'lucide-react';
-import { MessageBubble } from '@/Components/ai/MessageBubble';
+// import { MessageBubble } from '@/Components/ai/MessageBubble';
 import EnhancedMessageBubble from '@/Components/ai/enhanced/EnhancedMessageBubble';
 import { ServiceCard, MobileServiceCard } from '@/Components/ai/ServiceCard';
 import { SERVICES, DEFAULT_PROMPTS } from '@/Components/ai/constants';
@@ -1008,11 +1008,11 @@ export default function Index({ auth, userInfo, chatHistories }) {
     // Handler pour les services avec interfaces spécialisées
     const handleEnhancedServiceSubmit = async (serviceId: string, data: any) => {
         const service = SERVICES.find(s => s.id === serviceId);
-        
+
         // Gérer les tests d'artefacts
         if (data.isTest && data.mockResponse) {
             const contextId = crypto.randomUUID();
-            
+
             const newChat = {
                 context_id: contextId,
                 service_id: serviceId,
@@ -1034,7 +1034,7 @@ export default function Index({ auth, userInfo, chatHistories }) {
 
             setUserChats(prev => [newChat, ...prev]);
             setActiveChat(newChat);
-            
+
             toast({
                 title: "Test d'artefacts",
                 description: `Démonstration des artefacts pour ${service?.title}`,
@@ -1053,10 +1053,10 @@ export default function Index({ auth, userInfo, chatHistories }) {
         }
 
         setIsLoading(true);
-        
+
         try {
             const contextId = crypto.randomUUID();
-            
+
             const response = await axios.post('/career-advisor/chat', {
                 message: data.prompt || data.finalPrompt || JSON.stringify(data),
                 contextId: contextId,
@@ -1087,7 +1087,7 @@ export default function Index({ auth, userInfo, chatHistories }) {
 
                 setUserChats(prev => [newChat, ...prev]);
                 setActiveChat(newChat);
-                
+
                 setWalletBalance(prev => prev - service.cost);
                 setTokensUsed(prev => prev + (response.data.tokens || 0));
 
@@ -1119,7 +1119,7 @@ export default function Index({ auth, userInfo, chatHistories }) {
     // Handler pour les actions d'artefacts
     const handleArtifactAction = async (action: string, data: any) => {
         console.log('Artifact action:', action, data);
-        
+
         switch (action) {
             case 'optimize-cv':
                 toast({
@@ -1128,7 +1128,7 @@ export default function Index({ auth, userInfo, chatHistories }) {
                 });
                 // Rediriger vers CV avec optimisations
                 break;
-                
+
             case 'export-roadmap':
                 toast({
                     title: "Export en cours",
@@ -1136,7 +1136,7 @@ export default function Index({ auth, userInfo, chatHistories }) {
                 });
                 // Logique d'export
                 break;
-                
+
             case 'add-skill':
                 toast({
                     title: "Compétence ajoutée",
@@ -1144,7 +1144,7 @@ export default function Index({ auth, userInfo, chatHistories }) {
                 });
                 // Ajouter la compétence au profil utilisateur
                 break;
-                
+
             case 'schedule-practice':
                 toast({
                     title: "Entraînement programmé",
@@ -1152,7 +1152,7 @@ export default function Index({ auth, userInfo, chatHistories }) {
                 });
                 // Programmer une session d'entraînement
                 break;
-                
+
             default:
                 toast({
                     title: "Action en développement",
@@ -1476,7 +1476,7 @@ export default function Index({ auth, userInfo, chatHistories }) {
                                                 isLoading={isLoading}
                                                 walletBalance={walletBalance}
                                             />
-                                            
+
                                             {/* Toggle vers interface classique */}
                                             <div className="text-center mt-8">
                                                 <Button
@@ -1523,7 +1523,7 @@ export default function Index({ auth, userInfo, chatHistories }) {
                                                     onClick={() => handleServiceSelection(REPORT_SERVICE)}
                                                 />
                                             </div>
-                                            
+
                                             {/* Toggle vers interface améliorée */}
                                             <div className="text-center">
                                                 <Button
@@ -1709,7 +1709,7 @@ Voici l'évaluation détaillée de votre CV :
                                                     serviceId: selectedService.id,
                                                     isLatest: true
                                                 };
-                                                
+
                                                 setActiveChat({
                                                     ...activeChat,
                                                     messages: [...(activeChat?.messages || []), testMessage]

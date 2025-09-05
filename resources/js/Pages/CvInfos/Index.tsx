@@ -8,7 +8,8 @@ import {
     ChevronRight, ChevronLeft, Mail, Phone, MapPin, Linkedin,
     Github, PencilIcon, Sparkles, CircleChevronRight, Star,
     Camera, Upload, FileUp, Bot, AlertCircle, X, Plus, Menu, Coins, Trash2, Globe,
-    ArrowRight, Play, SkipForward, HelpCircle, Check
+    ArrowRight, Play, SkipForward, HelpCircle, Check,
+    Eye
 } from 'lucide-react';
 import axios from 'axios';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
@@ -1248,13 +1249,13 @@ export default function CvInterface({ auth, cvInformation: initialCvInformation 
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
     const [isPageBlocked, setIsPageBlocked] = useState(false);
     const [showTutorial, setShowTutorial] = useState(false);
-    
+
     // États pour la prévisualisation live
     const [isLivePreviewVisible, setIsLivePreviewVisible] = useState(false);
     const [selectedPreviewModel, setSelectedPreviewModel] = useState<number | null>(
         auth.user.selected_cv_model_id || null
     );
-    
+
     const { toast } = useToast();
 
     // Vérifier si l'utilisateur a déjà vu le tutoriel
@@ -1678,12 +1679,12 @@ export default function CvInterface({ auth, cvInformation: initialCvInformation 
 
     // Détection desktop pour afficher le bouton de prévisualisation
     const [isDesktop, setIsDesktop] = useState(false);
-    
+
     useEffect(() => {
         const checkIsDesktop = () => {
             setIsDesktop(window.innerWidth >= 1024); // lg breakpoint
         };
-        
+
         checkIsDesktop();
         window.addEventListener('resize', checkIsDesktop);
         return () => window.removeEventListener('resize', checkIsDesktop);
@@ -1737,8 +1738,8 @@ export default function CvInterface({ auth, cvInformation: initialCvInformation 
                                     onClick={toggleLivePreview}
                                     className={cn(
                                         "hidden lg:flex items-center gap-2 transition-all",
-                                        isLivePreviewVisible 
-                                            ? "bg-amber-100 text-amber-700 border-amber-300 hover:bg-amber-200" 
+                                        isLivePreviewVisible
+                                            ? "bg-amber-100 text-amber-700 border-amber-300 hover:bg-amber-200"
                                             : "hover:bg-amber-50 hover:border-amber-200"
                                     )}
                                 >
@@ -1748,7 +1749,7 @@ export default function CvInterface({ auth, cvInformation: initialCvInformation 
                                     </span>
                                 </Button>
                             )}
-                            
+
                             {/* Pourcentage et progression */}
                             <div className="flex items-center gap-2" data-tutorial="progress">
                                 <Progress value={getCompletionPercentage()} className="w-16 sm:w-24 h-2" />
@@ -1856,8 +1857,8 @@ export default function CvInterface({ auth, cvInformation: initialCvInformation 
                     {isLivePreviewVisible && (
                         <LivePreview
                             cvInformation={cvInformation}
-                            selectedCvModel={selectedPreviewModel ? 
-                                cvInformation.availableCvModels?.find(m => m.id === selectedPreviewModel) || null 
+                            selectedCvModel={selectedPreviewModel ?
+                                cvInformation.availableCvModels?.find(m => m.id === selectedPreviewModel) || null
                                 : null
                             }
                             availableModels={cvInformation.availableCvModels || []}

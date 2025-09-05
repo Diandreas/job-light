@@ -28,13 +28,13 @@ interface InterviewTimerProps {
     onTimeUp?: () => void;
 }
 
-export default function InterviewTimer({ 
-    title, 
-    duration, 
-    questions, 
-    currentQuestion, 
+export default function InterviewTimer({
+    title,
+    duration,
+    questions,
+    currentQuestion,
     onQuestionChange,
-    onTimeUp 
+    onTimeUp
 }: InterviewTimerProps) {
     const [isRunning, setIsRunning] = useState(false);
     const [elapsedTime, setElapsedTime] = useState(0); // en secondes
@@ -52,20 +52,20 @@ export default function InterviewTimer({
             intervalRef.current = setInterval(() => {
                 setElapsedTime(prev => {
                     const newTime = prev + 1;
-                    
+
                     // Calculer le niveau de stress basé sur le temps restant
                     const timeProgress = newTime / totalSeconds;
                     if (timeProgress > 0.8) setStressLevel(3); // High stress
                     else if (timeProgress > 0.6) setStressLevel(2); // Medium stress
                     else if (timeProgress > 0.3) setStressLevel(1); // Low stress
                     else setStressLevel(0); // No stress
-                    
+
                     // Alerte temps écoulé
                     if (newTime >= totalSeconds && onTimeUp) {
                         onTimeUp();
                         setIsRunning(false);
                     }
-                    
+
                     return newTime;
                 });
             }, 1000);
@@ -110,8 +110,8 @@ export default function InterviewTimer({
 
     const getCurrentQuestion = () => questions[currentQuestion];
     const answeredQuestions = questions.filter(q => q.answered).length;
-    const averageTimePerQuestion = answeredQuestions > 0 
-        ? elapsedTime / answeredQuestions 
+    const averageTimePerQuestion = answeredQuestions > 0
+        ? elapsedTime / answeredQuestions
         : 0;
 
     const getQuestionCategoryColor = (category: string) => {
@@ -160,7 +160,7 @@ export default function InterviewTimer({
                             <Timer className="w-5 h-5 text-amber-600" />
                             {title}
                         </CardTitle>
-                        
+
                         <div className="flex items-center gap-2">
                             <Badge className={`${getStressColor(stressLevel)} border-0`}>
                                 {getStressLabel(stressLevel)}
@@ -193,20 +193,19 @@ export default function InterviewTimer({
                                     className={`${progress > 80 ? 'text-red-500' : progress > 60 ? 'text-amber-500' : 'text-green-500'}`}
                                     strokeLinecap="round"
                                     initial={{ strokeDasharray: "0 283" }}
-                                    animate={{ 
+                                    animate={{
                                         strokeDasharray: `${(progress / 100) * 283} 283`,
                                         stroke: progress > 80 ? '#ef4444' : progress > 60 ? '#f59e0b' : '#10b981'
                                     }}
                                     transition={{ duration: 0.5 }}
                                 />
                             </svg>
-                            
+
                             {/* Temps au centre */}
                             <div className="absolute inset-0 flex flex-col items-center justify-center">
-                                <div className={`text-2xl font-bold ${
-                                    remainingTime < 300 ? 'text-red-600' : 
+                                <div className={`text-2xl font-bold ${remainingTime < 300 ? 'text-red-600' :
                                     remainingTime < 600 ? 'text-amber-600' : 'text-gray-800'
-                                }`}>
+                                    }`}>
                                     {formatTime(remainingTime)}
                                 </div>
                                 <div className="text-xs text-gray-500">restant</div>
@@ -224,7 +223,7 @@ export default function InterviewTimer({
                                 {isRunning ? <Pause className="w-4 h-4 mr-1" /> : <Play className="w-4 h-4 mr-1" />}
                                 {isRunning ? 'Pause' : 'Start'}
                             </Button>
-                            
+
                             <Button
                                 variant="outline"
                                 size="sm"
@@ -253,7 +252,7 @@ export default function InterviewTimer({
                                 <p className="text-sm text-gray-700 dark:text-gray-300">
                                     {getCurrentQuestion().text}
                                 </p>
-                                
+
                                 <div className="mt-3 flex items-center justify-between">
                                     <div className="text-xs text-gray-500">
                                         Temps suggéré: {formatTime(getCurrentQuestion().expectedTime)}
@@ -262,8 +261,8 @@ export default function InterviewTimer({
                                         Temps actuel: {formatTime(elapsedTime - questionStartTime)}
                                     </div>
                                 </div>
-                                
-                                <Progress 
+
+                                <Progress
                                     value={Math.min(100, ((elapsedTime - questionStartTime) / getCurrentQuestion().expectedTime) * 100)}
                                     className="mt-2 h-1"
                                 />

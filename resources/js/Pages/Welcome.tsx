@@ -113,10 +113,17 @@ const FeatureCard = ({ icon: Icon, title, description, action, link, color, bgCo
             <h3 className="text-base md:text-xl font-bold mb-2 md:mb-3 group-hover:text-amber-600 dark:group-hover:text-amber-400 transition-colors dark:text-white leading-tight">{title}</h3>
             <p className="text-sm md:text-base text-gray-600 dark:text-gray-300 mb-4 md:mb-6 flex-grow leading-relaxed">{description}</p>
             {action && link && (
-                <Link href={link} className="inline-flex items-center text-sm md:text-base text-amber-600 dark:text-amber-400 hover:text-amber-700 dark:hover:text-amber-300 font-semibold group/link mt-auto">
-                    {action}
-                    <ArrowRight className="ml-2 w-4 h-4 transform group-hover/link:translate-x-1 transition-transform" />
-                </Link>
+                link.startsWith('/') ? (
+                    <a href={link} className="inline-flex items-center text-sm md:text-base text-amber-600 dark:text-amber-400 hover:text-amber-700 dark:hover:text-amber-300 font-semibold group/link mt-auto">
+                        {action}
+                        <ArrowRight className="ml-2 w-4 h-4 transform group-hover/link:translate-x-1 transition-transform" />
+                    </a>
+                ) : (
+                    <Link href={link} className="inline-flex items-center text-sm md:text-base text-amber-600 dark:text-amber-400 hover:text-amber-700 dark:hover:text-amber-300 font-semibold group/link mt-auto">
+                        {action}
+                        <ArrowRight className="ml-2 w-4 h-4 transform group-hover/link:translate-x-1 transition-transform" />
+                    </Link>
+                )
             )}
         </div>
     </motion.div>
@@ -238,8 +245,16 @@ const ImageCallToAction = () => {
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: 0.6 }}
-                        className="flex justify-center"
+                        className="flex flex-col sm:flex-row gap-3 justify-center"
                     >
+                        <a
+                            href="/guest-cv"
+                            className="inline-flex items-center px-6 py-3 rounded-xl text-sm font-bold bg-white text-amber-600 border-2 border-amber-500 hover:bg-amber-50 shadow-lg hover:shadow-xl transition-all transform hover:scale-105 active:scale-95"
+                        >
+                            <FileText className="mr-2 w-4 h-4" />
+                            Essayer sans inscription
+                            <ArrowRight className="ml-2 w-4 h-4" />
+                        </a>
                         <Link
                             href={route('register')}
                             className="inline-flex items-center px-6 py-3 rounded-xl text-sm font-bold bg-gradient-to-r from-amber-500 to-purple-500 text-white hover:from-amber-600 hover:to-purple-600 shadow-lg hover:shadow-xl transition-all transform hover:scale-105 active:scale-95"
@@ -295,13 +310,24 @@ const ImageCallToAction = () => {
                     <p className="text-base text-gray-600 dark:text-gray-300 mb-8 leading-relaxed">
                         {t('hero.description')}
                     </p>
-                    <Link
-                        href={route('register')}
-                        className="inline-flex items-center px-6 py-3 rounded-full text-base font-medium bg-gradient-to-r from-amber-500 to-purple-500 text-white hover:from-amber-600 hover:to-purple-600 shadow-md hover:shadow-lg transition-all transform hover:scale-105"
-                    >
-                        {t('cta_image.button')}
-                        <ArrowRight className="ml-2 w-4 h-4" />
-                    </Link>
+                    <div className="flex flex-col gap-4">
+                        <a
+                            href="/guest-cv"
+                            className="inline-flex items-center px-6 py-3 rounded-full text-base font-medium bg-gradient-to-r from-blue-500 to-cyan-500 text-white hover:from-blue-600 hover:to-cyan-600 shadow-md hover:shadow-lg transition-all transform hover:scale-105"
+                        >
+                            <FileText className="mr-2 w-4 h-4" />
+                            Essayer sans inscription
+                            <ArrowRight className="ml-2 w-4 h-4" />
+                        </a>
+                        <Link
+                            href={route('register')}
+                            className="inline-flex items-center px-6 py-3 rounded-full text-base font-medium bg-gradient-to-r from-amber-500 to-purple-500 text-white hover:from-amber-600 hover:to-purple-600 shadow-md hover:shadow-lg transition-all transform hover:scale-105"
+                        >
+                            <Star className="mr-2 w-4 h-4" />
+                            {t('cta_image.button')}
+                            <ArrowRight className="ml-2 w-4 h-4" />
+                        </Link>
+                    </div>
                 </motion.div>
 
                 {/* Image droite (CV) */}
@@ -370,10 +396,10 @@ export default function Welcome() {
             icon: FileText,
             title: t('features.cv_designer.title'),
             description: t('features.cv_designer.description'),
-            action: t('features.cv_designer.action'),
-            link: route('register'),
-            color: 'from-blue-500 to-cyan-500',
-            bgColor: 'from-blue-50 to-cyan-50 dark:from-blue-950/50 dark:to-cyan-950/50',
+            action: 'Essayer maintenant',
+            link: '/guest-cv',
+            color: 'from-amber-500 to-purple-500',
+            bgColor: 'from-amber-50 to-purple-50 dark:from-amber-950/50 dark:to-purple-950/50',
             premium: false
         },
         {
@@ -1035,14 +1061,23 @@ export default function Welcome() {
                                 whileInView={{ opacity: 1, scale: 1 }}
                                 viewport={{ once: true }}
                                 transition={{ delay: 0.4 }}
+                                className="flex flex-col sm:flex-row gap-4 justify-center"
                             >
+                                <a
+                                    href="/guest-cv"
+                                    className="inline-flex items-center bg-white text-amber-600 border-2 border-amber-500 px-6 md:px-8 py-3 md:py-4 rounded-2xl text-base md:text-lg font-bold hover:bg-amber-50 shadow-xl hover:shadow-2xl transition-all transform hover:scale-105 active:scale-95 group"
+                                >
+                                    <FileText className="w-4 h-4 md:w-5 md:h-5 mr-2 md:mr-3" />
+                                    Essayer sans inscription
+                                    <ArrowRight className="w-4 h-4 md:w-5 md:h-5 ml-2 md:ml-3 group-hover:translate-x-1 transition-transform" />
+                                </a>
                                 <Link
                                     href={route('register')}
-                                    className="inline-flex items-center bg-gradient-to-r from-amber-500 via-purple-500 to-amber-500 text-white px-8 md:px-10 py-4 md:py-5 rounded-2xl text-lg md:text-xl font-bold hover:from-amber-600 hover:via-purple-600 hover:to-amber-600 shadow-xl hover:shadow-2xl transition-all transform hover:scale-105 active:scale-95 group"
+                                    className="inline-flex items-center bg-gradient-to-r from-amber-500 via-purple-500 to-amber-500 text-white px-6 md:px-8 py-3 md:py-4 rounded-2xl text-base md:text-lg font-bold hover:from-amber-600 hover:via-purple-600 hover:to-amber-600 shadow-xl hover:shadow-2xl transition-all transform hover:scale-105 active:scale-95 group"
                                 >
-                                    <Star className="w-5 h-5 md:w-6 md:h-6 mr-3 group-hover:rotate-12 transition-transform" />
+                                    <Star className="w-4 h-4 md:w-5 md:h-5 mr-2 md:mr-3 group-hover:rotate-12 transition-transform" />
                                     {t('cta.button')}
-                                    <ArrowRight className="w-5 h-5 md:w-6 md:h-6 ml-3 group-hover:translate-x-1 transition-transform" />
+                                    <ArrowRight className="w-4 h-4 md:w-5 md:h-5 ml-2 md:ml-3 group-hover:translate-x-1 transition-transform" />
                                 </Link>
                             </motion.div>
                         </motion.div>

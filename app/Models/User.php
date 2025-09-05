@@ -421,4 +421,40 @@ class User extends Authenticatable
             ->withPivot('language_level')
             ->withTimestamps();
     }
+
+    /**
+     * Get the companies/organizations this user belongs to.
+     */
+    public function companies()
+    {
+        return $this->belongsToMany(Company::class, 'company_members')
+            ->withPivot('role', 'receive_notifications', 'joined_at')
+            ->withTimestamps();
+    }
+
+    /**
+     * Get the company memberships with pivot data.
+     */
+    public function companyMembers()
+    {
+        return $this->hasMany(CompanyMember::class);
+    }
+
+    /**
+     * Check if user is APIDCA member.
+     */
+    public function isApidcaMember()
+    {
+        return $this->companies()
+            ->where('partner_code', 'APIDCA')
+            ->exists();
+    }
+
+    /**
+     * Get job applications submitted by this user.
+     */
+    public function jobApplications()
+    {
+        return $this->hasMany(JobApplication::class);
+    }
 }

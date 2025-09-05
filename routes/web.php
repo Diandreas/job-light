@@ -66,11 +66,26 @@ Route::get('/mentions-legales', function () {
 })->name('mentions-legales');
 
 
+// Routes Blog avec SEO
+Route::prefix('blog')->name('blog.')->group(function () {
+    // Liste des articles
+    Route::get('/', [App\Http\Controllers\BlogController::class, 'index'])->name('index');
+    
+    // Article spécifique
+    Route::get('/{slug}', [App\Http\Controllers\BlogController::class, 'show'])->name('show');
+    
+    // SEO et feeds
+    Route::get('/sitemap.xml', [App\Http\Controllers\BlogController::class, 'sitemap'])->name('sitemap');
+    Route::get('/rss.xml', [App\Http\Controllers\BlogController::class, 'rss'])->name('rss');
+    
+    // API recherche
+    Route::get('/api/search', [App\Http\Controllers\BlogController::class, 'search'])->name('search');
+});
+
+// Ancien article (redirection pour compatibilité)
 Route::get('/blog/comparaison', function () {
     return view('blog-comparaison-autonome');
 })->name('blog.comparaison-autonome');
-
-Route::get('/blog', [App\Http\Controllers\BlogController::class, 'index'])->name('blog.index');
 
 Route::get('/', function () {
     return Inertia::render('Welcome');
@@ -82,9 +97,12 @@ Route::get('/payment/callback', [NotchPayController::class, 'handleCallback'])->
 // Routes CinetPay (backup option)
 Route::post('/api/cinetpay/notify', [CinetPayController::class, 'notify']); // Webhook public
 Route::get('/api/cinetpay/return', [CinetPayController::class, 'return']);
-Route::match(['GET', 'POST'], '/payment/cinetpay/callback', [CinetPayController::class, 'return'])
-    ->name('payment.cinetpay.callback')
-    ->withoutMiddleware(['web']);
+Route::get('/payment/cinetpay/callback', [CinetPayController::class, 'return'])->name('payment.cinetpay.callback');
+
+// Routes CinetPay pour paiements guest
+Route::post('/api/cinetpay/guest/initialize', [App\Http\Controllers\GuestPaymentController::class, 'initializeGuestPayment'])->name('guest-payment.cinetpay.initialize');
+Route::post('/api/cinetpay/guest/notify', [App\Http\Controllers\GuestPaymentController::class, 'notifyGuest'])->name('guest-payment.cinetpay.notify');
+Route::get('/api/cinetpay/guest/return', [App\Http\Controllers\GuestPaymentController::class, 'returnGuest'])->name('guest-payment.cinetpay.return');
 Route::post('/api/cv/analyze', [CareerAdvisorController::class, 'analyzeCV'])
     ->name('cv.analyze')
     ->middleware(['auth']);
@@ -102,7 +120,13 @@ Route::prefix('career-advisor')->group(function () {
     Route::post('/export', [CareerAdvisorController::class, 'export'])->name('career-advisor.export');
     Route::delete('/chats/{contextId}', [CareerAdvisorController::class, 'destroyChat'])->name('career-advisor.destroy');
 });
-Route::get('/cv/{id}/download', [CvInfosController::class, 'downloadPdf'])->name('cv.download');
+    Route::get('/cv/{id}/download', [CvInfosController::class, 'downloadPdf'])->name('cv.download');
+
+// Live Preview Route (authentifié)
+Route::post('/api/cv/live-preview', [CvInfosController::class, 'livePreview'])
+    ->name('cv.preview.live')
+    ->middleware(['auth']);
+
 // Chat History Routes
 Route::prefix('api')->middleware(['auth'])->group(function () {
     Route::get('/chat-history/{contextId}', [ChatHistoryController::class, 'show']);
@@ -255,6 +279,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
             Route::get('/companies/{company}', [CompanyManagementController::class, 'show'])->name('companies.show');
             Route::put('/companies/{company}', [CompanyManagementController::class, 'update'])->name('companies.update');
             
+            // Gestion du blog
+            Route::resource('blog', \App\Http\Controllers\Admin\BlogManagementController::class);
+            Route::get('/blog-stats', [\App\Http\Controllers\Admin\BlogManagementController::class, 'seoStats'])->name('blog.stats');
+            
             // User management routes
             Route::resource('users', \App\Http\Controllers\Admin\UserManagementController::class);
             Route::get('/users/export', [\App\Http\Controllers\Admin\UserManagementController::class, 'export'])->name('users.export');
@@ -313,6 +341,96 @@ Route::get('/cv/preview-print/{id}', [CvInfosController::class, 'previewPrint'])
 // Route de test pour vérifier le schéma de la base de données
 Route::get('/test-db-schema', [App\Http\Controllers\TestDbController::class, 'testSchema']);
 
+// Routes Guest CV (sans authentification)
+Route::prefix('guest-cv')->name('guest-cv.')->group(function () {
+    // Page principale de création CV guest
+    Route::get('/', [App\Http\Controllers\GuestCvController::class, 'index'])->name('index');
+    
+    // Prévisualisation CV (public)
+    Route::post('/preview', [App\Http\Controllers\GuestCvController::class, 'preview'])->name('preview');
+    
+    // Initier paiement pour téléchargement
+    Route::post('/payment/initiate', [App\Http\Controllers\GuestCvController::class, 'initiatePayment'])->name('payment.initiate');
+    
+    // Confirmer paiement
+    Route::post('/payment/confirm', [App\Http\Controllers\GuestCvController::class, 'confirmPayment'])->name('payment.confirm');
+    
+    // Télécharger PDF (après paiement)
+    Route::post('/download', [App\Http\Controllers\GuestCvController::class, 'generatePdf'])->name('download');
+    
+    // Migration des données vers compte utilisateur (après inscription)
+    Route::middleware(['auth'])->group(function () {
+        Route::post('/migrate', [App\Http\Controllers\GuestCvController::class, 'migrateGuestData'])->name('migrate');
+    });
+});
 
+// Routes Job Portal (temporairement en Coming Soon)
+Route::prefix('job-portal')->name('job-portal.')->group(function () {
+    // Pages publiques - Coming Soon temporaire
+    Route::get('/', function() {
+        return \Inertia\Inertia::render('JobPortal/ComingSoon');
+    })->name('index');
+    Route::get('/{job}', [App\Http\Controllers\JobPortalController::class, 'show'])->name('show');
+    
+    // API publique
+    Route::get('/api/search-suggestions', [App\Http\Controllers\JobPortalController::class, 'searchSuggestions'])->name('search-suggestions');
+    
+    // Routes authentifiées
+    Route::middleware(['auth'])->group(function () {
+        // Candidatures - Coming Soon temporaire
+        Route::post('/{job}/apply', function() {
+            return response()->json(['message' => 'Fonctionnalité bientôt disponible']);
+        })->name('apply');
+        Route::get('/my/applications', function() {
+            return \Inertia\Inertia::render('JobPortal/ComingSoon');
+        })->name('my-applications');
+        
+        // Publication d'offres
+        Route::post('/create', [App\Http\Controllers\JobPortalController::class, 'createJob'])->name('create');
+        Route::get('/my/jobs', [App\Http\Controllers\JobPortalController::class, 'myJobs'])->name('my-jobs');
+        Route::get('/{job}/applications', [App\Http\Controllers\JobPortalController::class, 'jobApplications'])->name('applications');
+        Route::patch('/applications/{application}/status', [App\Http\Controllers\JobPortalController::class, 'updateApplicationStatus'])->name('applications.update-status');
+        
+        // Recherche de profils (entreprises) - Coming Soon temporaire
+        Route::get('/search/profiles', function() {
+            return \Inertia\Inertia::render('JobPortal/ComingSoon');
+        })->name('profiles');
+    });
+});
+
+// Routes Abonnement Entreprise
+Route::prefix('company')->name('company.')->middleware(['auth'])->group(function () {
+    Route::get('/subscription-plans', [App\Http\Controllers\CompanySubscriptionController::class, 'plans'])->name('subscription-plans');
+    Route::post('/subscribe', [App\Http\Controllers\CompanySubscriptionController::class, 'subscribe'])->name('subscribe');
+    Route::post('/subscription/confirm', [App\Http\Controllers\CompanySubscriptionController::class, 'confirmSubscription'])->name('subscription.confirm');
+    Route::get('/usage', [App\Http\Controllers\CompanySubscriptionController::class, 'usage'])->name('usage');
+});
+
+// Routes APIDCA Partnership
+Route::prefix('apidca')->name('apidca.')->group(function () {
+    // Page publique APIDCA
+    Route::get('/', [App\Http\Controllers\ApidcaController::class, 'index'])->name('index');
+    
+    // Désabonnement public (avec token)
+    Route::get('/unsubscribe/{user}', [App\Http\Controllers\ApidcaController::class, 'unsubscribe'])
+        ->name('unsubscribe');
+    
+    // Routes authentifiées
+    Route::middleware(['auth'])->group(function () {
+        // Inscription comme membre APIDCA
+        Route::post('/join', [App\Http\Controllers\ApidcaController::class, 'joinApidca'])
+            ->name('join');
+        
+        // Publication d'offres (membres APIDCA seulement)
+        Route::post('/jobs', [App\Http\Controllers\ApidcaController::class, 'postJob'])
+            ->name('jobs.store');
+    });
+    
+    // Routes admin
+    Route::middleware(['auth', 'can:access-admin'])->group(function () {
+        Route::get('/stats', [App\Http\Controllers\ApidcaController::class, 'stats'])
+            ->name('stats');
+    });
+});
 
 require __DIR__.'/auth.php';

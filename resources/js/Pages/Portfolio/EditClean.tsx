@@ -79,7 +79,6 @@ const DESIGN_OPTIONS = [
     { value: 'creative', label: 'Créatif', desc: 'Coloré et dynamique' },
     { value: 'minimal', label: 'Minimal', desc: 'Simple et moderne' },
     { value: 'modern', label: 'Moderne', desc: 'Tendance et stylé' },
-    { value: 'custom', label: 'Personnalisé', desc: 'Drag & drop complet' },
 ];
 
 
@@ -202,13 +201,13 @@ export default function EditClean({ auth, portfolio, settings, cvData = portfoli
                     ? { ...section, isActive: !section.isActive }
                     : section
             );
-            
+
             // Update form data using the new state
             const toggledSection = updatedSections.find(s => s.key === sectionKey);
             if (toggledSection) {
                 setData(`show_${sectionKey}` as any, toggledSection.isActive);
             }
-            
+
             return updatedSections;
         });
     };
@@ -403,10 +402,10 @@ export default function EditClean({ auth, portfolio, settings, cvData = portfoli
                                                         transition={{ delay: index * 0.03 }}
                                                         className={cn(
                                                             "flex items-center gap-3 p-3 rounded-lg border-2 transition-all duration-200",
-                                                            section.count === 0 
+                                                            section.count === 0
                                                                 ? "cursor-not-allowed opacity-40 border-orange-200 bg-orange-50/20"
-                                                                : section.isActive 
-                                                                    ? "cursor-pointer border-emerald-200 bg-emerald-50/30 hover:border-emerald-300" 
+                                                                : section.isActive
+                                                                    ? "cursor-pointer border-emerald-200 bg-emerald-50/30 hover:border-emerald-300"
                                                                     : "cursor-pointer border-gray-200 bg-gray-50/30 opacity-60 hover:opacity-80"
                                                         )}
                                                         onClick={() => section.count > 0 && handleToggleSection(section.key)}
@@ -414,8 +413,8 @@ export default function EditClean({ auth, portfolio, settings, cvData = portfoli
                                                         {/* Section Icon */}
                                                         <div className={cn(
                                                             "flex items-center justify-center w-8 h-8 rounded-md transition-colors shrink-0",
-                                                            section.isActive 
-                                                                ? "bg-emerald-100 text-emerald-600" 
+                                                            section.isActive
+                                                                ? "bg-emerald-100 text-emerald-600"
                                                                 : "bg-gray-100 text-gray-400"
                                                         )}>
                                                             <IconComponent className="w-4 h-4" />
@@ -430,12 +429,12 @@ export default function EditClean({ auth, portfolio, settings, cvData = portfoli
                                                                 )}>
                                                                     {section.label}
                                                                 </span>
-                                                                <Badge 
+                                                                <Badge
                                                                     variant="secondary"
                                                                     className={cn(
                                                                         "text-xs px-1.5 py-0.5 shrink-0",
-                                                                        section.count === 0 
-                                                                            ? "bg-orange-100 text-orange-600" 
+                                                                        section.count === 0
+                                                                            ? "bg-orange-100 text-orange-600"
                                                                             : "bg-blue-100 text-blue-600"
                                                                     )}
                                                                 >
@@ -448,7 +447,7 @@ export default function EditClean({ auth, portfolio, settings, cvData = portfoli
                                                         <Switch
                                                             checked={section.isActive}
                                                             disabled={section.count === 0}
-                                                            onCheckedChange={() => {}}
+                                                            onCheckedChange={() => { }}
                                                             onClick={(e) => {
                                                                 e.stopPropagation();
                                                                 if (section.count > 0) {
@@ -461,7 +460,7 @@ export default function EditClean({ auth, portfolio, settings, cvData = portfoli
                                                 );
                                             })}
                                         </div>
-                                        
+
                                         {/* Actions rapides */}
                                         <div className="flex items-center justify-between pt-3 border-t border-gray-100">
                                             <div className="text-xs text-gray-500">
@@ -479,7 +478,7 @@ export default function EditClean({ auth, portfolio, settings, cvData = portfoli
                                                                     ? { ...section, isActive: true }
                                                                     : section
                                                             );
-                                                            
+
                                                             // Update form data for all changed sections
                                                             updatedSections.forEach(section => {
                                                                 const originalSection = prevSections.find(s => s.key === section.key);
@@ -487,7 +486,7 @@ export default function EditClean({ auth, portfolio, settings, cvData = portfoli
                                                                     setData(`show_${section.key}` as any, section.isActive);
                                                                 }
                                                             });
-                                                            
+
                                                             return updatedSections;
                                                         });
                                                     }}
@@ -506,7 +505,7 @@ export default function EditClean({ auth, portfolio, settings, cvData = portfoli
                                                                     ? { ...section, isActive: false }
                                                                     : section
                                                             );
-                                                            
+
                                                             // Update form data for all changed sections
                                                             updatedSections.forEach(section => {
                                                                 const originalSection = prevSections.find(s => s.key === section.key);
@@ -514,7 +513,7 @@ export default function EditClean({ auth, portfolio, settings, cvData = portfoli
                                                                     setData(`show_${section.key}` as any, section.isActive);
                                                                 }
                                                             });
-                                                            
+
                                                             return updatedSections;
                                                         });
                                                     }}

@@ -1,7 +1,12 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import ReactMarkdown from 'react-markdown';
-import { Share2, Download, X, Copy, Check, Presentation, User, MoreHorizontal, Sparkles } from 'lucide-react';
+import { Share2, Download, X, Copy, Check, Presentation, User, MoreHorizontal, Sparkles, ChevronRight } from 'lucide-react';
+import { ArtifactDetector, ArtifactData } from './artifacts/ArtifactDetector';
+import InteractiveTable from './artifacts/InteractiveTable';
+import ScoreDashboard from './artifacts/ScoreDashboard';
+import InteractiveChecklist from './artifacts/InteractiveChecklist';
+import SimpleChart from './artifacts/SimpleChart';
 import html2canvas from 'html2canvas';
 import { PowerPointService } from '@/Components/ai/PresentationService';
 import { Button } from "@/Components/ui/button";
@@ -29,9 +34,11 @@ interface MessageBubbleProps {
         isLatest?: boolean;
         isThinking?: boolean;
     };
+    serviceId?: string;
+    onArtifactsDetected?: (artifacts: ArtifactData[], content: string) => void;
 }
 
-export const MessageBubble: React.FC<MessageBubbleProps> = ({ message }) => {
+export const MessageBubble: React.FC<MessageBubbleProps> = ({ message, serviceId, onArtifactsDetected }) => {
     const { t } = useTranslation();
     const isUser = message.role === 'user';
     const isThinking = message.isThinking || false;
@@ -42,6 +49,8 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({ message }) => {
     const [copied, setCopied] = useState(false);
     const [isGeneratingPPTX, setIsGeneratingPPTX] = useState(false);
     const [isPPTXSuccess, setIsPPTXSuccess] = useState(false);
+    const [artifacts, setArtifacts] = useState<ArtifactData[]>([]);
+    const [cleanContent, setCleanContent] = useState('');
     const messageRef = useRef<HTMLDivElement>(null);
     const bubbleRef = useRef<HTMLDivElement>(null);
     const { toast } = useToast();
@@ -138,7 +147,21 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({ message }) => {
 
             if (currentIndex >= cleanContent.length) {
                 clearInterval(typingInterval);
-                setTimeout(() => setIsTypingComplete(true), 100);
+                setTimeout(() => {
+                    setIsTypingComplete(true);
+                    // Détecter les artefacts une fois l'animation terminée
+                    if (!isUser && !isThinking) {
+                        const detectedArtifacts = ArtifactDetector.detectArtifacts(message.content, serviceId);
+                        setArtifacts(detectedArtifacts);
+                        const cleaned = ArtifactDetector.cleanContentForDisplay(message.content, detectedArtifacts);
+                        setCleanContent(cleaned);
+                        
+                        // Notifier le parent des artefacts détectés
+                        if (detectedArtifacts.length > 0 && onArtifactsDetected) {
+                            onArtifactsDetected(detectedArtifacts, message.content);
+                        }
+                    }
+                }, 100);
             }
         }, 10);
 
@@ -469,7 +492,7 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({ message }) => {
                                 )
                             }}
                         >
-                            {displayContent}
+                            {artifacts.length > 0 && cleanContent ? cleanContent : displayContent}
                         </ReactMarkdown>
                     )}
 
@@ -508,6 +531,32 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({ message }) => {
                                 <span>{t('components.messageBubble.presentation.button')}</span>
                             </Button>
                         </div>
+                    )}
+
+                    {/* Indicateur d'artefacts */}
+                    {!isUser && isTypingComplete && artifacts.length > 0 && (
+                        <motion.div
+                            initial={{ opacity: 0, scale: 0.9 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            className="mt-3 p-3 rounded-lg bg-gradient-to-r from-amber-50 to-purple-50 border border-amber-200"
+                        >
+                            <div className="flex items-center gap-3">
+                                <div className="p-2 rounded-lg bg-gradient-to-r from-amber-500 to-purple-500">
+                                    <Sparkles className="w-4 h-4 text-white" />
+                                </div>
+                                <div className="flex-1">
+                                    <div className="font-medium text-amber-800 text-sm">
+                                        {artifacts.length} artefact{artifacts.length > 1 ? 's' : ''} interactif{artifacts.length > 1 ? 's' : ''} détecté{artifacts.length > 1 ? 's' : ''}
+                                    </div>
+                                    <div className="text-xs text-amber-600">
+                                        {artifacts.map(a => a.title).join(', ')}
+                                    </div>
+                                </div>
+                                <div className="text-amber-600">
+                                    <ChevronRight className="w-5 h-5" />
+                                </div>
+                            </div>
+                        </motion.div>
                     )}
                 </motion.div>
 

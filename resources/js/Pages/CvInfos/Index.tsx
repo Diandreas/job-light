@@ -8,7 +8,8 @@ import {
     ChevronRight, ChevronLeft, Mail, Phone, MapPin, Linkedin,
     Github, PencilIcon, Sparkles, CircleChevronRight, Star,
     Camera, Upload, FileUp, Bot, AlertCircle, X, Plus, Menu, Coins, Trash2, Globe,
-    ArrowRight, Play, SkipForward, HelpCircle, Check
+    ArrowRight, Play, SkipForward, HelpCircle, Check,
+    Eye
 } from 'lucide-react';
 import axios from 'axios';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
@@ -34,8 +35,10 @@ import ProfessionManager from '@/Pages/CvInfos/Partials/ProfessionManager';
 import ExperienceManager from "@/Pages/CvInfos/Partials/ExperienceManager";
 import SummaryManager from '@/Pages/CvInfos/Partials/SummaryManager';
 import LanguageManager from '@/Pages/CvInfos/Partials/LanguageManager';
+import LivePreview from '@/Components/cv/LivePreview';
 import ReactCrop, { centerCrop, makeAspectCrop } from 'react-image-crop';
 import 'react-image-crop/dist/ReactCrop.css';
+import { cn } from '@/lib/utils';
 
 const SIDEBAR_ITEMS = [
     { id: 'personalInfo', label: 'Informations Personnelles', icon: User, color: 'text-amber-500' },
@@ -1246,6 +1249,13 @@ export default function CvInterface({ auth, cvInformation: initialCvInformation 
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
     const [isPageBlocked, setIsPageBlocked] = useState(false);
     const [showTutorial, setShowTutorial] = useState(false);
+
+    // États pour la prévisualisation live
+    const [isLivePreviewVisible, setIsLivePreviewVisible] = useState(false);
+    const [selectedPreviewModel, setSelectedPreviewModel] = useState<number | null>(
+        auth.user.selected_cv_model_id || null
+    );
+
     const { toast } = useToast();
 
     // Vérifier si l'utilisateur a déjà vu le tutoriel
@@ -1656,6 +1666,30 @@ export default function CvInterface({ auth, cvInformation: initialCvInformation 
         setActiveSection(sectionId);
     };
 
+    // Handlers pour la prévisualisation live
+    const handleModelSelect = useCallback((modelId: number) => {
+        setSelectedPreviewModel(modelId);
+        // Optionnel : sauvegarder la préférence utilisateur
+        // axios.post('/api/user/preferred-cv-model', { modelId });
+    }, []);
+
+    const toggleLivePreview = useCallback(() => {
+        setIsLivePreviewVisible(!isLivePreviewVisible);
+    }, [isLivePreviewVisible]);
+
+    // Détection desktop pour afficher le bouton de prévisualisation
+    const [isDesktop, setIsDesktop] = useState(false);
+
+    useEffect(() => {
+        const checkIsDesktop = () => {
+            setIsDesktop(window.innerWidth >= 1024); // lg breakpoint
+        };
+
+        checkIsDesktop();
+        window.addEventListener('resize', checkIsDesktop);
+        return () => window.removeEventListener('resize', checkIsDesktop);
+    }, []);
+
     return (
         <AuthenticatedLayout user={auth.user}>
 
@@ -1683,7 +1717,10 @@ export default function CvInterface({ auth, cvInformation: initialCvInformation 
             )}
 
             <div className="min-h-screen bg-gradient-to-b from-amber-50/50 to-purple-50/50 dark:from-gray-900 dark:to-gray-800">
-                <div className="container mx-auto py-3 sm:py-4 px-3 sm:px-4">
+                <div className={cn(
+                    "container mx-auto py-3 sm:py-4 px-3 sm:px-4 transition-all duration-300",
+                    isLivePreviewVisible && isDesktop ? "lg:mr-[500px]" : ""
+                )}>
                     {/* Header responsive amélioré - avec pourcentage et import intégrés */}
                     <div className="flex justify-between items-center mb-3 sm:mb-4">
                         <div className="flex items-center gap-1.5 sm:gap-2">
@@ -1693,6 +1730,26 @@ export default function CvInterface({ auth, cvInformation: initialCvInformation 
                             </h2>
                         </div>
                         <div className="flex items-center gap-2">
+                            {/* Bouton Live Preview (desktop seulement) */}
+                            {isDesktop && (
+                                <Button
+                                    variant="outline"
+                                    size="sm"
+                                    onClick={toggleLivePreview}
+                                    className={cn(
+                                        "hidden lg:flex items-center gap-2 transition-all",
+                                        isLivePreviewVisible
+                                            ? "bg-amber-100 text-amber-700 border-amber-300 hover:bg-amber-200"
+                                            : "hover:bg-amber-50 hover:border-amber-200"
+                                    )}
+                                >
+                                    <Eye className="w-4 h-4" />
+                                    <span className="hidden xl:inline">
+                                        {isLivePreviewVisible ? 'Masquer aperçu' : 'Aperçu Live'}
+                                    </span>
+                                </Button>
+                            )}
+
                             {/* Pourcentage et progression */}
                             <div className="flex items-center gap-2" data-tutorial="progress">
                                 <Progress value={getCompletionPercentage()} className="w-16 sm:w-24 h-2" />
@@ -1793,6 +1850,25 @@ export default function CvInterface({ auth, cvInformation: initialCvInformation 
                     {/*)}*/}
                 </div>
             </div>
+
+            {/* Composant de prévisualisation live (desktop seulement) */}
+            {isDesktop && (
+                <AnimatePresence>
+                    {isLivePreviewVisible && (
+                        <LivePreview
+                            cvInformation={cvInformation}
+                            selectedCvModel={selectedPreviewModel ?
+                                cvInformation.availableCvModels?.find(m => m.id === selectedPreviewModel) || null
+                                : null
+                            }
+                            availableModels={cvInformation.availableCvModels || []}
+                            onModelSelect={handleModelSelect}
+                            isVisible={isLivePreviewVisible}
+                            onToggleVisibility={toggleLivePreview}
+                        />
+                    )}
+                </AnimatePresence>
+            )}
         </AuthenticatedLayout>
     );
 }

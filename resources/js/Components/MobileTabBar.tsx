@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link, usePage } from '@inertiajs/react';
 import { useTranslation } from 'react-i18next';
-import { Folder, Brain, User, MessageSquare, RefreshCw } from 'lucide-react';
+import { Folder, Brain, User, MessageSquare, RefreshCw, Briefcase } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { motion } from 'framer-motion';
 import { useMediaQuery } from '@/lib/hooks';
@@ -47,10 +47,10 @@ export const MobileTabBar: React.FC<MobileTabBarProps> = ({ onRenewCodeClick, is
             active: url.includes('/career-advisor')
         },
         {
-            name: 'Support',
-            href: route('support'),
-            icon: MessageSquare,
-            active: url.includes('/support')
+            name: 'Jobs',
+            href: route('job-portal.index'),
+            icon: Briefcase,
+            active: url.includes('/jobs')
         },
         // {
         //     name: t('sponsorship.code.renewal.renewCode', 'New Code'),

@@ -16,12 +16,17 @@ import {
     MessageSquare, Calendar, History, Menu, Send, Plus,
     FileText, Presentation, ChevronDown, FileSpreadsheet,
     FileInput, MessageCircleQuestion, PenTool, Sparkles, ChevronRight, ChevronLeft,
-    Smartphone, Monitor
+    Smartphone, Monitor, Zap
 } from 'lucide-react';
-import { MessageBubble } from '@/Components/ai/MessageBubble';
+// import { MessageBubble } from '@/Components/ai/MessageBubble';
+import EnhancedMessageBubble from '@/Components/ai/enhanced/EnhancedMessageBubble';
 import { ServiceCard, MobileServiceCard } from '@/Components/ai/ServiceCard';
 import { SERVICES, DEFAULT_PROMPTS } from '@/Components/ai/constants';
 import { PowerPointService } from '@/Components/ai/PresentationService';
+import ServiceSelector from '@/Components/ai/specialized/ServiceSelector';
+import ArtifactSidebar from '@/Components/ai/artifacts/ArtifactSidebar';
+import { ArtifactData } from '@/Components/ai/artifacts/ArtifactDetector';
+import { cn } from '@/lib/utils';
 import { Avatar, AvatarFallback, AvatarImage } from "@/Components/ui/avatar";
 import { Badge } from "@/Components/ui/badge";
 import { Separator } from "@/Components/ui/separator";
@@ -529,6 +534,11 @@ export default function Index({ auth, userInfo, chatHistories }) {
     const [isSidebarCollapsed, setSidebarCollapsed] = useState(false);
     const [isExporting, setIsExporting] = useState(false);
     const [isPrinting, setIsPrinting] = useState(false);
+    const [useEnhancedInterface, setUseEnhancedInterface] = useState(true); // Nouvelle interface par défaut
+    const [useEnhancedBubbles, setUseEnhancedBubbles] = useState(true); // Nouvelles bulles avec artefacts
+    const [artifactSidebarOpen, setArtifactSidebarOpen] = useState(false);
+    const [currentArtifacts, setCurrentArtifacts] = useState<ArtifactData[]>([]);
+    const [currentArtifactContent, setCurrentArtifactContent] = useState<string>('');
     const scrollRef = useRef(null);
     const inputRef = useRef(null);
     const thinkingIntervalRef = useRef(null);
@@ -995,13 +1005,172 @@ export default function Index({ auth, userInfo, chatHistories }) {
         }
     };
 
+    // Handler pour les services avec interfaces spécialisées
+    const handleEnhancedServiceSubmit = async (serviceId: string, data: any) => {
+        const service = SERVICES.find(s => s.id === serviceId);
+
+        // Gérer les tests d'artefacts
+        if (data.isTest && data.mockResponse) {
+            const contextId = crypto.randomUUID();
+
+            const newChat = {
+                context_id: contextId,
+                service_id: serviceId,
+                created_at: new Date().toISOString(),
+                messages: [
+                    {
+                        role: 'user',
+                        content: data.prompt,
+                        timestamp: new Date().toISOString()
+                    },
+                    {
+                        role: 'assistant',
+                        content: data.mockResponse,
+                        timestamp: new Date().toISOString(),
+                        isLatest: true
+                    }
+                ]
+            };
+
+            setUserChats(prev => [newChat, ...prev]);
+            setActiveChat(newChat);
+
+            toast({
+                title: "Test d'artefacts",
+                description: `Démonstration des artefacts pour ${service?.title}`,
+            });
+            return;
+        }
+
+        // Logique normale pour les vraies requêtes
+        if (walletBalance < service?.cost || 0) {
+            toast({
+                title: "Solde insuffisant",
+                description: "Vous n'avez pas assez de tokens pour ce service",
+                variant: "destructive"
+            });
+            return;
+        }
+
+        setIsLoading(true);
+
+        try {
+            const contextId = crypto.randomUUID();
+
+            const response = await axios.post('/career-advisor/chat', {
+                message: data.prompt || data.finalPrompt || JSON.stringify(data),
+                contextId: contextId,
+                language: language,
+                serviceId: serviceId,
+                history: []
+            });
+
+            if (response.data.message) {
+                const newChat = {
+                    context_id: contextId,
+                    service_id: serviceId,
+                    created_at: new Date().toISOString(),
+                    messages: [
+                        {
+                            role: 'user',
+                            content: data.prompt || data.finalPrompt || 'Demande personnalisée',
+                            timestamp: new Date().toISOString()
+                        },
+                        {
+                            role: 'assistant',
+                            content: response.data.message,
+                            timestamp: new Date().toISOString(),
+                            isLatest: true
+                        }
+                    ]
+                };
+
+                setUserChats(prev => [newChat, ...prev]);
+                setActiveChat(newChat);
+
+                setWalletBalance(prev => prev - service.cost);
+                setTokensUsed(prev => prev + (response.data.tokens || 0));
+
+                toast({
+                    title: "Analyse terminée !",
+                    description: `Votre ${service.title.toLowerCase()} personnalisé est prêt`,
+                });
+            }
+
+        } catch (error) {
+            console.error('Enhanced service error:', error);
+            toast({
+                title: "Erreur",
+                description: "Une erreur est survenue lors du traitement",
+                variant: "destructive"
+            });
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    // Handler pour les artefacts détectés
+    const handleArtifactsDetected = (artifacts: ArtifactData[], content: string) => {
+        setCurrentArtifacts(artifacts);
+        setCurrentArtifactContent(content);
+        setArtifactSidebarOpen(true);
+    };
+
+    // Handler pour les actions d'artefacts
+    const handleArtifactAction = async (action: string, data: any) => {
+        console.log('Artifact action:', action, data);
+
+        switch (action) {
+            case 'optimize-cv':
+                toast({
+                    title: "Optimisation CV",
+                    description: "Redirection vers l'éditeur de CV avec suggestions appliquées",
+                });
+                // Rediriger vers CV avec optimisations
+                break;
+
+            case 'export-roadmap':
+                toast({
+                    title: "Export en cours",
+                    description: "Votre roadmap carrière est en cours d'export PDF",
+                });
+                // Logique d'export
+                break;
+
+            case 'add-skill':
+                toast({
+                    title: "Compétence ajoutée",
+                    description: `${data.keyword} ajouté à votre profil`,
+                });
+                // Ajouter la compétence au profil utilisateur
+                break;
+
+            case 'schedule-practice':
+                toast({
+                    title: "Entraînement programmé",
+                    description: "Session d'entraînement ajoutée à votre calendrier",
+                });
+                // Programmer une session d'entraînement
+                break;
+
+            default:
+                toast({
+                    title: "Action en développement",
+                    description: "Cette fonctionnalité sera bientôt disponible",
+                });
+        }
+    };
+
     return (
         <AuthenticatedLayout user={auth.user} hideHeaderOnMobile={true}>
             {/* Rendre l'effet de curseur plus subtil */}
             <div className="opacity-20"><FluidCursorEffect zIndex={100} /></div>
 
 
-            <div className="h-[calc(100vh-100px)] md:h-screen flex bg-gray-50 dark:bg-gray-900"> {/* 100px = header mobile (40px) + tab bar (60px) */}
+            <div className={cn(
+                "h-[calc(100vh-100px)] md:h-screen flex bg-gray-50 dark:bg-gray-900 transition-all duration-300",
+                artifactSidebarOpen ? "mr-96" : ""
+            )}> {/* 100px = header mobile (40px) + tab bar (60px) */}
                 {/* Sidebar Desktop - Collapsible */}
                 <div className={`hidden lg:flex ${isSidebarCollapsed ? 'lg:w-16' : 'lg:w-64'} bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-800 flex-col transition-all duration-300`}>
                     {/* En-tête sidebar avec titre et wallet */}
@@ -1298,43 +1467,76 @@ export default function Index({ auth, userInfo, chatHistories }) {
                                         </p>
                                     </div>
 
-                                    {/* Grille de services plus compacte */}
-                                    <div className="hidden lg:grid grid-cols-2 xl:grid-cols-3 gap-3 px-2 mb-8">
-                                        {/* Services existants */}
-                                        {SERVICES.map(service => (
-                                            <EnhancedServiceCard
-                                                key={service.id}
-                                                service={service}
-                                                isSelected={selectedService.id === service.id}
-                                                onClick={() => handleServiceSelection(service)}
+                                    {/* Interface améliorée ou classique */}
+                                    {useEnhancedInterface ? (
+                                        <div className="px-2">
+                                            <ServiceSelector
+                                                userInfo={userInfo}
+                                                onServiceSubmit={handleEnhancedServiceSubmit}
+                                                isLoading={isLoading}
+                                                walletBalance={walletBalance}
                                             />
-                                        ))}
-                                        {/* Nouveau service "coming soon" */}
-                                        <EnhancedServiceCard
-                                            service={REPORT_SERVICE}
-                                            isSelected={false}
-                                            onClick={() => handleServiceSelection(REPORT_SERVICE)}
-                                        />
-                                    </div>
 
-                                    {/* Services Mobile - 2 par ligne */}
-                                    <div className="lg:hidden grid grid-cols-2 gap-2 px-2 mb-8">
-                                        {/* Services existants */}
-                                        {SERVICES.map(service => (
-                                            <EnhancedMobileServiceCard
-                                                key={service.id}
-                                                service={service}
-                                                isSelected={selectedService.id === service.id}
-                                                onClick={() => handleServiceSelection(service)}
-                                            />
-                                        ))}
-                                        {/* Nouveau service "coming soon" */}
-                                        <EnhancedMobileServiceCard
-                                            service={REPORT_SERVICE}
-                                            isSelected={false}
-                                            onClick={() => handleServiceSelection(REPORT_SERVICE)}
-                                        />
-                                    </div>
+                                            {/* Toggle vers interface classique */}
+                                            <div className="text-center mt-8">
+                                                <Button
+                                                    variant="ghost"
+                                                    size="sm"
+                                                    onClick={() => setUseEnhancedInterface(false)}
+                                                    className="text-gray-500 hover:text-gray-700"
+                                                >
+                                                    Utiliser l'interface classique
+                                                </Button>
+                                            </div>
+                                        </div>
+                                    ) : (
+                                        <>
+                                            {/* Interface classique */}
+                                            <div className="hidden lg:grid grid-cols-2 xl:grid-cols-3 gap-3 px-2 mb-8">
+                                                {SERVICES.map(service => (
+                                                    <EnhancedServiceCard
+                                                        key={service.id}
+                                                        service={service}
+                                                        isSelected={selectedService.id === service.id}
+                                                        onClick={() => handleServiceSelection(service)}
+                                                    />
+                                                ))}
+                                                <EnhancedServiceCard
+                                                    service={REPORT_SERVICE}
+                                                    isSelected={false}
+                                                    onClick={() => handleServiceSelection(REPORT_SERVICE)}
+                                                />
+                                            </div>
+
+                                            <div className="lg:hidden grid grid-cols-2 gap-2 px-2 mb-8">
+                                                {SERVICES.map(service => (
+                                                    <EnhancedMobileServiceCard
+                                                        key={service.id}
+                                                        service={service}
+                                                        isSelected={selectedService.id === service.id}
+                                                        onClick={() => handleServiceSelection(service)}
+                                                    />
+                                                ))}
+                                                <EnhancedMobileServiceCard
+                                                    service={REPORT_SERVICE}
+                                                    isSelected={false}
+                                                    onClick={() => handleServiceSelection(REPORT_SERVICE)}
+                                                />
+                                            </div>
+
+                                            {/* Toggle vers interface améliorée */}
+                                            <div className="text-center">
+                                                <Button
+                                                    variant="outline"
+                                                    onClick={() => setUseEnhancedInterface(true)}
+                                                    className="bg-gradient-to-r from-amber-50 to-purple-50 border-amber-200 hover:from-amber-100 hover:to-purple-100"
+                                                >
+                                                    <Sparkles className="w-4 h-4 mr-2" />
+                                                    Essayer la nouvelle expérience IA
+                                                </Button>
+                                            </div>
+                                        </>
+                                    )}
                                 </div>
                             </div>
 
@@ -1403,6 +1605,25 @@ export default function Index({ auth, userInfo, chatHistories }) {
                                         </div>
                                     </div>
 
+                                    {/* Bouton artefacts */}
+                                    {currentArtifacts.length > 0 && (
+                                        <Button
+                                            variant="outline"
+                                            size="sm"
+                                            onClick={() => setArtifactSidebarOpen(true)}
+                                            className={cn(
+                                                "h-7 px-2 mr-2",
+                                                artifactSidebarOpen ? "bg-amber-100 text-amber-700 border-amber-300" : ""
+                                            )}
+                                        >
+                                            <Sparkles className="h-3 w-3 mr-1" />
+                                            <span className="hidden sm:inline text-xs">Artefacts</span>
+                                            <Badge variant="secondary" className="ml-1 h-4 px-1 text-xs bg-amber-500 text-white">
+                                                {currentArtifacts.length}
+                                            </Badge>
+                                        </Button>
+                                    )}
+
                                     {/* Bouton export compact */}
                                     <DropdownMenu>
                                         <DropdownMenuTrigger asChild>
@@ -1443,6 +1664,63 @@ export default function Index({ auth, userInfo, chatHistories }) {
                                             )}
                                         </DropdownMenuContent>
                                     </DropdownMenu>
+
+                                    {/* Toggle artefacts */}
+                                    <Button
+                                        variant="outline"
+                                        size="sm"
+                                        onClick={() => setUseEnhancedBubbles(!useEnhancedBubbles)}
+                                        className={`h-7 px-2 ${useEnhancedBubbles ? 'bg-amber-50 border-amber-200 text-amber-700' : ''}`}
+                                    >
+                                        <Sparkles className="h-3 w-3 mr-1" />
+                                        <span className="hidden sm:inline text-xs">
+                                            {useEnhancedBubbles ? 'Artefacts ON' : 'Artefacts OFF'}
+                                        </span>
+                                    </Button>
+
+                                    {/* Bouton test artefacts (temporaire) */}
+                                    {useEnhancedBubbles && (
+                                        <Button
+                                            variant="outline"
+                                            size="sm"
+                                            onClick={() => {
+                                                // Ajouter un message de test avec artefact
+                                                const testMessage = {
+                                                    role: 'assistant' as const,
+                                                    content: `## Analyse de votre profil professionnel
+
+Voici l'évaluation détaillée de votre CV :
+
+| Section | Score | Statut |
+|---------|-------|--------|
+| Informations personnelles | 85/100 | Bon |
+| Résumé professionnel | 65/100 | À améliorer |
+| Expériences | 90/100 | Excellent |
+| Compétences | 70/100 | Bon |
+
+### Actions recommandées :
+• Améliorer le résumé professionnel avec des mots-clés sectoriels
+• Ajouter 2-3 compétences techniques manquantes
+• Optimiser la mise en forme pour les ATS
+• Quantifier davantage les réalisations
+
+**Score global : 77/100** - Votre CV est bon mais peut être optimisé pour maximiser vos chances.`,
+                                                    timestamp: new Date().toISOString(),
+                                                    serviceId: selectedService.id,
+                                                    isLatest: true
+                                                };
+
+                                                setActiveChat({
+                                                    ...activeChat,
+                                                    messages: [...(activeChat?.messages || []), testMessage]
+                                                });
+                                            }}
+                                            className="h-7 px-2 bg-purple-50 border-purple-200 text-purple-700"
+                                        >
+                                            <Zap className="h-3 w-3 mr-1" />
+                                            <span className="hidden sm:inline text-xs">Test</span>
+                                        </Button>
+                                    )}
                                 </div>
                             </div>
 
@@ -1459,12 +1737,25 @@ export default function Index({ auth, userInfo, chatHistories }) {
                                                     exit={{ opacity: 0 }}
                                                     transition={{ duration: 0.2 }}
                                                 >
-                                                    <MessageBubble
-                                                        message={{
-                                                            ...message,
-                                                            isLatest: index === (activeChat?.messages || []).length - 1
-                                                        }}
-                                                    />
+                                                    {useEnhancedBubbles ? (
+                                                        <EnhancedMessageBubble
+                                                            message={{
+                                                                ...message,
+                                                                serviceId: selectedService.id,
+                                                                isLatest: index === (activeChat?.messages || []).length - 1
+                                                            }}
+                                                            onArtifactAction={handleArtifactAction}
+                                                        />
+                                                    ) : (
+                                                        <MessageBubble
+                                                            message={{
+                                                                ...message,
+                                                                isLatest: index === (activeChat?.messages || []).length - 1
+                                                            }}
+                                                            serviceId={selectedService.id}
+                                                            onArtifactsDetected={handleArtifactsDetected}
+                                                        />
+                                                    )}
                                                 </motion.div>
                                             ))}
                                             {tempMessage && (
@@ -1475,12 +1766,25 @@ export default function Index({ auth, userInfo, chatHistories }) {
                                                     exit={{ opacity: 0 }}
                                                     transition={{ duration: 0.2 }}
                                                 >
-                                                    <MessageBubble
-                                                        message={{
-                                                            ...tempMessage,
-                                                            isLatest: true
-                                                        }}
-                                                    />
+                                                    {useEnhancedBubbles ? (
+                                                        <EnhancedMessageBubble
+                                                            message={{
+                                                                ...tempMessage,
+                                                                serviceId: selectedService.id,
+                                                                isLatest: true
+                                                            }}
+                                                            onArtifactAction={handleArtifactAction}
+                                                        />
+                                                    ) : (
+                                                        <MessageBubble
+                                                            message={{
+                                                                ...tempMessage,
+                                                                isLatest: true
+                                                            }}
+                                                            serviceId={selectedService.id}
+                                                            onArtifactsDetected={handleArtifactsDetected}
+                                                        />
+                                                    )}
                                                 </motion.div>
                                             )}
                                         </AnimatePresence>
@@ -1571,6 +1875,15 @@ export default function Index({ auth, userInfo, chatHistories }) {
                     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
                 }
             `}</style>
+
+            {/* Sidebar d'artefacts */}
+            <ArtifactSidebar
+                artifacts={currentArtifacts}
+                isOpen={artifactSidebarOpen}
+                onClose={() => setArtifactSidebarOpen(false)}
+                serviceId={selectedService.id}
+                messageContent={currentArtifactContent}
+            />
         </AuthenticatedLayout>
     );
 }

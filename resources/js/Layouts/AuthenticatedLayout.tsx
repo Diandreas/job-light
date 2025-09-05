@@ -192,15 +192,14 @@ export default function Authenticated({ user, header, children, hideHeaderOnMobi
             name: (
                 <div className="flex items-center gap-1.5">
                     {t('menu.jobPortal')}
-                    <Badge variant="outline" className="bg-amber-500/20 text-amber-600 dark:bg-amber-500/10 dark:text-amber-400 text-[9px] px-1 py-0 h-3.5">
-                        {t('common.comingSoon')}
+                    <Badge variant="outline" className="bg-green-500/20 text-green-600 dark:bg-green-500/10 dark:text-green-400 text-[9px] px-1 py-0 h-3.5">
+                        NOUVEAU
                     </Badge>
                 </div>
             ),
-            href: '#',
+            href: route('job-portal.index'),
             icon: Award,
-            active: false,
-            onClick: handleJobPortalClick
+            active: route().current('job-portal.*')
         }
     ];
 

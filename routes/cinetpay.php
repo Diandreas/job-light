@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\CinetPayController;
+use App\Http\Middleware\CinetPayDebugMiddleware;
 use Inertia\Inertia;
 
 /**
@@ -13,11 +14,13 @@ use Inertia\Inertia;
 // Routes PUBLIQUES (appelées par CinetPay) - PAS d'authentification
 Route::post('/api/cinetpay/notify', [CinetPayController::class, 'notify'])
     ->name('cinetpay.notify')
-    ->withoutMiddleware(['auth']);
+    ->withoutMiddleware(['auth'])
+    ->middleware(CinetPayDebugMiddleware::class);
 
 Route::match(['get', 'post'], '/api/cinetpay/return', [CinetPayController::class, 'return'])
     ->name('cinetpay.return')
-    ->withoutMiddleware(['auth']);
+    ->withoutMiddleware(['auth'])
+    ->middleware(CinetPayDebugMiddleware::class);
 
 // Routes AUTHENTIFIÉES (pour l'application web)
 Route::middleware(['auth', 'verified'])->group(function () {
@@ -46,12 +49,15 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
 Route::post('/payment/notify', [CinetPayController::class, 'notify'])
     ->name('payment.notify.alias')
-    ->withoutMiddleware(['auth']);
+    ->withoutMiddleware(['auth'])
+    ->middleware(CinetPayDebugMiddleware::class);
     
 Route::match(['get', 'post'], '/payment/return', [CinetPayController::class, 'return'])
     ->name('payment.return.alias') 
-    ->withoutMiddleware(['auth']);
+    ->withoutMiddleware(['auth'])
+    ->middleware(CinetPayDebugMiddleware::class);
 
 Route::match(['get', 'post'], '/webhook/cinetpay/callback', [CinetPayController::class, 'return'])
     ->name('webhook.cinetpay.callback')
-    ->withoutMiddleware(['auth']);
+    ->withoutMiddleware(['auth'])
+    ->middleware(CinetPayDebugMiddleware::class);

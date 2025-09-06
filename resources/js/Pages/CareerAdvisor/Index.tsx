@@ -531,7 +531,11 @@ export default function Index({ auth, userInfo, chatHistories }) {
     const [tempMessage, setTempMessage] = useState(null);
     const [thinkingIndex, setThinkingIndex] = useState(0);
     const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
-    const [isSidebarCollapsed, setSidebarCollapsed] = useState(false);
+    const [isSidebarCollapsed, setSidebarCollapsed] = useState(() => {
+        // Récupérer l'état du sidebar depuis localStorage, collapsé par défaut
+        const saved = localStorage.getItem('career_advisor_sidebar_collapsed');
+        return saved ? JSON.parse(saved) : true; // true = collapsé par défaut
+    });
     const [isExporting, setIsExporting] = useState(false);
     const [isPrinting, setIsPrinting] = useState(false);
     const [useEnhancedInterface, setUseEnhancedInterface] = useState(true); // Nouvelle interface par défaut
@@ -1168,14 +1172,14 @@ export default function Index({ auth, userInfo, chatHistories }) {
 
 
             <div className={cn(
-                "h-[calc(100vh-100px)] md:h-screen flex bg-gray-50 dark:bg-gray-900 transition-all duration-300",
+                "h-[calc(100vh-50px)] flex bg-gray-50 dark:bg-gray-900 transition-all duration-300",
                 artifactSidebarOpen ? "mr-96" : ""
-            )}> {/* 100px = header mobile (40px) + tab bar (60px) */}
+            )}> {/* Interface compacte sans scroll */}
                 {/* Sidebar Desktop - Collapsible */}
-                <div className={`hidden lg:flex ${isSidebarCollapsed ? 'lg:w-16' : 'lg:w-64'} bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-800 flex-col transition-all duration-300`}>
+                <div className={`hidden lg:flex ${isSidebarCollapsed ? 'lg:w-12' : 'lg:w-56'} bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-800 flex-col transition-all duration-300`}>
                     {/* En-tête sidebar avec titre et wallet */}
-                    <div className="p-3 border-b border-gray-200 dark:border-gray-800 flex-shrink-0">
-                        <div className={`flex items-center ${isSidebarCollapsed ? 'justify-center' : 'gap-2'} mb-3`}>
+                    <div className="p-1.5 border-b border-gray-200 dark:border-gray-800 flex-shrink-0">
+                        <div className={`flex items-center ${isSidebarCollapsed ? 'justify-center' : 'gap-2'} mb-1.5`}>
                             <Avatar className="w-7 h-7">
                                 <AvatarImage src="/mascot/mascot.png" alt="AI Assistant" />
                                 <AvatarFallback className="bg-gradient-to-r from-amber-500 to-purple-500 text-white text-xs">
@@ -1185,15 +1189,15 @@ export default function Index({ auth, userInfo, chatHistories }) {
                             {!isSidebarCollapsed && (
                                 <div className="flex-1 min-w-0">
                                     <div className="flex items-center gap-1.5">
-                                        <h1 className="text-sm font-bold text-gray-900 dark:text-gray-100 truncate">
-                                            {t('career_advisor.title')}
+                                        <h1 className="text-xs font-bold text-gray-900 dark:text-gray-100 truncate">
+                                            IA Conseiller
                                         </h1>
-                                        <Badge variant="secondary" className="text-xs px-1.5 py-0 h-4 bg-amber-50 text-amber-600 dark:bg-amber-900/30 dark:text-amber-300">
-                                            <Sparkles className="w-2.5 h-2.5 mr-0.5" />
-                                            {t('components.sidebar.pro_badge')}
+                                        <Badge variant="secondary" className="text-[10px] px-1 py-0 h-3 bg-amber-50 text-amber-600 dark:bg-amber-900/30 dark:text-amber-300">
+                                            <Sparkles className="w-2 h-2 mr-0.5" />
+                                            Pro
                                         </Badge>
                                     </div>
-                                    <p className="text-xs text-gray-600 dark:text-gray-400 truncate">
+                                    <p className="text-[10px] text-gray-600 dark:text-gray-400 truncate">
                                         {t(`services.${selectedService.id}.title`)}
                                     </p>
                                 </div>
@@ -1202,14 +1206,11 @@ export default function Index({ auth, userInfo, chatHistories }) {
 
                         {/* Wallet info compactée */}
                         {!isSidebarCollapsed && (
-                            <div className="bg-gradient-to-r from-amber-50 to-purple-50 dark:from-amber-900/20 dark:to-purple-900/20 border border-amber-200 dark:border-amber-700 px-2.5 py-1.5 rounded-lg flex items-center gap-2 mb-2.5">
-                                <div className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse" />
-                                <Wallet className="h-3 w-3 text-amber-600 dark:text-amber-400" />
-                                <span className="text-xs font-semibold text-amber-700 dark:text-amber-300">
+                            <div className="bg-gradient-to-r from-amber-50 to-purple-50 dark:from-amber-900/20 dark:to-purple-900/20 border border-amber-200 dark:border-amber-700 px-1.5 py-0.5 rounded-md flex items-center gap-1 mb-1.5">
+                                <div className="w-1 h-1 bg-green-500 rounded-full" />
+                                <Wallet className="h-2.5 w-2.5 text-amber-600 dark:text-amber-400" />
+                                <span className="text-[10px] font-semibold text-amber-700 dark:text-amber-300">
                                     {walletBalance.toLocaleString()}
-                                </span>
-                                <span className="text-xs text-amber-600 dark:text-amber-400">
-                                    {t('components.sidebar.credits')}
                                 </span>
                             </div>
                         )}
@@ -1221,16 +1222,15 @@ export default function Index({ auth, userInfo, chatHistories }) {
                                     <Button
                                         onClick={() => {
                                             createNewChat();
-                                            setSidebarCollapsed(!isSidebarCollapsed);
                                         }}
-                                        className={`${isSidebarCollapsed ? 'w-10 p-0' : 'w-full'} h-8 bg-gradient-to-r from-amber-500 to-purple-500 hover:from-amber-600 hover:to-purple-600 text-white text-xs rounded-lg shadow-sm transition-all duration-200`}
+                                        className={`${isSidebarCollapsed ? 'w-8 p-0' : 'w-full'} h-6 bg-gradient-to-r from-amber-500 to-purple-500 hover:from-amber-600 hover:to-purple-600 text-white text-[10px] rounded-md shadow-sm transition-all duration-200`}
                                     >
                                         {isSidebarCollapsed ? (
-                                            <Plus className="h-3.5 w-3.5" />
+                                            <Plus className="h-3 w-3" />
                                         ) : (
                                             <>
-                                                <Plus className="h-3.5 w-3.5 mr-1.5" />
-                                                {t('career_advisor.chat.new')}
+                                                <Plus className="h-3 w-3 mr-1" />
+                                                Nouveau
                                             </>
                                         )}
                                     </Button>
@@ -1243,7 +1243,7 @@ export default function Index({ auth, userInfo, chatHistories }) {
                     </div>
 
                     {/* Historique optimisé */}
-                    <div className="flex-1 p-2.5 min-h-0">
+                    <div className="flex-1 p-1.5 min-h-0">
                         {!isSidebarCollapsed && (
                             <div className="flex items-center justify-between mb-2">
                                 <h3 className="text-xs font-semibold text-gray-700 dark:text-gray-300">
@@ -1255,21 +1255,25 @@ export default function Index({ auth, userInfo, chatHistories }) {
                             </div>
                         )}
 
-                        <ScrollArea className="h-[calc(100vh-190px)]">
+                        <ScrollArea className="h-[calc(100vh-120px)]">
                             <div className={`${isSidebarCollapsed ? 'space-y-2 items-center flex flex-col' : 'space-y-1.5'}`}>
                                 {/* Bouton toggle sidebar */}
                                 <Button
                                     variant="ghost"
                                     size="sm"
-                                    onClick={() => setSidebarCollapsed(!isSidebarCollapsed)}
-                                    className={`${isSidebarCollapsed ? 'w-10 h-10 p-0 rounded-full' : 'w-full h-7'} mb-1 text-gray-500`}
+                                    onClick={() => {
+                                        const newState = !isSidebarCollapsed;
+                                        setSidebarCollapsed(newState);
+                                        localStorage.setItem('career_advisor_sidebar_collapsed', JSON.stringify(newState));
+                                    }}
+                                    className={`${isSidebarCollapsed ? 'w-8 h-8 p-0 rounded-full' : 'w-full h-6'} mb-1 text-gray-500`}
                                 >
                                     {isSidebarCollapsed ? (
-                                        <ChevronRight className="h-4 w-4" />
+                                        <ChevronRight className="h-3 w-3" />
                                     ) : (
                                         <div className="flex items-center w-full justify-between">
-                                            <span className="text-xs">{t('career_advisor.sidebar.collapse')}</span>
-                                            <ChevronLeft className="h-3.5 w-3.5" />
+                                            <span className="text-[10px]">Réduire</span>
+                                            <ChevronLeft className="h-3 w-3" />
                                         </div>
                                     )}
                                 </Button>
@@ -1330,14 +1334,14 @@ export default function Index({ auth, userInfo, chatHistories }) {
                 {/* Zone de chat */}
                 <div className="flex-1 flex flex-col min-w-0 bg-gray-50 dark:bg-gray-900 h-full">
                     {/* Mobile header avec service selector et menu */}
-                    <div className="lg:hidden px-2.5 py-2 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 flex-shrink-0">
+                    <div className="lg:hidden px-2 py-1.5 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 flex-shrink-0">
                         <div className="flex items-center justify-between">
                             <div className="flex items-center gap-2">
                                 <Sheet open={isMobileSidebarOpen} onOpenChange={setIsMobileSidebarOpen}>
                                     <SheetTrigger asChild>
-                                        <Button variant="outline" size="sm" className="h-7 px-2 text-xs">
-                                            <Menu className="h-3.5 w-3.5 mr-1" />
-                                            {t('career_advisor.history.title')}
+                                        <Button variant="outline" size="sm" className="h-6 px-2 text-[10px]">
+                                            <Menu className="h-3 w-3 mr-0.5" />
+                                            Historique
                                         </Button>
                                     </SheetTrigger>
                                     <SheetContent side="left" className="w-[85vw] max-w-[300px] bg-white dark:bg-gray-900 p-4">
@@ -1411,10 +1415,10 @@ export default function Index({ auth, userInfo, chatHistories }) {
 
                                 <DropdownMenu>
                                     <DropdownMenuTrigger asChild>
-                                        <Button variant="outline" size="sm" className="h-7 text-xs">
-                                            <selectedService.icon className="h-3.5 w-3.5 mr-1.5" />
-                                            <span className="max-w-[70px] truncate">{t(`services.${selectedService.id}.title`)}</span>
-                                            <ChevronDown className="h-3 w-3 ml-1" />
+                                        <Button variant="outline" size="sm" className="h-6 text-[10px]">
+                                            <selectedService.icon className="h-3 w-3 mr-1" />
+                                            <span className="max-w-[60px] truncate">{t(`services.${selectedService.id}.title`)}</span>
+                                            <ChevronDown className="h-2.5 w-2.5 ml-0.5" />
                                         </Button>
                                     </DropdownMenuTrigger>
                                     <DropdownMenuContent align="end" className="min-w-[150px]">
@@ -1433,9 +1437,9 @@ export default function Index({ auth, userInfo, chatHistories }) {
                             </div>
 
                             {/* Balance mobile */}
-                            <div className="bg-gradient-to-r from-amber-50 to-purple-50 dark:from-amber-900/20 dark:to-purple-900/20 border border-amber-200 dark:border-amber-700 px-2 py-1 rounded-lg flex items-center gap-1.5">
-                                <Wallet className="h-3 w-3 text-amber-600 dark:text-amber-400" />
-                                <span className="text-xs font-semibold text-amber-700 dark:text-amber-300">
+                            <div className="bg-gradient-to-r from-amber-50 to-purple-50 dark:from-amber-900/20 dark:to-purple-900/20 border border-amber-200 dark:border-amber-700 px-1.5 py-0.5 rounded-md flex items-center gap-1">
+                                <Wallet className="h-2.5 w-2.5 text-amber-600 dark:text-amber-400" />
+                                <span className="text-[10px] font-semibold text-amber-700 dark:text-amber-300">
                                     {walletBalance.toLocaleString()}
                                 </span>
                             </div>
@@ -1540,41 +1544,36 @@ export default function Index({ auth, userInfo, chatHistories }) {
                                 </div>
                             </div>
 
-                            {/* Zone d'input principale fixe en bas */}
+                            {/* Message d'instructions - plus d'input sur la page principale */}
                             <div className="flex-shrink-0 bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-800 shadow-lg">
-                                <div className="max-w-4xl mx-auto px-3 py-4">
-                                    {/* Indicateur de service sélectionné */}
-                                    <div className="flex items-center justify-center gap-2 mb-3">
-                                        <div className="flex items-center gap-2 px-3 py-1.5 bg-gradient-to-r from-amber-50 to-purple-50 dark:from-amber-900/20 dark:to-purple-900/20 border border-amber-200 dark:border-amber-700 rounded-full">
+                                <div className="max-w-4xl mx-auto px-3 py-6 text-center">
+                                    <div className="flex items-center justify-center gap-2 mb-4">
+                                        <div className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-amber-50 to-purple-50 dark:from-amber-900/20 dark:to-purple-900/20 border border-amber-200 dark:border-amber-700 rounded-full">
                                             <selectedService.icon className="h-4 w-4 text-amber-600 dark:text-amber-400" />
                                             <span className="text-sm font-medium text-gray-900 dark:text-gray-100">
                                                 {t(`services.${selectedService.id}.title`)}
                                             </span>
-                                            <div className="flex items-center gap-1 ml-2 px-2 py-0.5 bg-amber-100 dark:bg-amber-800/30 rounded-full">
-                                                <Coins className="h-3 w-3 text-amber-600 dark:text-amber-400" />
-                                                <span className="text-xs font-medium text-amber-700 dark:text-amber-300">
-                                                    {selectedService.cost}
-                                                </span>
+                                        </div>
+                                    </div>
+                                    
+                                    <div className="max-w-lg mx-auto">
+                                        <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">
+                                            Service sélectionné
+                                        </h3>
+                                        <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
+                                            Cliquez sur le service ci-dessus pour démarrer une conversation personnalisée, ou utilisez l'interface classique pour poser directement une question.
+                                        </p>
+                                        <div className="flex items-center justify-center gap-4 text-xs text-gray-500 dark:text-gray-400">
+                                            <div className="flex items-center gap-1">
+                                                <Coins className="h-3 w-3 text-amber-500" />
+                                                <span>Coût: {selectedService.cost} crédits</span>
+                                            </div>
+                                            <div className="flex items-center gap-1">
+                                                <Wallet className="h-3 w-3 text-green-500" />
+                                                <span>Solde: {walletBalance.toLocaleString()}</span>
                                             </div>
                                         </div>
                                     </div>
-
-                                    <ChatInput
-                                        value={data.question}
-                                        onChange={setData}
-                                        onSubmit={handleSubmit}
-                                        placeholder={t('career_advisor.sidebar.ask_question', {
-                                            service: t(`services.${selectedService.id}.title`)
-                                        })}
-                                        disabled={isLoading}
-                                        isLoading={isLoading}
-                                        cost={selectedService.cost}
-                                        service={t(`services.${selectedService.id}.title`)}
-                                        showSuggestions={true}
-                                        suggestions={DEFAULT_PROMPTS[selectedService.id] || []}
-                                        variant="floating"
-                                        onKeyDown={handleKeyDown}
-                                    />
                                 </div>
                             </div>
                         </div>

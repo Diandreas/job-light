@@ -65,6 +65,31 @@ export default function GuestCvBuilder({
 }: GuestCvBuilderProps) {
     const { t } = useTranslation();
     const { toast } = useToast();
+    
+    // CSS pour scrollbar mobile
+    React.useEffect(() => {
+        const style = document.createElement('style');
+        style.textContent = `
+            .scrollbar-hide {
+                -ms-overflow-style: none;
+                scrollbar-width: none;
+            }
+            .scrollbar-hide::-webkit-scrollbar {
+                display: none;
+            }
+            
+            @media (max-width: 640px) {
+                .cv-preview-zoom {
+                    zoom: 0.25 !important;
+                }
+            }
+        `;
+        document.head.appendChild(style);
+        
+        return () => {
+            document.head.removeChild(style);
+        };
+    }, []);
     const [currentStep, setCurrentStep] = useState(0);
     const [selectedModel, setSelectedModel] = useState<number | null>(null);
     const [isModelSelectorOpen, setIsModelSelectorOpen] = useState(false);
@@ -1178,62 +1203,64 @@ export default function GuestCvBuilder({
                                         )}
                                     </CardTitle>
                                 </CardHeader>
-                                <CardContent>
+                                <CardContent className="p-2 sm:p-4">
                                     {!selectedModel ? (
-                                        <div className="text-center py-12">
-                                            <FileText className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-                                            <p className="text-gray-600 mb-4">Choisissez un modèle pour voir l'aperçu</p>
-                                            <Button onClick={() => setIsModelSelectorOpen(true)}>
+                                        <div className="text-center py-8 sm:py-12">
+                                            <FileText className="w-12 h-12 sm:w-16 sm:h-16 text-gray-300 mx-auto mb-4" />
+                                            <p className="text-sm sm:text-base text-gray-600 mb-4">Choisissez un modèle pour voir l'aperçu</p>
+                                            <Button onClick={() => setIsModelSelectorOpen(true)} size="sm">
                                                 Choisir un modèle
                                             </Button>
                                         </div>
                                     ) : previewHtml ? (
                                         <div className="border border-gray-200 rounded-lg overflow-hidden">
                                             <div 
-                                                className="w-full h-96 overflow-y-auto bg-white"
+                                                className="w-full h-64 sm:h-96 overflow-y-auto bg-white cv-preview-zoom"
                                                 dangerouslySetInnerHTML={{ __html: previewHtml }}
                                                 style={{ zoom: 0.5 }}
                                             />
-                                            <div className="bg-gray-50 p-4 border-t">
-                                                <div className="flex justify-between items-center">
-                                                    <div className="text-sm text-gray-600">
-                                                        Aperçu généré • Zoom 50%
+                                            <div className="bg-gray-50 p-3 sm:p-4 border-t">
+                                                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+                                                    <div className="text-xs sm:text-sm text-gray-600">
+                                                        <div>Aperçu généré • Zoom 50%</div>
                                                         {selectedModelData?.isPremium && (
-                                                            <span className="ml-2 text-purple-600 font-medium">
-                                                                • Modèle Premium ({selectedModelData.price}€)
-                                                            </span>
+                                                            <div className="text-purple-600 font-medium mt-1">
+                                                                Modèle Premium - {selectedModelData.price}€
+                                                            </div>
                                                         )}
                                                     </div>
                                                     {selectedModelData?.isPremium ? (
                                                         <Button 
                                                             onClick={() => setShowPaymentDialog(true)}
-                                                            className="bg-gradient-to-r from-purple-500 to-pink-500 text-white"
+                                                            className="bg-gradient-to-r from-purple-500 to-pink-500 text-white w-full sm:w-auto"
+                                                            size="sm"
                                                         >
-                                                            <Download className="w-4 h-4 mr-2" />
-                                                            Télécharger PDF - {selectedModelData.price}€
+                                                            <Download className="w-3 h-3 sm:w-4 sm:h-4 mr-2" />
+                                                            <span className="text-xs sm:text-sm">PDF - {selectedModelData.price}€</span>
                                                         </Button>
                                                     ) : (
                                                         <Button 
                                                             onClick={handleFreePdfDownload}
                                                             disabled={isPaymentProcessing}
-                                                            className="bg-gradient-to-r from-green-500 to-emerald-500 text-white"
+                                                            className="bg-gradient-to-r from-green-500 to-emerald-500 text-white w-full sm:w-auto"
+                                                            size="sm"
                                                         >
                                                             {isPaymentProcessing ? (
-                                                                <RefreshCw className="w-4 h-4 mr-2 animate-spin" />
+                                                                <RefreshCw className="w-3 h-3 sm:w-4 sm:h-4 mr-2 animate-spin" />
                                                             ) : (
-                                                                <Download className="w-4 h-4 mr-2" />
+                                                                <Download className="w-3 h-3 sm:w-4 sm:h-4 mr-2" />
                                                             )}
-                                                            Télécharger PDF - Gratuit
+                                                            <span className="text-xs sm:text-sm">PDF Gratuit</span>
                                                         </Button>
                                                     )}
                                                 </div>
                                             </div>
                                         </div>
                                     ) : (
-                                        <div className="text-center py-12">
-                                            <RefreshCw className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-                                            <p className="text-gray-600 mb-4">Cliquez sur "Aperçu" pour générer votre CV</p>
-                                            <Button onClick={generatePreview} disabled={isGeneratingPreview}>
+                                        <div className="text-center py-8 sm:py-12">
+                                            <RefreshCw className="w-12 h-12 sm:w-16 sm:h-16 text-gray-300 mx-auto mb-4" />
+                                            <p className="text-sm sm:text-base text-gray-600 mb-4">Cliquez sur "Aperçu" pour générer votre CV</p>
+                                            <Button onClick={generatePreview} disabled={isGeneratingPreview} size="sm">
                                                 {isGeneratingPreview ? 'Génération...' : 'Générer l\'aperçu'}
                                             </Button>
                                         </div>
@@ -1246,11 +1273,14 @@ export default function GuestCvBuilder({
 
                 {/* Dialog sélection de modèle */}
                 <Dialog open={isModelSelectorOpen} onOpenChange={setIsModelSelectorOpen}>
-                    <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
+                    <DialogContent className="max-w-6xl max-h-[85vh] overflow-y-auto" aria-describedby="model-selector-description">
                         <DialogHeader>
                             <DialogTitle>Choisir un modèle de CV</DialogTitle>
+                            <p id="model-selector-description" className="text-sm text-gray-600 mt-2">
+                                Sélectionnez un modèle pour votre CV. Les modèles gratuits peuvent être téléchargés immédiatement.
+                            </p>
                         </DialogHeader>
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-4 mt-4">
                             {availableCvModels.map((model) => (
                                 <motion.div
                                     key={model.id}
@@ -1258,8 +1288,8 @@ export default function GuestCvBuilder({
                                     whileTap={{ scale: 0.98 }}
                                     className={`border rounded-lg p-4 cursor-pointer transition-all ${
                                         selectedModel === model.id 
-                                            ? 'border-amber-500 bg-amber-50' 
-                                            : 'border-gray-200 hover:border-gray-300'
+                                            ? 'border-amber-500 bg-amber-50 shadow-md' 
+                                            : 'border-gray-200 hover:border-gray-300 hover:shadow-sm'
                                     }`}
                                     onClick={() => {
                                         setSelectedModel(model.id);
@@ -1268,8 +1298,38 @@ export default function GuestCvBuilder({
                                         setTimeout(generatePreview, 100);
                                     }}
                                 >
-                                    <div className="aspect-[3/4] bg-gray-100 rounded mb-3 flex items-center justify-center">
-                                        <FileText className="w-8 h-8 text-gray-400" />
+                                    <div className="aspect-[3/4] bg-gradient-to-br from-gray-50 to-gray-100 rounded mb-3 flex items-center justify-center overflow-hidden relative">
+                                        {model.previewImagePath && model.previewImagePath.startsWith('/') ? (
+                                            <img 
+                                                src={model.previewImagePath} 
+                                                alt={`Aperçu ${model.name}`}
+                                                className="w-full h-full object-cover rounded"
+                                                onError={(e) => {
+                                                    // Fallback si l'image ne se charge pas
+                                                    e.currentTarget.style.display = 'none';
+                                                    e.currentTarget.nextElementSibling?.classList.remove('hidden');
+                                                }}
+                                            />
+                                        ) : (
+                                            <div className="text-center">
+                                                <FileText className="w-8 h-8 text-gray-400 mb-2" />
+                                                <div className="text-xs text-gray-500">
+                                                    {model.name}
+                                                </div>
+                                            </div>
+                                        )}
+                                        <div className="hidden text-center">
+                                            <FileText className="w-8 h-8 text-gray-400 mb-2" />
+                                            <div className="text-xs text-gray-500">
+                                                {model.name}
+                                            </div>
+                                        </div>
+                                        
+                                        {selectedModel === model.id && (
+                                            <div className="absolute top-2 right-2 bg-amber-500 text-white rounded-full p-1">
+                                                <CheckCircle className="w-3 h-3" />
+                                            </div>
+                                        )}
                                     </div>
                                     <h3 className="font-medium text-sm mb-1">{model.name}</h3>
                                     <p className="text-xs text-gray-600 line-clamp-2">{model.description}</p>
@@ -1290,12 +1350,15 @@ export default function GuestCvBuilder({
 
                 {/* Dialog paiement */}
                 <Dialog open={showPaymentDialog} onOpenChange={setShowPaymentDialog}>
-                    <DialogContent>
+                    <DialogContent aria-describedby="payment-dialog-description">
                         <DialogHeader>
                             <DialogTitle className="flex items-center gap-2">
                                 <CreditCard className="w-5 h-5" />
                                 Télécharger votre CV
                             </DialogTitle>
+                            <p id="payment-dialog-description" className="text-sm text-gray-600 mt-2">
+                                Ce modèle premium nécessite un paiement unique pour le téléchargement.
+                            </p>
                         </DialogHeader>
                         <div className="space-y-4">
                             <div className="bg-purple-50 border border-purple-200 rounded-lg p-4">

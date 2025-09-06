@@ -1,26 +1,36 @@
 <?php
 
 use App\Http\Controllers\CinetPayController;
-use App\Http\Middleware\CinetPayDebugMiddleware;
 use Inertia\Inertia;
 
 /**
- * Routes CinetPay simplifiées et fonctionnelles
- * IMPORTANT: Ces routes sont exemptées du CSRF dans VerifyCsrfToken.php
+ * Routes CinetPay sans middleware web (pas de CSRF)
  */
 
-// === ROUTES PRINCIPALES CINETPAY ===
+// === GROUPE SANS MIDDLEWARE WEB POUR ÉVITER CSRF ===
+Route::group(['middleware' => ['api']], function () {
 
-// Routes PUBLIQUES (appelées par CinetPay) - PAS d'authentification
-Route::post('/api/cinetpay/notify', [CinetPayController::class, 'notify'])
-    ->name('cinetpay.notify')
-    ->withoutMiddleware(['auth'])
-    ->middleware(CinetPayDebugMiddleware::class);
+    // Routes PUBLIQUES CinetPay - Callbacks externes
+    Route::post('/api/cinetpay/notify', [CinetPayController::class, 'notify'])
+        ->name('cinetpay.notify')
+        ->middleware('cinetpay.debug');
 
-Route::match(['get', 'post'], '/api/cinetpay/return', [CinetPayController::class, 'return'])
-    ->name('cinetpay.return')
-    ->withoutMiddleware(['auth'])
-    ->middleware(CinetPayDebugMiddleware::class);
+    Route::match(['get', 'post'], '/api/cinetpay/return', [CinetPayController::class, 'return'])
+        ->name('cinetpay.return')
+        ->middleware('cinetpay.debug');
+
+    Route::post('/payment/notify', [CinetPayController::class, 'notify'])
+        ->name('payment.notify.alias')
+        ->middleware('cinetpay.debug');
+        
+    Route::match(['get', 'post'], '/payment/return', [CinetPayController::class, 'return'])
+        ->name('payment.return.alias') 
+        ->middleware('cinetpay.debug');
+
+    Route::match(['get', 'post'], '/webhook/cinetpay/callback', [CinetPayController::class, 'return'])
+        ->name('webhook.cinetpay.callback')
+        ->middleware('cinetpay.debug');
+});
 
 // Routes AUTHENTIFIÉES (pour l'application web)
 Route::middleware(['auth', 'verified'])->group(function () {
@@ -44,20 +54,4 @@ Route::middleware(['auth', 'verified'])->group(function () {
     })->name('payment.failed');
 });
 
-// === ROUTES DE COMPATIBILITÉ (aliases) ===
-// Maintenues pour compatibilité avec les configurations CinetPay existantes
-
-Route::post('/payment/notify', [CinetPayController::class, 'notify'])
-    ->name('payment.notify.alias')
-    ->withoutMiddleware(['auth'])
-    ->middleware(CinetPayDebugMiddleware::class);
-    
-Route::match(['get', 'post'], '/payment/return', [CinetPayController::class, 'return'])
-    ->name('payment.return.alias') 
-    ->withoutMiddleware(['auth'])
-    ->middleware(CinetPayDebugMiddleware::class);
-
-Route::match(['get', 'post'], '/webhook/cinetpay/callback', [CinetPayController::class, 'return'])
-    ->name('webhook.cinetpay.callback')
-    ->withoutMiddleware(['auth'])
-    ->middleware(CinetPayDebugMiddleware::class);
+// Note: Les routes de compatibilité sont maintenant dans le groupe API ci-dessus

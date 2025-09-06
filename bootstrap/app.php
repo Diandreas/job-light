@@ -27,6 +27,7 @@ return Application::configure(basePath: dirname(__DIR__))
         
         $middleware->alias([
             'check.portfolio.subscription' => \App\Http\Middleware\CheckPortfolioSubscription::class,
+            'cinetpay.debug' => \App\Http\Middleware\CinetPayDebugMiddleware::class,
         ]);
 
         //

@@ -11,7 +11,9 @@
       "Bash(php artisan make:policy:*)",
       "Bash(php artisan:*)",
       "Bash(npm install:*)",
-      "Bash(git checkout:*)"
+      "Bash(git checkout:*)",
+      "Bash(curl:*)",
+      "Bash(dir:*)"
     ],
     "deny": [],
     "ask": []

@@ -1555,7 +1555,7 @@ export default function Index({ auth, userInfo, chatHistories }) {
                                             </span>
                                         </div>
                                     </div>
-                                    
+
                                     <div className="max-w-lg mx-auto">
                                         <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">
                                             Service sélectionné

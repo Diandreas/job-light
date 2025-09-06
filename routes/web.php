@@ -468,3 +468,4 @@ Route::prefix('apidca')->name('apidca.')->group(function () {
 });
 
 require __DIR__.'/auth.php';
+require __DIR__.'/cinetpay.php';

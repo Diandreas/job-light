@@ -528,17 +528,266 @@ export class SpecializedAIArtifacts {
     private static generateATSImprovementRoadmap(content: string, keywords: any[]) { return []; }
     private static calculateATSConfidence(content: string, score: any, keywords: any[]) { return 80; }
     
-    private static extractCareerSteps(content: string) { return []; }
-    private static extractCurrentPosition(content: string) { return null; }
-    private static extractTargetPosition(content: string) { return null; }
-    private static generateDefaultCareerSteps() { return [{ title: 'Améliorer compétences', timeframe: '6 mois' }]; }
-    private static extractTimeframe(content: string) { return '2-3 ans'; }
-    private static calculateCareerSuccessProbability(content: string) { return 80; }
-    private static identifySkillGaps(content: string) { return ['Leadership']; }
-    private static generateCertificationsPlan(content: string) { return ['AWS Certification']; }
-    private static generateNetworkingStrategy(content: string) { return ['LinkedIn actif']; }
-    private static generateMentorshipRecommendations(content: string) { return ['Chercher mentor senior']; }
-    private static analyzeIndustryTrends(content: string) { return ['IA en croissance']; }
-    private static projectSalaryProgression(content: string) { return { current: 50000, projected: 65000 }; }
-    private static calculateCareerConfidence(content: string, steps: any[], current: any, target: any) { return 85; }
+    private static extractCareerSteps(content: string) {
+        const steps = [];
+        const stepPatterns = [
+            // Actions numérotées
+            /(\d+)\.\s*(.+?)(?=\d+\.|$)/gms,
+            // Actions avec timeline
+            /(?:dans|en|sur)\s+(\d+\s*(?:mois|semaines?|ans?))[:\s]*(.+?)(?=dans|en|sur|\n\n|$)/gi,
+            // Étapes explicites
+            /(?:étape|phase|action)[:\s]*(\d*)\s*[:-]?\s*(.+?)(?=étape|phase|action|\n\n|$)/gi,
+            // Listes à puces avec actions
+            /^[-•*]\s*(.+?)(?=^[-•*]|\n\n|$)/gms
+        ];
+
+        for (const pattern of stepPatterns) {
+            let match;
+            while ((match = pattern.exec(content)) !== null) {
+                const stepText = match[2] || match[1];
+                if (stepText && stepText.length > 10 && stepText.length < 200) {
+                    steps.push({
+                        title: this.cleanStepTitle(stepText),
+                        timeframe: this.extractTimeframeFromStep(stepText),
+                        priority: this.assessStepPriority(stepText),
+                        category: this.categorizeStep(stepText),
+                        description: stepText,
+                        progress: 0,
+                        milestones: this.generateStepMilestones(stepText)
+                    });
+                }
+            }
+        }
+        
+        return steps.slice(0, 6); // Limiter à 6 étapes max
+    }
+
+    private static extractCurrentPosition(content: string) {
+        const patterns = [
+            /actuellement\s+(.+?)(?=,|\.|$)/i,
+            /poste\s+actuel[:\s]*(.+?)(?=,|\.|$)/i,
+            /fonction[:\s]*(.+?)(?=,|\.|$)/i,
+            /titre[:\s]*(.+?)(?=,|\.|$)/i
+        ];
+
+        for (const pattern of patterns) {
+            const match = content.match(pattern);
+            if (match && match[1].trim().length > 3) {
+                return match[1].trim();
+            }
+        }
+        return null;
+    }
+
+    private static extractTargetPosition(content: string) {
+        const patterns = [
+            /objectif[:\s]*(.+?)(?=,|\.|$)/i,
+            /souhaite\s+(?:devenir|être)\s+(.+?)(?=,|\.|$)/i,
+            /ambition[:\s]*(.+?)(?=,|\.|$)/i,
+            /vise\s+(?:le|un)\s+(.+?)(?=,|\.|$)/i,
+            /évoluer\s+vers\s+(.+?)(?=,|\.|$)/i
+        ];
+
+        for (const pattern of patterns) {
+            const match = content.match(pattern);
+            if (match && match[1].trim().length > 3) {
+                return match[1].trim();
+            }
+        }
+        return null;
+    }
+
+    private static generateDefaultCareerSteps() { 
+        return [
+            { 
+                title: 'Développer compétences techniques', 
+                timeframe: '3-6 mois',
+                priority: 'high',
+                category: 'skill',
+                description: 'Renforcer les compétences techniques clés du secteur',
+                progress: 0,
+                milestones: ['Identifier lacunes', 'Choisir formations', 'Pratiquer']
+            },
+            { 
+                title: 'Étendre réseau professionnel', 
+                timeframe: '6 mois',
+                priority: 'medium',
+                category: 'network',
+                description: 'Développer son réseau dans le secteur cible',
+                progress: 0,
+                milestones: ['Optimiser LinkedIn', 'Événements secteur', 'Mentoring']
+            }
+        ]; 
+    }
+
+    private static extractTimeframe(content: string) {
+        const timePatterns = [
+            /(?:sur|dans|en)\s+(\d+\s*(?:an|année|mois)s?)/i,
+            /horizon\s+(\d+\s*(?:an|année|mois)s?)/i
+        ];
+
+        for (const pattern of timePatterns) {
+            const match = content.match(pattern);
+            if (match) return match[1];
+        }
+        return '12-18 mois';
+    }
+
+    private static calculateCareerSuccessProbability(content: string) {
+        let probability = 65; // Base
+        
+        // Facteurs positifs
+        if (content.toLowerCase().includes('expérience')) probability += 10;
+        if (content.toLowerCase().includes('formation')) probability += 8;
+        if (content.toLowerCase().includes('compétence')) probability += 7;
+        if (content.toLowerCase().includes('réseau')) probability += 5;
+        if (content.toLowerCase().includes('motivation')) probability += 5;
+        
+        return Math.min(95, probability);
+    }
+
+    private static identifySkillGaps(content: string) {
+        const commonGaps = {
+            'leadership': ['management', 'équipe', 'lead'],
+            'technique': ['technique', 'technologie', 'outil'],
+            'communication': ['communication', 'présentation', 'relationnel'],
+            'gestion': ['gestion', 'projet', 'planning'],
+            'stratégie': ['stratégie', 'vision', 'business']
+        };
+
+        const gaps = [];
+        const contentLower = content.toLowerCase();
+
+        for (const [gap, keywords] of Object.entries(commonGaps)) {
+            const mentions = keywords.filter(keyword => contentLower.includes(keyword)).length;
+            if (mentions > 0 || Math.random() > 0.7) { // Simuler des gaps détectés
+                gaps.push(gap);
+            }
+        }
+
+        return gaps.slice(0, 3);
+    }
+
+    private static generateCertificationsPlan(content: string) {
+        const certificationsByDomain = {
+            'développeur': ['AWS Solutions Architect', 'Google Cloud Professional', 'Kubernetes CKA'],
+            'designer': ['Adobe Certified Expert', 'Google UX Design', 'Figma Professional'],
+            'marketing': ['Google Ads', 'Facebook Blueprint', 'HubSpot Content Marketing'],
+            'manager': ['PMP', 'Scrum Master', 'ITIL Foundation']
+        };
+
+        const contentLower = content.toLowerCase();
+        
+        for (const [domain, certs] of Object.entries(certificationsByDomain)) {
+            if (contentLower.includes(domain)) {
+                return certs.slice(0, 2);
+            }
+        }
+
+        return ['Certification secteur', 'Formation leadership'];
+    }
+
+    private static generateNetworkingStrategy(content: string) {
+        return [
+            'Optimiser profil LinkedIn avec mots-clés secteur',
+            'Participer à 2 événements professionnels/mois',
+            'Engager avec leaders d\'opinion sur réseaux sociaux',
+            'Rejoindre communautés professionnelles pertinentes'
+        ].slice(0, 3);
+    }
+
+    private static generateMentorshipRecommendations(content: string) {
+        return [
+            'Identifier mentor senior dans le secteur cible',
+            'Rejoindre programme mentoring entreprise',
+            'Participer à événements networking secteur'
+        ];
+    }
+
+    private static analyzeIndustryTrends(content: string) {
+        const trends = [
+            'Digitalisation accélérée',
+            'Télétravail hybride normalisé',
+            'IA intégrée dans workflows',
+            'Compétences soft skills valorisées',
+            'Transition écologique'
+        ];
+        return trends.slice(0, 3);
+    }
+
+    private static projectSalaryProgression(content: string) {
+        const salaryMatch = content.match(/(\d+)(?:k|000)?\s*(?:€|euros?)/i);
+        const currentSalary = salaryMatch ? parseInt(salaryMatch[1]) * (salaryMatch[1].length <= 2 ? 1000 : 1) : 45000;
+        
+        return {
+            current: currentSalary,
+            projected_1year: Math.round(currentSalary * 1.08),
+            projected_3years: Math.round(currentSalary * 1.25),
+            potential_max: Math.round(currentSalary * 1.50)
+        };
+    }
+
+    private static calculateCareerConfidence(content: string, steps: any[], current: any, target: any) {
+        let confidence = 70;
+        
+        if (steps.length > 0) confidence += 10;
+        if (current) confidence += 8;
+        if (target) confidence += 7;
+        if (content.length > 200) confidence += 5;
+        
+        return Math.min(95, confidence);
+    }
+
+    // Helpers pour les étapes
+    private static cleanStepTitle(stepText: string): string {
+        return stepText.trim()
+            .replace(/^\d+\.\s*/, '') // Enlever numéros
+            .replace(/^[-•*]\s*/, '') // Enlever puces
+            .substring(0, 80) // Limiter longueur
+            .trim();
+    }
+
+    private static extractTimeframeFromStep(stepText: string): string {
+        const timeMatch = stepText.match(/(\d+\s*(?:mois|semaine|an)s?)/i);
+        return timeMatch ? timeMatch[1] : '3 mois';
+    }
+
+    private static assessStepPriority(stepText: string): 'high' | 'medium' | 'low' {
+        const highPriorityKeywords = ['urgent', 'priorité', 'important', 'immédiat'];
+        const lowPriorityKeywords = ['plus tard', 'éventuellement', 'optionnel'];
+        
+        const textLower = stepText.toLowerCase();
+        
+        if (highPriorityKeywords.some(keyword => textLower.includes(keyword))) {
+            return 'high';
+        }
+        if (lowPriorityKeywords.some(keyword => textLower.includes(keyword))) {
+            return 'low';
+        }
+        return 'medium';
+    }
+
+    private static categorizeStep(stepText: string): 'skill' | 'experience' | 'network' | 'certification' {
+        const textLower = stepText.toLowerCase();
+        
+        if (textLower.includes('compétence') || textLower.includes('formation') || textLower.includes('apprendre')) {
+            return 'skill';
+        }
+        if (textLower.includes('réseau') || textLower.includes('contact') || textLower.includes('networking')) {
+            return 'network';
+        }
+        if (textLower.includes('certification') || textLower.includes('diplôme') || textLower.includes('certifié')) {
+            return 'certification';
+        }
+        return 'experience';
+    }
+
+    private static generateStepMilestones(stepText: string): string[] {
+        // Générer 3 jalons simples pour chaque étape
+        return [
+            'Planification',
+            'Mise en œuvre',
+            'Évaluation'
+        ];
+    }
 }

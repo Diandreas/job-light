@@ -146,6 +146,16 @@ class CinetPayController extends Controller
      */
     public function notify(Request $request)
     {
+        // Log d'entrée avec IP et User-Agent pour diagnostiquer
+        Log::info('=== CINETPAY NOTIFY CALLED ===', [
+            'url' => $request->fullUrl(),
+            'method' => $request->method(),
+            'ip' => $request->ip(),
+            'user_agent' => $request->userAgent(),
+            'headers' => $request->headers->all(),
+            'all_data' => $request->all()
+        ]);
+        
         try {
             Log::info('CinetPay notification received', $request->all());
 
@@ -282,7 +292,7 @@ class CinetPayController extends Controller
             }
 
             // Pour les requêtes POST (retour après paiement)
-            $transactionId = $request->transaction_id ?? $request->token;
+            $transactionId = $request->cpm_trans_id ?? $request->transaction_id ?? $request->token;
             
             if (!$transactionId) {
                 Log::warning('CinetPay return: Transaction ID manquant');
@@ -360,11 +370,35 @@ class CinetPayController extends Controller
     private function updateUserBalance(Payment $payment)
     {
         try {
+            // Utiliser le nouveau service IA pour traiter le paiement
+            $aiPaymentService = app(\App\Services\AIPaymentService::class);
+            $aiPaymentService->processSuccessfulPayment($payment);
+
+        } catch (\Exception $e) {
+            Log::error('Failed to update user balance via AI service', [
+                'payment_id' => $payment->id,
+                'user_id' => $payment->user_id,
+                'error' => $e->getMessage()
+            ]);
+            
+            // Fallback vers l'ancienne méthode
+            $this->updateUserBalanceLegacy($payment);
+        }
+    }
+
+    /**
+     * Ancienne méthode de mise à jour du solde (fallback)
+     */
+    private function updateUserBalanceLegacy(Payment $payment)
+    {
+        try {
             $user = $payment->user;
-            $metadata = json_decode($payment->metadata, true);
+            $metadata = $payment->metadata;
             
             // Priorité aux métadonnées du paiement initial, sinon calcul depuis le montant
-            if (isset($metadata['tokens'])) {
+            if (isset($metadata['total_tokens'])) {
+                $tokensToAdd = $metadata['total_tokens'];
+            } elseif (isset($metadata['tokens'])) {
                 $tokensToAdd = $metadata['tokens'];
             } else {
                 $tokensToAdd = $this->calculateTokensFromAmount($payment->amount);
@@ -374,7 +408,7 @@ class CinetPayController extends Controller
             $oldBalance = $user->wallet_balance;
             $user->increment('wallet_balance', $tokensToAdd);
             
-            Log::info('User balance updated', [
+            Log::info('User balance updated (legacy)', [
                 'user_id' => $user->id,
                 'tokens_added' => $tokensToAdd,
                 'old_balance' => $oldBalance,
@@ -383,7 +417,7 @@ class CinetPayController extends Controller
             ]);
 
         } catch (\Exception $e) {
-            Log::error('Failed to update user balance', [
+            Log::error('Failed to update user balance (legacy)', [
                 'payment_id' => $payment->id,
                 'user_id' => $payment->user_id,
                 'error' => $e->getMessage()

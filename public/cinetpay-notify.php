@@ -97,7 +97,7 @@ if (isset($_POST['cpm_trans_id'])) {
                 ]);
 
                 // Mettre à jour le solde de l'utilisateur
-                $this->updateUserBalance($payment);
+                updateUserBalance($payment);
 
                 Log::info('CinetPay payment completed successfully', [
                     'transaction_id' => $id_transaction,

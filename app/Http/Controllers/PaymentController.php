@@ -8,6 +8,7 @@ use App\Models\Payment;
 use App\Models\User;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\DB;
+use Inertia\Inertia;
 
 class PaymentController extends Controller
 {

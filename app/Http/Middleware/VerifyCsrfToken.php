@@ -14,10 +14,17 @@ class VerifyCsrfToken extends Middleware
     protected $except = [
         'api/*', // Exclure toutes les routes API de la vérification CSRF
         'payment/*', // Exclure toutes les routes de paiement
+        'webhook/*', // Exclure tous les webhooks
+        // Routes CinetPay spécifiques
+        'api/cinetpay/notify',
+        'api/cinetpay/return', 
+        'api/cinetpay/callback',
         'payment/cinetpay/callback',
         'payment/callback',
-        '*/cinetpay/callback', // Exclure spécifiquement les callbacks CinetPay
-        'api/cinetpay/callback', // Exclure spécifiquement le callback API CinetPay
+        'payment/notify',
+        'payment/return',
+        'webhook/cinetpay/callback',
+        '*/cinetpay/*', // Pattern large pour tous les endpoints CinetPay
     ];
 
     /**

@@ -1299,7 +1299,7 @@ export default function Index({ auth, userInfo, chatHistories }) {
                                                             </motion.div>
                                                         </TooltipTrigger>
                                                         <TooltipContent side="right">
-                                                            <p className="text-xs">{chat.preview.substring(0, 30)}{chat.preview.length > 30 ? '...' : ''}</p>
+                                                            <p className="text-xs">{(chat.preview || '').substring(0, 30)}{(chat.preview || '').length > 30 ? '...' : ''}</p>
                                                         </TooltipContent>
                                                     </Tooltip>
                                                 </TooltipProvider>

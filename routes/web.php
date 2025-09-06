@@ -389,6 +389,7 @@ Route::prefix('guest-cv')->name('guest-cv.')->group(function () {
     Route::post('/payment/confirm', [App\Http\Controllers\GuestCvController::class, 'confirmPayment'])->name('payment.confirm');
     
     // Télécharger PDF (après paiement)
+    Route::post('/generate-pdf', [App\Http\Controllers\GuestCvController::class, 'generatePdf'])->name('generate-pdf');
     Route::post('/download', [App\Http\Controllers\GuestCvController::class, 'generatePdf'])->name('download');
     
     // Migration des données vers compte utilisateur (après inscription)

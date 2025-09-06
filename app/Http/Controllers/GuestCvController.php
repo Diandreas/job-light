@@ -31,8 +31,7 @@ class GuestCvController extends Controller
             'availableLanguages' => Language::select(['id', 'name', 'name_en'])->get()->toArray(),
             'experienceCategories' => ExperienceCategory::select(['id', 'name', 'name_en', 'ranking'])->orderBy('ranking')->get()->toArray(),
             'availableCvModels' => CvModel::select(['id', 'name', 'description', 'previewImagePath', 'price'])
-                ->where('price', 0) // Seulement les gratuits pour la prévisualisation
-                ->get()->toArray(),
+                ->get()->toArray(), // Tous les modèles disponibles
             'isGuest' => true
         ];
 
@@ -48,6 +47,11 @@ class GuestCvController extends Controller
             'cvData' => 'required|array',
             'modelId' => 'required|integer|exists:cv_models,id'
         ]);
+
+        $cvModel = CvModel::findOrFail($request->modelId);
+        
+        // Si le modèle est payant, on ajoute un watermark de prévisualisation
+        $isPreviewOnly = $cvModel->price > 0;
 
         try {
             $cvModel = CvModel::findOrFail($request->modelId);
@@ -67,13 +71,23 @@ class GuestCvController extends Controller
                 'showPrintButton' => false,
                 'cvModel' => $cvModel,
                 'currentLocale' => $locale,
-                'isPreview' => true
+                'isPreview' => true,
+                'isGuestPreview' => true,
+                'isPremiumTemplate' => $cvModel->price > 0
             ])->render();
+
+            // Ajouter watermark pour les modèles premium en prévisualisation
+            if ($isPreviewOnly) {
+                $html = $this->addPreviewWatermark($html);
+            }
 
             return response()->json([
                 'success' => true,
                 'html' => $html,
-                'modelName' => $cvModel->name
+                'modelName' => $cvModel->name,
+                'isPremium' => $cvModel->price > 0,
+                'price' => $cvModel->price,
+                'requiresPayment' => $cvModel->price > 0
             ]);
 
         } catch (\Exception $e) {
@@ -93,17 +107,33 @@ class GuestCvController extends Controller
         $request->validate([
             'cvData' => 'required|array',
             'modelId' => 'required|integer|exists:cv_models,id',
-            'paymentToken' => 'required|string' // Token de paiement validé
+            'paymentToken' => 'nullable|string' // Token de paiement pour modèles premium
         ]);
 
+        $cvModel = CvModel::findOrFail($request->modelId);
+        
+        // Si le modèle est gratuit, pas besoin de vérification de paiement
+        if ($cvModel->price == 0) {
+            return $this->generateFreePdf($request, $cvModel);
+        }
+
         try {
-            // Vérifier le token de paiement
+            // Pour les modèles premium, vérifier le token de paiement
+            if (!$request->paymentToken) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Paiement requis pour télécharger ce modèle premium',
+                    'requiresPayment' => true,
+                    'price' => $cvModel->price
+                ], 402);
+            }
+            
             $paymentData = Cache::get("guest_payment_{$request->paymentToken}");
             
             if (!$paymentData || $paymentData['status'] !== 'completed') {
                 return response()->json([
                     'success' => false,
-                    'message' => 'Paiement requis pour télécharger le CV',
+                    'message' => 'Paiement non validé ou expiré',
                     'requiresPayment' => true
                 ], 402);
             }
@@ -170,7 +200,16 @@ class GuestCvController extends Controller
 
         try {
             $cvModel = CvModel::findOrFail($request->modelId);
-            $price = 5.00; // Prix fixe pour téléchargement guest
+            
+            // Vérifier que le modèle nécessite un paiement
+            if ($cvModel->price == 0) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Ce modèle est gratuit, aucun paiement nécessaire'
+                ], 400);
+            }
+            
+            $price = max($cvModel->price, 5.00); // Prix minimum de 5€
             
             // Générer un token unique pour ce paiement
             $paymentToken = 'guest_' . Str::random(32);
@@ -285,7 +324,7 @@ class GuestCvController extends Controller
                     'description' => null
                 ]
             ] : [],
-            'summaries' => isset($guestData['summary']) ? [
+            'summaries' => isset($guestData['summary']) && !empty($guestData['summary']) ? [
                 [
                     'id' => 0,
                     'name' => 'Profil',
@@ -365,5 +404,91 @@ class GuestCvController extends Controller
                 'message' => 'Erreur lors de la migration des données'
             ], 500);
         }
+    }
+
+    /**
+     * Générer PDF gratuit sans vérification de paiement
+     */
+    private function generateFreePdf(Request $request, CvModel $cvModel)
+    {
+        try {
+            $cvData = $request->cvData;
+            
+            // Transformer les données
+            $cvInformation = $this->transformGuestDataToCvFormat($cvData);
+            $groupedData = $this->groupExperiencesByCategory($cvInformation['experiences']);
+            
+            $locale = $request->get('locale', 'fr');
+
+            // Générer le PDF
+            $pdf = PDF::loadView("cv-templates." . $cvModel->viewPath, [
+                'cvInformation' => $cvInformation,
+                'experiencesByCategory' => $groupedData['experiences'],
+                'categoryTranslations' => $groupedData['translations'],
+                'showPrintButton' => false,
+                'cvModel' => $cvModel,
+                'currentLocale' => $locale
+            ]);
+
+            $pdf->setOption([
+                'defaultFont' => 'dejavu sans',
+                'dpi' => 296,
+                'defaultMediaType' => 'print',
+                'enableCss' => true,
+            ]);
+
+            $filename = Str::slug($cvData['personalInformation']['firstName'] ?? 'cv-guest') . '-cv.pdf';
+            
+            // Log pour tracking
+            Log::info('Free Guest CV downloaded', [
+                'model_id' => $cvModel->id,
+                'model_name' => $cvModel->name,
+                'filename' => $filename
+            ]);
+
+            return $pdf->download($filename);
+
+        } catch (\Exception $e) {
+            Log::error('Free Guest CV generation error: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Erreur lors de la génération du PDF'
+            ], 500);
+        }
+    }
+
+    /**
+     * Ajouter un watermark de prévisualisation
+     */
+    private function addPreviewWatermark($html)
+    {
+        $watermarkStyle = '
+        <style>
+            .preview-watermark {
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%) rotate(-45deg);
+                font-size: 48px;
+                color: rgba(0, 0, 0, 0.1);
+                font-weight: bold;
+                pointer-events: none;
+                z-index: 1000;
+                font-family: Arial, sans-serif;
+            }
+            .cv-container {
+                position: relative;
+            }
+        </style>';
+        
+        $watermark = '<div class="preview-watermark">PRÉVISUALISATION</div>';
+        
+        // Insérer le style dans le head
+        $html = str_replace('</head>', $watermarkStyle . '</head>', $html);
+        
+        // Insérer le watermark après l'ouverture du container
+        $html = str_replace('<div class="cv-container">', '<div class="cv-container">' . $watermark, $html);
+        
+        return $html;
     }
 }

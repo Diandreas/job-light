@@ -658,7 +658,138 @@ class CareerAdvisorController extends Controller
 
     private function buildPrompt($message, $language, $serviceId, $userContext)
     {
-        return "Profil :\n{$userContext}\n\nMessage : {$message}";
+        // Parser le contexte utilisateur pour extraire les données clés
+        $context = json_decode($userContext, true);
+        $profession = $context['profession'] ?? 'Non spécifié';
+        $experiences = $context['expériences_clés'] ?? $context['experiences'] ?? [];
+        $competences = $context['compétences'] ?? $context['competences'] ?? [];
+        
+        // Enrichir le contexte avec des données marché simulées (prompt engineering)
+        $marketInsights = $this->generateMarketInsights($profession, $experiences);
+        
+        // Construire un prompt enrichi et contextuel
+        $userName = $context['nom'] ?? $context['name'] ?? 'Utilisateur';
+        $enrichedPrompt = "CONTEXTE UTILISATEUR DÉTAILLÉ :
+=== PROFIL PROFESSIONNEL ===
+• Nom : {$userName}
+• Profession : {$profession}
+• Compétences clés : " . (is_array($competences) ? implode(', ', array_slice($competences, 0, 5)) : $competences) . "
+
+=== EXPÉRIENCE PROFESSIONNELLE ===";
+
+        // Ajouter les expériences de manière structurée
+        if (!empty($experiences) && is_array($experiences)) {
+            foreach (array_slice($experiences, 0, 3) as $i => $exp) {
+                $title = $exp['poste'] ?? $exp['title'] ?? 'Poste non spécifié';
+                $company = $exp['entreprise'] ?? $exp['company'] ?? 'Entreprise non spécifiée';
+                $duration = $exp['période'] ?? $exp['duration'] ?? 'Durée non spécifiée';
+                
+                $enrichedPrompt .= "\n• {$title} chez {$company} ({$duration})";
+            }
+        } else {
+            $enrichedPrompt .= "\nAucune expérience détaillée fournie";
+        }
+
+        $enrichedPrompt .= "\n
+=== DONNÉES MARCHÉ CONTEXTUELLES ===
+{$marketInsights}
+
+=== INSTRUCTIONS SPÉCIALISÉES ===";
+
+        // Instructions spécifiques au service
+        switch($serviceId) {
+            case 'career-advice':
+                $enrichedPrompt .= "
+Tu es un conseiller carrière expert avec 15 ans d'expérience. Analyse le profil ci-dessus et :
+1. **Identifie les opportunités** basées sur l'expérience actuelle
+2. **Suggère 3 actions concrètes** avec timeline précise
+3. **Intègre les tendances marché** du secteur
+4. **Propose des compétences** à développer en priorité
+5. **Recommande des ressources** spécifiques (formations, certifications)
+
+FORMAT DE RÉPONSE STRUCTURÉ pour générer des artefacts automatiquement :
+- Utilise des listes à puces claires
+- Indique des scores/évaluations quand pertinent
+- Mentionne des timeframes concrets (3 mois, 6 mois, 1 an)
+- Propose des étapes séquentielles numérotées
+- Inclus des données chiffrées quand possible";
+                break;
+                
+            case 'resume-review':
+                $enrichedPrompt .= "
+Analyse le CV en tant qu'expert recruteur et génère automatiquement :
+- Score global /100 avec justification
+- Scores par section (En-tête, Expérience, Compétences, Formation)
+- Liste de recommandations prioritaires
+- Compatibilité ATS estimée en %
+- Suggestions d'optimisation par mots-clés sectoriels";
+                break;
+                
+            case 'interview-prep':
+                $enrichedPrompt .= "
+Prépare un plan d'entretien personnalisé avec :
+- 5 questions probables pour ce profil
+- Exemples de réponses STAR recommandées
+- Points forts à mettre en avant
+- Faiblesses potentielles et comment les adresser
+- Timeline de préparation sur 2 semaines";
+                break;
+        }
+
+        $enrichedPrompt .= "\n\n=== QUESTION DE L'UTILISATEUR ===
+{$message}
+
+RÉPONDS de manière personnalisée, actionnable et basée sur les données contextuelles fournies.";
+
+        return $enrichedPrompt;
+    }
+    
+    /**
+     * Générer des insights marché basés sur le profil (prompt engineering)
+     */
+    private function generateMarketInsights($profession, $experiences)
+    {
+        // Simuler des données marché basées sur des patterns réels
+        $insights = [];
+        
+        // Analyser la profession
+        $professionLower = strtolower($profession);
+        
+        if (strpos($professionLower, 'développeur') !== false || strpos($professionLower, 'dev') !== false) {
+            $insights[] = "• Secteur IT en croissance (+8% annuel), forte demande";
+            $insights[] = "• Compétences hot : React, TypeScript, AWS, Docker";
+            $insights[] = "• Salaire moyen : 45-65k€ selon expérience";
+            $insights[] = "• +45k postes ouverts en France actuellement";
+        } elseif (strpos($professionLower, 'designer') !== false || strpos($professionLower, 'ux') !== false) {
+            $insights[] = "• Design UX/UI en forte demande (+6% annuel)";
+            $insights[] = "• Outils tendance : Figma, Design Systems, Prototyping";
+            $insights[] = "• Salaire moyen : 38-58k€ selon expérience";
+            $insights[] = "• Focus sur l'accessibilité et mobile-first";
+        } elseif (strpos($professionLower, 'marketing') !== false) {
+            $insights[] = "• Marketing digital en expansion (+7% annuel)";
+            $insights[] = "• Compétences recherchées : SEO/SEA, Analytics, Automation";
+            $insights[] = "• Salaire moyen : 35-55k€ selon spécialisation";
+            $insights[] = "• Growth marketing et data-driven très demandés";
+        } else {
+            $insights[] = "• Marché de l'emploi dynamique post-COVID";
+            $insights[] = "• Digitalisation accélérée dans tous secteurs";
+            $insights[] = "• Compétences numériques valorisées";
+            $insights[] = "• Télétravail et flexibilité en hausse";
+        }
+        
+        // Analyser l'expérience pour des insights personnalisés
+        if (!empty($experiences) && is_array($experiences)) {
+            $totalExperience = count($experiences);
+            if ($totalExperience >= 3) {
+                $insights[] = "• Profil senior : éligible pour postes de lead/management";
+                $insights[] = "• Opportunités de mentoring et formation d'équipes";
+            } elseif ($totalExperience >= 1) {
+                $insights[] = "• Profil confirmé : prêt pour montée en compétences";
+                $insights[] = "• Moment idéal pour spécialisation ou pivot";
+            }
+        }
+        
+        return implode("\n", $insights);
     }
 
     private function saveHistory($userId, $contextId, $userMessage, $aiResponse, $maxHistory = 3, $tokensUsed = 0)

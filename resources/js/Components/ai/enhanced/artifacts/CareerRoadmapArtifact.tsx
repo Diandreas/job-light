@@ -7,84 +7,54 @@ import { Progress } from '@/Components/ui/progress';
 import {
     Target, Calendar, Star, TrendingUp, CheckCircle,
     Clock, Award, ArrowRight, MapPin, Briefcase, Users,
-    Zap, Download, Eye, RefreshCw
+    Zap, Download, Eye, RefreshCw, ChevronDown, ChevronRight,
+    DollarSign, BarChart3, CheckCircle2, Circle
 } from 'lucide-react';
+
+interface RoadmapStep {
+    id: string;
+    title: string;
+    description?: string;
+    timeframe?: string;
+    timeline?: string; // Compatibilité
+    priority: 'high' | 'medium' | 'low';
+    category: 'skill' | 'experience' | 'network' | 'certification';
+    completed: boolean;
+    progress: number;
+    milestones?: string[];
+}
 
 interface CareerRoadmapArtifactProps {
     data: {
-        scores: { [key: string]: { value: number, max: number } };
-        actionItems: string[];
+        currentPosition?: string;
+        targetPosition?: string;
+        timeframe?: string;
+        steps: RoadmapStep[];
+        successProbability?: number;
+        salaryProgression?: {
+            current: number;
+            projected_1year: number;
+            projected_3years: number;
+            potential_max: number;
+        };
+        // Compatibilité ancienne interface
+        scores?: { [key: string]: { value: number, max: number } };
+        actionItems?: string[];
     };
     messageContent: string;
     onAction?: (action: string, data: any) => void;
 }
 
-interface RoadmapStep {
-    id: string;
-    title: string;
-    description: string;
-    timeline: string;
-    priority: 'high' | 'medium' | 'low';
-    category: 'skill' | 'experience' | 'network' | 'certification';
-    completed: boolean;
-    progress: number;
-}
-
 export default function CareerRoadmapArtifact({ data, messageContent, onAction }: CareerRoadmapArtifactProps) {
     const [selectedStep, setSelectedStep] = useState<string | null>(null);
-    const [viewMode, setViewMode] = useState<'timeline' | 'grid'>('timeline');
+    const [viewMode, setViewMode] = useState<'timeline' | 'compact'>('timeline');
+    const [showSalaryDetails, setShowSalaryDetails] = useState(false);
 
-    // Extraire les objectifs du contenu du message
-    const extractRoadmapSteps = (): RoadmapStep[] => {
-        // Simulation d'extraction intelligente basée sur le contenu
-        const steps: RoadmapStep[] = [
-            {
-                id: 'skill-development',
-                title: 'Développer compétences clés',
-                description: 'Renforcer les compétences techniques et soft skills identifiées',
-                timeline: '3 mois',
-                priority: 'high',
-                category: 'skill',
-                completed: false,
-                progress: 25
-            },
-            {
-                id: 'network-building',
-                title: 'Étendre réseau professionnel',
-                description: 'Participer à des événements sectoriels et développer son LinkedIn',
-                timeline: '6 mois',
-                priority: 'medium',
-                category: 'network',
-                completed: false,
-                progress: 10
-            },
-            {
-                id: 'experience-gain',
-                title: 'Acquérir expérience ciblée',
-                description: 'Rechercher des missions ou projets dans le domaine visé',
-                timeline: '12 mois',
-                priority: 'high',
-                category: 'experience',
-                completed: false,
-                progress: 5
-            },
-            {
-                id: 'certification',
-                title: 'Obtenir certifications',
-                description: 'Valider expertise avec certifications reconnues du secteur',
-                timeline: '6 mois',
-                priority: 'medium',
-                category: 'certification',
-                completed: false,
-                progress: 0
-            }
-        ];
-
-        return steps;
-    };
-
-    const roadmapSteps = extractRoadmapSteps();
-    const overallProgress = roadmapSteps.reduce((acc, step) => acc + step.progress, 0) / roadmapSteps.length;
+    // Utiliser les données ou fallback
+    const roadmapSteps = data.steps || [];
+    const overallProgress = roadmapSteps.length > 0 
+        ? roadmapSteps.reduce((acc, step) => acc + step.progress, 0) / roadmapSteps.length
+        : 0;
 
     const getCategoryIcon = (category: string) => {
         switch (category) {
@@ -98,289 +68,334 @@ export default function CareerRoadmapArtifact({ data, messageContent, onAction }
 
     const getCategoryColor = (category: string) => {
         switch (category) {
-            case 'skill': return 'amber';
-            case 'experience': return 'purple';
-            case 'network': return 'amber';
-            case 'certification': return 'purple';
-            default: return 'gray';
+            case 'skill': return 'bg-blue-100 text-blue-700 border-blue-200';
+            case 'experience': return 'bg-green-100 text-green-700 border-green-200';
+            case 'network': return 'bg-purple-100 text-purple-700 border-purple-200';
+            case 'certification': return 'bg-amber-100 text-amber-700 border-amber-200';
+            default: return 'bg-gray-100 text-gray-700 border-gray-200';
         }
     };
 
     const getPriorityColor = (priority: string) => {
         switch (priority) {
-            case 'high': return 'bg-red-100 text-red-700 border-red-200';
-            case 'medium': return 'bg-amber-100 text-amber-700 border-amber-200';
-            case 'low': return 'bg-green-100 text-green-700 border-green-200';
-            default: return 'bg-gray-100 text-gray-700 border-gray-200';
+            case 'high': return 'text-red-600 bg-red-50';
+            case 'medium': return 'text-yellow-600 bg-yellow-50';
+            case 'low': return 'text-green-600 bg-green-50';
+            default: return 'text-gray-600 bg-gray-50';
         }
     };
 
+    const handleStepComplete = (stepId: string) => {
+        onAction?.('step_completed', { stepId });
+    };
+
+    const handleStepProgress = (stepId: string, newProgress: number) => {
+        onAction?.('step_progress', { stepId, progress: newProgress });
+    };
+
     return (
-        <div className="space-y-4">
-            {/* Header de l'artefact */}
-            <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                    <div className="w-8 h-8 bg-gradient-to-r from-amber-500 to-purple-500 rounded-lg flex items-center justify-center">
-                        <MapPin className="w-4 h-4 text-white" />
+        <Card className="overflow-hidden">
+            <CardHeader className="bg-gradient-to-r from-blue-50 to-purple-50 border-b pb-3">
+                <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                        <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-purple-500 rounded-lg flex items-center justify-center">
+                            <MapPin className="w-4 h-4 text-white" />
+                        </div>
+                        <div>
+                            <CardTitle className="text-lg font-bold text-gray-900">
+                                Plan de Carrière
+                            </CardTitle>
+                            <div className="text-xs text-gray-600">
+                                {data.currentPosition && data.targetPosition ? (
+                                    <span className="flex items-center gap-1">
+                                        <span className="truncate max-w-24">{data.currentPosition}</span>
+                                        <ArrowRight className="w-3 h-3 flex-shrink-0" />
+                                        <span className="font-medium truncate max-w-24">{data.targetPosition}</span>
+                                    </span>
+                                ) : (
+                                    'Généré par IA'
+                                )}
+                            </div>
+                        </div>
                     </div>
-                    <div>
-                        <h3 className="font-bold text-amber-800">Roadmap Carrière Personnalisée</h3>
-                        <p className="text-xs text-amber-600">Plan d'action basé sur votre profil</p>
-                    </div>
+                    
+                    <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => setViewMode(viewMode === 'timeline' ? 'compact' : 'timeline')}
+                        className="text-xs px-2 py-1"
+                    >
+                        <Eye className="w-3 h-3 mr-1" />
+                        {viewMode === 'timeline' ? 'Compact' : 'Timeline'}
+                    </Button>
                 </div>
                 
-                <div className="flex items-center gap-2">
-                    <Badge className="bg-amber-100 text-amber-700">
-                        <TrendingUp className="w-3 h-3 mr-1" />
-                        {Math.round(overallProgress)}% complété
-                    </Badge>
-                    
-                    <div className="flex bg-amber-100 rounded-lg p-1">
-                        <button
-                            onClick={() => setViewMode('timeline')}
-                            className={`px-2 py-1 rounded text-xs transition-all ${
-                                viewMode === 'timeline' 
-                                    ? 'bg-amber-500 text-white' 
-                                    : 'text-amber-700 hover:bg-amber-200'
-                            }`}
-                        >
-                            Timeline
-                        </button>
-                        <button
-                            onClick={() => setViewMode('grid')}
-                            className={`px-2 py-1 rounded text-xs transition-all ${
-                                viewMode === 'grid' 
-                                    ? 'bg-amber-500 text-white' 
-                                    : 'text-amber-700 hover:bg-amber-200'
-                            }`}
-                        >
-                            Grille
-                        </button>
+                {/* Stats Compactes */}
+                <div className="grid grid-cols-4 gap-2 mt-3">
+                    <div className="bg-white rounded p-2 border text-center">
+                        <div className="text-lg font-bold text-green-600">{Math.round(overallProgress)}%</div>
+                        <div className="text-xs text-gray-500">Progress</div>
                     </div>
+                    <div className="bg-white rounded p-2 border text-center">
+                        <div className="text-lg font-bold text-blue-600">
+                            {roadmapSteps.filter(s => s.completed).length}/{roadmapSteps.length}
+                        </div>
+                        <div className="text-xs text-gray-500">Étapes</div>
+                    </div>
+                    {data.successProbability && (
+                        <div className="bg-white rounded p-2 border text-center">
+                            <div className="text-lg font-bold text-purple-600">{data.successProbability}%</div>
+                            <div className="text-xs text-gray-500">Réussite</div>
+                        </div>
+                    )}
+                    {data.salaryProgression && (
+                        <div className="bg-white rounded p-2 border text-center cursor-pointer" 
+                             onClick={() => setShowSalaryDetails(!showSalaryDetails)}>
+                            <div className="text-lg font-bold text-amber-600">
+                                +{Math.round((data.salaryProgression.projected_3years - data.salaryProgression.current) / 1000)}k€
+                            </div>
+                            <div className="text-xs text-gray-500">Salaire</div>
+                        </div>
+                    )}
                 </div>
-            </div>
 
-            {/* Progress global */}
-            <div className="bg-white dark:bg-gray-800 rounded-lg p-4 border border-amber-200">
-                <div className="flex items-center justify-between mb-2">
-                    <span className="text-sm font-medium text-amber-800">Progression globale</span>
-                    <span className="text-sm font-bold text-amber-900">{Math.round(overallProgress)}%</span>
-                </div>
-                <Progress value={overallProgress} className="h-3" />
-                <div className="text-xs text-amber-600 mt-1">
-                    {roadmapSteps.filter(s => s.completed).length}/{roadmapSteps.length} objectifs atteints
-                </div>
-            </div>
+                {/* Détails Salaire Compacts */}
+                <AnimatePresence>
+                    {showSalaryDetails && data.salaryProgression && (
+                        <motion.div
+                            initial={{ opacity: 0, height: 0 }}
+                            animate={{ opacity: 1, height: 'auto' }}
+                            exit={{ opacity: 0, height: 0 }}
+                            className="mt-3 bg-white rounded border p-3"
+                        >
+                            <div className="text-xs space-y-1">
+                                <div className="flex justify-between">
+                                    <span className="text-gray-600">Actuel</span>
+                                    <span className="font-medium">{(data.salaryProgression.current / 1000).toFixed(0)}k€</span>
+                                </div>
+                                <div className="flex justify-between">
+                                    <span className="text-gray-600">1 an</span>
+                                    <span className="text-green-600">+{((data.salaryProgression.projected_1year - data.salaryProgression.current) / 1000).toFixed(0)}k€</span>
+                                </div>
+                                <div className="flex justify-between">
+                                    <span className="text-gray-600">3 ans</span>
+                                    <span className="text-blue-600">+{((data.salaryProgression.projected_3years - data.salaryProgression.current) / 1000).toFixed(0)}k€</span>
+                                </div>
+                            </div>
+                        </motion.div>
+                    )}
+                </AnimatePresence>
+            </CardHeader>
 
-            {/* Vue Timeline */}
-            {viewMode === 'timeline' && (
-                <div className="space-y-4">
-                    {roadmapSteps.map((step, index) => {
-                        const Icon = getCategoryIcon(step.category);
-                        const color = getCategoryColor(step.category);
-                        
-                        return (
-                            <motion.div
-                                key={step.id}
-                                initial={{ opacity: 0, x: -20 }}
-                                animate={{ opacity: 1, x: 0 }}
-                                transition={{ delay: index * 0.1 }}
-                                className="relative"
-                            >
-                                {/* Ligne de connexion */}
-                                {index < roadmapSteps.length - 1 && (
-                                    <div className="absolute left-6 top-12 w-0.5 h-8 bg-amber-200" />
-                                )}
-                                
-                                <div className="flex gap-4">
-                                    {/* Icône étape */}
-                                    <div className={`w-12 h-12 bg-gradient-to-r from-${color}-500 to-${color}-600 rounded-full flex items-center justify-center shadow-lg`}>
-                                        <Icon className="w-5 h-5 text-white" />
-                                    </div>
+            <CardContent className="p-4">
+                {/* Timeline View */}
+                {viewMode === 'timeline' && (
+                    <div className="space-y-4">
+                        {roadmapSteps.map((step, index) => {
+                            const IconComponent = getCategoryIcon(step.category);
+                            const isSelected = selectedStep === step.id;
+                            
+                            return (
+                                <motion.div
+                                    key={step.id}
+                                    initial={{ opacity: 0, y: 20 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    transition={{ delay: index * 0.1 }}
+                                    className="relative"
+                                >
+                                    {/* Timeline Connector */}
+                                    {index < roadmapSteps.length - 1 && (
+                                        <div className="absolute left-4 top-12 w-0.5 h-12 bg-gradient-to-b from-gray-300 to-transparent" />
+                                    )}
                                     
-                                    {/* Contenu étape */}
-                                    <div className="flex-1">
-                                        <Card className={`border-${color}-200 hover:shadow-md transition-shadow cursor-pointer`}
-                                              onClick={() => setSelectedStep(selectedStep === step.id ? null : step.id)}>
-                                            <CardContent className="p-4">
-                                                <div className="flex items-start justify-between mb-2">
-                                                    <div className="flex-1">
-                                                        <h4 className="font-semibold text-gray-800 dark:text-gray-200 mb-1">
+                                    <Card 
+                                        className={`transition-all duration-200 hover:shadow-md border-l-4 ${
+                                            step.priority === 'high' ? 'border-l-red-500' :
+                                            step.priority === 'medium' ? 'border-l-yellow-500' : 'border-l-green-500'
+                                        } ${isSelected ? 'ring-2 ring-blue-500' : ''}`}
+                                    >
+                                        <CardContent className="p-3">
+                                            <div className="flex items-start gap-3">
+                                                {/* Icon & Progress Indicator */}
+                                                <div className="relative flex-shrink-0">
+                                                    <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${getCategoryColor(step.category)} border`}>
+                                                        <IconComponent className="w-4 h-4" />
+                                                    </div>
+                                                    {step.completed && (
+                                                        <div className="absolute -top-1 -right-1 w-4 h-4 bg-green-500 rounded-full flex items-center justify-center">
+                                                            <CheckCircle2 className="w-3 h-3 text-white" />
+                                                        </div>
+                                                    )}
+                                                </div>
+                                                
+                                                {/* Content */}
+                                                <div className="flex-1 min-w-0">
+                                                    <div className="flex items-start justify-between mb-2">
+                                                        <div>
+                                                            <h3 className="font-semibold text-gray-900 text-base leading-tight">
+                                                                {step.title}
+                                                            </h3>
+                                                            {step.description && (
+                                                                <p className="text-gray-600 text-xs mt-1 line-clamp-2">
+                                                                    {step.description}
+                                                                </p>
+                                                            )}
+                                                        </div>
+                                                        
+                                                        <div className="flex items-center gap-1 ml-2 flex-shrink-0">
+                                                            <Badge variant="outline" className={`${getPriorityColor(step.priority)} text-xs px-1 py-0`}>
+                                                                {step.priority === 'high' ? 'H' :
+                                                                 step.priority === 'medium' ? 'M' : 'L'}
+                                                            </Badge>
+                                                            {step.timeframe && (
+                                                                <Badge variant="outline" className="text-xs px-1 py-0">
+                                                                    {step.timeframe}
+                                                                </Badge>
+                                                            )}
+                                                        </div>
+                                                    </div>
+                                                    
+                                                    {/* Progress Bar */}
+                                                    <div className="mb-2">
+                                                        <div className="flex items-center justify-between mb-1">
+                                                            <span className="text-xs text-gray-500">{step.progress}%</span>
+                                                        </div>
+                                                        <Progress value={step.progress} className="h-1.5" />
+                                                    </div>
+                                                    
+                                                    {/* Actions Compactes */}
+                                                    <div className="flex items-center gap-1">
+                                                        <Button
+                                                            size="sm"
+                                                            variant={step.completed ? "ghost" : "default"}
+                                                            onClick={() => handleStepComplete(step.id)}
+                                                            className="flex items-center gap-1 text-xs px-2 py-1 h-6"
+                                                        >
+                                                            {step.completed ? (
+                                                                <>
+                                                                    <CheckCircle2 className="w-3 h-3" />
+                                                                    OK
+                                                                </>
+                                                            ) : (
+                                                                <>
+                                                                    <Circle className="w-3 h-3" />
+                                                                    Faire
+                                                                </>
+                                                            )}
+                                                        </Button>
+                                                        
+                                                        {!step.completed && step.milestones && (
+                                                            <Button
+                                                                size="sm"
+                                                                variant="outline"
+                                                                onClick={() => setSelectedStep(isSelected ? null : step.id)}
+                                                                className="flex items-center gap-1 text-xs px-2 py-1 h-6"
+                                                            >
+                                                                <ChevronRight className={`w-3 h-3 transition-transform ${isSelected ? 'rotate-90' : ''}`} />
+                                                                +
+                                                            </Button>
+                                                        )}
+                                                    </div>
+                                                    
+                                                    {/* Expanded Details */}
+                                                    <AnimatePresence>
+                                                        {isSelected && step.milestones && (
+                                                            <motion.div
+                                                                initial={{ opacity: 0, height: 0 }}
+                                                                animate={{ opacity: 1, height: 'auto' }}
+                                                                exit={{ opacity: 0, height: 0 }}
+                                                                className="mt-2 pt-2 border-t bg-gray-50 rounded p-2"
+                                                            >
+                                                                <h4 className="font-medium text-xs text-gray-900 mb-1">Jalons :</h4>
+                                                                <ul className="space-y-0.5">
+                                                                    {step.milestones.map((milestone, idx) => (
+                                                                        <li key={idx} className="flex items-center gap-1 text-xs text-gray-600">
+                                                                            <div className="w-1 h-1 rounded-full bg-gray-400" />
+                                                                            {milestone}
+                                                                        </li>
+                                                                    ))}
+                                                                </ul>
+                                                            </motion.div>
+                                                        )}
+                                                    </AnimatePresence>
+                                                </div>
+                                            </div>
+                                        </CardContent>
+                                    </Card>
+                                </motion.div>
+                            );
+                        })}
+                    </div>
+                )}
+
+                {/* Compact View */}
+                {viewMode === 'compact' && (
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                        {roadmapSteps.map((step, index) => {
+                            const IconComponent = getCategoryIcon(step.category);
+                            
+                            return (
+                                <motion.div
+                                    key={step.id}
+                                    initial={{ opacity: 0, scale: 0.95 }}
+                                    animate={{ opacity: 1, scale: 1 }}
+                                    transition={{ delay: index * 0.05 }}
+                                >
+                                    <Card className="hover:shadow-sm transition-shadow border">
+                                        <CardContent className="p-3">
+                                            <div className="flex items-center gap-2">
+                                                <div className={`w-8 h-8 rounded flex items-center justify-center ${getCategoryColor(step.category)} relative`}>
+                                                    <IconComponent className="w-4 h-4" />
+                                                    {step.completed && (
+                                                        <div className="absolute -top-1 -right-1 w-3 h-3 bg-green-500 rounded-full flex items-center justify-center">
+                                                            <CheckCircle2 className="w-2 h-2 text-white" />
+                                                        </div>
+                                                    )}
+                                                </div>
+                                                <div className="flex-1 min-w-0">
+                                                    <div className="flex items-center justify-between mb-1">
+                                                        <h4 className="font-medium text-gray-900 text-sm leading-tight truncate">
                                                             {step.title}
                                                         </h4>
-                                                        <p className="text-sm text-gray-600 dark:text-gray-400">
-                                                            {step.description}
-                                                        </p>
-                                                    </div>
-                                                    
-                                                    <div className="flex flex-col items-end gap-2">
-                                                        <Badge className={getPriorityColor(step.priority)}>
-                                                            {step.priority === 'high' ? 'Priorité haute' : 
-                                                             step.priority === 'medium' ? 'Priorité moyenne' : 'Priorité basse'}
+                                                        <Badge variant="outline" className={`${getPriorityColor(step.priority)} text-xs px-1 py-0`}>
+                                                            {step.priority === 'high' ? 'H' :
+                                                             step.priority === 'medium' ? 'M' : 'L'}
                                                         </Badge>
-                                                        <div className="flex items-center gap-1 text-xs text-gray-500">
-                                                            <Clock className="w-3 h-3" />
-                                                            {step.timeline}
+                                                    </div>
+                                                    <div className="flex items-center gap-1">
+                                                        <span className="text-xs text-gray-500">
+                                                            {step.timeframe || step.timeline || '3m'}
+                                                        </span>
+                                                        <div className="flex-1 mx-1">
+                                                            <Progress value={step.progress} className="h-1" />
                                                         </div>
+                                                        <span className="text-xs text-gray-500 w-8 text-right">
+                                                            {step.progress}%
+                                                        </span>
                                                     </div>
                                                 </div>
-                                                
-                                                <div className="flex items-center justify-between">
-                                                    <div className="flex-1">
-                                                        <Progress value={step.progress} className="h-2" />
-                                                        <div className="text-xs text-gray-500 mt-1">
-                                                            {step.progress}% complété
-                                                        </div>
-                                                    </div>
-                                                    
-                                                    <Button 
-                                                        size="sm" 
-                                                        variant="ghost"
-                                                        className={`ml-4 text-${color}-600 hover:bg-${color}-50`}
-                                                        onClick={(e) => {
-                                                            e.stopPropagation();
-                                                            onAction?.('start-objective', step);
-                                                        }}
-                                                    >
-                                                        <ArrowRight className="w-3 h-3" />
-                                                    </Button>
-                                                </div>
-                                                
-                                                {/* Détails expandables */}
-                                                <AnimatePresence>
-                                                    {selectedStep === step.id && (
-                                                        <motion.div
-                                                            initial={{ opacity: 0, height: 0 }}
-                                                            animate={{ opacity: 1, height: 'auto' }}
-                                                            exit={{ opacity: 0, height: 0 }}
-                                                            className="mt-3 pt-3 border-t border-amber-200"
-                                                        >
-                                                            <div className="space-y-2">
-                                                                <div className="text-xs">
-                                                                    <strong>Actions concrètes :</strong>
-                                                                    <ul className="mt-1 space-y-1 text-amber-700">
-                                                                        <li>• Identifier 3 compétences clés à développer</li>
-                                                                        <li>• Suivre 2 formations en ligne</li>
-                                                                        <li>• Pratiquer sur 1 projet personnel</li>
-                                                                    </ul>
-                                                                </div>
-                                                                
-                                                                <div className="flex gap-2">
-                                                                    <Button size="sm" className="bg-gradient-to-r from-amber-500 to-purple-500 text-white">
-                                                                        <CheckCircle className="w-3 h-3 mr-1" />
-                                                                        Marquer terminé
-                                                                    </Button>
-                                                                    <Button size="sm" variant="outline" className="border-amber-200 text-amber-700">
-                                                                        <Calendar className="w-3 h-3 mr-1" />
-                                                                        Programmer
-                                                                    </Button>
-                                                                </div>
-                                                            </div>
-                                                        </motion.div>
-                                                    )}
-                                                </AnimatePresence>
-                                            </CardContent>
-                                        </Card>
-                                    </div>
-                                </div>
-                            </motion.div>
-                        );
-                    })}
-                </div>
-            )}
+                                            </div>
+                                        </CardContent>
+                                    </Card>
+                                </motion.div>
+                            );
+                        })}
+                    </div>
+                )}
 
-            {/* Vue Grille */}
-            {viewMode === 'grid' && (
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    {roadmapSteps.map((step, index) => {
-                        const Icon = getCategoryIcon(step.category);
-                        const color = getCategoryColor(step.category);
-                        
-                        return (
-                            <motion.div
-                                key={step.id}
-                                initial={{ opacity: 0, scale: 0.95 }}
-                                animate={{ opacity: 1, scale: 1 }}
-                                transition={{ delay: index * 0.1 }}
-                            >
-                                <Card className={`border-${color}-200 hover:shadow-md transition-shadow h-full`}>
-                                    <CardContent className="p-4">
-                                        <div className="flex items-start gap-3 mb-3">
-                                            <div className={`w-8 h-8 bg-gradient-to-r from-${color}-500 to-${color}-600 rounded-lg flex items-center justify-center`}>
-                                                <Icon className="w-4 h-4 text-white" />
-                                            </div>
-                                            <div className="flex-1">
-                                                <h4 className="font-semibold text-gray-800 dark:text-gray-200 text-sm">
-                                                    {step.title}
-                                                </h4>
-                                                <div className="flex items-center gap-2 mt-1">
-                                                    <Badge className={getPriorityColor(step.priority)} size="sm">
-                                                        {step.priority}
-                                                    </Badge>
-                                                    <span className="text-xs text-gray-500">{step.timeline}</span>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        
-                                        <p className="text-xs text-gray-600 dark:text-gray-400 mb-3">
-                                            {step.description}
-                                        </p>
-                                        
-                                        <div className="space-y-2">
-                                            <Progress value={step.progress} className="h-1.5" />
-                                            <div className="flex justify-between items-center">
-                                                <span className="text-xs text-gray-500">
-                                                    {step.progress}% complété
-                                                </span>
-                                                <Button 
-                                                    size="sm" 
-                                                    variant="ghost"
-                                                    className={`h-6 px-2 text-${color}-600 hover:bg-${color}-50`}
-                                                    onClick={() => onAction?.('view-details', step)}
-                                                >
-                                                    <Eye className="w-3 h-3" />
-                                                </Button>
-                                            </div>
-                                        </div>
-                                    </CardContent>
-                                </Card>
-                            </motion.div>
-                        );
-                    })}
-                </div>
-            )}
-
-            {/* Actions globales */}
-            <div className="flex justify-center gap-3 pt-4 border-t border-amber-200">
-                <Button 
-                    size="sm" 
-                    className="bg-gradient-to-r from-amber-500 to-purple-500 text-white"
-                    onClick={() => onAction?.('export-roadmap', roadmapSteps)}
-                >
-                    <Download className="w-3 h-3 mr-2" />
-                    Exporter PDF
-                </Button>
-                
-                <Button 
-                    size="sm" 
-                    variant="outline"
-                    className="border-amber-200 text-amber-700 hover:bg-amber-50"
-                    onClick={() => onAction?.('schedule-review', { date: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000) })}
-                >
-                    <Calendar className="w-3 h-3 mr-2" />
-                    Planifier suivi
-                </Button>
-                
-                <Button 
-                    size="sm" 
-                    variant="outline"
-                    className="border-purple-200 text-purple-700 hover:bg-purple-50"
-                    onClick={() => onAction?.('update-roadmap', {})}
-                >
-                    <RefreshCw className="w-3 h-3 mr-2" />
-                    Mettre à jour
-                </Button>
-            </div>
-        </div>
+                {/* Empty State */}
+                {roadmapSteps.length === 0 && (
+                    <div className="text-center py-8">
+                        <MapPin className="w-12 h-12 text-gray-300 mx-auto mb-3" />
+                        <h3 className="text-base font-medium text-gray-900 mb-1">
+                            Aucune étape définie
+                        </h3>
+                        <p className="text-sm text-gray-500">
+                            Plan généré automatiquement par l'IA
+                        </p>
+                    </div>
+                )}
+            </CardContent>
+        </Card>
     );
 }

@@ -251,29 +251,97 @@ class CinetPayController extends Controller
     }
 
     /**
-     * Page de retour - appelée après le paiement
+     * Page de retour - appelée après le paiement (GET)
+     * Selon la doc CinetPay, cette URL doit être disponible en GET et POST
      */
     public function return(Request $request)
     {
         try {
-            Log::info('CinetPay return page accessed', $request->all());
+            error_log("=== CINETPAY CONTROLLER RETURN START ===");
+            error_log("Method: " . $request->method());
+            error_log("URL: " . $request->fullUrl());
+            error_log("Data: " . json_encode($request->all()));
+            
+            Log::info('CinetPay return page accessed', [
+                'method' => $request->method(),
+                'url' => $request->fullUrl(),
+                'data' => $request->all(),
+                'headers' => $request->headers->all()
+            ]);
+            
+            error_log("Laravel log written from controller");
 
+            // Pour les requêtes GET, on vérifie juste que l'URL est disponible
+            // CinetPay ping cette URL pour s'assurer qu'elle est accessible
+            if ($request->isMethod('GET')) {
+                // Retourner une page simple pour confirmer que l'URL est disponible
+                return response()->view('cinetpay.return-test', [
+                    'status' => 'available',
+                    'message' => 'URL de retour disponible'
+                ], 200);
+            }
+
+            // Pour les requêtes POST (retour après paiement)
             $transactionId = $request->transaction_id ?? $request->token;
             
             if (!$transactionId) {
+                Log::warning('CinetPay return: Transaction ID manquant');
                 return redirect()->route('payment.failed')->with('error', 'Transaction ID manquant');
             }
+
+            Log::info('CinetPay return: Processing transaction', ['transaction_id' => $transactionId]);
 
             $payment = Payment::where('transaction_id', $transactionId)->first();
             
             if (!$payment) {
+                Log::warning('CinetPay return: Paiement non trouvé', ['transaction_id' => $transactionId]);
                 return redirect()->route('payment.failed')->with('error', 'Paiement non trouvé');
             }
 
-            if ($payment->status === 'completed') {
-                return redirect()->route('payment.success')->with('success', 'Paiement effectué avec succès');
+            // Vérifier le statut du paiement auprès de CinetPay (comme recommandé dans la doc)
+            $statusResponse = Http::post($this->baseUrl . '/payment/check', [
+                'apikey' => $this->apiKey,
+                'site_id' => $this->siteId,
+                'transaction_id' => $transactionId
+            ]);
+
+            if ($statusResponse->successful()) {
+                $statusResult = $statusResponse->json();
+                
+                if ($statusResult['code'] === '00' && $statusResult['data']['status'] === 'ACCEPTED') {
+                    // Paiement réussi
+                    Log::info('CinetPay return: Paiement confirmé réussi', [
+                        'transaction_id' => $transactionId,
+                        'amount' => $statusResult['data']['amount']
+                    ]);
+                    
+                    return redirect()->route('payment.success')->with([
+                        'success' => 'Paiement effectué avec succès',
+                        'transaction_id' => $transactionId,
+                        'amount' => $statusResult['data']['amount']
+                    ]);
+                } else {
+                    // Paiement échoué ou en attente
+                    Log::warning('CinetPay return: Paiement non confirmé', [
+                        'transaction_id' => $transactionId,
+                        'status' => $statusResult['data']['status'] ?? 'Unknown',
+                        'code' => $statusResult['code']
+                    ]);
+                    
+                    return redirect()->route('payment.failed')->with('error', 'Le paiement n\'a pas pu être confirmé');
+                }
             } else {
-                return redirect()->route('payment.failed')->with('error', 'Le paiement n\'a pas pu être complété');
+                Log::error('CinetPay return: Erreur vérification statut', [
+                    'transaction_id' => $transactionId,
+                    'response' => $statusResponse->body()
+                ]);
+                
+                // En cas d'erreur de vérification, utiliser le statut local
+                if ($payment->status === 'completed') {
+                    return redirect()->route('payment.success')->with('success', 'Paiement effectué avec succès');
+                } else {
+                    return redirect()->route('payment.failed')->with('error', 'Le paiement n\'a pas pu être complété');
+                }
             }
 
         } catch (\Exception $e) {

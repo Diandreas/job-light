@@ -94,10 +94,43 @@ Route::get('/', function () {
 Route::post('/api/notchpay/webhook', [NotchPayController::class, 'handleWebhook'])->name('notchpay.webhook');
 Route::get('/payment/callback', [NotchPayController::class, 'handleCallback'])->name('payment.callback');
 
-// Routes CinetPay (backup option)
+// Routes CinetPay - Configuration corrigée
+Route::post('/payment/initiate', [PaymentController::class, 'initiatePayment'])->name('payment.initiate');
+Route::post('/payment/notify', [PaymentController::class, 'notify'])->name('payment.notify');
+Route::get('/payment/return', [PaymentController::class, 'return'])->name('payment.return');
+Route::post('/payment/return', [PaymentController::class, 'return'])->name('payment.return.post');
+
+// Routes CinetPay alternatives (backup)
 Route::post('/api/cinetpay/notify', [CinetPayController::class, 'notify']); // Webhook public
 Route::get('/api/cinetpay/return', [CinetPayController::class, 'return']);
+Route::post('/api/cinetpay/return', [CinetPayController::class, 'return']); // Support POST pour les retours
+
+// Route API pour callback CinetPay (sans CSRF)
+Route::post('/api/cinetpay/callback', [CinetPayController::class, 'return'])->name('api.cinetpay.callback');
+
+// Route webhook spécifique pour CinetPay (sans middleware web)
+Route::match(['get', 'post'], '/webhook/cinetpay/callback', [App\Http\Controllers\CinetPayWebhookController::class, 'handleCallback'])
+    ->name('webhook.cinetpay.callback')
+    ->withoutMiddleware(['web', 'csrf']);
+
+// URL de retour principale (doit supporter GET et POST selon la doc CinetPay)
 Route::get('/payment/cinetpay/callback', [CinetPayController::class, 'return'])->name('payment.cinetpay.callback');
+Route::post('/payment/cinetpay/callback', [CinetPayController::class, 'return'])->name('payment.cinetpay.callback.post');
+
+// Pages de résultat de paiement
+Route::get('/payment/success', function () {
+    return Inertia::render('Payment/Success', [
+        'message' => session('success', 'Paiement effectué avec succès'),
+        'transaction_id' => session('transaction_id'),
+        'amount' => session('amount')
+    ]);
+})->name('payment.success');
+
+Route::get('/payment/failed', function () {
+    return Inertia::render('Payment/Failed', [
+        'error' => session('error', 'Le paiement a échoué')
+    ]);
+})->name('payment.failed');
 
 // Routes CinetPay pour paiements guest
 Route::post('/api/cinetpay/guest/initialize', [App\Http\Controllers\GuestPaymentController::class, 'initializeGuestPayment'])->name('guest-payment.cinetpay.initialize');
@@ -283,9 +316,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
             Route::resource('blog', \App\Http\Controllers\Admin\BlogManagementController::class);
             Route::get('/blog-stats', [\App\Http\Controllers\Admin\BlogManagementController::class, 'seoStats'])->name('blog.stats');
             
-            // User management routes
-            Route::resource('users', \App\Http\Controllers\Admin\UserManagementController::class);
-            Route::get('/users/export', [\App\Http\Controllers\Admin\UserManagementController::class, 'export'])->name('users.export');
+            // User management routes (commented out - controller doesn't exist yet)
+            // Route::resource('users', \App\Http\Controllers\Admin\UserManagementController::class);
+            // Route::get('/users/export', [\App\Http\Controllers\Admin\UserManagementController::class, 'export'])->name('users.export');
         });
 
         Route::resources([

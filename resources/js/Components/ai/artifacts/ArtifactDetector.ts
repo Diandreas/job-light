@@ -1,23 +1,77 @@
 /**
  * Service de détection et parsing des artefacts dans les réponses IA
+ * Nouvelle version avec analyse IA intelligente
  */
 
+import { AIArtifactGenerator, AIGeneratedArtifact } from './AIArtifactGenerator';
+import { AIContentAnalyzer } from '../services/AIContentAnalyzer';
+
 export interface ArtifactData {
-    type: 'table' | 'chart' | 'score' | 'checklist' | 'roadmap' | 'heatmap' | 'dashboard' | 'timer' | 'cv-analysis';
+    id: string;
+    type: 'table' | 'chart' | 'score' | 'checklist' | 'roadmap' | 'heatmap' | 'dashboard' | 'timer' | 'cv-analysis' | 'interview-simulator' | 'salary-negotiator';
     title: string;
     data: any;
+    confidence?: number;
+    source?: string;
     metadata?: {
         exportable?: boolean;
         interactive?: boolean;
         service?: string;
+        aiGenerated?: boolean;
+        timestamp?: number;
+        priority?: 'high' | 'medium' | 'low';
     };
 }
 
 export class ArtifactDetector {
     /**
-     * Détecter et extraire les artefacts d'un message IA
+     * Détecter et extraire les artefacts d'un message IA avec analyse intelligente
      */
-    static detectArtifacts(content: string, serviceId?: string): ArtifactData[] {
+    static async detectArtifacts(
+        content: string, 
+        serviceId?: string, 
+        userContext?: any,
+        useAI: boolean = true
+    ): Promise<ArtifactData[]> {
+        console.log('🔍 Détection d\'artefacts - Mode IA:', useAI);
+        
+        let artifacts: ArtifactData[] = [];
+
+        if (useAI) {
+            // Nouvelle approche avec IA
+            try {
+                const aiAnalysis = AIContentAnalyzer.analyzeAIContent(content, serviceId, userContext);
+                console.log('🧠 Analyse IA complétée:', aiAnalysis);
+                
+                const aiArtifacts = await AIArtifactGenerator.generateArtifacts(content, serviceId, userContext);
+                console.log('🎨 Artefacts IA générés:', aiArtifacts.length);
+                
+                // Convertir les artefacts IA au format legacy
+                artifacts = aiArtifacts.map(aiArtifact => this.convertAIArtifactToLegacy(aiArtifact));
+                
+                // Si l'IA n'a pas trouvé assez d'artefacts, utiliser la méthode classique en complément
+                if (artifacts.length === 0) {
+                    console.log('⚠️ Aucun artefact IA détecté, utilisation méthode classique...');
+                    artifacts = this.detectArtifactsClassic(content, serviceId);
+                }
+                
+            } catch (error) {
+                console.error('❌ Erreur analyse IA, utilisation méthode classique:', error);
+                artifacts = this.detectArtifactsClassic(content, serviceId);
+            }
+        } else {
+            // Méthode classique (fallback)
+            artifacts = this.detectArtifactsClassic(content, serviceId);
+        }
+
+        console.log(`✅ ${artifacts.length} artefacts détectés au total`);
+        return artifacts;
+    }
+
+    /**
+     * Méthode classique de détection (ancienne logique)
+     */
+    private static detectArtifactsClassic(content: string, serviceId?: string): ArtifactData[] {
         const artifacts: ArtifactData[] = [];
 
         // 1. Détecter les tableaux markdown
@@ -48,6 +102,28 @@ export class ArtifactDetector {
     }
 
     /**
+     * Convertit un artefact IA au format legacy
+     */
+    private static convertAIArtifactToLegacy(aiArtifact: AIGeneratedArtifact): ArtifactData {
+        return {
+            id: aiArtifact.id,
+            type: aiArtifact.type as any,
+            title: aiArtifact.title,
+            data: aiArtifact.data,
+            confidence: aiArtifact.confidence,
+            source: aiArtifact.source,
+            metadata: {
+                exportable: aiArtifact.metadata.exportable,
+                interactive: aiArtifact.metadata.interactive,
+                service: aiArtifact.metadata.serviceId,
+                aiGenerated: aiArtifact.metadata.aiGenerated,
+                timestamp: aiArtifact.metadata.timestamp,
+                priority: aiArtifact.metadata.priority
+            }
+        };
+    }
+
+    /**
      * Détecter les tableaux markdown
      */
     private static detectTables(content: string): ArtifactData[] {
@@ -72,6 +148,7 @@ export class ArtifactDetector {
 
             if (headers.length > 0 && rows.length > 0) {
                 artifacts.push({
+                    id: `table-classic-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
                     type: 'table',
                     title: this.extractTableTitle(content, fullMatch) || 'Tableau de données',
                     data: {
@@ -83,7 +160,8 @@ export class ArtifactDetector {
                     },
                     metadata: {
                         exportable: true,
-                        interactive: true
+                        interactive: true,
+                        aiGenerated: false
                     }
                 });
             }
@@ -109,6 +187,7 @@ export class ArtifactDetector {
             const subScores = this.detectSubScores(content);
             
             artifacts.push({
+                id: `score-classic-${Date.now()}`,
                 type: 'score',
                 title: this.getScoreTitle(serviceId) || 'Évaluation',
                 data: {
@@ -120,7 +199,8 @@ export class ArtifactDetector {
                 metadata: {
                     exportable: true,
                     interactive: true,
-                    service: serviceId
+                    service: serviceId,
+                    aiGenerated: false
                 }
             });
         }

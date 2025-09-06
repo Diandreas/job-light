@@ -36,7 +36,7 @@ return [
 
     // URLs de notification et de retour
     'notify_url' => env('CINETPAY_NOTIFY_URL', '/api/cinetpay/notify'),
-    'return_url' => env('CINETPAY_RETURN_URL', '/api/cinetpay/return'),
+    'return_url' => env('CINETPAY_RETURN_URL', '/webhook/cinetpay/callback'),
 
     // Timeout pour les appels API (en secondes)
     'timeout' => env('CINETPAY_TIMEOUT', 30),

@@ -16,5 +16,41 @@ class VerifyCsrfToken extends Middleware
         'payment/*', // Exclure toutes les routes de paiement
         'payment/cinetpay/callback',
         'payment/callback',
+        '*/cinetpay/callback', // Exclure spécifiquement les callbacks CinetPay
+        'api/cinetpay/callback', // Exclure spécifiquement le callback API CinetPay
     ];
+
+    /**
+     * Handle an incoming request.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  \Closure  $next
+     * @return mixed
+     */
+    public function handle($request, \Closure $next)
+    {
+        error_log("=== CSRF MIDDLEWARE CHECK ===");
+        error_log("URL: " . $request->fullUrl());
+        error_log("Method: " . $request->method());
+        error_log("Path: " . $request->path());
+        
+        // Vérifier si l'URL est dans les exceptions
+        $isExcluded = false;
+        foreach ($this->except as $pattern) {
+            if ($request->is($pattern)) {
+                $isExcluded = true;
+                break;
+            }
+        }
+        
+        error_log("Is excluded from CSRF: " . ($isExcluded ? 'YES' : 'NO'));
+        
+        if ($isExcluded) {
+            error_log("CSRF check SKIPPED for: " . $request->path());
+            return $next($request);
+        }
+        
+        error_log("CSRF check PROCEEDING for: " . $request->path());
+        return parent::handle($request, $next);
+    }
 }

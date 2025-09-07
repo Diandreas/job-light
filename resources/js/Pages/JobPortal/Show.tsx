@@ -142,7 +142,7 @@ export default function JobShow({ auth, job, hasApplied = false, similarJobs = [
                 <meta name="description" content={`${job.title} - ${job.company.name}. ${job.description.substring(0, 160)}...`} />
                 <meta name="keywords" content={`emploi, ${job.title}, ${job.company.name}, ${job.location}, ${job.industry}`} />
                 
-                <!-- Open Graph -->
+                {/* Open Graph */}
                 <meta property="og:title" content={`${job.title} chez ${job.company.name}`} />
                 <meta property="og:description" content={job.description.substring(0, 200)} />
                 <meta property="og:type" content="article" />

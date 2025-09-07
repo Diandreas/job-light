@@ -168,14 +168,15 @@ export default function ModernDesign({
                                         </Button>
                                     )}
 
-                                    <Button
+                                    {/* TODO: Réimplémenter le téléchargement CV plus tard */}
+                                    {/* <Button
                                         size="lg"
                                         variant="outline"
                                         className="border-2 border-white/30 text-white hover:bg-white/10 backdrop-blur-sm px-8 py-4 rounded-full hover:scale-105 transition-all duration-300"
                                     >
                                         <Download className="w-5 h-5 mr-2" />
                                         Télécharger CV
-                                    </Button>
+                                    </Button> */}
                                 </motion.div>
                             </motion.div>
                         </div>

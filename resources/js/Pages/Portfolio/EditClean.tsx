@@ -221,33 +221,38 @@ export default function EditClean({ auth, portfolio, settings, cvData = portfoli
         <AuthenticatedLayout
             user={auth.user}
             header={
-                <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                        <div className="w-8 h-8 rounded-lg bg-gradient-to-r from-amber-500 to-purple-500 flex items-center justify-center">
-                            <Sparkles className="h-4 w-4 text-white" />
+                <div className="flex items-center justify-between bg-gradient-to-r from-white via-gray-50 to-white p-6 rounded-2xl shadow-lg border border-gray-200">
+                    <div className="flex items-center gap-4">
+                        <div className="w-12 h-12 rounded-2xl bg-gradient-to-r from-amber-500 to-purple-600 flex items-center justify-center shadow-lg">
+                            <Sparkles className="h-6 w-6 text-white" />
                         </div>
                         <div>
-                            <h2 className="text-lg font-bold text-gray-900">{__('portfolio.edit.portfolio_express')}</h2>
-                            <p className="text-xs text-gray-500">{__('portfolio.edit.quick_config')}</p>
+                            <h2 className="text-2xl font-bold text-gray-900 bg-gradient-to-r from-gray-900 to-gray-700 bg-clip-text">Portfolio Studio Pro</h2>
+                            <p className="text-sm text-gray-600 font-medium">Configuration avancée de votre portfolio</p>
                         </div>
                     </div>
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-3">
                         <Button
                             onClick={() => setShowQR(!showQR)}
                             variant="outline"
-                            size="sm"
-                            className="h-8 px-3"
+                            size="default"
+                            className="h-11 px-5 border-gray-300 hover:bg-gray-50 font-medium transition-all duration-200 shadow-sm hover:shadow-md"
                         >
-                            <QrCode className="h-3 w-3 mr-1" />
-                            QR
+                            <QrCode className="h-4 w-4 mr-2" />
+                            QR Code
                         </Button>
                         <Button
                             onClick={() => setPreviewMode(!previewMode)}
                             variant={previewMode ? "default" : "outline"}
-                            size="sm"
-                            className="h-8 px-3"
+                            size="default"
+                            className={cn(
+                                "h-11 px-5 font-medium transition-all duration-200",
+                                previewMode 
+                                    ? "bg-gradient-to-r from-purple-600 to-amber-500 text-white shadow-lg hover:shadow-xl" 
+                                    : "border-gray-300 hover:bg-gray-50 shadow-sm hover:shadow-md"
+                            )}
                         >
-                            <Eye className="h-3 w-3 mr-1" />
+                            <Eye className="h-4 w-4 mr-2" />
                             {previewMode ? __('portfolio.edit.hide') : __('portfolio.edit.preview')}
                         </Button>
                     </div>
@@ -256,7 +261,7 @@ export default function EditClean({ auth, portfolio, settings, cvData = portfoli
         >
             <Head title={__('portfolio.edit.portfolio_express')} />
 
-            <div className="py-6">
+            <div className="py-8 bg-gray-50 min-h-screen">
                 <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
 
                     {/* QR Code Modal */}
@@ -273,24 +278,32 @@ export default function EditClean({ auth, portfolio, settings, cvData = portfoli
                                     initial={{ scale: 0.9, opacity: 0 }}
                                     animate={{ scale: 1, opacity: 1 }}
                                     exit={{ scale: 0.9, opacity: 0 }}
-                                    className="bg-white rounded-xl p-6 max-w-sm w-full shadow-xl"
+                                    className="bg-white rounded-2xl p-8 max-w-md w-full shadow-2xl border border-gray-200"
                                     onClick={(e) => e.stopPropagation()}
                                 >
-                                    <h3 className="font-semibold text-lg text-center mb-4">Partager votre Portfolio</h3>
-                                    <div className="text-center mb-4">
-                                        <img
-                                            src={generateQRCode()}
-                                            alt="QR Code"
-                                            className="mx-auto mb-3 rounded-lg shadow-md"
-                                        />
-                                        <p className="text-xs text-gray-600 break-all bg-gray-50 p-2 rounded">
+                                    <div className="text-center mb-6">
+                                        <div className="w-16 h-16 bg-gradient-to-r from-purple-600 to-amber-500 rounded-2xl mx-auto mb-4 flex items-center justify-center">
+                                            <QrCode className="h-8 w-8 text-white" />
+                                        </div>
+                                        <h3 className="font-bold text-2xl text-gray-900 mb-2">Partager votre Portfolio</h3>
+                                        <p className="text-gray-600">Scannez le QR code pour accéder à votre portfolio</p>
+                                    </div>
+                                    <div className="text-center mb-6">
+                                        <div className="p-6 bg-gray-50 rounded-2xl shadow-inner mb-4">
+                                            <img
+                                                src={generateQRCode()}
+                                                alt="QR Code"
+                                                className="mx-auto rounded-xl"
+                                            />
+                                        </div>
+                                        <p className="text-sm text-gray-600 break-all bg-gray-100 p-3 rounded-lg font-mono">
                                             {portfolioUrl}
                                         </p>
                                     </div>
                                     <Button
                                         variant="outline"
                                         onClick={() => setShowQR(false)}
-                                        className="w-full"
+                                        className="w-full h-12 font-semibold border-gray-300 hover:bg-gray-50"
                                     >
                                         Fermer
                                     </Button>
@@ -306,66 +319,89 @@ export default function EditClean({ auth, portfolio, settings, cvData = portfoli
 
 
 
-                            <form onSubmit={onSubmit} id="portfolio-form" className="space-y-6">
+                            <form onSubmit={onSubmit} id="portfolio-form" className="space-y-8">
 
                                 {/* Design & Couleur */}
-                                <Card className="bg-white shadow-lg">
-                                    <CardHeader className="pb-4">
-                                        <CardTitle className="flex items-center gap-3">
-                                            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-violet-500 to-purple-600 flex items-center justify-center">
-                                                <Palette className="h-5 w-5 text-white" />
+                                <Card className="bg-white shadow-xl border-l-4 border-l-violet-500 hover:shadow-2xl transition-shadow duration-300">
+                                    <CardHeader className="pb-6 bg-gradient-to-r from-violet-50 to-purple-50">
+                                        <CardTitle className="flex items-center justify-between">
+                                            <div className="flex items-center gap-4">
+                                                <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-violet-500 to-purple-600 flex items-center justify-center shadow-lg">
+                                                    <Palette className="h-7 w-7 text-white" />
+                                                </div>
+                                                <div>
+                                                    <h3 className="text-xl font-bold text-gray-900">Design & Style</h3>
+                                                    <p className="text-sm text-gray-600 font-medium mt-1">Personnalisez l'apparence de votre portfolio</p>
+                                                </div>
                                             </div>
-                                            <div>
-                                                <h3 className="text-lg font-semibold text-gray-900">Design & Style</h3>
-                                                <p className="text-sm text-gray-500 mt-1">Personnalisez l'apparence de votre portfolio</p>
-                                            </div>
+                                            <Badge className="bg-violet-100 text-violet-800 font-semibold px-3 py-1.5">
+                                                Thème: {DESIGN_OPTIONS.find(d => d.value === data.design)?.label}
+                                            </Badge>
                                         </CardTitle>
                                     </CardHeader>
                                     <CardContent className="space-y-6">
                                         {/* Sélection du design */}
                                         <div>
-                                            <Label className="text-base font-medium text-gray-700 mb-3 block">Thème du portfolio</Label>
-                                            <div className="grid grid-cols-2 lg:grid-cols-5 gap-3">
+                                            <Label className="text-lg font-semibold text-gray-800 mb-4 block">Choisissez votre thème</Label>
+                                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                                                 {DESIGN_OPTIONS.map((option) => (
-                                                    <div
+                                                    <motion.div
                                                         key={option.value}
+                                                        whileHover={{ scale: 1.02 }}
+                                                        whileTap={{ scale: 0.98 }}
                                                         className={cn(
-                                                            "p-4 rounded-xl border-2 cursor-pointer transition-all hover:shadow-md",
+                                                            "p-5 rounded-2xl border-2 cursor-pointer transition-all duration-200 hover:shadow-lg",
                                                             data.design === option.value
-                                                                ? "border-violet-500 bg-violet-50 shadow-md"
-                                                                : "border-gray-200 hover:border-gray-300"
+                                                                ? "border-violet-500 bg-gradient-to-br from-violet-50 to-purple-50 shadow-lg ring-2 ring-violet-200"
+                                                                : "border-gray-200 hover:border-violet-300 bg-white hover:bg-gradient-to-br hover:from-gray-50 hover:to-violet-50"
                                                         )}
                                                         onClick={() => setData('design', option.value)}
                                                     >
-                                                        <h4 className="font-medium text-gray-900 text-sm">{option.label}</h4>
-                                                        <p className="text-xs text-gray-500 mt-1">{option.desc}</p>
-                                                    </div>
+                                                        <div className="flex items-center justify-between mb-2">
+                                                            <h4 className="font-bold text-gray-900 text-base">{option.label}</h4>
+                                                            {data.design === option.value && (
+                                                                <div className="w-6 h-6 bg-violet-500 rounded-full flex items-center justify-center">
+                                                                    <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
+                                                                        <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                                                                    </svg>
+                                                                </div>
+                                                            )}
+                                                        </div>
+                                                        <p className="text-sm text-gray-600 leading-relaxed">{option.desc}</p>
+                                                    </motion.div>
                                                 ))}
                                             </div>
                                         </div>
 
                                         {/* Couleur principale */}
-                                        <div className="flex items-center justify-between p-4 bg-gray-50 rounded-xl">
-                                            <div>
-                                                <Label className="text-base font-medium text-gray-700">Couleur principale</Label>
-                                                <p className="text-sm text-gray-500 mt-1">Choisissez la couleur dominante de votre portfolio</p>
-                                            </div>
-                                            <div className="flex items-center gap-3">
-                                                <Input
-                                                    type="color"
-                                                    value={data.primary_color}
-                                                    onChange={(e) => setData('primary_color', e.target.value)}
-                                                    className="w-16 h-12 rounded-lg cursor-pointer border-2"
-                                                />
-                                                <Button
-                                                    type="button"
-                                                    onClick={() => setData('primary_color', '#f59e0b')}
-                                                    variant="outline"
-                                                    size="sm"
-                                                    className="text-xs"
-                                                >
-                                                    Par défaut
-                                                </Button>
+                                        <div className="bg-gradient-to-r from-gray-50 to-violet-50 p-6 rounded-2xl border border-gray-200">
+                                            <div className="flex items-center justify-between">
+                                                <div>
+                                                    <Label className="text-lg font-semibold text-gray-800 mb-1 block">Couleur principale</Label>
+                                                    <p className="text-sm text-gray-600">Sélectionnez la couleur dominante de votre portfolio</p>
+                                                </div>
+                                                <div className="flex items-center gap-4">
+                                                    <div className="text-center">
+                                                        <Input
+                                                            type="color"
+                                                            value={data.primary_color}
+                                                            onChange={(e) => setData('primary_color', e.target.value)}
+                                                            className="w-20 h-16 rounded-2xl cursor-pointer border-3 border-white shadow-lg hover:shadow-xl transition-shadow"
+                                                        />
+                                                        <p className="text-xs text-gray-500 font-mono mt-2 bg-white px-2 py-1 rounded-md">
+                                                            {data.primary_color}
+                                                        </p>
+                                                    </div>
+                                                    <Button
+                                                        type="button"
+                                                        onClick={() => setData('primary_color', '#f59e0b')}
+                                                        variant="outline"
+                                                        size="sm"
+                                                        className="border-2 border-amber-200 text-amber-700 hover:bg-amber-50 font-medium"
+                                                    >
+                                                        Par défaut
+                                                    </Button>
+                                                </div>
                                             </div>
                                         </div>
                                     </CardContent>
@@ -373,89 +409,108 @@ export default function EditClean({ auth, portfolio, settings, cvData = portfoli
 
 
                                 {/* Visibilité des Sections - Interface Simplifiée */}
-                                <Card className="bg-white shadow-lg border-l-4 border-l-emerald-500">
-                                    <CardHeader className="pb-3">
+                                <Card className="bg-white shadow-xl border-l-4 border-l-emerald-500 hover:shadow-2xl transition-shadow duration-300">
+                                    <CardHeader className="pb-6 bg-gradient-to-r from-emerald-50 to-green-50">
                                         <CardTitle className="flex items-center justify-between">
-                                            <div className="flex items-center gap-3">
-                                                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-500 to-green-600 flex items-center justify-center">
-                                                    <Eye className="h-5 w-5 text-white" />
+                                            <div className="flex items-center gap-4">
+                                                <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-emerald-500 to-green-600 flex items-center justify-center shadow-lg">
+                                                    <Settings className="h-7 w-7 text-white" />
                                                 </div>
                                                 <div>
-                                                    <h3 className="text-lg font-semibold text-gray-900">Visibilité des Sections</h3>
-                                                    <p className="text-sm text-gray-500 mt-1">Choisissez les sections à afficher</p>
+                                                    <h3 className="text-xl font-bold text-gray-900">Gestion des Sections</h3>
+                                                    <p className="text-sm text-gray-600 font-medium mt-1">Organisez et configurez les sections de votre portfolio</p>
                                                 </div>
                                             </div>
-                                            <Badge variant="outline" className="bg-emerald-50 text-emerald-700 border-emerald-200">
-                                                {sections.filter(s => s.isActive).length}/{sections.length}
-                                            </Badge>
+                                            <div className="flex items-center gap-3">
+                                                <Badge className="bg-emerald-100 text-emerald-800 font-semibold px-3 py-1.5">
+                                                    {sections.filter(s => s.isActive).length}/{sections.length} Actives
+                                                </Badge>
+                                                <Badge className="bg-orange-100 text-orange-800 font-semibold px-3 py-1.5">
+                                                    {sections.filter(s => s.count === 0).length} Vides
+                                                </Badge>
+                                            </div>
                                         </CardTitle>
                                     </CardHeader>
-                                    <CardContent className="space-y-2">
-                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                                    <CardContent className="space-y-4">
+                                        <div className="grid grid-cols-1 gap-4">
                                             {sections.map((section, index) => {
                                                 const IconComponent = section.icon;
                                                 return (
                                                     <motion.div
                                                         key={section.key}
-                                                        initial={{ opacity: 0, scale: 0.95 }}
-                                                        animate={{ opacity: 1, scale: 1 }}
-                                                        transition={{ delay: index * 0.03 }}
+                                                        initial={{ opacity: 0, x: -20 }}
+                                                        animate={{ opacity: 1, x: 0 }}
+                                                        transition={{ delay: index * 0.05 }}
+                                                        whileHover={{ scale: 1.01 }}
                                                         className={cn(
-                                                            "flex items-center gap-3 p-3 rounded-lg border-2 transition-all duration-200",
+                                                            "flex items-center gap-4 p-4 rounded-2xl border-2 transition-all duration-200 hover:shadow-md",
                                                             section.count === 0
-                                                                ? "cursor-not-allowed opacity-40 border-orange-200 bg-orange-50/20"
+                                                                ? "cursor-not-allowed opacity-60 border-orange-200 bg-gradient-to-r from-orange-50 to-red-50"
                                                                 : section.isActive
-                                                                    ? "cursor-pointer border-emerald-200 bg-emerald-50/30 hover:border-emerald-300"
-                                                                    : "cursor-pointer border-gray-200 bg-gray-50/30 opacity-60 hover:opacity-80"
+                                                                    ? "cursor-pointer border-emerald-300 bg-gradient-to-r from-emerald-50 to-green-50 hover:border-emerald-400 shadow-sm"
+                                                                    : "cursor-pointer border-gray-200 bg-gradient-to-r from-gray-50 to-slate-50 opacity-75 hover:opacity-90 hover:border-gray-300"
                                                         )}
                                                         onClick={() => section.count > 0 && handleToggleSection(section.key)}
                                                     >
                                                         {/* Section Icon */}
                                                         <div className={cn(
-                                                            "flex items-center justify-center w-8 h-8 rounded-md transition-colors shrink-0",
-                                                            section.isActive
-                                                                ? "bg-emerald-100 text-emerald-600"
-                                                                : "bg-gray-100 text-gray-400"
+                                                            "flex items-center justify-center w-12 h-12 rounded-2xl transition-all duration-200 shrink-0",
+                                                            section.count === 0
+                                                                ? "bg-orange-100 text-orange-500"
+                                                                : section.isActive
+                                                                    ? "bg-emerald-100 text-emerald-600 shadow-md"
+                                                                    : "bg-gray-100 text-gray-400"
                                                         )}>
-                                                            <IconComponent className="w-4 h-4" />
+                                                            <IconComponent className="w-6 h-6" />
                                                         </div>
 
                                                         {/* Section Info */}
                                                         <div className="flex-1 min-w-0">
-                                                            <div className="flex items-center gap-2">
-                                                                <span className={cn(
-                                                                    "text-sm font-medium truncate",
-                                                                    section.isActive ? "text-gray-900" : "text-gray-500"
-                                                                )}>
-                                                                    {section.label}
-                                                                </span>
-                                                                <Badge
-                                                                    variant="secondary"
-                                                                    className={cn(
-                                                                        "text-xs px-1.5 py-0.5 shrink-0",
+                                                            <div className="flex items-center justify-between">
+                                                                <div>
+                                                                    <span className={cn(
+                                                                        "text-base font-semibold block",
                                                                         section.count === 0
-                                                                            ? "bg-orange-100 text-orange-600"
-                                                                            : "bg-blue-100 text-blue-600"
-                                                                    )}
-                                                                >
-                                                                    {section.count}
-                                                                </Badge>
+                                                                            ? "text-orange-700"
+                                                                            : section.isActive 
+                                                                                ? "text-gray-900" 
+                                                                                : "text-gray-500"
+                                                                    )}>
+                                                                        {section.label}
+                                                                    </span>
+                                                                    <span className="text-sm text-gray-600">
+                                                                        {section.count === 0 
+                                                                            ? "Aucun contenu disponible" 
+                                                                            : `${section.count} élément${section.count > 1 ? 's' : ''}`
+                                                                        }
+                                                                    </span>
+                                                                </div>
+                                                                <div className="flex items-center gap-3">
+                                                                    <Badge
+                                                                        className={cn(
+                                                                            "text-sm px-3 py-1 font-semibold rounded-full",
+                                                                            section.count === 0
+                                                                                ? "bg-orange-100 text-orange-700"
+                                                                                : "bg-blue-100 text-blue-700"
+                                                                        )}
+                                                                    >
+                                                                        {section.count}
+                                                                    </Badge>
+                                                                    <Switch
+                                                                        checked={section.isActive}
+                                                                        disabled={section.count === 0}
+                                                                        onCheckedChange={() => { }}
+                                                                        onClick={(e) => {
+                                                                            e.stopPropagation();
+                                                                            if (section.count > 0) {
+                                                                                handleToggleSection(section.key);
+                                                                            }
+                                                                        }}
+                                                                        className="data-[state=checked]:bg-emerald-500 shrink-0 scale-110"
+                                                                    />
+                                                                </div>
                                                             </div>
                                                         </div>
-
-                                                        {/* Toggle Switch */}
-                                                        <Switch
-                                                            checked={section.isActive}
-                                                            disabled={section.count === 0}
-                                                            onCheckedChange={() => { }}
-                                                            onClick={(e) => {
-                                                                e.stopPropagation();
-                                                                if (section.count > 0) {
-                                                                    handleToggleSection(section.key);
-                                                                }
-                                                            }}
-                                                            className="data-[state=checked]:bg-emerald-500 shrink-0"
-                                                        />
                                                     </motion.div>
                                                 );
                                             })}

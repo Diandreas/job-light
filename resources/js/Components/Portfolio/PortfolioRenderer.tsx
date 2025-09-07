@@ -6,6 +6,7 @@ import { Button } from "@/Components/ui/button";
 import { Card, CardContent } from "@/Components/ui/card";
 import { QrCode, Share2, Download, ExternalLink } from 'lucide-react';
 import { motion } from 'framer-motion';
+import PortfolioQRCode from '../PortfolioQRCode';
 
 interface PortfolioRendererProps {
     user: any;
@@ -56,22 +57,79 @@ const PortfolioError = ({ error, retry }: { error?: Error; retry?: () => void })
 };
 
 // QR Code Generator component
-const QRCodeGenerator = ({ url, isOpen, onClose }: { url: string; isOpen: boolean; onClose: () => void }) => {
+const QRCodeGenerator = ({ 
+    url, 
+    isOpen, 
+    onClose, 
+    userPhoto 
+}: { 
+    url: string; 
+    isOpen: boolean; 
+    onClose: () => void;
+    userPhoto?: string;
+}) => {
     const { t } = useTranslation();
+    const [qrCodeRef, setQrCodeRef] = React.useState<HTMLCanvasElement | null>(null);
 
     if (!isOpen) return null;
 
-    const qrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(url)}`;
+    const shareQRCodeImage = async (platform: string) => {
+        if (!qrCodeRef) return;
 
-    const shareUrls = {
-        linkedin: `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(url)}`,
-        x: `https://x.com/intent/tweet?text=${encodeURIComponent('Découvrez mon portfolio professionnel : ' + url)}`,
-        facebook: `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`,
-        whatsapp: `https://wa.me/?text=${encodeURIComponent('Découvrez mon portfolio : ' + url)}`,
-    };
+        try {
+            // Convert QR code to blob
+            qrCodeRef.toBlob(async (blob) => {
+                if (!blob) return;
 
-    const shareOnPlatform = (platform: keyof typeof shareUrls) => {
-        window.open(shareUrls[platform], '_blank', 'width=600,height=400');
+                const shareText = `Découvrez mon portfolio professionnel : ${url}`;
+
+                if (platform === 'whatsapp') {
+                    // For WhatsApp, we can try to share the image if Web Share API is supported
+                    if (navigator.share && navigator.canShare && navigator.canShare({ files: [new File([blob], 'qrcode.png', { type: 'image/png' })] })) {
+                        try {
+                            await navigator.share({
+                                text: shareText,
+                                files: [new File([blob], 'qrcode.png', { type: 'image/png' })]
+                            });
+                            return;
+                        } catch (error) {
+                            console.log('Native share failed, falling back to URL');
+                        }
+                    }
+                    // Fallback to WhatsApp URL with text
+                    window.open(`https://wa.me/?text=${encodeURIComponent(shareText)}`, '_blank');
+                } else {
+                    // For other platforms, download the QR code and open share URL
+                    const link = document.createElement('a');
+                    link.download = 'qrcode-portfolio.png';
+                    link.href = URL.createObjectURL(blob);
+                    link.click();
+
+                    // Then open the share URL
+                    const shareUrls = {
+                        linkedin: `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(url)}`,
+                        x: `https://x.com/intent/tweet?text=${encodeURIComponent(shareText)}`,
+                        facebook: `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`,
+                    };
+                    
+                    if (shareUrls[platform as keyof typeof shareUrls]) {
+                        setTimeout(() => {
+                            window.open(shareUrls[platform as keyof typeof shareUrls], '_blank', 'width=600,height=400');
+                        }, 500);
+                    }
+                }
+            }, 'image/png', 0.9);
+        } catch (error) {
+            console.error('Error sharing QR code:', error);
+            // Fallback to simple URL sharing
+            const shareUrls = {
+                linkedin: `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(url)}`,
+                x: `https://x.com/intent/tweet?text=${encodeURIComponent('Découvrez mon portfolio professionnel : ' + url)}`,
+                facebook: `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`,
+                whatsapp: `https://wa.me/?text=${encodeURIComponent('Découvrez mon portfolio : ' + url)}`,
+            };
+            window.open(shareUrls[platform as keyof typeof shareUrls], '_blank', 'width=600,height=400');
+        }
     };
 
     return (
@@ -86,48 +144,50 @@ const QRCodeGenerator = ({ url, isOpen, onClose }: { url: string; isOpen: boolea
                 initial={{ scale: 0.9, opacity: 0 }}
                 animate={{ scale: 1, opacity: 1 }}
                 exit={{ scale: 0.9, opacity: 0 }}
-                className="bg-white rounded-xl shadow-2xl max-w-sm w-full p-6"
+                className="bg-white rounded-xl shadow-2xl max-w-sm w-full p-4"
                 onClick={(e) => e.stopPropagation()}
             >
                 <div className="text-center">
-                    <h3 className="text-xl font-bold mb-4">{t('portfolio.share.title')}</h3>
+                    <h3 className="text-lg font-bold mb-4">{t('portfolio.share.title')}</h3>
 
-                    {/* QR Code */}
-                    <div className="mb-6">
-                        <img
-                            src={qrCodeUrl}
-                            alt="QR Code"
-                            className="mx-auto rounded-lg shadow-md mb-3"
+                    {/* Beautiful QR Code with Guidy branding */}
+                    <div className="mb-4">
+                        <PortfolioQRCode 
+                            value={url} 
+                            size={200}
+                            profilePicture={userPhoto}
+                            className="flex flex-col items-center compact-mode"
+                            onQRReady={(canvas) => setQrCodeRef(canvas)}
                         />
-                        <p className="text-xs text-gray-500 break-all px-2">{url}</p>
+                        <p className="text-xs text-gray-500 break-all px-2 mt-2">{url}</p>
                     </div>
 
                     {/* Social sharing buttons */}
-                    <div className="grid grid-cols-2 gap-3 mb-6">
+                    <div className="grid grid-cols-2 gap-2 mb-4">
                         <Button
                             size="sm"
-                            onClick={() => shareOnPlatform('linkedin')}
+                            onClick={() => shareQRCodeImage('linkedin')}
                             className="bg-blue-600 hover:bg-blue-700 text-white"
                         >
                             {t('portfolio.share.linkedin')}
                         </Button>
                         <Button
                             size="sm"
-                            onClick={() => shareOnPlatform('x')}
+                            onClick={() => shareQRCodeImage('x')}
                             className="bg-black hover:bg-gray-800 text-white"
                         >
                             X (Twitter)
                         </Button>
                         <Button
                             size="sm"
-                            onClick={() => shareOnPlatform('facebook')}
+                            onClick={() => shareQRCodeImage('facebook')}
                             className="bg-blue-700 hover:bg-blue-800 text-white"
                         >
                             {t('portfolio.share.facebook')}
                         </Button>
                         <Button
                             size="sm"
-                            onClick={() => shareOnPlatform('whatsapp')}
+                            onClick={() => shareQRCodeImage('whatsapp')}
                             className="bg-green-600 hover:bg-green-700 text-white"
                         >
                             {t('portfolio.share.whatsapp')}
@@ -139,9 +199,19 @@ const QRCodeGenerator = ({ url, isOpen, onClose }: { url: string; isOpen: boolea
                         size="sm"
                         variant="outline"
                         onClick={() => navigator.clipboard.writeText(url)}
-                        className="w-full"
+                        className="w-full mb-2"
                     >
                         {t('portfolio.controls.copyLink')}
+                    </Button>
+
+                    {/* Close button */}
+                    <Button
+                        size="sm"
+                        variant="ghost"
+                        onClick={onClose}
+                        className="w-full text-gray-500 hover:text-gray-700"
+                    >
+                        Fermer
                     </Button>
                 </div>
             </motion.div>
@@ -168,13 +238,12 @@ const PortfolioControls = ({
             className="fixed bottom-6 right-6 z-40 flex flex-col gap-2"
         >
             <Button
-                size="sm"
+                size="lg"
                 onClick={onShowQR}
-                className="shadow-lg hover:shadow-xl transition-all duration-300"
-                style={{ backgroundColor: '#3b82f6' }}
+                className="shadow-lg hover:shadow-xl transition-all duration-300 bg-gradient-to-r from-purple-600 to-amber-500 hover:from-purple-700 hover:to-amber-600 text-white font-semibold rounded-full"
             >
-                <QrCode className="w-4 h-4 mr-2" />
-                {t('portfolio.controls.share')}
+                <QrCode className="w-5 h-5 mr-2" />
+                Partager
             </Button>
 
 
@@ -360,6 +429,7 @@ export default function PortfolioRenderer({
                 url={portfolioUrl}
                 isOpen={showQR}
                 onClose={() => setShowQR(false)}
+                userPhoto={processedCvData?.profile_picture || user.photo}
             />
         </>
     );

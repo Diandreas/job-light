@@ -7,7 +7,7 @@ import { ScrollArea } from '@/Components/ui/scroll-area';
 import {
     X, ChevronRight, ChevronLeft, Maximize2, Minimize2,
     FileSpreadsheet, BarChart3, CheckCircle, TrendingUp,
-    Eye, EyeOff, Download, Share2, Sparkles
+    Eye, EyeOff, Download, Share2, Sparkles, DollarSign
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { ArtifactData } from './ArtifactDetector';
@@ -19,6 +19,8 @@ import CvHeatmap from './CvHeatmap';
 import InterviewTimer from './InterviewTimer';
 import CareerRoadmap from './CareerRoadmap';
 import AtsAnalyzer from './AtsAnalyzer';
+import SalaryNegotiator from './SalaryNegotiator';
+import CvEvaluationWidget from './CvEvaluationWidget';
 
 interface ArtifactSidebarProps {
     artifacts: ArtifactData[];
@@ -37,7 +39,9 @@ const ARTIFACT_ICONS = {
     dashboard: BarChart3,
     heatmap: Eye,
     timer: CheckCircle,
-    'cv-analysis': BarChart3
+    'cv-analysis': BarChart3,
+    'salary-negotiator': DollarSign,
+    'cv-evaluation': FileSpreadsheet
 };
 
 export default function ArtifactSidebar({ 
@@ -79,7 +83,7 @@ export default function ArtifactSidebar({
                             </div>
                             <div>
                                 <h3 className="font-semibold text-gray-800 dark:text-gray-200">
-                                    Artefacts Interactifs
+                                    Career Widgets
                                 </h3>
                                 <p className="text-xs text-gray-600 dark:text-gray-400">
                                     {artifacts.length} élément{artifacts.length > 1 ? 's' : ''} détecté{artifacts.length > 1 ? 's' : ''}
@@ -248,6 +252,30 @@ export default function ArtifactSidebar({
                                                 onTextUpdate={(newText) => {
                                                     console.log('Text updated:', newText);
                                                 }}
+                                            />
+                                        )}
+                                        
+                                        {currentArtifact.type === 'salary-negotiator' && (
+                                            <SalaryNegotiator
+                                                title={currentArtifact.title}
+                                                currentSalary={currentArtifact.data.currentSalary}
+                                                targetSalary={currentArtifact.data.targetSalary}
+                                                marketRange={currentArtifact.data.marketRange}
+                                                negotiationStrategies={currentArtifact.data.negotiationStrategies}
+                                                argumentationPoints={currentArtifact.data.argumentationPoints}
+                                                alternativeOffers={currentArtifact.data.alternativeOffers}
+                                                successProbability={currentArtifact.data.successProbability}
+                                            />
+                                        )}
+                                        
+                                        {currentArtifact.type === 'cv-evaluation' && (
+                                            <CvEvaluationWidget
+                                                title={currentArtifact.title}
+                                                headers={currentArtifact.data.headers}
+                                                rows={currentArtifact.data.rows}
+                                                exportable={currentArtifact.data.exportable}
+                                                sortable={currentArtifact.data.sortable}
+                                                filterable={currentArtifact.data.filterable}
                                             />
                                         )}
                                     </motion.div>

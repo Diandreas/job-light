@@ -296,7 +296,10 @@
         "manage": "Manage",
         "close": "Close",
         "tokens": "tokens",
-        "comingSoon": "Coming Soon"
+        "comingSoon": "Coming Soon",
+        "start": "Start",
+        "back_to_services": "Back to services",
+        "previous": "Previous"
     },
     "wallet": {
         "balance": "Balance",
@@ -975,6 +978,180 @@
         "internship_report": {
             "title": "Internship & Defense Report",
             "description": "Generate comprehensive internship and defense reports"
+        },
+        "specialized_ai_services": "Specialized AI Services",
+        "unique_experience": "Each service offers a unique and personalized experience",
+        "test_artifacts": "Test artifacts",
+        "why_unique": "Why are our AI services unique?",
+        "career_advice": {
+            "enhanced_title": "Personalized Career Advice",
+            "enhanced_description": "Intelligent assistant that analyzes your profile and goals to create a tailor-made career plan",
+            "features": {
+                "profile_analysis": "Profile analysis",
+                "career_plan": "Career plan",
+                "recommendations": "Recommendations",
+                "goal_tracking": "Goal tracking"
+            }
+        },
+        "cover_letter": {
+            "enhanced_title": "Cover Letter Generator",
+            "enhanced_description": "Create personalized and ATS-optimized letters by automatically analyzing job offers",
+            "features": {
+                "job_analysis": "Job analysis",
+                "ats_optimization": "ATS optimization",
+                "personalization": "Personalization",
+                "multiple_versions": "Multiple versions"
+            }
+        },
+        "resume_review": {
+            "enhanced_title": "Advanced Resume Analyzer",
+            "enhanced_description": "Complete audit with detailed scoring, visual recommendations and sector comparison",
+            "features": {
+                "detailed_score": "Detailed score",
+                "heatmap": "Heatmap",
+                "benchmarking": "Benchmarking",
+                "recommendations": "Recommendations"
+            }
+        },
+        "interview_prep": {
+            "enhanced_title": "Immersive Interview Simulator",
+            "enhanced_description": "Realistic simulations with sector-specific questions and detailed performance feedback",
+            "features": {
+                "realistic_simulation": "Realistic simulation",
+                "sector_questions": "Sector questions",
+                "timer": "Timer",
+                "detailed_feedback": "Detailed feedback"
+            }
+        },
+        "presentation_ppt": {
+            "enhanced_title": "Portfolio Presentation Creator",
+            "enhanced_description": "Transform your projects into professional presentations to impress recruiters",
+            "features": {
+                "pro_templates": "Pro templates",
+                "projects_showcase": "Projects showcase",
+                "powerpoint_export": "PowerPoint export",
+                "adaptive_design": "Adaptive design"
+            }
+        },
+        "benefits": {
+            "contextual_ai": "Contextual AI",
+            "contextual_ai_desc": "Analyzes your complete profile for ultra-personalized advice",
+            "dedicated_interfaces": "Dedicated Interfaces",
+            "dedicated_interfaces_desc": "Each service has its optimized interface for a unique experience",
+            "measurable_results": "Measurable Results",
+            "measurable_results_desc": "Scores, metrics and concrete recommendations to progress"
+        }
+    },
+    "career_advice_wizard": {
+        "title": "Personalized Career Assistant",
+        "personalized_ai": "Personalized AI",
+        "step_progress": "Step {{current}} of {{total}}",
+        "time_remaining": "~2 min remaining",
+        "generate_advice": "Generate advice",
+        "steps": {
+            "situation": "Current Situation",
+            "goals": "Goals",
+            "constraints": "Constraints",
+            "development": "Development",
+            "summary": "Summary"
+        },
+        "industries": {
+            "technology": "Technology",
+            "finance": "Finance",
+            "health": "Health",
+            "education": "Education",
+            "marketing": "Marketing",
+            "hr": "Human Resources",
+            "sales": "Sales",
+            "consulting": "Consulting",
+            "media": "Media",
+            "archives": "Archives/Documentation"
+        },
+        "experience": {
+            "beginner": "Beginner (0-2 years)",
+            "intermediate": "Intermediate (2-5 years)",
+            "senior": "Senior (5-10 years)",
+            "expert": "Expert (10+ years)"
+        },
+        "challenges": {
+            "lack_experience": "Lack of experience",
+            "career_change": "Career change",
+            "salary_growth": "Salary growth",
+            "work_life_balance": "Work-life balance",
+            "skill_development": "Skill development",
+            "networking": "Networking",
+            "salary_negotiation": "Salary negotiation",
+            "leadership": "Leadership",
+            "professional_visibility": "Professional visibility"
+        },
+        "priorities": {
+            "salary_growth": "Salary growth",
+            "work_life_balance": "Work-life balance",
+            "continuous_learning": "Continuous learning",
+            "social_impact": "Social impact",
+            "autonomy": "Autonomy",
+            "job_security": "Job security",
+            "innovation": "Innovation",
+            "team_management": "Team management",
+            "recognition": "Recognition"
+        },
+        "form": {
+            "current_situation": "Describe your current professional situation *",
+            "current_situation_placeholder": "Ex: I'm a junior developer for 2 years in a startup. I want to evolve to a tech lead position...",
+            "characters_min_20": "characters (minimum 20)",
+            "industry": "Industry",
+            "select_industry": "Select your industry",
+            "experience_level": "Experience level",
+            "career_goals": "What are your career goals? *",
+            "career_goals_placeholder": "Ex: I want to become CTO of a tech scale-up within 3 years, manage a team of 10+ developers...",
+            "timeframe": "In what timeframe?",
+            "priorities": "Your main priorities (select 2-3)"
+        }
+    },
+    "cover_letter_generator": {
+        "tones": {
+            "professional": {
+                "label": "Professional",
+                "description": "Formal and respectful"
+            },
+            "enthusiastic": {
+                "label": "Enthusiastic",
+                "description": "Dynamic and motivated"
+            },
+            "confident": {
+                "label": "Confident",
+                "description": "Assertive and determined"
+            },
+            "creative": {
+                "label": "Creative",
+                "description": "Original and innovative"
+            }
+        },
+        "lengths": {
+            "short": {
+                "label": "Short",
+                "description": "200-300 words"
+            },
+            "medium": {
+                "label": "Standard",
+                "description": "300-400 words"
+            },
+            "long": {
+                "label": "Detailed",
+                "description": "400-500 words"
+            }
+        },
+        "motivations": {
+            "company_mission": "Company mission",
+            "growth_opportunities": "Growth opportunities",
+            "team_culture": "Team and culture",
+            "innovative_projects": "Innovative projects",
+            "technical_challenges": "Technical challenges",
+            "social_impact": "Social impact",
+            "learning": "Learning",
+            "company_reputation": "Company reputation",
+            "shared_values": "Shared values",
+            "sector_growth": "Sector growth"
         }
     },
     "sponsorship": {
@@ -1558,6 +1735,48 @@
             "active_conversation": "Active conversation",
             "ai_assistant": "AI Assistant",
             "quick_actions": "Quick actions"
+        },
+        "career_advisor": {
+            "interface": {
+                "send": "Send",
+                "progress_characters": "characters",
+                "new_chat": "New chat",
+                "collapse": "Collapse",
+                "expand": "Expand",
+                "history": "History",
+                "no_conversations": "No conversations",
+                "selected_service": "Selected Service",
+                "service_description": "Click on the service above to start a guided and personalized conversation",
+                "cost": "Cost",
+                "credits": "credits",
+                "balance": "Balance",
+                "advanced_ai": "Advanced AI",
+                "ai_advisor": "AI Advisor",
+                "professional_ai_advisor": "Professional AI Advisor",
+                "start_intelligent_conversation": "Start an intelligent conversation with our specialized AI to advance your career",
+                "export": "Export",
+                "export_success": "Export successful",
+                "export_error": "Export error",
+                "export_file_downloaded": "{{format}} file downloaded",
+                "export_failed": "Unable to export file",
+                "widgets": "Career Widgets",
+                "demonstration": "Demonstration",
+                "widget_test": "Widget test for {{service}}",
+                "insufficient_balance": "Insufficient balance",
+                "insufficient_tokens": "You don't have enough tokens",
+                "analysis_complete": "Analysis complete",
+                "analysis_ready": "Your {{service}} is ready",
+                "error": "Error",
+                "error_occurred": "An error occurred",
+                "widget_action": "Widget action",
+                "widget_action_executed": "Action {{action}} executed",
+                "delete_conversation": "Delete conversation",
+                "irreversible_action": "This action is irreversible. The conversation will be permanently deleted.",
+                "menu": "Menu",
+                "cost_info": "Token cost",
+                "new_conversation": "New conversation",
+                "custom_request": "Custom request"
+            }
         }
     },
     "jobPortal": {

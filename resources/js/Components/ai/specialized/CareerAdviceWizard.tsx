@@ -40,39 +40,72 @@ interface CareerAdviceData {
     skills_to_develop: string[];
 }
 
-const WIZARD_STEPS = [
-    { id: 'situation', title: 'Situation Actuelle', icon: Users },
-    { id: 'goals', title: 'Objectifs', icon: Target },
-    { id: 'constraints', title: 'Contraintes', icon: MapPin },
-    { id: 'development', title: 'Développement', icon: TrendingUp },
-    { id: 'summary', title: 'Résumé', icon: CheckCircle }
-];
+// Wizard steps - will be translated in component
 
-const INDUSTRIES = [
-    'Technologie', 'Finance', 'Santé', 'Éducation', 'Marketing',
-    'Ressources Humaines', 'Vente', 'Consulting', 'Média', 'Archives/Documentation'
-];
+// Industries - will be translated in component
 
-const EXPERIENCE_LEVELS = [
-    'Débutant (0-2 ans)', 'Intermédiaire (2-5 ans)', 
-    'Senior (5-10 ans)', 'Expert (10+ ans)'
-];
+// Experience levels - will be translated in component
 
-const COMMON_CHALLENGES = [
-    'Manque d\'expérience', 'Reconversion professionnelle', 'Évolution salariale',
-    'Équilibre vie pro/perso', 'Développement de compétences', 'Networking',
-    'Négociation salariale', 'Leadership', 'Visibilité professionnelle'
-];
+// Common challenges - will be translated in component
 
-const CAREER_PRIORITIES = [
-    'Croissance salariale', 'Équilibre vie privée', 'Apprentissage continu',
-    'Impact social', 'Autonomie', 'Sécurité d\'emploi', 'Innovation',
-    'Management d\'équipe', 'Reconnaissance'
-];
+// Career priorities - will be translated in component
 
 export default function CareerAdviceWizard({ onSubmit, userInfo, isLoading }: CareerAdviceWizardProps) {
     const { t } = useTranslation();
     const [currentStep, setCurrentStep] = useState(0);
+
+    // Translated constants
+    const WIZARD_STEPS = [
+        { id: 'situation', title: t('career_advice_wizard.steps.situation') || 'Situation Actuelle', icon: Users },
+        { id: 'goals', title: t('career_advice_wizard.steps.goals') || 'Objectifs', icon: Target },
+        { id: 'constraints', title: t('career_advice_wizard.steps.constraints') || 'Contraintes', icon: MapPin },
+        { id: 'development', title: t('career_advice_wizard.steps.development') || 'Développement', icon: TrendingUp },
+        { id: 'summary', title: t('career_advice_wizard.steps.summary') || 'Résumé', icon: CheckCircle }
+    ];
+
+    const INDUSTRIES = [
+        t('career_advice_wizard.industries.technology') || 'Technologie',
+        t('career_advice_wizard.industries.finance') || 'Finance',
+        t('career_advice_wizard.industries.health') || 'Santé',
+        t('career_advice_wizard.industries.education') || 'Éducation',
+        t('career_advice_wizard.industries.marketing') || 'Marketing',
+        t('career_advice_wizard.industries.hr') || 'Ressources Humaines',
+        t('career_advice_wizard.industries.sales') || 'Vente',
+        t('career_advice_wizard.industries.consulting') || 'Consulting',
+        t('career_advice_wizard.industries.media') || 'Média',
+        t('career_advice_wizard.industries.archives') || 'Archives/Documentation'
+    ];
+
+    const EXPERIENCE_LEVELS = [
+        t('career_advice_wizard.experience.beginner') || 'Débutant (0-2 ans)',
+        t('career_advice_wizard.experience.intermediate') || 'Intermédiaire (2-5 ans)',
+        t('career_advice_wizard.experience.senior') || 'Senior (5-10 ans)',
+        t('career_advice_wizard.experience.expert') || 'Expert (10+ ans)'
+    ];
+
+    const COMMON_CHALLENGES = [
+        t('career_advice_wizard.challenges.lack_experience') || 'Manque d\'expérience',
+        t('career_advice_wizard.challenges.career_change') || 'Reconversion professionnelle',
+        t('career_advice_wizard.challenges.salary_growth') || 'Évolution salariale',
+        t('career_advice_wizard.challenges.work_life_balance') || 'Équilibre vie pro/perso',
+        t('career_advice_wizard.challenges.skill_development') || 'Développement de compétences',
+        t('career_advice_wizard.challenges.networking') || 'Networking',
+        t('career_advice_wizard.challenges.salary_negotiation') || 'Négociation salariale',
+        t('career_advice_wizard.challenges.leadership') || 'Leadership',
+        t('career_advice_wizard.challenges.professional_visibility') || 'Visibilité professionnelle'
+    ];
+
+    const CAREER_PRIORITIES = [
+        t('career_advice_wizard.priorities.salary_growth') || 'Croissance salariale',
+        t('career_advice_wizard.priorities.work_life_balance') || 'Équilibre vie privée',
+        t('career_advice_wizard.priorities.continuous_learning') || 'Apprentissage continu',
+        t('career_advice_wizard.priorities.social_impact') || 'Impact social',
+        t('career_advice_wizard.priorities.autonomy') || 'Autonomie',
+        t('career_advice_wizard.priorities.job_security') || 'Sécurité d\'emploi',
+        t('career_advice_wizard.priorities.innovation') || 'Innovation',
+        t('career_advice_wizard.priorities.team_management') || 'Management d\'équipe',
+        t('career_advice_wizard.priorities.recognition') || 'Reconnaissance'
+    ];
     const [formData, setFormData] = useState<CareerAdviceData>({
         currentSituation: '',
         careerGoals: '',
@@ -155,16 +188,16 @@ Pouvez-vous me donner des conseils personnalisés pour atteindre mes objectifs d
                     </div>
                         <div>
                             <h2 className="text-xl font-bold text-gray-800 dark:text-gray-200">
-                                Assistant Carrière Personnalisé
+                                {t('career_advice_wizard.title') || 'Assistant Carrière Personnalisé'}
                             </h2>
                             <p className="text-sm text-gray-600 dark:text-gray-400">
-                                Étape {currentStep + 1} sur {WIZARD_STEPS.length}
+                                {t('career_advice_wizard.step_progress', { current: currentStep + 1, total: WIZARD_STEPS.length }) || `Étape ${currentStep + 1} sur ${WIZARD_STEPS.length}`}
                             </p>
                         </div>
                     </div>
                     <Badge variant="outline" className="bg-amber-50 text-amber-700 border-amber-200">
                         <Sparkles className="w-3 h-3 mr-1" />
-                        IA Personnalisée
+                        {t('career_advice_wizard.personalized_ai') || 'IA Personnalisée'}
                     </Badge>
                 </div>
                 
@@ -216,7 +249,7 @@ Pouvez-vous me donner des conseils personnalisés pour atteindre mes objectifs d
                                 <div className="space-y-4">
                                     <div>
                                         <Label htmlFor="currentSituation">
-                                            Décrivez votre situation professionnelle actuelle *
+                                            {t('career_advice_wizard.form.current_situation') || 'Décrivez votre situation professionnelle actuelle *'}
                                         </Label>
                                         <Textarea
                                             id="currentSituation"
@@ -225,24 +258,24 @@ Pouvez-vous me donner des conseils personnalisés pour atteindre mes objectifs d
                                                 ...prev,
                                                 currentSituation: e.target.value
                                             }))}
-                                            placeholder="Ex: Je suis développeur junior depuis 2 ans dans une startup. Je souhaite évoluer vers un poste de tech lead..."
+                                            placeholder={t('career_advice_wizard.form.current_situation_placeholder') || 'Ex: Je suis développeur junior depuis 2 ans dans une startup. Je souhaite évoluer vers un poste de tech lead...'}
                                             rows={4}
                                             className="resize-none"
                                         />
                                         <div className="text-xs text-gray-500 mt-1">
-                                            {formData.currentSituation.length}/500 caractères (minimum 20)
+                                            {formData.currentSituation.length}/500 {t('career_advice_wizard.form.characters_min_20') || 'caractères (minimum 20)'}
                                         </div>
                                     </div>
                                     
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                         <div>
-                                            <Label htmlFor="industry">Secteur d'activité</Label>
+                                            <Label htmlFor="industry">{t('career_advice_wizard.form.industry') || 'Secteur d\'activité'}</Label>
                                             <Select 
                                                 value={formData.industry} 
                                                 onValueChange={(value) => setFormData(prev => ({ ...prev, industry: value }))}
                                             >
                                                 <SelectTrigger>
-                                                    <SelectValue placeholder="Sélectionnez votre secteur" />
+                                                    <SelectValue placeholder={t('career_advice_wizard.form.select_industry') || 'Sélectionnez votre secteur'} />
                                                 </SelectTrigger>
                                                 <SelectContent>
                                                     {INDUSTRIES.map(industry => (
@@ -255,7 +288,7 @@ Pouvez-vous me donner des conseils personnalisés pour atteindre mes objectifs d
                                         </div>
                                         
                                         <div>
-                                            <Label htmlFor="experience">Niveau d'expérience</Label>
+                                            <Label htmlFor="experience">{t('career_advice_wizard.form.experience_level') || 'Niveau d\'expérience'}</Label>
                                             <Select 
                                                 value={formData.experience_level} 
                                                 onValueChange={(value) => setFormData(prev => ({ ...prev, experience_level: value }))}
@@ -281,7 +314,7 @@ Pouvez-vous me donner des conseils personnalisés pour atteindre mes objectifs d
                                 <div className="space-y-4">
                                     <div>
                                         <Label htmlFor="careerGoals">
-                                            Quels sont vos objectifs de carrière ? *
+                                            {t('career_advice_wizard.form.career_goals') || 'Quels sont vos objectifs de carrière ? *'}
                                         </Label>
                                         <Textarea
                                             id="careerGoals"
@@ -290,13 +323,13 @@ Pouvez-vous me donner des conseils personnalisés pour atteindre mes objectifs d
                                                 ...prev,
                                                 careerGoals: e.target.value
                                             }))}
-                                            placeholder="Ex: Je veux devenir CTO d'une scale-up tech d'ici 3 ans, manager une équipe de 10+ développeurs..."
+                                            placeholder={t('career_advice_wizard.form.career_goals_placeholder') || 'Ex: Je veux devenir CTO d\'une scale-up tech d\'ici 3 ans, manager une équipe de 10+ développeurs...'}
                                             rows={4}
                                         />
                                     </div>
                                     
                                     <div>
-                                        <Label htmlFor="timeframe">Dans quel délai ?</Label>
+                                        <Label htmlFor="timeframe">{t('career_advice_wizard.form.timeframe') || 'Dans quel délai ?'}</Label>
                                         <Select 
                                             value={formData.timeframe} 
                                             onValueChange={(value) => setFormData(prev => ({ ...prev, timeframe: value }))}
@@ -315,7 +348,7 @@ Pouvez-vous me donner des conseils personnalisés pour atteindre mes objectifs d
                                     </div>
 
                                     <div>
-                                        <Label>Vos priorités principales (sélectionnez 2-3)</Label>
+                                        <Label>{t('career_advice_wizard.form.priorities') || 'Vos priorités principales (sélectionnez 2-3)'}</Label>
                                         <div className="grid grid-cols-2 md:grid-cols-3 gap-2 mt-2">
                                             {CAREER_PRIORITIES.map(priority => (
                                                 <button
@@ -467,12 +500,12 @@ Pouvez-vous me donner des conseils personnalisés pour atteindre mes objectifs d
                             className="flex items-center gap-2"
                         >
                             <ChevronLeft className="w-4 h-4" />
-                            Précédent
+                            {t('common.previous') || 'Précédent'}
                         </Button>
                         
                         <div className="flex items-center gap-2 text-xs text-gray-500">
                             <Clock className="w-3 h-3" />
-                            ~2 min restantes
+                            {t('career_advice_wizard.time_remaining') || '~2 min restantes'}
                         </div>
                         
                         <Button
@@ -483,11 +516,11 @@ Pouvez-vous me donner des conseils personnalisés pour atteindre mes objectifs d
                             {currentStep === WIZARD_STEPS.length - 1 ? (
                                 <>
                                     <Sparkles className="w-4 h-4" />
-                                    Générer conseils
+                                    {t('career_advice_wizard.generate_advice') || 'Générer conseils'}
                                 </>
                             ) : (
                                 <>
-                                    Suivant
+                                    {t('common.next') || 'Suivant'}
                                     <ChevronRight className="w-4 h-4" />
                                 </>
                             )}

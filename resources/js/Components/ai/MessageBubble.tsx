@@ -147,11 +147,14 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({ message, serviceId
 
             if (currentIndex >= cleanContent.length) {
                 clearInterval(typingInterval);
-                setTimeout(() => {
+                setTimeout(async () => {
                     setIsTypingComplete(true);
                     // Détecter les artefacts une fois l'animation terminée
                     if (!isUser && !isThinking) {
-                        const detectedArtifacts = ArtifactDetector.detectArtifacts(message.content, serviceId);
+                        console.log('🔥 MessageBubble: Detecting artifacts for content:', message.content.substring(0, 200) + '...');
+                        console.log('🔥 MessageBubble: ServiceId:', serviceId);
+                        const detectedArtifacts = await ArtifactDetector.detectArtifacts(message.content, serviceId, undefined, false);
+                        console.log('🔥 MessageBubble: Detected artifacts:', detectedArtifacts);
                         setArtifacts(detectedArtifacts);
                         const cleaned = ArtifactDetector.cleanContentForDisplay(message.content, detectedArtifacts);
                         setCleanContent(cleaned);
@@ -496,6 +499,114 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({ message, serviceId
                         </ReactMarkdown>
                     )}
 
+                    {/* Affichage inline des artefacts détectés */}
+                    {!isUser && isTypingComplete && artifacts.length > 0 && artifacts.map((artifact, index) => (
+                        <div key={index} className="mt-3">
+                            {artifact.type === 'table' && (
+                                <div className="border border-amber-200 rounded-lg overflow-hidden bg-white dark:bg-gray-800">
+                                    <div className="px-3 py-2 bg-gradient-to-r from-amber-50 to-purple-50 dark:from-amber-950/50 dark:to-purple-950/50 border-b border-amber-200">
+                                        <h4 className="text-sm font-medium text-gray-800 dark:text-gray-200">
+                                            {artifact.title}
+                                        </h4>
+                                    </div>
+                                    <div className="p-2">
+                                        <div className="overflow-x-auto">
+                                            <table className="w-full text-xs">
+                                                <thead>
+                                                    <tr className="border-b border-gray-200">
+                                                        {artifact.data.headers?.map((header: string, idx: number) => (
+                                                            <th key={idx} className="text-left py-1 px-2 font-medium text-gray-700 dark:text-gray-300">
+                                                                {header}
+                                                            </th>
+                                                        ))}
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    {artifact.data.rows?.slice(0, 5).map((row: string[], rowIdx: number) => (
+                                                        <tr key={rowIdx} className="border-b border-gray-100 hover:bg-gray-50/50">
+                                                            {row.map((cell: string, cellIdx: number) => (
+                                                                <td key={cellIdx} className="py-1 px-2 text-gray-600 dark:text-gray-400">
+                                                                    {cell}
+                                                                </td>
+                                                            ))}
+                                                        </tr>
+                                                    ))}
+                                                </tbody>
+                                            </table>
+                                            {artifact.data.rows && artifact.data.rows.length > 5 && (
+                                                <div className="text-center py-2 text-xs text-gray-500">
+                                                    ... et {artifact.data.rows.length - 5} lignes supplémentaires
+                                                </div>
+                                            )}
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+
+                            {artifact.type === 'cv-evaluation' && (
+                                <div className="border border-amber-200 rounded-lg overflow-hidden bg-white dark:bg-gray-800">
+                                    <div className="px-3 py-2 bg-gradient-to-r from-amber-50 to-purple-50 dark:from-amber-950/50 dark:to-purple-950/50 border-b border-amber-200">
+                                        <h4 className="text-sm font-medium text-gray-800 dark:text-gray-200 flex items-center gap-2">
+                                            <Sparkles className="w-4 h-4 text-amber-600" />
+                                            {artifact.title}
+                                            <span className="text-xs bg-amber-200 text-amber-800 px-2 py-0.5 rounded-full">IA</span>
+                                        </h4>
+                                    </div>
+                                    <div className="p-3">
+                                        <div className="grid grid-cols-3 gap-2 mb-3">
+                                            <div className="text-center p-2 bg-gray-50 rounded">
+                                                <div className="text-sm font-bold text-gray-800">{artifact.data.rows?.length || 0}</div>
+                                                <div className="text-xs text-gray-600">Critères</div>
+                                            </div>
+                                            <div className="text-center p-2 bg-amber-50 rounded">
+                                                <div className="text-sm font-bold text-amber-600">
+                                                    {Math.round((artifact.data.rows?.reduce((acc: number, row: string[]) => {
+                                                        const match = row[1]?.match(/(\d+)\/(\d+)/);
+                                                        if (match) {
+                                                            return acc + (parseInt(match[1]) / parseInt(match[2])) * 100;
+                                                        }
+                                                        return acc;
+                                                    }, 0) || 0) / (artifact.data.rows?.length || 1))}
+                                                </div>
+                                                <div className="text-xs text-gray-600">Score global</div>
+                                            </div>
+                                            <div className="text-center p-2 bg-red-50 rounded">
+                                                <div className="text-sm font-bold text-red-600">
+                                                    {artifact.data.rows?.filter((row: string[]) => {
+                                                        const match = row[1]?.match(/(\d+)\/(\d+)/);
+                                                        return match && (parseInt(match[1]) / parseInt(match[2])) * 100 <= 30;
+                                                    }).length || 0}
+                                                </div>
+                                                <div className="text-xs text-gray-600">Critiques</div>
+                                            </div>
+                                        </div>
+                                        <p className="text-xs text-amber-600 text-center">
+                                            📊 Ouvrez la sidebar pour voir les recommandations IA détaillées
+                                        </p>
+                                    </div>
+                                </div>
+                            )}
+
+                            {(artifact.type === 'heatmap' || artifact.type === 'timer' || artifact.type === 'roadmap' || artifact.type === 'dashboard' || artifact.type === 'salary-negotiator') && (
+                                <div className="p-3 border border-amber-200 rounded-lg bg-gradient-to-r from-amber-50/50 to-purple-50/50">
+                                    <div className="flex items-center justify-between">
+                                        <div>
+                                            <h4 className="text-sm font-medium text-gray-800 dark:text-gray-200">
+                                                {artifact.title}
+                                            </h4>
+                                            <p className="text-xs text-gray-600 dark:text-gray-400">
+                                                Ouvrez la sidebar pour interagir avec ce widget
+                                            </p>
+                                        </div>
+                                        <div className="text-amber-600">
+                                            <ChevronRight className="w-4 h-4" />
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+                    ))}
+
                     {/* Bouton PPT compact */}
                     {!isUser && isTypingComplete && hasPresentationJson && (
                         <div className="mt-2 flex">
@@ -546,7 +657,7 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({ message, serviceId
                                 </div>
                                 <div className="flex-1">
                                     <div className="font-medium text-amber-800 text-sm">
-                                        {artifacts.length} artefact{artifacts.length > 1 ? 's' : ''} interactif{artifacts.length > 1 ? 's' : ''} détecté{artifacts.length > 1 ? 's' : ''}
+                                        {artifacts.length} Career Widget{artifacts.length > 1 ? 's' : ''} détecté{artifacts.length > 1 ? 's' : ''}
                                     </div>
                                     <div className="text-xs text-amber-600">
                                         {artifacts.map(a => a.title).join(', ')}

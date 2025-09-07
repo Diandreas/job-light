@@ -270,41 +270,46 @@ export default function EditClean({ auth, portfolio, settings, cvData = portfoli
         <AuthenticatedLayout
             user={auth.user}
             header={
-                <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                        <div className="w-8 h-8 rounded-lg bg-gradient-to-r from-amber-500 to-purple-500 flex items-center justify-center">
-                            <Sparkles className="h-4 w-4 text-white" />
+                <div className="flex items-center justify-between bg-gradient-to-r from-white via-gray-50 to-white p-4 rounded-xl shadow-lg border border-gray-200">
+                    <div className="flex items-center gap-4">
+                        <div className="w-10 h-10 rounded-xl bg-gradient-to-r from-amber-500 to-purple-600 flex items-center justify-center shadow-md">
+                            <Sparkles className="h-5 w-5 text-white" />
                         </div>
                         <div>
-                            <h2 className="text-lg font-bold text-gray-900">Portfolio Express</h2>
-                            <p className="text-xs text-gray-500">{t.quickConfig}</p>
+                            <h2 className="text-xl font-bold text-gray-900">Portfolio Studio</h2>
+                            <p className="text-sm text-gray-600 font-medium">{t.quickConfig}</p>
                         </div>
                     </div>
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-3">
                         <select
                             value={currentLang}
                             onChange={(e) => setCurrentLang(e.target.value)}
-                            className="text-xs border border-gray-300 rounded px-2 py-1 h-8"
+                            className="text-sm border border-gray-300 rounded-lg px-3 py-2 h-10 bg-white focus:border-blue-500 transition-colors"
                         >
-                            <option value="fr">FR</option>
-                            <option value="en">EN</option>
+                            <option value="fr">🇫🇷 FR</option>
+                            <option value="en">🇺🇸 EN</option>
                         </select>
                         <Button
                             onClick={() => setShowQR(!showQR)}
                             variant="outline"
-                            size="sm"
-                            className="h-8 px-3"
+                            size="default"
+                            className="h-10 px-4 border-gray-300 hover:bg-gray-50"
                         >
-                            <QrCode className="h-3 w-3 mr-1" />
+                            <QrCode className="h-4 w-4 mr-2" />
                             {t.qrCode}
                         </Button>
                         <Button
                             onClick={() => setPreviewMode(!previewMode)}
                             variant={previewMode ? "default" : "outline"}
-                            size="sm"
-                            className="h-8 px-3"
+                            size="default"
+                            className={cn(
+                                "h-10 px-4 transition-all duration-200",
+                                previewMode 
+                                    ? "bg-gradient-to-r from-purple-600 to-amber-500 text-white shadow-lg hover:shadow-xl" 
+                                    : "border-gray-300 hover:bg-gray-50"
+                            )}
                         >
-                            <Eye className="h-3 w-3 mr-1" />
+                            <Eye className="h-4 w-4 mr-2" />
                             {previewMode ? t.hide : t.preview}
                         </Button>
                     </div>
@@ -313,8 +318,8 @@ export default function EditClean({ auth, portfolio, settings, cvData = portfoli
         >
             <Head title="Portfolio Express" />
 
-            <div className="py-4 md:py-8">
-                <div className="mx-auto max-w-6xl px-4 md:px-6">
+            <div className="py-6 md:py-8 bg-gray-50 min-h-screen">
+                <div className="mx-auto max-w-7xl px-4 md:px-6">
 
                     {/* QR Code Modal */}
                     <AnimatePresence>
@@ -330,24 +335,26 @@ export default function EditClean({ auth, portfolio, settings, cvData = portfoli
                                     initial={{ scale: 0.9, opacity: 0 }}
                                     animate={{ scale: 1, opacity: 1 }}
                                     exit={{ scale: 0.9, opacity: 0 }}
-                                    className="bg-white rounded-xl p-6 max-w-sm w-full shadow-xl"
+                                    className="bg-white rounded-2xl p-6 max-w-md w-full shadow-2xl border border-gray-200"
                                     onClick={(e) => e.stopPropagation()}
                                 >
-                                    <h3 className="font-semibold text-lg text-center mb-4">{t.sharePortfolio}</h3>
-                                    <div className="text-center mb-4">
-                                        <img
-                                            src={generateQRCode()}
-                                            alt="QR Code"
-                                            className="mx-auto mb-3 rounded-lg shadow-md"
-                                        />
-                                        <p className="text-xs text-gray-600 break-all bg-gray-50 p-2 rounded">
+                                    <h3 className="font-bold text-xl text-center mb-6 text-gray-900">{t.sharePortfolio}</h3>
+                                    <div className="text-center mb-6">
+                                        <div className="p-4 bg-gray-50 rounded-xl shadow-inner mb-4">
+                                            <img
+                                                src={generateQRCode()}
+                                                alt="QR Code"
+                                                className="mx-auto rounded-lg"
+                                            />
+                                        </div>
+                                        <p className="text-sm text-gray-600 break-all bg-gray-100 p-3 rounded-lg font-mono">
                                             {portfolioUrl}
                                         </p>
                                     </div>
                                     <Button
                                         variant="outline"
                                         onClick={() => setShowQR(false)}
-                                        className="w-full"
+                                        className="w-full h-11 font-medium border-gray-300 hover:bg-gray-50"
                                     >
                                         {t.close}
                                     </Button>
@@ -359,46 +366,59 @@ export default function EditClean({ auth, portfolio, settings, cvData = portfoli
                     <div className={cn("grid gap-4 md:gap-8", previewMode ? "lg:grid-cols-3" : "lg:grid-cols-1")}>
 
                         {/* Configuration principale */}
-                        <div className={cn("space-y-2 md:space-y-6", previewMode ? "lg:col-span-2" : "lg:col-span-1")}>
+                        <div className={cn("space-y-4 md:space-y-6", previewMode ? "lg:col-span-2" : "lg:col-span-1")}>
 
-                            {/* Save Button - Ultra Compact Sticky */}
-                            <div className="sticky top-4 z-20 bg-white/90 backdrop-blur-sm rounded p-1.5 shadow-sm border">
+                            {/* Save Button - Enhanced Sticky */}
+                            <div className="sticky top-6 z-20 bg-white/95 backdrop-blur-md rounded-xl p-3 shadow-lg border border-gray-200/50">
                                 <Button
                                     type="submit"
                                     form="portfolio-form"
                                     disabled={processing}
-                                    className="w-full bg-gradient-to-r from-amber-500 to-purple-500 hover:from-amber-600 hover:to-purple-600 text-white text-xs py-1.5"
+                                    className="w-full h-12 bg-gradient-to-r from-amber-500 to-purple-600 hover:from-amber-600 hover:to-purple-700 text-white font-semibold text-sm shadow-md transition-all duration-200 hover:shadow-lg"
                                 >
                                     {processing ? (
-                                        <RefreshCw className="h-3 w-3 mr-1 animate-spin" />
+                                        <>
+                                            <RefreshCw className="h-4 w-4 mr-2 animate-spin" />
+                                            {__('portfolio.edit.saving')}
+                                        </>
                                     ) : (
-                                        <Save className="h-3 w-3 mr-1" />
+                                        <>
+                                            <Save className="h-4 w-4 mr-2" />
+                                            {__('portfolio.edit.save')}
+                                        </>
                                     )}
-                                    {processing ? __('portfolio.edit.saving') : __('portfolio.edit.save')}
                                 </Button>
                             </div>
 
-                            <form onSubmit={onSubmit} id="portfolio-form" className="space-y-2 md:space-y-4">
+                            <form onSubmit={onSubmit} id="portfolio-form" className="space-y-4 md:space-y-6">
 
                                 {/* Design & Couleur */}
-                                <Card className="border-l-2 border-l-amber-400 shadow-sm">
-                                    <CardContent className="p-3 md:p-6">
-                                        <div className="flex items-center justify-between mb-3 md:mb-4">
-                                            <div className="flex items-center gap-2 md:gap-3">
-                                                <Palette className="h-4 w-4 md:h-5 md:w-5 text-amber-600" />
-                                                <span className="text-sm md:text-base font-medium text-gray-900">{t.designStyle}</span>
+                                <Card className="border-l-4 border-l-amber-500 shadow-lg hover:shadow-xl transition-shadow duration-200 bg-white">
+                                    <CardContent className="p-4 md:p-6">
+                                        <div className="flex items-center justify-between mb-4 md:mb-6">
+                                            <div className="flex items-center gap-3 md:gap-4">
+                                                <div className="p-3 bg-amber-100 rounded-xl">
+                                                    <Palette className="h-6 w-6 text-amber-600" />
+                                                </div>
+                                                <div>
+                                                    <span className="text-lg font-bold text-gray-900">{t.designStyle}</span>
+                                                    <p className="text-sm text-gray-600">Personnalisez l'apparence de votre portfolio</p>
+                                                </div>
                                             </div>
-                                            <div className="flex items-center gap-2 md:gap-4">
-                                                <Input
-                                                    type="color"
-                                                    value={data.primary_color}
-                                                    onChange={(e) => setData('primary_color', e.target.value)}
-                                                    className="h-6 w-8 md:h-8 md:w-12 rounded border-amber-200"
-                                                />
+                                            <div className="flex items-center gap-4">
+                                                <div className="flex flex-col items-center gap-2">
+                                                    <Input
+                                                        type="color"
+                                                        value={data.primary_color}
+                                                        onChange={(e) => setData('primary_color', e.target.value)}
+                                                        className="h-12 w-16 rounded-xl border-2 border-amber-300 cursor-pointer shadow-sm hover:shadow-md transition-shadow"
+                                                    />
+                                                    <span className="text-xs text-gray-500 font-mono bg-gray-100 px-2 py-1 rounded">{data.primary_color}</span>
+                                                </div>
                                                 <select
                                                     value={data.design}
                                                     onChange={(e) => setData('design', e.target.value)}
-                                                    className="text-xs md:text-sm border border-gray-300 rounded px-2 py-1 h-6 md:h-8 md:px-3 md:py-2"
+                                                    className="text-sm border-2 border-gray-300 rounded-xl px-4 py-3 h-12 bg-white transition-colors focus:border-amber-500 focus:ring-2 focus:ring-amber-200 shadow-sm"
                                                 >
                                                     <option value="professional">{t.professional}</option>
                                                     <option value="creative">{t.creative}</option>
@@ -411,62 +431,79 @@ export default function EditClean({ auth, portfolio, settings, cvData = portfoli
                                 </Card>
 
                                 {/* Sections du Portfolio */}
-                                <Card className="border-l-2 border-l-green-400 shadow-sm">
-                                    <CardContent className="p-3 md:p-6">
-                                        <div className="flex items-center gap-2 md:gap-3 mb-3 md:mb-4">
-                                            <Settings className="h-4 w-4 md:h-5 md:w-5 text-green-600" />
-                                            <span className="text-sm md:text-base font-medium text-gray-900">{t.portfolioSections}</span>
-                                            <Badge variant="secondary" className="text-xs px-2 py-0.5 h-5">
-                                                {sections.filter(s => s.isActive).length}/{sections.length}
+                                <Card className="border-l-4 border-l-green-500 shadow-lg hover:shadow-xl transition-shadow duration-200 bg-white">
+                                    <CardContent className="p-4 md:p-6">
+                                        <div className="flex items-center justify-between mb-4 md:mb-6">
+                                            <div className="flex items-center gap-3 md:gap-4">
+                                                <div className="p-3 bg-green-100 rounded-xl">
+                                                    <Settings className="h-6 w-6 text-green-600" />
+                                                </div>
+                                                <div>
+                                                    <span className="text-lg font-bold text-gray-900">{t.portfolioSections}</span>
+                                                    <p className="text-sm text-gray-600">Organisez les sections de votre portfolio</p>
+                                                </div>
+                                            </div>
+                                            <Badge variant="secondary" className="text-sm px-3 py-2 bg-green-100 text-green-800 font-semibold rounded-full">
+                                                {sections.filter(s => s.isActive).length}/{sections.length} actives
                                             </Badge>
                                         </div>
 
-                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-2 md:gap-3">
+                                        <div className="grid grid-cols-1 gap-3">
                                             {sections.map((section, index) => {
                                                 const IconComponent = section.icon;
 
                                                 return (
-                                                    <div
+                                                    <motion.div
                                                         key={section.key}
+                                                        initial={{ opacity: 0, y: 20 }}
+                                                        animate={{ opacity: 1, y: 0 }}
+                                                        transition={{ delay: index * 0.1 }}
                                                         className={cn(
-                                                            "flex items-center gap-2 md:gap-3 p-2 md:p-3 bg-gray-50 rounded-lg border transition-all",
-                                                            !section.isActive && "opacity-40"
+                                                            "flex items-center gap-4 p-4 bg-gradient-to-r from-gray-50 to-gray-100 rounded-xl border border-gray-200 transition-all duration-200 hover:shadow-md hover:from-gray-100 hover:to-gray-200",
+                                                            !section.isActive && "opacity-50 grayscale"
                                                         )}
                                                     >
                                                         {/* Contrôles d'ordre */}
-                                                        <div className="flex flex-col gap-0.5">
+                                                        <div className="flex flex-col gap-1">
                                                             <Button
                                                                 size="sm"
                                                                 variant="ghost"
                                                                 onClick={() => handleMoveSection(section.key, 'up')}
                                                                 disabled={index === 0}
-                                                                className="h-5 w-5 md:h-6 md:w-6 p-0 hover:bg-gray-200"
+                                                                className="h-7 w-7 p-0 hover:bg-white hover:shadow-sm rounded-lg transition-all"
                                                             >
-                                                                <ArrowUp className="h-2.5 w-2.5 md:h-3 md:w-3" />
+                                                                <ArrowUp className="h-3 w-3 text-gray-600" />
                                                             </Button>
                                                             <Button
                                                                 size="sm"
                                                                 variant="ghost"
                                                                 onClick={() => handleMoveSection(section.key, 'down')}
                                                                 disabled={index === sections.length - 1}
-                                                                className="h-5 w-5 md:h-6 md:w-6 p-0 hover:bg-gray-200"
+                                                                className="h-7 w-7 p-0 hover:bg-white hover:shadow-sm rounded-lg transition-all"
                                                             >
-                                                                <ArrowDown className="h-2.5 w-2.5 md:h-3 md:w-3" />
+                                                                <ArrowDown className="h-3 w-3 text-gray-600" />
                                                             </Button>
                                                         </div>
 
-                                                        <IconComponent className="w-4 h-4 md:w-5 md:h-5 text-green-600 shrink-0" />
+                                                        <div className="p-2 bg-white dark:bg-slate-800 rounded-lg shadow-sm">
+                                                            <IconComponent className="w-5 h-5 text-green-600 dark:text-green-400" />
+                                                        </div>
 
                                                         <div className="flex-1 min-w-0">
-                                                            <span className="text-xs md:text-sm font-medium text-gray-800 truncate block">
+                                                            <span className="text-sm font-semibold text-gray-900 dark:text-white block">
                                                                 {section.label}
+                                                            </span>
+                                                            <span className="text-xs text-gray-500 dark:text-gray-400">
+                                                                {section.count} élément{section.count !== 1 ? 's' : ''}
                                                             </span>
                                                         </div>
 
                                                         <Badge
                                                             className={cn(
-                                                                "text-xs px-1.5 py-0.5 h-5 min-w-[24px] text-center",
-                                                                section.count === 0 ? "bg-red-500 text-white" : "bg-green-500 text-white"
+                                                                "text-xs px-2 py-1 font-medium rounded-full",
+                                                                section.count === 0 
+                                                                    ? "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400" 
+                                                                    : "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400"
                                                             )}
                                                         >
                                                             {section.count}
@@ -475,9 +512,9 @@ export default function EditClean({ auth, portfolio, settings, cvData = portfoli
                                                         <Switch
                                                             checked={section.isActive}
                                                             onCheckedChange={() => handleToggleSection(section.key)}
-                                                            className="h-5 w-9 md:h-6 md:w-11 data-[state=checked]:bg-green-500"
+                                                            className="h-6 w-11 data-[state=checked]:bg-green-500 dark:data-[state=checked]:bg-green-400"
                                                         />
-                                                    </div>
+                                                    </motion.div>
                                                 );
                                             })}
                                         </div>
@@ -486,39 +523,44 @@ export default function EditClean({ auth, portfolio, settings, cvData = portfoli
 
                                 {/* Gestion des Services */}
                                 {data.show_services && (
-                                    <Card className="border-l-2 border-l-blue-400 shadow-sm">
-                                        <CardContent className="p-3 md:p-6">
-                                            <div className="flex items-center justify-between mb-3 md:mb-4">
-                                                <div className="flex items-center gap-2 md:gap-3">
-                                                    <Wrench className="h-4 w-4 md:h-5 md:w-5 text-blue-600" />
-                                                    <span className="text-sm md:text-base font-medium text-gray-900">{t.services}</span>
-                                                    <Badge variant="secondary" className="text-xs px-2 py-0.5 h-5">
-                                                        {services?.length || 0}
+                                    <Card className="border-l-4 border-l-blue-500 shadow-lg hover:shadow-xl transition-shadow duration-200 bg-white dark:bg-slate-800 dark:border-slate-700">
+                                        <CardContent className="p-4 md:p-6">
+                                            <div className="flex items-center justify-between mb-4 md:mb-6">
+                                                <div className="flex items-center gap-3 md:gap-4">
+                                                    <div className="p-2 bg-blue-100 dark:bg-blue-900/30 rounded-lg">
+                                                        <Wrench className="h-5 w-5 md:h-6 md:w-6 text-blue-600 dark:text-blue-400" />
+                                                    </div>
+                                                    <div>
+                                                        <span className="text-base md:text-lg font-semibold text-gray-900 dark:text-white">{t.services}</span>
+                                                        <p className="text-sm text-gray-600 dark:text-gray-300">Gérez vos services professionnels</p>
+                                                    </div>
+                                                    <Badge variant="secondary" className="text-sm px-3 py-1.5 h-7 bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400 font-medium">
+                                                        {services?.length || 0} services
                                                     </Badge>
                                                 </div>
                                                 <Button
                                                     type="button"
                                                     variant="outline"
-                                                    size="sm"
+                                                    size="default"
                                                     onClick={() => setShowServiceModal(true)}
-                                                    className="flex items-center gap-2"
+                                                    className="flex items-center gap-2 h-10 px-4 border-2 border-blue-200 dark:border-blue-700 text-blue-700 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20"
                                                 >
-                                                    <Plus className="h-3 w-3" />
+                                                    <Plus className="h-4 w-4" />
                                                     Gérer les services
                                                 </Button>
                                             </div>
 
                                             {services && services.length > 0 && (
-                                                <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                                                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                                                     {services.slice(0, 4).map((service) => (
-                                                        <div key={service.id} className="p-2 bg-blue-50 rounded border text-xs">
-                                                            <div className="font-medium text-blue-900 truncate">{service.title}</div>
-                                                            <div className="text-blue-700 truncate">{service.short_description || service.description}</div>
+                                                        <div key={service.id} className="p-4 bg-gradient-to-r from-blue-50 to-blue-100 dark:from-blue-900/20 dark:to-blue-800/20 rounded-lg border border-blue-200 dark:border-blue-700/50 text-sm">
+                                                            <div className="font-semibold text-blue-900 dark:text-blue-100 truncate mb-1">{service.title}</div>
+                                                            <div className="text-blue-700 dark:text-blue-300 text-xs truncate">{service.short_description || service.description}</div>
                                                         </div>
                                                     ))}
                                                     {services.length > 4 && (
-                                                        <div className="p-2 bg-gray-100 rounded border text-xs flex items-center justify-center text-gray-600">
-                                                            +{services.length - 4} autres
+                                                        <div className="p-4 bg-gray-100 dark:bg-slate-700 rounded-lg border border-gray-200 dark:border-slate-600 text-sm flex items-center justify-center text-gray-600 dark:text-gray-400 font-medium">
+                                                            +{services.length - 4} autres services
                                                         </div>
                                                     )}
                                                 </div>
@@ -561,38 +603,56 @@ export default function EditClean({ auth, portfolio, settings, cvData = portfoli
                         {/* Aperçu (si activé) */}
                         {previewMode && (
                             <motion.div
-                                initial={{ opacity: 0, x: 20 }}
+                                initial={{ opacity: 0, x: 30 }}
                                 animate={{ opacity: 1, x: 0 }}
+                                transition={{ duration: 0.3 }}
                                 className="lg:col-span-1"
                             >
-                                <Card className="sticky top-4 shadow-lg border-purple-200">
-                                    <CardContent className="p-4">
-                                        <div className="text-center mb-3">
-                                            <h3 className="font-semibold text-sm text-gray-900 flex items-center justify-center gap-2">
-                                                <Eye className="h-3 w-3 text-purple-600" />
-                                                {t.livePreview}
-                                            </h3>
+                                <Card className="sticky top-6 shadow-2xl border-l-4 border-l-purple-500 bg-white dark:bg-slate-800 dark:border-slate-700 overflow-hidden">
+                                    <CardContent className="p-0">
+                                        <div className="p-4 bg-gradient-to-r from-purple-50 to-pink-50 dark:from-purple-900/20 dark:to-pink-900/20 border-b dark:border-slate-700">
+                                            <div className="flex items-center justify-center gap-3">
+                                                <div className="p-2 bg-purple-100 dark:bg-purple-900/30 rounded-lg">
+                                                    <Eye className="h-5 w-5 text-purple-600 dark:text-purple-400" />
+                                                </div>
+                                                <div>
+                                                    <h3 className="font-bold text-lg text-gray-900 dark:text-white">{t.livePreview}</h3>
+                                                    <p className="text-sm text-gray-600 dark:text-gray-300">Aperçu en temps réel</p>
+                                                </div>
+                                            </div>
                                         </div>
 
-                                        <div className="aspect-[3/4] w-full overflow-hidden rounded-lg bg-gray-100 border-2 border-purple-200">
-                                            <iframe
-                                                src={portfolioUrl}
-                                                className="h-full w-full border-0 scale-75 origin-top-left"
-                                                style={{ width: '133.33%', height: '133.33%' }}
-                                                title="Aperçu portfolio"
-                                                loading="lazy"
-                                            />
-                                        </div>
+                                        <div className="p-4">
+                                            <div className="aspect-[3/4] w-full overflow-hidden rounded-xl bg-gray-100 dark:bg-slate-700 border-2 border-purple-200 dark:border-purple-700/50 shadow-inner">
+                                                <iframe
+                                                    src={portfolioUrl}
+                                                    className="h-full w-full border-0 scale-75 origin-top-left transition-all duration-300"
+                                                    style={{ width: '133.33%', height: '133.33%' }}
+                                                    title="Aperçu portfolio"
+                                                    loading="lazy"
+                                                />
+                                            </div>
 
-                                        <Button
-                                            onClick={() => window.open(portfolioUrl, '_blank')}
-                                            variant="outline"
-                                            size="sm"
-                                            className="w-full mt-3 border-purple-300 text-purple-700 hover:bg-purple-50"
-                                        >
-                                            <Share className="h-3 w-3 mr-2" />
-                                            {t.viewFullscreen}
-                                        </Button>
+                                            <div className="flex gap-2 mt-4">
+                                                <Button
+                                                    onClick={() => window.open(portfolioUrl, '_blank')}
+                                                    variant="outline"
+                                                    size="default"
+                                                    className="flex-1 h-10 border-2 border-purple-200 dark:border-purple-700 text-purple-700 dark:text-purple-400 hover:bg-purple-50 dark:hover:bg-purple-900/20 font-medium"
+                                                >
+                                                    <ExternalLink className="h-4 w-4 mr-2" />
+                                                    {t.viewFullscreen}
+                                                </Button>
+                                                <Button
+                                                    onClick={() => setShowQR(true)}
+                                                    variant="outline"
+                                                    size="default"
+                                                    className="h-10 px-4 border-2 border-purple-200 dark:border-purple-700 text-purple-700 dark:text-purple-400 hover:bg-purple-50 dark:hover:bg-purple-900/20"
+                                                >
+                                                    <QrCode className="h-4 w-4" />
+                                                </Button>
+                                            </div>
+                                        </div>
                                     </CardContent>
                                 </Card>
                             </motion.div>

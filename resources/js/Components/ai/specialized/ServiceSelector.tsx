@@ -23,63 +23,91 @@ interface ServiceSelectorProps {
     walletBalance: number;
 }
 
-const ENHANCED_SERVICES = [
-    {
-        id: 'career-advice',
-        icon: Brain,
-        title: 'Conseil de Carrière Personnalisé',
-        description: 'Assistant intelligent qui analyse votre profil et vos objectifs pour créer un plan de carrière sur mesure',
-        cost: 3,
-        color: 'amber',
-        features: ['Analyse de profil', 'Plan de carrière', 'Recommandations', 'Suivi objectifs'],
-        component: CareerAdviceWizard
-    },
-    {
-        id: 'cover-letter',
-        icon: FileText,
-        title: 'Générateur de Lettre de Motivation',
-        description: 'Créez des lettres personnalisées et optimisées ATS en analysant automatiquement les offres d\'emploi',
-        cost: 5,
-        color: 'purple',
-        features: ['Analyse d\'offre', 'Optimisation ATS', 'Personnalisation', 'Multiple versions'],
-        component: CoverLetterGenerator
-    },
-    {
-        id: 'resume-review',
-        icon: PenTool,
-        title: 'Analyseur de CV Avancé',
-        description: 'Audit complet avec scoring détaillé, recommandations visuelles et comparaison sectorielle',
-        cost: 4,
-        color: 'amber',
-        features: ['Score détaillé', 'Heatmap', 'Benchmarking', 'Recommandations'],
-        component: ResumeAnalyzer
-    },
-    {
-        id: 'interview-prep',
-        icon: MessageSquare,
-        title: 'Simulateur d\'Entretien Immersif',
-        description: 'Simulations réalistes avec questions adaptées au secteur et feedback détaillé de performance',
-        cost: 5,
-        color: 'purple',
-        features: ['Simulation réaliste', 'Questions sectorielles', 'Timer', 'Feedback détaillé'],
-        component: InterviewSimulator
-    },
-    {
-        id: 'presentation-ppt',
-        icon: Presentation,
-        title: 'Créateur de Portfolio Présentation',
-        description: 'Transformez vos projets en présentations professionnelles pour impressionner les recruteurs',
-        cost: 8,
-        color: 'amber',
-        features: ['Templates pro', 'Projets showcase', 'Export PowerPoint', 'Design adaptatif'],
-        component: null // À implémenter si nécessaire
-    }
-];
+// Configuration des services - sera initialisée dans le composant
 
 export default function ServiceSelector({ userInfo, onServiceSubmit, isLoading, walletBalance }: ServiceSelectorProps) {
     const { t } = useTranslation();
     const [selectedService, setSelectedService] = useState<string | null>(null);
     const [showServiceInterface, setShowServiceInterface] = useState(false);
+
+    // Configuration des services avec traductions
+    const ENHANCED_SERVICES = [
+        {
+            id: 'career-advice',
+            icon: Brain,
+            title: t('services.career_advice.enhanced_title') || 'Conseil de Carrière Personnalisé',
+            description: t('services.career_advice.enhanced_description') || 'Assistant intelligent qui analyse votre profil et vos objectifs pour créer un plan de carrière sur mesure',
+            cost: 3,
+            color: 'amber',
+            features: [
+                t('services.career_advice.features.profile_analysis') || 'Analyse de profil',
+                t('services.career_advice.features.career_plan') || 'Plan de carrière',
+                t('services.career_advice.features.recommendations') || 'Recommandations',
+                t('services.career_advice.features.goal_tracking') || 'Suivi objectifs'
+            ],
+            component: CareerAdviceWizard
+        },
+        {
+            id: 'cover-letter',
+            icon: FileText,
+            title: t('services.cover_letter.enhanced_title') || 'Générateur de Lettre de Motivation',
+            description: t('services.cover_letter.enhanced_description') || 'Créez des lettres personnalisées et optimisées ATS en analysant automatiquement les offres d\'emploi',
+            cost: 5,
+            color: 'purple',
+            features: [
+                t('services.cover_letter.features.job_analysis') || 'Analyse d\'offre',
+                t('services.cover_letter.features.ats_optimization') || 'Optimisation ATS',
+                t('services.cover_letter.features.personalization') || 'Personnalisation',
+                t('services.cover_letter.features.multiple_versions') || 'Multiple versions'
+            ],
+            component: CoverLetterGenerator
+        },
+        {
+            id: 'resume-review',
+            icon: PenTool,
+            title: t('services.resume_review.enhanced_title') || 'Analyseur de CV Avancé',
+            description: t('services.resume_review.enhanced_description') || 'Audit complet avec scoring détaillé, recommandations visuelles et comparaison sectorielle',
+            cost: 4,
+            color: 'amber',
+            features: [
+                t('services.resume_review.features.detailed_score') || 'Score détaillé',
+                t('services.resume_review.features.heatmap') || 'Heatmap',
+                t('services.resume_review.features.benchmarking') || 'Benchmarking',
+                t('services.resume_review.features.recommendations') || 'Recommandations'
+            ],
+            component: ResumeAnalyzer
+        },
+        {
+            id: 'interview-prep',
+            icon: MessageSquare,
+            title: t('services.interview_prep.enhanced_title') || 'Simulateur d\'Entretien Immersif',
+            description: t('services.interview_prep.enhanced_description') || 'Simulations réalistes avec questions adaptées au secteur et feedback détaillé de performance',
+            cost: 5,
+            color: 'purple',
+            features: [
+                t('services.interview_prep.features.realistic_simulation') || 'Simulation réaliste',
+                t('services.interview_prep.features.sector_questions') || 'Questions sectorielles',
+                t('services.interview_prep.features.timer') || 'Timer',
+                t('services.interview_prep.features.detailed_feedback') || 'Feedback détaillé'
+            ],
+            component: InterviewSimulator
+        },
+        {
+            id: 'presentation-ppt',
+            icon: Presentation,
+            title: t('services.presentation_ppt.enhanced_title') || 'Créateur de Portfolio Présentation',
+            description: t('services.presentation_ppt.enhanced_description') || 'Transformez vos projets en présentations professionnelles pour impressionner les recruteurs',
+            cost: 8,
+            color: 'amber',
+            features: [
+                t('services.presentation_ppt.features.pro_templates') || 'Templates pro',
+                t('services.presentation_ppt.features.projects_showcase') || 'Projets showcase',
+                t('services.presentation_ppt.features.powerpoint_export') || 'Export PowerPoint',
+                t('services.presentation_ppt.features.adaptive_design') || 'Design adaptatif'
+            ],
+            component: null // À implémenter si nécessaire
+        }
+    ];
 
 
 
@@ -134,7 +162,7 @@ export default function ServiceSelector({ userInfo, onServiceSubmit, isLoading, 
                             className="flex items-center gap-2"
                         >
                             <ArrowRight className="w-4 h-4 rotate-180" />
-                            Retour aux services
+                            {t('common.back_to_services') || 'Retour aux services'}
                         </Button>
                         
                         <Badge variant="outline" className="bg-amber-50 text-amber-700">
@@ -165,17 +193,17 @@ export default function ServiceSelector({ userInfo, onServiceSubmit, isLoading, 
                     className="mb-6"
                 >
                     <h2 className="text-3xl font-bold bg-gradient-to-r from-amber-600 to-purple-600 bg-clip-text text-transparent mb-2">
-                        Services IA Spécialisés
+                        {t('services.specialized_ai_services') || 'Services IA Spécialisés'}
                     </h2>
                     <p className="text-gray-600 dark:text-gray-400">
-                        Chaque service offre une expérience unique et personnalisée
+                        {t('services.unique_experience') || 'Chaque service offre une expérience unique et personnalisée'}
                     </p>
                 </motion.div>
 
                 <div className="flex items-center justify-center gap-4 mb-8">
                     <Badge variant="outline" className="bg-green-50 text-green-700">
                         <Sparkles className="w-3 h-3 mr-1" />
-                        Solde: {walletBalance} tokens
+                        {t('wallet.balance')}: {walletBalance} {t('common.tokens')}
                     </Badge>
                 </div>
             </div>
@@ -209,7 +237,7 @@ export default function ServiceSelector({ userInfo, onServiceSubmit, isLoading, 
                                                 variant={canAfford ? "default" : "secondary"}
                                                 className={canAfford ? colors.bg : 'bg-gray-100'}
                                             >
-                                                {service.cost} tokens
+                                                {service.cost} {t('common.tokens')}
                                             </Badge>
                                         </div>
                                     </div>
@@ -243,16 +271,16 @@ export default function ServiceSelector({ userInfo, onServiceSubmit, isLoading, 
                                             {!service.component ? (
                                                 <>
                                                     <Zap className="w-4 h-4 mr-2" />
-                                                    Bientôt disponible
+                                                    {t('common.comingSoon')}
                                                 </>
                                             ) : !canAfford ? (
                                                 <>
-                                                    Tokens insuffisants
+                                                    {t('wallet.insufficient')}
                                                 </>
                                             ) : (
                                                 <>
                                                     <Target className="w-4 h-4 mr-2" />
-                                                    Commencer
+                                                    {t('common.start') || 'Commencer'}
                                                     <ArrowRight className="w-4 h-4 ml-2" />
                                                 </>
                                             )}
@@ -274,7 +302,7 @@ export default function ServiceSelector({ userInfo, onServiceSubmit, isLoading, 
                                                 className="w-full text-xs border-amber-200 text-amber-700 hover:bg-amber-50"
                                             >
                                                 <Sparkles className="w-3 h-3 mr-1" />
-                                                Tester les artefacts
+                                                {t('services.test_artifacts') || 'Tester les artefacts'}
                                             </Button>
                                         )}
                                     </div>
@@ -288,34 +316,34 @@ export default function ServiceSelector({ userInfo, onServiceSubmit, isLoading, 
             {/* Section avantages */}
             <div className="text-center mt-12">
                 <h3 className="text-xl font-bold text-gray-800 dark:text-gray-200 mb-4">
-                    Pourquoi nos services IA sont uniques ?
+                    {t('services.why_unique') || 'Pourquoi nos services IA sont uniques ?'}
                 </h3>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <div className="text-center">
                         <div className="w-12 h-12 bg-blue-100 dark:bg-blue-950/50 rounded-xl flex items-center justify-center mx-auto mb-3">
                             <Brain className="w-6 h-6 text-blue-600" />
                         </div>
-                        <h4 className="font-medium text-gray-800 dark:text-gray-200 mb-1">IA Contextuelle</h4>
+                        <h4 className="font-medium text-gray-800 dark:text-gray-200 mb-1">{t('services.benefits.contextual_ai') || 'IA Contextuelle'}</h4>
                         <p className="text-xs text-gray-600 dark:text-gray-400">
-                            Analyse votre profil complet pour des conseils ultra-personnalisés
+                            {t('services.benefits.contextual_ai_desc') || 'Analyse votre profil complet pour des conseils ultra-personnalisés'}
                         </p>
                     </div>
                     <div className="text-center">
                         <div className="w-12 h-12 bg-purple-100 dark:bg-purple-950/50 rounded-xl flex items-center justify-center mx-auto mb-3">
                             <Target className="w-6 h-6 text-purple-600" />
                         </div>
-                        <h4 className="font-medium text-gray-800 dark:text-gray-200 mb-1">Interfaces Dédiées</h4>
+                        <h4 className="font-medium text-gray-800 dark:text-gray-200 mb-1">{t('services.benefits.dedicated_interfaces') || 'Interfaces Dédiées'}</h4>
                         <p className="text-xs text-gray-600 dark:text-gray-400">
-                            Chaque service a son interface optimisée pour une expérience unique
+                            {t('services.benefits.dedicated_interfaces_desc') || 'Chaque service a son interface optimisée pour une expérience unique'}
                         </p>
                     </div>
                     <div className="text-center">
                         <div className="w-12 h-12 bg-green-100 dark:bg-green-950/50 rounded-xl flex items-center justify-center mx-auto mb-3">
                             <Star className="w-6 h-6 text-green-600" />
                         </div>
-                        <h4 className="font-medium text-gray-800 dark:text-gray-200 mb-1">Résultats Mesurables</h4>
+                        <h4 className="font-medium text-gray-800 dark:text-gray-200 mb-1">{t('services.benefits.measurable_results') || 'Résultats Mesurables'}</h4>
                         <p className="text-xs text-gray-600 dark:text-gray-400">
-                            Scores, métriques et recommandations concrètes pour progresser
+                            {t('services.benefits.measurable_results_desc') || 'Scores, métriques et recommandations concrètes pour progresser'}
                         </p>
                     </div>
                 </div>

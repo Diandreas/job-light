@@ -46,6 +46,81 @@ Route::get('/lang/{locale}.json', function ($locale) {
     }
     return response()->json([]);
 });
+
+// Route pour servir les images de templates CV depuis la base de données
+Route::get('/images/cv-previews/{imageName}.png', function ($imageName) {
+    // Chercher le modèle CV par nom d'image
+    $cvModel = \App\Models\CvModel::where('previewImagePath', "/images/cv-previews/{$imageName}.png")
+        ->orWhere('name', 'like', "%{$imageName}%")
+        ->first();
+    
+    if (!$cvModel) {
+        abort(404);
+    }
+    
+    // Si c'est un chemin vers un fichier physique (en enlevant le / du début)
+    $filePath = ltrim($cvModel->previewImagePath, '/');
+    if ($cvModel->previewImagePath && file_exists(public_path($filePath))) {
+        return response()->file(public_path($filePath));
+    }
+    
+    // Si c'est des données base64 en base
+    if ($cvModel->previewImagePath && str_starts_with($cvModel->previewImagePath, 'data:image/')) {
+        $imageData = explode(',', $cvModel->previewImagePath)[1];
+        $imageData = base64_decode($imageData);
+        
+        return response($imageData)
+            ->header('Content-Type', 'image/png')
+            ->header('Cache-Control', 'public, max-age=86400');
+    }
+    
+    // Générer un placeholder SVG dynamique
+    $colors = [
+        'international' => '#3498db',
+        'digital' => '#2ecc71', 
+        'luxe' => '#f39c12',
+        'elegant' => '#9b59b6',
+        'technique' => '#e74c3c',
+        'moderne' => '#1abc9c',
+        'classique' => '#34495e',
+        'minimaliste' => '#95a5a6',
+        'creatif' => '#e67e22',
+        'corporatif' => '#2c3e50'
+    ];
+    
+    $color = $colors[strtolower($imageName)] ?? '#3498db';
+    $name = ucfirst($imageName);
+    
+    $svg = '<?xml version="1.0" encoding="UTF-8"?>
+    <svg width="300" height="400" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+            <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" style="stop-color:' . $color . ';stop-opacity:1" />
+                <stop offset="100%" style="stop-color:' . $color . '80;stop-opacity:1" />
+            </linearGradient>
+        </defs>
+        <rect width="300" height="400" fill="url(#grad)"/>
+        <rect x="20" y="30" width="260" height="340" fill="white" rx="8"/>
+        <rect x="30" y="40" width="80" height="80" fill="' . $color . '20" rx="40"/>
+        <rect x="130" y="50" width="140" height="8" fill="' . $color . '40" rx="4"/>
+        <rect x="130" y="70" width="100" height="6" fill="' . $color . '30" rx="3"/>
+        <rect x="30" y="140" width="240" height="4" fill="' . $color . '20" rx="2"/>
+        <rect x="30" y="155" width="200" height="4" fill="' . $color . '20" rx="2"/>
+        <rect x="30" y="170" width="180" height="4" fill="' . $color . '20" rx="2"/>
+        <rect x="30" y="200" width="240" height="6" fill="' . $color . '" rx="3"/>
+        <rect x="30" y="220" width="180" height="4" fill="' . $color . '40" rx="2"/>
+        <rect x="30" y="235" width="200" height="4" fill="' . $color . '40" rx="2"/>
+        <rect x="30" y="250" width="160" height="4" fill="' . $color . '40" rx="2"/>
+        <rect x="30" y="280" width="240" height="6" fill="' . $color . '" rx="3"/>
+        <rect x="30" y="300" width="100" height="4" fill="' . $color . '40" rx="2"/>
+        <rect x="150" y="300" width="80" height="4" fill="' . $color . '40" rx="2"/>
+        <text x="150" y="360" text-anchor="middle" fill="' . $color . '" font-family="Arial, sans-serif" font-size="14" font-weight="bold">CV ' . $name . '</text>
+    </svg>';
+    
+    return response($svg)
+        ->header('Content-Type', 'image/svg+xml')
+        ->header('Cache-Control', 'public, max-age=86400');
+})->where('imageName', '[a-zA-Z0-9\-_]+');
 Route::get('/support', function () {
     return Inertia::render('Support');
 })->name('support');

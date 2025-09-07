@@ -220,8 +220,8 @@ class CareerAdvisorController extends Controller
     {
         $configs = [
             'interview-prep' => [
-                'model' => 'mistral-small-latest',
-                'maxTokens' => 500,
+                'model' => 'mistral-large-latest',
+                'maxTokens' => 2000,
                 'temperature' => 0.8,
                 'maxHistory' => 10
             ],
@@ -232,14 +232,14 @@ class CareerAdvisorController extends Controller
                 'maxHistory' => 3
             ],
             'career-advice' => [
-                'model' => 'mistral-medium-latest',
-                'maxTokens' => 1000,
+                'model' => 'mistral-large-latest',
+                'maxTokens' => 2000,
                 'temperature' => 0.7,
                 'maxHistory' => 3
             ],
             'resume-review' => [
-                'model' => 'mistral-medium-latest',
-                'maxTokens' => 1000,
+                'model' => 'mistral-large-latest',
+                'maxTokens' => 2000,
                 'temperature' => 0.2,
                 'maxHistory' => 3
             ],

@@ -48,16 +48,16 @@ export const ServiceCard: React.FC<ServiceCardProps> = ({
                             </div>
                         </TooltipTrigger>
                         <TooltipContent side="top">
-                            <p className="text-xs">Coût du service</p>
+                            <p className="text-xs">{t('components.career_advisor.interface.cost_info')}</p>
                         </TooltipContent>
                     </Tooltip>
                 </TooltipProvider>
             </div>
             <h3 className="font-medium text-sm mb-1 text-gray-900 dark:text-gray-100">
-                {t(`${title.toLowerCase().replace(/\s/g, '-')}`)}
+                {t(title)}
             </h3>
             <p className="text-xs text-gray-600 dark:text-gray-400 leading-relaxed line-clamp-2">
-                {t(`${title.toLowerCase().replace(/\s/g, '-')}`)}
+                {t(description)}
             </p>
         </motion.div>
     );

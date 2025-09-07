@@ -46,27 +46,66 @@ interface CoverLetterData {
     inputMethod: 'manual' | 'paste' | 'url';
 }
 
-const TONES = [
-    { value: 'professional', label: 'Professionnel', description: 'Formel et respectueux' },
-    { value: 'enthusiastic', label: 'Enthousiaste', description: 'Dynamique et motivé' },
-    { value: 'confident', label: 'Confiant', description: 'Assertif et déterminé' },
-    { value: 'creative', label: 'Créatif', description: 'Original et innovant' }
-];
-
-const LENGTHS = [
-    { value: 'short', label: 'Courte', description: '200-300 mots' },
-    { value: 'medium', label: 'Standard', description: '300-400 mots' },
-    { value: 'long', label: 'Détaillée', description: '400-500 mots' }
-];
-
-const COMMON_MOTIVATIONS = [
-    'Mission de l\'entreprise', 'Opportunités d\'évolution', 'Équipe et culture',
-    'Projets innovants', 'Défis techniques', 'Impact social', 'Apprentissage',
-    'Réputation de l\'entreprise', 'Valeurs partagées', 'Croissance du secteur'
-];
+// Constants will be defined in component with translations
 
 export default function CoverLetterGenerator({ onSubmit, userInfo, isLoading }: CoverLetterGeneratorProps) {
     const { t } = useTranslation();
+
+    // Translated constants
+    const TONES = [
+        { 
+            value: 'professional', 
+            label: t('cover_letter_generator.tones.professional.label') || 'Professionnel', 
+            description: t('cover_letter_generator.tones.professional.description') || 'Formel et respectueux' 
+        },
+        { 
+            value: 'enthusiastic', 
+            label: t('cover_letter_generator.tones.enthusiastic.label') || 'Enthousiaste', 
+            description: t('cover_letter_generator.tones.enthusiastic.description') || 'Dynamique et motivé' 
+        },
+        { 
+            value: 'confident', 
+            label: t('cover_letter_generator.tones.confident.label') || 'Confiant', 
+            description: t('cover_letter_generator.tones.confident.description') || 'Assertif et déterminé' 
+        },
+        { 
+            value: 'creative', 
+            label: t('cover_letter_generator.tones.creative.label') || 'Créatif', 
+            description: t('cover_letter_generator.tones.creative.description') || 'Original et innovant' 
+        }
+    ];
+
+    const LENGTHS = [
+        { 
+            value: 'short', 
+            label: t('cover_letter_generator.lengths.short.label') || 'Courte', 
+            description: t('cover_letter_generator.lengths.short.description') || '200-300 mots' 
+        },
+        { 
+            value: 'medium', 
+            label: t('cover_letter_generator.lengths.medium.label') || 'Standard', 
+            description: t('cover_letter_generator.lengths.medium.description') || '300-400 mots' 
+        },
+        { 
+            value: 'long', 
+            label: t('cover_letter_generator.lengths.long.label') || 'Détaillée', 
+            description: t('cover_letter_generator.lengths.long.description') || '400-500 mots' 
+        }
+    ];
+
+    const COMMON_MOTIVATIONS = [
+        t('cover_letter_generator.motivations.company_mission') || 'Mission de l\'entreprise',
+        t('cover_letter_generator.motivations.growth_opportunities') || 'Opportunités d\'évolution',
+        t('cover_letter_generator.motivations.team_culture') || 'Équipe et culture',
+        t('cover_letter_generator.motivations.innovative_projects') || 'Projets innovants',
+        t('cover_letter_generator.motivations.technical_challenges') || 'Défis techniques',
+        t('cover_letter_generator.motivations.social_impact') || 'Impact social',
+        t('cover_letter_generator.motivations.learning') || 'Apprentissage',
+        t('cover_letter_generator.motivations.company_reputation') || 'Réputation de l\'entreprise',
+        t('cover_letter_generator.motivations.shared_values') || 'Valeurs partagées',
+        t('cover_letter_generator.motivations.sector_growth') || 'Croissance du secteur'
+    ];
+
     const [formData, setFormData] = useState<CoverLetterData>({
         jobTitle: '',
         companyName: '',

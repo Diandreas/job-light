@@ -305,27 +305,48 @@ export default function GuestCvBuilder({
                 <meta name="description" content="Créez votre CV professionnel gratuitement sans inscription. Prévisualisez votre CV et téléchargez-le en PDF." />
             </Head>
 
-            <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-amber-50/30">
-                {/* Header compact avec progression */}
-                <div className="bg-white border-b border-gray-200 sticky top-0 z-50 shadow-sm">
-                    <div className="max-w-7xl mx-auto px-3 sm:px-4 py-2 sm:py-4">
-                        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 sm:gap-4 mb-3">
-                            <div className="flex items-center gap-2 sm:gap-4">
-                                <h1 className="text-lg sm:text-2xl font-bold bg-gradient-to-r from-amber-600 to-purple-600 bg-clip-text text-transparent">
-                                    CV Gratuit
-                                </h1>
-                                <Badge variant="secondary" className="bg-amber-50 text-amber-700 border-amber-200 text-xs">
-                                    <Star className="w-3 h-3 mr-1" />
-                                    <span className="hidden sm:inline">Sans inscription</span>
-                                    <span className="sm:hidden">Gratuit</span>
-                                </Badge>
+            <div className="min-h-screen bg-gradient-to-br from-amber-50/30 via-white to-purple-50/20">
+                {/* Header moderne avec progression */}
+                <div className="bg-white/95 backdrop-blur-sm border-b border-gray-200/60 sticky top-0 z-50 shadow-sm">
+                    <div className="max-w-7xl mx-auto px-3 sm:px-4 py-3 sm:py-5">
+                        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4 mb-4">
+                            <div className="flex items-center gap-3 sm:gap-4">
+                                <div className="flex items-center gap-2">
+                                    <div className="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-br from-amber-500 to-purple-600 rounded-lg flex items-center justify-center">
+                                        <FileText className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
+                                    </div>
+                                    <div>
+                                        <h1 className="text-lg sm:text-2xl font-bold bg-gradient-to-r from-amber-600 to-purple-600 bg-clip-text text-transparent">
+                                            CV Builder
+                                        </h1>
+                                        <p className="text-xs text-gray-500 hidden sm:block">Créez votre CV professionnel</p>
+                                    </div>
+                                </div>
+                                <div className="flex gap-2">
+                                    <Badge variant="secondary" className="bg-emerald-50 text-emerald-700 border-emerald-200 text-xs">
+                                        <Star className="w-3 h-3 mr-1" />
+                                        <span className="hidden sm:inline">100% Gratuit</span>
+                                        <span className="sm:hidden">Gratuit</span>
+                                    </Badge>
+                                    <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200 text-xs hidden sm:inline-flex">
+                                        Sans inscription
+                                    </Badge>
+                                </div>
                             </div>
                             
-                            <div className="flex items-center gap-2 sm:gap-4 w-full sm:w-auto">
-                                <div className="text-xs sm:text-sm text-gray-600 whitespace-nowrap">
-                                    {completionPercentage}%
+                            <div className="flex items-center gap-3 sm:gap-4 w-full sm:w-auto">
+                                <div className="flex items-center gap-2">
+                                    <div className="text-xs sm:text-sm font-medium text-gray-700">
+                                        Progression
+                                    </div>
+                                    <div className="text-xs sm:text-sm font-bold text-amber-600">
+                                        {completionPercentage}%
+                                    </div>
                                 </div>
-                                <Progress value={completionPercentage} className="flex-1 sm:w-32" />
+                                <Progress 
+                                    value={completionPercentage} 
+                                    className="flex-1 sm:w-40 h-2" 
+                                />
                             </div>
                         </div>
 
@@ -1299,29 +1320,33 @@ export default function GuestCvBuilder({
                                     }}
                                 >
                                     <div className="aspect-[3/4] bg-gradient-to-br from-gray-50 to-gray-100 rounded mb-3 flex items-center justify-center overflow-hidden relative">
-                                        {model.previewImagePath && model.previewImagePath.startsWith('/') ? (
-                                            <img 
-                                                src={model.previewImagePath} 
-                                                alt={`Aperçu ${model.name}`}
-                                                className="w-full h-full object-cover rounded"
-                                                onError={(e) => {
-                                                    // Fallback si l'image ne se charge pas
-                                                    e.currentTarget.style.display = 'none';
-                                                    e.currentTarget.nextElementSibling?.classList.remove('hidden');
-                                                }}
-                                            />
-                                        ) : (
-                                            <div className="text-center">
-                                                <FileText className="w-8 h-8 text-gray-400 mb-2" />
-                                                <div className="text-xs text-gray-500">
-                                                    {model.name}
-                                                </div>
-                                            </div>
-                                        )}
-                                        <div className="hidden text-center">
-                                            <FileText className="w-8 h-8 text-gray-400 mb-2" />
-                                            <div className="text-xs text-gray-500">
-                                                {model.name}
+                                        <img 
+                                            src={model.previewImagePath || `/images/cv-previews/${model.name.toLowerCase()}.png`} 
+                                            alt={`Aperçu ${model.name}`}
+                                            className="w-full h-full object-cover rounded transition-opacity duration-300"
+                                            onError={(e) => {
+                                                // Fallback vers notre SVG généré
+                                                const target = e.currentTarget as HTMLImageElement;
+                                                if (!target.src.includes('/images/cv-previews/')) {
+                                                    target.src = `/images/cv-previews/${model.name.toLowerCase()}.png`;
+                                                }
+                                            }}
+                                            onLoad={(e) => {
+                                                (e.currentTarget as HTMLImageElement).style.opacity = '1';
+                                            }}
+                                            style={{ opacity: 0 }}
+                                        />
+                                        
+                                        {/* Overlay avec nom du modèle */}
+                                        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent flex items-end">
+                                            <div className="p-3 text-white w-full">
+                                                <div className="text-sm font-medium">{model.name}</div>
+                                                {model.price > 0 && (
+                                                    <div className="text-xs opacity-90 flex items-center mt-1">
+                                                        <Star className="w-3 h-3 mr-1 text-yellow-400" />
+                                                        Premium - {model.price}€
+                                                    </div>
+                                                )}
                                             </div>
                                         </div>
                                         

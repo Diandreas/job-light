@@ -16,9 +16,9 @@ import {
     MessageSquare, Calendar, History, Menu, Send, Plus,
     FileText, Presentation, ChevronDown, FileSpreadsheet,
     FileInput, MessageCircleQuestion, PenTool, Sparkles, ChevronRight, ChevronLeft,
-    Smartphone, Monitor, Zap
+    Smartphone, Monitor, Zap, MoreHorizontal, Settings, Star,
+    TrendingUp, Target, Users, BookOpen, Award, Briefcase
 } from 'lucide-react';
-// import { MessageBubble } from '@/Components/ai/MessageBubble';
 import EnhancedMessageBubble from '@/Components/ai/enhanced/EnhancedMessageBubble';
 import { ServiceCard, MobileServiceCard } from '@/Components/ai/ServiceCard';
 import { SERVICES, DEFAULT_PROMPTS } from '@/Components/ai/constants';
@@ -57,57 +57,30 @@ import axios from 'axios';
 
 const TOKEN_LIMIT = 2000;
 
-// Service "Rapport de stage" coming soon
-const REPORT_SERVICE = {
-    id: 'internship-report',
-    icon: FileSpreadsheet,
-    title: 'services.internship_report.title',
-    description: 'services.internship_report.description',
-    cost: 7,
-    category: 'document',
-    formats: ['docx', 'pdf'],
-    comingSoon: true,
-    releaseDate: '20 juin 2025'
-};
-
-// Hook personnalisé pour gérer le comportement de l'input
-const useInputBehavior = () => {
-    const [inputHeight, setInputHeight] = useState(40);
+// Hook pour l'input optimisé
+const useSmartInput = () => {
+    const [inputHeight, setInputHeight] = useState(36);
     const inputRef = useRef(null);
 
     const adjustHeight = useCallback((element) => {
         if (!element) return;
-
         element.style.height = 'auto';
-        const newHeight = Math.min(Math.max(element.scrollHeight, 40), 60); // Réduit de 80 à 60
+        const newHeight = Math.min(Math.max(element.scrollHeight, 36), 72);
         element.style.height = `${newHeight}px`;
         setInputHeight(newHeight);
     }, []);
 
     const handleInputChange = useCallback((event, setData) => {
         const textarea = event.target;
-        const newValue = textarea.value;
-        setData('question', newValue);
+        setData('question', textarea.value);
         adjustHeight(textarea);
     }, [adjustHeight]);
 
-    const focusInput = useCallback(() => {
-        if (inputRef.current) {
-            inputRef.current.focus();
-        }
-    }, []);
-
-    return {
-        inputRef,
-        inputHeight,
-        handleInputChange,
-        focusInput,
-        adjustHeight
-    };
+    return { inputRef, inputHeight, handleInputChange, adjustHeight };
 };
 
-// Composant d'input amélioré réutilisable
-const ChatInput = ({
+// Composant d'input ultra-compact
+const CompactChatInput = ({
     value,
     onChange,
     onSubmit,
@@ -115,77 +88,48 @@ const ChatInput = ({
     disabled,
     isLoading,
     cost,
-    service,
-    showSuggestions = false,
-    suggestions = [],
-    variant = "default", // "default" | "minimal" | "floating"
     onKeyDown
 }) => {
-    const { inputRef, handleInputChange } = useInputBehavior();
+    const { inputRef, handleInputChange } = useSmartInput();
     const [isFocused, setIsFocused] = useState(false);
-    const { t } = useTranslation();
-
-    const inputVariants = {
-        default: "min-h-[40px] max-h-[60px] border-2 border-gray-200 dark:border-gray-700 focus:border-amber-500 dark:focus:border-amber-400 rounded-xl shadow-sm focus:shadow-md focus:ring-4 focus:ring-amber-500/10",
-        minimal: "min-h-[36px] max-h-[60px] border border-gray-200 dark:border-gray-700 focus:border-amber-500 dark:focus:border-amber-400 rounded-lg focus:ring-2 focus:ring-amber-500/20",
-        floating: "min-h-[44px] max-h-[60px] border-2 border-gray-300 dark:border-gray-600 focus:border-amber-500 dark:focus:border-amber-400 rounded-2xl shadow-lg focus:shadow-xl backdrop-blur-sm bg-white/90 dark:bg-gray-800/90"
-    };
 
     return (
-        <div className="space-y-3">
+        <div className="relative">
             <form onSubmit={onSubmit}>
-                <div className="relative group">
+                <div className="relative flex items-end gap-2 p-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl shadow-sm transition-all hover:shadow-md focus-within:shadow-md focus-within:border-amber-400 dark:focus-within:border-amber-500">
                     <Textarea
                         ref={inputRef}
                         value={value}
                         onChange={(e) => handleInputChange(e, onChange)}
-                        onKeyDown={onKeyDown || ((e) => {
-                            if (e.key === 'Enter' && !e.shiftKey) {
-                                e.preventDefault();
-                                if (value.trim() && !disabled) {
-                                    onSubmit(e);
-                                }
-                            }
-                        })}
+                        onKeyDown={onKeyDown}
                         onFocus={() => setIsFocused(true)}
                         onBlur={() => setIsFocused(false)}
                         placeholder={placeholder}
-                        className={`w-full pr-20 pl-4 py-3 resize-none text-sm bg-white dark:bg-gray-800 transition-all ${inputVariants[variant]} hide-scrollbar`}
+                        className="flex-1 min-h-[36px] max-h-[72px] border-0 p-0 resize-none bg-transparent text-sm placeholder:text-gray-400 dark:placeholder:text-gray-500 focus-visible:ring-0 focus-visible:ring-offset-0"
                         disabled={disabled}
                         maxLength={2000}
-                        style={{
-                            scrollbarWidth: 'none',
-                            msOverflowStyle: 'none'
-                        }}
                     />
 
-                    {/* Focus indicator */}
-                    <div className={`absolute inset-0 rounded-xl pointer-events-none transition-opacity duration-200 ${isFocused ? 'opacity-100' : 'opacity-0'
-                        } bg-gradient-to-r from-amber-500/5 to-purple-500/5`} />
-
-                    {/* Boutons d'action */}
-                    <div className="absolute right-3 bottom-3 flex gap-2">
-                        {/* Indicateur de coût avec animation */}
-                        <motion.div
-                            initial={{ scale: 0.9, opacity: 0 }}
-                            animate={{ scale: 1, opacity: 1 }}
-                            className="flex items-center gap-1 px-2 py-1 bg-gradient-to-r from-amber-50 to-amber-100 dark:from-amber-900/20 dark:to-amber-800/20 border border-amber-200 dark:border-amber-700 rounded-lg shadow-sm"
-                        >
+                    <div className="flex items-center gap-2 flex-shrink-0">
+                        {/* Indicateur de coût */}
+                        <div className="flex items-center gap-1 px-2 py-1 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-700 rounded-md">
                             <Coins className="h-3 w-3 text-amber-600 dark:text-amber-400" />
                             <span className="text-xs font-medium text-amber-700 dark:text-amber-300">
-                                -{cost}
+                                {cost}
                             </span>
-                        </motion.div>
+                        </div>
 
-                        {/* Bouton d'envoi avec états visuels */}
+                        {/* Bouton d'envoi */}
                         <Button
                             type="submit"
                             size="sm"
                             disabled={disabled || !value.trim()}
-                            className={`h-8 w-8 p-0 rounded-lg shadow-md transition-all transform ${disabled || !value.trim()
-                                ? 'opacity-50 cursor-not-allowed'
-                                : 'bg-gradient-to-r from-amber-500 to-purple-500 hover:from-amber-600 hover:to-purple-600 hover:shadow-lg hover:scale-105 active:scale-95'
-                                }`}
+                            className={cn(
+                                "h-8 w-8 p-0 rounded-lg transition-all duration-200",
+                                disabled || !value.trim()
+                                    ? "opacity-40 cursor-not-allowed bg-gray-400"
+                                    : "bg-gradient-to-r from-amber-500 to-purple-500 hover:from-amber-600 hover:to-purple-600 shadow-md hover:shadow-lg hover:scale-105 active:scale-95"
+                            )}
                         >
                             {isLoading ? (
                                 <motion.div
@@ -199,202 +143,415 @@ const ChatInput = ({
                             )}
                         </Button>
                     </div>
-
-                    {/* Indicateur de progression de frappe */}
-                    {value.length > 0 && (
-                        <div className="absolute bottom-1 left-3 right-20">
-                            <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-0.5">
-                                <motion.div
-                                    initial={{ width: 0 }}
-                                    animate={{ width: `${(value.length / 2000) * 100}%` }}
-                                    className={`h-0.5 rounded-full transition-colors ${value.length > 1800
-                                        ? 'bg-red-500'
-                                        : value.length > 1500
-                                            ? 'bg-yellow-500'
-                                            : 'bg-amber-500'
-                                        }`}
-                                />
-                            </div>
-                        </div>
-                    )}
                 </div>
 
-                {/* Informations et suggestions */}
-                <AnimatePresence>
-                    {(value.length > 0 || showSuggestions) && (
-                        <motion.div
-                            initial={{ opacity: 0, height: 0 }}
-                            animate={{ opacity: 1, height: 'auto' }}
-                            exit={{ opacity: 0, height: 0 }}
-                            className="space-y-2"
-                        >
-                            {/* Barre d'informations */}
-                            {value.length > 0 && (
-                                <div className="flex justify-between items-center text-xs px-1">
-                                    <div className="flex items-center gap-3">
-                                        <span className="text-gray-500 dark:text-gray-400">
-                                            {value.length}/2000
-                                        </span>
-                                        {value.length > 1500 && (
-                                            <motion.span
-                                                initial={{ opacity: 0, x: -10 }}
-                                                animate={{ opacity: 1, x: 0 }}
-                                                className={`flex items-center gap-1 ${value.length > 1800 ? 'text-red-500' : 'text-yellow-500'
-                                                    }`}
-                                            >
-                                                <Clock className="h-3 w-3" />
-                                                {value.length > 1800 ? 'Limite atteinte' : 'Proche de la limite'}
-                                            </motion.span>
-                                        )}
-                                    </div>
-                                    <div className="flex items-center gap-2 text-gray-500 dark:text-gray-400">
-                                        <kbd className="px-1.5 py-0.5 text-[10px] font-mono bg-gray-100 dark:bg-gray-700 rounded border">
-                                            ⏎
-                                        </kbd>
-                                        <span>Envoyer</span>
-                                    </div>
-                                </div>
-                            )}
-
-                            {/* Suggestions */}
-                            {showSuggestions && suggestions.length > 0 && value.length === 0 && (
-                                <div className="space-y-2">
-                                    <p className="text-xs text-gray-500 dark:text-gray-400 text-center">
-                                        Suggestions pour {service} :
-                                    </p>
-                                    <div className="flex flex-wrap gap-2 justify-center">
-                                        {suggestions.slice(0, 3).map((suggestion, index) => (
-                                            <motion.button
-                                                key={index}
-                                                initial={{ opacity: 0, y: 10 }}
-                                                animate={{ opacity: 1, y: 0 }}
-                                                transition={{ delay: index * 0.1 }}
-                                                onClick={() => onChange('question', suggestion)}
-                                                className="px-3 py-1.5 text-xs bg-gray-100 dark:bg-gray-800 hover:bg-amber-50 dark:hover:bg-amber-900/20 border border-gray-200 dark:border-gray-700 hover:border-amber-300 dark:hover:border-amber-600 rounded-lg transition-all text-gray-700 dark:text-gray-300 hover:text-amber-700 dark:hover:text-amber-300 hover:shadow-sm"
-                                            >
-                                                {suggestion.substring(0, 40)}
-                                                {suggestion.length > 40 ? '...' : ''}
-                                            </motion.button>
-                                        ))}
-                                    </div>
-                                </div>
-                            )}
-                        </motion.div>
-                    )}
-                </AnimatePresence>
+                {/* Barre de progression */}
+                {value.length > 0 && (
+                    <div className="mt-1 px-1">
+                        <div className="flex justify-between items-center text-xs text-gray-500 dark:text-gray-400 mb-1">
+                            <span>{value.length}/2000 {t('components.career_advisor.interface.progress_characters')}</span>
+                            <div className="flex items-center gap-2">
+                                <kbd className="px-1 py-0.5 text-[10px] bg-gray-100 dark:bg-gray-700 rounded border">
+                                    Enter
+                                </kbd>
+                                <span>{t('components.career_advisor.interface.send')}</span>
+                            </div>
+                        </div>
+                        <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-0.5">
+                            <motion.div
+                                initial={{ width: 0 }}
+                                animate={{ width: `${(value.length / 2000) * 100}%` }}
+                                className={cn(
+                                    "h-0.5 rounded-full transition-colors",
+                                    value.length > 1800 ? "bg-red-500" :
+                                        value.length > 1500 ? "bg-yellow-500" : "bg-amber-500"
+                                )}
+                            />
+                        </div>
+                    </div>
+                )}
             </form>
         </div>
     );
 };
 
-// Services cards améliorés
-const EnhancedServiceCard = ({ service, isSelected, onClick }) => {
+// Card de chat optimisée
+const CompactChatCard = ({ chat, isActive, onSelect, onDelete }) => {
     const { t } = useTranslation();
-    const isComingSoon = service.comingSoon === true;
+
+    const truncatedPreview = chat.preview ?
+        (chat.preview.length > 28 ? chat.preview.substring(0, 28) + '...' : chat.preview) :
+        t('components.career_advisor.interface.new_conversation');
 
     return (
         <motion.div
-            whileHover={{ y: isComingSoon ? 0 : -3, transition: { duration: 0.2 } }}
-            whileTap={{ scale: isComingSoon ? 0.99 : 0.98 }}
-            onClick={isComingSoon ? undefined : onClick}
-            className={`cursor-${isComingSoon ? 'not-allowed' : 'pointer'} p-3.5 rounded-lg border transition-all relative overflow-hidden
-                ${isSelected
-                    ? 'border-amber-400 dark:border-amber-500 bg-gradient-to-r from-amber-50 to-purple-50 dark:from-amber-500/10 dark:to-purple-500/10 shadow-sm'
-                    : isComingSoon
-                        ? 'border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800'
-                        : 'border-gray-200 dark:border-gray-700 hover:border-amber-300/70 dark:hover:border-amber-500/30 bg-white dark:bg-gray-800 hover:bg-gradient-to-r hover:from-amber-50/50 hover:to-purple-50/50 dark:hover:from-amber-500/5 dark:hover:to-purple-500/5'
-                }`}
+            layout
+            initial={{ opacity: 0, y: 2 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, x: -8 }}
+            whileHover={{ y: -1 }}
+            whileTap={{ scale: 0.98 }}
+            className={cn(
+                "group relative p-2 rounded-lg cursor-pointer transition-all border",
+                isActive
+                    ? "bg-gradient-to-r from-amber-50 to-purple-50 dark:from-amber-900/20 dark:to-purple-900/20 border-amber-300 dark:border-amber-600 shadow-sm"
+                    : "bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-750 border-gray-200 dark:border-gray-700 hover:border-amber-200 dark:hover:border-amber-800"
+            )}
+            onClick={() => onSelect(chat)}
         >
-            <div className="flex items-start justify-between mb-2.5">
-                <div className={`p-1.5 rounded-lg bg-gradient-to-r ${isComingSoon ? 'from-gray-400 to-gray-500 dark:from-gray-600 dark:to-gray-700' : 'from-amber-500 to-purple-500 dark:from-amber-400 dark:to-purple-400'}`}>
-                    <service.icon className="text-white h-4 w-4" />
-                </div>
-                <TooltipProvider>
-                    <Tooltip>
-                        <TooltipTrigger asChild>
-                            <div className={`flex items-center gap-1 text-xs font-medium ${isComingSoon
-                                ? 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400'
-                                : 'bg-amber-100 dark:bg-amber-500/20 text-amber-700 dark:text-amber-300'
-                                } px-2 py-0.5 rounded-full`}>
-                                <Coins className="h-3 w-3" />
-                                <span>{service.cost}</span>
+            <div className="flex items-start gap-2 pr-6">
+                <div className={cn(
+                    "w-1 h-1 rounded-full mt-2 flex-shrink-0",
+                    isActive ? "bg-amber-500" : "bg-gray-300 dark:bg-gray-600"
+                )} />
+                <div className="min-w-0 flex-1">
+                    <h3 className="text-xs font-medium text-gray-900 dark:text-gray-100 line-clamp-1 mb-1" title={chat.preview}>
+                        {truncatedPreview}
+                    </h3>
+                    <div className="flex items-center gap-3 text-xs text-gray-500 dark:text-gray-400">
+                        <div className="flex items-center gap-1">
+                            <Calendar className="h-2.5 w-2.5" />
+                            <span>
+                                {new Date(chat.created_at).toLocaleDateString('fr-FR', {
+                                    day: 'numeric',
+                                    month: 'short'
+                                })}
+                            </span>
+                        </div>
+                        {chat.messages_count && (
+                            <div className="flex items-center gap-1">
+                                <MessageSquare className="h-2.5 w-2.5" />
+                                <span>{chat.messages_count}</span>
                             </div>
-                        </TooltipTrigger>
-                        <TooltipContent side="top">
-                            <p className="text-xs">Coût du service</p>
-                        </TooltipContent>
-                    </Tooltip>
-                </TooltipProvider>
-            </div>
-            <h3 className="font-medium text-sm mb-1 text-gray-900 dark:text-gray-100">
-                {t(`${service.title}`)}
-            </h3>
-            <p className="text-xs text-gray-600 dark:text-gray-400 leading-relaxed line-clamp-2">
-                {t(`${service.description}`)}
-            </p>
-
-            {isComingSoon && (
-                <div className="absolute inset-0 bg-gradient-to-b from-transparent via-white/90 to-white/95 dark:via-gray-900/90 dark:to-gray-900/95 flex flex-col items-center justify-end py-3">
-                    <div className="text-center max-w-[85%] z-10">
-                        <h3 className="font-medium text-sm mb-1 text-gray-900 dark:text-gray-100">
-                            {t(`${service.title}`)}
-                        </h3>
-                        <Badge className="bg-amber-500 text-white dark:bg-amber-600 dark:text-white mb-1 px-2 py-1 text-xs">
-                            {t('career_advisor.coming_soon.badge')}
-                        </Badge>
-                        <p className="text-xs text-gray-600 dark:text-gray-400">
-                            {t('career_advisor.coming_soon.available_from', { date: service.releaseDate })}
-                        </p>
+                        )}
                     </div>
                 </div>
-            )}
+            </div>
+
+            <Button
+                variant="ghost"
+                size="sm"
+                onClick={(e) => {
+                    e.stopPropagation();
+                    onDelete(chat);
+                }}
+                className="absolute right-1 top-1/2 -translate-y-1/2 h-5 w-5 p-0 opacity-0 group-hover:opacity-100 hover:text-red-500 dark:hover:text-red-400 transition-all"
+            >
+                <Trash2 className="h-3 w-3" />
+            </Button>
         </motion.div>
     );
 };
 
-const EnhancedMobileServiceCard = ({ service, isSelected, onClick }) => {
+// Header compact
+const CompactHeader = ({
+    selectedService,
+    walletBalance,
+    onNewChat,
+    onExport,
+    isExporting,
+    isAndroidApp,
+    isReady,
+    artifactCount,
+    onToggleArtifacts,
+    artifactSidebarOpen
+}) => {
     const { t } = useTranslation();
-    const isComingSoon = service.comingSoon === true;
 
     return (
-        <motion.div
-            whileTap={{ scale: isComingSoon ? 0.99 : 0.98 }}
-            onClick={isComingSoon ? undefined : onClick}
-            className={`flex items-center gap-2 p-2.5 rounded-lg cursor-${isComingSoon ? 'not-allowed' : 'pointer'} transition-all border relative overflow-hidden ${isSelected
-                ? 'bg-gradient-to-r from-amber-50 to-purple-50 dark:from-amber-900/20 dark:to-purple-900/20 border-amber-300 dark:border-amber-500/40'
-                : isComingSoon
-                    ? 'border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800'
-                    : 'hover:bg-amber-50/50 dark:hover:bg-amber-500/5 border-transparent dark:hover:border-amber-500/20 bg-white dark:bg-gray-800'
-                }`}
-        >
-            <div className={`p-1.5 rounded-lg bg-gradient-to-r ${isComingSoon ? 'from-gray-400 to-gray-500 dark:from-gray-600 dark:to-gray-700' : 'from-amber-500 to-purple-500 dark:from-amber-400 dark:to-purple-400'}`}>
-                <service.icon className="h-3.5 w-3.5 text-white" />
-            </div>
-            <div className="flex-1 min-w-0">
-                <p className="font-medium text-xs text-gray-900 dark:text-gray-100 truncate">
-                    {t(`${service.title}`)}
-                </p>
-                <div className="flex items-center gap-1 text-xs text-amber-600 dark:text-amber-400">
-                    <Coins className="h-2.5 w-2.5" />
-                    <span>{service.cost}</span>
-                </div>
-            </div>
-
-            {isComingSoon && (
-                <div className="absolute inset-0 bg-gradient-to-b from-transparent via-white/90 to-white/95 dark:via-gray-900/90 dark:to-gray-900/95 flex flex-col items-center justify-end py-2">
-                    <div className="text-center max-w-[85%] z-10">
-                        <Badge className="bg-amber-500 text-white dark:bg-amber-600 dark:text-white mb-1 px-1.5 py-0.5 text-[10px]">
-                            {t('career_advisor.coming_soon.badge')}
-                        </Badge>
-                        <p className="text-[10px] text-gray-600 dark:text-gray-400">
-                            {service.releaseDate}
-                        </p>
+        <div className="bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 px-3 py-2">
+            <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3 min-w-0">
+                    <div className="flex items-center gap-2">
+                        <div className="w-7 h-7 bg-gradient-to-r from-amber-500 to-purple-500 rounded-lg flex items-center justify-center">
+                            <selectedService.icon className="h-4 w-4 text-white" />
+                        </div>
+                        <div className="min-w-0">
+                            <h3 className="font-semibold text-gray-900 dark:text-gray-100 text-sm truncate">
+                                {t(`services.${selectedService.id}.title`)}
+                            </h3>
+                            <div className="flex items-center gap-2">
+                                <div className="flex items-center gap-1">
+                                    <div className="w-1.5 h-1.5 bg-green-500 rounded-full" />
+                                    <span className="text-xs text-gray-500 dark:text-gray-400">{t('components.sidebar.active')}</span>
+                                </div>
+                                <div className="flex items-center gap-1">
+                                    <Wallet className="h-3 w-3 text-amber-500" />
+                                    <span className="text-xs font-medium text-amber-600 dark:text-amber-400">
+                                        {walletBalance.toLocaleString()}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
-            )}
-        </motion.div>
+
+                <div className="flex items-center gap-2">
+                    {/* Nouveau chat */}
+                    <TooltipProvider>
+                        <Tooltip>
+                            <TooltipTrigger asChild>
+                                <Button
+                                    onClick={onNewChat}
+                                    variant="outline"
+                                    size="sm"
+                                    className="h-8 w-8 p-0"
+                                >
+                                    <Plus className="h-4 w-4" />
+                                </Button>
+                            </TooltipTrigger>
+                            <TooltipContent>
+                                <p className="text-xs">{t('components.career_advisor.interface.new_chat')}</p>
+                            </TooltipContent>
+                        </Tooltip>
+                    </TooltipProvider>
+
+                    {/* Artefacts */}
+                    {artifactCount > 0 && (
+                        <Button
+                            onClick={onToggleArtifacts}
+                            variant="outline"
+                            size="sm"
+                            className={cn(
+                                "h-8 px-2 relative",
+                                artifactSidebarOpen ? "bg-amber-100 border-amber-300 text-amber-700" : ""
+                            )}
+                        >
+                            <Sparkles className="h-3.5 w-3.5 mr-1" />
+                            <span className="text-xs">Artefacts</span>
+                            <Badge variant="secondary" className="ml-1 h-4 px-1 text-xs bg-amber-500 text-white">
+                                {artifactCount}
+                            </Badge>
+                        </Button>
+                    )}
+
+                    {/* Export */}
+                    <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                            <Button
+                                variant="outline"
+                                size="sm"
+                                className="h-8 px-2"
+                                disabled={isExporting}
+                            >
+                                {isExporting ? (
+                                    <Loader className="h-3.5 w-3.5 mr-1 animate-spin" />
+                                ) : (
+                                    <Download className="h-3.5 w-3.5 mr-1" />
+                                )}
+                                <span className="text-xs hidden sm:inline">{t('components.career_advisor.interface.export')}</span>
+                                <ChevronDown className="h-3 w-3 ml-1" />
+                                {isAndroidApp && isReady && (
+                                    <Smartphone className="ml-1 h-3 w-3 text-green-500" />
+                                )}
+                            </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end">
+                            <DropdownMenuItem onClick={() => onExport('pdf')} className="text-xs">
+                                <FileText className="h-3.5 w-3.5 mr-2" />
+                                PDF
+                            </DropdownMenuItem>
+                            <DropdownMenuItem onClick={() => onExport('docx')} className="text-xs">
+                                <FileText className="h-3.5 w-3.5 mr-2" />
+                                DOCX
+                            </DropdownMenuItem>
+                            {selectedService.id === 'presentation-ppt' && (
+                                <DropdownMenuItem onClick={() => onExport('pptx')} className="text-xs">
+                                    <Presentation className="h-3.5 w-3.5 mr-2" />
+                                    PPTX
+                                </DropdownMenuItem>
+                            )}
+                        </DropdownMenuContent>
+                    </DropdownMenu>
+                </div>
+            </div>
+        </div>
     );
 };
+
+// Sidebar ultra-compacte
+const UltraCompactSidebar = ({
+    isCollapsed,
+    onToggleCollapse,
+    walletBalance,
+    onNewChat,
+    userChats,
+    selectedService,
+    activeChat,
+    onChatSelect,
+    onChatDelete
+}) => {
+    const { t } = useTranslation();
+    const filteredChats = userChats.filter(chat => chat.service_id === selectedService.id);
+
+    return (
+        <div className={cn(
+            "bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-800 flex flex-col transition-all duration-300",
+            isCollapsed ? "w-12" : "w-64"
+        )}>
+            {/* Header */}
+            <div className="p-2 border-b border-gray-200 dark:border-gray-800">
+                {isCollapsed ? (
+                    <div className="flex flex-col items-center gap-2">
+                        <Avatar className="w-8 h-8">
+                            <AvatarImage src="/mascot/mascot.png" />
+                            <AvatarFallback className="bg-gradient-to-r from-amber-500 to-purple-500 text-white text-xs">
+                                AI
+                            </AvatarFallback>
+                        </Avatar>
+                        <Button
+                            onClick={onNewChat}
+                            size="sm"
+                            className="w-8 h-8 p-0 bg-gradient-to-r from-amber-500 to-purple-500"
+                        >
+                            <Plus className="h-4 w-4" />
+                        </Button>
+                    </div>
+                ) : (
+                    <div className="space-y-2">
+                        <div className="flex items-center gap-2">
+                            <Avatar className="w-8 h-8">
+                                <AvatarImage src="/mascot/mascot.png" />
+                                <AvatarFallback className="bg-gradient-to-r from-amber-500 to-purple-500 text-white text-xs">
+                                    AI
+                                </AvatarFallback>
+                            </Avatar>
+                            <div className="flex-1 min-w-0">
+                                <div className="flex items-center gap-1.5">
+                                    <h1 className="text-sm font-bold text-gray-900 dark:text-gray-100 truncate">
+                                        {t('components.career_advisor.interface.ai_advisor')}
+                                    </h1>
+                                    <Badge variant="secondary" className="text-xs px-1.5 py-0 h-4 bg-amber-50 text-amber-600">
+                                        <Sparkles className="w-2.5 h-2.5 mr-0.5" />
+                                        {t('components.sidebar.pro_badge')}
+                                    </Badge>
+                                </div>
+                                <p className="text-xs text-gray-600 dark:text-gray-400 truncate">
+                                    {t(`services.${selectedService.id}.title`)}
+                                </p>
+                            </div>
+                        </div>
+
+                        {/* Wallet compact */}
+                        <div className="bg-gradient-to-r from-amber-50 to-purple-50 dark:from-amber-900/20 dark:to-purple-900/20 border border-amber-200 dark:border-amber-700 px-2 py-1 rounded-lg flex items-center gap-2">
+                            <div className="w-1.5 h-1.5 bg-green-500 rounded-full" />
+                            <Wallet className="h-3 w-3 text-amber-600 dark:text-amber-400" />
+                            <span className="text-xs font-semibold text-amber-700 dark:text-amber-300">
+                                {walletBalance.toLocaleString()}
+                            </span>
+                        </div>
+
+                        <Button
+                            onClick={onNewChat}
+                            className="w-full h-7 bg-gradient-to-r from-amber-500 to-purple-500 text-white text-xs"
+                        >
+                            <Plus className="h-3.5 w-3.5 mr-1" />
+                            {t('components.career_advisor.interface.new_chat')}
+                        </Button>
+                    </div>
+                )}
+
+                {/* Toggle button */}
+                <Button
+                    onClick={onToggleCollapse}
+                    variant="ghost"
+                    size="sm"
+                    className={cn(
+                        "mt-2 transition-all",
+                        isCollapsed ? "w-8 h-8 p-0 mx-auto" : "w-full h-6"
+                    )}
+                >
+                    {isCollapsed ? (
+                        <ChevronRight className="h-3.5 w-3.5" />
+                    ) : (
+                        <div className="flex items-center justify-between w-full">
+                            <span className="text-xs">{t('components.career_advisor.interface.collapse')}</span>
+                            <ChevronLeft className="h-3.5 w-3.5" />
+                        </div>
+                    )}
+                </Button>
+            </div>
+
+            {/* Chat history */}
+            <div className="flex-1 p-2 min-h-0">
+                {!isCollapsed && (
+                    <div className="flex items-center justify-between mb-2">
+                        <h3 className="text-xs font-semibold text-gray-700 dark:text-gray-300">
+                            {t('components.career_advisor.interface.history')}
+                        </h3>
+                        <Badge variant="outline" className="text-xs h-4 px-1.5 border-amber-200 text-amber-600">
+                            {filteredChats.length}
+                        </Badge>
+                    </div>
+                )}
+
+                <ScrollArea className="h-full">
+                    <div className={cn(
+                        "space-y-1",
+                        isCollapsed && "flex flex-col items-center"
+                    )}>
+                        <AnimatePresence>
+                            {filteredChats.map(chat => (
+                                isCollapsed ? (
+                                    <TooltipProvider key={chat.context_id}>
+                                        <Tooltip>
+                                            <TooltipTrigger asChild>
+                                                <motion.button
+                                                    layout
+                                                    initial={{ opacity: 0 }}
+                                                    animate={{ opacity: 1 }}
+                                                    exit={{ opacity: 0 }}
+                                                    whileHover={{ scale: 1.05 }}
+                                                    onClick={() => onChatSelect(chat)}
+                                                    className={cn(
+                                                        "w-8 h-8 flex items-center justify-center rounded-lg border transition-all",
+                                                        activeChat?.context_id === chat.context_id
+                                                            ? "bg-amber-100 dark:bg-amber-900/30 text-amber-600 dark:text-amber-300 border-amber-300"
+                                                            : "bg-white dark:bg-gray-800 text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-700 border-gray-200 dark:border-gray-700"
+                                                    )}
+                                                >
+                                                    <MessageSquare className="h-3.5 w-3.5" />
+                                                </motion.button>
+                                            </TooltipTrigger>
+                                            <TooltipContent side="right">
+                                                <p className="text-xs">{chat.preview?.substring(0, 30)}</p>
+                                            </TooltipContent>
+                                        </Tooltip>
+                                    </TooltipProvider>
+                                ) : (
+                                    <CompactChatCard
+                                        key={chat.context_id}
+                                        chat={chat}
+                                        isActive={activeChat?.context_id === chat.context_id}
+                                        onSelect={onChatSelect}
+                                        onDelete={onChatDelete}
+                                    />
+                                )
+                            ))}
+                        </AnimatePresence>
+
+                        {filteredChats.length === 0 && !isCollapsed && (
+                            <div className="text-center py-6">
+                                <MessageSquare className="h-8 w-8 text-gray-300 dark:text-gray-600 mx-auto mb-2" />
+                                <p className="text-xs text-gray-500 dark:text-gray-400">
+                                    {t('components.career_advisor.interface.no_conversations')}
+                                </p>
+                            </div>
+                        )}
+                    </div>
+                </ScrollArea>
+            </div>
+        </div>
+    );
+};
+
+// Messages temporaires de réflexion
+const thinkingMessages = [
+    "career_advisor.chat.thinking.analyzing",
+    "career_advisor.chat.thinking.reflecting",
+    "career_advisor.chat.thinking.generating",
+    "career_advisor.chat.thinking.finalizing"
+];
 
 const getMaxHistoryForService = (serviceId) => {
     return serviceId === 'interview-prep' ? 10 : 3;
@@ -404,121 +561,12 @@ const countUserQuestions = (messages) => {
     return messages?.filter(msg => msg.role === 'user').length || 0;
 };
 
-const extractValidJsonFromMessage = (content) => {
-    try {
-        const jsonMatch = content.match(/\{[\s\S]*\}/);
-        if (!jsonMatch) return null;
-
-        const jsonStr = jsonMatch[0];
-        const data = JSON.parse(jsonStr);
-
-        if (data && data.slides && data.title) {
-            return jsonStr;
-        }
-        return null;
-    } catch (e) {
-        return null;
-    }
-};
-
-const ChatHistoryCard = ({ chat, isActive, onSelect, onDelete }) => {
-    const { t } = useTranslation();
-
-    const truncatedPreview = chat.preview ?
-        (chat.preview.length > 35 ? chat.preview.substring(0, 35) + '...' : chat.preview) :
-        'Nouvelle conversation';
-
-    return (
-        <motion.div
-            layout
-            initial={{ opacity: 0, y: 4, scale: 0.98 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, x: -10, scale: 0.95 }}
-            whileHover={{ y: -1 }}
-            whileTap={{ scale: 0.98 }}
-            transition={{
-                type: "spring",
-                stiffness: 400,
-                damping: 25,
-                layout: { duration: 0.15 }
-            }}
-            className={`relative group p-2.5 rounded-lg cursor-pointer transition-all border ${isActive
-                ? 'bg-gradient-to-r from-amber-50 to-purple-50 dark:from-amber-900/20 dark:to-purple-900/20 border-amber-300 dark:border-amber-600 shadow-sm'
-                : 'bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-800 border-gray-200 dark:border-gray-700 hover:border-amber-200 dark:hover:border-amber-800'
-                }`}
-            onClick={() => onSelect(chat)}
-        >
-            <div className="pr-6">
-                <div className="flex items-start gap-1.5 mb-1">
-                    <div className={`w-1 h-1 rounded-full mt-1.5 ${isActive ? 'bg-amber-500' : 'bg-gray-300 dark:bg-gray-600'
-                        }`} />
-                    <h3 className="text-xs font-medium text-gray-900 dark:text-gray-100 line-clamp-1 leading-tight" title={chat.preview}>
-                        {truncatedPreview}
-                    </h3>
-                </div>
-                <div className="flex items-center gap-2 ml-2.5 mt-1">
-                    <div className="flex items-center gap-1">
-                        <Calendar className="h-2.5 w-2.5 text-amber-500 dark:text-amber-400" />
-                        <span className="text-xs text-gray-500 dark:text-gray-400">
-                            {new Date(chat.created_at).toLocaleDateString('fr-FR', {
-                                day: 'numeric',
-                                month: 'short'
-                            })}
-                        </span>
-                    </div>
-                    {chat.messages_count && (
-                        <div className="flex items-center gap-1">
-                            <MessageSquare className="h-2.5 w-2.5 text-purple-500 dark:text-purple-400" />
-                            <span className="text-xs text-gray-500 dark:text-gray-400">
-                                {chat.messages_count}
-                            </span>
-                        </div>
-                    )}
-                </div>
-            </div>
-
-            <TooltipProvider>
-                <Tooltip>
-                    <TooltipTrigger asChild>
-                        <motion.div
-                            initial={{ opacity: 0 }}
-                            animate={{ opacity: 1 }}
-                            className="absolute right-1 top-1/2 -translate-y-1/2"
-                        >
-                            <Button
-                                variant="ghost"
-                                size="sm"
-                                onClick={(e) => {
-                                    e.stopPropagation();
-                                    onDelete(chat);
-                                }}
-                                className="h-6 w-6 p-0 opacity-0 group-hover:opacity-100 hover:text-red-500 dark:hover:text-red-400 hover:bg-red-50/70 dark:hover:bg-red-900/20 transition-all duration-200"
-                            >
-                                <Trash2 className="h-3 w-3" />
-                            </Button>
-                        </motion.div>
-                    </TooltipTrigger>
-                    <TooltipContent side="left">
-                        <p className="text-xs">{t('career_advisor.sidebar.delete')}</p>
-                    </TooltipContent>
-                </Tooltip>
-            </TooltipProvider>
-        </motion.div>
-    );
-};
-
-// Messages temporaires pour simuler la réflexion de l'IA
-const thinkingMessages = [
-    "career_advisor.chat.thinking.analyzing",
-    "career_advisor.chat.thinking.reflecting",
-    "career_advisor.chat.thinking.generating",
-    "career_advisor.chat.thinking.finalizing"
-];
-
-export default function Index({ auth, userInfo, chatHistories }) {
+export default function EnhancedCareerAdvisor({ auth, userInfo, chatHistories }) {
     const { t, i18n } = useTranslation();
     const { toast } = useToast();
-    const { isReady, isAndroidApp, downloadFile, printDocument, createDirectDownloadUrl, isUrlCompatible } = useMedian();
+    const { isReady, isAndroidApp, downloadFile, createDirectDownloadUrl, isUrlCompatible } = useMedian();
+
+    // États principaux
     const [isLoading, setIsLoading] = useState(false);
     const [walletBalance, setWalletBalance] = useState(auth.user.wallet_balance);
     const [selectedService, setSelectedService] = useState(SERVICES[0]);
@@ -532,20 +580,20 @@ export default function Index({ auth, userInfo, chatHistories }) {
     const [thinkingIndex, setThinkingIndex] = useState(0);
     const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
     const [isSidebarCollapsed, setSidebarCollapsed] = useState(() => {
-        // Récupérer l'état du sidebar depuis localStorage, collapsé par défaut
         const saved = localStorage.getItem('career_advisor_sidebar_collapsed');
-        return saved ? JSON.parse(saved) : true; // true = collapsé par défaut
+        return saved ? JSON.parse(saved) : false; // Ouvert par défaut pour la nouvelle interface
     });
     const [isExporting, setIsExporting] = useState(false);
-    const [isPrinting, setIsPrinting] = useState(false);
-    const [useEnhancedInterface, setUseEnhancedInterface] = useState(true); // Nouvelle interface par défaut
-    const [useEnhancedBubbles, setUseEnhancedBubbles] = useState(true); // Nouvelles bulles avec artefacts
     const [artifactSidebarOpen, setArtifactSidebarOpen] = useState(false);
-    const [currentArtifacts, setCurrentArtifacts] = useState<ArtifactData[]>([]);
-    const [currentArtifactContent, setCurrentArtifactContent] = useState<string>('');
+    const [currentArtifacts, setCurrentArtifacts] = useState([]);
+    const [currentArtifactContent, setCurrentArtifactContent] = useState('');
+
+    // Refs
     const scrollRef = useRef(null);
     const inputRef = useRef(null);
     const thinkingIntervalRef = useRef(null);
+
+    // Valeurs calculées
     const maxHistory = getMaxHistoryForService(selectedService.id);
     const currentQuestions = countUserQuestions(activeChat?.messages);
 
@@ -564,19 +612,17 @@ export default function Index({ auth, userInfo, chatHistories }) {
         };
     }, []);
 
-    // Scroll amélioré avec gestion de l'input
     useEffect(() => {
         if (scrollRef.current) {
             const scrollElement = scrollRef.current;
-            const scrollToBottom = () => {
+            setTimeout(() => {
                 scrollElement.scrollTo({
                     top: scrollElement.scrollHeight,
                     behavior: 'smooth'
                 });
-            };
-            setTimeout(scrollToBottom, 100);
+            }, 100);
         }
-    }, [activeChat?.messages, tempMessage, data.question]);
+    }, [activeChat?.messages, tempMessage]);
 
     useEffect(() => {
         setLanguage(i18n.language);
@@ -586,13 +632,6 @@ export default function Index({ auth, userInfo, chatHistories }) {
     useEffect(() => {
         setData('question', '');
     }, [selectedService]);
-
-    // Auto-focus sur le champ de saisie
-    useEffect(() => {
-        if (!isLoading && inputRef.current) {
-            inputRef.current.focus();
-        }
-    }, [isLoading, activeChat]);
 
     const loadUserChats = async () => {
         try {
@@ -725,7 +764,7 @@ export default function Index({ auth, userInfo, chatHistories }) {
 
         setData('question', '');
 
-        // Messages temporaires de réflexion
+        // Messages de réflexion
         setThinkingIndex(0);
         setTempMessage({
             role: 'assistant',
@@ -825,172 +864,35 @@ export default function Index({ auth, userInfo, chatHistories }) {
         if (!activeChat) return;
 
         setIsExporting(true);
-
         try {
-            if (format === 'pptx') {
-                console.log('🎨 Génération PowerPoint côté client');
+            // Logique d'export simplifiée
+            const response = await axios.post('/career-advisor/export', {
+                contextId: activeChat.context_id,
+                format
+            }, { responseType: 'blob' });
 
-                const lastAiMessage = activeChat.messages
-                    .filter(msg => msg.role === 'assistant')
-                    .pop();
+            const url = window.URL.createObjectURL(new Blob([response.data]));
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `conversation-${activeChat.context_id}.${format}`;
+            document.body.appendChild(link);
+            link.click();
+            window.URL.revokeObjectURL(url);
+            document.body.removeChild(link);
 
-                if (lastAiMessage) {
-                    const jsonData = extractValidJsonFromMessage(lastAiMessage.content);
-                    if (jsonData) {
-                        try {
-                            const pptxBlob = await PowerPointService.generateFromJSON(jsonData);
-
-                            const url = window.URL.createObjectURL(pptxBlob);
-                            const link = document.createElement('a');
-                            link.href = url;
-                            link.download = `presentation-${activeChat.context_id}.pptx`;
-                            document.body.appendChild(link);
-                            link.click();
-                            document.body.removeChild(link);
-                            window.URL.revokeObjectURL(url);
-
-                            toast({
-                                title: '🎨 Présentation générée',
-                                description: 'Le fichier PowerPoint a été créé et téléchargé',
-                                variant: 'default'
-                            });
-                            return;
-                        } catch (pptxError) {
-                            console.error('❌ Erreur génération PowerPoint:', pptxError);
-                            toast({
-                                title: t('career_advisor.messages.error'),
-                                description: 'Erreur lors de la génération du PowerPoint',
-                                variant: "destructive",
-                            });
-                            return;
-                        }
-                    }
-                }
-
-                toast({
-                    title: t('career_advisor.messages.error'),
-                    description: "Aucun contenu de présentation valide trouvé",
-                    variant: "destructive",
-                });
-                return;
-            }
-
-            if (isAndroidApp && isReady) {
-                console.log('🚀 Utilisation du téléchargement natif Android pour', format);
-
-                const downloadUrl = createDirectDownloadUrl('/career-advisor/export-direct', {
-                    contextId: activeChat.context_id,
-                    format: format,
-                    direct: true
-                });
-
-                if (!isUrlCompatible(downloadUrl)) {
-                    throw new Error('URL non compatible avec Median');
-                }
-
-                const result = await downloadFile(downloadUrl, {
-                    filename: `conversation-${activeChat.context_id}.${format}`,
-                    open: true,
-                    forceDownload: true
-                });
-
-                if (result.success) {
-                    toast({
-                        title: '📱 Téléchargement natif réussi',
-                        description: `Le fichier ${format.toUpperCase()} a été téléchargé et ouvert automatiquement`,
-                        variant: 'default'
-                    });
-                } else {
-                    throw new Error('Échec du téléchargement natif');
-                }
-            } else {
-                console.log('🌐 Utilisation du téléchargement web pour', format);
-                await handleExportWeb(format);
-            }
+            toast({
+                title: t('components.career_advisor.interface.export_success'),
+                description: t('components.career_advisor.interface.export_file_downloaded', { format: format.toUpperCase() })
+            });
         } catch (error) {
-            console.error('❌ Erreur lors de l\'export:', error);
-
-            if (isAndroidApp && format !== 'pptx') {
-                console.log('🔄 Tentative de fallback vers téléchargement web');
-                try {
-                    await handleExportWeb(format);
-                } catch (fallbackError) {
-                    console.error('❌ Erreur fallback:', fallbackError);
-                    toast({
-                        title: t('career_advisor.messages.error'),
-                        description: t('career_advisor.messages.export_error'),
-                        variant: "destructive",
-                    });
-                }
-            } else {
-                toast({
-                    title: t('career_advisor.messages.error'),
-                    description: t('career_advisor.messages.export_error'),
-                    variant: "destructive",
-                });
-            }
+            toast({
+                title: t('components.career_advisor.interface.export_error'),
+                description: t('components.career_advisor.interface.export_failed'),
+                variant: "destructive"
+            });
         } finally {
             setIsExporting(false);
         }
-    };
-
-    const handleExportWeb = async (format) => {
-        console.log('📄 Export web classique:', format);
-
-        if (format === 'pptx') {
-            const lastAiMessage = activeChat.messages
-                .filter(msg => msg.role === 'assistant')
-                .pop();
-
-            if (lastAiMessage) {
-                const jsonData = extractValidJsonFromMessage(lastAiMessage.content);
-                if (jsonData) {
-                    try {
-                        const pptxBlob = await PowerPointService.generateFromJSON(jsonData);
-
-                        const url = window.URL.createObjectURL(pptxBlob);
-                        const link = document.createElement('a');
-                        link.href = url;
-                        link.download = `presentation-${activeChat.context_id}.pptx`;
-                        document.body.appendChild(link);
-                        link.click();
-                        document.body.removeChild(link);
-                        window.URL.revokeObjectURL(url);
-
-                        toast({
-                            title: '🌐 Téléchargement web réussi',
-                            description: 'Le PowerPoint a été généré et téléchargé',
-                            variant: 'default'
-                        });
-                        return;
-                    } catch (error) {
-                        console.error('❌ Erreur génération PowerPoint:', error);
-                        throw new Error('Erreur lors de la génération du PowerPoint');
-                    }
-                }
-            }
-
-            throw new Error('Aucun contenu de présentation valide trouvé');
-        }
-
-        const response = await axios.post('/career-advisor/export', {
-            contextId: activeChat.context_id,
-            format
-        }, { responseType: 'blob' });
-
-        const url = window.URL.createObjectURL(new Blob([response.data]));
-        const link = document.createElement('a');
-        link.href = url;
-        link.download = `conversation-${activeChat.context_id}.${format}`;
-        document.body.appendChild(link);
-        link.click();
-        window.URL.revokeObjectURL(url);
-        document.body.removeChild(link);
-
-        toast({
-            title: '🌐 Téléchargement web réussi',
-            description: t('career_advisor.messages.export_success')
-        });
     };
 
     const createNewChat = () => {
@@ -1009,11 +911,9 @@ export default function Index({ auth, userInfo, chatHistories }) {
         }
     };
 
-    // Handler pour les services avec interfaces spécialisées
-    const handleEnhancedServiceSubmit = async (serviceId: string, data: any) => {
+    const handleEnhancedServiceSubmit = async (serviceId, data) => {
         const service = SERVICES.find(s => s.id === serviceId);
 
-        // Gérer les tests d'artefacts
         if (data.isTest && data.mockResponse) {
             const contextId = crypto.randomUUID();
 
@@ -1040,17 +940,16 @@ export default function Index({ auth, userInfo, chatHistories }) {
             setActiveChat(newChat);
 
             toast({
-                title: "Test d'artefacts",
-                description: `Démonstration des artefacts pour ${service?.title}`,
+                title: t('components.career_advisor.interface.demonstration'),
+                description: t('components.career_advisor.interface.artifact_test', { service: service?.title }),
             });
             return;
         }
 
-        // Logique normale pour les vraies requêtes
         if (walletBalance < service?.cost || 0) {
             toast({
-                title: "Solde insuffisant",
-                description: "Vous n'avez pas assez de tokens pour ce service",
+                title: t('components.career_advisor.interface.insufficient_balance'),
+                description: t('components.career_advisor.interface.insufficient_tokens'),
                 variant: "destructive"
             });
             return;
@@ -1077,7 +976,7 @@ export default function Index({ auth, userInfo, chatHistories }) {
                     messages: [
                         {
                             role: 'user',
-                            content: data.prompt || data.finalPrompt || 'Demande personnalisée',
+                            content: data.prompt || data.finalPrompt || t('components.career_advisor.interface.custom_request'),
                             timestamp: new Date().toISOString()
                         },
                         {
@@ -1096,16 +995,16 @@ export default function Index({ auth, userInfo, chatHistories }) {
                 setTokensUsed(prev => prev + (response.data.tokens || 0));
 
                 toast({
-                    title: "Analyse terminée !",
-                    description: `Votre ${service.title.toLowerCase()} personnalisé est prêt`,
+                    title: t('components.career_advisor.interface.analysis_complete'),
+                    description: t('components.career_advisor.interface.analysis_ready', { service: service.title.toLowerCase() }),
                 });
             }
 
         } catch (error) {
             console.error('Enhanced service error:', error);
             toast({
-                title: "Erreur",
-                description: "Une erreur est survenue lors du traitement",
+                title: t('components.career_advisor.interface.error'),
+                description: t('components.career_advisor.interface.error_occurred'),
                 variant: "destructive"
             });
         } finally {
@@ -1113,322 +1012,97 @@ export default function Index({ auth, userInfo, chatHistories }) {
         }
     };
 
-    // Handler pour les artefacts détectés
-    const handleArtifactsDetected = (artifacts: ArtifactData[], content: string) => {
+    const handleArtifactsDetected = (artifacts, content) => {
         setCurrentArtifacts(artifacts);
         setCurrentArtifactContent(content);
         setArtifactSidebarOpen(true);
     };
 
-    // Handler pour les actions d'artefacts
-    const handleArtifactAction = async (action: string, data: any) => {
+    const handleArtifactAction = async (action, data) => {
         console.log('Artifact action:', action, data);
-
-        switch (action) {
-            case 'optimize-cv':
-                toast({
-                    title: "Optimisation CV",
-                    description: "Redirection vers l'éditeur de CV avec suggestions appliquées",
-                });
-                // Rediriger vers CV avec optimisations
-                break;
-
-            case 'export-roadmap':
-                toast({
-                    title: "Export en cours",
-                    description: "Votre roadmap carrière est en cours d'export PDF",
-                });
-                // Logique d'export
-                break;
-
-            case 'add-skill':
-                toast({
-                    title: "Compétence ajoutée",
-                    description: `${data.keyword} ajouté à votre profil`,
-                });
-                // Ajouter la compétence au profil utilisateur
-                break;
-
-            case 'schedule-practice':
-                toast({
-                    title: "Entraînement programmé",
-                    description: "Session d'entraînement ajoutée à votre calendrier",
-                });
-                // Programmer une session d'entraînement
-                break;
-
-            default:
-                toast({
-                    title: "Action en développement",
-                    description: "Cette fonctionnalité sera bientôt disponible",
-                });
-        }
+        toast({
+            title: t('components.career_advisor.interface.artifact_action'),
+            description: t('components.career_advisor.interface.artifact_action_executed', { action }),
+        });
     };
 
     return (
         <AuthenticatedLayout user={auth.user} hideHeaderOnMobile={true}>
-            {/* Rendre l'effet de curseur plus subtil */}
-            <div className="opacity-20"><FluidCursorEffect zIndex={100} /></div>
-
+            <div className="opacity-10">
+                <FluidCursorEffect zIndex={100} />
+            </div>
 
             <div className={cn(
                 "h-[calc(100vh-50px)] flex bg-gray-50 dark:bg-gray-900 transition-all duration-300",
-                artifactSidebarOpen ? "mr-96" : ""
-            )}> {/* Interface compacte sans scroll */}
-                {/* Sidebar Desktop - Collapsible */}
-                <div className={`hidden lg:flex ${isSidebarCollapsed ? 'lg:w-12' : 'lg:w-56'} bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-800 flex-col transition-all duration-300`}>
-                    {/* En-tête sidebar avec titre et wallet */}
-                    <div className="p-1.5 border-b border-gray-200 dark:border-gray-800 flex-shrink-0">
-                        <div className={`flex items-center ${isSidebarCollapsed ? 'justify-center' : 'gap-2'} mb-1.5`}>
-                            <Avatar className="w-7 h-7">
-                                <AvatarImage src="/mascot/mascot.png" alt="AI Assistant" />
-                                <AvatarFallback className="bg-gradient-to-r from-amber-500 to-purple-500 text-white text-xs">
-                                    AI
-                                </AvatarFallback>
-                            </Avatar>
-                            {!isSidebarCollapsed && (
-                                <div className="flex-1 min-w-0">
-                                    <div className="flex items-center gap-1.5">
-                                        <h1 className="text-xs font-bold text-gray-900 dark:text-gray-100 truncate">
-                                            IA Conseiller
-                                        </h1>
-                                        <Badge variant="secondary" className="text-[10px] px-1 py-0 h-3 bg-amber-50 text-amber-600 dark:bg-amber-900/30 dark:text-amber-300">
-                                            <Sparkles className="w-2 h-2 mr-0.5" />
-                                            Pro
-                                        </Badge>
-                                    </div>
-                                    <p className="text-[10px] text-gray-600 dark:text-gray-400 truncate">
-                                        {t(`services.${selectedService.id}.title`)}
-                                    </p>
-                                </div>
-                            )}
-                        </div>
-
-                        {/* Wallet info compactée */}
-                        {!isSidebarCollapsed && (
-                            <div className="bg-gradient-to-r from-amber-50 to-purple-50 dark:from-amber-900/20 dark:to-purple-900/20 border border-amber-200 dark:border-amber-700 px-1.5 py-0.5 rounded-md flex items-center gap-1 mb-1.5">
-                                <div className="w-1 h-1 bg-green-500 rounded-full" />
-                                <Wallet className="h-2.5 w-2.5 text-amber-600 dark:text-amber-400" />
-                                <span className="text-[10px] font-semibold text-amber-700 dark:text-amber-300">
-                                    {walletBalance.toLocaleString()}
-                                </span>
-                            </div>
-                        )}
-
-                        {/* Bouton collapsible */}
-                        <TooltipProvider>
-                            <Tooltip>
-                                <TooltipTrigger asChild>
-                                    <Button
-                                        onClick={() => {
-                                            createNewChat();
-                                        }}
-                                        className={`${isSidebarCollapsed ? 'w-8 p-0' : 'w-full'} h-6 bg-gradient-to-r from-amber-500 to-purple-500 hover:from-amber-600 hover:to-purple-600 text-white text-[10px] rounded-md shadow-sm transition-all duration-200`}
-                                    >
-                                        {isSidebarCollapsed ? (
-                                            <Plus className="h-3 w-3" />
-                                        ) : (
-                                            <>
-                                                <Plus className="h-3 w-3 mr-1" />
-                                                Nouveau
-                                            </>
-                                        )}
-                                    </Button>
-                                </TooltipTrigger>
-                                <TooltipContent side="right">
-                                    <p className="text-xs">{t('career_advisor.chat.new')}</p>
-                                </TooltipContent>
-                            </Tooltip>
-                        </TooltipProvider>
-                    </div>
-
-                    {/* Historique optimisé */}
-                    <div className="flex-1 p-1.5 min-h-0">
-                        {!isSidebarCollapsed && (
-                            <div className="flex items-center justify-between mb-2">
-                                <h3 className="text-xs font-semibold text-gray-700 dark:text-gray-300">
-                                    {t('career_advisor.history.title')}
-                                </h3>
-                                <Badge variant="outline" className="text-xs h-5 px-1.5 border-amber-200 text-amber-600">
-                                    {userChats.filter(chat => chat.service_id === selectedService.id).length}
-                                </Badge>
-                            </div>
-                        )}
-
-                        <ScrollArea className="h-[calc(100vh-120px)]">
-                            <div className={`${isSidebarCollapsed ? 'space-y-2 items-center flex flex-col' : 'space-y-1.5'}`}>
-                                {/* Bouton toggle sidebar */}
-                                <Button
-                                    variant="ghost"
-                                    size="sm"
-                                    onClick={() => {
-                                        const newState = !isSidebarCollapsed;
-                                        setSidebarCollapsed(newState);
-                                        localStorage.setItem('career_advisor_sidebar_collapsed', JSON.stringify(newState));
-                                    }}
-                                    className={`${isSidebarCollapsed ? 'w-8 h-8 p-0 rounded-full' : 'w-full h-6'} mb-1 text-gray-500`}
-                                >
-                                    {isSidebarCollapsed ? (
-                                        <ChevronRight className="h-3 w-3" />
-                                    ) : (
-                                        <div className="flex items-center w-full justify-between">
-                                            <span className="text-[10px]">Réduire</span>
-                                            <ChevronLeft className="h-3 w-3" />
-                                        </div>
-                                    )}
-                                </Button>
-
-                                <AnimatePresence>
-                                    {userChats
-                                        .filter(chat => chat.service_id === selectedService.id)
-                                        .map(chat => (
-                                            isSidebarCollapsed ? (
-                                                <TooltipProvider key={chat.context_id}>
-                                                    <Tooltip>
-                                                        <TooltipTrigger asChild>
-                                                            <motion.div
-                                                                layout
-                                                                initial={{ opacity: 0 }}
-                                                                animate={{ opacity: 1 }}
-                                                                exit={{ opacity: 0 }}
-                                                                whileHover={{ scale: 1.05 }}
-                                                                whileTap={{ scale: 0.95 }}
-                                                                onClick={() => handleChatSelection(chat)}
-                                                                className={`w-10 h-10 flex items-center justify-center rounded-full cursor-pointer ${activeChat?.context_id === chat.context_id
-                                                                    ? 'bg-amber-100 dark:bg-amber-900/30 text-amber-600 dark:text-amber-300 border border-amber-300 dark:border-amber-600'
-                                                                    : 'bg-white dark:bg-gray-800 text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-700 border border-gray-200 dark:border-gray-700'
-                                                                    } shadow-sm transition-all duration-200`}
-                                                            >
-                                                                <MessageSquare className="h-4 w-4" />
-                                                            </motion.div>
-                                                        </TooltipTrigger>
-                                                        <TooltipContent side="right">
-                                                            <p className="text-xs">{(chat.preview || '').substring(0, 30)}{(chat.preview || '').length > 30 ? '...' : ''}</p>
-                                                        </TooltipContent>
-                                                    </Tooltip>
-                                                </TooltipProvider>
-                                            ) : (
-                                                <ChatHistoryCard
-                                                    key={chat.context_id}
-                                                    chat={chat}
-                                                    isActive={activeChat?.context_id === chat.context_id}
-                                                    onSelect={handleChatSelection}
-                                                    onDelete={confirmDeleteChat}
-                                                />
-                                            )
-                                        ))}
-                                </AnimatePresence>
-                                {userChats.filter(chat => chat.service_id === selectedService.id).length === 0 && !isSidebarCollapsed && (
-                                    <div className="text-center py-4">
-                                        <MessageSquare className="h-6 w-6 text-gray-300 dark:text-gray-600 mx-auto mb-2" />
-                                        <p className="text-xs text-gray-500 dark:text-gray-400">
-                                            {t('career_advisor.history.empty')}
-                                        </p>
-                                    </div>
-                                )}
-                            </div>
-                        </ScrollArea>
-                    </div>
+                artifactSidebarOpen ? "mr-80" : ""
+            )}>
+                {/* Sidebar Desktop Ultra-Compacte */}
+                <div className="hidden lg:flex">
+                    <UltraCompactSidebar
+                        isCollapsed={isSidebarCollapsed}
+                        onToggleCollapse={() => {
+                            const newState = !isSidebarCollapsed;
+                            setSidebarCollapsed(newState);
+                            localStorage.setItem('career_advisor_sidebar_collapsed', JSON.stringify(newState));
+                        }}
+                        walletBalance={walletBalance}
+                        onNewChat={createNewChat}
+                        userChats={userChats}
+                        selectedService={selectedService}
+                        activeChat={activeChat}
+                        onChatSelect={handleChatSelection}
+                        onChatDelete={confirmDeleteChat}
+                    />
                 </div>
 
-                {/* Zone de chat */}
+                {/* Zone principale */}
                 <div className="flex-1 flex flex-col min-w-0 bg-gray-50 dark:bg-gray-900 h-full">
-                    {/* Mobile header avec service selector et menu */}
-                    <div className="lg:hidden px-2 py-1.5 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 flex-shrink-0">
+                    {/* Header Mobile */}
+                    <div className="lg:hidden px-3 py-2 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800">
                         <div className="flex items-center justify-between">
                             <div className="flex items-center gap-2">
                                 <Sheet open={isMobileSidebarOpen} onOpenChange={setIsMobileSidebarOpen}>
                                     <SheetTrigger asChild>
-                                        <Button variant="outline" size="sm" className="h-6 px-2 text-[10px]">
-                                            <Menu className="h-3 w-3 mr-0.5" />
-                                            Historique
+                                        <Button variant="outline" size="sm" className="h-8 px-2">
+                                            <Menu className="h-4 w-4 mr-1" />
+                                            <span className="text-xs">{t('components.career_advisor.interface.menu')}</span>
                                         </Button>
                                     </SheetTrigger>
-                                    <SheetContent side="left" className="w-[85vw] max-w-[300px] bg-white dark:bg-gray-900 p-4">
-                                        <SheetHeader className="text-left">
-                                            <SheetTitle className="flex items-center gap-2 text-sm">
-                                                <div className="w-7 h-7 bg-gradient-to-r from-amber-500 to-purple-500 rounded-lg flex items-center justify-center">
-                                                    <Brain className="h-4 w-4 text-white" />
-                                                </div>
-                                                {t('career_advisor.title')}
-                                                <Badge variant="secondary" className="text-xs px-1.5 py-0 h-4 bg-amber-50 text-amber-600 dark:bg-amber-900/30 dark:text-amber-300">
-                                                    <Sparkles className="w-2.5 h-2.5 mr-0.5" />
-                                                    {t('components.sidebar.pro_badge')}
-                                                </Badge>
-                                            </SheetTitle>
-                                        </SheetHeader>
-                                        <Separator className="my-2.5" />
-                                        <div className="space-y-2.5">
-                                            <div className="bg-gradient-to-r from-amber-50 to-purple-50 dark:from-amber-900/20 dark:to-purple-900/20 border border-amber-200 dark:border-amber-700 px-2.5 py-1.5 rounded-lg flex items-center gap-2 mb-2.5">
-                                                <div className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse" />
-                                                <Wallet className="h-3 w-3 text-amber-600 dark:text-amber-400" />
-                                                <span className="text-xs font-semibold text-amber-700 dark:text-amber-300">
-                                                    {walletBalance.toLocaleString()}
-                                                </span>
-                                                <span className="text-xs text-amber-600 dark:text-amber-400">
-                                                    {t('components.sidebar.credits')}
-                                                </span>
-                                            </div>
-                                            <Button
-                                                onClick={createNewChat}
-                                                className="w-full bg-gradient-to-r from-amber-500 to-purple-500 text-white h-8 text-xs"
-                                            >
-                                                <Plus className="h-3.5 w-3.5 mr-1.5" />
-                                                {t('career_advisor.chat.new')}
-                                            </Button>
-                                            <div className="flex items-center justify-between mt-4 mb-2">
-                                                <h3 className="text-xs font-semibold text-gray-700 dark:text-gray-300">
-                                                    {t('career_advisor.history.title')}
-                                                </h3>
-                                                <Badge variant="outline" className="text-xs h-5 px-1.5 border-amber-200 text-amber-600">
-                                                    {userChats.filter(chat => chat.service_id === selectedService.id).length}
-                                                </Badge>
-                                            </div>
-                                            <ScrollArea className="h-[calc(100vh-220px)]">
-                                                <div className="space-y-1.5 pr-2">
-                                                    <AnimatePresence>
-                                                        {userChats
-                                                            .filter(chat => chat.service_id === selectedService.id)
-                                                            .map(chat => (
-                                                                <ChatHistoryCard
-                                                                    key={chat.context_id}
-                                                                    chat={chat}
-                                                                    isActive={activeChat?.context_id === chat.context_id}
-                                                                    onSelect={handleChatSelection}
-                                                                    onDelete={confirmDeleteChat}
-                                                                />
-                                                            ))}
-                                                    </AnimatePresence>
-                                                    {userChats.filter(chat => chat.service_id === selectedService.id).length === 0 && (
-                                                        <div className="text-center py-4">
-                                                            <MessageSquare className="h-6 w-6 text-gray-300 dark:text-gray-600 mx-auto mb-2" />
-                                                            <p className="text-xs text-gray-500 dark:text-gray-400">
-                                                                {t('career_advisor.history.empty')}
-                                                            </p>
-                                                        </div>
-                                                    )}
-                                                </div>
-                                            </ScrollArea>
+                                    <SheetContent side="left" className="w-[280px] p-0">
+                                        <div className="h-full">
+                                            <UltraCompactSidebar
+                                                isCollapsed={false}
+                                                onToggleCollapse={() => { }}
+                                                walletBalance={walletBalance}
+                                                onNewChat={createNewChat}
+                                                userChats={userChats}
+                                                selectedService={selectedService}
+                                                activeChat={activeChat}
+                                                onChatSelect={handleChatSelection}
+                                                onChatDelete={confirmDeleteChat}
+                                            />
                                         </div>
                                     </SheetContent>
                                 </Sheet>
 
                                 <DropdownMenu>
                                     <DropdownMenuTrigger asChild>
-                                        <Button variant="outline" size="sm" className="h-6 text-[10px]">
-                                            <selectedService.icon className="h-3 w-3 mr-1" />
-                                            <span className="max-w-[60px] truncate">{t(`services.${selectedService.id}.title`)}</span>
-                                            <ChevronDown className="h-2.5 w-2.5 ml-0.5" />
+                                        <Button variant="outline" size="sm" className="h-8 px-2">
+                                            <selectedService.icon className="h-3.5 w-3.5 mr-1" />
+                                            <span className="text-xs max-w-[80px] truncate">
+                                                {t(`services.${selectedService.id}.title`)}
+                                            </span>
+                                            <ChevronDown className="h-3 w-3 ml-1" />
                                         </Button>
                                     </DropdownMenuTrigger>
-                                    <DropdownMenuContent align="end" className="min-w-[150px]">
+                                    <DropdownMenuContent align="start">
                                         {SERVICES.map((service) => (
                                             <DropdownMenuItem
                                                 key={service.id}
                                                 onSelect={() => handleServiceSelection(service)}
-                                                className="text-xs py-1.5"
+                                                className="text-xs"
                                             >
-                                                <service.icon className="h-3.5 w-3.5 mr-1.5" />
+                                                <service.icon className="h-3.5 w-3.5 mr-2" />
                                                 {t(`services.${service.id}.title`)}
                                             </DropdownMenuItem>
                                         ))}
@@ -1436,119 +1110,57 @@ export default function Index({ auth, userInfo, chatHistories }) {
                                 </DropdownMenu>
                             </div>
 
-                            {/* Balance mobile */}
-                            <div className="bg-gradient-to-r from-amber-50 to-purple-50 dark:from-amber-900/20 dark:to-purple-900/20 border border-amber-200 dark:border-amber-700 px-1.5 py-0.5 rounded-md flex items-center gap-1">
-                                <Wallet className="h-2.5 w-2.5 text-amber-600 dark:text-amber-400" />
-                                <span className="text-[10px] font-semibold text-amber-700 dark:text-amber-300">
-                                    {walletBalance.toLocaleString()}
-                                </span>
+                            <div className="flex items-center gap-2">
+                                <div className="bg-gradient-to-r from-amber-50 to-purple-50 dark:from-amber-900/20 dark:to-purple-900/20 border border-amber-200 dark:border-amber-700 px-2 py-1 rounded-lg flex items-center gap-1">
+                                    <Wallet className="h-3 w-3 text-amber-600 dark:text-amber-400" />
+                                    <span className="text-xs font-semibold text-amber-700 dark:text-amber-300">
+                                        {walletBalance.toLocaleString()}
+                                    </span>
+                                </div>
                             </div>
                         </div>
                     </div>
 
-                    {/* Services ou Chat */}
+                    {/* Contenu principal */}
                     {!activeChat ? (
                         <div className="flex-1 flex flex-col min-h-0">
-                            {/* Section services */}
-                            <div className="flex-1 overflow-y-auto pb-6">
-                                <div className="px-3 py-6">
-                                    <div className="text-center mb-6">
+                            <div className="flex-1 overflow-y-auto">
+                                <div className="px-4 py-6">
+                                    <div className="text-center mb-8">
                                         <motion.div
                                             initial={{ scale: 0.9, opacity: 0 }}
                                             animate={{ scale: 1, opacity: 1 }}
-                                            transition={{ duration: 0.4, type: "spring" }}
-                                            className="mb-3"
+                                            transition={{ duration: 0.5, type: "spring" }}
                                         >
-                                            <div className="w-20 h-20   rounded-xl mx-auto flex items-center justify-center mb-2.5 shadow-md overflow-hidden">
-                                                <img src="/mascot/mas.png" alt="AI Assistant" className="w-16 h-16 object-contain" />
+                                            <div className="w-20 h-20 rounded-2xl mx-auto mb-4 overflow-hidden shadow-lg">
+                                                <img src="/mascot/mas.png" alt="AI Assistant" className="w-full h-full object-cover" />
                                             </div>
+                                            <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-3">
+                                                {t('components.career_advisor.interface.professional_ai_advisor')}
+                                            </h2>
+                                            <p className="text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
+                                                {t('components.career_advisor.interface.start_intelligent_conversation')}
+                                            </p>
                                         </motion.div>
-                                        <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-2">
-                                            {t('career_advisor.services.choose')}
-                                        </h2>
-                                        <p className="text-sm text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
-                                            {t('career_advisor.services.description')}
-                                        </p>
                                     </div>
 
-                                    {/* Interface améliorée ou classique */}
-                                    {useEnhancedInterface ? (
-                                        <div className="px-2">
-                                            <ServiceSelector
-                                                userInfo={userInfo}
-                                                onServiceSubmit={handleEnhancedServiceSubmit}
-                                                isLoading={isLoading}
-                                                walletBalance={walletBalance}
-                                            />
-
-                                            {/* Toggle vers interface classique */}
-                                            <div className="text-center mt-8">
-                                                <Button
-                                                    variant="ghost"
-                                                    size="sm"
-                                                    onClick={() => setUseEnhancedInterface(false)}
-                                                    className="text-gray-500 hover:text-gray-700"
-                                                >
-                                                    Utiliser l'interface classique
-                                                </Button>
-                                            </div>
-                                        </div>
-                                    ) : (
-                                        <>
-                                            {/* Interface classique */}
-                                            <div className="hidden lg:grid grid-cols-2 xl:grid-cols-3 gap-3 px-2 mb-8">
-                                                {SERVICES.map(service => (
-                                                    <EnhancedServiceCard
-                                                        key={service.id}
-                                                        service={service}
-                                                        isSelected={selectedService.id === service.id}
-                                                        onClick={() => handleServiceSelection(service)}
-                                                    />
-                                                ))}
-                                                <EnhancedServiceCard
-                                                    service={REPORT_SERVICE}
-                                                    isSelected={false}
-                                                    onClick={() => handleServiceSelection(REPORT_SERVICE)}
-                                                />
-                                            </div>
-
-                                            <div className="lg:hidden grid grid-cols-2 gap-2 px-2 mb-8">
-                                                {SERVICES.map(service => (
-                                                    <EnhancedMobileServiceCard
-                                                        key={service.id}
-                                                        service={service}
-                                                        isSelected={selectedService.id === service.id}
-                                                        onClick={() => handleServiceSelection(service)}
-                                                    />
-                                                ))}
-                                                <EnhancedMobileServiceCard
-                                                    service={REPORT_SERVICE}
-                                                    isSelected={false}
-                                                    onClick={() => handleServiceSelection(REPORT_SERVICE)}
-                                                />
-                                            </div>
-
-                                            {/* Toggle vers interface améliorée */}
-                                            <div className="text-center">
-                                                <Button
-                                                    variant="outline"
-                                                    onClick={() => setUseEnhancedInterface(true)}
-                                                    className="bg-gradient-to-r from-amber-50 to-purple-50 border-amber-200 hover:from-amber-100 hover:to-purple-100"
-                                                >
-                                                    <Sparkles className="w-4 h-4 mr-2" />
-                                                    Essayer la nouvelle expérience IA
-                                                </Button>
-                                            </div>
-                                        </>
-                                    )}
+                                    {/* Interface Enhanced uniquement */}
+                                    <div className="px-2">
+                                        <ServiceSelector
+                                            userInfo={userInfo}
+                                            onServiceSubmit={handleEnhancedServiceSubmit}
+                                            isLoading={isLoading}
+                                            walletBalance={walletBalance}
+                                        />
+                                    </div>
                                 </div>
                             </div>
 
-                            {/* Message d'instructions - plus d'input sur la page principale */}
-                            <div className="flex-shrink-0 bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-800 shadow-lg">
-                                <div className="max-w-4xl mx-auto px-3 py-6 text-center">
-                                    <div className="flex items-center justify-center gap-2 mb-4">
-                                        <div className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-amber-50 to-purple-50 dark:from-amber-900/20 dark:to-purple-900/20 border border-amber-200 dark:border-amber-700 rounded-full">
+                            {/* Footer informatif */}
+                            <div className="bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-800 px-4 py-4">
+                                <div className="max-w-2xl mx-auto text-center">
+                                    <div className="flex items-center justify-center gap-2 mb-3">
+                                        <div className="flex items-center gap-2 px-3 py-1.5 bg-gradient-to-r from-amber-50 to-purple-50 dark:from-amber-900/20 dark:to-purple-900/20 border border-amber-200 dark:border-amber-700 rounded-full">
                                             <selectedService.icon className="h-4 w-4 text-amber-600 dark:text-amber-400" />
                                             <span className="text-sm font-medium text-gray-900 dark:text-gray-100">
                                                 {t(`services.${selectedService.id}.title`)}
@@ -1556,22 +1168,25 @@ export default function Index({ auth, userInfo, chatHistories }) {
                                         </div>
                                     </div>
 
-                                    <div className="max-w-lg mx-auto">
-                                        <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">
-                                            Service sélectionné
-                                        </h3>
-                                        <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
-                                            Cliquez sur le service ci-dessus pour démarrer une conversation personnalisée, ou utilisez l'interface classique pour poser directement une question.
-                                        </p>
-                                        <div className="flex items-center justify-center gap-4 text-xs text-gray-500 dark:text-gray-400">
-                                            <div className="flex items-center gap-1">
-                                                <Coins className="h-3 w-3 text-amber-500" />
-                                                <span>Coût: {selectedService.cost} crédits</span>
-                                            </div>
-                                            <div className="flex items-center gap-1">
-                                                <Wallet className="h-3 w-3 text-green-500" />
-                                                <span>Solde: {walletBalance.toLocaleString()}</span>
-                                            </div>
+                                    <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">
+                                        {t('components.career_advisor.interface.selected_service')}
+                                    </h3>
+                                    <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
+                                        {t('components.career_advisor.interface.service_description')}
+                                    </p>
+
+                                    <div className="flex items-center justify-center gap-6 text-xs text-gray-500 dark:text-gray-400">
+                                        <div className="flex items-center gap-1">
+                                            <Coins className="h-3.5 w-3.5 text-amber-500" />
+                                            <span>{t('components.career_advisor.interface.cost')}: {selectedService.cost} {t('components.career_advisor.interface.credits')}</span>
+                                        </div>
+                                        <div className="flex items-center gap-1">
+                                            <Wallet className="h-3.5 w-3.5 text-green-500" />
+                                            <span>{t('components.career_advisor.interface.balance')}: {walletBalance.toLocaleString()}</span>
+                                        </div>
+                                        <div className="flex items-center gap-1">
+                                            <Star className="h-3.5 w-3.5 text-purple-500" />
+                                            <span>{t('components.career_advisor.interface.advanced_ai')}</span>
                                         </div>
                                     </div>
                                 </div>
@@ -1579,211 +1194,60 @@ export default function Index({ auth, userInfo, chatHistories }) {
                         </div>
                     ) : (
                         <div className="flex-1 flex flex-col min-h-0">
-                            {/* En-tête du chat plus compact */}
-                            <div className="bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 py-2 px-3 flex-shrink-0">
-                                <div className="flex items-center justify-between">
-                                    <div className="flex items-center gap-2 min-w-0">
-                                        <div className="w-6 h-6 bg-gradient-to-r from-amber-500 to-purple-500 rounded-lg flex items-center justify-center">
-                                            <selectedService.icon className="h-3.5 w-3.5 text-white" />
-                                        </div>
-                                        <div className="min-w-0">
-                                            <h3 className="font-medium text-gray-900 dark:text-gray-100 text-sm truncate">
-                                                {t(`services.${selectedService.id}.title`)}
-                                            </h3>
-                                            <div className="flex items-center gap-2">
-                                                <div className="flex items-center gap-1">
-                                                    <div className="w-1 h-1 bg-green-500 rounded-full"></div>
-                                                    <span className="text-xs text-gray-500 dark:text-gray-400">
-                                                        Active
-                                                    </span>
-                                                </div>
-                                                <Badge variant="outline" className="text-xs h-4 px-1.5 py-0 border-amber-200 text-amber-600">
-                                                    {maxHistory - currentQuestions}
-                                                </Badge>
-                                            </div>
-                                        </div>
-                                    </div>
+                            {/* Header de chat */}
+                            <CompactHeader
+                                selectedService={selectedService}
+                                walletBalance={walletBalance}
+                                onNewChat={createNewChat}
+                                onExport={handleExport}
+                                isExporting={isExporting}
+                                isAndroidApp={isAndroidApp}
+                                isReady={isReady}
+                                artifactCount={currentArtifacts.length}
+                                onToggleArtifacts={() => setArtifactSidebarOpen(!artifactSidebarOpen)}
+                                artifactSidebarOpen={artifactSidebarOpen}
+                            />
 
-                                    {/* Bouton artefacts */}
-                                    {currentArtifacts.length > 0 && (
-                                        <Button
-                                            variant="outline"
-                                            size="sm"
-                                            onClick={() => setArtifactSidebarOpen(true)}
-                                            className={cn(
-                                                "h-7 px-2 mr-2",
-                                                artifactSidebarOpen ? "bg-amber-100 text-amber-700 border-amber-300" : ""
-                                            )}
-                                        >
-                                            <Sparkles className="h-3 w-3 mr-1" />
-                                            <span className="hidden sm:inline text-xs">Artefacts</span>
-                                            <Badge variant="secondary" className="ml-1 h-4 px-1 text-xs bg-amber-500 text-white">
-                                                {currentArtifacts.length}
-                                            </Badge>
-                                        </Button>
-                                    )}
-
-                                    {/* Bouton export compact */}
-                                    <DropdownMenu>
-                                        <DropdownMenuTrigger asChild>
-                                            <Button
-                                                variant="outline"
-                                                size="sm"
-                                                className="h-7 px-2"
-                                            >
-                                                <Download className="h-3 w-3 mr-1" />
-                                                <span className="hidden sm:inline text-xs">Export</span>
-                                                <ChevronDown className="h-2.5 w-2.5 ml-0.5" />
-                                                {isAndroidApp && isReady && (
-                                                    <Smartphone className="ml-1 h-2.5 w-2.5 text-green-500" />
-                                                )}
-                                            </Button>
-                                        </DropdownMenuTrigger>
-                                        <DropdownMenuContent align="end" className="min-w-[120px]">
-                                            <DropdownMenuItem onClick={() => handleExport('pdf')} className="text-xs py-1.5">
-                                                <FileText className="h-3.5 w-3.5 mr-2" />
-                                                PDF
-                                                {isAndroidApp && isReady && (
-                                                    <Smartphone className="ml-auto h-3 w-3 text-green-500" />
-                                                )}
-                                            </DropdownMenuItem>
-                                            <DropdownMenuItem onClick={() => handleExport('docx')} className="text-xs py-1.5">
-                                                <FileText className="h-3.5 w-3.5 mr-2" />
-                                                DOCX
-                                                {isAndroidApp && isReady && (
-                                                    <Smartphone className="ml-auto h-3 w-3 text-green-500" />
-                                                )}
-                                            </DropdownMenuItem>
-                                            {selectedService.id === 'presentation-ppt' && (
-                                                <DropdownMenuItem onClick={() => handleExport('pptx')} className="text-xs py-1.5">
-                                                    <Presentation className="h-3.5 w-3.5 mr-2" />
-                                                    PPTX
-                                                    <span className="ml-auto text-[10px] text-amber-600">Client</span>
-                                                </DropdownMenuItem>
-                                            )}
-                                        </DropdownMenuContent>
-                                    </DropdownMenu>
-
-                                    {/* Toggle artefacts */}
-                                    <Button
-                                        variant="outline"
-                                        size="sm"
-                                        onClick={() => setUseEnhancedBubbles(!useEnhancedBubbles)}
-                                        className={`h-7 px-2 ${useEnhancedBubbles ? 'bg-amber-50 border-amber-200 text-amber-700' : ''}`}
-                                    >
-                                        <Sparkles className="h-3 w-3 mr-1" />
-                                        <span className="hidden sm:inline text-xs">
-                                            {useEnhancedBubbles ? 'Artefacts ON' : 'Artefacts OFF'}
-                                        </span>
-                                    </Button>
-
-                                    {/* Bouton test artefacts (temporaire) */}
-                                    {useEnhancedBubbles && (
-                                        <Button
-                                            variant="outline"
-                                            size="sm"
-                                            onClick={() => {
-                                                // Ajouter un message de test avec artefact
-                                                const testMessage = {
-                                                    role: 'assistant' as const,
-                                                    content: `## Analyse de votre profil professionnel
-
-Voici l'évaluation détaillée de votre CV :
-
-| Section | Score | Statut |
-|---------|-------|--------|
-| Informations personnelles | 85/100 | Bon |
-| Résumé professionnel | 65/100 | À améliorer |
-| Expériences | 90/100 | Excellent |
-| Compétences | 70/100 | Bon |
-
-### Actions recommandées :
-• Améliorer le résumé professionnel avec des mots-clés sectoriels
-• Ajouter 2-3 compétences techniques manquantes
-• Optimiser la mise en forme pour les ATS
-• Quantifier davantage les réalisations
-
-**Score global : 77/100** - Votre CV est bon mais peut être optimisé pour maximiser vos chances.`,
-                                                    timestamp: new Date().toISOString(),
-                                                    serviceId: selectedService.id,
-                                                    isLatest: true
-                                                };
-
-                                                setActiveChat({
-                                                    ...activeChat,
-                                                    messages: [...(activeChat?.messages || []), testMessage]
-                                                });
-                                            }}
-                                            className="h-7 px-2 bg-purple-50 border-purple-200 text-purple-700"
-                                        >
-                                            <Zap className="h-3 w-3 mr-1" />
-                                            <span className="hidden sm:inline text-xs">Test</span>
-                                        </Button>
-                                    )}
-                                </div>
-                            </div>
-
-                            {/* Zone de messages avec hauteur optimisée */}
-                            <div className="flex-1 min-h-0 pb-2">
+                            {/* Zone de messages optimisée */}
+                            <div className="flex-1 min-h-0">
                                 <ScrollArea className="h-full" ref={scrollRef}>
-                                    <div className="max-w-4xl mx-auto space-y-3 p-3 pb-4">
+                                    <div className="max-w-4xl mx-auto space-y-4 p-4">
                                         <AnimatePresence mode="popLayout">
                                             {(activeChat?.messages || []).map((message, index) => (
                                                 <motion.div
                                                     key={`message-${index}`}
-                                                    initial={{ opacity: 0, y: 15 }}
+                                                    initial={{ opacity: 0, y: 20 }}
                                                     animate={{ opacity: 1, y: 0 }}
-                                                    exit={{ opacity: 0 }}
-                                                    transition={{ duration: 0.2 }}
+                                                    exit={{ opacity: 0, y: -10 }}
+                                                    transition={{ duration: 0.3 }}
                                                 >
-                                                    {useEnhancedBubbles ? (
-                                                        <EnhancedMessageBubble
-                                                            message={{
-                                                                ...message,
-                                                                serviceId: selectedService.id,
-                                                                isLatest: index === (activeChat?.messages || []).length - 1
-                                                            }}
-                                                            onArtifactAction={handleArtifactAction}
-                                                        />
-                                                    ) : (
-                                                        <MessageBubble
-                                                            message={{
-                                                                ...message,
-                                                                isLatest: index === (activeChat?.messages || []).length - 1
-                                                            }}
-                                                            serviceId={selectedService.id}
-                                                            onArtifactsDetected={handleArtifactsDetected}
-                                                        />
-                                                    )}
+                                                    <EnhancedMessageBubble
+                                                        message={{
+                                                            ...message,
+                                                            serviceId: selectedService.id,
+                                                            isLatest: index === (activeChat?.messages || []).length - 1
+                                                        }}
+                                                        onArtifactAction={handleArtifactAction}
+                                                    />
                                                 </motion.div>
                                             ))}
+
                                             {tempMessage && (
                                                 <motion.div
                                                     key="thinking"
-                                                    initial={{ opacity: 0, y: 10 }}
+                                                    initial={{ opacity: 0, y: 20 }}
                                                     animate={{ opacity: 1, y: 0 }}
-                                                    exit={{ opacity: 0 }}
-                                                    transition={{ duration: 0.2 }}
+                                                    exit={{ opacity: 0, y: -10 }}
+                                                    transition={{ duration: 0.3 }}
                                                 >
-                                                    {useEnhancedBubbles ? (
-                                                        <EnhancedMessageBubble
-                                                            message={{
-                                                                ...tempMessage,
-                                                                serviceId: selectedService.id,
-                                                                isLatest: true
-                                                            }}
-                                                            onArtifactAction={handleArtifactAction}
-                                                        />
-                                                    ) : (
-                                                        <MessageBubble
-                                                            message={{
-                                                                ...tempMessage,
-                                                                isLatest: true
-                                                            }}
-                                                            serviceId={selectedService.id}
-                                                            onArtifactsDetected={handleArtifactsDetected}
-                                                        />
-                                                    )}
+                                                    <EnhancedMessageBubble
+                                                        message={{
+                                                            ...tempMessage,
+                                                            serviceId: selectedService.id,
+                                                            isLatest: true
+                                                        }}
+                                                        onArtifactAction={handleArtifactAction}
+                                                    />
                                                 </motion.div>
                                             )}
                                         </AnimatePresence>
@@ -1791,10 +1255,10 @@ Voici l'évaluation détaillée de votre CV :
                                 </ScrollArea>
                             </div>
 
-                            {/* Zone de saisie fixe */}
-                            <div className="flex-shrink-0 bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-800">
-                                <div className="max-w-4xl mx-auto px-3 py-3">
-                                    <ChatInput
+                            {/* Zone de saisie compacte */}
+                            <div className="bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-800 p-3">
+                                <div className="max-w-4xl mx-auto">
+                                    <CompactChatInput
                                         value={data.question}
                                         onChange={setData}
                                         onSubmit={handleSubmit}
@@ -1802,8 +1266,6 @@ Voici l'évaluation détaillée de votre CV :
                                         disabled={isLoading}
                                         isLoading={isLoading}
                                         cost={selectedService.cost}
-                                        service={t(`services.${selectedService.id}.title`)}
-                                        variant="minimal"
                                         onKeyDown={handleKeyDown}
                                     />
                                 </div>
@@ -1813,67 +1275,32 @@ Voici l'évaluation détaillée de votre CV :
                 </div>
             </div>
 
-            {/* Dialogue de suppression optimisé */}
+            {/* Dialogue de suppression */}
             <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
-                <AlertDialogContent className="sm:max-w-sm">
+                <AlertDialogContent className="sm:max-w-md">
                     <AlertDialogHeader>
-                        <AlertDialogTitle className="flex items-center gap-2 text-base">
-                            <div className="w-7 h-7 bg-red-100 dark:bg-red-900/20 rounded-full flex items-center justify-center">
-                                <Trash2 className="h-3.5 w-3.5 text-red-600 dark:text-red-400" />
+                        <AlertDialogTitle className="flex items-center gap-2">
+                            <div className="w-8 h-8 bg-red-100 dark:bg-red-900/20 rounded-full flex items-center justify-center">
+                                <Trash2 className="h-4 w-4 text-red-600 dark:text-red-400" />
                             </div>
-                            {t('career_advisor.chat.actions.delete.title')}
+                            {t('components.career_advisor.interface.delete_conversation')}
                         </AlertDialogTitle>
-                        <AlertDialogDescription className="text-gray-600 dark:text-gray-400 text-sm mt-1.5">
-                            {t('career_advisor.chat.actions.delete.description')}
+                        <AlertDialogDescription>
+                            {t('components.career_advisor.interface.irreversible_action')}
                         </AlertDialogDescription>
                     </AlertDialogHeader>
-                    <AlertDialogFooter className="gap-2 mt-3">
-                        <AlertDialogCancel className="text-sm py-1.5 px-3 h-9">
-                            {t('career_advisor.chat.actions.delete.cancel')}
-                        </AlertDialogCancel>
+                    <AlertDialogFooter>
+                        <AlertDialogCancel>{t('common.cancel')}</AlertDialogCancel>
                         <AlertDialogAction
                             onClick={handleDeleteChat}
-                            className="bg-red-500 hover:bg-red-600 text-white shadow-sm text-sm py-1.5 px-3 h-9"
+                            className="bg-red-500 hover:bg-red-600 text-white"
                         >
-                            <Trash2 className="h-3.5 w-3.5 mr-1.5" />
-                            {t('career_advisor.chat.actions.delete.confirm')}
+                            <Trash2 className="h-4 w-4 mr-2" />
+                            {t('common.delete')}
                         </AlertDialogAction>
                     </AlertDialogFooter>
                 </AlertDialogContent>
             </AlertDialog>
-
-            {/* Styles CSS supplémentaires */}
-            <style>{`
-                .hide-scrollbar {
-                    scrollbar-width: none;
-                    -ms-overflow-style: none;
-                }
-                .hide-scrollbar::-webkit-scrollbar {
-                    display: none;
-                }
-                .smooth-focus {
-                    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-                }
-                .smooth-focus:focus {
-                    transform: translateY(-1px);
-                }
-                @media (max-width: 768px) {
-                    .mobile-input {
-                        font-size: 16px;
-                    }
-                }
-                .focus-visible:focus-visible {
-                    outline: 2px solid #f59e0b;
-                    outline-offset: 2px;
-                }
-                .interactive-hover {
-                    transition: all 0.15s ease-out;
-                }
-                .interactive-hover:hover {
-                    transform: translateY(-0.5px);
-                    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-                }
-            `}</style>
 
             {/* Sidebar d'artefacts */}
             <ArtifactSidebar
@@ -1883,6 +1310,50 @@ Voici l'évaluation détaillée de votre CV :
                 serviceId={selectedService.id}
                 messageContent={currentArtifactContent}
             />
+
+            {/* Styles supplémentaires */}
+            <style>{`
+                .hide-scrollbar {
+                    scrollbar-width: none;
+                    -ms-overflow-style: none;
+                }
+                .hide-scrollbar::-webkit-scrollbar {
+                    display: none;
+                }
+                
+                /* Animations fluides */
+                .smooth-transition {
+                    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+                }
+                
+                /* Focus amélioré */
+                .focus-ring:focus-visible {
+                    outline: 2px solid #f59e0b;
+                    outline-offset: 2px;
+                }
+                
+                /* Hover subtil */
+                .hover-lift:hover {
+                    transform: translateY(-1px);
+                    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+                }
+                
+                /* Mobile optimisé */
+                @media (max-width: 768px) {
+                    .mobile-optimized {
+                        font-size: 16px; /* Évite le zoom iOS */
+                    }
+                }
+                
+                /* Gradients améliorés */
+                .gradient-amber-purple {
+                    background: linear-gradient(135deg, #f59e0b 0%, #8b5cf6 100%);
+                }
+                
+                .gradient-amber-purple-soft {
+                    background: linear-gradient(135deg, #fef3c7 0%, #ede9fe 100%);
+                }
+            `}</style>
         </AuthenticatedLayout>
     );
 }

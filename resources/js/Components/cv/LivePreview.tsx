@@ -6,7 +6,7 @@ import { Card, CardHeader, CardTitle, CardContent } from '@/Components/ui/card';
 import { Badge } from '@/Components/ui/badge';
 import { useToast } from '@/Components/ui/use-toast';
 import {
-    Eye, EyeOff, RefreshCw, Monitor, Smartphone, 
+    Eye, EyeOff, RefreshCw, Monitor, Smartphone,
     Maximize2, Minimize2, Star, FileText, AlertCircle,
     Loader2, Settings, Palette, RotateCcw
 } from 'lucide-react';
@@ -174,33 +174,9 @@ export default function LivePreview({
                         <Loader2 className="w-4 h-4 text-amber-600 animate-spin" />
                     )}
                 </div>
-                
+
                 <div className="flex items-center gap-2">
-                    {/* Sélecteur de vue */}
-                    <div className="flex items-center bg-gray-200 dark:bg-gray-700 rounded-lg p-1">
-                        <button
-                            onClick={() => setViewMode('desktop')}
-                            className={cn(
-                                "p-1.5 rounded-md transition-all",
-                                viewMode === 'desktop' 
-                                    ? "bg-white dark:bg-gray-600 text-amber-600 shadow-sm" 
-                                    : "text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200"
-                            )}
-                        >
-                            <Monitor className="w-4 h-4" />
-                        </button>
-                        <button
-                            onClick={() => setViewMode('mobile')}
-                            className={cn(
-                                "p-1.5 rounded-md transition-all",
-                                viewMode === 'mobile' 
-                                    ? "bg-white dark:bg-gray-600 text-amber-600 shadow-sm" 
-                                    : "text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200"
-                            )}
-                        >
-                            <Smartphone className="w-4 h-4" />
-                        </button>
-                    </div>
+
 
                     {/* Boutons d'action */}
                     <Button
@@ -210,7 +186,7 @@ export default function LivePreview({
                     >
                         {isFullscreen ? <Minimize2 className="w-4 h-4" /> : <Maximize2 className="w-4 h-4" />}
                     </Button>
-                    
+
                     <Button
                         variant="ghost"
                         size="sm"
@@ -265,7 +241,7 @@ export default function LivePreview({
                             Auto-refresh
                         </label>
                     </div>
-                    
+
                     <Button
                         variant="ghost"
                         size="sm"
@@ -293,7 +269,7 @@ export default function LivePreview({
                     </div>
                 ) : previewHtml ? (
                     <div className="h-full relative">
-                        <div 
+                        <div
                             className={cn(
                                 "h-full overflow-auto bg-gray-100 dark:bg-gray-800",
                                 viewMode === 'mobile' ? "flex justify-center" : ""
@@ -302,8 +278,8 @@ export default function LivePreview({
                             <div
                                 className={cn(
                                     "bg-white shadow-lg transition-all duration-300",
-                                    viewMode === 'mobile' 
-                                        ? "w-80 mx-auto my-4 rounded-lg overflow-hidden" 
+                                    viewMode === 'mobile'
+                                        ? "w-80 mx-auto my-4 rounded-lg overflow-hidden"
                                         : "w-full"
                                 )}
                                 style={{
@@ -313,7 +289,7 @@ export default function LivePreview({
                                 dangerouslySetInnerHTML={{ __html: previewHtml }}
                             />
                         </div>
-                        
+
                         {/* Overlay de chargement */}
                         <AnimatePresence>
                             {isGenerating && (
@@ -357,7 +333,7 @@ export default function LivePreview({
                             Choisir un modèle de CV
                         </DialogTitle>
                     </DialogHeader>
-                    
+
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
                         {availableModels.map((model) => (
                             <motion.div
@@ -366,8 +342,8 @@ export default function LivePreview({
                                 whileTap={{ scale: 0.98 }}
                                 className={cn(
                                     "border rounded-lg p-4 cursor-pointer transition-all",
-                                    selectedCvModel?.id === model.id 
-                                        ? "border-amber-500 bg-amber-50 dark:bg-amber-950/50" 
+                                    selectedCvModel?.id === model.id
+                                        ? "border-amber-500 bg-amber-50 dark:bg-amber-950/50"
                                         : "border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600"
                                 )}
                                 onClick={() => {
@@ -377,8 +353,8 @@ export default function LivePreview({
                             >
                                 <div className="aspect-[3/4] bg-gray-100 dark:bg-gray-800 rounded mb-3 flex items-center justify-center overflow-hidden">
                                     {model.previewImagePath ? (
-                                        <img 
-                                            src={model.previewImagePath} 
+                                        <img
+                                            src={model.previewImagePath}
                                             alt={model.name}
                                             className="w-full h-full object-cover"
                                         />
@@ -386,15 +362,15 @@ export default function LivePreview({
                                         <FileText className="w-8 h-8 text-gray-400" />
                                     )}
                                 </div>
-                                
+
                                 <h3 className="font-medium text-sm mb-1 text-gray-800 dark:text-gray-200">
                                     {model.name}
                                 </h3>
-                                
+
                                 <p className="text-xs text-gray-600 dark:text-gray-400 line-clamp-2 mb-2">
                                     {model.description}
                                 </p>
-                                
+
                                 <div className="flex items-center justify-between">
                                     {model.price === 0 ? (
                                         <Badge className="bg-green-100 text-green-800 dark:bg-green-950 dark:text-green-400">
@@ -405,7 +381,7 @@ export default function LivePreview({
                                             {model.price}€
                                         </Badge>
                                     )}
-                                    
+
                                     {selectedCvModel?.id === model.id && (
                                         <Badge className="bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-400">
                                             Sélectionné
@@ -415,7 +391,7 @@ export default function LivePreview({
                             </motion.div>
                         ))}
                     </div>
-                    
+
                     <div className="mt-6 p-4 bg-blue-50 dark:bg-blue-950/50 rounded-lg">
                         <div className="flex items-start gap-3">
                             <AlertCircle className="w-5 h-5 text-blue-600 dark:text-blue-400 mt-0.5" />
@@ -424,7 +400,7 @@ export default function LivePreview({
                                     Aperçu en temps réel
                                 </h4>
                                 <p className="text-sm text-blue-700 dark:text-blue-400">
-                                    L'aperçu se met à jour automatiquement lorsque vous modifiez vos informations. 
+                                    L'aperçu se met à jour automatiquement lorsque vous modifiez vos informations.
                                     Vous pouvez désactiver cette fonction avec le bouton "Auto-refresh".
                                 </p>
                             </div>

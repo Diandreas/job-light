@@ -279,7 +279,11 @@
             <div class="name-title-band">
                 <div class="name">{{ $cvInformation['personalInformation']['firstName'] }}</div>
                 <div class="profession">
-                    {{ $currentLocale === 'fr' ? $cvInformation['professions'][0]['name'] : $cvInformation['professions'][0]['name_en'] }}
+                    @if(!empty($cvInformation['professions']))
+                        {{ $currentLocale === 'fr' ? $cvInformation['professions'][0]['name'] : $cvInformation['professions'][0]['name_en'] }}
+                    @else
+                        {{ $cvInformation['personalInformation']['profession'] ?? $cvInformation['personalInformation']['full_profession'] ?? '' }}
+                    @endif
                 </div>
             </div>
         </div>
@@ -399,10 +403,16 @@
             @endif
 
             <!-- Résumé / Profil -->
-            @if(!empty($cvInformation['summaries']))
+            @if(!empty($cvInformation['summaries']) && isset($cvInformation['summaries'][0]))
                 <div class="contact-item" style="margin-top: 10mm;">
                     <div class="contact-text" style="text-align: justify; line-height: 1.3;">
                         {{ $cvInformation['summaries'][0]['description'] ?? '' }}
+                    </div>
+                </div>
+            @elseif(!empty($cvInformation['summary']))
+                <div class="contact-item" style="margin-top: 10mm;">
+                    <div class="contact-text" style="text-align: justify; line-height: 1.3;">
+                        {{ $cvInformation['summary'] }}
                     </div>
                 </div>
             @endif

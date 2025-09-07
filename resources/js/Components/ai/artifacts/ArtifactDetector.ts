@@ -8,7 +8,7 @@ import { AIContentAnalyzer } from '../services/AIContentAnalyzer';
 
 export interface ArtifactData {
     id: string;
-    type: 'table' | 'chart' | 'score' | 'checklist' | 'roadmap' | 'heatmap' | 'dashboard' | 'timer' | 'cv-analysis' | 'interview-simulator' | 'salary-negotiator';
+    type: 'table' | 'chart' | 'score' | 'checklist' | 'roadmap' | 'heatmap' | 'dashboard' | 'timer' | 'cv-analysis' | 'interview-simulator' | 'salary-negotiator' | 'cv-evaluation';
     title: string;
     data: any;
     confidence?: number;
@@ -94,7 +94,11 @@ export class ArtifactDetector {
         const roadmaps = this.detectRoadmaps(content);
         artifacts.push(...roadmaps);
 
-        // 6. Détecter les artefacts spécialisés selon le service
+        // 6. Détecter spécifiquement les tableaux d'évaluation de CV (indépendant du service)
+        const cvEvaluation = this.detectCVEvaluationTable(content);
+        if (cvEvaluation) artifacts.push(cvEvaluation);
+
+        // 7. Détecter les artefacts spécialisés selon le service
         const specialized = this.detectSpecializedArtifacts(content, serviceId);
         artifacts.push(...specialized);
 
@@ -127,35 +131,134 @@ export class ArtifactDetector {
      * Détecter les tableaux markdown
      */
     private static detectTables(content: string): ArtifactData[] {
-        const tableRegex = /\|(.+)\|\s*\n\|[-\s|:]+\|\s*\n((?:\|.+\|\s*\n?)+)/g;
         const artifacts: ArtifactData[] = [];
-        let match;
+        
+        // Version plus flexible - détecte les tableaux avec différents formats
+        const tablePatterns = [
+            // Pattern standard markdown
+            /\|(.+)\|\s*\n\|[-\s|:]+\|\s*\n((?:\|.+\|\s*\n?)+)/g,
+            // Pattern plus flexible pour les tableaux avec espaces
+            /^\|(.+)\|\s*$/gm
+        ];
 
-        while ((match = tableRegex.exec(content)) !== null) {
-            const [fullMatch, headerRow, dataRows] = match;
+        // Essayer le pattern standard en premier
+        let match;
+        const standardRegex = /\|(.+)\|\s*\n\|[-\s|:]+\|\s*\n((?:\|.+\|\s*\n?)+)/g;
+        
+        while ((match = standardRegex.exec(content)) !== null) {
+            const artifact = this.parseStandardTable(match, content);
+            if (artifact) artifacts.push(artifact);
+        }
+
+        // Si aucun tableau standard trouvé, chercher des patterns plus flexibles
+        if (artifacts.length === 0) {
+            const flexibleArtifact = this.parseFlexibleTable(content);
+            if (flexibleArtifact) artifacts.push(flexibleArtifact);
+        }
+
+        return artifacts;
+    }
+
+    /**
+     * Parser un tableau markdown standard
+     */
+    private static parseStandardTable(match: RegExpExecArray, content: string): ArtifactData | null {
+        const [fullMatch, headerRow, dataRows] = match;
+        
+        // Parser les headers
+        const headers = headerRow.split('|')
+            .map(h => h.trim())
+            .filter(h => h.length > 0);
+
+        // Parser les données
+        const rows = dataRows.trim().split('\n')
+            .map(row => row.split('|')
+                .map(cell => cell.trim())
+                .filter(cell => cell.length > 0))
+            .filter(row => row.length > 0);
+
+        if (headers.length > 0 && rows.length > 0) {
+            return {
+                id: `table-classic-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+                type: 'table',
+                title: this.extractTableTitle(content, fullMatch) || 'Tableau de données',
+                data: {
+                    headers,
+                    rows,
+                    sortable: true,
+                    filterable: headers.length <= 5,
+                    exportable: true
+                },
+                metadata: {
+                    exportable: true,
+                    interactive: true,
+                    aiGenerated: false
+                }
+            };
+        }
+        
+        return null;
+    }
+
+    /**
+     * Parser un tableau avec un format plus flexible
+     */
+    private static parseFlexibleTable(content: string): ArtifactData | null {
+        // Chercher des lignes qui ressemblent à des tableaux
+        const lines = content.split('\n').map(line => line.trim());
+        const tableLines: string[] = [];
+        let inTable = false;
+        let headerFound = false;
+        
+        for (let i = 0; i < lines.length; i++) {
+            const line = lines[i];
             
-            // Parser les headers
-            const headers = headerRow.split('|')
+            // Détecter le début d'un tableau (ligne avec des |)
+            if (line.includes('|') && line.split('|').length >= 3) {
+                if (!inTable) {
+                    inTable = true;
+                    tableLines.length = 0; // Reset
+                }
+                tableLines.push(line);
+                
+                // Vérifier si la ligne suivante est un séparateur
+                if (i + 1 < lines.length) {
+                    const nextLine = lines[i + 1].trim();
+                    if (nextLine.match(/^[\|\-\s:]+$/)) {
+                        headerFound = true;
+                        i++; // Skip separator line
+                        continue;
+                    }
+                }
+            } else if (inTable) {
+                // Fin du tableau
+                break;
+            }
+        }
+
+        if (tableLines.length >= 2) {
+            // Au moins une ligne header + une ligne de données
+            const firstLine = tableLines[0];
+            const headers = firstLine.split('|')
                 .map(h => h.trim())
                 .filter(h => h.length > 0);
 
-            // Parser les données
-            const rows = dataRows.trim().split('\n')
-                .map(row => row.split('|')
+            const rows = tableLines.slice(headerFound ? 0 : 1)
+                .map(line => line.split('|')
                     .map(cell => cell.trim())
                     .filter(cell => cell.length > 0))
-                .filter(row => row.length === headers.length);
+                .filter(row => row.length > 0);
 
             if (headers.length > 0 && rows.length > 0) {
-                artifacts.push({
-                    id: `table-classic-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+                return {
+                    id: `table-flexible-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
                     type: 'table',
-                    title: this.extractTableTitle(content, fullMatch) || 'Tableau de données',
+                    title: 'Tableau d\'évaluation',
                     data: {
-                        headers,
+                        headers: headers.length > 0 ? headers : ['Critère', 'Score', 'Notes'],
                         rows,
                         sortable: true,
-                        filterable: headers.length <= 5,
+                        filterable: true,
                         exportable: true
                     },
                     metadata: {
@@ -163,11 +266,11 @@ export class ArtifactDetector {
                         interactive: true,
                         aiGenerated: false
                     }
-                });
+                };
             }
         }
-
-        return artifacts;
+        
+        return null;
     }
 
     /**
@@ -359,6 +462,167 @@ export class ArtifactDetector {
         return artifacts;
     }
 
+    /**
+     * Détecter spécifiquement les tableaux d'évaluation de CV
+     */
+    private static detectCVEvaluationTable(content: string): ArtifactData | null {
+        // Chercher des patterns spécifiques aux évaluations de CV
+        const cvKeywords = ['Clarity', 'Structure', 'Relevance', 'Achievement', 'Skills', 'Professional', 'Branding', 'International', 'Language', 'Proficiency', 'criteria', 'score', 'notes', 'visibility', 'orientation', 'appeal'];
+        const scoreKeywords = ['Score', '/10', 'Revised Global Score', 'Criteria', '1-10', 'Scale:', 'Global Score'];
+        
+        const contentLower = content.toLowerCase();
+        const hasCVKeywords = cvKeywords.some(keyword => contentLower.includes(keyword.toLowerCase()));
+        const hasScoreKeywords = scoreKeywords.some(keyword => content.includes(keyword));
+        
+        console.log('🔍 CV Detection - CV Keywords found:', hasCVKeywords);
+        console.log('🔍 CV Detection - Score Keywords found:', hasScoreKeywords); 
+        console.log('🔍 CV Detection - Has tables (|):', content.includes('|'));
+        console.log('🔍 CV Detection - Has bold markdown (**):', content.includes('**'));
+        
+        // Détecter format tableau traditionnel avec |
+        if ((hasCVKeywords || hasScoreKeywords) && content.includes('|')) {
+            return this.parseCVTableFormat(content);
+        }
+        
+        // Détecter format markdown bold avec **
+        if ((hasCVKeywords || hasScoreKeywords) && content.includes('**')) {
+            return this.parseCVBoldFormat(content);
+        }
+        
+        return null;
+    }
+
+    /**
+     * Parser le format tableau traditionnel avec |
+     */
+    private static parseCVTableFormat(content: string): ArtifactData | null {
+        // Extraire le tableau même s'il n'a pas de format markdown standard
+        const lines = content.split('\n').map(line => line.trim()).filter(line => line.includes('|'));
+        
+        console.log('🔍 CV Detection - Lines with |:', lines.length);
+            
+        if (lines.length >= 2) { // Au moins header + data (plus flexible)
+            const headers = [];
+            const rows = [];
+            let headerFound = false;
+            
+            // Traiter toutes les lignes contenant des |
+            for (let i = 0; i < lines.length; i++) {
+                const line = lines[i];
+                const cells = line.split('|').map(cell => cell.trim()).filter(cell => cell.length > 0);
+                
+                console.log(`🔍 Line ${i}: "${line}" -> ${cells.length} cells:`, cells);
+                
+                // Ignorer les lignes de séparation
+                if (cells.some(cell => cell.match(/^[-:\s]+$/))) {
+                    console.log('🔍 Skipping separator line');
+                    continue;
+                }
+                
+                if (cells.length >= 2) {
+                    // Détecter header par position ou contenu
+                    const isHeaderLine = i === 0 || 
+                                       cells[0].toLowerCase().includes('criteria') || 
+                                       cells[0].toLowerCase().includes('critère') ||
+                                       cells.some(cell => cell.toLowerCase().includes('score'));
+                    
+                    if (isHeaderLine && !headerFound) {
+                        headers.push(...cells);
+                        headerFound = true;
+                        console.log('🔍 Header detected:', headers);
+                    } else {
+                        rows.push(cells);
+                        console.log('🔍 Data row added:', cells);
+                    }
+                }
+            }
+            
+            // Si pas de headers détectés, utiliser des headers par défaut
+            if (headers.length === 0) {
+                headers.push('Critère', 'Score', 'Notes');
+                console.log('🔍 Using default headers:', headers);
+            }
+            
+            console.log('🔍 Final detection - Headers:', headers.length, 'Rows:', rows.length);
+            
+            if (rows.length > 0) {
+                console.log('✅ CV Evaluation table detected successfully!');
+                return {
+                    id: `cv-evaluation-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+                    type: 'cv-evaluation',
+                    title: 'Évaluation détaillée du CV',
+                    data: {
+                        headers: ['Critère', 'Score', 'Notes'],
+                        rows,
+                        sortable: true,
+                        filterable: true,
+                        exportable: true
+                    },
+                    metadata: {
+                        exportable: true,
+                        interactive: true,
+                        aiGenerated: true,
+                        service: 'resume-review',
+                        priority: 'high'
+                    }
+                };
+            }
+        }
+        
+        return null;
+    }
+
+    /**
+     * Parser le format markdown bold avec **
+     */
+    private static parseCVBoldFormat(content: string): ArtifactData | null {
+        console.log('🔍 Parsing CV Bold Format...');
+        
+        // Pattern pour détecter les lignes de critères avec scores
+        const criteriaPattern = /\*\*([^*]+)\*\*\s+(\d+\/\d+)\s+(.*?)(?=\*\*|$)/gs;
+        const rows = [];
+        
+        let match;
+        while ((match = criteriaPattern.exec(content)) !== null) {
+            const criterion = match[1].trim();
+            const score = match[2].trim();
+            const notes = match[3].trim().replace(/\*\*/g, '').replace(/\n/g, ' ').trim();
+            
+            console.log(`🔍 Bold Format - Found: "${criterion}" | "${score}" | "${notes}"`);
+            
+            if (criterion && score && criterion !== 'Issue' && criterion !== 'Current Date') {
+                rows.push([criterion, score, notes]);
+            }
+        }
+        
+        console.log('🔍 Bold Format - Total rows found:', rows.length);
+        
+        if (rows.length > 0) {
+            console.log('✅ CV Evaluation (Bold Format) detected successfully!');
+            return {
+                id: `cv-evaluation-bold-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+                type: 'cv-evaluation',
+                title: 'Évaluation détaillée du CV',
+                data: {
+                    headers: ['Critère', 'Score', 'Notes'],
+                    rows,
+                    sortable: true,
+                    filterable: true,
+                    exportable: true
+                },
+                metadata: {
+                    exportable: true,
+                    interactive: true,
+                    aiGenerated: true,
+                    service: 'resume-review',
+                    priority: 'high'
+                }
+            };
+        }
+        
+        return null;
+    }
+
     // Méthodes utilitaires
     private static extractTableTitle(content: string, tableMatch: string): string | null {
         const beforeTable = content.substring(0, content.indexOf(tableMatch));
@@ -438,8 +702,72 @@ export class ArtifactDetector {
     static cleanContentForDisplay(content: string, artifacts: ArtifactData[]): string {
         let cleanContent = content;
 
-        // Supprimer les tableaux markdown
+        console.log('🧹 Cleaning content, artifacts found:', artifacts.length);
+
+        // Si des artefacts CV ont été détectés, supprimer le contenu correspondant
+        const hasCVEvaluation = artifacts.some(a => a.type === 'cv-evaluation');
+        
+        if (hasCVEvaluation) {
+            console.log('🧹 CV Evaluation detected, cleaning bold format...');
+            
+            // Supprimer le format bold markdown pour les évaluations CV
+            // Pattern pour les critères: **Critère** Score Notes
+            cleanContent = cleanContent.replace(/\*\*([^*]+)\*\*\s+\d+\/\d+\s+[^\*]*(?=\*\*|$)/gs, '');
+            
+            // Supprimer les lignes de headers/titles isolées
+            cleanContent = cleanContent.replace(/\*\*(Criteria|Score|Notes|Issue|Current Date|Correction)\*\*/g, '');
+            
+            // Supprimer les fragments orphelins
+            cleanContent = cleanContent.replace(/\d+\/\d+\s+[A-Za-z\s,.-]+/g, '');
+            
+            console.log('🧹 After CV cleaning:', cleanContent.substring(0, 200));
+        }
+
+        // Supprimer les tableaux markdown standards
         cleanContent = cleanContent.replace(/\|(.+)\|\s*\n\|[-\s|:]+\|\s*\n((?:\|.+\|\s*\n?)+)/g, '');
+        
+        // Supprimer les tableaux flexibles (toute séquence de lignes avec des |)
+        const lines = cleanContent.split('\n');
+        const filteredLines = [];
+        let inTable = false;
+        let consecutiveTableLines = 0;
+        
+        for (let i = 0; i < lines.length; i++) {
+            const line = lines[i].trim();
+            
+            if (line.includes('|') && line.split('|').length >= 3) {
+                consecutiveTableLines++;
+                inTable = true;
+            } else {
+                // Si on était dans un tableau et qu'on a au moins 2 lignes consécutives
+                if (inTable && consecutiveTableLines >= 2) {
+                    // Ne pas ajouter les lignes précédentes du tableau
+                    for (let j = 0; j < consecutiveTableLines; j++) {
+                        if (filteredLines.length > 0) {
+                            filteredLines.pop();
+                        }
+                    }
+                }
+                inTable = false;
+                consecutiveTableLines = 0;
+                filteredLines.push(lines[i]);
+            }
+            
+            if (inTable) {
+                filteredLines.push(lines[i]);
+            }
+        }
+        
+        // Traitement final si le contenu se termine par un tableau
+        if (inTable && consecutiveTableLines >= 2) {
+            for (let j = 0; j < consecutiveTableLines; j++) {
+                if (filteredLines.length > 0) {
+                    filteredLines.pop();
+                }
+            }
+        }
+        
+        cleanContent = filteredLines.join('\n');
 
         // Supprimer les checklists détectées
         cleanContent = cleanContent.replace(/(?:^|\n)((?:\s*[☐☑✓❌]\s*.+(?:\n|$))+)/gm, '');
@@ -450,7 +778,13 @@ export class ArtifactDetector {
         // Nettoyer les lignes vides multiples
         cleanContent = cleanContent.replace(/\n\s*\n\s*\n/g, '\n\n');
 
-        return cleanContent.trim();
+        // Supprimer les lignes quasi-vides avec juste des fragments
+        cleanContent = cleanContent.replace(/^\s*[,.-]+\s*$/gm, '');
+
+        const finalContent = cleanContent.trim();
+        console.log('🧹 Final cleaned content:', finalContent.substring(0, 200));
+        
+        return finalContent;
     }
 
     /**

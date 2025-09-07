@@ -1,0 +1,841 @@
+{
+    "brand": "Guidy",
+    "nav": {
+        "login": "Connexion",
+        "register": "Commencer gratuitement",
+        "start_free": "Commencer maintenant"
+    },
+    "hero": {
+        "badge": "🚀 Boostez votre carrière avec l'IA",
+        "title": "Votre guide professionnel intelligent",
+        "description": "Créez des CV percutants, obtenez des conseils de carrière personnalisés et préparez-vous aux entretiens avec notre assistant IA de nouvelle génération"
+    },
+    "features": {
+        "cv_designer": {
+            "title": "Concepteur de CV Pro",
+            "description": "Créez des CV professionnels avec nos modèles premium et exportez en PDF de haute qualité.",
+            "action": "Créer mon CV"
+        },
+        "career_advisor": {
+            "title": "Conseiller Carrière IA",
+            "description": "Obtenez des conseils personnalisés pour votre développement professionnel.",
+            "action": "Consulter l'assistant"
+        },
+        "cover_letter": {
+            "title": "Lettre de Motivation",
+            "description": "Générez des lettres de motivation percutantes et adaptées à vos candidatures.",
+            "action": "Rédiger ma lettre"
+        },
+        "interview_coach": {
+            "title": "Coach d'Entretien",
+            "description": "Préparez-vous aux entretiens avec notre simulation interactive intelligente.",
+            "action": "Préparer l'entretien"
+        }
+    },
+    "stats": {
+        "users": "Utilisateurs actifs",
+        "satisfaction": "% de satisfaction",
+        "cvs": "CV générés",
+        "availability": "% de disponibilité"
+    },
+    "cta": {
+        "badge": "L'assistant qui vous guide vers le succès",
+        "button": "Libérez votre potentiel"
+    },
+    "footer": {
+        "services": {
+            "title": "Services",
+            "resume": "Créateur de CV",
+            "advisor": "Conseiller Carrière",
+            "interview": "Préparation aux entretiens"
+        },
+        "legal": {
+            "title": "Légal",
+            "privacy": "Politique de confidentialité",
+            "terms": "Conditions d'utilisation",
+            "cookies": "Politique de cookies",
+            "mentions": "Mentions légales"
+        },
+        "copyright": "Tous droits réservés"
+    },
+    "menu": {
+        "title": "Menu Guidy",
+        "admin": "Administration",
+        "createCV": "Créer un CV",
+        "assistant": "Assistant Guidy",
+        "dashboard": "Tableau de bord",
+        "profile": "Mon profil"
+    },
+    "cv": {
+        "interface": {
+            "title": "Mon CV Guidy",
+            "subtitle": "Complétez votre profil pour un CV qui vous ressemble",
+            "progress": "Progression",
+            "chooseDesign": "Choisir le design",
+            "premiumDesigns": "Donnez vie à votre CV avec nos designs professionnels",
+            "premiumSubtitle": "Faites votre choix parmi nos modèles premium",
+            "welcome": {
+                "title": "Bienvenue dans votre espace CV",
+                "subtitle": "Créez un CV professionnel en quelques étapes",
+                "complete": "complété"
+            },
+            "import": {
+                "button": "Importer un CV",
+                "pdf": "Importer un PDF",
+                "word": "Importer un Word",
+                "ai": "Analyse IA (5 jetons)",
+                "success": "Importation réussie",
+                "successDetail": "Votre CV a été importé avec succès",
+                "error": "Erreur d'importation",
+                "errorDetail": "Une erreur est survenue lors de l'importation",
+                "insufficient": "Solde insuffisant pour l'analyse IA"
+            },
+            "update": {
+                "success": "Mise à jour réussie",
+                "successDetail": "Vos informations ont été enregistrées avec succès"
+            },
+            "sections": {
+                "title": "Créez votre CV professionnel",
+                "description": "Remplissez chaque section pour un CV complet",
+                "personalInfo": "Informations personnelles",
+                "summary": "Résumé",
+                "experience": "Expérience",
+                "competence": "Compétences",
+                "education": "Formation",
+                "hobbies": "Centres d'intérêt",
+                "languages": "Langues",
+                "languages.empty": "Aucune langue ajoutée pour le moment",
+                "languages.add": "Ajouter une langue",
+                "languages.select": "Sélectionner une langue",
+                "languages.selectPlaceholder": "Choisissez une langue",
+                "languages.level": "Niveau de langue",
+                "languages.levelPlaceholder": "Sélectionnez un niveau",
+                "notFound": "Section non trouvée"
+            },
+            "personal": {
+                "title": "Informations Personnelles",
+                "edit": "Modifier",
+                "photo": {
+                    "deleteSuccess": {
+                        "title": "Photo supprimée",
+                        "description": "Votre photo de profil a été supprimée"
+                    },
+                    "upload": "Ajouter une photo",
+                    "edit": "Modifier la photo",
+                    "crop": "Ajuster la photo",
+                    "cropDescription": "Recadrez votre photo pour l'adapter au format carré",
+                    "save": "Enregistrer",
+                    "saving": "Enregistrement...",
+                    "cancel": "Annuler",
+                    "success": "Photo mise à jour avec succès",
+                    "successDetail": "Votre photo de profil a été mise à jour",
+                    "error": "Erreur lors de la mise à jour de la photo",
+                    "sizeError": "Fichier trop volumineux (max 5Mo)",
+                    "preview": "Aperçu de la photo",
+                    "error": {
+                        "noCrop": "Veuillez recadrer la photo avant de l'enregistrer"
+                    }
+                },
+                "fields": {
+                    "email": "E-mail",
+                    "phone": "Téléphone",
+                    "address": "Adresse",
+                    "linkedin": "LinkedIn",
+                    "github": "GitHub",
+                    "notSpecified": "Non spécifié"
+                }
+            },
+            "navigation": {
+                "back": "Retour",
+                "next": "Suivant",
+                "save": "Enregistrer",
+                "cancel": "Annuler"
+            },
+            "ai": {
+                "analyzer": {
+                    "title": "Analyseur de CV",
+                    "subtitle": "Importez votre CV existant pour une conversion automatique",
+                    "upload": "Importer un CV",
+                    "analyzing": "Analyse en cours...",
+                    "success": "CV importé avec succès",
+                    "successDesc": "Les sections ont été mises à jour automatiquement",
+                    "error": "Erreur lors de l'analyse du CV",
+                    "insufficient": "Solde insuffisant"
+                }
+            },
+            "cta": {
+                "title": "Donnez vie à votre CV avec nos designs premium",
+                "subtitle": "Faites votre choix parmi nos modèles premium"
+            }
+        },
+        "navigation": "Navigation CV",
+        "edit": "Modifier le CV",
+        "premium": "Designs Premium",
+        "preview": "Aperçu & Export",
+        "download": "Télécharger",
+        "template": "Modèles",
+        "save": "Enregistrer",
+        "continue": "Continuer",
+        "sidebar": {
+            "personalInfo": "Informations Personnelles",
+            "summary": "Résumé",
+            "experience": "Expérience",
+            "competence": "Compétences",
+            "education": "Formation",
+            "language": "Langues",
+            "hobby": "Centres d'intérêt",
+            "profession": "Profession"
+        },
+        "personalInfo": {
+            "title": "Informations Personnelles",
+            "email": "E-mail",
+            "phone": "Téléphone",
+            "address": "Adresse",
+            "linkedin": "LinkedIn",
+            "github": "GitHub",
+            "edit": "Modifier",
+            "save": "Enregistrer",
+            "cancel": "Annuler"
+        },
+        "sections": {
+            "notFound": "Section non trouvée"
+        },
+        "languages": {
+            "title": "Langues",
+            "add": "Ajouter une langue",
+            "select": "Sélectionner une langue",
+            "selectPlaceholder": "Choisissez une langue",
+            "level": "Niveau",
+            "levelPlaceholder": "Sélectionnez un niveau",
+            "empty": "Aucune langue ajoutée",
+            "delete": "Supprimer",
+            "success": {
+                "added": "Langue ajoutée avec succès",
+                "removed": "Langue supprimée avec succès"
+            },
+            "error": {
+                "title": "Erreur",
+                "load": "Impossible de charger les langues",
+                "select": "Veuillez sélectionner une langue",
+                "add": "Impossible d'ajouter la langue",
+                "delete": "Impossible de supprimer la langue"
+            },
+            "levels": {
+                "beginner": "Débutant (A1)",
+                "elementary": "Élémentaire (A2)",
+                "intermediate": "Intermédiaire (B1)",
+                "upperIntermediate": "Intermédiaire supérieur (B2)",
+                "advanced": "Avancé (C1)",
+                "proficient": "Compétent (C2)",
+                "native": "Natif"
+            }
+        }
+    },
+    "profile": {
+        "edit": "Modifier le profil",
+        "settings": "Paramètres",
+        "preferences": "Préférences",
+        "account": "Compte",
+        "security": "Sécurité"
+    },
+    "theme": {
+        "toggle": "Changer de thème",
+        "light": "Mode clair",
+        "dark": "Mode sombre",
+        "system": "Système"
+    },
+    "language": {
+        "change": "Changer de langue",
+        "en": "Anglais",
+        "fr": "Français"
+    },
+    "common": {
+        "search": "Rechercher",
+        "loading": "Chargement",
+        "error": "Erreur",
+        "success": "Succès",
+        "cancel": "Annuler",
+        "save": "Enregistrer",
+        "edit": "Modifier",
+        "delete": "Supprimer",
+        "back": "Retour",
+        "next": "Suivant",
+        "add": "Ajouter",
+        "remove": "Retirer"
+    },
+    "wallet": {
+        "balance": "Solde",
+        "tokens": "Jetons",
+        "add": "Ajouter des jetons",
+        "insufficient": "Solde insuffisant"
+    },
+    "notifications": {
+        "title": "Notifications",
+        "empty": "Aucune notification",
+        "markAllRead": "Tout marquer comme lu",
+        "new": "Nouveau"
+    },
+    "cv_models": {
+        "title": "Collection de modèles de CV",
+        "back": "Retour",
+        "export_cv": "Exporter le CV",
+        "search_placeholder": "Rechercher...",
+        "active_models": {
+            "title": "Mes modèles actifs",
+            "limit": "{{current}}/{{max}} modèles"
+        },
+        "discover_models": "Découvrez nos modèles",
+        "empty_state": {
+            "title": "Aucun modèle actif",
+            "description": "Sélectionnez un modèle parmi les modèles disponibles ci-dessous."
+        },
+        "model_card": {
+            "active": "Actif",
+            "use_model": "Utiliser ce modèle",
+            "active_model": "Modèle actif",
+            "add_to_catalog": "Ajouter au catalogue"
+        },
+        "notifications": {
+            "model_added": "Modèle ajouté à votre collection",
+            "model_activated": "Votre modèle a été activé avec succès",
+            "max_models_reached": "Vous ne pouvez pas ajouter plus de {{max}} modèles",
+            "error": "Une erreur est survenue"
+        },
+        "free": "Gratuit"
+    },
+    "cv_preview": {
+        "title": "CV Professionnel",
+        "export": {
+            "download": "Télécharger votre CV",
+            "downloading": "Téléchargement en cours",
+            "title": "Exporter Mon CV",
+            "selected_model": "Modèle sélectionné : {{name}}",
+            "back_to_models": "Retour aux modèles",
+            "print": "Imprimer",
+            "printing": "Impression en cours..."
+        },
+        "wallet": {
+            "current_balance": "Solde actuel",
+            "model_price": "Prix du modèle",
+            "insufficient_tokens": "Vous n'avez pas assez de jetons pour utiliser ce modèle. Veuillez recharger votre compte.",
+            "recharge_tokens": "Recharger mes jetons"
+        },
+        "no_model": {
+            "title": "Sélection requise",
+            "message": "Veuillez sélectionner un modèle de CV dans la section \"Mes designs\" avant de continuer.",
+            "action": "Choisir un modèle"
+        },
+        "preview": {
+            "title": "Aperçu du CV",
+            "loading": "Chargement de l'aperçu..."
+        }
+    },
+    "experiences": {
+        "title": "Gestion des expériences",
+        "description": "Gérez vos expériences professionnelles, académiques et bénévoles",
+        "actions": {
+            "add": "Ajouter une expérience",
+            "update": "Mettre à jour l'expérience",
+            "save": "Enregistrer l'expérience",
+            "cancel": "Annuler",
+            "delete": "Supprimer"
+        },
+        "filters": {
+            "search": "Rechercher des expériences..."
+        },
+        "tabs": {
+            "list": "Expériences",
+            "attachments": "Pièces jointes"
+        },
+        "form": {
+            "references": {
+                "title": "Références",
+                "add": "Ajouter une référence",
+                "name": "Nom complet",
+                "function": "Poste/Rôle",
+                "email": "E-mail",
+                "phone": "Téléphone",
+                "placeholders": {
+                    "name": "Entrez le nom de la référence",
+                    "function": "Entrez le poste/rôle",
+                    "email": "Entrez l'adresse e-mail",
+                    "phone": "Entrez le numéro de téléphone"
+                },
+                "default": {
+                    "name": "John Smith",
+                    "function": "Chef de projet",
+                    "email": "john.smith@example.com",
+                    "phone": "+1 234 567 890"
+                }
+            },
+            "title": {
+                "new": "Nouvelle expérience",
+                "edit": "Modifier l'expérience"
+            },
+            "description": {
+                "new": "Ajoutez une nouvelle expérience à votre profil",
+                "edit": "Modifiez les détails de l'expérience existante"
+            },
+            "templates": {
+                "title": "Modèles",
+                "description": "Commencez avec un modèle prédéfini",
+                "academic": "Expérience académique",
+                "internship": "Expérience de stage",
+                "volunteer": "Expérience de bénévolat",
+                "defaultComment": "Ajoutez ici tout commentaire supplémentaire"
+            },
+            "fields": {
+                "name": {
+                    "label": "Nom de l'expérience",
+                    "placeholder": "Entrez le nom de votre expérience"
+                },
+                "institution": {
+                    "label": "Nom de l'établissement",
+                    "placeholder": "Entrez le nom de l'établissement ou de l'entreprise"
+                },
+                "dates": {
+                    "start": "Date de début",
+                    "end": "Date de fin",
+                    "ongoing": "Laissez la date de fin vide pour les expériences en cours"
+                },
+                "type": {
+                    "label": "Type d'expérience",
+                    "placeholder": "Sélectionnez le type d'expérience"
+                },
+                "description": {
+                    "label": "Description",
+                    "placeholder": "Décrivez votre expérience, vos responsabilités et vos réalisations"
+                },
+                "output": {
+                    "label": "Résultats",
+                    "placeholder": "Quels ont été les principaux résultats ou réalisations ?"
+                },
+                "references": {
+                    "title": "Références",
+                    "label": "Références",
+                    "add": "Ajouter une référence",
+                    "name": "Nom complet",
+                    "function": "Poste/Rôle",
+                    "email": "E-mail",
+                    "phone": "Téléphone",
+                    "placeholders": {
+                        "name": "Entrez le nom de la référence",
+                        "function": "Entrez le poste/rôle",
+                        "email": "Entrez l'adresse e-mail",
+                        "phone": "Entrez le numéro de téléphone"
+                    },
+                    "default": {
+                        "name": "John Smith",
+                        "function": "Chef de projet",
+                        "email": "john.smith@example.com",
+                        "phone": "+1 234 567 890"
+                    }
+                }
+            },
+            "attachment": {
+                "title": "Pièces jointes",
+                "maxSize": "Max 100Mo",
+                "current": "Fichier actuel :",
+                "delete": "Supprimer le fichier",
+                "formats": "Formats acceptés : PDF, DOC, DOCX"
+            }
+        },
+        "attachments": {
+            "stats": {
+                "used": "Stockage utilisé",
+                "files": "Total des fichiers",
+                "available": "Espace disponible"
+            }
+        },
+        "empty": {
+            "experiences": "Aucune expérience ajoutée pour le moment",
+            "search": "Aucune expérience ne correspond à votre recherche",
+            "attachments": "Aucune pièce jointe téléchargée pour le moment"
+        },
+        "success": {
+            "created": "Expérience créée avec succès",
+            "updated": "Expérience mise à jour avec succès",
+            "deleted": "Expérience supprimée",
+            "deletedDescription": "L'expérience a été définitivement supprimée",
+            "formDescription": "Vos modifications ont été enregistrées",
+            "template": {
+                "applied": "Modèle appliqué",
+                "description": "Le modèle a été appliqué avec succès"
+            },
+            "attachment": {
+                "deleted": "Pièce jointe supprimée",
+                "deletedDescription": "Le fichier a été supprimé"
+            }
+        },
+        "errors": {
+            "title": "Erreur",
+            "save": "Erreur lors de l'enregistrement de l'expérience",
+            "delete": "Erreur lors de la suppression de l'expérience",
+            "generic": "Une erreur inattendue est survenue",
+            "attachment": {
+                "delete": "Erreur lors de la suppression de la pièce jointe",
+                "noFile": "Aucun fichier disponible",
+                "noFileDescription": "Il n'y a aucune pièce jointe à prévisualiser"
+            }
+        }
+    },
+    "common": {
+        "loading": "Chargement..."
+    },
+    "auth": {
+        "register": {
+            "value": "S'inscrire",
+            "title": "Créez votre compte",
+            "subtitle": "Rejoignez-nous et commencez à créer votre CV professionnel",
+            "name": {
+                "label": "Nom complet",
+                "placeholder": "Entrez votre nom"
+            },
+            "email": {
+                "label": "E-mail",
+                "placeholder": "votre@email.com"
+            },
+            "password": {
+                "label": "Mot de passe",
+                "placeholder": "Votre mot de passe",
+                "confirm": "Confirmer le mot de passe",
+                "confirm_placeholder": "Confirmez votre mot de passe",
+                "strength": {
+                    "label": "Force",
+                    "weak": "Faible",
+                    "medium": "Moyen",
+                    "good": "Bon",
+                    "strong": "Fort"
+                }
+            },
+            "already_registered": "Déjà inscrit ?",
+            "button": {
+                "submit": "S'inscrire",
+                "processing": "Inscription en cours..."
+            }
+        },
+        "logout": "Déconnexion",
+        "login": {
+            "value": "se connecter",
+            "title": "Content de vous revoir !",
+            "subtitle": "Connectez-vous pour accéder à votre espace personnel",
+            "email": "Votre e-mail",
+            "password": "Votre mot de passe",
+            "remember": "Se souvenir de moi",
+            "button": "Se connecter",
+            "processing": "Connexion en cours...",
+            "forgotPassword": "Mot de passe oublié ?",
+            "createAccount": "Créer un compte"
+        }
+    },
+    "career_advisor": {
+        "title": "Assistant Carrière",
+        "header": {
+            "balance": "Solde",
+            "history": "Historique"
+        },
+        "messages": {
+            "loading_error": "Erreur lors du chargement des conversations",
+            "chat_loading_error": "Erreur lors du chargement de la conversation",
+            "delete_success": "Conversation supprimée avec succès",
+            "delete_error": "Erreur lors de la suppression de la conversation",
+            "loading": "Chargement de la conversation...",
+            "empty": "Veuillez saisir votre message",
+            "insufficient_balance": "Solde insuffisant",
+            "recharge_needed": "Veuillez recharger votre compte",
+            "error": "Une erreur est survenue",
+            "processing_error": "Erreur de traitement",
+            "export_success": "Document exporté avec succès",
+            "export_error": "L'exportation a échoué"
+        },
+        "chat": {
+            "send": "Envoyer",
+            "sending": "Envoi en cours...",
+            "questions_remaining": "{{count}} questions restantes",
+            "actions": {
+                "delete": {
+                    "title": "Supprimer la conversation ?",
+                    "description": "Cette action est irréversible. La conversation sera définitivement supprimée.",
+                    "confirm": "Supprimer",
+                    "cancel": "Annuler"
+                },
+                "export": {
+                    "pdf": "Exporter en PDF",
+                    "docx": "Exporter en DOCX"
+                }
+            }
+        },
+        "history": {
+            "title": "Historique des conversations",
+            "empty": "Aucune conversation",
+            "created_at": "Créé le {{date}}"
+        }
+    },
+    "hobbies": {
+        "title": "Centres d'intérêt",
+        "description": "Personnalisez votre profil avec vos passions",
+        "card": {
+            "title": "Gérer mes centres d'intérêt",
+            "description": "Ajoutez les activités qui vous passionnent"
+        },
+        "select": {
+            "placeholder": "Sélectionnez un centre d'intérêt"
+        },
+        "search": {
+            "placeholder": "Rechercher des centres d'intérêt..."
+        },
+        "list": {
+            "title": "Vos centres d'intérêt ({{count}})",
+            "empty": "Ajoutez vos premiers centres d'intérêt pour personnaliser votre profil !"
+        },
+        "actions": {
+            "add": "Ajouter"
+        },
+        "mobile": {
+            "openDrawer": "Gérer mes centres d'intérêt"
+        },
+        "success": {
+            "added": {
+                "title": "Centre d'intérêt ajouté",
+                "description": "{{hobby}} a été ajouté à votre profil."
+            },
+            "removed": {
+                "title": "Centre d'intérêt supprimé",
+                "description": "L'élément a été supprimé de votre profil."
+            }
+        },
+        "errors": {
+            "selectHobby": {
+                "title": "Erreur",
+                "description": "Veuillez sélectionner un centre d'intérêt"
+            },
+            "adding": {
+                "title": "Erreur"
+            },
+            "removing": {
+                "title": "Erreur"
+            },
+            "generic": "Une erreur est survenue."
+        }
+    },
+    "professions": {
+        "title": "Ma formation",
+        "description": "Indiquez votre parcours académique ou professionnel",
+        "card": {
+            "title": "Gérer ma formation",
+            "description": "Sélectionnez votre formation ou saisissez-la manuellement"
+        },
+        "tabs": {
+            "select": "Choisir dans la liste",
+            "manual": "Saisie manuelle"
+        },
+        "search": {
+            "placeholder": "Rechercher une formation..."
+        },
+        "select": {
+            "placeholder": "Sélectionnez une formation"
+        },
+        "manual": {
+            "placeholder": "Saisissez votre formation..."
+        },
+        "current": {
+            "title": "Titre du poste actuel"
+        },
+        "actions": {
+            "select": "Sélectionner",
+            "save": "Enregistrer"
+        },
+        "success": {
+            "updated": {
+                "title": "Formation mise à jour",
+                "description": "Vous êtes maintenant enregistré en tant que {{profession}}."
+            },
+            "manual": {
+                "title": "Formation mise à jour",
+                "description": "Votre formation personnalisée a été enregistrée."
+            }
+        },
+        "errors": {
+            "select": {
+                "title": "Erreur",
+                "description": "Veuillez sélectionner une formation"
+            },
+            "manual": {
+                "title": "Erreur",
+                "description": "Veuillez saisir votre formation"
+            },
+            "adding": {
+                "title": "Erreur"
+            },
+            "generic": "Une erreur est survenue."
+        }
+    },
+    "competences": {
+        "title": "Mes compétences",
+        "description": "Mettez en avant vos atouts professionnels",
+        "card": {
+            "title": "Gérer mes compétences",
+            "description": "Ajoutez les compétences qui correspondent à votre profil"
+        },
+        "select": {
+            "placeholder": "Sélectionnez une compétence"
+        },
+        "search": {
+            "placeholder": "Rechercher des compétences..."
+        },
+        "list": {
+            "title": "Vos compétences ({{count}})",
+            "empty": "Aucune compétence sélectionnée. Ajoutez vos premières compétences !"
+        },
+        "actions": {
+            "add": "Ajouter"
+        },
+        "success": {
+            "added": {
+                "title": "Compétence ajoutée",
+                "description": "{{name}} a été ajoutée à votre profil."
+            },
+            "removed": {
+                "title": "Compétence supprimée",
+                "description": "La compétence a été supprimée de votre profil."
+            }
+        },
+        "errors": {
+            "select": {
+                "title": "Erreur",
+                "description": "Veuillez sélectionner une compétence"
+            },
+            "adding": {
+                "title": "Erreur"
+            },
+            "removing": {
+                "title": "Erreur"
+            },
+            "generic": "Une erreur est survenue."
+        }
+    },
+    "summaries": {
+        "title": "Mes résumés",
+        "subtitle": "Gérez vos résumés professionnels",
+        "new": "Nouveau résumé",
+        "edit": "Modifier le résumé",
+        "search": "Rechercher des résumés...",
+        "noResults": "Aucun résumé ne correspond à votre recherche.",
+        "createFirst": "Créez votre premier résumé professionnel !",
+        "delete": {
+            "title": "Supprimer le résumé",
+            "description": "Êtes-vous sûr de vouloir supprimer ce résumé ? Cette action est irréversible.",
+            "confirm": "Supprimer",
+            "cancel": "Annuler"
+        }
+    },
+    "form": {
+        "jobTitle": "Titre du poste",
+        "jobTitlePlaceholder": "Ex : Commercial, Assistant administratif...",
+        "description": "Description",
+        "descriptionPlaceholder": "Décrivez votre profil...",
+        "save": "Enregistrer",
+        "cancel": "Annuler",
+        "update": "Mettre à jour"
+    },
+    "templates": {
+        "title": "Choisir un modèle",
+        "subtitle": "Commencez avec un modèle pré-fait ou créez le vôtre",
+        "student": {
+            "name": "Étudiant",
+            "description": "Jeune diplômé motivé avec une solide formation académique et une première expérience acquise lors de stages et projets étudiants. Maîtrise des outils informatiques et capacité d'apprentissage rapide."
+        },
+        "archivist": {
+            "name": "Archiviste adjoint",
+            "description": "Passionné par l'organisation et la conservation des documents. Méthodique et rigoureux, avec une bonne maîtrise des outils numériques. Capable de travailler en autonomie et en équipe."
+        },
+        "beginner": {
+            "name": "Premier emploi",
+            "description": "Bachelier enthousiaste et polyvalent, prêt à mettre en pratique ses connaissances. Forte capacité d'adaptation et volonté d'apprendre. Maîtrise des outils bureautiques de base."
+        }
+    },
+    "actions": {
+        "select": "Sélectionner",
+        "selected": "Sélectionné",
+        "edit": "Modifier",
+        "delete": "Supprimer"
+    },
+    "toast": {
+        "success": {
+            "created": "Résumé créé avec succès",
+            "updated": "Résumé mis à jour avec succès",
+            "deleted": "Résumé supprimé avec succès",
+            "selected": "Résumé sélectionné avec succès"
+        },
+        "error": {
+            "create": "Impossible de créer le résumé",
+            "update": "Impossible de mettre à jour le résumé",
+            "delete": "Impossible de supprimer le résumé",
+            "select": "Impossible de sélectionner le résumé"
+        }
+    },
+    "personalInfos": {
+        "editTitle": "Modifier les informations personnelles",
+        "form": {
+            "name": "Nom",
+            "email": "E-mail",
+            "github": "GitHub",
+            "linkedin": "LinkedIn",
+            "address": "Adresse",
+            "phoneNumber": "Numéro de téléphone"
+        },
+        "actions": {
+            "save": "Enregistrer les modifications",
+            "cancel": "Annuler"
+        },
+        "toast": {
+            "success": {
+                "title": "Succès",
+                "updated": "Informations personnelles mises à jour avec succès"
+            },
+            "error": {
+                "title": "Erreur",
+                "userDataNotFound": "Données utilisateur non trouvées",
+                "updateFailed": "La mise à jour a échoué"
+            }
+        }
+    },
+    "services": {
+        "interview-prep": {
+            "title": "Préparation à l'entretien",
+            "description": "Simulation d'entretien interactive",
+            "placeholder": "Posez vos questions sur la préparation à l'entretien..."
+        },
+        "cover-letter": {
+            "title": "Lettre de motivation",
+            "description": "Lettre de motivation personnalisée",
+            "placeholder": "Quel type de lettre de motivation souhaitez-vous créer ?"
+        },
+        "resume-review": {
+            "title": "Revue de CV",
+            "description": "Suggestions d'amélioration de CV",
+            "placeholder": "Partagez votre CV ou demandez des conseils spécifiques..."
+        },
+        "career-advice": {
+            "title": "Conseils carrière",
+            "description": "Conseils personnalisés en développement de carrière",
+            "placeholder": "Quels conseils carrière souhaitez-vous ?"
+        },
+        "career_advice": {
+            "title": "Conseils carrière",
+            "description": "Conseils personnalisés en développement de carrière"
+        },
+        "cover_letter": {
+            "title": "Lettre de motivation",
+            "description": "Lettre de motivation personnalisée"
+        },
+        "interview_prep": {
+            "title": "Préparation à l'entretien",
+            "description": "Simulation d'entretien interactive"
+        },
+        "resume_review": {
+            "title": "Revue de CV",
+            "description": "Suggestions d'amélioration de CV"
+        }
+    }
+}

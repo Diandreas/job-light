@@ -153,7 +153,7 @@ const ModelCard = ({ model, isActive, onSelect, onAdd, onPreview, loading, inCat
                 {viewMode === 'grid' && (
                     <div className="absolute bottom-0 left-0 right-0 p-3 z-20">
                         <h3 className="font-bold text-sm sm:text-base text-white line-clamp-2">{model.name}</h3>
-                        {model.price > 0 && (
+                        {model.price > 0 ? (
                             <motion.div
                                 className="flex items-center gap-1.5 mt-0.5"
                                 initial={{ opacity: 0 }}
@@ -164,6 +164,16 @@ const ModelCard = ({ model, isActive, onSelect, onAdd, onPreview, loading, inCat
                                 <p className="text-xs sm:text-sm text-amber-200">
                                     {model.price.toLocaleString()}
                                 </p>
+                            </motion.div>
+                        ) : (
+                            <motion.div
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: 1 }}
+                                transition={{ delay: 0.2 }}
+                            >
+                                <Badge variant="outline" className="bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-400 border-green-200 dark:border-green-800 mt-1">
+                                    {t('cv_models.free')}
+                                </Badge>
                             </motion.div>
                         )}
                     </div>
@@ -205,13 +215,17 @@ const ModelCard = ({ model, isActive, onSelect, onAdd, onPreview, loading, inCat
                         <h3 className="font-bold text-sm sm:text-base text-gray-900 dark:text-white line-clamp-2 mb-1">
                             {model.name}
                         </h3>
-                        {model.price > 0 && (
+                        {model.price > 0 ? (
                             <div className="flex items-center gap-1.5">
                                 <Coins className="w-3.5 h-3.5 text-amber-500" />
                                 <p className="text-xs sm:text-sm text-amber-600 dark:text-amber-400 font-medium">
                                     {model.price.toLocaleString()}
                                 </p>
                             </div>
+                        ) : (
+                            <Badge variant="outline" className="bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-400 border-green-200 dark:border-green-800">
+                                {t('cv_models.free')}
+                            </Badge>
                         )}
                     </div>
                 )}
@@ -463,6 +477,7 @@ export default function CvModelsIndex({ auth, userCvModels, availableCvModels, m
     const [selectedModelId, setSelectedModelId] = useState(auth.user.selected_cv_model_id);
     const [searchTerm, setSearchTerm] = useState('');
     const [loading, setLoading] = useState(false);
+    const [loadingModelId, setLoadingModelId] = useState(null);
     const [previewModel, setPreviewModel] = useState(null);
     const [activeModels, setActiveModels] = useState(userCvModels);
     const [availableModels, setAvailableModels] = useState(availableCvModels);
@@ -515,7 +530,7 @@ export default function CvModelsIndex({ auth, userCvModels, availableCvModels, m
         }
 
         try {
-            setLoading(true);
+            setLoadingModelId(model.id);
             await axios.post('/user-cv-models', {
                 user_id: auth.user.id,
                 cv_model_id: model.id,
@@ -535,12 +550,12 @@ export default function CvModelsIndex({ auth, userCvModels, availableCvModels, m
                 variant: 'destructive'
             });
         } finally {
-            setLoading(false);
+            setLoadingModelId(null);
         }
     };
 
     const handleSelectModel = async (modelId) => {
-        setLoading(true);
+        setLoadingModelId(modelId);
         try {
             await axios.post('/user-cv-models/select-active', {
                 user_id: auth.user.id,
@@ -558,7 +573,7 @@ export default function CvModelsIndex({ auth, userCvModels, availableCvModels, m
                 variant: 'destructive'
             });
         } finally {
-            setLoading(false);
+            setLoadingModelId(null);
         }
     };
 
@@ -821,7 +836,7 @@ export default function CvModelsIndex({ auth, userCvModels, availableCvModels, m
                                                     onSelect={handleSelectModel}
                                                     onAdd={handleAddModel}
                                                     onPreview={setPreviewModel}
-                                                    loading={loading}
+                                                    loading={loadingModelId === model.id}
                                                     inCatalog={false}
                                                     viewMode={viewMode}
                                                 />

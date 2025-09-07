@@ -36,6 +36,108 @@ import {
     Settings, Sparkles, Plus, Edit, Trash2,
     GripVertical, EyeOff
 } from 'lucide-react';
+
+// Traductions complètes
+const translations = {
+    fr: {
+        portfolioStudio: 'Portfolio Studio Pro',
+        advancedConfig: 'Configuration avancée de votre portfolio',
+        qrCode: 'QR Code',
+        preview: 'Aperçu',
+        hide: 'Masquer',
+        sharePortfolio: 'Partager votre Portfolio',
+        scanQr: 'Scannez le QR code pour accéder à votre portfolio',
+        close: 'Fermer',
+        designStyle: 'Design & Style',
+        customizeAppearance: 'Personnalisez l\'apparence de votre portfolio',
+        chooseTheme: 'Choisissez votre thème',
+        primaryColor: 'Couleur principale',
+        selectColor: 'Sélectionnez la couleur dominante de votre portfolio',
+        default: 'Par défaut',
+        sectionManagement: 'Gestion des Sections',
+        organizePortfolio: 'Organisez et configurez les sections de votre portfolio',
+        active: 'Actives',
+        empty: 'Vides',
+        noContent: 'Aucun contenu disponible',
+        element: 'élément',
+        elements: 'éléments',
+        emptySectionsOrange: 'Les sections vides sont marquées en orange',
+        allSectionsContent: 'Toutes vos sections contiennent du contenu !',
+        showAll: 'Afficher tout',
+        hideEmpty: 'Masquer vides',
+        saveChanges: 'Sauvegarder les modifications',
+        saving: 'Sauvegarde en cours...',
+        livePreview: 'Aperçu Live',
+        realtimePreview: 'Prévisualisation en temps réel',
+        fullscreen: 'Plein écran',
+        professional: 'Pro',
+        creative: 'Créatif',
+        minimal: 'Minimal',
+        modern: 'Moderne',
+        classicClean: 'Classique et épuré',
+        colorfulDynamic: 'Coloré et dynamique',
+        simpleModern: 'Simple et moderne',
+        trendyStyled: 'Tendance et stylé',
+        experiences: 'Expériences',
+        competences: 'Compétences',
+        hobbies: 'Centres d\'intérêt',
+        summary: 'Résumé',
+        contact_info: 'Contact',
+        languages: 'Langues',
+        services: 'Services',
+        about: 'À propos',
+        theme: 'Thème'
+    },
+    en: {
+        portfolioStudio: 'Portfolio Studio Pro',
+        advancedConfig: 'Advanced portfolio configuration',
+        qrCode: 'QR Code',
+        preview: 'Preview',
+        hide: 'Hide',
+        sharePortfolio: 'Share your Portfolio',
+        scanQr: 'Scan the QR code to access your portfolio',
+        close: 'Close',
+        designStyle: 'Design & Style',
+        customizeAppearance: 'Customize your portfolio appearance',
+        chooseTheme: 'Choose your theme',
+        primaryColor: 'Primary Color',
+        selectColor: 'Select your portfolio dominant color',
+        default: 'Default',
+        sectionManagement: 'Section Management',
+        organizePortfolio: 'Organize and configure your portfolio sections',
+        active: 'Active',
+        empty: 'Empty',
+        noContent: 'No content available',
+        element: 'element',
+        elements: 'elements',
+        emptySectionsOrange: 'Empty sections are marked in orange',
+        allSectionsContent: 'All your sections contain content!',
+        showAll: 'Show all',
+        hideEmpty: 'Hide empty',
+        saveChanges: 'Save changes',
+        saving: 'Saving...',
+        livePreview: 'Live Preview',
+        realtimePreview: 'Real-time preview',
+        fullscreen: 'Fullscreen',
+        professional: 'Pro',
+        creative: 'Creative',
+        minimal: 'Minimal',
+        modern: 'Modern',
+        classicClean: 'Classic and clean',
+        colorfulDynamic: 'Colorful and dynamic',
+        simpleModern: 'Simple and modern',
+        trendyStyled: 'Trendy and styled',
+        experiences: 'Experiences',
+        competences: 'Skills',
+        hobbies: 'Hobbies',
+        summary: 'Summary',
+        contact_info: 'Contact',
+        languages: 'Languages',
+        services: 'Services',
+        about: 'About',
+        theme: 'Theme'
+    }
+};
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import ServiceManager from '@/Components/Portfolio/ServiceManager';
@@ -63,22 +165,22 @@ const SECTION_ICONS = {
     testimonials: Heart,
 };
 
-const SECTION_LABELS = {
-    experiences: 'Expériences',
-    competences: 'Compétences',
-    hobbies: 'Centres d\'intérêt',
-    summary: 'Résumé',
-    contact_info: 'Contact',
-    languages: 'Langues',
-    services: 'Services',
-    about: 'À propos',
-};
+const getSectionLabels = (t: any) => ({
+    experiences: t.experiences,
+    competences: t.competences,
+    hobbies: t.hobbies,
+    summary: t.summary,
+    contact_info: t.contact_info,
+    languages: t.languages,
+    services: t.services,
+    about: t.about,
+});
 
 const DESIGN_OPTIONS = [
-    { value: 'professional', label: 'Professionnel', desc: 'Classique et épuré' },
-    { value: 'creative', label: 'Créatif', desc: 'Coloré et dynamique' },
-    { value: 'minimal', label: 'Minimal', desc: 'Simple et moderne' },
-    { value: 'modern', label: 'Moderne', desc: 'Tendance et stylé' },
+    { value: 'professional', labelKey: 'professional', descKey: 'classicClean' },
+    { value: 'creative', labelKey: 'creative', descKey: 'colorfulDynamic' },
+    { value: 'minimal', labelKey: 'minimal', descKey: 'simpleModern' },
+    { value: 'modern', labelKey: 'modern', descKey: 'trendyStyled' },
 ];
 
 
@@ -86,6 +188,10 @@ const DESIGN_OPTIONS = [
 export default function EditClean({ auth, portfolio, settings, cvData = portfolio, customSections, services, groupedSections = {} }) {
     const [previewMode, setPreviewMode] = useState(false);
     const [showQR, setShowQR] = useState(false);
+    
+    // Détection de la langue (par défaut français)
+    const currentLang = document.documentElement.lang || 'fr';
+    const t = translations[currentLang] || translations.fr;
 
     // Créer les sections avec compteurs corrects
     const createSections = (): Section[] => {
@@ -135,9 +241,10 @@ export default function EditClean({ auth, portfolio, settings, cvData = portfoli
         // Appliquer l'ordre sauvegardé
         const sectionOrder = settings.section_order || {};
 
+        const sectionLabels = getSectionLabels(t);
         return sectionsData.map((section) => ({
             ...section,
-            label: SECTION_LABELS[section.key],
+            label: sectionLabels[section.key],
             icon: SECTION_ICONS[section.key],
             order: sectionOrder[section.key] ?? 999,
         })).sort((a, b) => a.order - b.order);
@@ -246,14 +353,14 @@ export default function EditClean({ auth, portfolio, settings, cvData = portfoli
                             variant={previewMode ? "default" : "outline"}
                             size="default"
                             className={cn(
-                                "h-11 px-5 font-medium transition-all duration-200",
-                                previewMode 
-                                    ? "bg-gradient-to-r from-purple-600 to-amber-500 text-white shadow-lg hover:shadow-xl" 
-                                    : "border-gray-300 hover:bg-gray-50 shadow-sm hover:shadow-md"
+                                "h-10 px-4 font-medium transition-all duration-200 text-sm",
+                                previewMode
+                                    ? "bg-gradient-to-r from-purple-600 to-amber-500 text-white shadow-lg hover:shadow-xl"
+                                    : "border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 shadow-sm hover:shadow-md"
                             )}
                         >
-                            <Eye className="h-4 w-4 mr-2" />
-                            {previewMode ? __('portfolio.edit.hide') : __('portfolio.edit.preview')}
+                            <Eye className="h-4 w-4 mr-1" />
+                            {previewMode ? t.hide : t.preview}
                         </Button>
                     </div>
                 </div>
@@ -261,8 +368,8 @@ export default function EditClean({ auth, portfolio, settings, cvData = portfoli
         >
             <Head title={__('portfolio.edit.portfolio_express')} />
 
-            <div className="py-8 bg-gray-50 min-h-screen">
-                <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+            <div className="py-2 bg-gray-50 dark:bg-gray-900 min-h-screen">
+                <div className="mx-auto max-w-7xl px-2 sm:px-3 lg:px-4">
 
                     {/* QR Code Modal */}
                     <AnimatePresence>
@@ -278,34 +385,34 @@ export default function EditClean({ auth, portfolio, settings, cvData = portfoli
                                     initial={{ scale: 0.9, opacity: 0 }}
                                     animate={{ scale: 1, opacity: 1 }}
                                     exit={{ scale: 0.9, opacity: 0 }}
-                                    className="bg-white rounded-2xl p-8 max-w-md w-full shadow-2xl border border-gray-200"
+                                    className="bg-white dark:bg-gray-800 rounded-2xl p-6 max-w-md w-full shadow-2xl border border-gray-200 dark:border-gray-600"
                                     onClick={(e) => e.stopPropagation()}
                                 >
-                                    <div className="text-center mb-6">
-                                        <div className="w-16 h-16 bg-gradient-to-r from-purple-600 to-amber-500 rounded-2xl mx-auto mb-4 flex items-center justify-center">
-                                            <QrCode className="h-8 w-8 text-white" />
+                                    <div className="text-center mb-4">
+                                        <div className="w-12 h-12 bg-gradient-to-r from-purple-600 to-amber-500 rounded-xl mx-auto mb-3 flex items-center justify-center">
+                                            <QrCode className="h-6 w-6 text-white" />
                                         </div>
-                                        <h3 className="font-bold text-2xl text-gray-900 mb-2">Partager votre Portfolio</h3>
-                                        <p className="text-gray-600">Scannez le QR code pour accéder à votre portfolio</p>
+                                        <h3 className="font-bold text-xl text-gray-900 dark:text-white mb-2">{t.sharePortfolio}</h3>
+                                        <p className="text-gray-600 dark:text-gray-300 text-sm">{t.scanQr}</p>
                                     </div>
-                                    <div className="text-center mb-6">
-                                        <div className="p-6 bg-gray-50 rounded-2xl shadow-inner mb-4">
+                                    <div className="text-center mb-4">
+                                        <div className="p-4 bg-gray-50 dark:bg-gray-700 rounded-xl shadow-inner mb-3">
                                             <img
                                                 src={generateQRCode()}
                                                 alt="QR Code"
                                                 className="mx-auto rounded-xl"
                                             />
                                         </div>
-                                        <p className="text-sm text-gray-600 break-all bg-gray-100 p-3 rounded-lg font-mono">
+                                        <p className="text-xs text-gray-600 dark:text-gray-400 break-all bg-gray-100 dark:bg-gray-700 p-2 rounded-lg font-mono">
                                             {portfolioUrl}
                                         </p>
                                     </div>
                                     <Button
                                         variant="outline"
                                         onClick={() => setShowQR(false)}
-                                        className="w-full h-12 font-semibold border-gray-300 hover:bg-gray-50"
+                                        className="w-full h-10 font-semibold border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 text-sm"
                                     >
-                                        Fermer
+                                        {t.close}
                                     </Button>
                                 </motion.div>
                             </motion.div>
@@ -315,70 +422,70 @@ export default function EditClean({ auth, portfolio, settings, cvData = portfoli
                     <div className={cn("grid gap-8", previewMode ? "lg:grid-cols-3" : "lg:grid-cols-1")}>
 
                         {/* Configuration principale */}
-                        <div className={cn("space-y-6", previewMode ? "lg:col-span-2" : "lg:col-span-1")}>
+                        <div className={cn("space-y-3", previewMode ? "lg:col-span-2" : "lg:col-span-1")}>
 
 
 
-                            <form onSubmit={onSubmit} id="portfolio-form" className="space-y-8">
+                            <form onSubmit={onSubmit} id="portfolio-form" className="space-y-4">
 
                                 {/* Design & Couleur */}
-                                <Card className="bg-white shadow-xl border-l-4 border-l-violet-500 hover:shadow-2xl transition-shadow duration-300">
-                                    <CardHeader className="pb-6 bg-gradient-to-r from-violet-50 to-purple-50">
+                                <Card className="bg-white dark:bg-gray-800 shadow-lg border-l-4 border-l-violet-500 hover:shadow-xl transition-shadow duration-300">
+                                    <CardHeader className="pb-3 bg-gradient-to-r from-violet-50 to-purple-50 dark:from-violet-900/30 dark:to-purple-900/30">
                                         <CardTitle className="flex items-center justify-between">
                                             <div className="flex items-center gap-4">
-                                                <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-violet-500 to-purple-600 flex items-center justify-center shadow-lg">
-                                                    <Palette className="h-7 w-7 text-white" />
+                                                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-violet-500 to-purple-600 flex items-center justify-center shadow-lg">
+                                                    <Palette className="h-5 w-5 text-white" />
                                                 </div>
                                                 <div>
-                                                    <h3 className="text-xl font-bold text-gray-900">Design & Style</h3>
-                                                    <p className="text-sm text-gray-600 font-medium mt-1">Personnalisez l'apparence de votre portfolio</p>
+                                                    <h3 className="text-lg font-bold text-gray-900 dark:text-white">{t.designStyle}</h3>
+                                                    <p className="text-xs text-gray-600 dark:text-gray-300 font-medium">{t.customizeAppearance}</p>
                                                 </div>
                                             </div>
-                                            <Badge className="bg-violet-100 text-violet-800 font-semibold px-3 py-1.5">
-                                                Thème: {DESIGN_OPTIONS.find(d => d.value === data.design)?.label}
+                                            <Badge className="bg-violet-100 dark:bg-violet-900 text-violet-800 dark:text-violet-200 font-semibold px-2 py-1 text-xs">
+                                                {t.theme}: {t[DESIGN_OPTIONS.find(d => d.value === data.design)?.labelKey] || t.professional}
                                             </Badge>
                                         </CardTitle>
                                     </CardHeader>
-                                    <CardContent className="space-y-6">
+                                    <CardContent className="space-y-3">
                                         {/* Sélection du design */}
                                         <div>
-                                            <Label className="text-lg font-semibold text-gray-800 mb-4 block">Choisissez votre thème</Label>
-                                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                                            <Label className="text-sm font-semibold text-gray-800 dark:text-gray-200 mb-2 block">{t.chooseTheme}</Label>
+                                            <div className="grid grid-cols-2 lg:grid-cols-4 gap-2">
                                                 {DESIGN_OPTIONS.map((option) => (
                                                     <motion.div
                                                         key={option.value}
                                                         whileHover={{ scale: 1.02 }}
                                                         whileTap={{ scale: 0.98 }}
                                                         className={cn(
-                                                            "p-5 rounded-2xl border-2 cursor-pointer transition-all duration-200 hover:shadow-lg",
+                                                            "p-3 rounded-xl border-2 cursor-pointer transition-all duration-200 hover:shadow-md",
                                                             data.design === option.value
-                                                                ? "border-violet-500 bg-gradient-to-br from-violet-50 to-purple-50 shadow-lg ring-2 ring-violet-200"
-                                                                : "border-gray-200 hover:border-violet-300 bg-white hover:bg-gradient-to-br hover:from-gray-50 hover:to-violet-50"
+                                                                ? "border-violet-500 bg-gradient-to-br from-violet-50 to-purple-50 dark:from-violet-900/30 dark:to-purple-900/30 shadow-md ring-1 ring-violet-300"
+                                                                : "border-gray-200 dark:border-gray-600 hover:border-violet-300 bg-white dark:bg-gray-700 hover:bg-gradient-to-br hover:from-gray-50 hover:to-violet-50 dark:hover:from-gray-600 dark:hover:to-violet-900/20"
                                                         )}
                                                         onClick={() => setData('design', option.value)}
                                                     >
                                                         <div className="flex items-center justify-between mb-2">
-                                                            <h4 className="font-bold text-gray-900 text-base">{option.label}</h4>
+                                                            <h4 className="font-bold text-gray-900 dark:text-white text-sm">{t[option.labelKey]}</h4>
                                                             {data.design === option.value && (
-                                                                <div className="w-6 h-6 bg-violet-500 rounded-full flex items-center justify-center">
-                                                                    <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
+                                                                <div className="w-4 h-4 bg-violet-500 rounded-full flex items-center justify-center">
+                                                                    <svg className="w-2 h-2 text-white" fill="currentColor" viewBox="0 0 20 20">
                                                                         <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                                                                     </svg>
                                                                 </div>
                                                             )}
                                                         </div>
-                                                        <p className="text-sm text-gray-600 leading-relaxed">{option.desc}</p>
+                                                        <p className="text-xs text-gray-600 dark:text-gray-400 leading-relaxed">{t[option.descKey]}</p>
                                                     </motion.div>
                                                 ))}
                                             </div>
                                         </div>
 
                                         {/* Couleur principale */}
-                                        <div className="bg-gradient-to-r from-gray-50 to-violet-50 p-6 rounded-2xl border border-gray-200">
+                                        <div className="bg-gradient-to-r from-gray-50 to-violet-50 dark:from-gray-800 dark:to-violet-900/30 p-4 rounded-xl border border-gray-200 dark:border-gray-600">
                                             <div className="flex items-center justify-between">
                                                 <div>
-                                                    <Label className="text-lg font-semibold text-gray-800 mb-1 block">Couleur principale</Label>
-                                                    <p className="text-sm text-gray-600">Sélectionnez la couleur dominante de votre portfolio</p>
+                                                    <Label className="text-sm font-semibold text-gray-800 dark:text-gray-200 mb-1 block">{t.primaryColor}</Label>
+                                                    <p className="text-xs text-gray-600 dark:text-gray-400">{t.selectColor}</p>
                                                 </div>
                                                 <div className="flex items-center gap-4">
                                                     <div className="text-center">
@@ -386,9 +493,9 @@ export default function EditClean({ auth, portfolio, settings, cvData = portfoli
                                                             type="color"
                                                             value={data.primary_color}
                                                             onChange={(e) => setData('primary_color', e.target.value)}
-                                                            className="w-20 h-16 rounded-2xl cursor-pointer border-3 border-white shadow-lg hover:shadow-xl transition-shadow"
+                                                            className="w-16 h-12 rounded-xl cursor-pointer border-2 border-white shadow-md hover:shadow-lg transition-shadow"
                                                         />
-                                                        <p className="text-xs text-gray-500 font-mono mt-2 bg-white px-2 py-1 rounded-md">
+                                                        <p className="text-xs text-gray-500 dark:text-gray-400 font-mono mt-1 bg-white dark:bg-gray-700 px-2 py-1 rounded-md">
                                                             {data.primary_color}
                                                         </p>
                                                     </div>
@@ -397,9 +504,9 @@ export default function EditClean({ auth, portfolio, settings, cvData = portfoli
                                                         onClick={() => setData('primary_color', '#f59e0b')}
                                                         variant="outline"
                                                         size="sm"
-                                                        className="border-2 border-amber-200 text-amber-700 hover:bg-amber-50 font-medium"
+                                                        className="border-2 border-amber-200 dark:border-amber-600 text-amber-700 dark:text-amber-300 hover:bg-amber-50 dark:hover:bg-amber-900/20 font-medium text-xs"
                                                     >
-                                                        Par défaut
+                                                        {t.default}
                                                     </Button>
                                                 </div>
                                             </div>
@@ -409,30 +516,30 @@ export default function EditClean({ auth, portfolio, settings, cvData = portfoli
 
 
                                 {/* Visibilité des Sections - Interface Simplifiée */}
-                                <Card className="bg-white shadow-xl border-l-4 border-l-emerald-500 hover:shadow-2xl transition-shadow duration-300">
-                                    <CardHeader className="pb-6 bg-gradient-to-r from-emerald-50 to-green-50">
+                                <Card className="bg-white dark:bg-gray-800 shadow-lg border-l-4 border-l-emerald-500 hover:shadow-xl transition-shadow duration-300">
+                                    <CardHeader className="pb-3 bg-gradient-to-r from-emerald-50 to-green-50 dark:from-emerald-900/30 dark:to-green-900/30">
                                         <CardTitle className="flex items-center justify-between">
                                             <div className="flex items-center gap-4">
-                                                <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-emerald-500 to-green-600 flex items-center justify-center shadow-lg">
-                                                    <Settings className="h-7 w-7 text-white" />
+                                                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-500 to-green-600 flex items-center justify-center shadow-lg">
+                                                    <Settings className="h-5 w-5 text-white" />
                                                 </div>
                                                 <div>
-                                                    <h3 className="text-xl font-bold text-gray-900">Gestion des Sections</h3>
-                                                    <p className="text-sm text-gray-600 font-medium mt-1">Organisez et configurez les sections de votre portfolio</p>
+                                                    <h3 className="text-lg font-bold text-gray-900 dark:text-white">{t.sectionManagement}</h3>
+                                                    <p className="text-xs text-gray-600 dark:text-gray-300 font-medium">{t.organizePortfolio}</p>
                                                 </div>
                                             </div>
                                             <div className="flex items-center gap-3">
-                                                <Badge className="bg-emerald-100 text-emerald-800 font-semibold px-3 py-1.5">
-                                                    {sections.filter(s => s.isActive).length}/{sections.length} Actives
+                                                <Badge className="bg-emerald-100 dark:bg-emerald-900 text-emerald-800 dark:text-emerald-200 font-semibold px-2 py-1 text-xs">
+                                                    {sections.filter(s => s.isActive).length}/{sections.length} {t.active}
                                                 </Badge>
-                                                <Badge className="bg-orange-100 text-orange-800 font-semibold px-3 py-1.5">
-                                                    {sections.filter(s => s.count === 0).length} Vides
+                                                <Badge className="bg-orange-100 dark:bg-orange-900 text-orange-800 dark:text-orange-200 font-semibold px-2 py-1 text-xs">
+                                                    {sections.filter(s => s.count === 0).length} {t.empty}
                                                 </Badge>
                                             </div>
                                         </CardTitle>
                                     </CardHeader>
-                                    <CardContent className="space-y-4">
-                                        <div className="grid grid-cols-1 gap-4">
+                                    <CardContent className="space-y-2">
+                                        <div className="grid grid-cols-1 gap-2">
                                             {sections.map((section, index) => {
                                                 const IconComponent = section.icon;
                                                 return (
@@ -443,25 +550,25 @@ export default function EditClean({ auth, portfolio, settings, cvData = portfoli
                                                         transition={{ delay: index * 0.05 }}
                                                         whileHover={{ scale: 1.01 }}
                                                         className={cn(
-                                                            "flex items-center gap-4 p-4 rounded-2xl border-2 transition-all duration-200 hover:shadow-md",
+                                                            "flex items-center gap-3 p-3 rounded-xl border transition-all duration-200 hover:shadow-sm",
                                                             section.count === 0
-                                                                ? "cursor-not-allowed opacity-60 border-orange-200 bg-gradient-to-r from-orange-50 to-red-50"
+                                                                ? "cursor-not-allowed opacity-60 border-orange-200 dark:border-orange-800 bg-gradient-to-r from-orange-50 to-red-50 dark:from-orange-900/20 dark:to-red-900/20"
                                                                 : section.isActive
-                                                                    ? "cursor-pointer border-emerald-300 bg-gradient-to-r from-emerald-50 to-green-50 hover:border-emerald-400 shadow-sm"
-                                                                    : "cursor-pointer border-gray-200 bg-gradient-to-r from-gray-50 to-slate-50 opacity-75 hover:opacity-90 hover:border-gray-300"
+                                                                    ? "cursor-pointer border-emerald-300 dark:border-emerald-600 bg-gradient-to-r from-emerald-50 to-green-50 dark:from-emerald-900/20 dark:to-green-900/20 hover:border-emerald-400 shadow-sm"
+                                                                    : "cursor-pointer border-gray-200 dark:border-gray-600 bg-gradient-to-r from-gray-50 to-slate-50 dark:from-gray-700 dark:to-slate-700 opacity-75 hover:opacity-90 hover:border-gray-300 dark:hover:border-gray-500"
                                                         )}
                                                         onClick={() => section.count > 0 && handleToggleSection(section.key)}
                                                     >
                                                         {/* Section Icon */}
                                                         <div className={cn(
-                                                            "flex items-center justify-center w-12 h-12 rounded-2xl transition-all duration-200 shrink-0",
+                                                            "flex items-center justify-center w-8 h-8 rounded-xl transition-all duration-200 shrink-0",
                                                             section.count === 0
-                                                                ? "bg-orange-100 text-orange-500"
+                                                                ? "bg-orange-100 dark:bg-orange-800 text-orange-500 dark:text-orange-400"
                                                                 : section.isActive
-                                                                    ? "bg-emerald-100 text-emerald-600 shadow-md"
-                                                                    : "bg-gray-100 text-gray-400"
+                                                                    ? "bg-emerald-100 dark:bg-emerald-800 text-emerald-600 dark:text-emerald-300 shadow-md"
+                                                                    : "bg-gray-100 dark:bg-gray-600 text-gray-400 dark:text-gray-300"
                                                         )}>
-                                                            <IconComponent className="w-6 h-6" />
+                                                            <IconComponent className="w-4 h-4" />
                                                         </div>
 
                                                         {/* Section Info */}
@@ -469,29 +576,29 @@ export default function EditClean({ auth, portfolio, settings, cvData = portfoli
                                                             <div className="flex items-center justify-between">
                                                                 <div>
                                                                     <span className={cn(
-                                                                        "text-base font-semibold block",
+                                                                        "text-sm font-semibold block",
                                                                         section.count === 0
-                                                                            ? "text-orange-700"
-                                                                            : section.isActive 
-                                                                                ? "text-gray-900" 
-                                                                                : "text-gray-500"
+                                                                            ? "text-orange-700 dark:text-orange-400"
+                                                                            : section.isActive
+                                                                                ? "text-gray-900 dark:text-white"
+                                                                                : "text-gray-500 dark:text-gray-400"
                                                                     )}>
                                                                         {section.label}
                                                                     </span>
-                                                                    <span className="text-sm text-gray-600">
-                                                                        {section.count === 0 
-                                                                            ? "Aucun contenu disponible" 
-                                                                            : `${section.count} élément${section.count > 1 ? 's' : ''}`
+                                                                    <span className="text-xs text-gray-600 dark:text-gray-400">
+                                                                        {section.count === 0
+                                                                            ? t.noContent
+                                                                            : `${section.count} ${section.count > 1 ? t.elements : t.element}`
                                                                         }
                                                                     </span>
                                                                 </div>
-                                                                <div className="flex items-center gap-3">
+                                                                <div className="flex items-center gap-2">
                                                                     <Badge
                                                                         className={cn(
-                                                                            "text-sm px-3 py-1 font-semibold rounded-full",
+                                                                            "text-xs px-2 py-0.5 font-semibold rounded-full",
                                                                             section.count === 0
-                                                                                ? "bg-orange-100 text-orange-700"
-                                                                                : "bg-blue-100 text-blue-700"
+                                                                                ? "bg-orange-100 dark:bg-orange-800 text-orange-700 dark:text-orange-300"
+                                                                                : "bg-blue-100 dark:bg-blue-800 text-blue-700 dark:text-blue-300"
                                                                         )}
                                                                     >
                                                                         {section.count}
@@ -506,7 +613,7 @@ export default function EditClean({ auth, portfolio, settings, cvData = portfoli
                                                                                 handleToggleSection(section.key);
                                                                             }
                                                                         }}
-                                                                        className="data-[state=checked]:bg-emerald-500 shrink-0 scale-110"
+                                                                        className="data-[state=checked]:bg-emerald-500 shrink-0"
                                                                     />
                                                                 </div>
                                                             </div>
@@ -517,15 +624,17 @@ export default function EditClean({ auth, portfolio, settings, cvData = portfoli
                                         </div>
 
                                         {/* Actions rapides */}
-                                        <div className="flex items-center justify-between pt-3 border-t border-gray-100">
-                                            <div className="text-xs text-gray-500">
-                                                {sections.filter(s => s.count === 0).length > 0 && "Les sections sans contenu sont marquées en orange"}
+                                        <div className="flex items-center justify-between pt-3 border-t border-gray-200 dark:border-gray-600">
+                                            <div className="text-xs text-gray-600 dark:text-gray-400 bg-blue-50 dark:bg-blue-900/20 px-2 py-1 rounded-lg">
+                                                💡 {sections.filter(s => s.count === 0).length > 0
+                                                    ? t.emptySectionsOrange
+                                                    : t.allSectionsContent}
                                             </div>
                                             <div className="flex gap-2">
                                                 <Button
                                                     type="button"
                                                     variant="outline"
-                                                    size="sm"
+                                                    size="default"
                                                     onClick={() => {
                                                         setSections(prevSections => {
                                                             const updatedSections = prevSections.map(section =>
@@ -545,14 +654,15 @@ export default function EditClean({ auth, portfolio, settings, cvData = portfoli
                                                             return updatedSections;
                                                         });
                                                     }}
-                                                    className="h-7 px-2 text-xs"
+                                                    className="h-8 px-3 border-emerald-200 dark:border-emerald-600 text-emerald-700 dark:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-900/20 text-xs"
                                                 >
-                                                    Afficher tout
+                                                    <Eye className="h-3 w-3 mr-1" />
+                                                    {t.showAll}
                                                 </Button>
                                                 <Button
                                                     type="button"
                                                     variant="outline"
-                                                    size="sm"
+                                                    size="default"
                                                     onClick={() => {
                                                         setSections(prevSections => {
                                                             const updatedSections = prevSections.map(section =>
@@ -572,9 +682,10 @@ export default function EditClean({ auth, portfolio, settings, cvData = portfoli
                                                             return updatedSections;
                                                         });
                                                     }}
-                                                    className="h-7 px-2 text-xs"
+                                                    className="h-8 px-3 border-orange-200 dark:border-orange-600 text-orange-700 dark:text-orange-400 hover:bg-orange-50 dark:hover:bg-orange-900/20 text-xs"
                                                 >
-                                                    Masquer vides
+                                                    <EyeOff className="h-3 w-3 mr-1" />
+                                                    {t.hideEmpty}
                                                 </Button>
                                             </div>
                                         </div>
@@ -586,25 +697,30 @@ export default function EditClean({ auth, portfolio, settings, cvData = portfoli
 
 
                                 {/* Bouton de sauvegarde */}
-                                <div className="flex justify-center pt-6">
-                                    <Button
-                                        type="submit"
-                                        disabled={processing}
-                                        size="lg"
-                                        className="bg-gradient-to-r from-violet-500 to-purple-600 hover:from-violet-600 hover:to-purple-700 text-white px-12 py-3 text-base font-medium shadow-lg hover:shadow-xl transition-all"
+                                <div className="flex justify-center pt-4">
+                                    <motion.div
+                                        whileHover={{ scale: 1.02 }}
+                                        whileTap={{ scale: 0.98 }}
                                     >
-                                        {processing ? (
-                                            <>
-                                                <RefreshCw className="h-5 w-5 mr-3 animate-spin" />
-                                                Sauvegarde en cours...
-                                            </>
-                                        ) : (
-                                            <>
-                                                <Save className="h-5 w-5 mr-3" />
-                                                Sauvegarder les modifications
-                                            </>
-                                        )}
-                                    </Button>
+                                        <Button
+                                            type="submit"
+                                            disabled={processing}
+                                            size="lg"
+                                            className="bg-gradient-to-r from-violet-600 via-purple-600 to-amber-500 hover:from-violet-700 hover:via-purple-700 hover:to-amber-600 text-white px-12 py-3 text-base font-semibold shadow-xl hover:shadow-2xl transition-all duration-300 rounded-xl"
+                                        >
+                                            {processing ? (
+                                                <>
+                                                    <RefreshCw className="h-5 w-5 mr-2 animate-spin" />
+                                                    {t.saving}
+                                                </>
+                                            ) : (
+                                                <>
+                                                    <Save className="h-5 w-5 mr-2" />
+                                                    {t.saveChanges}
+                                                </>
+                                            )}
+                                        </Button>
+                                    </motion.div>
                                 </div>
 
                             </form>
@@ -613,38 +729,53 @@ export default function EditClean({ auth, portfolio, settings, cvData = portfoli
                         {/* Preview (if active) */}
                         {previewMode && (
                             <motion.div
-                                initial={{ opacity: 0, x: 20 }}
+                                initial={{ opacity: 0, x: 30 }}
                                 animate={{ opacity: 1, x: 0 }}
+                                transition={{ duration: 0.4 }}
                                 className="lg:col-span-1"
                             >
-                                <Card className="sticky top-6 shadow-xl bg-white">
-                                    <CardHeader className="pb-4">
-                                        <CardTitle className="text-center flex items-center justify-center gap-2">
-                                            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center">
-                                                <Eye className="h-4 w-4 text-white" />
+                                <Card className="sticky top-6 shadow-2xl bg-white border-l-4 border-l-purple-500 overflow-hidden">
+                                    <CardHeader className="pb-4 bg-gradient-to-r from-purple-50 to-pink-50">
+                                        <CardTitle className="flex items-center justify-center gap-3">
+                                            <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center shadow-lg">
+                                                <Eye className="h-6 w-6 text-white" />
                                             </div>
-                                            <span className="text-base font-semibold text-gray-900">{__('portfolio.edit.live_preview')}</span>
+                                            <div>
+                                                <span className="text-xl font-bold text-gray-900 block">Aperçu Live</span>
+                                                <span className="text-sm text-gray-600">Prévisualisation en temps réel</span>
+                                            </div>
                                         </CardTitle>
                                     </CardHeader>
                                     <CardContent className="p-0">
-                                        <div className="aspect-[3/4] bg-gradient-to-br from-gray-100 to-gray-200 rounded-lg overflow-hidden mx-4 border-2 border-purple-100">
-                                            <iframe
-                                                src={portfolioUrl}
-                                                className="w-full h-full border-0 scale-75 origin-top-left"
-                                                style={{ width: '133.33%', height: '133.33%' }}
-                                                title={__('portfolio.edit.portfolio_preview')}
-                                                loading="lazy"
-                                            />
-                                        </div>
                                         <div className="p-4">
-                                            <Button
-                                                onClick={() => window.open(portfolioUrl, '_blank')}
-                                                variant="outline"
-                                                className="w-full border-purple-200 text-purple-700 hover:bg-purple-50 hover:border-purple-300"
-                                            >
-                                                <Share className="h-4 w-4 mr-2" />
-                                                Ouvrir en plein écran
-                                            </Button>
+                                            <div className="aspect-[3/4] bg-gradient-to-br from-gray-100 to-gray-200 rounded-2xl overflow-hidden border-2 border-purple-200 shadow-inner">
+                                                <iframe
+                                                    src={portfolioUrl}
+                                                    className="w-full h-full border-0 scale-75 origin-top-left transition-all duration-300"
+                                                    style={{ width: '133.33%', height: '133.33%' }}
+                                                    title={__('portfolio.edit.portfolio_preview')}
+                                                    loading="lazy"
+                                                />
+                                            </div>
+                                        </div>
+                                        <div className="p-3 bg-gray-50 dark:bg-gray-700 border-t border-gray-200 dark:border-gray-600">
+                                            <div className="flex gap-1">
+                                                <Button
+                                                    onClick={() => window.open(portfolioUrl, '_blank')}
+                                                    variant="outline"
+                                                    className="flex-1 h-9 border border-purple-200 dark:border-purple-600 text-purple-700 dark:text-purple-400 hover:bg-purple-50 dark:hover:bg-purple-900/20 hover:border-purple-300 font-medium text-sm"
+                                                >
+                                                    <Share className="h-3 w-3 mr-1" />
+                                                    {t.fullscreen}
+                                                </Button>
+                                                <Button
+                                                    onClick={() => setShowQR(true)}
+                                                    variant="outline"
+                                                    className="h-9 px-3 border border-purple-200 dark:border-purple-600 text-purple-700 dark:text-purple-400 hover:bg-purple-50 dark:hover:bg-purple-900/20 hover:border-purple-300 text-sm"
+                                                >
+                                                    <QrCode className="h-3 w-3" />
+                                                </Button>
+                                            </div>
                                         </div>
                                     </CardContent>
                                 </Card>

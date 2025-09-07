@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { Head, useForm } from '@inertiajs/react';
+import { Head, useForm, router } from '@inertiajs/react';
+import axios from 'axios';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Button } from "@/Components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/Components/ui/card";
@@ -24,8 +25,8 @@ import {
     SelectValue,
 } from "@/Components/ui/select";
 import {
-    Plus, Edit, Trash2, Image as ImageIcon, 
-    DragHandleDots2Icon, Eye, EyeOff, Star, Wrench
+    Plus, Edit, Trash2, Image as ImageIcon,
+    GripVertical, Eye, EyeOff, Star, Wrench
 } from 'lucide-react';
 import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
 import { cn } from '@/lib/utils';
@@ -84,7 +85,7 @@ export default function ServicesIndex({ auth, services: initialServices }: Props
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        
+
         if (editingService) {
             put(route('services.update', editingService.id), {
                 onSuccess: () => {
@@ -147,7 +148,7 @@ export default function ServicesIndex({ auth, services: initialServices }: Props
 
     const priceTypes = {
         'fixed': 'Prix fixe',
-        'hourly': 'Tarif horaire', 
+        'hourly': 'Tarif horaire',
         'daily': 'Tarif journalier',
         'project': 'Prix par projet'
     };
@@ -180,7 +181,7 @@ export default function ServicesIndex({ auth, services: initialServices }: Props
                                     Ajoutez un nouveau service à votre portfolio
                                 </DialogDescription>
                             </DialogHeader>
-                            <ServiceForm 
+                            <ServiceForm
                                 data={data}
                                 setData={setData}
                                 onSubmit={handleSubmit}
@@ -207,7 +208,7 @@ export default function ServicesIndex({ auth, services: initialServices }: Props
                                 <p className="text-gray-600 mb-4">
                                     Commencez par créer votre premier service
                                 </p>
-                                <Button 
+                                <Button
                                     onClick={() => setShowCreateDialog(true)}
                                     className="bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600"
                                 >
@@ -239,17 +240,17 @@ export default function ServicesIndex({ auth, services: initialServices }: Props
                                                                     {...provided.dragHandleProps}
                                                                     className="text-gray-400 hover:text-gray-600 cursor-grab active:cursor-grabbing mt-2"
                                                                 >
-                                                                    <DragHandleDots2Icon className="h-5 w-5" />
+                                                                    <GripVertical className="h-5 w-5" />
                                                                 </div>
-                                                                
-                                                                {service.main_image_url && (
+
+                                                                {service.main_image && (
                                                                     <img
-                                                                        src={service.main_image_url}
+                                                                        src={service.main_image}
                                                                         alt={service.title}
                                                                         className="w-16 h-16 rounded-lg object-cover"
                                                                     />
                                                                 )}
-                                                                
+
                                                                 <div className="flex-1">
                                                                     <div className="flex items-start justify-between mb-2">
                                                                         <div>
@@ -291,7 +292,7 @@ export default function ServicesIndex({ auth, services: initialServices }: Props
                                                                             </Button>
                                                                         </div>
                                                                     </div>
-                                                                    
+
                                                                     {service.tags && service.tags.length > 0 && (
                                                                         <div className="flex flex-wrap gap-1 mt-2">
                                                                             {service.tags.map((tag, tagIndex) => (
@@ -301,7 +302,7 @@ export default function ServicesIndex({ auth, services: initialServices }: Props
                                                                             ))}
                                                                         </div>
                                                                     )}
-                                                                    
+
                                                                     {service.images && service.images.length > 0 && (
                                                                         <div className="flex items-center gap-1 mt-2 text-xs text-gray-500">
                                                                             <ImageIcon className="h-3 w-3" />
@@ -332,7 +333,7 @@ export default function ServicesIndex({ auth, services: initialServices }: Props
                                 </DialogDescription>
                             </DialogHeader>
                             {editingService && (
-                                <ServiceForm 
+                                <ServiceForm
                                     data={data}
                                     setData={setData}
                                     onSubmit={handleSubmit}
@@ -410,6 +411,7 @@ function ServiceForm({ data, setData, onSubmit, processing, errors, priceTypes, 
                             <SelectContent>
                                 {Object.entries(priceTypes).map(([key, label]) => (
                                     <SelectItem key={key} value={key}>
+                                        {/* @ts-ignore */}
                                         {label}
                                     </SelectItem>
                                 ))}

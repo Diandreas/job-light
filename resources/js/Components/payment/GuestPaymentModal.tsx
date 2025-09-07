@@ -19,7 +19,7 @@ import {
 } from '@/Components/ui/select';
 import {
     CreditCard, Lock, Shield, ArrowRight, Loader2,
-    CheckCircle, AlertCircle, Euro, Banknote
+    CheckCircle, AlertCircle, Euro, Banknote, Download
 } from 'lucide-react';
 
 interface GuestPaymentModalProps {

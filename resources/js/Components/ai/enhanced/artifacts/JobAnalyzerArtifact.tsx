@@ -266,7 +266,7 @@ export default function JobAnalyzerArtifact({ data, messageContent, onAction }: 
                                     </div>
                                     
                                     <div className="flex items-center justify-center gap-2 mb-2">
-                                        <Badge className={getImportanceColor(keyword.importance)} size="sm">
+                                        <Badge className={`${getImportanceColor(keyword.importance)} text-xs px-2 py-1`}>
                                             {keyword.importance}
                                         </Badge>
                                         <span className="text-xs text-gray-500">×{keyword.frequency}</span>

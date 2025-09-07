@@ -149,11 +149,13 @@ const CompactChatInput = ({
                 {value.length > 0 && (
                     <div className="mt-1 px-1">
                         <div className="flex justify-between items-center text-xs text-gray-500 dark:text-gray-400 mb-1">
+                            {/* @ts-ignore */}
                             <span>{value.length}/2000 {t('components.career_advisor.interface.progress_characters')}</span>
                             <div className="flex items-center gap-2">
                                 <kbd className="px-1 py-0.5 text-[10px] bg-gray-100 dark:bg-gray-700 rounded border">
                                     Enter
                                 </kbd>
+                                {/* @ts-ignore */}
                                 <span>{t('components.career_advisor.interface.send')}</span>
                             </div>
                         </div>

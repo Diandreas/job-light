@@ -25,7 +25,7 @@ import {
     Palette, Eye, Save, RefreshCw, QrCode, Share,
     Briefcase, Award, Heart, FileText, Contact,
     Globe, Wrench, User, ArrowUp, ArrowDown,
-    Settings, Sparkles, Plus, Edit, Trash2
+    Settings, Sparkles, Plus, Edit, Trash2, ExternalLink
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';

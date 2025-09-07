@@ -11,7 +11,7 @@ import { Alert, AlertDescription } from '@/Components/ui/alert';
 import {
     FileText, Upload, Sparkles, Target, Building,
     MapPin, Calendar, DollarSign, CheckCircle, AlertCircle,
-    Lightbulb, Zap, Star, TrendingUp, Users
+    Lightbulb, Zap, Star, TrendingUp, Users, Loader2
 } from 'lucide-react';
 import {
     Select,
@@ -53,43 +53,43 @@ export default function CoverLetterGenerator({ onSubmit, userInfo, isLoading }: 
 
     // Translated constants
     const TONES = [
-        { 
-            value: 'professional', 
-            label: t('cover_letter_generator.tones.professional.label') || 'Professionnel', 
-            description: t('cover_letter_generator.tones.professional.description') || 'Formel et respectueux' 
+        {
+            value: 'professional',
+            label: t('cover_letter_generator.tones.professional.label') || 'Professionnel',
+            description: t('cover_letter_generator.tones.professional.description') || 'Formel et respectueux'
         },
-        { 
-            value: 'enthusiastic', 
-            label: t('cover_letter_generator.tones.enthusiastic.label') || 'Enthousiaste', 
-            description: t('cover_letter_generator.tones.enthusiastic.description') || 'Dynamique et motivé' 
+        {
+            value: 'enthusiastic',
+            label: t('cover_letter_generator.tones.enthusiastic.label') || 'Enthousiaste',
+            description: t('cover_letter_generator.tones.enthusiastic.description') || 'Dynamique et motivé'
         },
-        { 
-            value: 'confident', 
-            label: t('cover_letter_generator.tones.confident.label') || 'Confiant', 
-            description: t('cover_letter_generator.tones.confident.description') || 'Assertif et déterminé' 
+        {
+            value: 'confident',
+            label: t('cover_letter_generator.tones.confident.label') || 'Confiant',
+            description: t('cover_letter_generator.tones.confident.description') || 'Assertif et déterminé'
         },
-        { 
-            value: 'creative', 
-            label: t('cover_letter_generator.tones.creative.label') || 'Créatif', 
-            description: t('cover_letter_generator.tones.creative.description') || 'Original et innovant' 
+        {
+            value: 'creative',
+            label: t('cover_letter_generator.tones.creative.label') || 'Créatif',
+            description: t('cover_letter_generator.tones.creative.description') || 'Original et innovant'
         }
     ];
 
     const LENGTHS = [
-        { 
-            value: 'short', 
-            label: t('cover_letter_generator.lengths.short.label') || 'Courte', 
-            description: t('cover_letter_generator.lengths.short.description') || '200-300 mots' 
+        {
+            value: 'short',
+            label: t('cover_letter_generator.lengths.short.label') || 'Courte',
+            description: t('cover_letter_generator.lengths.short.description') || '200-300 mots'
         },
-        { 
-            value: 'medium', 
-            label: t('cover_letter_generator.lengths.medium.label') || 'Standard', 
-            description: t('cover_letter_generator.lengths.medium.description') || '300-400 mots' 
+        {
+            value: 'medium',
+            label: t('cover_letter_generator.lengths.medium.label') || 'Standard',
+            description: t('cover_letter_generator.lengths.medium.description') || '300-400 mots'
         },
-        { 
-            value: 'long', 
-            label: t('cover_letter_generator.lengths.long.label') || 'Détaillée', 
-            description: t('cover_letter_generator.lengths.long.description') || '400-500 mots' 
+        {
+            value: 'long',
+            label: t('cover_letter_generator.lengths.long.label') || 'Détaillée',
+            description: t('cover_letter_generator.lengths.long.description') || '400-500 mots'
         }
     ];
 
@@ -132,11 +132,11 @@ export default function CoverLetterGenerator({ onSubmit, userInfo, isLoading }: 
             'expérience', 'compétences', 'responsabilités', 'équipe',
             'projet', 'développement', 'gestion', 'communication'
         ];
-        
-        const found = commonKeywords.filter(keyword => 
+
+        const found = commonKeywords.filter(keyword =>
             text.includes(keyword)
         );
-        
+
         setKeywordsExtracted(found);
         setAtsScore(Math.min(95, 60 + (found.length * 5)));
     };
@@ -150,6 +150,7 @@ export default function CoverLetterGenerator({ onSubmit, userInfo, isLoading }: 
 
     const handleSubmit = () => {
         const prompt = generateCoverLetterPrompt(formData);
+        // @ts-ignore
         onSubmit({ ...formData, prompt });
     };
 
@@ -187,9 +188,9 @@ Créez une lettre de motivation personnalisée qui met en valeur mon profil pour
     };
 
     const isFormValid = () => {
-        return formData.jobTitle.length > 0 && 
-               formData.companyName.length > 0 && 
-               formData.jobDescription.length > 50;
+        return formData.jobTitle.length > 0 &&
+            formData.companyName.length > 0 &&
+            formData.jobDescription.length > 50;
     };
 
     return (
@@ -209,13 +210,13 @@ Créez une lettre de motivation personnalisée qui met en valeur mon profil pour
                         </p>
                     </div>
                 </div>
-                
+
                 {atsScore && (
-                    <Badge 
-                        variant="outline" 
-                        className={`${atsScore >= 80 ? 'bg-green-50 text-green-700 border-green-200' : 
-                                    atsScore >= 60 ? 'bg-orange-50 text-orange-700 border-orange-200' : 
-                                    'bg-red-50 text-red-700 border-red-200'}`}
+                    <Badge
+                        variant="outline"
+                        className={`${atsScore >= 80 ? 'bg-green-50 text-green-700 border-green-200' :
+                            atsScore >= 60 ? 'bg-orange-50 text-orange-700 border-orange-200' :
+                                'bg-red-50 text-red-700 border-red-200'}`}
                     >
                         <TrendingUp className="w-3 h-3 mr-1" />
                         Score ATS: {atsScore}%
@@ -234,7 +235,7 @@ Créez une lettre de motivation personnalisée qui met en valeur mon profil pour
                             </CardTitle>
                         </CardHeader>
                         <CardContent className="space-y-4">
-                            <Tabs value={formData.inputMethod} onValueChange={(value) => 
+                            <Tabs value={formData.inputMethod} onValueChange={(value) =>
                                 setFormData(prev => ({ ...prev, inputMethod: value as 'manual' | 'paste' | 'url' }))
                             }>
                                 <TabsList className="grid w-full grid-cols-3">
@@ -242,7 +243,7 @@ Créez une lettre de motivation personnalisée qui met en valeur mon profil pour
                                     <TabsTrigger value="paste">Coller l'annonce</TabsTrigger>
                                     <TabsTrigger value="url">URL de l'offre</TabsTrigger>
                                 </TabsList>
-                                
+
                                 <TabsContent value="manual" className="space-y-4 mt-4">
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                         <div>
@@ -270,7 +271,7 @@ Créez une lettre de motivation personnalisée qui met en valeur mon profil pour
                                             />
                                         </div>
                                     </div>
-                                    
+
                                     <div>
                                         <Label htmlFor="jobDescription">Description du poste *</Label>
                                         <Textarea
@@ -289,7 +290,7 @@ Créez une lettre de motivation personnalisée qui met en valeur mon profil pour
                                         </div>
                                     </div>
                                 </TabsContent>
-                                
+
                                 <TabsContent value="paste" className="space-y-4 mt-4">
                                     <div>
                                         <Label htmlFor="fullJobPosting">Annonce complète</Label>
@@ -305,7 +306,7 @@ Créez une lettre de motivation personnalisée qui met en valeur mon profil pour
                                         </Button>
                                     </div>
                                 </TabsContent>
-                                
+
                                 <TabsContent value="url" className="space-y-4 mt-4">
                                     <div>
                                         <Label htmlFor="jobUrl">URL de l'offre d'emploi</Label>
@@ -336,8 +337,8 @@ Créez une lettre de motivation personnalisée qui met en valeur mon profil pour
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div>
                                     <Label>Ton de la lettre</Label>
-                                    <Select 
-                                        value={formData.tone} 
+                                    <Select
+                                        value={formData.tone}
                                         onValueChange={(value) => setFormData(prev => ({ ...prev, tone: value }))}
                                     >
                                         <SelectTrigger>
@@ -355,11 +356,11 @@ Créez une lettre de motivation personnalisée qui met en valeur mon profil pour
                                         </SelectContent>
                                     </Select>
                                 </div>
-                                
+
                                 <div>
                                     <Label>Longueur souhaitée</Label>
-                                    <Select 
-                                        value={formData.length} 
+                                    <Select
+                                        value={formData.length}
                                         onValueChange={(value) => setFormData(prev => ({ ...prev, length: value }))}
                                     >
                                         <SelectTrigger>
@@ -387,15 +388,14 @@ Créez une lettre de motivation personnalisée qui met en valeur mon profil pour
                                             key={motivation}
                                             type="button"
                                             onClick={() => toggleArrayItem(
-                                                formData.motivations, 
-                                                motivation, 
+                                                formData.motivations,
+                                                motivation,
                                                 (items) => setFormData(prev => ({ ...prev, motivations: items }))
                                             )}
-                                            className={`p-2 text-xs rounded-lg border transition-all ${
-                                                formData.motivations.includes(motivation)
+                                            className={`p-2 text-xs rounded-lg border transition-all ${formData.motivations.includes(motivation)
                                                     ? 'bg-green-100 border-green-300 text-green-700'
                                                     : 'bg-gray-50 border-gray-200 text-gray-600 hover:bg-green-50'
-                                            }`}
+                                                }`}
                                         >
                                             {motivation}
                                         </button>
@@ -419,17 +419,16 @@ Créez une lettre de motivation personnalisée qui met en valeur mon profil pour
                             </CardHeader>
                             <CardContent>
                                 <div className="text-center mb-4">
-                                    <div className={`text-3xl font-bold ${
-                                        atsScore >= 80 ? 'text-green-600' :
-                                        atsScore >= 60 ? 'text-orange-600' : 'text-red-600'
-                                    }`}>
+                                    <div className={`text-3xl font-bold ${atsScore >= 80 ? 'text-green-600' :
+                                            atsScore >= 60 ? 'text-orange-600' : 'text-red-600'
+                                        }`}>
                                         {atsScore}%
                                     </div>
                                     <div className="text-xs text-gray-600">
                                         Compatibilité ATS
                                     </div>
                                 </div>
-                                
+
                                 {keywordsExtracted.length > 0 && (
                                     <div>
                                         <div className="text-xs font-medium text-gray-700 dark:text-gray-300 mb-2">
@@ -500,12 +499,12 @@ Créez une lettre de motivation personnalisée qui met en valeur mon profil pour
 
             {/* Bouton de génération */}
             <div className="text-center">
-                                    <Button
-                        onClick={handleSubmit}
-                        disabled={!isFormValid() || isLoading}
-                        size="lg"
-                        className="bg-gradient-to-r from-amber-500 to-purple-500 hover:from-amber-600 hover:to-purple-600 px-8"
-                    >
+                <Button
+                    onClick={handleSubmit}
+                    disabled={!isFormValid() || isLoading}
+                    size="lg"
+                    className="bg-gradient-to-r from-amber-500 to-purple-500 hover:from-amber-600 hover:to-purple-600 px-8"
+                >
                     {isLoading ? (
                         <>
                             <Loader2 className="w-5 h-5 mr-2 animate-spin" />

@@ -34,12 +34,12 @@ import {
 } from '@/Components/ui/select';
 
 interface GuestCvBuilderProps {
-    availableCompetences: Array<{id: number; name: string; name_en: string; description: string}>;
-    availableHobbies: Array<{id: number; name: string; name_en: string}>;
-    availableProfessions: Array<{id: number; name: string; name_en: string; description: string}>;
-    availableLanguages: Array<{id: number; name: string; name_en: string}>;
-    experienceCategories: Array<{id: number; name: string; name_en: string; ranking: number}>;
-    availableCvModels: Array<{id: number; name: string; description: string; previewImagePath: string; price: number}>;
+    availableCompetences: Array<{ id: number; name: string; name_en: string; description: string }>;
+    availableHobbies: Array<{ id: number; name: string; name_en: string }>;
+    availableProfessions: Array<{ id: number; name: string; name_en: string; description: string }>;
+    availableLanguages: Array<{ id: number; name: string; name_en: string }>;
+    experienceCategories: Array<{ id: number; name: string; name_en: string; ranking: number }>;
+    availableCvModels: Array<{ id: number; name: string; description: string; previewImagePath: string; price: number }>;
     isGuest: boolean;
 }
 
@@ -54,18 +54,18 @@ const STEPS = [
     { id: 'preview', label: 'Aperçu & Téléchargement', icon: Eye }
 ];
 
-export default function GuestCvBuilder({ 
-    availableCompetences, 
-    availableHobbies, 
+export default function GuestCvBuilder({
+    availableCompetences,
+    availableHobbies,
     availableProfessions,
     availableLanguages,
     experienceCategories,
     availableCvModels,
-    isGuest 
+    isGuest
 }: GuestCvBuilderProps) {
     const { t } = useTranslation();
     const { toast } = useToast();
-    
+
     // CSS pour scrollbar mobile
     React.useEffect(() => {
         const style = document.createElement('style');
@@ -85,7 +85,7 @@ export default function GuestCvBuilder({
             }
         `;
         document.head.appendChild(style);
-        
+
         return () => {
             document.head.removeChild(style);
         };
@@ -172,12 +172,13 @@ export default function GuestCvBuilder({
                 if (currentStep < STEPS.length - 1) {
                     setCurrentStep(STEPS.length - 1); // Aller à l'étape aperçu
                 }
-                
+
                 // Afficher message pour modèle premium
                 if (result.isPremium) {
                     toast({
                         title: "Modèle Premium",
                         description: `Ce modèle coûte ${result.price}€. Vous pouvez le prévisualiser gratuitement.`,
+                        // @ts-ignore
                         duration: 4000
                     });
                 }
@@ -228,7 +229,7 @@ export default function GuestCvBuilder({
     // Ajouter une compétence
     const addCompetence = (competenceName: string) => {
         if (!competenceName.trim()) return;
-        
+
         setCvData(prev => ({
             ...prev,
             competences: [...prev.competences, {
@@ -243,7 +244,7 @@ export default function GuestCvBuilder({
     // Télécharger PDF gratuit
     const handleFreePdfDownload = async () => {
         if (!selectedModel || !selectedModelData || selectedModelData.isPremium) return;
-        
+
         setIsPaymentProcessing(true);
         try {
             const response = await fetch(route('guest-cv.generate-pdf'), {
@@ -270,10 +271,11 @@ export default function GuestCvBuilder({
                 a.click();
                 window.URL.revokeObjectURL(url);
                 document.body.removeChild(a);
-                
+
                 toast({
                     title: "Téléchargement réussi !",
                     description: "Votre CV a été téléchargé avec succès.",
+                    // @ts-ignore
                     duration: 3000
                 });
             } else {
@@ -333,7 +335,7 @@ export default function GuestCvBuilder({
                                     </Badge>
                                 </div>
                             </div>
-                            
+
                             <div className="flex items-center gap-3 sm:gap-4 w-full sm:w-auto">
                                 <div className="flex items-center gap-2">
                                     <div className="text-xs sm:text-sm font-medium text-gray-700">
@@ -343,9 +345,9 @@ export default function GuestCvBuilder({
                                         {completionPercentage}%
                                     </div>
                                 </div>
-                                <Progress 
-                                    value={completionPercentage} 
-                                    className="flex-1 sm:w-40 h-2" 
+                                <Progress
+                                    value={completionPercentage}
+                                    className="flex-1 sm:w-40 h-2"
                                 />
                             </div>
                         </div>
@@ -357,18 +359,17 @@ export default function GuestCvBuilder({
                                     const Icon = step.icon;
                                     const isActive = index === currentStep;
                                     const isCompleted = index < currentStep;
-                                    
+
                                     return (
                                         <button
                                             key={step.id}
                                             onClick={() => setCurrentStep(index)}
-                                            className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-all whitespace-nowrap ${
-                                                isActive 
-                                                    ? 'bg-amber-100 text-amber-700 border border-amber-200' 
-                                                    : isCompleted
-                                                        ? 'bg-green-100 text-green-700 border border-green-200'
-                                                        : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-                                            }`}
+                                            className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-all whitespace-nowrap ${isActive
+                                                ? 'bg-amber-100 text-amber-700 border border-amber-200'
+                                                : isCompleted
+                                                    ? 'bg-green-100 text-green-700 border border-green-200'
+                                                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                                                }`}
                                         >
                                             <Icon className="w-4 h-4" />
                                             <span className="hidden sm:inline">{step.label}</span>
@@ -377,7 +378,7 @@ export default function GuestCvBuilder({
                                     );
                                 })}
                             </div>
-                            
+
                             <div className="flex gap-2">
                                 <Button
                                     variant="outline"
@@ -392,7 +393,7 @@ export default function GuestCvBuilder({
                                     )}
                                     Aperçu
                                 </Button>
-                                
+
                                 <Button
                                     variant="outline"
                                     size="sm"
@@ -568,21 +569,21 @@ export default function GuestCvBuilder({
                                                     Ajouter
                                                 </Button>
                                             </div>
-                                            
+
                                             {cvData.experiences.map((exp, index) => (
                                                 <div key={exp.id} className="border rounded-lg p-4 space-y-3">
                                                     <div className="flex justify-between items-start">
                                                         <h4 className="font-medium text-sm">Expérience #{index + 1}</h4>
-                                                        <Button 
-                                                            onClick={() => removeExperience(exp.id)} 
-                                                            size="sm" 
+                                                        <Button
+                                                            onClick={() => removeExperience(exp.id)}
+                                                            size="sm"
                                                             variant="ghost"
                                                             className="text-red-500 hover:text-red-700"
                                                         >
                                                             <Trash2 className="w-4 h-4" />
                                                         </Button>
                                                     </div>
-                                                    
+
                                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                                                         <div>
                                                             <Label>Poste *</Label>
@@ -591,7 +592,7 @@ export default function GuestCvBuilder({
                                                                 onChange={(e) => {
                                                                     setCvData(prev => ({
                                                                         ...prev,
-                                                                        experiences: prev.experiences.map(item => 
+                                                                        experiences: prev.experiences.map(item =>
                                                                             item.id === exp.id ? { ...item, name: e.target.value } : item
                                                                         )
                                                                     }));
@@ -606,7 +607,7 @@ export default function GuestCvBuilder({
                                                                 onChange={(e) => {
                                                                     setCvData(prev => ({
                                                                         ...prev,
-                                                                        experiences: prev.experiences.map(item => 
+                                                                        experiences: prev.experiences.map(item =>
                                                                             item.id === exp.id ? { ...item, InstitutionName: e.target.value } : item
                                                                         )
                                                                     }));
@@ -622,7 +623,7 @@ export default function GuestCvBuilder({
                                                                 onChange={(e) => {
                                                                     setCvData(prev => ({
                                                                         ...prev,
-                                                                        experiences: prev.experiences.map(item => 
+                                                                        experiences: prev.experiences.map(item =>
                                                                             item.id === exp.id ? { ...item, date_start: e.target.value } : item
                                                                         )
                                                                     }));
@@ -637,7 +638,7 @@ export default function GuestCvBuilder({
                                                                 onChange={(e) => {
                                                                     setCvData(prev => ({
                                                                         ...prev,
-                                                                        experiences: prev.experiences.map(item => 
+                                                                        experiences: prev.experiences.map(item =>
                                                                             item.id === exp.id ? { ...item, date_end: e.target.value } : item
                                                                         )
                                                                     }));
@@ -646,7 +647,7 @@ export default function GuestCvBuilder({
                                                             />
                                                         </div>
                                                     </div>
-                                                    
+
                                                     <div>
                                                         <Label>Description</Label>
                                                         <Textarea
@@ -654,7 +655,7 @@ export default function GuestCvBuilder({
                                                             onChange={(e) => {
                                                                 setCvData(prev => ({
                                                                     ...prev,
-                                                                    experiences: prev.experiences.map(item => 
+                                                                    experiences: prev.experiences.map(item =>
                                                                         item.id === exp.id ? { ...item, description: e.target.value } : item
                                                                     )
                                                                 }));
@@ -663,7 +664,7 @@ export default function GuestCvBuilder({
                                                             rows={3}
                                                         />
                                                     </div>
-                                                    
+
                                                     <div>
                                                         <Label>Réalisations (optionnel)</Label>
                                                         <Textarea
@@ -671,7 +672,7 @@ export default function GuestCvBuilder({
                                                             onChange={(e) => {
                                                                 setCvData(prev => ({
                                                                     ...prev,
-                                                                    experiences: prev.experiences.map(item => 
+                                                                    experiences: prev.experiences.map(item =>
                                                                         item.id === exp.id ? { ...item, output: e.target.value } : item
                                                                     )
                                                                 }));
@@ -682,7 +683,7 @@ export default function GuestCvBuilder({
                                                     </div>
                                                 </div>
                                             ))}
-                                            
+
                                             {cvData.experiences.length === 0 && (
                                                 <div className="text-center py-8 text-gray-500">
                                                     <Briefcase className="w-12 h-12 mx-auto mb-3 text-gray-300" />
@@ -701,7 +702,7 @@ export default function GuestCvBuilder({
                                             <div className="flex justify-between items-center">
                                                 <h3 className="font-medium">Compétences</h3>
                                             </div>
-                                            
+
                                             <div>
                                                 <Label htmlFor="newSkill">Ajouter une compétence</Label>
                                                 <div className="flex gap-2">
@@ -729,7 +730,7 @@ export default function GuestCvBuilder({
                                                     </Button>
                                                 </div>
                                             </div>
-                                            
+
                                             <div className="flex flex-wrap gap-2">
                                                 {cvData.competences.map((comp, index) => (
                                                     <Badge key={index} variant="secondary" className="flex items-center gap-1">
@@ -748,7 +749,7 @@ export default function GuestCvBuilder({
                                                     </Badge>
                                                 ))}
                                             </div>
-                                            
+
                                             {cvData.competences.length === 0 && (
                                                 <div className="text-center py-8 text-gray-500">
                                                     <Code className="w-12 h-12 mx-auto mb-3 text-gray-300" />
@@ -763,7 +764,7 @@ export default function GuestCvBuilder({
                                         <div className="space-y-4">
                                             <div className="flex justify-between items-center">
                                                 <h3 className="font-medium">Formation & Éducation</h3>
-                                                <Button 
+                                                <Button
                                                     onClick={() => {
                                                         setCvData(prev => ({
                                                             ...prev,
@@ -777,33 +778,33 @@ export default function GuestCvBuilder({
                                                             }]
                                                         }));
                                                     }}
-                                                    size="sm" 
+                                                    size="sm"
                                                     variant="outline"
                                                 >
                                                     <Plus className="w-4 h-4 mr-1" />
                                                     Ajouter
                                                 </Button>
                                             </div>
-                                            
+
                                             {cvData.formation.map((edu, index) => (
                                                 <div key={edu.id} className="border rounded-lg p-4 space-y-3">
                                                     <div className="flex justify-between items-start">
                                                         <h4 className="font-medium text-sm">Formation #{index + 1}</h4>
-                                                        <Button 
+                                                        <Button
                                                             onClick={() => {
                                                                 setCvData(prev => ({
                                                                     ...prev,
                                                                     formation: prev.formation.filter(item => item.id !== edu.id)
                                                                 }));
                                                             }}
-                                                            size="sm" 
+                                                            size="sm"
                                                             variant="ghost"
                                                             className="text-red-500 hover:text-red-700"
                                                         >
                                                             <Trash2 className="w-4 h-4" />
                                                         </Button>
                                                     </div>
-                                                    
+
                                                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                                                         <div>
                                                             <Label>Diplôme/Formation *</Label>
@@ -812,7 +813,7 @@ export default function GuestCvBuilder({
                                                                 onChange={(e) => {
                                                                     setCvData(prev => ({
                                                                         ...prev,
-                                                                        formation: prev.formation.map(item => 
+                                                                        formation: prev.formation.map(item =>
                                                                             item.id === edu.id ? { ...item, title: e.target.value } : item
                                                                         )
                                                                     }));
@@ -827,7 +828,7 @@ export default function GuestCvBuilder({
                                                                 onChange={(e) => {
                                                                     setCvData(prev => ({
                                                                         ...prev,
-                                                                        formation: prev.formation.map(item => 
+                                                                        formation: prev.formation.map(item =>
                                                                             item.id === edu.id ? { ...item, institution: e.target.value } : item
                                                                         )
                                                                     }));
@@ -843,7 +844,7 @@ export default function GuestCvBuilder({
                                                                 onChange={(e) => {
                                                                     setCvData(prev => ({
                                                                         ...prev,
-                                                                        formation: prev.formation.map(item => 
+                                                                        formation: prev.formation.map(item =>
                                                                             item.id === edu.id ? { ...item, date_start: e.target.value } : item
                                                                         )
                                                                     }));
@@ -858,7 +859,7 @@ export default function GuestCvBuilder({
                                                                 onChange={(e) => {
                                                                     setCvData(prev => ({
                                                                         ...prev,
-                                                                        formation: prev.formation.map(item => 
+                                                                        formation: prev.formation.map(item =>
                                                                             item.id === edu.id ? { ...item, date_end: e.target.value } : item
                                                                         )
                                                                     }));
@@ -867,7 +868,7 @@ export default function GuestCvBuilder({
                                                             />
                                                         </div>
                                                     </div>
-                                                    
+
                                                     <div>
                                                         <Label>Description (optionnel)</Label>
                                                         <Textarea
@@ -875,7 +876,7 @@ export default function GuestCvBuilder({
                                                             onChange={(e) => {
                                                                 setCvData(prev => ({
                                                                     ...prev,
-                                                                    formation: prev.formation.map(item => 
+                                                                    formation: prev.formation.map(item =>
                                                                         item.id === edu.id ? { ...item, description: e.target.value } : item
                                                                     )
                                                                 }));
@@ -886,12 +887,12 @@ export default function GuestCvBuilder({
                                                     </div>
                                                 </div>
                                             ))}
-                                            
+
                                             {cvData.formation.length === 0 && (
                                                 <div className="text-center py-8 text-gray-500">
                                                     <GraduationCap className="w-12 h-12 mx-auto mb-3 text-gray-300" />
                                                     <p>Aucune formation ajoutée</p>
-                                                    <Button 
+                                                    <Button
                                                         onClick={() => {
                                                             setCvData(prev => ({
                                                                 ...prev,
@@ -905,7 +906,7 @@ export default function GuestCvBuilder({
                                                                 }]
                                                             }));
                                                         }}
-                                                        size="sm" 
+                                                        size="sm"
                                                         className="mt-2"
                                                     >
                                                         Ajouter votre première formation
@@ -921,7 +922,7 @@ export default function GuestCvBuilder({
                                             <div className="flex justify-between items-center">
                                                 <h3 className="font-medium">Langues</h3>
                                             </div>
-                                            
+
                                             <div>
                                                 <Label htmlFor="newLanguage">Ajouter une langue</Label>
                                                 <div className="flex gap-2">
@@ -971,18 +972,18 @@ export default function GuestCvBuilder({
                                                     </Button>
                                                 </div>
                                             </div>
-                                            
+
                                             <div className="space-y-3">
                                                 {cvData.languages.map((lang, index) => (
                                                     <div key={index} className="flex items-center gap-3 p-3 border rounded-lg">
                                                         <div className="flex-1">
                                                             <div className="font-medium text-sm">{lang.name}</div>
-                                                            <Select 
+                                                            <Select
                                                                 value={lang.level || 'Intermédiaire'}
                                                                 onValueChange={(value) => {
                                                                     setCvData(prev => ({
                                                                         ...prev,
-                                                                        languages: prev.languages.map((item, i) => 
+                                                                        languages: prev.languages.map((item, i) =>
                                                                             i === index ? { ...item, level: value } : item
                                                                         )
                                                                     }));
@@ -1016,7 +1017,7 @@ export default function GuestCvBuilder({
                                                     </div>
                                                 ))}
                                             </div>
-                                            
+
                                             {cvData.languages.length === 0 && (
                                                 <div className="text-center py-8 text-gray-500">
                                                     <Globe className="w-12 h-12 mx-auto mb-3 text-gray-300" />
@@ -1032,7 +1033,7 @@ export default function GuestCvBuilder({
                                             <div className="flex justify-between items-center">
                                                 <h3 className="font-medium">Centres d'intérêt</h3>
                                             </div>
-                                            
+
                                             <div>
                                                 <Label htmlFor="newHobby">Ajouter un centre d'intérêt</Label>
                                                 <div className="flex gap-2">
@@ -1080,7 +1081,7 @@ export default function GuestCvBuilder({
                                                     </Button>
                                                 </div>
                                             </div>
-                                            
+
                                             <div className="flex flex-wrap gap-2">
                                                 {cvData.hobbies.map((hobby, index) => (
                                                     <Badge key={index} variant="secondary" className="flex items-center gap-1">
@@ -1099,7 +1100,7 @@ export default function GuestCvBuilder({
                                                     </Badge>
                                                 ))}
                                             </div>
-                                            
+
                                             {cvData.hobbies.length === 0 && (
                                                 <div className="text-center py-8 text-gray-500">
                                                     <Heart className="w-12 h-12 mx-auto mb-3 text-gray-300" />
@@ -1119,14 +1120,14 @@ export default function GuestCvBuilder({
                                                     Félicitations ! Vous avez terminé la création de votre CV.
                                                     Vous pouvez maintenant le prévisualiser et le télécharger.
                                                 </p>
-                                                
+
                                                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
                                                     <div className="p-4 bg-green-50 border border-green-200 rounded-lg">
                                                         <CheckCircle className="w-8 h-8 mx-auto mb-2 text-green-600" />
                                                         <div className="font-medium text-green-800">Informations remplies</div>
                                                         <div className="text-green-600">{completionPercentage}% complet</div>
                                                     </div>
-                                                    
+
                                                     <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
                                                         <FileText className="w-8 h-8 mx-auto mb-2 text-blue-600" />
                                                         <div className="font-medium text-blue-800">Modèle sélectionné</div>
@@ -1135,7 +1136,7 @@ export default function GuestCvBuilder({
                                                         </div>
                                                     </div>
                                                 </div>
-                                                
+
                                                 {!selectedModel && (
                                                     <Alert className="mt-4">
                                                         <AlertCircle className="w-4 h-4" />
@@ -1159,7 +1160,7 @@ export default function GuestCvBuilder({
                                             <ArrowLeft className="w-4 h-4 mr-2" />
                                             Précédent
                                         </Button>
-                                        
+
                                         <Button
                                             onClick={() => {
                                                 if (currentStep === STEPS.length - 1) {
@@ -1192,15 +1193,15 @@ export default function GuestCvBuilder({
                             <Alert className="border-green-200 bg-green-50">
                                 <CheckCircle className="w-4 h-4 text-green-600" />
                                 <AlertDescription>
-                                    <strong>Modèles gratuits disponibles !</strong> Certains modèles sont entièrement gratuits. 
+                                    <strong>Modèles gratuits disponibles !</strong> Certains modèles sont entièrement gratuits.
                                     Les modèles premium offrent des designs plus avancés.
                                 </AlertDescription>
                             </Alert>
-                            
+
                             <Alert className="border-amber-200 bg-amber-50">
                                 <AlertCircle className="w-4 h-4" />
                                 <AlertDescription>
-                                    <strong>Mode invité :</strong> Vos données sont sauvegardées localement. 
+                                    <strong>Mode invité :</strong> Vos données sont sauvegardées localement.
                                     <Link href={route('register')} className="text-amber-600 hover:text-amber-700 font-medium ml-1">
                                         Créez un compte
                                     </Link> pour sauvegarder définitivement.
@@ -1235,7 +1236,7 @@ export default function GuestCvBuilder({
                                         </div>
                                     ) : previewHtml ? (
                                         <div className="border border-gray-200 rounded-lg overflow-hidden">
-                                            <div 
+                                            <div
                                                 className="w-full h-64 sm:h-96 overflow-y-auto bg-white cv-preview-zoom"
                                                 dangerouslySetInnerHTML={{ __html: previewHtml }}
                                                 style={{ zoom: 0.5 }}
@@ -1251,7 +1252,7 @@ export default function GuestCvBuilder({
                                                         )}
                                                     </div>
                                                     {selectedModelData?.isPremium ? (
-                                                        <Button 
+                                                        <Button
                                                             onClick={() => setShowPaymentDialog(true)}
                                                             className="bg-gradient-to-r from-purple-500 to-pink-500 text-white w-full sm:w-auto"
                                                             size="sm"
@@ -1260,7 +1261,7 @@ export default function GuestCvBuilder({
                                                             <span className="text-xs sm:text-sm">PDF - {selectedModelData.price}€</span>
                                                         </Button>
                                                     ) : (
-                                                        <Button 
+                                                        <Button
                                                             onClick={handleFreePdfDownload}
                                                             disabled={isPaymentProcessing}
                                                             className="bg-gradient-to-r from-green-500 to-emerald-500 text-white w-full sm:w-auto"
@@ -1307,11 +1308,10 @@ export default function GuestCvBuilder({
                                     key={model.id}
                                     whileHover={{ scale: 1.02 }}
                                     whileTap={{ scale: 0.98 }}
-                                    className={`border rounded-lg p-4 cursor-pointer transition-all ${
-                                        selectedModel === model.id 
-                                            ? 'border-amber-500 bg-amber-50 shadow-md' 
-                                            : 'border-gray-200 hover:border-gray-300 hover:shadow-sm'
-                                    }`}
+                                    className={`border rounded-lg p-4 cursor-pointer transition-all ${selectedModel === model.id
+                                        ? 'border-amber-500 bg-amber-50 shadow-md'
+                                        : 'border-gray-200 hover:border-gray-300 hover:shadow-sm'
+                                        }`}
                                     onClick={() => {
                                         setSelectedModel(model.id);
                                         setIsModelSelectorOpen(false);
@@ -1320,8 +1320,8 @@ export default function GuestCvBuilder({
                                     }}
                                 >
                                     <div className="aspect-[3/4] bg-gradient-to-br from-gray-50 to-gray-100 rounded mb-3 flex items-center justify-center overflow-hidden relative">
-                                        <img 
-                                            src={model.previewImagePath || `/images/cv-previews/${model.name.toLowerCase()}.png`} 
+                                        <img
+                                            src={model.previewImagePath || `/images/cv-previews/${model.name.toLowerCase()}.png`}
                                             alt={`Aperçu ${model.name}`}
                                             className="w-full h-full object-cover rounded transition-opacity duration-300"
                                             onError={(e) => {
@@ -1336,7 +1336,7 @@ export default function GuestCvBuilder({
                                             }}
                                             style={{ opacity: 0 }}
                                         />
-                                        
+
                                         {/* Overlay avec nom du modèle */}
                                         <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent flex items-end">
                                             <div className="p-3 text-white w-full">
@@ -1349,7 +1349,7 @@ export default function GuestCvBuilder({
                                                 )}
                                             </div>
                                         </div>
-                                        
+
                                         {selectedModel === model.id && (
                                             <div className="absolute top-2 right-2 bg-amber-500 text-white rounded-full p-1">
                                                 <CheckCircle className="w-3 h-3" />
@@ -1396,7 +1396,7 @@ export default function GuestCvBuilder({
                                     Paiement unique, aucun abonnement.
                                 </p>
                             </div>
-                            
+
                             <div className="text-center">
                                 <div className="text-3xl font-bold text-gray-800 mb-2">{selectedModelData?.price || 5},00 €</div>
                                 <div className="text-sm text-gray-600">Téléchargement PDF • {selectedModelData?.modelName || 'Modèle Premium'}</div>

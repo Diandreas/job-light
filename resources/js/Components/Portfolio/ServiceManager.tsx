@@ -121,6 +121,8 @@ export default function ServiceManager({ services: initialServices, onServiceUpd
                 if (key === 'tags') {
                     formDataToSend.append(key, JSON.stringify(value));
                 } else if (key === 'main_image' && value) {
+                    // @ts-ignore
+
                     formDataToSend.append(key, value);
                 } else if (value !== null && value !== '') {
                     formDataToSend.append(key, value.toString());

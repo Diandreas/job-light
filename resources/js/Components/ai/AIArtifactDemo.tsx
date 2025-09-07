@@ -169,12 +169,12 @@ export default function AIArtifactDemo() {
     const [evolutionStep, setEvolutionStep] = useState(0);
     const [isEvolution, setIsEvolution] = useState(false);
     const [customMessage, setCustomMessage] = useState('');
-    
+
     // États de l'interface
     const [showArtifact, setShowArtifact] = useState(false);
     const [animationState, setAnimationState] = useState('idle'); // idle, generating, evolving
     const [evolutionHistory, setEvolutionHistory] = useState<any[]>([]);
-    
+
     // Stats temps réel
     const [stats, setStats] = useState({
         generationTime: 0,
@@ -187,11 +187,11 @@ export default function AIArtifactDemo() {
     const handleGenerateArtifact = async () => {
         setAnimationState('generating');
         setShowArtifact(false);
-        
+
         // Simuler temps de génération
         const startTime = Date.now();
         await new Promise(resolve => setTimeout(resolve, 1500));
-        
+
         const template = ARTIFACT_TEMPLATES[selectedArtifact];
         const artifact = {
             ...template,
@@ -203,7 +203,7 @@ export default function AIArtifactDemo() {
                 interactive: true
             }
         };
-        
+
         setCurrentArtifact(artifact);
         setStats(prev => ({
             ...prev,
@@ -212,19 +212,20 @@ export default function AIArtifactDemo() {
             evolutionCount: 0,
             totalChanges: 0
         }));
-        
+
         setEvolutionHistory([{
             timestamp: Date.now(),
             artifact: JSON.parse(JSON.stringify(artifact)),
             trigger: 'initial_generation',
             changes: ['Artefact créé']
         }]);
-        
+
         setAnimationState('idle');
         setShowArtifact(true);
-        
+
         // Enregistrer pour évolution
         if (selectedArtifact === 'career-roadmap') {
+            // @ts-ignore
             ArtifactEvolutionManager.registerForEvolution(artifact, []);
         }
     };
@@ -232,20 +233,20 @@ export default function AIArtifactDemo() {
     // Évolution avec un message
     const handleEvolveArtifact = async (message?: string) => {
         if (!currentArtifact) return;
-        
+
         setAnimationState('evolving');
         setIsEvolution(true);
-        
+
         const evolutionMessage = message || EVOLUTION_MESSAGES[evolutionStep % EVOLUTION_MESSAGES.length];
-        
+
         // Simuler évolution IA
         await new Promise(resolve => setTimeout(resolve, 1000));
-        
+
         const updatedArtifact = await simulateArtifactEvolution(currentArtifact, evolutionMessage);
-        
+
         setCurrentArtifact(updatedArtifact);
         setEvolutionStep(prev => prev + 1);
-        
+
         // Ajouter à l'historique
         const newHistoryEntry = {
             timestamp: Date.now(),
@@ -253,14 +254,14 @@ export default function AIArtifactDemo() {
             trigger: evolutionMessage,
             changes: calculateChanges(currentArtifact, updatedArtifact)
         };
-        
+
         setEvolutionHistory(prev => [...prev, newHistoryEntry]);
         setStats(prev => ({
             ...prev,
             evolutionCount: prev.evolutionCount + 1,
             totalChanges: prev.totalChanges + newHistoryEntry.changes.length
         }));
-        
+
         setAnimationState('idle');
         setIsEvolution(false);
     };
@@ -268,10 +269,10 @@ export default function AIArtifactDemo() {
     // Simuler l'évolution d'un artefact
     const simulateArtifactEvolution = async (artifact: any, message: string) => {
         const messageLower = message.toLowerCase();
-        
+
         if (artifact.type === 'roadmap') {
             const updatedData = { ...artifact.data };
-            
+
             // Modifier selon le message
             if (messageLower.includes('ia') || messageLower.includes('intelligence')) {
                 updatedData.steps = [
@@ -289,7 +290,7 @@ export default function AIArtifactDemo() {
                 ];
                 updatedData.targetPosition = 'AI Tech Lead';
             }
-            
+
             if (messageLower.includes('management')) {
                 updatedData.steps.push({
                     id: 'management-training',
@@ -302,34 +303,34 @@ export default function AIArtifactDemo() {
                     description: 'Leadership et gestion d\'équipe'
                 });
             }
-            
+
             return { ...artifact, data: updatedData };
         }
-        
+
         return artifact;
     };
 
     // Calculer les changements entre deux versions
     const calculateChanges = (oldArtifact: any, newArtifact: any): string[] => {
         const changes = [];
-        
+
         if (oldArtifact.data.steps && newArtifact.data.steps) {
             const oldStepCount = oldArtifact.data.steps.length;
             const newStepCount = newArtifact.data.steps.length;
-            
+
             if (newStepCount > oldStepCount) {
                 changes.push(`+${newStepCount - oldStepCount} nouvelle(s) étape(s)`);
             }
         }
-        
+
         if (oldArtifact.data.targetPosition !== newArtifact.data.targetPosition) {
             changes.push(`Objectif mis à jour: ${newArtifact.data.targetPosition}`);
         }
-        
+
         if (changes.length === 0) {
             changes.push('Données contextuelles enrichies');
         }
-        
+
         return changes;
     };
 
@@ -352,7 +353,7 @@ export default function AIArtifactDemo() {
     // Rendre l'artefact selon son type
     const renderArtifact = () => {
         if (!currentArtifact) return null;
-        
+
         const props = {
             data: currentArtifact.data,
             messageContent: '',
@@ -360,7 +361,7 @@ export default function AIArtifactDemo() {
                 console.log('Action artefact:', action, data);
             }
         };
-        
+
         switch (currentArtifact.type) {
             case 'roadmap':
                 return <CareerRoadmapArtifact {...props} />;
@@ -409,25 +410,25 @@ export default function AIArtifactDemo() {
                     <Badge variant="secondary" className="flex items-center gap-2 px-3 py-2">
                         <Brain className="w-4 h-4" />
                         <span className="font-medium">
-                            {animationState === 'generating' ? 'Génération...' : 
-                             animationState === 'evolving' ? 'Évolution...' : 'Prêt'}
+                            {animationState === 'generating' ? 'Génération...' :
+                                animationState === 'evolving' ? 'Évolution...' : 'Prêt'}
                         </span>
                     </Badge>
-                    
+
                     {stats.generationTime > 0 && (
                         <Badge variant="secondary" className="flex items-center gap-2 px-3 py-2">
                             <Zap className="w-4 h-4" />
                             {(stats.generationTime / 1000).toFixed(1)}s génération
                         </Badge>
                     )}
-                    
+
                     {stats.evolutionCount > 0 && (
                         <Badge variant="secondary" className="flex items-center gap-2 px-3 py-2">
                             <RefreshCw className="w-4 h-4" />
                             {stats.evolutionCount} évolution{stats.evolutionCount > 1 ? 's' : ''}
                         </Badge>
                     )}
-                    
+
                     {stats.confidenceLevel > 0 && (
                         <Badge variant="secondary" className="flex items-center gap-2 px-3 py-2">
                             <Target className="w-4 h-4" />
@@ -482,8 +483,8 @@ export default function AIArtifactDemo() {
 
                         {/* Actions Principales */}
                         <div className="space-y-3">
-                            <Button 
-                                onClick={handleGenerateArtifact} 
+                            <Button
+                                onClick={handleGenerateArtifact}
                                 className="w-full bg-gradient-to-r from-amber-500 to-purple-500 hover:from-amber-600 hover:to-purple-600"
                                 disabled={animationState !== 'idle'}
                             >
@@ -493,9 +494,9 @@ export default function AIArtifactDemo() {
 
                             {showArtifact && (
                                 <>
-                                    <Button 
+                                    <Button
                                         onClick={() => handleEvolveArtifact()}
-                                        variant="outline" 
+                                        variant="outline"
                                         className="w-full border-purple-200 text-purple-700 hover:bg-purple-50"
                                         disabled={animationState !== 'idle'}
                                     >
@@ -503,9 +504,9 @@ export default function AIArtifactDemo() {
                                         {animationState === 'evolving' ? 'Évolution...' : 'Faire Évoluer'}
                                     </Button>
 
-                                    <Button 
+                                    <Button
                                         onClick={handleResetDemo}
-                                        variant="ghost" 
+                                        variant="ghost"
                                         className="w-full"
                                     >
                                         <RotateCcw className="w-4 h-4 mr-2" />
@@ -528,8 +529,8 @@ export default function AIArtifactDemo() {
                                         placeholder="Ex: Je veux me spécialiser en IA..."
                                         className="resize-none h-20"
                                     />
-                                    <Button 
-                                        size="sm" 
+                                    <Button
+                                        size="sm"
                                         onClick={() => {
                                             if (customMessage.trim()) {
                                                 handleEvolveArtifact(customMessage);
@@ -607,7 +608,7 @@ export default function AIArtifactDemo() {
                                             </Badge>
                                         </div>
                                     )}
-                                    
+
                                     {/* Artefact */}
                                     {renderArtifact()}
                                 </Card>

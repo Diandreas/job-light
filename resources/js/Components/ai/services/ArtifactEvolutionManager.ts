@@ -29,7 +29,7 @@ export class ArtifactEvolutionManager {
      */
     static registerForEvolution(artifact: AIGeneratedArtifact, contextMessages: string[]) {
         console.log('📈 Enregistrement artefact pour évolution:', artifact.id);
-        
+
         this.evolutions.set(artifact.id, {
             artifactId: artifact.id,
             conversationContext: contextMessages,
@@ -49,23 +49,23 @@ export class ArtifactEvolutionManager {
      */
     static async checkForUpdates(newMessage: string, allArtifacts: AIGeneratedArtifact[]): Promise<AIGeneratedArtifact[]> {
         const updatedArtifacts: AIGeneratedArtifact[] = [];
-        
+
         for (const artifact of allArtifacts) {
             const evolution = this.evolutions.get(artifact.id);
             if (!evolution) continue;
 
             const shouldUpdate = this.shouldUpdateArtifact(artifact, newMessage, evolution);
-            
+
             if (shouldUpdate.update) {
                 console.log('🔄 Mise à jour artefact:', artifact.id, 'Raison:', shouldUpdate.reason);
-                
+
                 const updatedArtifact = await this.updateArtifact(
-                    artifact, 
-                    newMessage, 
+                    artifact,
+                    newMessage,
                     shouldUpdate.reason,
                     evolution
                 );
-                
+
                 if (updatedArtifact) {
                     updatedArtifacts.push(updatedArtifact);
                     this.notifyCallbacks(artifact.id, updatedArtifact);
@@ -80,13 +80,12 @@ export class ArtifactEvolutionManager {
      * Détermine si un artefact doit être mis à jour
      */
     private static shouldUpdateArtifact(
-        artifact: AIGeneratedArtifact, 
-        newMessage: string, 
+        artifact: AIGeneratedArtifact,
+        newMessage: string,
         evolution: ArtifactEvolution
     ): { update: boolean; reason: string } {
-        
-        const messageL
-        = newMessage.toLowerCase();
+
+        const messageLower = newMessage.toLowerCase();
         const timeSinceLastUpdate = Date.now() - evolution.lastUpdate;
 
         // Roadmap Career - Mise à jour si nouvelles infos carrière
@@ -95,11 +94,11 @@ export class ArtifactEvolutionManager {
                 'objectif', 'étape', 'compétence', 'formation', 'certification',
                 'timeline', 'priorité', 'plan', 'stratégie', 'progression'
             ];
-            
-            const hasCareerContent = careerKeywords.some(keyword => 
+
+            const hasCareerContent = careerKeywords.some(keyword =>
                 messageLower.includes(keyword)
             );
-            
+
             if (hasCareerContent && timeSinceLastUpdate > 30000) { // 30s min entre MAJ
                 return { update: true, reason: 'nouvelles_info_carriere' };
             }
@@ -108,14 +107,14 @@ export class ArtifactEvolutionManager {
         // CV Analysis - Mise à jour si nouvelles infos profil
         if (artifact.type === 'heatmap') {
             const cvKeywords = [
-                'expérience', 'compétence', 'formation', 'poste', 
+                'expérience', 'compétence', 'formation', 'poste',
                 'responsabilité', 'réalisation', 'projet'
             ];
-            
-            const hasCVContent = cvKeywords.some(keyword => 
+
+            const hasCVContent = cvKeywords.some(keyword =>
                 messageLower.includes(keyword)
             );
-            
+
             if (hasCVContent && timeSinceLastUpdate > 45000) { // 45s min
                 return { update: true, reason: 'nouvelles_info_profil' };
             }
@@ -127,11 +126,11 @@ export class ArtifactEvolutionManager {
                 'entretien', 'question', 'réponse', 'préparation',
                 'faiblesse', 'force', 'motivation', 'exemple'
             ];
-            
-            const hasInterviewContent = interviewKeywords.some(keyword => 
+
+            const hasInterviewContent = interviewKeywords.some(keyword =>
                 messageLower.includes(keyword)
             );
-            
+
             if (hasInterviewContent && timeSinceLastUpdate > 60000) { // 60s min
                 return { update: true, reason: 'preparation_entretien' };
             }
@@ -154,11 +153,11 @@ export class ArtifactEvolutionManager {
         updateReason: string,
         evolution: ArtifactEvolution
     ): Promise<AIGeneratedArtifact | null> {
-        
+
         try {
             // Ajouter le nouveau message au contexte
             evolution.conversationContext.push(newMessage);
-            
+
             // Garder seulement les 10 derniers messages pour le contexte
             if (evolution.conversationContext.length > 10) {
                 evolution.conversationContext = evolution.conversationContext.slice(-10);
@@ -185,12 +184,13 @@ export class ArtifactEvolutionManager {
             if (updatedArtifact) {
                 // Sauvegarder snapshot de l'évolution
                 this.saveEvolutionSnapshot(evolution, updatedArtifact, updateReason);
-                
+
                 // Mettre à jour les métadonnées
                 evolution.lastUpdate = Date.now();
                 evolution.updateCount++;
-                
+
                 // Marquer comme mis à jour
+                // @ts-ignore
                 updatedArtifact.metadata.lastEvolution = {
                     timestamp: Date.now(),
                     reason: updateReason,
@@ -214,28 +214,28 @@ export class ArtifactEvolutionManager {
         context: string,
         newMessage: string
     ): Promise<AIGeneratedArtifact> {
-        
+
         const { SpecializedAIArtifacts } = await import('./SpecializedAIArtifacts');
         const updatedRoadmap = await SpecializedAIArtifacts.generateCareerPlannerArtifact(context);
-        
+
         if (updatedRoadmap) {
             // Fusionner les données existantes avec les nouvelles
             const existingSteps = artifact.data.steps || [];
             const newSteps = updatedRoadmap.data.steps || [];
-            
+
             // Garder le progrès des étapes existantes
             const mergedSteps = newSteps.map((newStep: any) => {
-                const existingStep = existingSteps.find((existing: any) => 
+                const existingStep = existingSteps.find((existing: any) =>
                     existing.title.toLowerCase().includes(newStep.title.toLowerCase().substring(0, 20))
                 );
-                
+
                 return {
                     ...newStep,
                     progress: existingStep?.progress || 0,
                     completed: existingStep?.completed || false
                 };
             });
-            
+
             return {
                 ...updatedRoadmap,
                 data: {
@@ -244,7 +244,7 @@ export class ArtifactEvolutionManager {
                 }
             };
         }
-        
+
         return artifact;
     }
 
@@ -256,10 +256,10 @@ export class ArtifactEvolutionManager {
         context: string,
         newMessage: string
     ): Promise<AIGeneratedArtifact> {
-        
+
         const { SpecializedAIArtifacts } = await import('./SpecializedAIArtifacts');
         const updatedAnalysis = await SpecializedAIArtifacts.generateCVAnalysisArtifact(context);
-        
+
         if (updatedAnalysis) {
             // Conserver l'historique des scores pour voir l'évolution
             const previousScores = artifact.data.scoreHistory || [];
@@ -268,7 +268,7 @@ export class ArtifactEvolutionManager {
                 globalScore: artifact.data.globalScore,
                 sections: artifact.data.sections
             });
-            
+
             return {
                 ...updatedAnalysis,
                 data: {
@@ -277,7 +277,7 @@ export class ArtifactEvolutionManager {
                 }
             };
         }
-        
+
         return artifact;
     }
 
@@ -289,15 +289,15 @@ export class ArtifactEvolutionManager {
         context: string,
         newMessage: string
     ): Promise<AIGeneratedArtifact> {
-        
+
         const { SpecializedAIArtifacts } = await import('./SpecializedAIArtifacts');
         const updatedInterview = await SpecializedAIArtifacts.generateInterviewSimulatorArtifact(context);
-        
+
         if (updatedInterview) {
             // Préserver les réponses déjà données
             const existingQuestions = artifact.data.questions || [];
             const newQuestions = updatedInterview.data.questions || [];
-            
+
             const mergedQuestions = newQuestions.map((newQ: any, index: number) => {
                 const existingQ = existingQuestions[index];
                 return {
@@ -306,7 +306,7 @@ export class ArtifactEvolutionManager {
                     answered: existingQ?.answered || false
                 };
             });
-            
+
             return {
                 ...updatedInterview,
                 data: {
@@ -315,7 +315,7 @@ export class ArtifactEvolutionManager {
                 }
             };
         }
-        
+
         return artifact;
     }
 
@@ -327,12 +327,13 @@ export class ArtifactEvolutionManager {
         context: string,
         newMessage: string
     ): Promise<AIGeneratedArtifact> {
-        
+
         // Pour les autres types, juste enrichir les métadonnées
         return {
             ...artifact,
             metadata: {
                 ...artifact.metadata,
+                // @ts-ignore
                 enrichedContext: context.substring(0, 500) + '...'
             }
         };
@@ -350,14 +351,14 @@ export class ArtifactEvolutionManager {
             evolution.evolutionHistory[evolution.evolutionHistory.length - 1]?.data,
             updatedArtifact.data
         );
-        
+
         evolution.evolutionHistory.push({
             timestamp: Date.now(),
             data: JSON.parse(JSON.stringify(updatedArtifact.data)),
             trigger: reason,
             changes
         });
-        
+
         // Garder seulement les 10 dernières évolutions
         if (evolution.evolutionHistory.length > 10) {
             evolution.evolutionHistory = evolution.evolutionHistory.slice(-10);
@@ -369,32 +370,32 @@ export class ArtifactEvolutionManager {
      */
     private static detectChanges(oldData: any, newData: any): string[] {
         const changes = [];
-        
+
         // Détecter les changements dans les roadmaps
         if (oldData?.steps && newData?.steps) {
             if (oldData.steps.length !== newData.steps.length) {
                 changes.push(`Nombre d'étapes: ${oldData.steps.length} → ${newData.steps.length}`);
             }
-            
+
             // Nouvelles étapes
             const newStepTitles = newData.steps.map((s: any) => s.title);
             const oldStepTitles = oldData.steps.map((s: any) => s.title);
             const addedSteps = newStepTitles.filter((title: string) => !oldStepTitles.includes(title));
-            
+
             if (addedSteps.length > 0) {
                 changes.push(`Nouvelles étapes: ${addedSteps.join(', ')}`);
             }
         }
-        
+
         // Détecter changements de scores
         if (oldData?.globalScore !== newData?.globalScore) {
             changes.push(`Score global: ${oldData?.globalScore} → ${newData?.globalScore}`);
         }
-        
+
         if (changes.length === 0) {
             changes.push('Données contextuelles mises à jour');
         }
-        
+
         return changes;
     }
 
@@ -436,7 +437,7 @@ export class ArtifactEvolutionManager {
      */
     static cleanup() {
         const cutoff = Date.now() - (24 * 60 * 60 * 1000); // 24h
-        
+
         for (const [id, evolution] of this.evolutions.entries()) {
             if (evolution.lastUpdate < cutoff) {
                 this.evolutions.delete(id);

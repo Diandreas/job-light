@@ -1,6 +1,6 @@
 import React from 'react';
 import { Head } from '@inertiajs/react';
-import { XCircleIcon } from '@heroicons/react/24/solid';
+import { XCircle as XCircleIcon } from 'lucide-react';
 
 interface PaymentFailedProps {
     error: string;

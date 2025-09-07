@@ -14,7 +14,7 @@ import { Alert, AlertDescription } from '@/Components/ui/alert';
 import {
     ArrowLeft, MapPin, Clock, Building, DollarSign, Users,
     Wifi, Calendar, Star, Send, CheckCircle, AlertCircle,
-    Eye, Share2, Bookmark, FileText, Target, Briefcase
+    Eye, Share2, Bookmark, FileText, Target, Briefcase, Globe
 } from 'lucide-react';
 import {
     Dialog,

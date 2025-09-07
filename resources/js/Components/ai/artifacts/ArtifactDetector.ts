@@ -367,6 +367,7 @@ export class ArtifactDetector {
 
             if (items.length >= 2) {
                 artifacts.push({
+                    id: `checklist-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
                     type: 'checklist',
                     title: this.extractChecklistTitle(content, checklistText) || 'Plan d\'action',
                     data: {
@@ -406,6 +407,7 @@ export class ArtifactDetector {
 
         if (progressions.length > 0) {
             artifacts.push({
+                id: `chart-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
                 type: 'chart',
                 title: 'Évolution Prévue',
                 data: {
@@ -445,6 +447,7 @@ export class ArtifactDetector {
 
         if (timelineItems.length >= 2) {
             artifacts.push({
+                id: `roadmap-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
                 type: 'roadmap',
                 title: 'Feuille de Route',
                 data: {
@@ -800,6 +803,7 @@ export class ArtifactDetector {
                     const cvSections = this.parseCvSections(content);
                     if (cvSections.length > 0) {
                         artifacts.push({
+                            id: `heatmap-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
                             type: 'heatmap',
                             title: 'Analyse Visuelle du CV',
                             data: {
@@ -822,6 +826,7 @@ export class ArtifactDetector {
                     const questions = this.parseInterviewQuestions(content);
                     if (questions.length > 0) {
                         artifacts.push({
+                            id: `timer-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
                             type: 'timer',
                             title: 'Simulateur d\'Entretien',
                             data: {
@@ -847,6 +852,7 @@ export class ArtifactDetector {
                     
                     if (keywords.length > 0) {
                         artifacts.push({
+                            id: `dashboard-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
                             type: 'dashboard',
                             title: 'Analyseur ATS',
                             data: {
@@ -871,6 +877,7 @@ export class ArtifactDetector {
                     const roadmapSteps = this.parseCareerRoadmap(content);
                     if (roadmapSteps.length > 0) {
                         artifacts.push({
+                            id: `roadmap-career-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
                             type: 'roadmap',
                             title: 'Feuille de Route Carrière',
                             data: {

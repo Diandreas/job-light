@@ -90,14 +90,14 @@ export default function EnhancedMessageBubble({ message, onArtifactAction }: Enh
         if (serviceId === 'interview-prep' && (content.includes('simulation') || content.includes('entretien'))) {
             return 'interview-report';
         }
-        
+
         return null;
     };
 
     // Extraire les données structurées (tableaux, scores, etc.)
     const extractStructuredData = () => {
         const content = message.content;
-        
+
         // Extraire les scores (format: "Score: 85/100")
         const scoreMatches = content.match(/(\w+):\s*(\d+)\/(\d+)/g);
         const scores = {};
@@ -110,7 +110,7 @@ export default function EnhancedMessageBubble({ message, onArtifactAction }: Enh
 
         // Extraire les listes d'actions (format: "• Action item")
         const actionMatches = content.match(/[•\-\*]\s*(.+?)(?=\n|$)/g);
-        const actionItems = actionMatches ? actionMatches.map(item => 
+        const actionItems = actionMatches ? actionMatches.map(item =>
             item.replace(/^[•\-\*]\s*/, '').trim()
         ) : [];
 
@@ -123,7 +123,7 @@ export default function EnhancedMessageBubble({ message, onArtifactAction }: Enh
             const rows = tableMatch[2].split('\n')
                 .filter(row => row.includes('|'))
                 .map(row => row.split('|').map(cell => cell.trim()).filter(cell => cell));
-            
+
             if (headers.length > 0 && rows.length > 0) {
                 tables.push({ headers, rows });
             }
@@ -196,8 +196,8 @@ export default function EnhancedMessageBubble({ message, onArtifactAction }: Enh
                                 {scoreData.value}/{scoreData.max}
                             </span>
                         </div>
-                        <Progress 
-                            value={(scoreData.value / scoreData.max) * 100} 
+                        <Progress
+                            value={(scoreData.value / scoreData.max) * 100}
                             className="h-2"
                         />
                     </CardContent>
@@ -228,9 +228,9 @@ export default function EnhancedMessageBubble({ message, onArtifactAction }: Enh
                         <span className="text-sm text-amber-800 dark:text-amber-300 flex-1">
                             {action}
                         </span>
-                        <Button 
-                            size="sm" 
-                            variant="ghost" 
+                        <Button
+                            size="sm"
+                            variant="ghost"
                             className="h-6 px-2 text-amber-600 hover:bg-amber-100"
                             onClick={() => onArtifactAction?.('execute-action', { action, index })}
                         >
@@ -254,6 +254,7 @@ export default function EnhancedMessageBubble({ message, onArtifactAction }: Enh
 
         switch (artifactType) {
             case 'career-roadmap':
+                // @ts-ignore
                 return <CareerRoadmapArtifact {...artifactProps} />;
             case 'cv-heatmap':
                 return <CVHeatmapArtifact {...artifactProps} />;
@@ -286,16 +287,14 @@ export default function EnhancedMessageBubble({ message, onArtifactAction }: Enh
                 {/* Message principal */}
                 <div
                     ref={messageRef}
-                    className={`relative px-4 py-3 rounded-2xl shadow-sm ${
-                        isUser
+                    className={`relative px-4 py-3 rounded-2xl shadow-sm ${isUser
                             ? 'bg-gradient-to-r from-amber-500 to-purple-500 text-white'
                             : 'bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700'
-                    }`}
+                        }`}
                 >
                     {/* Contenu du message */}
-                    <div className={`prose prose-sm max-w-none ${
-                        isUser ? 'prose-invert' : 'prose-gray dark:prose-invert'
-                    }`}>
+                    <div className={`prose prose-sm max-w-none ${isUser ? 'prose-invert' : 'prose-gray dark:prose-invert'
+                        }`}>
                         <ReactMarkdown
                             components={{
                                 // Personnaliser le rendu des tableaux
@@ -332,8 +331,8 @@ export default function EnhancedMessageBubble({ message, onArtifactAction }: Enh
                                 ),
                                 // Personnaliser les liens
                                 a: ({ href, children }) => (
-                                    <a 
-                                        href={href} 
+                                    <a
+                                        href={href}
                                         className="text-amber-600 hover:text-amber-700 underline inline-flex items-center gap-1"
                                         target="_blank"
                                         rel="noopener noreferrer"
@@ -371,7 +370,7 @@ export default function EnhancedMessageBubble({ message, onArtifactAction }: Enh
                             >
                                 {copied ? <Check className="w-3 h-3" /> : <Copy className="w-3 h-3" />}
                             </Button>
-                            
+
                             {artifactType && (
                                 <Button
                                     size="sm"
@@ -467,12 +466,12 @@ export default function EnhancedMessageBubble({ message, onArtifactAction }: Enh
                 <div className={`text-xs text-gray-500 mt-2 ${isUser ? 'text-right' : 'text-left'}`}>
                     {(() => {
                         try {
-                            const timestamp = typeof message.timestamp === 'string' 
-                                ? new Date(message.timestamp) 
+                            const timestamp = typeof message.timestamp === 'string'
+                                ? new Date(message.timestamp)
                                 : message.timestamp;
-                            return timestamp.toLocaleTimeString('fr-FR', { 
-                                hour: '2-digit', 
-                                minute: '2-digit' 
+                            return timestamp.toLocaleTimeString('fr-FR', {
+                                hour: '2-digit',
+                                minute: '2-digit'
                             });
                         } catch (error) {
                             return 'Maintenant';

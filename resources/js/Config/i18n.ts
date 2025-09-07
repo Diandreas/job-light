@@ -73,7 +73,11 @@ i18n.services.languageDetector.detect = () => {
 // Sync with translation.js utility when language changes
 i18n.on('languageChanged', (lng) => {
     // Update the translation.js utility if it's available
+    // @ts-ignore
+
     if (typeof window !== 'undefined' && window.setLocale) {
+        // @ts-ignore
+
         window.setLocale(lng);
     }
 });

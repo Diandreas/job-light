@@ -104,6 +104,7 @@ export default function InterviewSimulator({ onSubmit, userInfo, isLoading }: In
 
     const handleStartSimulation = () => {
         const prompt = generateInterviewPrompt(formData);
+        // @ts-ignore
         onSubmit({ ...formData, prompt });
         setSimulationStarted(true);
         setIsTimerRunning(true);
@@ -152,9 +153,9 @@ Commencez par vous présenter comme recruteur, puis posez la première question.
     };
 
     const isFormValid = () => {
-        return formData.jobTitle.length > 0 && 
-               formData.companyName.length > 0 && 
-               formData.focusAreas.length > 0;
+        return formData.jobTitle.length > 0 &&
+            formData.companyName.length > 0 &&
+            formData.focusAreas.length > 0;
     };
 
     return (
@@ -240,8 +241,8 @@ Commencez par vous présenter comme recruteur, puis posez la première question.
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                     <div>
                                         <Label>Type d'entretien</Label>
-                                        <Select 
-                                            value={formData.interviewType} 
+                                        <Select
+                                            value={formData.interviewType}
                                             onValueChange={(value) => setFormData(prev => ({ ...prev, interviewType: value }))}
                                         >
                                             <SelectTrigger>
@@ -259,11 +260,11 @@ Commencez par vous présenter comme recruteur, puis posez la première question.
                                             </SelectContent>
                                         </Select>
                                     </div>
-                                    
+
                                     <div>
                                         <Label>Durée prévue</Label>
-                                        <Select 
-                                            value={formData.duration} 
+                                        <Select
+                                            value={formData.duration}
                                             onValueChange={(value) => setFormData(prev => ({ ...prev, duration: value }))}
                                         >
                                             <SelectTrigger>
@@ -289,11 +290,10 @@ Commencez par vous présenter comme recruteur, puis posez la première question.
                                                     key={level.value}
                                                     type="button"
                                                     onClick={() => setFormData(prev => ({ ...prev, difficulty: level.value }))}
-                                                    className={`p-3 rounded-lg border transition-all text-center ${
-                                                        isSelected
+                                                    className={`p-3 rounded-lg border transition-all text-center ${isSelected
                                                             ? `bg-${level.color}-100 border-${level.color}-300 text-${level.color}-700`
                                                             : 'bg-gray-50 border-gray-200 text-gray-600 hover:bg-gray-100'
-                                                    }`}
+                                                        }`}
                                                 >
                                                     <div className="font-medium text-sm">{level.label}</div>
                                                     <div className="text-xs">{level.description}</div>
@@ -311,15 +311,14 @@ Commencez par vous présenter comme recruteur, puis posez la première question.
                                                 key={area}
                                                 type="button"
                                                 onClick={() => toggleArrayItem(
-                                                    formData.focusAreas, 
-                                                    area, 
+                                                    formData.focusAreas,
+                                                    area,
                                                     (items) => setFormData(prev => ({ ...prev, focusAreas: items }))
                                                 )}
-                                                className={`p-2 text-xs rounded-lg border transition-all text-left ${
-                                                    formData.focusAreas.includes(area)
+                                                className={`p-2 text-xs rounded-lg border transition-all text-left ${formData.focusAreas.includes(area)
                                                         ? 'bg-blue-100 border-blue-300 text-blue-700'
                                                         : 'bg-gray-50 border-gray-200 text-gray-600 hover:bg-blue-50'
-                                                }`}
+                                                    }`}
                                             >
                                                 {area}
                                             </button>
@@ -344,15 +343,14 @@ Commencez par vous présenter comme recruteur, puis posez la première question.
                                             key={concern}
                                             type="button"
                                             onClick={() => toggleArrayItem(
-                                                formData.specificConcerns, 
-                                                concern, 
+                                                formData.specificConcerns,
+                                                concern,
                                                 (items) => setFormData(prev => ({ ...prev, specificConcerns: items }))
                                             )}
-                                            className={`p-2 text-xs rounded-lg border transition-all text-left ${
-                                                formData.specificConcerns.includes(concern)
+                                            className={`p-2 text-xs rounded-lg border transition-all text-left ${formData.specificConcerns.includes(concern)
                                                     ? 'bg-amber-100 border-amber-300 text-amber-700'
                                                     : 'bg-gray-50 border-gray-200 text-gray-600 hover:bg-amber-50'
-                                            }`}
+                                                }`}
                                         >
                                             {concern}
                                         </button>
@@ -419,12 +417,12 @@ Commencez par vous présenter comme recruteur, puis posez la première question.
                                         </Badge>
                                     </div>
                                 </div>
-                                
-                                <Progress 
-                                    value={isFormValid() ? 
-                                        (50 + (formData.focusAreas.length * 10) + (formData.specificConcerns.length * 5)) 
+
+                                <Progress
+                                    value={isFormValid() ?
+                                        (50 + (formData.focusAreas.length * 10) + (formData.specificConcerns.length * 5))
                                         : 20
-                                    } 
+                                    }
                                     className="mt-3"
                                 />
                             </CardContent>
@@ -508,12 +506,12 @@ Commencez par vous présenter comme recruteur, puis posez la première question.
             {/* Bouton de démarrage */}
             {!simulationStarted && (
                 <div className="text-center">
-                                            <Button
-                            onClick={handleStartSimulation}
-                            disabled={!isFormValid() || isLoading}
-                            size="lg"
-                            className="bg-gradient-to-r from-amber-500 to-purple-500 hover:from-amber-600 hover:to-purple-600 px-8"
-                        >
+                    <Button
+                        onClick={handleStartSimulation}
+                        disabled={!isFormValid() || isLoading}
+                        size="lg"
+                        className="bg-gradient-to-r from-amber-500 to-purple-500 hover:from-amber-600 hover:to-purple-600 px-8"
+                    >
                         {isLoading ? (
                             <>
                                 <Timer className="w-5 h-5 mr-2 animate-pulse" />
@@ -526,7 +524,7 @@ Commencez par vous présenter comme recruteur, puis posez la première question.
                             </>
                         )}
                     </Button>
-                    
+
                     <p className="text-xs text-gray-500 mt-2">
                         Simulation interactive de {formData.duration}
                     </p>

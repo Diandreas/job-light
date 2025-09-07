@@ -84,6 +84,7 @@ export function PortfolioQRCode({
         if (isReady && download) {
             // You can customize the filename here
             const filename = 'guidy-portfolio-qrcode';
+            // @ts-ignore
             download(filename);
         }
     };

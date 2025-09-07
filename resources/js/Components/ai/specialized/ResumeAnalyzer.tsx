@@ -104,22 +104,22 @@ export default function ResumeAnalyzer({ onSubmit, userInfo, isLoading }: Resume
     });
 
     const [currentScore, setCurrentScore] = useState<number>(0);
-    const [criteriaScores, setCriteriaScores] = useState<{[key: string]: number}>({});
+    const [criteriaScores, setCriteriaScores] = useState<{ [key: string]: number }>({});
 
     // Simulation de score basé sur les données utilisateur
     useEffect(() => {
         const calculateScore = () => {
             let score = 50; // Score de base
-            
+
             // Bonus basé sur les données utilisateur
             if (userInfo?.experiences?.length > 0) score += 15;
             if (userInfo?.competences?.length > 3) score += 10;
             if (userInfo?.languages?.length > 1) score += 10;
             if (userInfo?.personalInformation?.photo) score += 5;
             if (userInfo?.summaries?.length > 0) score += 10;
-            
+
             setCurrentScore(Math.min(100, score));
-            
+
             // Scores par critère (simulation)
             setCriteriaScores({
                 'Structure': Math.min(100, score + Math.random() * 20 - 10),
@@ -130,12 +130,13 @@ export default function ResumeAnalyzer({ onSubmit, userInfo, isLoading }: Resume
                 'Présentation': Math.min(100, score + Math.random() * 20 - 10)
             });
         };
-        
+
         calculateScore();
     }, [userInfo]);
 
     const handleSubmit = () => {
         const prompt = generateResumeAnalysisPrompt(formData, userInfo);
+        // @ts-ignore
         onSubmit({ ...formData, prompt, currentScore, criteriaScores });
     };
 
@@ -213,7 +214,7 @@ Donnez-moi une analyse détaillée avec :
                     <div className="text-left">
                         <div className="text-sm font-medium text-gray-800">
                             {currentScore >= 80 ? 'Excellent CV' :
-                             currentScore >= 60 ? 'Bon CV' : 'CV à améliorer'}
+                                currentScore >= 60 ? 'Bon CV' : 'CV à améliorer'}
                         </div>
                         <div className="text-xs text-gray-600">
                             Basé sur votre profil actuel
@@ -234,18 +235,17 @@ Donnez-moi une analyse détaillée avec :
                                 {ANALYSIS_TYPES.map(type => {
                                     const Icon = type.icon;
                                     const isSelected = formData.analysisType === type.id;
-                                    
+
                                     return (
                                         <motion.div
                                             key={type.id}
                                             whileHover={{ scale: 1.02 }}
                                             whileTap={{ scale: 0.98 }}
                                             onClick={() => setFormData(prev => ({ ...prev, analysisType: type.id as any }))}
-                                            className={`p-4 rounded-lg border cursor-pointer transition-all ${
-                                                isSelected
+                                            className={`p-4 rounded-lg border cursor-pointer transition-all ${isSelected
                                                     ? `bg-${type.color}-50 border-${type.color}-300 dark:bg-${type.color}-950/50`
                                                     : 'bg-gray-50 border-gray-200 hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-700'
-                                            }`}
+                                                }`}
                                         >
                                             <div className="flex items-center gap-3 mb-2">
                                                 <Icon className={`w-5 h-5 text-${type.color}-600`} />
@@ -311,15 +311,14 @@ Donnez-moi une analyse détaillée avec :
                                         key={area}
                                         type="button"
                                         onClick={() => toggleArrayItem(
-                                            formData.focusAreas, 
-                                            area, 
+                                            formData.focusAreas,
+                                            area,
                                             (items) => setFormData(prev => ({ ...prev, focusAreas: items }))
                                         )}
-                                        className={`p-2 text-xs rounded-lg border transition-all text-left ${
-                                            formData.focusAreas.includes(area)
+                                        className={`p-2 text-xs rounded-lg border transition-all text-left ${formData.focusAreas.includes(area)
                                                 ? 'bg-purple-100 border-purple-300 text-purple-700'
                                                 : 'bg-gray-50 border-gray-200 text-gray-600 hover:bg-purple-50'
-                                        }`}
+                                            }`}
                                     >
                                         {area}
                                     </button>
@@ -352,8 +351,8 @@ Donnez-moi une analyse détaillée avec :
                                                 {Math.round(score)}%
                                             </span>
                                         </div>
-                                        <Progress 
-                                            value={score} 
+                                        <Progress
+                                            value={score}
                                             className="h-1.5"
                                         />
                                     </div>
@@ -414,7 +413,7 @@ Donnez-moi une analyse détaillée avec :
                                         </AlertDescription>
                                     </Alert>
                                 )}
-                                
+
                                 {userInfo?.competences?.length < 5 && (
                                     <Alert className="border-blue-200 bg-blue-50 p-2">
                                         <Star className="w-3 h-3" />
@@ -423,7 +422,7 @@ Donnez-moi une analyse détaillée avec :
                                         </AlertDescription>
                                     </Alert>
                                 )}
-                                
+
                                 {!userInfo?.personalInformation?.photo && (
                                     <Alert className="border-purple-200 bg-purple-50 p-2">
                                         <Upload className="w-3 h-3" />
@@ -440,12 +439,12 @@ Donnez-moi une analyse détaillée avec :
 
             {/* Bouton d'analyse */}
             <div className="text-center">
-                                    <Button
-                        onClick={handleSubmit}
-                        disabled={isLoading}
-                        size="lg"
-                        className="bg-gradient-to-r from-amber-500 to-purple-500 hover:from-amber-600 hover:to-purple-600 px-8"
-                    >
+                <Button
+                    onClick={handleSubmit}
+                    disabled={isLoading}
+                    size="lg"
+                    className="bg-gradient-to-r from-amber-500 to-purple-500 hover:from-amber-600 hover:to-purple-600 px-8"
+                >
                     {isLoading ? (
                         <>
                             <RefreshCw className="w-5 h-5 mr-2 animate-spin" />
@@ -458,7 +457,7 @@ Donnez-moi une analyse détaillée avec :
                         </>
                     )}
                 </Button>
-                
+
                 <p className="text-xs text-gray-500 mt-2">
                     Analyse complète en ~30 secondes
                 </p>

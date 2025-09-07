@@ -1,6 +1,6 @@
 import React from 'react';
 import { Head } from '@inertiajs/react';
-import { CheckCircleIcon } from '@heroicons/react/24/solid';
+import { CheckCircle as CheckCircleIcon } from 'lucide-react';
 
 interface PaymentSuccessProps {
     message: string;

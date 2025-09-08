@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { Head, usePage } from '@inertiajs/react';
 import { motion } from 'framer-motion';
-// Import PayPal supprimé - Fapshi uniquement
+import { PayPalScriptProvider, PayPalButtons, usePayPalScriptReducer } from "@paypal/react-paypal-js";
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Card, CardContent } from "@/Components/ui/card";
-// Import Tabs supprimé - plus d'onglets nécessaires
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/Components/ui/tabs";
 import { useToast } from "@/Components/ui/use-toast";
 import { Alert, AlertDescription } from "@/Components/ui/alert";
 import { useTranslation } from 'react-i18next';
@@ -63,8 +63,7 @@ const TOKEN_PACKS = [
 const PaymentMethodsInfo = {
     mobileMoneyLogos: [
         { name: 'MTN Mobile Money', logo: '/mtn-momo.png' },
-        { name: 'Orange Money', logo: '/orange-money.png' },
-        { name: 'Fapshi', logo: '/fapshi-logo.svg' }
+        { name: 'Orange Money', logo: '/orange-money.png' }
     ],
     cardLogos: [
         // { name: 'Visa', logo: '/visa.png' },
@@ -72,10 +71,8 @@ const PaymentMethodsInfo = {
     ]
 };
 
-// Composant NotchPay supprimé - Fapshi uniquement
-
-// Fapshi Button Component (Mobile Payments)
-const FapshiButton = ({ pack, onSuccess, user }) => {
+// NotchPay Button Component (Primary)
+const NotchPayButton = ({ pack, onSuccess, user }) => {
     const [loading, setLoading] = useState(false);
     const { toast } = useToast();
     const { t } = useTranslation();
@@ -84,29 +81,7 @@ const FapshiButton = ({ pack, onSuccess, user }) => {
         try {
             setLoading(true);
 
-            // Utiliser toujours Fapshi
-            const provider = 'fapshi';
-            
-            // Vérifier si le téléphone est valide pour le paiement mobile direct
-            const phoneRegex = /^6[0-9]{8}$/;
-            const hasValidPhone = user?.phone && phoneRegex.test(user.phone);
-            
-            const paymentData = {
-                provider: provider,
-                amount: pack.priceFCFA,
-                currency: 'XAF',
-                description: `Achat de ${pack.tokens + pack.bonusTokens} tokens`,
-                customer_name: user?.name || 'Utilisateur',
-                customer_email: user?.email || '',
-                payment_type: 'web'
-            };
-
-            // Ajouter le téléphone seulement si valide
-            if (hasValidPhone) {
-                paymentData.customer_phone = user.phone;
-            }
-
-            const response = await fetch('/api/payments/initiate', {
+            const response = await fetch('/api/notchpay/initialize', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -114,7 +89,9 @@ const FapshiButton = ({ pack, onSuccess, user }) => {
                     'Accept': 'application/json',
                 },
                 credentials: 'same-origin',
-                body: JSON.stringify(paymentData)
+                body: JSON.stringify({
+                    tokens: pack.tokens + pack.bonusTokens
+                })
             });
 
             if (!response.ok) {
@@ -124,25 +101,15 @@ const FapshiButton = ({ pack, onSuccess, user }) => {
 
             const result = await response.json();
 
-            if (result.success) {
-                if (result.payment_url) {
-                    // Rediriger vers la page de paiement
-                    window.location.href = result.payment_url;
-                } else {
-                    // Paiement mobile direct initié
-                    toast({
-                        title: t('payment.success.title'),
-                        description: `Paiement initié avec Fapshi`,
-                    });
-                    // Vérifier le statut après quelques secondes
-                    setTimeout(() => checkPaymentStatus(result.transaction_id), 3000);
-                }
+            if (result.success && result.authorization_url) {
+                // Rediriger vers la page de paiement NotchPay
+                window.location.href = result.authorization_url;
             } else {
                 throw new Error(t('payment.errors.initialization'));
             }
 
         } catch (error) {
-            console.error('Erreur de paiement Fapshi:', error);
+            console.error('Erreur de paiement NotchPay:', error);
             toast({
                 variant: "destructive",
                 title: t('payment.errors.paymentFailed'),
@@ -153,27 +120,11 @@ const FapshiButton = ({ pack, onSuccess, user }) => {
         }
     };
 
-    const checkPaymentStatus = async (transactionId) => {
-        try {
-            const response = await fetch(`/api/payments/status/${transactionId}`);
-            const result = await response.json();
-            
-            if (result.success && result.status === 'completed') {
-                onSuccess(result.new_balance);
-            } else if (result.status === 'pending') {
-                // Réessayer après quelques secondes
-                setTimeout(() => checkPaymentStatus(transactionId), 5000);
-            }
-        } catch (error) {
-            console.error('Erreur lors de la vérification du statut:', error);
-        }
-    };
-
     return (
         <button
             onClick={handlePayment}
             disabled={loading}
-            className={`w-full py-3 px-4 rounded-lg font-medium text-white bg-gradient-to-r from-orange-500 to-pink-600 hover:from-orange-600 hover:to-pink-700 transition-all duration-200 flex items-center justify-center gap-2 ${loading ? 'opacity-75 cursor-not-allowed' : ''}`}
+            className={`w-full py-3 px-4 rounded-lg font-medium text-white bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 transition-all duration-200 flex items-center justify-center gap-2 ${loading ? 'opacity-75 cursor-not-allowed' : ''}`}
         >
             {loading ? (
                 <>
@@ -183,43 +134,245 @@ const FapshiButton = ({ pack, onSuccess, user }) => {
             ) : (
                 <>
                     <Smartphone className="w-5 h-5" />
-                    <span>Payer Mobile Money</span>
+                    <span>{t('payment.payWithNotchPay')}</span>
                 </>
             )}
         </button>
     );
 };
 
-// Composant PayPal supprimé - Fapshi uniquement
+// CinetPay Button Component (Backup)
+const CinetPayButton = ({ pack, onSuccess, user }) => {
+    const [loading, setLoading] = useState(false);
+    const { toast } = useToast();
+    const { t } = useTranslation();
+
+    const handlePayment = async () => {
+        try {
+            setLoading(true);
+
+            // Générer un ID de transaction unique
+            const transactionId = `tokens_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+
+            const response = await fetch('/api/cinetpay/initialize', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '',
+                    'Accept': 'application/json',
+                },
+                credentials: 'same-origin',
+                body: JSON.stringify({
+                    transaction_id: transactionId,
+                    amount: pack.priceFCFA,
+                    currency: 'XAF', // FCFA
+                    description: `Achat de ${pack.tokens + pack.bonusTokens} tokens`,
+                    customer_name: user?.name || 'Utilisateur',
+                    customer_surname: user?.surname || '',
+                    customer_email: user?.email || '',
+                    customer_phone_number: user?.phone || '',
+                    notify_url: `${window.location.origin}/api/cinetpay/notify`,
+                    return_url: `${window.location.origin}/payment/cinetpay/callback`,
+                    channels: 'ALL',
+                    lang: 'fr'
+                })
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.message || t('payment.errors.default'));
+            }
+
+            const result = await response.json();
+
+            if (result.success && result.payment_url) {
+                // Rediriger vers la page de paiement CinetPay
+                window.location.href = result.payment_url;
+            } else {
+                throw new Error(t('payment.errors.initialization'));
+            }
+
+        } catch (error) {
+            console.error('Erreur de paiement:', error);
+            toast({
+                variant: "destructive",
+                title: t('payment.errors.paymentFailed'),
+                description: error.message || t('payment.errors.processingError')
+            });
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    return (
+        <button
+            onClick={handlePayment}
+            disabled={loading}
+            className={`w-full py-3 px-4 rounded-lg font-medium text-white bg-gradient-to-r from-green-600 to-blue-600 hover:from-green-700 hover:to-blue-700 transition-all duration-200 flex items-center justify-center gap-2 ${loading ? 'opacity-75 cursor-not-allowed' : ''}`}
+        >
+            {loading ? (
+                <>
+                    <Loader2 className="w-5 h-5 animate-spin" />
+                    <span>{t('payment.processing')}</span>
+                </>
+            ) : (
+                <>
+                    <Smartphone className="w-5 h-5" />
+                    <span>{t('payment.payWithCinetPay')}</span>
+                </>
+            )}
+        </button>
+    );
+};
+
+const PayPalPackButton = ({ pack, onSuccess }) => {
+    const [{ isPending }] = usePayPalScriptReducer();
+    const [error, setError] = useState(null);
+    const { t } = useTranslation();
+
+    const handlePayPalCapture = async (data, actions) => {
+        try {
+            const details = await actions.order.capture();
+            const response = await fetch('/api/paypal/capture-payment', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-XSRF-TOKEN': decodeURIComponent(document.cookie
+                        .split('; ')
+                        .find(row => row.startsWith('XSRF-TOKEN='))
+                        ?.split('=')[1] || ''),
+                    'Accept': 'application/json',
+                },
+                credentials: 'include',
+                body: JSON.stringify({
+                    orderID: data.orderID,
+                    tokens: pack.tokens + pack.bonusTokens,
+                    paypalDetails: details
+                })
+            });
+
+            if (!response.ok) {
+                throw new Error(t('payment.errors.captureFailure'));
+            }
+
+            const result = await response.json();
+            if (result.success) {
+                onSuccess(result.new_balance);
+            } else {
+                throw new Error(t('payment.errors.processingFailure'));
+            }
+        } catch (err) {
+            console.error('Erreur lors de la capture PayPal:', err);
+            setError(err.message || t('payment.errors.default'));
+        }
+    };
+
+    if (isPending) {
+        return (
+            <div className="flex items-center justify-center h-12">
+                <Loader2 className="w-6 h-6 animate-spin text-blue-500" />
+            </div>
+        );
+    }
+
+    return (
+        <div className="space-y-3">
+            {error && (
+                <div className="text-red-500 text-sm p-2 bg-red-50 rounded-lg">
+                    {error}
+                </div>
+            )}
+            <PayPalButtons
+                style={{
+                    layout: "vertical",
+                    shape: "rect",
+                    color: "gold"
+                }}
+                createOrder={(data, actions) => {
+                    // @ts-ignore
+                    return actions.order.create({
+                        purchase_units: [{
+                            amount: {
+                                value: pack.priceEuros.toString(),
+                                currency_code: "EUR"
+                            },
+                            description: `${pack.tokens + pack.bonusTokens} tokens`
+                        }]
+                    });
+                }}
+                onApprove={handlePayPalCapture}
+                onError={(err) => {
+                    console.error('Erreur PayPal:', err);
+                    setError(t('payment.errors.paypalFailed'));
+                }}
+            />
+        </div>
+    );
+};
 
 function cn(...classes) {
     return classes.filter(Boolean).join(' ');
 }
 
-const FapshiPayment = ({ pack, onSuccess, user }) => {
-    return (
-        <div className="w-full space-y-4">
-            <div className="text-2xl font-bold text-center">
-                {pack.priceFCFA.toLocaleString()} FCFA
-            </div>
-            
-            <FapshiButton pack={pack} onSuccess={onSuccess} user={user} />
+const PaymentTabs = ({ pack, onSuccess, user }) => {
+    const { t } = useTranslation();
 
-            <div className="flex items-center justify-center gap-4 mt-2">
-                {PaymentMethodsInfo.mobileMoneyLogos.map((logo, index) => (
-                    <img
-                        key={index}
-                        src={logo.logo}
-                        alt={logo.name}
-                        className="h-8 object-contain"
-                    />
-                ))}
-            </div>
-        </div>
+    return (
+        <Tabs defaultValue="mobile" className="w-full">
+            <TabsList className="grid grid-cols-2 w-full">
+                <TabsTrigger value="mobile" className="flex items-center gap-2">
+                    <Smartphone className="w-4 h-4" />
+                    <span>{t('payment.tabs.mobileMoney')}</span>
+                </TabsTrigger>
+                <TabsTrigger value="card" className="flex items-center gap-2">
+                    <CreditCard className="w-4 h-4" />
+                    <span>{t('payment.tabs.bankCard')}</span>
+                </TabsTrigger>
+            </TabsList>
+
+            <TabsContent value="mobile" className="mt-4 space-y-4">
+                <div className="text-2xl font-bold text-center">
+                    {pack.priceFCFA.toLocaleString()} FCFA
+                </div>
+                
+                <CinetPayButton pack={pack} onSuccess={onSuccess} user={user} />
+
+                <div className="flex items-center justify-center gap-4 mt-2">
+                    {PaymentMethodsInfo.mobileMoneyLogos.map((logo, index) => (
+                        <img
+                            key={index}
+                            src={logo.logo}
+                            alt={logo.name}
+                            className="h-8 object-contain"
+                        />
+                    ))}
+                </div>
+            </TabsContent>
+
+            <TabsContent value="card" className="mt-4 space-y-4">
+                <div className="text-2xl font-bold text-center">
+                    {pack.priceEuros}€
+                    {/*<span className="text-sm text-gray-500 ml-2">*/}
+                    {/*    ({pack.priceFCFA.toLocaleString()} FCFA)*/}
+                    {/*</span>*/}
+                </div>
+                <PayPalPackButton pack={pack} onSuccess={onSuccess} />
+                <div className="flex items-center justify-center gap-4 mt-2">
+                    {PaymentMethodsInfo.cardLogos.map((logo, index) => (
+                        <img
+                            key={index}
+                            src={logo.logo}
+                            alt={logo.name}
+                            className="h-6 object-contain"
+                        />
+                    ))}
+                </div>
+            </TabsContent>
+        </Tabs>
     );
 };
 
-export default function Index({ auth }) {
+export default function Index({ auth, paypalConfig }) {
     const { toast } = useToast();
     const [error, setError] = useState(null);
     const { t } = useTranslation();
@@ -228,6 +381,12 @@ export default function Index({ auth }) {
         window.location.href = '/login';
         return null;
     }
+
+    const initialOptions = {
+        "client-id": paypalConfig.clientId,
+        currency: "EUR",
+        intent: "capture",
+    };
 
     const handlePaymentSuccess = (newBalance) => {
         auth.user.wallet_balance = newBalance;
@@ -241,6 +400,8 @@ export default function Index({ auth }) {
     return (
         <AuthenticatedLayout user={auth.user}>
             <Head title={t('payment.pageTitle')} />
+            {/*@ts-ignore*/}
+            <PayPalScriptProvider options={initialOptions}>
                 <div className="py-12">
                     <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
                         <div className="text-center mb-12">
@@ -269,10 +430,16 @@ export default function Index({ auth }) {
                                         {t('payment.features.bonus')}
                                     </span>
                                 </div>
-                                <div className="flex items-center gap-2 px-4 py-2 bg-orange-100 dark:bg-orange-900/50 rounded-full">
-                                    <Smartphone className="w-5 h-5 text-orange-500" />
-                                    <span className="text-orange-700 dark:text-orange-300">
-                                        Fapshi Mobile Money
+                                <div className="flex items-center gap-2 px-4 py-2 bg-purple-100 dark:bg-purple-900/50 rounded-full">
+                                    <Smartphone className="w-5 h-5 text-purple-500" />
+                                    <span className="text-purple-700 dark:text-purple-300">
+                                        {t('payment.features.mobile')}
+                                    </span>
+                                </div>
+                                <div className="flex items-center gap-2 px-4 py-2 bg-blue-100 dark:bg-blue-900/50 rounded-full">
+                                    <CreditCard className="w-5 h-5 text-blue-500" />
+                                    <span className="text-blue-700 dark:text-blue-300">
+                                        {t('payment.features.card')}
                                     </span>
                                 </div>
                             </div>
@@ -331,7 +498,7 @@ export default function Index({ auth }) {
                                                 </div> */}
 
                                                 <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
-                                                    <FapshiPayment
+                                                    <PaymentTabs
                                                         pack={pack}
                                                         onSuccess={handlePaymentSuccess}
                                                         user={auth.user}
@@ -346,25 +513,35 @@ export default function Index({ auth }) {
 
                         <div className="mt-12 space-y-4">
                             <div className="bg-white dark:bg-gray-800 rounded-lg p-6 max-w-3xl mx-auto">
-                                <h2 className="text-lg font-semibold mb-4">Paiement avec Fapshi</h2>
-                                <div className="space-y-2">
-                                    <h3 className="font-medium">Mobile Money Cameroun</h3>
-                                    <ul className="text-sm text-gray-600 dark:text-gray-300 space-y-1">
-                                        <li>• Paiement instantané</li>
-                                        <li>• MTN Mobile Money et Orange Money acceptés</li>
-                                        <li>• Tarifs en FCFA (XAF)</li>
-                                        <li>• Sécurisé par Fapshi</li>
-                                    </ul>
+                                <h2 className="text-lg font-semibold mb-4">{t('payment.importantInfo.title')}</h2>
+                                <div className="grid gap-4 md:grid-cols-2">
+                                    <div className="space-y-2">
+                                        <h3 className="font-medium">{t('payment.importantInfo.mobileMoney.title')}</h3>
+                                        <ul className="text-sm text-gray-600 dark:text-gray-300 space-y-1">
+                                            <li>• {t('payment.importantInfo.mobileMoney.instant')}</li>
+                                            <li>• {t('payment.importantInfo.mobileMoney.accepted')}</li>
+                                            <li>• {t('payment.importantInfo.mobileMoney.pricing')}</li>
+                                        </ul>
+                                    </div>
+                                    <div className="space-y-2">
+                                        <h3 className="font-medium">{t('payment.importantInfo.bankCard.title')}</h3>
+                                        <ul className="text-sm text-gray-600 dark:text-gray-300 space-y-1">
+                                            <li>• {t('payment.importantInfo.bankCard.secure')}</li>
+                                            <li>• {t('payment.importantInfo.bankCard.accepted')}</li>
+                                            <li>• {t('payment.importantInfo.bankCard.pricing')}</li>
+                                        </ul>
+                                    </div>
                                 </div>
                             </div>
 
                             <div className="text-center text-sm text-gray-500 dark:text-gray-400">
-                                <p>Les tokens sont crédités immédiatement après paiement</p>
-                                <p className="mt-2">Paiement sécurisé par Fapshi - Leader du Mobile Money au Cameroun</p>
+                                <p>{t('payment.footer.immediate')}</p>
+                                <p className="mt-2">{t('payment.footer.secure')}</p>
                             </div>
                         </div>
                     </div>
                 </div>
+            </PayPalScriptProvider>
         </AuthenticatedLayout>
     );
 }

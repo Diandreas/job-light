@@ -300,7 +300,8 @@
             "model_activated": "Your model has been successfully activated",
             "max_models_reached": "You cannot add more than {{max}} models",
             "error": "An error occurred"
-        }
+        },
+        "free": "Free"
     },
     "cv_preview": {
         "title": "Professional CV",

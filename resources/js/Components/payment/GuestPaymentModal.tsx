@@ -42,6 +42,7 @@ export default function GuestPaymentModal({
     const [currency, setCurrency] = useState('EUR');
     const [customerName, setCustomerName] = useState('');
     const [customerEmail, setCustomerEmail] = useState('');
+    const [customerPhone, setCustomerPhone] = useState('');
     const [step, setStep] = useState<'form' | 'processing' | 'success'>('form');
 
     // Calculer le montant selon la devise
@@ -79,25 +80,38 @@ export default function GuestPaymentModal({
         setStep('processing');
 
         try {
-            const response = await fetch(route('guest-payment.cinetpay.initialize'), {
+            const response = await fetch('/api/payments/initiate', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                     'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || ''
                 },
                 body: JSON.stringify({
-                    paymentToken,
-                    currency,
-                    customerName,
-                    customerEmail
+                    provider: 'fapshi',
+                    amount: getDisplayAmount(),
+                    currency: currency,
+                    description: 'CV Professionnel PDF',
+                    customer_name: customerName,
+                    customer_email: customerEmail,
+                    customer_phone: customerPhone,
+                    payment_type: customerPhone ? 'mobile' : 'web'
                 })
             });
 
             const result = await response.json();
 
             if (result.success) {
-                // Rediriger vers CinetPay
-                window.location.href = result.payment_url;
+                if (result.payment_url) {
+                    // Rediriger vers l'interface de paiement
+                    window.location.href = result.payment_url;
+                } else {
+                    // Paiement direct Fapshi - simuler le succès pour cette démo
+                    setStep('success');
+                    toast({
+                        title: "Paiement initié",
+                        description: "Votre paiement mobile a été initié avec Fapshi",
+                    });
+                }
             } else {
                 throw new Error(result.message || 'Erreur lors du paiement');
             }
@@ -120,6 +134,7 @@ export default function GuestPaymentModal({
         setIsProcessing(false);
         setCustomerName('');
         setCustomerEmail('');
+        setCustomerPhone('');
         setCurrency('EUR');
     };
 
@@ -155,7 +170,7 @@ export default function GuestPaymentModal({
                                 </div>
                             </div>
                             <div className="text-sm text-blue-600">
-                                ✓ Téléchargement immédiat • ✓ Qualité HD • ✓ Aucun abonnement
+                                ✓ Téléchargement immédiat • ✓ Qualité HD • ✓ Paiement mobile Fapshi
                             </div>
                         </div>
 
@@ -215,13 +230,27 @@ export default function GuestPaymentModal({
                                     Votre reçu sera envoyé à cette adresse
                                 </div>
                             </div>
+                            <div>
+                                <Label htmlFor="customerPhone">Téléphone (optionnel)</Label>
+                                <Input
+                                    id="customerPhone"
+                                    type="tel"
+                                    value={customerPhone}
+                                    onChange={(e) => setCustomerPhone(e.target.value)}
+                                    placeholder="677123456"
+                                    pattern="6[0-9]{8}"
+                                />
+                                <div className="text-xs text-gray-500 mt-1">
+                                    Pour paiement mobile direct (format: 6XXXXXXXX)
+                                </div>
+                            </div>
                         </div>
 
                         {/* Sécurité */}
                         <Alert className="border-green-200 bg-green-50">
                             <Shield className="w-4 h-4" />
                             <AlertDescription className="text-green-800">
-                                <strong>Paiement sécurisé</strong> par CinetPay. Vos données bancaires sont protégées.
+                                <strong>Paiement sécurisé</strong> par Fapshi. Vos données bancaires sont protégées.
                             </AlertDescription>
                         </Alert>
 
@@ -264,7 +293,7 @@ export default function GuestPaymentModal({
                     <div className="text-center py-8">
                         <Loader2 className="w-12 h-12 text-blue-600 mx-auto mb-4 animate-spin" />
                         <h3 className="text-lg font-medium mb-2">Redirection vers le paiement...</h3>
-                        <p className="text-gray-600">Vous allez être redirigé vers CinetPay</p>
+                        <p className="text-gray-600">Vous allez être redirigé vers Fapshi</p>
                     </div>
                 )}
 

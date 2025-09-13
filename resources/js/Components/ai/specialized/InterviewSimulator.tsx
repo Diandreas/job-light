@@ -159,48 +159,43 @@ Commencez par vous présenter comme recruteur, puis posez la première question.
     };
 
     return (
-        <div className="max-w-5xl mx-auto space-y-6">
-            {/* Header avec timer */}
-            <div className="text-center mb-8">
-                <div className="flex items-center justify-center gap-4 mb-6">
-                    <div className="p-3 rounded-xl bg-gradient-to-r from-amber-500 to-purple-500">
-                        <MessageSquare className="w-8 h-8 text-white" />
-                    </div>
-                    <div>
-                        <h2 className="text-2xl font-bold text-gray-800 dark:text-gray-200">
-                            Simulateur d'Entretien IA
-                        </h2>
-                        <p className="text-gray-600 dark:text-gray-400">
-                            Préparez-vous avec des simulations réalistes
-                        </p>
-                    </div>
-                </div>
-
-                {simulationStarted && (
-                    <div className="flex items-center justify-center gap-4">
-                        <Badge variant="outline" className="bg-blue-50 text-blue-700">
-                            <Clock className="w-3 h-3 mr-1" />
-                            {formatTime(timeElapsed)}
-                        </Badge>
-                        <Badge variant="outline" className="bg-green-50 text-green-700">
-                            Question {currentQuestion + 1}
-                        </Badge>
-                    </div>
-                )}
-            </div>
+        <div className="max-w-5xl mx-auto space-y-4">
+            {/* Timer en cours de simulation */}
+            {simulationStarted && (
+                <motion.div
+                    initial={{ opacity: 0, y: -20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="flex items-center justify-center gap-4"
+                >
+                    <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200">
+                        <Clock className="w-3 h-3 mr-1" />
+                        {formatTime(timeElapsed)}
+                    </Badge>
+                    <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">
+                        Question {currentQuestion + 1}
+                    </Badge>
+                </motion.div>
+            )}
 
             {!simulationStarted ? (
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                     {/* Configuration */}
-                    <div className="lg:col-span-2 space-y-6">
-                        <Card>
-                            <CardHeader>
-                                <CardTitle className="flex items-center gap-2">
-                                    <Building className="w-5 h-5 text-blue-600" />
-                                    Détails du Poste
-                                </CardTitle>
-                            </CardHeader>
-                            <CardContent className="space-y-4">
+                    <div className="lg:col-span-2 space-y-4">
+                        <motion.div
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ delay: 0.1 }}
+                        >
+                            <Card className="border-0 shadow-lg bg-white/90 dark:bg-gray-900/90 backdrop-blur-sm">
+                                <CardContent className="p-6">
+                                    <div className="flex items-center gap-2 mb-4">
+                                        <div className="w-8 h-8 rounded-lg bg-gradient-to-r from-blue-500 to-indigo-500 flex items-center justify-center">
+                                            <Building className="w-4 h-4 text-white" />
+                                        </div>
+                                        <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+                                            Informations Générales
+                                        </h3>
+                                    </div>
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                     <div>
                                         <Label htmlFor="jobTitle">Intitulé du poste *</Label>
@@ -358,7 +353,8 @@ Commencez par vous présenter comme recruteur, puis posez la première question.
                                 </div>
                             </CardContent>
                         </Card>
-                    </div>
+                    </motion.div>
+                </div>
 
                     {/* Panneau de droite - Conseils et préparation */}
                     <div className="space-y-6">
@@ -503,14 +499,19 @@ Commencez par vous présenter comme recruteur, puis posez la première question.
                 </div>
             )}
 
-            {/* Bouton de démarrage */}
+            {/* Bouton de démarrage modernisé */}
             {!simulationStarted && (
-                <div className="text-center">
+                <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.4 }}
+                    className="text-center pt-6"
+                >
                     <Button
                         onClick={handleStartSimulation}
                         disabled={!isFormValid() || isLoading}
                         size="lg"
-                        className="bg-gradient-to-r from-amber-500 to-purple-500 hover:from-amber-600 hover:to-purple-600 px-8"
+                        className="bg-gradient-to-r from-amber-500 to-purple-500 hover:from-amber-600 hover:to-purple-600 shadow-lg hover:shadow-xl disabled:opacity-50 transition-all px-8 py-3 rounded-xl font-medium"
                     >
                         {isLoading ? (
                             <>
@@ -525,10 +526,17 @@ Commencez par vous présenter comme recruteur, puis posez la première question.
                         )}
                     </Button>
 
-                    <p className="text-xs text-gray-500 mt-2">
-                        Simulation interactive de {formData.duration}
-                    </p>
-                </div>
+                    <div className="mt-3 space-y-1">
+                        <p className="text-xs text-gray-500">
+                            Simulation interactive de {formData.duration}
+                        </p>
+                        {!isFormValid() && (
+                            <p className="text-xs text-red-500">
+                                Veuillez remplir tous les champs obligatoires
+                            </p>
+                        )}
+                    </div>
+                </motion.div>
             )}
         </div>
     );

@@ -307,35 +307,47 @@ Donnez-moi une analyse détaillée avec :
                                 </div>
                             </CardContent>
                         </Card>
+                        </motion.div>
                     )}
 
                     {/* Zones de focus */}
-                    <Card>
-                        <CardHeader>
-                            <CardTitle>Zones d'Analyse Prioritaires</CardTitle>
-                        </CardHeader>
-                        <CardContent>
-                            <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
-                                {FOCUS_AREAS.map(area => (
-                                    <button
-                                        key={area}
-                                        type="button"
-                                        onClick={() => toggleArrayItem(
-                                            formData.focusAreas,
-                                            area,
-                                            (items) => setFormData(prev => ({ ...prev, focusAreas: items }))
-                                        )}
-                                        className={`p-2 text-xs rounded-lg border transition-all text-left ${formData.focusAreas.includes(area)
-                                                ? 'bg-purple-100 border-purple-300 text-purple-700'
-                                                : 'bg-gray-50 border-gray-200 text-gray-600 hover:bg-purple-50'
-                                            }`}
-                                    >
-                                        {area}
-                                    </button>
-                                ))}
-                            </div>
-                        </CardContent>
-                    </Card>
+                    <motion.div
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.3 }}
+                    >
+                        <Card className="border-0 shadow-lg bg-white/90 dark:bg-gray-900/90 backdrop-blur-sm">
+                            <CardContent className="p-6">
+                                <div className="flex items-center gap-2 mb-4">
+                                    <div className="w-8 h-8 rounded-lg bg-gradient-to-r from-purple-500 to-pink-500 flex items-center justify-center">
+                                        <Target className="w-4 h-4 text-white" />
+                                    </div>
+                                    <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+                                        Zones d'Analyse Prioritaires
+                                    </h3>
+                                </div>
+                                <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
+                                    {FOCUS_AREAS.map(area => (
+                                        <button
+                                            key={area}
+                                            type="button"
+                                            onClick={() => toggleArrayItem(
+                                                formData.focusAreas,
+                                                area,
+                                                (items) => setFormData(prev => ({ ...prev, focusAreas: items }))
+                                            )}
+                                            className={`p-2 text-xs rounded-lg border transition-all text-left ${formData.focusAreas.includes(area)
+                                                    ? 'bg-purple-100 border-purple-300 text-purple-700'
+                                                    : 'bg-gray-50 border-gray-200 text-gray-600 hover:bg-purple-50'
+                                                }`}
+                                        >
+                                            {area}
+                                        </button>
+                                    ))}
+                                </div>
+                            </CardContent>
+                        </Card>
+                    </motion.div>
                 </div>
 
                 {/* Panneau de droite - Aperçu et scores */}

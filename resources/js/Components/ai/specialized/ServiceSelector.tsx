@@ -5,8 +5,14 @@ import { Button } from '@/Components/ui/button';
 import { Card, CardHeader, CardTitle, CardContent } from '@/Components/ui/card';
 import { Badge } from '@/Components/ui/badge';
 import {
+    Tooltip,
+    TooltipContent,
+    TooltipProvider,
+    TooltipTrigger,
+} from "@/Components/ui/tooltip";
+import {
     Brain, FileText, MessageSquare, PenTool, Presentation,
-    ArrowRight, Sparkles, Star, Zap, Target
+    ArrowRight, Sparkles, Star, Zap, Target, HelpCircle, Info
 } from 'lucide-react';
 
 // Import des interfaces spécialisées
@@ -91,21 +97,6 @@ export default function ServiceSelector({ userInfo, onServiceSubmit, isLoading, 
                 t('services.interview_prep.features.detailed_feedback') || 'Feedback détaillé'
             ],
             component: InterviewSimulator
-        },
-        {
-            id: 'presentation-ppt',
-            icon: Presentation,
-            title: t('services.presentation_ppt.enhanced_title') || 'Créateur de Portfolio Présentation',
-            description: t('services.presentation_ppt.enhanced_description') || 'Transformez vos projets en présentations professionnelles pour impressionner les recruteurs',
-            cost: 8,
-            color: 'amber',
-            features: [
-                t('services.presentation_ppt.features.pro_templates') || 'Templates pro',
-                t('services.presentation_ppt.features.projects_showcase') || 'Projets showcase',
-                t('services.presentation_ppt.features.powerpoint_export') || 'Export PowerPoint',
-                t('services.presentation_ppt.features.adaptive_design') || 'Design adaptatif'
-            ],
-            component: null // À implémenter si nécessaire
         }
     ];
 
@@ -208,146 +199,108 @@ export default function ServiceSelector({ userInfo, onServiceSubmit, isLoading, 
                 </div>
             </div>
 
-            {/* Grille des services */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {/* Grille des services compacts */}
+            <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-4">
                 {ENHANCED_SERVICES.map((service, index) => {
                     const Icon = service.icon;
-                    const colors = getColorClasses(service.color);
                     const canAfford = walletBalance >= service.cost;
-                    
+
                     return (
-                        <motion.div
-                            key={service.id}
-                            initial={{ opacity: 0, y: 20 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ delay: index * 0.1 }}
-                            whileHover={{ y: -4, scale: 1.02 }}
-                            whileTap={{ scale: 0.98 }}
-                        >
-                            <Card className={`h-full cursor-pointer transition-all duration-300 hover:shadow-xl ${
-                                canAfford ? 'hover:shadow-lg' : 'opacity-75'
-                            }`}>
-                                <CardHeader>
-                                    <div className="flex items-start justify-between mb-3">
-                                        <div className={`p-3 rounded-xl bg-gradient-to-r from-${service.color}-500 to-${service.color}-600`}>
-                                            <Icon className="w-6 h-6 text-white" />
-                                        </div>
-                                        <div className="text-right">
-                                            <Badge 
-                                                variant={canAfford ? "default" : "secondary"}
-                                                className={canAfford ? colors.bg : 'bg-gray-100'}
-                                            >
-                                                {service.cost} {t('common.tokens')}
-                                            </Badge>
-                                        </div>
-                                    </div>
-                                    
-                                    <CardTitle className="text-lg leading-tight">
-                                        {service.title}
-                                    </CardTitle>
-                                </CardHeader>
-                                
-                                <CardContent>
-                                    <p className="text-sm text-gray-600 dark:text-gray-400 mb-4 leading-relaxed">
-                                        {service.description}
-                                    </p>
-                                    
-                                    {/* Features */}
-                                    <div className="space-y-2 mb-4">
-                                        {service.features.map(feature => (
-                                            <div key={feature} className="flex items-center gap-2 text-xs">
-                                                <div className={`w-1.5 h-1.5 rounded-full bg-${service.color}-500`} />
-                                                <span className="text-gray-600 dark:text-gray-400">{feature}</span>
+                        <TooltipProvider key={service.id}>
+                            <motion.div
+                                initial={{ opacity: 0, y: 20 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                transition={{ delay: index * 0.1 }}
+                                whileHover={{ y: -2 }}
+                                whileTap={{ scale: 0.98 }}
+                            >
+                                <Card className={`cursor-pointer transition-all duration-300 border-2 ${
+                                    canAfford ? 'hover:shadow-lg hover:border-amber-300 dark:hover:border-amber-600' : 'opacity-60 border-gray-200'
+                                }`}>
+                                    <CardContent className="p-4">
+                                        <div className="flex items-start justify-between mb-3">
+                                            <div className={`p-2 rounded-lg bg-gradient-to-r from-${service.color}-500 to-${service.color}-600`}>
+                                                <Icon className="w-5 h-5 text-white" />
                                             </div>
-                                        ))}
-                                    </div>
-                                    
-                                    <div className="space-y-2">
+
+                                            <div className="flex items-center gap-2">
+                                                <Tooltip>
+                                                    <TooltipTrigger asChild>
+                                                        <Button variant="ghost" size="sm" className="h-6 w-6 p-0">
+                                                            <HelpCircle className="h-3 w-3 text-gray-500" />
+                                                        </Button>
+                                                    </TooltipTrigger>
+                                                    <TooltipContent className="max-w-xs">
+                                                        <div className="space-y-2">
+                                                            <p className="font-medium">{service.title}</p>
+                                                            <p className="text-sm">{service.description}</p>
+                                                            <div className="space-y-1">
+                                                                <p className="text-xs font-medium">Fonctionnalités :</p>
+                                                                <ul className="text-xs space-y-0.5">
+                                                                    {service.features.map(feature => (
+                                                                        <li key={feature} className="flex items-center gap-1">
+                                                                            <div className="w-1 h-1 bg-current rounded-full" />
+                                                                            {feature}
+                                                                        </li>
+                                                                    ))}
+                                                                </ul>
+                                                            </div>
+                                                        </div>
+                                                    </TooltipContent>
+                                                </Tooltip>
+
+                                                <Badge
+                                                    variant={canAfford ? "default" : "secondary"}
+                                                    className={`text-xs ${canAfford ? 'bg-amber-100 text-amber-700 border-amber-200' : 'bg-gray-100 text-gray-500'}`}
+                                                >
+                                                    {service.cost}
+                                                </Badge>
+                                            </div>
+                                        </div>
+
+                                        <div className="mb-4">
+                                            <h3 className="font-medium text-gray-900 dark:text-gray-100 text-sm mb-1 line-clamp-2">
+                                                {service.title}
+                                            </h3>
+                                            <p className="text-xs text-gray-500 dark:text-gray-400 line-clamp-2">
+                                                {service.description.split(' ').slice(0, 8).join(' ')}...
+                                            </p>
+                                        </div>
+
                                         <Button
                                             onClick={() => handleServiceSelect(service.id)}
                                             disabled={!canAfford || !service.component}
-                                            className={`w-full ${service.component && canAfford ? 'bg-gradient-to-r from-amber-500 to-purple-500 hover:from-amber-600 hover:to-purple-600' : 'bg-gray-400'}`}
+                                            size="sm"
+                                            className={`w-full text-xs ${
+                                                service.component && canAfford
+                                                    ? 'bg-gradient-to-r from-amber-500 to-purple-500 hover:from-amber-600 hover:to-purple-600'
+                                                    : 'bg-gray-400'
+                                            }`}
                                         >
                                             {!service.component ? (
                                                 <>
-                                                    <Zap className="w-4 h-4 mr-2" />
-                                                    {t('common.comingSoon')}
+                                                    <Zap className="w-3 h-3 mr-1" />
+                                                    {t('common.comingSoon') || 'Bientôt'}
                                                 </>
                                             ) : !canAfford ? (
                                                 <>
-                                                    {t('wallet.insufficient')}
+                                                    {t('wallet.insufficient') || 'Solde insuffisant'}
                                                 </>
                                             ) : (
                                                 <>
-                                                    <Target className="w-4 h-4 mr-2" />
+                                                    <Target className="w-3 h-3 mr-1" />
                                                     {t('common.start') || 'Commencer'}
-                                                    <ArrowRight className="w-4 h-4 ml-2" />
                                                 </>
                                             )}
                                         </Button>
-                                        
-                                        {/* Bouton de test des artefacts */}
-                                        {service.component && canAfford && (
-                                            <Button
-                                                variant="outline"
-                                                size="sm"
-                                                onClick={() => {
-                                                    const testResponse = generateTestArtifacts(service.id);
-                                                    onServiceSubmit(service.id, { 
-                                                        prompt: "Test des artefacts interactifs",
-                                                        mockResponse: testResponse,
-                                                        isTest: true 
-                                                    });
-                                                }}
-                                                className="w-full text-xs border-amber-200 text-amber-700 hover:bg-amber-50"
-                                            >
-                                                <Sparkles className="w-3 h-3 mr-1" />
-                                                {t('services.test_artifacts') || 'Tester les artefacts'}
-                                            </Button>
-                                        )}
-                                    </div>
-                                </CardContent>
-                            </Card>
-                        </motion.div>
+                                    </CardContent>
+                                </Card>
+                            </motion.div>
+                        </TooltipProvider>
                     );
                 })}
             </div>
 
-            {/* Section avantages */}
-            <div className="text-center mt-12">
-                <h3 className="text-xl font-bold text-gray-800 dark:text-gray-200 mb-4">
-                    {t('services.why_unique') || 'Pourquoi nos services IA sont uniques ?'}
-                </h3>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <div className="text-center">
-                        <div className="w-12 h-12 bg-blue-100 dark:bg-blue-950/50 rounded-xl flex items-center justify-center mx-auto mb-3">
-                            <Brain className="w-6 h-6 text-blue-600" />
-                        </div>
-                        <h4 className="font-medium text-gray-800 dark:text-gray-200 mb-1">{t('services.benefits.contextual_ai') || 'IA Contextuelle'}</h4>
-                        <p className="text-xs text-gray-600 dark:text-gray-400">
-                            {t('services.benefits.contextual_ai_desc') || 'Analyse votre profil complet pour des conseils ultra-personnalisés'}
-                        </p>
-                    </div>
-                    <div className="text-center">
-                        <div className="w-12 h-12 bg-purple-100 dark:bg-purple-950/50 rounded-xl flex items-center justify-center mx-auto mb-3">
-                            <Target className="w-6 h-6 text-purple-600" />
-                        </div>
-                        <h4 className="font-medium text-gray-800 dark:text-gray-200 mb-1">{t('services.benefits.dedicated_interfaces') || 'Interfaces Dédiées'}</h4>
-                        <p className="text-xs text-gray-600 dark:text-gray-400">
-                            {t('services.benefits.dedicated_interfaces_desc') || 'Chaque service a son interface optimisée pour une expérience unique'}
-                        </p>
-                    </div>
-                    <div className="text-center">
-                        <div className="w-12 h-12 bg-green-100 dark:bg-green-950/50 rounded-xl flex items-center justify-center mx-auto mb-3">
-                            <Star className="w-6 h-6 text-green-600" />
-                        </div>
-                        <h4 className="font-medium text-gray-800 dark:text-gray-200 mb-1">{t('services.benefits.measurable_results') || 'Résultats Mesurables'}</h4>
-                        <p className="text-xs text-gray-600 dark:text-gray-400">
-                            {t('services.benefits.measurable_results_desc') || 'Scores, métriques et recommandations concrètes pour progresser'}
-                        </p>
-                    </div>
-                </div>
-            </div>
         </div>
     );
 }

@@ -229,7 +229,7 @@ const useElementPosition = (targetSelector: string | null, isNavigationStep: boo
 const TutorialOverlay = ({ targetRect, children }: { targetRect: DOMRect | null, children: ReactNode }) => {
     if (!targetRect) {
         return (
-            <div className="fixed inset-0 bg-black/60 backdrop-blur-sm" style={{ zIndex: 9998 }}>
+            <div className="fixed inset-0 bg-black/40 backdrop-blur-sm" style={{ zIndex: 9998 }}>
                 {children}
             </div>
         );
@@ -249,7 +249,7 @@ const TutorialOverlay = ({ targetRect, children }: { targetRect: DOMRect | null,
         left: 0,
         width: '100vw',
         height: '100vh',
-        backgroundColor: 'rgba(0, 0, 0, 0.6)',
+        backgroundColor: 'rgba(0, 0, 0, 0.4)',
         backdropFilter: 'blur(1px)',
         clipPath: `polygon(
             0% 0%,
@@ -273,9 +273,9 @@ const TutorialOverlay = ({ targetRect, children }: { targetRect: DOMRect | null,
         left: Math.max(0, x),
         width: Math.min(window.innerWidth - Math.max(0, x), width),
         height: Math.min(window.innerHeight - Math.max(0, y), height),
-        border: '3px solid #f59e0b',
+        border: '2px solid #f59e0b',
         borderRadius: '8px',
-        boxShadow: '0 0 20px rgba(245, 158, 11, 0.5)',
+        boxShadow: '0 0 15px rgba(245, 158, 11, 0.3)',
         zIndex: 9999,
         pointerEvents: 'none' as const,
         animation: 'pulse 2s infinite'
@@ -291,10 +291,10 @@ const TutorialOverlay = ({ targetRect, children }: { targetRect: DOMRect | null,
             <style>{`
                 @keyframes pulse {
                     0%, 100% {
-                        box-shadow: 0 0 20px rgba(245, 158, 11, 0.5);
+                        box-shadow: 0 0 15px rgba(245, 158, 11, 0.3);
                     }
                     50% {
-                        box-shadow: 0 0 30px rgba(245, 158, 11, 0.8);
+                        box-shadow: 0 0 25px rgba(245, 158, 11, 0.6);
                     }
                 }
             `}</style>
@@ -645,7 +645,7 @@ const Tutorial = ({ isVisible, onComplete, currentSection, onNavigateToSection }
                 animate={{ opacity: 1, scale: 1, y: 0 }}
                 exit={{ opacity: 0, scale: 0.9, y: -20 }}
                 transition={{ duration: 0.3 }}
-                className="bg-white dark:bg-gray-800 rounded-xl shadow-2xl overflow-hidden"
+                className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl overflow-hidden border-0"
                 style={getCardPosition()}
             >
                 <div className={`${isMobile ? 'p-4' : 'p-6'}`}>
@@ -668,7 +668,7 @@ const Tutorial = ({ isVisible, onComplete, currentSection, onNavigateToSection }
                             variant="ghost"
                             size="sm"
                             onClick={skipTutorial}
-                            className="text-gray-400 hover:text-gray-600 flex-shrink-0 -mt-1 -mr-1"
+                            className="text-gray-400 hover:text-gray-600 flex-shrink-0 -mt-1 -mr-1 hover:bg-gray-100 dark:hover:bg-gray-700"
                         >
                             <X className="w-4 h-4" />
                         </Button>
@@ -676,9 +676,9 @@ const Tutorial = ({ isVisible, onComplete, currentSection, onNavigateToSection }
 
                     {/* Progress bar */}
                     <div className="mb-4">
-                        <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
+                        <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-1.5">
                             <div
-                                className="bg-gradient-to-r from-amber-500 to-purple-500 h-2 rounded-full transition-all duration-300"
+                                className="bg-gradient-to-r from-amber-500 to-purple-500 h-1.5 rounded-full transition-all duration-300"
                                 style={{ width: `${(getVisibleStepIndex() / getVisibleStepsCount()) * 100}%` }}
                             />
                         </div>
@@ -700,7 +700,7 @@ const Tutorial = ({ isVisible, onComplete, currentSection, onNavigateToSection }
                                     <Button
                                         onClick={nextStep}
                                         disabled={isAnimating}
-                                        className="flex-1 bg-gradient-to-r from-amber-500 to-purple-500 hover:from-amber-600 hover:to-purple-600 text-white h-9"
+                                        className="flex-1 bg-gradient-to-r from-amber-500 to-purple-500 hover:from-amber-600 hover:to-purple-600 text-white h-9 border-0"
                                         size="sm"
                                     >
                                         {isAnimating ? (
@@ -718,7 +718,7 @@ const Tutorial = ({ isVisible, onComplete, currentSection, onNavigateToSection }
                                             size="sm"
                                             onClick={prevStep}
                                             disabled={isAnimating}
-                                            className="h-9"
+                                            className="h-9 border-gray-200 dark:border-gray-600"
                                         >
                                             <ChevronLeft className="w-4 h-4" />
                                         </Button>
@@ -728,7 +728,7 @@ const Tutorial = ({ isVisible, onComplete, currentSection, onNavigateToSection }
                                     variant="ghost"
                                     size="sm"
                                     onClick={skipTutorial}
-                                    className="text-gray-500 w-full h-8"
+                                    className="text-gray-500 w-full h-8 hover:bg-gray-100 dark:hover:bg-gray-700"
                                 >
                                     <SkipForward className="w-4 h-4 mr-2" />
                                     {t('tutorial.skip')}
@@ -744,6 +744,7 @@ const Tutorial = ({ isVisible, onComplete, currentSection, onNavigateToSection }
                                             size="sm"
                                             onClick={prevStep}
                                             disabled={isAnimating}
+                                            className="border-gray-200 dark:border-gray-600"
                                         >
                                             <ChevronLeft className="w-4 h-4 mr-1" />
                                             {t('tutorial.previous')}
@@ -756,7 +757,7 @@ const Tutorial = ({ isVisible, onComplete, currentSection, onNavigateToSection }
                                         variant="ghost"
                                         size="sm"
                                         onClick={skipTutorial}
-                                        className="text-gray-500"
+                                        className="text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-700"
                                     >
                                         <SkipForward className="w-4 h-4 mr-1" />
                                         {t('tutorial.skip')}
@@ -764,7 +765,7 @@ const Tutorial = ({ isVisible, onComplete, currentSection, onNavigateToSection }
                                     <Button
                                         onClick={nextStep}
                                         disabled={isAnimating}
-                                        className="bg-gradient-to-r from-amber-500 to-purple-500 hover:from-amber-600 hover:to-purple-600 text-white"
+                                        className="bg-gradient-to-r from-amber-500 to-purple-500 hover:from-amber-600 hover:to-purple-600 text-white border-0"
                                         size="sm"
                                     >
                                         {isAnimating ? (
@@ -798,8 +799,8 @@ const ImportButton = ({ onImport, isImporting, isCompact = false }) => {
             <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                     <Button
-                        variant="outline"
-                        className={`${isCompact ? 'text-xs h-7 py-0' : 'text-xs sm:text-sm h-7 sm:h-9 py-0 sm:py-2'} border-amber-200 dark:border-amber-800 hover:bg-amber-50 dark:hover:bg-amber-900/50`}
+                        variant="ghost"
+                        className={`${isCompact ? 'text-xs h-7 py-0 px-2' : 'text-xs sm:text-sm h-7 sm:h-9 py-0 sm:py-2 px-3'} text-amber-600 hover:text-amber-700 hover:bg-amber-50 dark:text-amber-400 dark:hover:bg-amber-900/20 border-0`}
                         disabled={isImporting}
                     >
                         {isImporting ? (
@@ -815,12 +816,12 @@ const ImportButton = ({ onImport, isImporting, isCompact = false }) => {
                         )}
                     </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className={isCompact ? "text-xs" : "text-xs sm:text-sm"}>
-                    <DropdownMenuItem onClick={() => onImport('pdf')} className={`cursor-pointer ${isCompact ? 'h-8' : 'h-8 sm:h-10'}`} disabled={isImporting}>
+                <DropdownMenuContent align="end" className={`${isCompact ? "text-xs" : "text-xs sm:text-sm"} border-0 shadow-lg`}>
+                    <DropdownMenuItem onClick={() => onImport('pdf')} className={`cursor-pointer ${isCompact ? 'h-8' : 'h-8 sm:h-10'} hover:bg-amber-50 dark:hover:bg-amber-900/20`} disabled={isImporting}>
                         <FileText className={isCompact ? "w-3 h-3 mr-1" : "w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2"} />
                         {t('cv.interface.import.pdf')}( - 5 <Coins className={isCompact ? "w-3 h-3" : "w-3 h-3 sm:w-4 sm:h-4"} />)
                     </DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => onImport('docx')} className={`cursor-pointer ${isCompact ? 'h-8' : 'h-8 sm:h-10'}`} disabled={isImporting}>
+                    <DropdownMenuItem onClick={() => onImport('docx')} className={`cursor-pointer ${isCompact ? 'h-8' : 'h-8 sm:h-10'} hover:bg-amber-50 dark:hover:bg-amber-900/20`} disabled={isImporting}>
                         <FileText className={isCompact ? "w-3 h-3 mr-1" : "w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2"} />
                         {t('cv.interface.import.word')}( - 5 <Coins className={isCompact ? "w-3 h-3" : "w-3 h-3 sm:w-4 sm:h-4"} />)
                     </DropdownMenuItem>
@@ -835,30 +836,28 @@ const WelcomeCard = ({ onStartTutorial }) => {
     const { t } = useTranslation();
 
     return (
-        <Card className="bg-gradient-to-r from-amber-50 to-purple-50 dark:from-gray-800 dark:to-gray-900 border-none mb-2 sm:mb-3">
-            <CardContent className="p-2 sm:p-3">
-                <div className="flex items-center justify-between gap-2 sm:gap-3">
-                    <div className="min-w-0 flex-1">
-                        <h3 className="text-sm sm:text-base font-semibold text-gray-800 dark:text-white truncate">
-                            {t('cv.interface.welcome.title')}
-                        </h3>
-                        <p className="text-xs text-gray-600 dark:text-gray-300 hidden sm:block">
-                            {t('cv.interface.welcome.subtitle')}
-                        </p>
-                    </div>
-                    <Button
-                        onClick={onStartTutorial}
-                        variant="outline"
-                        size="sm"
-                        className="border-amber-200 hover:bg-amber-50 text-amber-700 whitespace-nowrap flex-shrink-0 h-7 text-xs px-2 sm:h-8 sm:px-3 sm:text-sm"
-                    >
-                        <Play className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
-                        <span className="hidden sm:inline">{t('tutorial.restart')}</span>
-                        <span className="sm:hidden">{t('tutorial.help')}</span>
-                    </Button>
+        <div className="bg-gradient-to-r from-amber-50 to-purple-50 dark:from-gray-800 dark:to-gray-900 rounded-xl mb-2 sm:mb-3 p-2 sm:p-3 border-0">
+            <div className="flex items-center justify-between gap-2 sm:gap-3">
+                <div className="min-w-0 flex-1">
+                    <h3 className="text-sm sm:text-base font-semibold text-gray-800 dark:text-white truncate">
+                        {t('cv.interface.welcome.title')}
+                    </h3>
+                    <p className="text-xs text-gray-600 dark:text-gray-300 hidden sm:block">
+                        {t('cv.interface.welcome.subtitle')}
+                    </p>
                 </div>
-            </CardContent>
-        </Card>
+                <Button
+                    onClick={onStartTutorial}
+                    variant="ghost"
+                    size="sm"
+                    className="text-amber-700 hover:text-amber-800 hover:bg-amber-100 dark:text-amber-400 dark:hover:bg-amber-900/20 whitespace-nowrap flex-shrink-0 h-7 text-xs px-2 sm:h-8 sm:px-3 sm:text-sm border-0"
+                >
+                    <Play className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
+                    <span className="hidden sm:inline">{t('tutorial.restart')}</span>
+                    <span className="sm:hidden">{t('tutorial.help')}</span>
+                </Button>
+            </div>
+        </div>
     );
 };
 
@@ -1019,46 +1018,25 @@ const PersonalInfoCard = ({ item, onEdit, updateCvInformation }) => {
                 </h2>
                 <Button
                     onClick={onEdit}
-                    className="w-full sm:w-auto bg-gradient-to-r from-amber-500 to-purple-500 hover:from-amber-600 hover:to-purple-600 dark:from-amber-400 dark:to-purple-400 text-white h-8 sm:h-10 text-xs sm:text-sm py-0"
+                    className="w-full sm:w-auto bg-gradient-to-r from-amber-500 to-purple-500 hover:from-amber-600 hover:to-purple-600 dark:from-amber-400 dark:to-purple-400 text-white h-8 sm:h-10 text-xs sm:text-sm py-0 border-0"
                 >
                     <PencilIcon className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
                     {t('cv.interface.personal.edit')}
                 </Button>
             </div>
 
-            <Card>
-                <CardContent className="p-3 sm:p-5 space-y-3 sm:space-y-4">
-                    <div className="flex items-center gap-3 sm:gap-4 pb-3 sm:pb-4">
-                        <div className="relative h-16 w-16 sm:h-20 sm:w-20 flex-shrink-0">
-                            {item.photo ? (
-                                <div className="group relative h-full w-full">
-                                    <img
-                                        src={item.photo}
-                                        alt="Profile"
-                                        className="h-full w-full rounded-full object-cover"
-                                    />
-                                    <div className="absolute inset-0 bg-black bg-opacity-50 rounded-full opacity-0 group-hover:opacity-100 flex items-center justify-center gap-1 transition-opacity">
-                                        <label className="cursor-pointer p-1 hover:bg-white/20 rounded-full">
-                                            <input
-                                                type="file"
-                                                className="hidden"
-                                                accept="image/*"
-                                                onChange={onSelectFile}
-                                                disabled={isUploading}
-                                            />
-                                            <Upload className="h-4 w-4 text-white" />
-                                        </label>
-                                        <button
-                                            onClick={handleDeletePhoto}
-                                            className="p-1 hover:bg-white/20 rounded-full"
-                                        >
-                                            <Trash2 className="h-4 w-4 text-white" />
-                                        </button>
-                                    </div>
-                                </div>
-                            ) : (
-                                <div className="h-full w-full rounded-full bg-gradient-to-r from-amber-500/10 to-purple-500/10 flex items-center justify-center">
-                                    <label className="cursor-pointer">
+            <div className="bg-white dark:bg-gray-900 rounded-2xl p-3 sm:p-5 space-y-3 sm:space-y-4 border-0">
+                <div className="flex items-center gap-3 sm:gap-4 pb-3 sm:pb-4">
+                    <div className="relative h-16 w-16 sm:h-20 sm:w-20 flex-shrink-0">
+                        {item.photo ? (
+                            <div className="group relative h-full w-full">
+                                <img
+                                    src={item.photo}
+                                    alt="Profile"
+                                    className="h-full w-full rounded-full object-cover"
+                                />
+                                <div className="absolute inset-0 bg-black bg-opacity-50 rounded-full opacity-0 group-hover:opacity-100 flex items-center justify-center gap-1 transition-opacity">
+                                    <label className="cursor-pointer p-1 hover:bg-white/20 rounded-full">
                                         <input
                                             type="file"
                                             className="hidden"
@@ -1066,43 +1044,62 @@ const PersonalInfoCard = ({ item, onEdit, updateCvInformation }) => {
                                             onChange={onSelectFile}
                                             disabled={isUploading}
                                         />
-                                        <Camera className="h-6 w-6 sm:h-8 sm:w-8 text-amber-500" />
+                                        <Upload className="h-4 w-4 text-white" />
                                     </label>
-                                </div>
-                            )}
-                        </div>
-                        <div className="min-w-0">
-                            <h3 className="text-base sm:text-xl font-bold text-gray-900 dark:text-white break-words">
-                                {item.firstName}
-                            </h3>
-                            <p className="text-gray-500 dark:text-gray-400 text-xs sm:text-sm truncate">
-                                {item.full_profession || localStorage.getItem('manual_profession') || item.profession || t('cv.interface.personal.fields.notSpecified')}
-                            </p>
-                        </div>
-                    </div>
-
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-4">
-                        {PERSONAL_INFO_FIELDS.map(({ label, key, icon: Icon }) => (
-                            <div key={label} className="flex items-start gap-2 sm:gap-3">
-                                <div className="mt-0.5">
-                                    <Icon className="h-3 w-3 sm:h-5 sm:w-5 text-amber-500" />
-                                </div>
-                                <div className="flex-1 min-w-0">
-                                    <p className="text-[10px] sm:text-sm text-gray-500 dark:text-gray-400 font-medium">
-                                        {t(`cv.interface.personal.fields.${key}`)}
-                                    </p>
-                                    <p className="text-xs sm:text-base text-gray-900 dark:text-white font-medium truncate">
-                                        {item[key] || t('cv.interface.personal.fields.notSpecified')}
-                                    </p>
+                                    <button
+                                        onClick={handleDeletePhoto}
+                                        className="p-1 hover:bg-white/20 rounded-full"
+                                    >
+                                        <Trash2 className="h-4 w-4 text-white" />
+                                    </button>
                                 </div>
                             </div>
-                        ))}
+                        ) : (
+                            <div className="h-full w-full rounded-full bg-gradient-to-r from-amber-500/10 to-purple-500/10 flex items-center justify-center">
+                                <label className="cursor-pointer">
+                                    <input
+                                        type="file"
+                                        className="hidden"
+                                        accept="image/*"
+                                        onChange={onSelectFile}
+                                        disabled={isUploading}
+                                    />
+                                    <Camera className="h-6 w-6 sm:h-8 sm:w-8 text-amber-500" />
+                                </label>
+                            </div>
+                        )}
                     </div>
-                </CardContent>
-            </Card>
+                    <div className="min-w-0">
+                        <h3 className="text-base sm:text-xl font-bold text-gray-900 dark:text-white break-words">
+                            {item.firstName}
+                        </h3>
+                        <p className="text-gray-500 dark:text-gray-400 text-xs sm:text-sm truncate">
+                            {item.full_profession || localStorage.getItem('manual_profession') || item.profession || t('cv.interface.personal.fields.notSpecified')}
+                        </p>
+                    </div>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-4">
+                    {PERSONAL_INFO_FIELDS.map(({ label, key, icon: Icon }) => (
+                        <div key={label} className="flex items-start gap-2 sm:gap-3">
+                            <div className="mt-0.5">
+                                <Icon className="h-3 w-3 sm:h-5 sm:w-5 text-amber-500" />
+                            </div>
+                            <div className="flex-1 min-w-0">
+                                <p className="text-[10px] sm:text-sm text-gray-500 dark:text-gray-400 font-medium">
+                                    {t(`cv.interface.personal.fields.${key}`)}
+                                </p>
+                                <p className="text-xs sm:text-base text-gray-900 dark:text-white font-medium truncate">
+                                    {item[key] || t('cv.interface.personal.fields.notSpecified')}
+                                </p>
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            </div>
 
             <Sheet open={isOpen} onOpenChange={setIsOpen}>
-                <SheetContent side="right" className="w-full sm:max-w-xl p-3 sm:p-4">
+                <SheetContent side="right" className="w-full sm:max-w-xl p-3 sm:p-4 border-0">
                     <SheetHeader className="text-left">
                         <SheetTitle className="text-base sm:text-lg">
                             {t('cv.interface.personal.photo.crop')}
@@ -1111,21 +1108,21 @@ const PersonalInfoCard = ({ item, onEdit, updateCvInformation }) => {
                             {t('cv.interface.personal.photo.cropDescription')}
                         </SheetDescription>
                     </SheetHeader>
-                    <Separator className="my-3 sm:my-4" />
-                    <div className="flex justify-end gap-2 sm:gap-3 mt-3 sm:mt-4 sticky bottom-0 bg-white dark:bg-gray-900 pt-3 sm:pt-4 border-t border-amber-100 dark:border-amber-800">
-                        <Button variant="outline" onClick={() => setIsOpen(false)} className="h-8 sm:h-10 text-xs sm:text-sm">
+                    <div className="h-px bg-gray-200 dark:bg-gray-700 my-3 sm:my-4" />
+                    <div className="flex justify-end gap-2 sm:gap-3 mt-3 sm:mt-4 sticky bottom-0 bg-white dark:bg-gray-900 pt-3 sm:pt-4 border-t border-gray-100 dark:border-gray-800">
+                        <Button variant="ghost" onClick={() => setIsOpen(false)} className="h-8 sm:h-10 text-xs sm:text-sm hover:bg-gray-100 dark:hover:bg-gray-800">
                             {t('cv.interface.personal.photo.cancel')}
                         </Button>
                         <Button
                             onClick={handleUpload}
                             disabled={!completedCrop || isUploading}
-                            className="bg-gradient-to-r from-amber-500 to-purple-500 hover:from-amber-600 hover:to-purple-600 dark:from-amber-400 dark:to-purple-400 h-8 sm:h-10 text-xs sm:text-sm"
+                            className="bg-gradient-to-r from-amber-500 to-purple-500 hover:from-amber-600 hover:to-purple-600 dark:from-amber-400 dark:to-purple-400 h-8 sm:h-10 text-xs sm:text-sm border-0"
                         >
                             {isUploading ? t('cv.interface.personal.photo.saving') : t('cv.interface.personal.photo.save')}
                         </Button>
                     </div>
 
-                    <Separator className="my-3 sm:my-4" />
+                    <div className="h-px bg-gray-200 dark:bg-gray-700 my-3 sm:my-4" />
 
                     <ScrollArea className="h-[calc(100vh-10rem)] pr-2 sm:pr-4">
                         <div className="space-y-3 sm:space-y-4">
@@ -1160,15 +1157,317 @@ const PersonalInfoCard = ({ item, onEdit, updateCvInformation }) => {
     );
 };
 
-// Version optimisée pour mobile et desktop avec une meilleure utilisation de l'espace
+// Composant IntegratedLivePreview - Version intégrée dans le layout
+const IntegratedLivePreview = ({ cvInformation, selectedCvModel, availableModels, onModelSelect, onToggleVisibility }) => {
+    const { t } = useTranslation();
+    const { toast } = useToast();
+    const [isGenerating, setIsGenerating] = useState(false);
+    const [previewHtml, setPreviewHtml] = useState('');
+    const [isModelSelectorOpen, setIsModelSelectorOpen] = useState(false);
+    const [autoRefresh, setAutoRefresh] = useState(true);
+    const [lastUpdateTime, setLastUpdateTime] = useState(0);
+
+    // Génération de l'aperçu
+    const generatePreview = useCallback(async (force = false) => {
+        if (!selectedCvModel) {
+            setIsModelSelectorOpen(true);
+            return;
+        }
+
+        const now = Date.now();
+        if (!force && now - lastUpdateTime < 2000) return;
+
+        setIsGenerating(true);
+        setLastUpdateTime(now);
+
+        try {
+            // Simulation de l'appel API - à remplacer par votre vraie logique
+            await new Promise(resolve => setTimeout(resolve, 1500));
+
+            // Mock HTML - remplacez par votre vraie génération
+            const mockHtml = `
+                <div style="padding: 20px; font-family: Arial, sans-serif; background: white; min-height: 400px;">
+                    <div style="text-align: center; margin-bottom: 20px;">
+                        <h1 style="color: #f59e0b; margin: 0;">${cvInformation.personalInformation?.firstName || 'Prénom'}</h1>
+                        <h2 style="color: #8b5cf6; margin: 5px 0 0 0; font-size: 18px;">${selectedCvModel.name}</h2>
+                    </div>
+                    <div style="margin: 20px 0;">
+                        <h3 style="color: #374151; border-bottom: 2px solid #f59e0b; padding-bottom: 5px;">Profil</h3>
+                        <p style="color: #6b7280; line-height: 1.6;">Aperçu en temps réel du CV avec le modèle sélectionné.</p>
+                    </div>
+                    <div style="margin: 20px 0;">
+                        <h3 style="color: #374151; border-bottom: 2px solid #8b5cf6; padding-bottom: 5px;">Informations</h3>
+                        <p style="color: #6b7280;">Email: ${cvInformation.personalInformation?.email || 'Non spécifié'}</p>
+                        <p style="color: #6b7280;">Téléphone: ${cvInformation.personalInformation?.phone || 'Non spécifié'}</p>
+                    </div>
+                </div>
+            `;
+            setPreviewHtml(mockHtml);
+        } catch (error) {
+            toast({
+                title: "Erreur d'aperçu",
+                description: "Impossible de générer l'aperçu",
+                variant: "destructive"
+            });
+        } finally {
+            setIsGenerating(false);
+        }
+    }, [selectedCvModel, cvInformation, lastUpdateTime, toast]);
+
+    // Auto-refresh
+    useEffect(() => {
+        if (autoRefresh && selectedCvModel) {
+            const timer = setTimeout(() => {
+                generatePreview();
+            }, 1000);
+            return () => clearTimeout(timer);
+        }
+    }, [cvInformation, autoRefresh, selectedCvModel, generatePreview]);
+
+    // Force refresh on model change
+    useEffect(() => {
+        if (selectedCvModel) {
+            generatePreview(true);
+        }
+    }, [selectedCvModel]);
+
+    return (
+        <div className="h-full flex flex-col">
+            {/* Header de l'aperçu */}
+            <div className="flex items-center justify-between p-4 bg-gray-50/50 dark:bg-gray-800/50 border-b border-gray-100 dark:border-gray-700">
+                <div className="flex items-center gap-3">
+                    <Eye className="w-5 h-5 text-amber-500" />
+                    <div>
+                        <h3 className="font-semibold text-gray-800 dark:text-gray-200 text-sm">
+                            Aperçu Live
+                        </h3>
+                        {selectedCvModel && (
+                            <p className="text-xs text-gray-500 dark:text-gray-400">
+                                {selectedCvModel.name}
+                            </p>
+                        )}
+                    </div>
+                    {isGenerating && (
+                        <Loader2 className="w-4 h-4 text-amber-500 animate-spin" />
+                    )}
+                </div>
+
+                <div className="flex items-center gap-1">
+                    <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => setAutoRefresh(!autoRefresh)}
+                        className={cn(
+                            "h-7 w-7 p-0 border-0",
+                            autoRefresh ? "text-amber-600 bg-amber-50 dark:bg-amber-900/20" : "text-gray-400"
+                        )}
+                        title={autoRefresh ? "Auto-refresh activé" : "Auto-refresh désactivé"}
+                    >
+                        <RefreshCw className={cn("w-3.5 h-3.5", autoRefresh && isGenerating && "animate-spin")} />
+                    </Button>
+
+                    <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => generatePreview(true)}
+                        disabled={isGenerating}
+                        className="h-7 w-7 p-0 text-gray-600 hover:text-gray-800 hover:bg-gray-100 dark:text-gray-400 dark:hover:text-gray-200 dark:hover:bg-gray-700 border-0"
+                    >
+                        <RotateCcw className="w-3.5 h-3.5" />
+                    </Button>
+
+                    <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => setIsModelSelectorOpen(true)}
+                        className="h-7 w-7 p-0 text-gray-600 hover:text-gray-800 hover:bg-gray-100 dark:text-gray-400 dark:hover:text-gray-200 dark:hover:bg-gray-700 border-0"
+                    >
+                        <Settings className="w-3.5 h-3.5" />
+                    </Button>
+
+                    <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={onToggleVisibility}
+                        className="h-7 w-7 p-0 text-gray-400 hover:text-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700 border-0"
+                    >
+                        <X className="w-3.5 h-3.5" />
+                    </Button>
+                </div>
+            </div>
+
+            {/* Zone d'aperçu */}
+            <div className="flex-1 bg-gray-50/30 dark:bg-gray-800/30 relative overflow-hidden">
+                {!selectedCvModel ? (
+                    <div className="flex items-center justify-center h-full p-6">
+                        <div className="text-center">
+                            <div className="w-16 h-16 bg-gradient-to-br from-amber-100 to-purple-100 dark:from-amber-900/20 dark:to-purple-900/20 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                                <FileText className="w-8 h-8 text-amber-500" />
+                            </div>
+                            <p className="text-gray-600 dark:text-gray-400 mb-4 text-sm">
+                                Sélectionnez un modèle
+                            </p>
+                            <Button
+                                onClick={() => setIsModelSelectorOpen(true)}
+                                className="bg-gradient-to-r from-amber-500 to-purple-500 hover:from-amber-600 hover:to-purple-600 text-white border-0 text-sm h-8"
+                            >
+                                <Star className="w-3.5 h-3.5 mr-2" />
+                                Choisir
+                            </Button>
+                        </div>
+                    </div>
+                ) : previewHtml ? (
+                    <div className="h-full relative">
+                        <div className="h-full overflow-auto p-4">
+                            <div
+                                className="bg-white shadow-sm rounded-xl overflow-hidden w-full"
+                                style={{
+                                    zoom: '0.7',
+                                    transformOrigin: 'top center'
+                                }}
+                                dangerouslySetInnerHTML={{ __html: previewHtml }}
+                            />
+                        </div>
+
+                        <AnimatePresence>
+                            {isGenerating && (
+                                <motion.div
+                                    initial={{ opacity: 0 }}
+                                    animate={{ opacity: 1 }}
+                                    exit={{ opacity: 0 }}
+                                    className="absolute inset-0 bg-white/70 dark:bg-gray-900/70 backdrop-blur-sm flex items-center justify-center"
+                                >
+                                    <div className="bg-white dark:bg-gray-800 rounded-xl p-4 shadow-lg border-0">
+                                        <div className="flex items-center gap-3">
+                                            <Loader2 className="w-5 h-5 text-amber-500 animate-spin" />
+                                            <p className="text-sm text-gray-600 dark:text-gray-400">
+                                                Génération...
+                                            </p>
+                                        </div>
+                                    </div>
+                                </motion.div>
+                            )}
+                        </AnimatePresence>
+                    </div>
+                ) : (
+                    <div className="flex items-center justify-center h-full p-6">
+                        <div className="text-center">
+                            <div className="w-16 h-16 bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-800 dark:to-gray-700 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                                <RefreshCw className="w-8 h-8 text-gray-400" />
+                            </div>
+                            <p className="text-gray-600 dark:text-gray-400 mb-4 text-sm">
+                                Générer l'aperçu
+                            </p>
+                            <Button
+                                onClick={() => generatePreview(true)}
+                                variant="ghost"
+                                className="text-sm h-8 border-gray-200 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-800 border-0"
+                            >
+                                Générer
+                            </Button>
+                        </div>
+                    </div>
+                )}
+            </div>
+
+            {/* Status bar */}
+            {selectedCvModel && (
+                <div className="p-3 bg-gray-50/50 dark:bg-gray-800/50 border-t border-gray-100 dark:border-gray-700">
+                    <div className="flex items-center justify-between text-xs text-gray-500 dark:text-gray-400">
+                        <div className="flex items-center gap-2">
+                            <div className={cn(
+                                "w-2 h-2 rounded-full",
+                                autoRefresh ? "bg-green-400" : "bg-gray-300"
+                            )} />
+                            <span>{autoRefresh ? "Auto" : "Manuel"}</span>
+                        </div>
+                        <span className="truncate">{selectedCvModel.name}</span>
+                    </div>
+                </div>
+            )}
+
+            {/* Dialog sélection de modèle */}
+            <Dialog open={isModelSelectorOpen} onOpenChange={setIsModelSelectorOpen}>
+                <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto border-0 rounded-2xl">
+                    <DialogHeader>
+                        <DialogTitle className="flex items-center gap-2 text-lg">
+                            <div className="w-8 h-8 bg-gradient-to-r from-amber-500 to-purple-500 rounded-full flex items-center justify-center">
+                                <Star className="w-4 h-4 text-white" />
+                            </div>
+                            Choisir un modèle de CV
+                        </DialogTitle>
+                    </DialogHeader>
+
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6">
+                        {availableModels.map((model) => (
+                            <motion.div
+                                key={model.id}
+                                whileHover={{ scale: 1.02 }}
+                                whileTap={{ scale: 0.98 }}
+                                className={cn(
+                                    "rounded-xl p-4 cursor-pointer transition-all border-0",
+                                    selectedCvModel?.id === model.id
+                                        ? "bg-gradient-to-br from-amber-50 to-purple-50 dark:from-amber-900/20 dark:to-purple-900/20 shadow-md"
+                                        : "bg-gray-50 dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700"
+                                )}
+                                onClick={() => {
+                                    onModelSelect(model.id);
+                                    setIsModelSelectorOpen(false);
+                                }}
+                            >
+                                <div className="aspect-[3/4] bg-white dark:bg-gray-700 rounded-lg mb-3 flex items-center justify-center overflow-hidden shadow-sm">
+                                    {model.previewImagePath ? (
+                                        <img
+                                            src={model.previewImagePath}
+                                            alt={model.name}
+                                            className="w-full h-full object-cover"
+                                        />
+                                    ) : (
+                                        <FileText className="w-8 h-8 text-gray-400" />
+                                    )}
+                                </div>
+
+                                <h3 className="font-medium text-sm mb-1 text-gray-800 dark:text-gray-200">
+                                    {model.name}
+                                </h3>
+
+                                <p className="text-xs text-gray-600 dark:text-gray-400 line-clamp-2 mb-3">
+                                    {model.description}
+                                </p>
+
+                                <div className="flex items-center justify-between">
+                                    {model.price === 0 ? (
+                                        <span className="text-xs px-2 py-1 bg-green-100 text-green-700 dark:bg-green-900/20 dark:text-green-400 rounded-full font-medium">
+                                            Gratuit
+                                        </span>
+                                    ) : (
+                                        <span className="text-xs px-2 py-1 bg-gray-100 text-gray-700 dark:bg-gray-700 dark:text-gray-300 rounded-full font-medium">
+                                            {model.price}€
+                                        </span>
+                                    )}
+
+                                    {selectedCvModel?.id === model.id && (
+                                        <span className="text-xs px-2 py-1 bg-gradient-to-r from-amber-500 to-purple-500 text-white rounded-full font-medium">
+                                            Sélectionné
+                                        </span>
+                                    )}
+                                </div>
+                            </motion.div>
+                        ))}
+                    </div>
+                </DialogContent>
+            </Dialog>
+        </div>
+    );
+};
 const SidebarButton = ({ item, isActive, isComplete, onClick, isMobile }) => {
-    const activeClass = "bg-gradient-to-r from-amber-500 to-purple-500 dark:from-amber-400 dark:to-purple-400 text-white shadow-lg";
+    const activeClass = "bg-gradient-to-r from-amber-500 to-purple-500 dark:from-amber-400 dark:to-purple-400 text-white shadow-sm";
     const inactiveClass = "hover:bg-amber-50 dark:hover:bg-gray-800 text-gray-700 dark:text-gray-200";
 
     return (
         <motion.button
             onClick={onClick}
-            className={`flex items-center justify-between p-2 sm:p-3 rounded-lg transition-all ${isActive ? activeClass : inactiveClass} ${isMobile ? 'w-9 sm:w-10' : 'w-full'}`}
+            className={`flex items-center justify-between p-2 sm:p-3 rounded-xl transition-all ${isActive ? activeClass : inactiveClass} ${isMobile ? 'w-9 sm:w-10' : 'w-full'} border-0`}
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
         >
@@ -1199,13 +1498,13 @@ const SectionNavigation = ({ currentSection, nextSection, prevSection, canProgre
     const isLastSection = currentSection === 'skills';
 
     return (
-        <div className="mt-4 sm:mt-6 pt-3 sm:pt-4 border-t border-amber-100 dark:border-amber-800" data-tutorial="navigation">
+        <div className="mt-4 sm:mt-6 pt-3 sm:pt-4 border-t border-gray-100 dark:border-gray-800" data-tutorial="navigation">
             <div className="flex justify-between items-center gap-2 sm:gap-4">
                 {prevSection && (
                     <Button
-                        variant="outline"
+                        variant="ghost"
                         onClick={() => onNavigate(prevSection.id)}
-                        className="h-8 sm:h-10 text-xs sm:text-sm py-0 sm:py-2 flex items-center gap-1 sm:gap-2 border-amber-200 dark:border-amber-800"
+                        className="h-8 sm:h-10 text-xs sm:text-sm py-0 sm:py-2 flex items-center gap-1 sm:gap-2 text-gray-600 hover:text-gray-800 hover:bg-gray-100 dark:text-gray-400 dark:hover:text-gray-200 dark:hover:bg-gray-800 border-0"
                     >
                         <ChevronLeft className="w-3 h-3 sm:w-4 sm:h-4" />
                         <span className="truncate max-w-[80px] sm:max-w-none">{prevSection.label}</span>
@@ -1215,7 +1514,7 @@ const SectionNavigation = ({ currentSection, nextSection, prevSection, canProgre
                 {/* Bouton Choisir un design s'affiche uniquement à la dernière étape */}
                 {isLastSection && canProgress ? (
                     <Link href={route('userCvModels.index')}>
-                        <Button className="h-8 sm:h-10 text-xs sm:text-sm py-0 sm:py-2 bg-gradient-to-r from-amber-500 to-purple-500 hover:from-amber-600 hover:to-purple-600 dark:from-amber-400 dark:to-purple-400 text-white">
+                        <Button className="h-8 sm:h-10 text-xs sm:text-sm py-0 sm:py-2 bg-gradient-to-r from-amber-500 to-purple-500 hover:from-amber-600 hover:to-purple-600 dark:from-amber-400 dark:to-purple-400 text-white border-0">
                             <Star className="mr-1 sm:mr-2 h-3 w-3 sm:h-4 sm:w-4" />
                             {t('cv.interface.chooseDesign')}
                             <CircleChevronRight className="ml-1 sm:ml-2 h-3 w-3 sm:h-4 sm:w-4" />
@@ -1225,7 +1524,7 @@ const SectionNavigation = ({ currentSection, nextSection, prevSection, canProgre
                     <Button
                         onClick={() => onNavigate(nextSection.id)}
                         disabled={!canProgress}
-                        className="h-8 sm:h-10 text-xs sm:text-sm py-0 sm:py-2 flex items-center gap-1 sm:gap-2 bg-gradient-to-r from-amber-500 to-purple-500 hover:from-amber-600 hover:to-purple-600 dark:from-amber-400 dark:to-purple-400 text-white"
+                        className="h-8 sm:h-10 text-xs sm:text-sm py-0 sm:py-2 flex items-center gap-1 sm:gap-2 bg-gradient-to-r from-amber-500 to-purple-500 hover:from-amber-600 hover:to-purple-600 dark:from-amber-400 dark:to-purple-400 text-white border-0"
                     >
                         <span className="truncate max-w-[80px] sm:max-w-none">{nextSection.label}</span>
                         <ChevronRight className="w-3 h-3 sm:w-4 sm:h-4" />
@@ -1344,8 +1643,8 @@ export default function CvInterface({ auth, cvInformation: initialCvInformation 
             Boolean(cvInformation.personalInformation?.full_profession) ||
             Boolean(localStorage.getItem('manual_profession')),
         skills: (cvInformation.competences?.length > 0) ||
-               (cvInformation.languages?.length > 0) ||
-               (cvInformation.hobbies?.length > 0),
+            (cvInformation.languages?.length > 0) ||
+            (cvInformation.hobbies?.length > 0),
     };
 
     const getCompletionPercentage = () => {
@@ -1652,8 +1951,6 @@ export default function CvInterface({ auth, cvInformation: initialCvInformation 
 
     return (
         <AuthenticatedLayout user={auth.user}>
-
-
             <Head title={t('cv.interface.title')} />
 
             {/* Tutoriel */}
@@ -1666,8 +1963,8 @@ export default function CvInterface({ auth, cvInformation: initialCvInformation 
 
             {/* Overlay qui bloque toute interaction */}
             {isPageBlocked && (
-                <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center">
-                    <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-lg text-center">
+                <div className="fixed inset-0 bg-black/30 z-50 flex items-center justify-center">
+                    <div className="bg-white dark:bg-gray-800 p-4 rounded-xl shadow-lg text-center border-0">
                         <div className="animate-spin w-8 h-8 border-4 border-amber-500 border-t-transparent rounded-full mx-auto mb-4"></div>
                         <p className="text-gray-900 dark:text-gray-100 font-medium">
                             {t('common.loading')}
@@ -1676,7 +1973,7 @@ export default function CvInterface({ auth, cvInformation: initialCvInformation 
                 </div>
             )}
 
-            <div className="min-h-screen bg-gradient-to-b from-amber-50/50 to-purple-50/50 dark:from-gray-900 dark:to-gray-800">
+            <div className="min-h-screen bg-gradient-to-b from-amber-50/30 to-purple-50/30 dark:from-gray-900 dark:to-gray-800">
                 <div className={cn(
                     "container mx-auto py-3 sm:py-4 px-3 sm:px-4 transition-all duration-300",
                     isLivePreviewVisible && isDesktop ? "lg:mr-[500px]" : ""
@@ -1690,17 +1987,39 @@ export default function CvInterface({ auth, cvInformation: initialCvInformation 
                             </h2>
                         </div>
                         <div className="flex items-center gap-2">
+                            {/* Bouton Voir CV */}
+                            <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => window.open('/cvinfos/show', '_blank')}
+                                className="flex items-center gap-1 text-purple-600 hover:text-purple-700 hover:bg-purple-50 dark:text-purple-400 dark:hover:bg-purple-900/20 transition-all border-0"
+                            >
+                                <FileText className="w-4 h-4" />
+                                <span className="text-xs sm:text-sm">{t('cv.interface.viewCv')}</span>
+                            </Button>
+
+                            {/* Bouton Changer modèle */}
+                            <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => window.open('/models/index', '_blank')}
+                                className="flex items-center gap-1 text-blue-600 hover:text-blue-700 hover:bg-blue-50 dark:text-blue-400 dark:hover:bg-blue-900/20 transition-all border-0"
+                            >
+                                <Sparkles className="w-4 h-4" />
+                                <span className="text-xs sm:text-sm">{t('cv.interface.changeModel')}</span>
+                            </Button>
+
                             {/* Bouton Live Preview (desktop seulement) */}
                             {isDesktop && (
                                 <Button
-                                    variant="outline"
+                                    variant="ghost"
                                     size="sm"
                                     onClick={toggleLivePreview}
                                     className={cn(
-                                        "hidden lg:flex items-center gap-2 transition-all",
+                                        "hidden lg:flex items-center gap-2 transition-all border-0",
                                         isLivePreviewVisible
-                                            ? "bg-amber-100 text-amber-700 border-amber-300 hover:bg-amber-200"
-                                            : "hover:bg-amber-50 hover:border-amber-200"
+                                            ? "bg-amber-100 text-amber-700 hover:bg-amber-200"
+                                            : "text-amber-600 hover:text-amber-700 hover:bg-amber-50 dark:text-amber-400 dark:hover:bg-amber-900/20"
                                     )}
                                 >
                                     <Eye className="w-4 h-4" />
@@ -1713,7 +2032,7 @@ export default function CvInterface({ auth, cvInformation: initialCvInformation 
                             {/* Pourcentage et progression */}
                             <div className="flex items-center gap-2" data-tutorial="progress">
                                 <Progress value={getCompletionPercentage()} className="w-16 sm:w-24 h-2" />
-                                <span className="text-xs font-medium">
+                                <span className="text-xs font-medium text-gray-600 dark:text-gray-400">
                                     {getCompletionPercentage()}%
                                 </span>
                             </div>
@@ -1726,10 +2045,10 @@ export default function CvInterface({ auth, cvInformation: initialCvInformation 
                     {/* WelcomeCard avec bouton tutoriel */}
                     <WelcomeCard onStartTutorial={handleStartTutorial} />
 
-                    <Card className="shadow-md border border-amber-100 dark:border-amber-800">
+                    <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border-0 overflow-hidden">
                         <div className="flex flex-row min-h-[500px] sm:min-h-[600px]">
                             {/* Sidebar mobile optimisée (icônes uniquement) */}
-                            <div className="w-11 sm:w-14 md:w-16 flex-shrink-0 border-r border-amber-100 dark:border-amber-800 bg-white/50 dark:bg-gray-900/50 md:hidden" data-tutorial="sidebar">
+                            <div className="w-11 sm:w-14 md:w-16 flex-shrink-0 bg-gray-50/50 dark:bg-gray-800/50 md:hidden" data-tutorial="sidebar">
                                 <ScrollArea className="h-full py-1.5 sm:py-2">
                                     <nav className="sticky top-0 p-1 sm:p-1.5 space-y-1.5 sm:space-y-2">
                                         {translatedSidebarItems.map(item => (
@@ -1747,7 +2066,7 @@ export default function CvInterface({ auth, cvInformation: initialCvInformation 
                             </div>
 
                             {/* Sidebar desktop (texte + icônes) */}
-                            <div className="hidden md:block w-48 lg:w-64 flex-shrink-0 border-r border-amber-100 dark:border-amber-800 bg-white/50 dark:bg-gray-900/50" data-tutorial="sidebar">
+                            <div className="hidden md:block w-48 lg:w-64 flex-shrink-0 bg-gray-50/30 dark:bg-gray-800/30" data-tutorial="sidebar">
                                 <ScrollArea className="h-full py-2 sm:py-3">
                                     <nav className="sticky top-0 p-1.5 sm:p-3 space-y-1.5 sm:space-y-2">
                                         {translatedSidebarItems.map(item => (
@@ -1788,26 +2107,7 @@ export default function CvInterface({ auth, cvInformation: initialCvInformation 
                                 </AnimatePresence>
                             </div>
                         </div>
-                    </Card>
-
-                    {/* Call-to-action pour les utilisateurs qui ont terminé la dernière étape */}
-                    {/*{completionStatus.skills && (*/}
-                    {/*    <div className="mt-4 sm:mt-6 text-center">*/}
-                    {/*        <Link href={route('userCvModels.index')}>*/}
-                    {/*            <Button className="w-full bg-gradient-to-r from-amber-500 to-purple-500 hover:from-amber-600 hover:to-purple-600 dark:from-amber-400 dark:to-purple-400 text-white p-2 sm:p-4 rounded-lg shadow-md sm:shadow-lg group">*/}
-                    {/*                <div className="flex flex-col items-center gap-1 sm:gap-2">*/}
-                    {/*                    <Sparkles className="h-4 w-4 sm:h-5 sm:w-5 group-hover:animate-spin" />*/}
-                    {/*                    <span className="text-sm sm:text-base font-medium">*/}
-                    {/*                        {t('cv.interface.cta.title')}*/}
-                    {/*                    </span>*/}
-                    {/*                    <span className="text-xs sm:text-sm opacity-90">*/}
-                    {/*                        {t('cv.interface.cta.subtitle')}*/}
-                    {/*                    </span>*/}
-                    {/*                </div>*/}
-                    {/*            </Button>*/}
-                    {/*        </Link>*/}
-                    {/*    </div>*/}
-                    {/*)}*/}
+                    </div>
                 </div>
             </div>
 
@@ -1830,11 +2130,5 @@ export default function CvInterface({ auth, cvInformation: initialCvInformation 
                 </AnimatePresence>
             )}
         </AuthenticatedLayout>
-    );
-}
-uthenticatedLayout>
-    );
-}
-atedLayout>
     );
 }

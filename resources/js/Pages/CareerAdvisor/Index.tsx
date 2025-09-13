@@ -1137,12 +1137,6 @@ export default function EnhancedCareerAdvisor({ auth, userInfo, chatHistories })
                                             <div className="w-20 h-20 rounded-2xl mx-auto mb-4 overflow-hidden shadow-lg">
                                                 <img src="/mascot/mas.png" alt="AI Assistant" className="w-full h-full object-cover" />
                                             </div>
-                                            <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-3">
-                                                {t('components.career_advisor.interface.professional_ai_advisor')}
-                                            </h2>
-                                            <p className="text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
-                                                {t('components.career_advisor.interface.start_intelligent_conversation')}
-                                            </p>
                                         </motion.div>
                                     </div>
 

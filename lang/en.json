@@ -90,6 +90,8 @@
                 "errorDetail": "An error occurred during import",
                 "insufficient": "Insufficient balance for AI analysis"
             },
+            "viewCv": "View CV",
+            "changeModel": "Template",
             "update": {
                 "success": "Update successful",
                 "successDetail": "Your information has been saved successfully"

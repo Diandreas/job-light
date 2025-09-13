@@ -90,6 +90,8 @@
                 "errorDetail": "Une erreur est survenue lors de l'importation",
                 "insufficient": "Solde insuffisant pour l'analyse IA"
             },
+            "viewCv": "Voir CV",
+            "changeModel": "Modèle",
             "update": {
                 "success": "Mise à jour réussie",
                 "successDetail": "Vos informations ont été enregistrées avec succès"

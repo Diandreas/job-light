@@ -192,10 +192,10 @@ const SummaryManager: React.FC<Props> = ({ auth, summaries: initialSummaries, se
             {/* Header Jobii style compact */}
             <div className="space-y-2">
                 <h3 className="text-lg font-semibold text-gray-800 dark:text-white">
-                    Résumé professionnel
+                    {t('summary.title', 'Résumé professionnel')}
                 </h3>
                 <p className="text-sm text-gray-600 dark:text-gray-400">
-                    Décrivez votre profil professionnel en quelques lignes
+                    {t('summary.description', 'Décrivez votre profil professionnel en quelques lignes')}
                 </p>
             </div>
 
@@ -225,14 +225,14 @@ const SummaryManager: React.FC<Props> = ({ auth, summaries: initialSummaries, se
                     <div className="text-center p-6 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg">
                         <BookOpen className="w-8 h-8 text-gray-400 mx-auto mb-2" />
                         <p className="text-sm text-gray-500 dark:text-gray-400 mb-3">
-                            Aucun résumé sélectionné
+                            {t('summary.noneSelected', 'Aucun résumé sélectionné')}
                         </p>
                         <Button
                             onClick={() => setIsFormVisible(true)}
                             className="bg-black hover:bg-gray-800 text-white text-sm px-4 py-2"
                         >
                             <PlusIcon className="w-4 h-4 mr-2" />
-                            Créer un résumé
+                            {t('summary.create', 'Créer un résumé')}
                         </Button>
                     </div>
                 )}
@@ -241,7 +241,7 @@ const SummaryManager: React.FC<Props> = ({ auth, summaries: initialSummaries, se
                 {summaries.length > 0 && (
                     <div className="space-y-2">
                         <h5 className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                            Résumés disponibles
+                            {t('summary.available', 'Résumés disponibles')}
                         </h5>
                         <div className="flex flex-wrap gap-2">
                             {summaries.map((summary) => (
@@ -272,7 +272,7 @@ const SummaryManager: React.FC<Props> = ({ auth, summaries: initialSummaries, se
                         >
                             <div className="flex justify-between items-center">
                                 <h5 className="font-medium text-gray-800 dark:text-white">
-                                    {data.id ? 'Modifier le résumé' : 'Nouveau résumé'}
+                                    {data.id ? t('summary.editTitle', 'Modifier le résumé') : t('summary.newTitle', 'Nouveau résumé')}
                                 </h5>
                                 <Button
                                     variant="ghost"
@@ -288,7 +288,7 @@ const SummaryManager: React.FC<Props> = ({ auth, summaries: initialSummaries, se
                                     <Input
                                         value={data.name}
                                         onChange={e => setData('name', e.target.value)}
-                                        placeholder="Titre du poste visé"
+                                        placeholder={t('summary.namePlaceholder', 'Titre du poste visé')}
                                         className="w-full"
                                     />
                                 </div>
@@ -297,7 +297,7 @@ const SummaryManager: React.FC<Props> = ({ auth, summaries: initialSummaries, se
                                     <Textarea
                                         value={data.description}
                                         onChange={e => setData('description', e.target.value)}
-                                        placeholder="Décrivez votre profil professionnel..."
+                                        placeholder={t('summary.descriptionPlaceholder', 'Décrivez votre profil professionnel...')}
                                         rows={3}
                                         className="w-full"
                                     />
@@ -309,14 +309,14 @@ const SummaryManager: React.FC<Props> = ({ auth, summaries: initialSummaries, se
                                         disabled={processing}
                                         className="bg-black hover:bg-gray-800 text-white flex-1"
                                     >
-                                        {data.id ? 'Modifier' : 'Créer'}
+                                        {data.id ? t('common.edit', 'Modifier') : t('common.create', 'Créer')}
                                     </Button>
                                     <Button
                                         type="button"
                                         variant="outline"
                                         onClick={resetForm}
                                     >
-                                        Annuler
+                                        {t('common.cancel', 'Annuler')}
                                     </Button>
                                 </div>
                             </form>
@@ -327,7 +327,5 @@ const SummaryManager: React.FC<Props> = ({ auth, summaries: initialSummaries, se
         </div>
     );
 };
-
-
 
 export default SummaryManager;

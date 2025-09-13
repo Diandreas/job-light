@@ -455,256 +455,189 @@ export default function Show({ auth, cvInformation, selectedCvModel }) {
 
     // @ts-ignore
     return (
-        <AuthenticatedLayout user={auth.user}>
+        <AuthenticatedLayout user={auth.user} hideSidebar={true}>
             <Head title={t('cv_preview.title')} />
 
-            <div className="w-full max-w-7xl mx-auto p-3 md:p-6 space-y-4">
-                <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.5 }}
-                >
-                    <Card className="border-amber-100/50 dark:border-gray-800/50 bg-white/80 dark:bg-gray-900/80 backdrop-blur-lg shadow-xl">
-                        <CardHeader className="border-b border-amber-100/50 dark:border-gray-800/50 p-4 md:p-6">
-                            {/* Header compact avec infos essentielles */}
-                            <div className="flex flex-col md:flex-row md:items-center gap-4">
-                                <div className="flex-1 space-y-3">
-                                    <div className="flex items-center justify-between">
-                                        <CardTitle className="text-lg md:text-xl font-bold bg-gradient-to-r from-amber-500 to-purple-500 dark:from-amber-400 dark:to-purple-400 text-transparent bg-clip-text">
-                                            {t('cv_preview.export.title')}
-                                        </CardTitle>
-                                        <StatusBadge
-                                            hasDownloaded={hasDownloaded}
-                                            canAccessFeatures={canAccessFeatures}
-                                            isAndroidApp={isAndroidApp}
-                                            isReady={isReady}
-                                        />
-                                    </div>
-
-                                    <div className="flex items-center gap-2">
-                                        <div className="w-2 h-2 bg-gradient-to-r from-amber-500 to-purple-500 rounded-full"></div>
-                                        <p className="text-sm text-gray-600 dark:text-gray-300 font-medium">
-                                            {t('cv_preview.export.selected_model', { name: selectedCvModel.name })}
-                                        </p>
-                                        {isAndroidApp && isReady && (
-                                            <div className="flex items-center gap-1 text-xs bg-green-50 dark:bg-green-500/10 text-green-600 dark:text-green-400 px-2 py-0.5 rounded-full border border-green-200 dark:border-green-500/20">
-                                                <Smartphone className="w-3 h-3" />
-                                                <span>Natif</span>
-                                            </div>
-                                        )}
-                                    </div>
-                                </div>
-
-                                {/* Stats compactes à droite sur desktop */}
-                                <div className="flex md:flex-col gap-3 md:gap-2 md:items-end">
-                                    <div className="text-right">
-                                        <p className="text-xs text-gray-500 dark:text-gray-400">Balance</p>
-                                        <div className="flex items-center gap-1">
-                                            <Coins className={`w-3 h-3 ${canAccessFeatures ? "text-emerald-500" : "text-red-500"}`} />
-                                            <span className={`text-sm font-semibold ${canAccessFeatures ? "text-emerald-600 dark:text-emerald-400" : "text-red-600 dark:text-red-400"}`}>
-                                                {walletBalance}
-                                            </span>
-                                        </div>
-                                    </div>
-                                    <div className="text-right">
-                                        <p className="text-xs text-gray-500 dark:text-gray-400">Prix</p>
-                                        <div className="flex items-center gap-1">
-                                            <Star className="w-3 h-3 text-amber-500" />
-                                            <span className="text-sm font-semibold text-gray-900 dark:text-gray-100">
-                                                {selectedCvModel.price}
-                                            </span>
-                                        </div>
-                                    </div>
-                                </div>
+            <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+                {/* Header ultra compact */}
+                <div className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 px-4 py-2">
+                    <div className="flex justify-between items-center">
+                        <div className="flex items-center gap-3">
+                            <Link href={route('cv-infos.index')} className="flex items-center gap-2 text-gray-600 hover:text-gray-800">
+                                <ArrowLeft className="h-4 w-4" />
+                                <span className="font-semibold text-sm">Retour à l'édition</span>
+                            </Link>
+                            <div className="w-px h-4 bg-gray-300"></div>
+                            <h1 className="font-semibold text-gray-800 dark:text-white text-sm">
+                                Aperçu final
+                            </h1>
+                        </div>
+                        <div className="flex items-center gap-2">
+                            <StatusBadge
+                                hasDownloaded={hasDownloaded}
+                                canAccessFeatures={canAccessFeatures}
+                                isAndroidApp={isAndroidApp}
+                                isReady={isReady}
+                            />
+                            <div className="flex items-center gap-1 text-xs text-gray-500">
+                                <Coins className={`w-3 h-3 ${canAccessFeatures ? "text-emerald-500" : "text-red-500"}`} />
+                                <span className={canAccessFeatures ? "text-emerald-600" : "text-red-600"}>
+                                    {walletBalance}
+                                </span>
                             </div>
-                        </CardHeader>
+                        </div>
+                    </div>
+                </div>
 
-                        <CardContent className="p-4 md:p-6 space-y-4">
-                            {/* Alert pour tokens insuffisants */}
-                            {!canAccessFeatures && !hasDownloaded && (
-                                <motion.div
-                                    initial={{ opacity: 0, height: 0 }}
-                                    animate={{ opacity: 1, height: 'auto' }}
-                                    exit={{ opacity: 0, height: 0 }}
-                                >
-                                    <Alert variant="destructive" className="bg-gradient-to-r from-red-50 to-red-100/50 dark:from-red-500/10 dark:to-red-500/5 border-red-200 dark:border-red-500/20">
-                                        <AlertCircle className="h-4 w-4" />
-                                        <AlertDescription className="font-medium">
-                                            {t('cv_preview.wallet.insufficient_tokens')}
-                                        </AlertDescription>
-                                    </Alert>
-                                </motion.div>
-                            )}
-
-                            {/* Barre d'actions compacte */}
-                            <div className="flex flex-wrap items-center gap-2">
-                                <Link href={route('userCvModels.index')}>
-                                    <Button
-                                        variant="outline"
-                                        size="sm"
-                                        className="group border-amber-200/50 dark:border-gray-700 bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm hover:bg-amber-50 dark:hover:bg-gray-700 transition-all"
-                                    >
-                                        <ArrowLeft className="w-3.5 h-3.5 mr-1.5 group-hover:-translate-x-0.5 transition-transform" />
-                                        <span className="hidden sm:inline">{t('cv_preview.export.back_to_models')}</span>
-                                        <span className="sm:hidden">Retour</span>
-                                    </Button>
-                                </Link>
-
-                                {selectedCvModel && (
-                                    <div className="flex items-center gap-2">
-                                        <ColorPicker
-                                            defaultColor={currentColor}
-                                            //@ts-ignore
-                                            onColorSaved={handleColorSaved}
-                                        />
-
-                                        {hasCustomColor && (
-                                            <Button
-                                                onClick={handleColorReset}
-                                                variant="outline"
-                                                size="sm"
-                                                className="group border-gray-200/50 dark:border-gray-700 bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm hover:bg-gray-50 dark:hover:bg-gray-700 transition-all"
-                                                title="Réinitialiser la couleur par défaut"
-                                            >
-                                                <RotateCcw className="w-3.5 h-3.5 group-hover:rotate-180 transition-transform duration-300" />
-                                                <span className="sr-only">Réinitialiser couleur</span>
-                                            </Button>
-                                        )}
-                                    </div>
-                                )}
-
-                                <div className="flex-1"></div>
-
-                                <AnimatePresence mode="wait">
-                                    {!hasDownloaded && !canAccessFeatures ? (
-                                        <motion.div
-                                            initial={{ opacity: 0, scale: 0.9 }}
-                                            animate={{ opacity: 1, scale: 1 }}
-                                            exit={{ opacity: 0, scale: 0.9 }}
-                                            className="flex gap-2"
-                                        >
-                                            <Button
-                                                onClick={() => window.location.href = route('payment.index')}
-                                                size="sm"
-                                                className="bg-gradient-to-r from-amber-500 to-purple-500 hover:from-amber-600 hover:to-purple-600 dark:from-amber-400 dark:to-purple-400 shadow-lg hover:shadow-xl transform hover:scale-105 transition-all"
-                                                disabled={isProcessing}
-                                            >
-                                                <Coins className="mr-1.5 h-3.5 w-3.5" />
-                                                <span className="hidden sm:inline">{t('cv_preview.wallet.recharge_tokens')}</span>
-                                                <span className="sm:hidden">Recharger</span>
-                                                <ArrowUpRight className="ml-1.5 h-3 w-3" />
-                                            </Button>
-                                        </motion.div>
-                                    ) : (
-                                        <motion.div
-                                            initial={{ opacity: 0, scale: 0.9 }}
-                                            animate={{ opacity: 1, scale: 1 }}
-                                            exit={{ opacity: 0, scale: 0.9 }}
-                                            className="flex gap-2"
-                                        >
-                                            {!isDownloadAllowed ? (
-                                                <Button
-                                                    onClick={handlePrint}
-                                                    size="sm"
-                                                    className="bg-gradient-to-r from-amber-500 to-purple-500 hover:from-amber-600 hover:to-purple-600 dark:from-amber-400 dark:to-purple-400 shadow-lg hover:shadow-xl transform hover:scale-105 transition-all"
-                                                    disabled={isLoading}
-                                                >
-                                                    <Printer className="mr-1.5 h-3.5 w-3.5" />
-                                                    <span className="hidden sm:inline">
-                                                        {isLoading ? t('cv_preview.export.printing') : t('cv_preview.export.print')}
-                                                    </span>
-                                                    <span className="sm:hidden">
-                                                        {isLoading ? 'Impression...' : 'Imprimer'}
-                                                    </span>
-                                                    {isAndroidApp && isReady && (
-                                                        <Smartphone className="ml-1 h-2.5 w-2.5 text-green-300" />
-                                                    )}
-                                                </Button>
-                                            ) : (
-                                                <Button
-                                                    onClick={handleDownload}
-                                                    size="sm"
-                                                    className="bg-gradient-to-r from-amber-500 to-purple-500 hover:from-amber-600 hover:to-purple-600 dark:from-amber-400 dark:to-purple-400 shadow-lg hover:shadow-xl transform hover:scale-105 transition-all"
-                                                    disabled={isDownloading}
-                                                >
-                                                    <Download className="mr-1.5 h-3.5 w-3.5" />
-                                                    <span className="hidden sm:inline">
-                                                        {isDownloading ? t('cv_preview.export.downloading') : t('cv_preview.export.download')}
-                                                    </span>
-                                                    <span className="sm:hidden">
-                                                        {isDownloading ? 'Télécharge...' : 'PDF'}
-                                                    </span>
-                                                    {isAndroidApp && isReady && (
-                                                        <Smartphone className="ml-1 h-2.5 w-2.5 text-green-300" />
-                                                    )}
-                                                </Button>
-                                            )}
-                                        </motion.div>
-                                    )}
-                                </AnimatePresence>
-                            </div>
-
-                            {/* Prévisualisation avec loader amélioré */}
-                            <motion.div
-                                initial={{ opacity: 0, y: 10 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                className="relative rounded-xl overflow-hidden border border-amber-100/50 dark:border-gray-800/50 bg-white dark:bg-gray-900 shadow-2xl"
-                            >
+                {/* Layout deux colonnes ultra moderne */}
+                <div className="flex h-[calc(100vh-57px)]">
+                    {/* Colonne gauche - Aperçu CV plein écran */}
+                    <div className="w-2/3 bg-gray-100 dark:bg-gray-800 flex items-center justify-center p-6">
+                        <div className="w-full max-w-2xl bg-white dark:bg-gray-900 rounded-lg shadow-2xl overflow-hidden">
+                            <div className="relative">
                                 <AnimatePresence>
                                     {!previewLoaded && (
                                         <motion.div
                                             initial={{ opacity: 0 }}
                                             animate={{ opacity: 1 }}
                                             exit={{ opacity: 0 }}
-                                            className="absolute inset-0 flex flex-col items-center justify-center bg-gradient-to-br from-white via-amber-50/30 to-purple-50/30 dark:from-gray-900 dark:via-gray-900 dark:to-gray-900 z-10 backdrop-blur-sm"
+                                            className="absolute inset-0 flex items-center justify-center bg-white/80 backdrop-blur-sm z-10"
                                         >
-                                            <motion.div
-                                                animate={{
-                                                    rotate: 360,
-                                                    scale: [1, 1.1, 1]
-                                                }}
-                                                transition={{
-                                                    rotate: { duration: 2, repeat: Infinity, ease: "linear" },
-                                                    scale: { duration: 1, repeat: Infinity, ease: "easeInOut" }
-                                                }}
-                                                className="w-8 h-8 md:w-10 md:h-10 rounded-full border-3 border-gradient-to-r from-amber-500 to-purple-500 border-t-transparent mb-3"
-                                                style={{
-                                                    background: 'conic-gradient(from 0deg, #f59e0b, #a855f7, #f59e0b)',
-                                                    WebkitMask: 'radial-gradient(circle, transparent 60%, black 60%)',
-                                                    mask: 'radial-gradient(circle, transparent 60%, black 60%)'
-                                                }}
-                                            />
-                                            <p className="text-sm text-gray-600 dark:text-gray-300 font-medium">
-                                                Chargement de la prévisualisation...
-                                            </p>
-                                            <div className="w-32 h-1 bg-gray-200 dark:bg-gray-700 rounded-full mt-3 overflow-hidden">
+                                            <div className="text-center">
                                                 <motion.div
-                                                    className="h-full bg-gradient-to-r from-amber-500 to-purple-500"
-                                                    animate={{ x: ['-100%', '100%'] }}
-                                                    transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
+                                                    animate={{ rotate: 360 }}
+                                                    transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
+                                                    className="w-8 h-8 mx-auto mb-2 border-2 border-amber-500 border-t-transparent rounded-full"
                                                 />
+                                                <p className="text-sm text-gray-600">Chargement...</p>
                                             </div>
                                         </motion.div>
                                     )}
                                 </AnimatePresence>
-
                                 <iframe
                                     ref={iframeRef}
                                     src={route('cv.preview', {
                                         id: selectedCvModel?.id,
                                         locale: i18n.language
                                     })}
-                                    className="w-full h-[500px] sm:h-[650px] md:h-[800px] lg:h-[900px] xl:h-[1000px] border-0"
+                                    className="w-full h-[calc(100vh-120px)] border-0"
                                     title={t('cv_preview.preview.title')}
                                     onLoad={() => {
                                         setTimeout(() => setPreviewLoaded(true), 300);
                                     }}
                                     key={`${i18n.language}-${previewKey}`}
                                 />
-                            </motion.div>
-                        </CardContent>
-                    </Card>
-                </motion.div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Colonne droite - Panneau de contrôle compact */}
+                    <div className="w-1/3 bg-white dark:bg-gray-900 border-l border-gray-200 dark:border-gray-700 flex flex-col">
+                        {/* En-tête du panneau */}
+                        <div className="p-4 border-b border-gray-200 dark:border-gray-700">
+                            <h2 className="font-semibold text-gray-800 dark:text-white mb-2">
+                                {selectedCvModel.name}
+                            </h2>
+                            <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
+                                <Star className="w-4 h-4 text-amber-500" />
+                                <span>{selectedCvModel.price === 0 ? 'Gratuit' : `${selectedCvModel.price} tokens`}</span>
+                            </div>
+                        </div>
+
+                        {/* Contrôles */}
+                        <div className="flex-1 p-4 space-y-4">
+                            {/* Alerte tokens insuffisants */}
+                            {!canAccessFeatures && !hasDownloaded && (
+                                <Alert variant="destructive" className="text-sm">
+                                    <AlertCircle className="h-4 w-4" />
+                                    <AlertDescription>
+                                        Tokens insuffisants pour l'export
+                                    </AlertDescription>
+                                </Alert>
+                            )}
+
+                            {/* Personnalisation couleur */}
+                            <div className="space-y-3">
+                                <h3 className="font-medium text-gray-800 dark:text-white text-sm">Personnalisation</h3>
+                                <div className="flex gap-2">
+                                    <ColorPicker
+                                        defaultColor={currentColor}
+                                        //@ts-ignore
+                                        onColorSaved={handleColorSaved}
+                                    />
+                                    {hasCustomColor && (
+                                        <Button
+                                            onClick={handleColorReset}
+                                            variant="outline"
+                                            size="sm"
+                                            title="Réinitialiser"
+                                        >
+                                            <RotateCcw className="w-4 h-4" />
+                                        </Button>
+                                    )}
+                                </div>
+                            </div>
+
+                            {/* Actions d'export */}
+                            <div className="space-y-3">
+                                <h3 className="font-medium text-gray-800 dark:text-white text-sm">Export</h3>
+
+                                {!hasDownloaded && !canAccessFeatures ? (
+                                    <Button
+                                        onClick={() => window.location.href = route('payment.index')}
+                                        className="w-full bg-gradient-to-r from-amber-500 to-purple-500 hover:from-amber-600 hover:to-purple-600 text-white"
+                                        size="sm"
+                                    >
+                                        <Coins className="mr-2 h-4 w-4" />
+                                        Recharger les tokens
+                                    </Button>
+                                ) : (
+                                    <div className="space-y-2">
+                                        {isDownloadAllowed ? (
+                                            <Button
+                                                onClick={handleDownload}
+                                                className="w-full bg-gradient-to-r from-amber-500 to-purple-500 hover:from-amber-600 hover:to-purple-600 text-white"
+                                                disabled={isDownloading}
+                                                size="sm"
+                                            >
+                                                <Download className="mr-2 h-4 w-4" />
+                                                {isDownloading ? 'Téléchargement...' : 'Télécharger PDF'}
+                                            </Button>
+                                        ) : (
+                                            <Button
+                                                onClick={handlePrint}
+                                                className="w-full bg-gradient-to-r from-amber-500 to-purple-500 hover:from-amber-600 hover:to-purple-600 text-white"
+                                                disabled={isLoading}
+                                                size="sm"
+                                            >
+                                                <Printer className="mr-2 h-4 w-4" />
+                                                {isLoading ? 'Impression...' : 'Imprimer'}
+                                            </Button>
+                                        )}
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+
+                        {/* Navigation du processus */}
+                        <div className="p-4 border-t border-gray-200 dark:border-gray-700">
+                            <div className="flex gap-2">
+                                <Link href={route('userCvModels.index')} className="flex-1">
+                                    <Button variant="outline" className="w-full" size="sm">
+                                        <ArrowLeft className="w-4 h-4 mr-2" />
+                                        Changer de modèle
+                                    </Button>
+                                </Link>
+                                <Link href={route('cv-infos.index')} className="flex-1">
+                                    <Button variant="outline" className="w-full" size="sm">
+                                        <Eye className="w-4 h-4 mr-2" />
+                                        Modifier le CV
+                                    </Button>
+                                </Link>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </AuthenticatedLayout>
     );

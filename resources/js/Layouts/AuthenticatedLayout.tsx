@@ -138,17 +138,18 @@ interface AuthenticatedProps {
     user: UserType;
     header?: React.ReactNode;
     hideHeaderOnMobile?: boolean; // Nouvelle prop pour masquer le header sur mobile
+    hideSidebar?: boolean; // Nouvelle prop pour masquer la sidebar
     children: React.ReactNode;
 }
 
-export default function Authenticated({ user, header, children, hideHeaderOnMobile = false }: PropsWithChildren<AuthenticatedProps>) {
+export default function Authenticated({ user, header, children, hideHeaderOnMobile = false, hideSidebar = false }: PropsWithChildren<AuthenticatedProps>) {
     const { t, i18n } = useTranslation();
     const { url } = usePage();
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const [isNavOpen, setIsNavOpen] = useState(false);
     const [isReferralDialogOpen, setIsReferralDialogOpen] = useState(false);
     const [isJobPortalDialogOpen, setIsJobPortalDialogOpen] = useState(false);
-    const showNav = ['cv-infos.show', 'cv-infos.index', 'userCvModels.index'].includes(route().current());
+    const showNav = [].includes(route().current()); // Suppression complète de la navigation CV
     const cvSideMenuItems = getCvSideMenuItems(t);
 
     // Détecter si on est sur la page career-advisor
@@ -820,7 +821,7 @@ export default function Authenticated({ user, header, children, hideHeaderOnMobi
                     </SheetContent>
                 </Sheet>
 
-                {showNav && !isCareerAdvisorPage && <MobileNav />}
+                {showNav && !isCareerAdvisorPage && !hideSidebar && <MobileNav />}
 
                 {header && !isCareerAdvisorPage && (
                     <header className="bg-white/80 dark:bg-gray-900/90 backdrop-blur-md border-b border-amber-100 dark:border-gray-700">
@@ -831,7 +832,7 @@ export default function Authenticated({ user, header, children, hideHeaderOnMobi
                 )}
 
                 <div className="flex flex-1">
-                    {showNav && !isCareerAdvisorPage && (
+                    {showNav && !isCareerAdvisorPage && !hideSidebar && (
                         <aside className="hidden md:block w-48 sm:w-64 bg-white/80 dark:bg-gray-900/90 backdrop-blur-md border-r border-amber-100 dark:border-gray-700 min-h-screen">
                             <div className="sticky top-16 p-3 sm:p-4">
                                 <div className="mb-3 sm:mb-6">

@@ -44,10 +44,8 @@ const SIDEBAR_ITEMS = [
     { id: 'personalInfo', label: 'Informations Personnelles', icon: User, color: 'text-amber-500' },
     { id: 'summary', label: 'Résumé', icon: FileText, color: 'text-purple-500' },
     { id: 'experience', label: 'Expériences', icon: Briefcase, color: 'text-amber-600' },
-    { id: 'competence', label: 'Compétences', icon: Code, color: 'text-purple-600' },
     { id: 'profession', label: 'Formation', icon: GraduationCap, color: 'text-amber-500' },
-    { id: 'language', label: 'Langues', icon: Globe, color: 'text-purple-600' },
-    { id: 'hobby', label: "Centres d'Intérêt", icon: Heart, color: 'text-purple-500' }
+    { id: 'skills', label: 'Compétences & Autres', icon: Code, color: 'text-purple-600' }
 ];
 
 const PERSONAL_INFO_FIELDS = [
@@ -294,11 +292,9 @@ const TutorialOverlay = ({ targetRect, children }: { targetRect: DOMRect | null,
                 @keyframes pulse {
                     0%, 100% {
                         box-shadow: 0 0 20px rgba(245, 158, 11, 0.5);
-                        border-color: #f59e0b;
                     }
                     50% {
                         box-shadow: 0 0 30px rgba(245, 158, 11, 0.8);
-                        border-color: #fbbf24;
                     }
                 }
             `}</style>
@@ -649,7 +645,7 @@ const Tutorial = ({ isVisible, onComplete, currentSection, onNavigateToSection }
                 animate={{ opacity: 1, scale: 1, y: 0 }}
                 exit={{ opacity: 0, scale: 0.9, y: -20 }}
                 transition={{ duration: 0.3 }}
-                className="bg-white dark:bg-gray-800 rounded-xl shadow-2xl border border-amber-200 dark:border-amber-700 overflow-hidden"
+                className="bg-white dark:bg-gray-800 rounded-xl shadow-2xl overflow-hidden"
                 style={getCardPosition()}
             >
                 <div className={`${isMobile ? 'p-4' : 'p-6'}`}>
@@ -1032,7 +1028,7 @@ const PersonalInfoCard = ({ item, onEdit, updateCvInformation }) => {
 
             <Card>
                 <CardContent className="p-3 sm:p-5 space-y-3 sm:space-y-4">
-                    <div className="flex items-center gap-3 sm:gap-4 border-b border-amber-100 dark:border-amber-800 pb-3 sm:pb-4">
+                    <div className="flex items-center gap-3 sm:gap-4 pb-3 sm:pb-4">
                         <div className="relative h-16 w-16 sm:h-20 sm:w-20 flex-shrink-0">
                             {item.photo ? (
                                 <div className="group relative h-full w-full">
@@ -1199,8 +1195,8 @@ const SidebarButton = ({ item, isActive, isComplete, onClick, isMobile }) => {
 const SectionNavigation = ({ currentSection, nextSection, prevSection, canProgress, onNavigate }) => {
     const { t } = useTranslation();
 
-    // Vérifier si c'est la dernière section (hobby)
-    const isLastSection = currentSection === 'hobby';
+    // Vérifier si c'est la dernière section (skills)
+    const isLastSection = currentSection === 'skills';
 
     return (
         <div className="mt-4 sm:mt-6 pt-3 sm:pt-4 border-t border-amber-100 dark:border-amber-800" data-tutorial="navigation">
@@ -1300,10 +1296,8 @@ export default function CvInterface({ auth, cvInformation: initialCvInformation 
         { id: 'personalInfo', label: t('cv.sidebar.personalInfo'), icon: User, color: 'text-amber-500' },
         { id: 'summary', label: t('cv.sidebar.summary'), icon: FileText, color: 'text-purple-500' },
         { id: 'experience', label: t('cv.sidebar.experience'), icon: Briefcase, color: 'text-amber-600' },
-        { id: 'competence', label: t('cv.sidebar.competence'), icon: Code, color: 'text-purple-600' },
-        { id: 'profession', label: t('cv.sidebar.profession'), icon: GraduationCap, color: 'text-amber-500' },
-        { id: 'language', label: t('cv.sidebar.language'), icon: Globe, color: 'text-purple-600' },
-        { id: 'hobby', label: t('cv.sidebar.hobby'), icon: Heart, color: 'text-purple-500' }
+        { id: 'profession', label: t('cv.sidebar.profession', 'Titre du CV'), icon: GraduationCap, color: 'text-amber-500' },
+        { id: 'skills', label: 'Compétences & Autres', icon: Code, color: 'text-purple-600' }
     ];
 
     // Utilisation des traductions pour les champs d'information personnelle
@@ -1346,12 +1340,12 @@ export default function CvInterface({ auth, cvInformation: initialCvInformation 
         personalInfo: Boolean(cvInformation.personalInformation?.firstName),
         summary: cvInformation.summaries?.length > 0,
         experience: cvInformation.experiences?.length > 0,
-        competence: cvInformation.competences?.length > 0,
         profession: Boolean(cvInformation.myProfession) ||
             Boolean(cvInformation.personalInformation?.full_profession) ||
             Boolean(localStorage.getItem('manual_profession')),
-        language: cvInformation.languages?.length > 0,
-        hobby: cvInformation.hobbies?.length > 0,
+        skills: (cvInformation.competences?.length > 0) ||
+               (cvInformation.languages?.length > 0) ||
+               (cvInformation.hobbies?.length > 0),
     };
 
     const getCompletionPercentage = () => {
@@ -1395,31 +1389,43 @@ export default function CvInterface({ auth, cvInformation: initialCvInformation 
                         onUpdate={(summaries) => updateCvInformation('summaries', summaries)}
                     />
                 );
-            case 'competence':
+            case 'skills':
                 return (
-                    <CompetenceManager
-                        auth={auth}
-                        availableCompetences={cvInformation.availableCompetences}
-                        initialUserCompetences={cvInformation.competences}
-                        onUpdate={(competences) => updateCvInformation('competences', competences)}
-                    />
-                );
-            case 'hobby':
-                return (
-                    <div className="space-y-3 sm:space-y-4">
-                        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 sm:gap-4">
+                    <div className="space-y-4 sm:space-y-5">
+                        <div className="flex justify-between items-center">
                             <h2 className="text-lg sm:text-xl font-bold text-gray-800 dark:text-white">
-                                {t('cv.sidebar.hobby')}
+                                Compétences & Autres
                             </h2>
-
                         </div>
 
-                        <HobbyManager
-                            auth={auth}
-                            availableHobbies={cvInformation.availableHobbies}
-                            initialUserHobbies={cvInformation.hobbies}
-                            onUpdate={(hobbies) => updateCvInformation('hobbies', hobbies)}
-                        />
+                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                            {/* Colonne gauche */}
+                            <div className="space-y-5">
+                                <CompetenceManager
+                                    auth={auth}
+                                    availableCompetences={cvInformation.availableCompetences}
+                                    initialUserCompetences={cvInformation.competences}
+                                    onUpdate={(competences) => updateCvInformation('competences', competences)}
+                                />
+
+                                <LanguageManager
+                                    auth={auth}
+                                    availableLanguages={cvInformation.availableLanguages}
+                                    initialLanguages={cvInformation.languages || []}
+                                    onUpdate={(languages) => updateCvInformation('languages', languages)}
+                                />
+                            </div>
+
+                            {/* Colonne droite */}
+                            <div>
+                                <HobbyManager
+                                    auth={auth}
+                                    availableHobbies={cvInformation.availableHobbies}
+                                    initialUserHobbies={cvInformation.hobbies}
+                                    onUpdate={(hobbies) => updateCvInformation('hobbies', hobbies)}
+                                />
+                            </div>
+                        </div>
                     </div>
                 );
             case 'profession':
@@ -1433,85 +1439,46 @@ export default function CvInterface({ auth, cvInformation: initialCvInformation 
                             setTimeout(() => {
                                 if (profession) {
                                     console.log('Sélection de profession:', profession);
-                                    // Mettre à jour les deux éléments en même temps
-                                    const updatedPersonalInfo = {
-                                        ...cvInformation.personalInformation,
-                                        profession: profession.name,
-                                        full_profession: ''
-                                    };
-                                    console.log('Mise à jour combinée avec profession:', {
-                                        myProfession: profession,
-                                        personalInformation: updatedPersonalInfo
+                                    setCvInformation(prev => {
+                                        const updatedPersonalInfo = {
+                                            ...prev.personalInformation,
+                                            profession: profession.name,
+                                            full_profession: ''
+                                        };
+                                        console.log('Mise à jour combinée avec profession:', { myProfession: profession, personalInformation: updatedPersonalInfo });
+                                        return { ...prev, myProfession: profession, personalInformation: updatedPersonalInfo };
                                     });
-
-                                    // Mise à jour synchronisée
-                                    setCvInformation(prev => ({
-                                        ...prev,
-                                        myProfession: profession,
-                                        personalInformation: updatedPersonalInfo
-                                    }));
-
-                                    // Sauvegarder l'état sur le serveur
                                     axios.post('/user-preferences', {
                                         key: 'profession_state',
-                                        value: JSON.stringify({
-                                            type: 'profession',
-                                            data: profession
-                                        })
+                                        value: JSON.stringify({ type: 'profession', data: profession })
                                     }).catch(e => console.error('Erreur lors de la sauvegarde des préférences:', e));
-
                                 } else if (fullProfession) {
                                     console.log('Sélection de profession manuelle:', fullProfession);
-                                    // Mettre à jour les deux éléments en même temps
-                                    const updatedPersonalInfo = {
-                                        ...cvInformation.personalInformation,
-                                        profession: '',
-                                        full_profession: fullProfession
-                                    };
-                                    console.log('Mise à jour combinée avec profession manuelle:', {
-                                        myProfession: { fullProfession },
-                                        personalInformation: updatedPersonalInfo
+                                    setCvInformation(prev => {
+                                        const updatedPersonalInfo = {
+                                            ...prev.personalInformation,
+                                            profession: '',
+                                            full_profession: fullProfession
+                                        };
+                                        console.log('Mise à jour combinée avec profession manuelle:', { myProfession: { fullProfession }, personalInformation: updatedPersonalInfo });
+                                        return { ...prev, myProfession: { fullProfession }, personalInformation: updatedPersonalInfo };
                                     });
-
-                                    // Mise à jour synchronisée
-                                    setCvInformation(prev => ({
-                                        ...prev,
-                                        myProfession: { fullProfession },
-                                        personalInformation: updatedPersonalInfo
-                                    }));
-
-                                    // Sauvegarder la profession manuelle dans localStorage pour récupération en cas de problème
                                     localStorage.setItem('manual_profession', fullProfession);
-
-                                    // Sauvegarder l'état sur le serveur
                                     axios.post('/user-preferences', {
                                         key: 'profession_state',
-                                        value: JSON.stringify({
-                                            type: 'manual',
-                                            data: fullProfession
-                                        })
+                                        value: JSON.stringify({ type: 'manual', data: fullProfession })
                                     }).catch(e => console.error('Erreur lors de la sauvegarde des préférences:', e));
                                 } else {
                                     console.log('Réinitialisation de profession');
-                                    // Mettre à jour les deux éléments en même temps
-                                    const updatedPersonalInfo = {
-                                        ...cvInformation.personalInformation,
-                                        profession: '',
-                                        full_profession: ''
-                                    };
-                                    console.log('Mise à jour combinée avec réinitialisation:', {
-                                        myProfession: null,
-                                        personalInformation: updatedPersonalInfo
+                                    setCvInformation(prev => {
+                                        const updatedPersonalInfo = {
+                                            ...prev.personalInformation,
+                                            profession: '',
+                                            full_profession: ''
+                                        };
+                                        console.log('Mise à jour combinée avec réinitialisation:', { myProfession: null, personalInformation: updatedPersonalInfo });
+                                        return { ...prev, myProfession: null, personalInformation: updatedPersonalInfo };
                                     });
-
-                                    // Mise à jour synchronisée
-                                    setCvInformation(prev => ({
-                                        ...prev,
-                                        myProfession: null,
-                                        personalInformation: updatedPersonalInfo
-                                    }));
-
-                                    // Nettoyer le stockage local
                                     localStorage.removeItem('manual_profession');
                                 }
                             }, 0);
@@ -1527,13 +1494,6 @@ export default function CvInterface({ auth, cvInformation: initialCvInformation 
                         onUpdate={(experiences) => updateCvInformation('experiences', experiences)}
                     />
                 );
-            case 'language':
-                return <LanguageManager
-                    auth={auth}
-                    availableLanguages={cvInformation.availableLanguages}
-                    initialLanguages={cvInformation.languages || []}
-                    onUpdate={(languages) => updateCvInformation('languages', languages)}
-                />;
             default:
                 return <div>{t('cv.sections.notFound')}</div>;
         }
@@ -1831,7 +1791,7 @@ export default function CvInterface({ auth, cvInformation: initialCvInformation 
                     </Card>
 
                     {/* Call-to-action pour les utilisateurs qui ont terminé la dernière étape */}
-                    {/*{completionStatus.hobby && (*/}
+                    {/*{completionStatus.skills && (*/}
                     {/*    <div className="mt-4 sm:mt-6 text-center">*/}
                     {/*        <Link href={route('userCvModels.index')}>*/}
                     {/*            <Button className="w-full bg-gradient-to-r from-amber-500 to-purple-500 hover:from-amber-600 hover:to-purple-600 dark:from-amber-400 dark:to-purple-400 text-white p-2 sm:p-4 rounded-lg shadow-md sm:shadow-lg group">*/}
@@ -1870,5 +1830,11 @@ export default function CvInterface({ auth, cvInformation: initialCvInformation 
                 </AnimatePresence>
             )}
         </AuthenticatedLayout>
+    );
+}
+uthenticatedLayout>
+    );
+}
+atedLayout>
     );
 }

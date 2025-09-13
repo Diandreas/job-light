@@ -1,19 +1,14 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useTranslation } from 'react-i18next';
-import { X, Globe2, Check } from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/Components/ui/card';
+import { X, Plus } from 'lucide-react';
 import { useToast } from '@/Components/ui/use-toast';
-import { Badge } from '@/Components/ui/badge';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const LANGUAGE_LEVELS = [
-    { id: 'Débutant', name: 'beginner' },
-    { id: 'Élémentaire', name: 'elementary' },
+    { id: 'Les bases', name: 'beginner' },
     { id: 'Intermédiaire', name: 'intermediate' },
-    { id: 'Intermédiaire avancé', name: 'upperIntermediate' },
-    { id: 'Avancé', name: 'advanced' },
-    { id: 'Maîtrise', name: 'proficient' },
+    { id: 'Expérimenté', name: 'advanced' },
     { id: 'Langue maternelle', name: 'native' }
 ];
 
@@ -27,10 +22,9 @@ const getLocalizedName = (language, currentLanguage) => {
 export default function LanguageInput({ auth, initialLanguages, availableLanguages, onUpdate }) {
     const [languages, setLanguages] = useState(initialLanguages || []);
     const [inputValue, setInputValue] = useState('');
+    const [selectedLevel, setSelectedLevel] = useState('Les bases');
     const [suggestions, setSuggestions] = useState([]);
-    const [selectedLanguage, setSelectedLanguage] = useState(null);
-    const [selectedLevel, setSelectedLevel] = useState(null);
-    const [showLevelSelector, setShowLevelSelector] = useState(false);
+    const [loading, setLoading] = useState(false);
     const { toast } = useToast();
     const { t, i18n } = useTranslation();
 
@@ -38,7 +32,7 @@ export default function LanguageInput({ auth, initialLanguages, availableLanguag
         setLanguages(initialLanguages || []);
     }, [initialLanguages]);
 
-    // Filtrer les suggestions en fonction de l'entrée utilisateur
+    // Filtrer les suggestions
     useEffect(() => {
         if (inputValue.trim().length > 0) {
             const filteredSuggestions = availableLanguages
@@ -48,246 +42,174 @@ export default function LanguageInput({ auth, initialLanguages, availableLanguag
                         .toLowerCase()
                         .includes(inputValue.toLowerCase())
                 )
-                .slice(0, 5); // Limiter à 5 suggestions
+                .slice(0, 5);
             setSuggestions(filteredSuggestions);
         } else {
             setSuggestions([]);
         }
     }, [inputValue, availableLanguages, languages, i18n.language]);
 
-    const sortedLanguages = useMemo(() => {
-        if (!languages || !Array.isArray(languages)) return [];
-        return [...languages].sort((a, b) =>
-            getLocalizedName(a, i18n.language)
-                .localeCompare(getLocalizedName(b, i18n.language))
-        );
-    }, [languages, i18n.language]);
+    const addLanguage = async (language = null) => {
+        const languageToAdd = language || {
+            id: `manual-${Date.now()}`,
+            name: inputValue.trim(),
+            name_en: inputValue.trim(),
+            is_manual: true
+        };
 
-    const handleLanguageSelect = (language) => {
-        setSelectedLanguage(language);
-        setInputValue('');
-        setSuggestions([]);
-        setShowLevelSelector(true);
-    };
+        if (!languageToAdd.name.trim()) return;
 
-    const handleLevelSelect = (level) => {
-        setSelectedLevel(level);
-    };
-
-    const handleAddLanguage = async () => {
-        if (!selectedLanguage || !selectedLevel) return;
-
+        setLoading(true);
         try {
-            await axios.post(route('user-languages.store'), {
-                language_id: selectedLanguage.id,
-                language_level: selectedLevel.id,
-            });
+            const newLanguage = {
+                ...languageToAdd,
+                level: selectedLevel,
+                user_id: auth.user.id
+            };
 
-            const updatedLanguages = [
-                ...languages,
-                {
-                    ...selectedLanguage,
-                    pivot: {
-                        user_id: auth.user.id,
-                        language_id: selectedLanguage.id,
-                        language_level: selectedLevel.id
-                    }
-                }
-            ];
+            await axios.post('/user-languages', newLanguage);
 
+            const updatedLanguages = [...languages, newLanguage];
             setLanguages(updatedLanguages);
             onUpdate(updatedLanguages);
-            setSelectedLanguage(null);
-            setSelectedLevel(null);
-            setShowLevelSelector(false);
 
+            setInputValue('');
+            setSuggestions([]);
+            
             toast({
-                title: t('common.success'),
-                description: t('cv.languages.success.added'),
+                title: 'Langue ajoutée',
+                description: `${languageToAdd.name} (${selectedLevel}) a été ajouté`,
+                variant: 'default'
             });
         } catch (error) {
             console.error('Error adding language:', error);
             toast({
-                title: t('cv.languages.error.title'),
-                description: t('cv.languages.error.add'),
-                variant: 'destructive',
+                title: 'Erreur',
+                description: 'Impossible d\'ajouter la langue',
+                variant: 'destructive'
             });
+        } finally {
+            setLoading(false);
         }
     };
 
-    const handleInputKeyDown = (e) => {
-        if (e.key === 'Enter' && suggestions.length > 0) {
-            e.preventDefault();
-            handleLanguageSelect(suggestions[0]);
-        }
-    };
-
-    const handleDeleteLanguage = async (userId, languageId) => {
+    const removeLanguage = async (languageId) => {
+        setLoading(true);
         try {
-            await axios.delete(route('user-languages.destroy', [userId, languageId]));
-            const updatedLanguages = languages.filter(lang => lang.id !== languageId);
+            await axios.delete(`/user-languages/${auth.user.id}/${languageId}`);
+            
+            const updatedLanguages = languages.filter(l => l.id !== languageId);
             setLanguages(updatedLanguages);
             onUpdate(updatedLanguages);
 
             toast({
-                title: t('common.success'),
-                description: t('cv.languages.success.removed'),
+                title: 'Langue supprimée',
+                description: 'La langue a été supprimée avec succès',
+                variant: 'default'
             });
         } catch (error) {
             console.error('Error removing language:', error);
             toast({
-                title: t('cv.languages.error.title'),
-                description: t('cv.languages.error.delete'),
-                variant: 'destructive',
+                title: 'Erreur',
+                description: 'Impossible de supprimer la langue',
+                variant: 'destructive'
             });
+        } finally {
+            setLoading(false);
         }
     };
 
     return (
-        <div className="space-y-6">
+        <div className="space-y-4">
+            {/* Header compact */}
+            <div>
+                <h4 className="text-base font-medium text-gray-800 dark:text-white mb-2">
+                    Langues <span className="text-sm text-gray-500">({languages.length}/5)</span>
+                </h4>
+            </div>
 
-
-            <Card className="border-amber-100 dark:border-amber-900/50 shadow-md">
-                <CardHeader>
-                    <CardTitle className="text-lg font-semibold">
-                        <div className="flex items-center gap-2">
-                            <Globe2 className="w-5 h-5 text-amber-500 dark:text-amber-400" />
-                            {t('cv.languages.title')}
-                        </div>
-                    </CardTitle>
-                    <CardDescription className="dark:text-gray-400">
-                        {t('cv.languages.description')}
-                    </CardDescription>
-                </CardHeader>
-
-                <CardContent className="space-y-6">
-                    {!showLevelSelector ? (
-                        <div className="relative">
-                            <input
-                                type="text"
-                                className="w-full p-3 border border-amber-200 rounded-lg shadow-sm focus:ring-2 focus:ring-amber-500 focus:border-transparent dark:bg-gray-900 dark:border-amber-800 dark:text-white"
-                                placeholder={t('cv.languages.searchPlaceholder', 'Rechercher une langue...')}
-                                value={inputValue}
-                                onChange={(e) => setInputValue(e.target.value)}
-                                onKeyDown={handleInputKeyDown}
-                            />
-
-                            {suggestions.length > 0 && (
-                                <div className="absolute z-10 w-full mt-1 bg-white rounded-md shadow-lg dark:bg-gray-800 border border-amber-200 dark:border-amber-800">
-                                    {suggestions.map((language) => (
-                                        <div
-                                            key={language.id}
-                                            className="px-4 py-3 cursor-pointer hover:bg-amber-50 dark:hover:bg-amber-900/30 text-base touch-manipulation"
-                                            onClick={() => handleLanguageSelect(language)}
-                                        >
-                                            {getLocalizedName(language, i18n.language)}
-                                        </div>
-                                    ))}
-                                </div>
-                            )}
-                        </div>
-                    ) : (
-                        <div className="space-y-4">
-                            <div className="p-4 border border-amber-200 rounded-lg dark:border-amber-800 dark:bg-gray-900/50">
-                                <div className="mb-2 text-sm font-medium text-amber-700 dark:text-amber-300">
-                                    {t('cv.languages.selectLevel', 'Sélectionnez votre niveau pour')} :
-                                    <span className="font-semibold ml-1">
-                    {getLocalizedName(selectedLanguage, i18n.language)}
-                  </span>
-                                </div>
-                                <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
-                                    {LANGUAGE_LEVELS.map((level) => (
-                                        <button
-                                            key={level.id}
-                                            className={`p-2 text-sm border rounded-md text-center ${
-                                                selectedLevel === level
-                                                    ? 'bg-gradient-to-r from-amber-500 to-purple-500 text-white border-transparent'
-                                                    : 'border-amber-200 dark:border-amber-800 hover:bg-amber-50 dark:hover:bg-amber-900/30 dark:text-white'
-                                            }`}
-                                            onClick={() => handleLevelSelect(level)}
-                                        >
-                                            {t(`cv.languages.levels.${level.name}`)}
-                                        </button>
-                                    ))}
-                                </div>
-                            </div>
-                            <div className="flex justify-between gap-2">
+            <div className="space-y-3">
+                {/* Tags des langues sélectionnées */}
+                <div className="flex flex-wrap gap-2">
+                    <AnimatePresence>
+                        {languages.map((language) => (
+                            <motion.div
+                                key={language.id}
+                                initial={{ opacity: 0, scale: 0.8 }}
+                                animate={{ opacity: 1, scale: 1 }}
+                                exit={{ opacity: 0, scale: 0.8 }}
+                                className="bg-amber-500 text-white px-2.5 py-1 rounded-full text-xs flex items-center gap-1.5 hover:bg-amber-600 transition-colors"
+                            >
+                                <span>{getLocalizedName(language, i18n.language)} | {language.level}</span>
                                 <button
-                                    onClick={() => {
-                                        setSelectedLanguage(null);
-                                        setSelectedLevel(null);
-                                        setShowLevelSelector(false);
-                                    }}
-                                    className="px-4 py-2 text-sm border border-red-200 rounded-md text-red-600 hover:bg-red-50 dark:border-red-800 dark:text-red-400 dark:hover:bg-red-900/30"
+                                    onClick={() => removeLanguage(language.id)}
+                                    className="hover:bg-teal-600 rounded-full p-0.5 transition-colors"
+                                    disabled={loading}
                                 >
-                                    {t('common.cancel', 'Annuler')}
+                                    <X className="w-3 h-3" />
                                 </button>
-                                <button
-                                    onClick={handleAddLanguage}
-                                    disabled={!selectedLevel}
-                                    className="px-4 py-2 text-sm bg-gradient-to-r from-amber-500 to-purple-500 hover:from-amber-600 hover:to-purple-600 text-white rounded-md disabled:opacity-50 dark:from-amber-400 dark:to-purple-400"
-                                >
-                                    <Check className="w-4 h-4 mr-1 inline-block" />
-                                    {t('common.add', 'Ajouter')}
-                                </button>
-                            </div>
-                        </div>
-                    )}
+                            </motion.div>
+                        ))}
+                    </AnimatePresence>
+                </div>
 
-                    <div className="text-sm text-gray-500 dark:text-gray-400">
-                        {!showLevelSelector
-                            ? t('cv.languages.help', 'Commencez à taper pour rechercher une langue.')
-                            : t('cv.languages.levelHelp', 'Choisissez votre niveau de maîtrise de cette langue.')}
+                {/* Input d'ajout compact */}
+                <div className="flex gap-2">
+                    <div className="relative flex-1">
+                        <input
+                            type="text"
+                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-sm focus:ring-1 focus:ring-amber-500 focus:border-amber-500 dark:bg-gray-800 dark:text-white"
+                            placeholder="Ajouter langue..."
+                            value={inputValue}
+                            onChange={(e) => setInputValue(e.target.value)}
+                            onKeyDown={(e) => e.key === 'Enter' && addLanguage()}
+                            disabled={loading}
+                        />
+
+                        {suggestions.length > 0 && (
+                            <div className="absolute z-10 w-full mt-1 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-600">
+                                {suggestions.map((language) => (
+                                    <div
+                                        key={language.id}
+                                        className="px-3 py-2 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 text-sm"
+                                        onClick={() => addLanguage(language)}
+                                    >
+                                        {getLocalizedName(language, i18n.language)}
+                                    </div>
+                                ))}
+                            </div>
+                        )}
                     </div>
 
-                    <div className="mt-6">
-                        <h3 className="text-lg font-semibold mb-4 flex items-center gap-2 dark:text-white">
-                            <Globe2 className="w-5 h-5 text-amber-500 dark:text-amber-400" />
-                            {t('cv.languages.yourLanguages', 'Vos langues')} ({sortedLanguages.length})
-                        </h3>
+                    <select
+                        value={selectedLevel}
+                        onChange={(e) => setSelectedLevel(e.target.value)}
+                        className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-sm focus:ring-1 focus:ring-amber-500 focus:border-amber-500 dark:bg-gray-800 dark:text-white"
+                    >
+                        {LANGUAGE_LEVELS.map(level => (
+                            <option key={level.id} value={level.id}>
+                                {level.id}
+                            </option>
+                        ))}
+                    </select>
 
-                        <div className="flex flex-wrap gap-2 max-h-[250px] overflow-y-auto pr-2">
-                            <AnimatePresence>
-                                {sortedLanguages.length === 0 ? (
-                                    <p className="text-gray-500 dark:text-gray-400 text-sm italic w-full text-center py-4">
-                                        {t('cv.languages.empty', 'Aucune langue ajoutée')}
-                                    </p>
-                                ) : (
-                                    sortedLanguages.map((language) => (
-                                        <motion.div
-                                            key={language.id}
-                                            initial={{ opacity: 0, scale: 0.8 }}
-                                            animate={{ opacity: 1, scale: 1 }}
-                                            exit={{ opacity: 0, scale: 0.8 }}
-                                            transition={{ duration: 0.2 }}
-                                        >
-                                            <Badge
-                                                variant="secondary"
-                                                className="bg-gradient-to-r from-amber-100 to-purple-100 hover:from-amber-200 hover:to-purple-200
-                                  dark:from-amber-900/40 dark:to-purple-900/40 dark:hover:from-amber-900/60 dark:hover:to-purple-900/60
-                                  text-gray-800 dark:text-gray-200 flex items-center gap-2 py-2 pl-3 pr-2 text-base mb-2"
-                                            >
-                        <span>
-                          {getLocalizedName(language, i18n.language)}
-                            <span className="text-xs ml-1 text-amber-600 dark:text-amber-400">
-                            ({t(`cv.languages.levels.${LANGUAGE_LEVELS.find(level => level.id === language.pivot?.language_level)?.name || 'beginner'}`)})
-                          </span>
-                        </span>
-                                                <button
-                                                    onClick={() => handleDeleteLanguage(language.pivot?.user_id || auth.user.id, language.id)}
-                                                    className="ml-1 p-1 rounded-full hover:bg-red-100 hover:text-red-500 dark:hover:bg-red-900/30 dark:hover:text-red-400 touch-manipulation"
-                                                >
-                                                    <X className="h-3 w-3" />
-                                                </button>
-                                            </Badge>
-                                        </motion.div>
-                                    ))
-                                )}
-                            </AnimatePresence>
-                        </div>
-                    </div>
-                </CardContent>
-            </Card>
+                    <button
+                        onClick={() => addLanguage()}
+                        disabled={!inputValue.trim() || loading || languages.length >= 5}
+                        className="bg-amber-500 hover:bg-amber-600 text-white px-3 py-2 rounded-md text-sm disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1.5"
+                    >
+                        {loading ? (
+                            <svg className="animate-spin h-3 w-3" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                            </svg>
+                        ) : (
+                            <Plus className="w-3 w-3" />
+                        )}
+                        +
+                    </button>
+                </div>
+            </div>
         </div>
     );
 }

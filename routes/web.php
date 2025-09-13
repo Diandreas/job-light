@@ -218,8 +218,7 @@ Route::delete('personal-information/photo', [PersonalInformationController::clas
     ->name('personal-information.delete-photo');
 Route::get('/payment', [PaymentController::class, 'index'])->name('payment.index');
 
-Route::post('/api/paypal/capture-payment', [PayPalController::class, 'capturePayment'])
-    ->middleware(['auth']);// Career Advisor Routes
+Route::post('/api/paypal/capture-payment', [PayPalController::class, 'capturePayment'])->middleware(['auth']);
 Route::prefix('career-advisor')->group(function () {
     Route::get('/', [CareerAdvisorController::class, 'index'])->name('career-advisor.index');
     Route::get('/chats', [CareerAdvisorController::class, 'getUserChats'])->name('career-advisor.chats');

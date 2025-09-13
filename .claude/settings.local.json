@@ -14,7 +14,9 @@
       "Bash(git checkout:*)",
       "Bash(curl:*)",
       "Bash(dir:*)",
-      "Bash(npx tsc:*)"
+      "Bash(npx tsc:*)",
+      "WebFetch(domain:jobii.be)",
+      "Read(//c/Users/david/Pictures/Screenshots/**)"
     ],
     "deny": [],
     "ask": []

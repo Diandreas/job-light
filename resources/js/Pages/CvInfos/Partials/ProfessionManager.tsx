@@ -185,11 +185,11 @@ export default function ProfessionInput({ auth, availableProfessions, initialUse
                     <CardTitle className="text-lg font-semibold">
                         <div className="flex items-center gap-2">
                             <GraduationCap className="w-5 h-5 text-amber-500 dark:text-amber-400" />
-                            {t('professions.card.title')}
+{t('cv.title.section', 'Titre du CV')}
                         </div>
                     </CardTitle>
                     <CardDescription className="dark:text-gray-400">
-                        {t('professions.card.description')}
+{t('cv.title.description', 'Choisissez le titre professionnel qui apparaîtra sur votre CV')}
                     </CardDescription>
                 </CardHeader>
 
@@ -199,7 +199,7 @@ export default function ProfessionInput({ auth, availableProfessions, initialUse
                             <input
                                 type="text"
                                 className="w-full p-3 border border-amber-200 rounded-lg shadow-sm focus:ring-2 focus:ring-amber-500 focus:border-transparent dark:bg-gray-900 dark:border-amber-800 dark:text-white"
-                                placeholder={t('professions.input.placeholder', 'Saisissez votre profession...')}
+                                placeholder={t('cv.title.placeholder', 'Ex: Développeur Web, Ingénieur, Chef de projet...')}
                                 value={inputValue}
                                 onChange={(e) => setInputValue(e.target.value)}
                                 onKeyDown={handleInputKeyDown}
@@ -239,7 +239,7 @@ export default function ProfessionInput({ auth, availableProfessions, initialUse
                     </div>
 
                     <div className="text-sm text-gray-500 dark:text-gray-400">
-                        {t('professions.input.help', 'Saisissez votre profession. Si elle existe dans notre base de données, elle sera automatiquement reconnue.')}
+{t('cv.title.help', 'Ce titre apparaîtra en haut de votre CV. Choisissez un titre qui correspond à votre domaine ou au poste visé.')}
                     </div>
 
                     {/* Section profession actuelle */}
@@ -249,7 +249,7 @@ export default function ProfessionInput({ auth, availableProfessions, initialUse
                                 <div className="flex items-center gap-2">
                                     <GraduationCap className="w-5 h-5 text-amber-500 dark:text-amber-400" />
                                     <h3 className="text-lg font-semibold dark:text-white">
-                                        {t('professions.current.title', 'Profession actuelle')}
+{t('cv.title.current', 'Titre actuel')}
                                     </h3>
                                 </div>
                                 <button

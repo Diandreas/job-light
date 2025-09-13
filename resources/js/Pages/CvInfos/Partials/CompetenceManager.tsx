@@ -1,11 +1,9 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { Badge } from '@/Components/ui/badge';
-import { X, BookOpen, Check, Plus } from 'lucide-react';
+import { X, Plus } from 'lucide-react';
 import { useToast } from '@/Components/ui/use-toast';
 import axios from 'axios';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
-import { Card, CardHeader, CardContent, CardTitle, CardDescription } from '@/Components/ui/card';
 
 const getLocalizedName = (competence, currentLanguage) => {
     if (currentLanguage === 'en' && competence.name_en) {
@@ -188,127 +186,85 @@ export default function CompetenceInput({ auth, availableCompetences, initialUse
     }, [userCompetences, i18n.language]);
 
     return (
-        <div className="space-y-1">
+        <div className="space-y-4">
+            {/* Header compact */}
+            <div>
+                <h4 className="text-base font-medium text-gray-800 dark:text-white mb-2">
+                    Compétences <span className="text-sm text-gray-500">({sortedUserCompetences.length}/12)</span>
+                </h4>
+            </div>
 
-            <Card className=" items-stretch">
-                <CardHeader>
-                    <CardTitle className="text-lg font-semibold">
-                        <div className="flex items-center gap-2">
-                            <BookOpen className="w-5 h-5 text-amber-500 dark:text-amber-400" />
-                            {t('competences.card.title')}
-                        </div>
-                    </CardTitle>
+            <div className="space-y-3">
+                {/* Tags des compétences sélectionnées */}
+                <div className="flex flex-wrap gap-2">
+                    <AnimatePresence>
+                        {sortedUserCompetences.map((competence) => (
+                            <motion.div
+                                key={competence.id}
+                                initial={{ opacity: 0, scale: 0.8 }}
+                                animate={{ opacity: 1, scale: 1 }}
+                                exit={{ opacity: 0, scale: 0.8 }}
+                                className="bg-teal-500 text-white px-2.5 py-1 rounded-full text-xs flex items-center gap-1.5 hover:bg-teal-600 transition-colors"
+                            >
+                                <span>{getLocalizedName(competence, i18n.language)}</span>
+                                <button
+                                    onClick={() => handleRemoveCompetence(competence.id)}
+                                    className="hover:bg-teal-600 rounded-full p-0.5 transition-colors"
+                                    disabled={loading}
+                                >
+                                    <X className="w-3 h-3" />
+                                </button>
+                            </motion.div>
+                        ))}
+                    </AnimatePresence>
+                </div>
 
-                </CardHeader>
+                {/* Input d'ajout compact */}
+                <div className="flex gap-2">
+                    <div className="relative flex-1">
+                        <input
+                            type="text"
+                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-sm focus:ring-1 focus:ring-teal-500 focus:border-teal-500 dark:bg-gray-800 dark:text-white"
+                            placeholder="Ajouter compétence..."
+                            value={inputValue}
+                            onChange={(e) => setInputValue(e.target.value)}
+                            onKeyDown={handleInputKeyDown}
+                            disabled={loading}
+                        />
 
-                <CardContent className="space-y-6">
-                    <div className="flex items-stretch gap-2">
-                        <div className="relative flex-grow">
-                            <input
-                                type="text"
-                                className="w-full p-3 border border-amber-200 rounded-lg shadow-sm focus:ring-2 focus:ring-amber-500 focus:border-transparent dark:bg-gray-900 dark:border-amber-800 dark:text-white"
-                                placeholder={t('competences.input.placeholder', 'Saisissez une compétence...')}
-                                value={inputValue}
-                                onChange={(e) => setInputValue(e.target.value)}
-                                onKeyDown={handleInputKeyDown}
-                                disabled={loading}
-                            />
-
-                            {suggestions.length > 0 && (
-                                <div className="absolute z-10 w-full mt-1 bg-white rounded-md shadow-lg dark:bg-gray-800 border border-amber-200 dark:border-amber-800">
-                                    {suggestions.map((competence) => (
-                                        <div
-                                            key={competence.id}
-                                            className="px-4 py-3 cursor-pointer hover:bg-amber-50 dark:hover:bg-amber-900/30 text-base touch-manipulation"
-                                            onClick={() => handleSuggestionClick(competence)}
-                                        >
-                                            {getLocalizedName(competence, i18n.language)}
-                                        </div>
-                                    ))}
-                                </div>
-                            )}
-                        </div>
-
-                        <button
-                            onClick={addCompetence}
-                            disabled={!inputValue.trim() || loading}
-                            className="min-w-16 px-4 py-3 bg-gradient-to-r from-amber-500 to-purple-500 hover:from-amber-600 hover:to-purple-600 text-white dark:from-amber-400 dark:to-purple-400 dark:hover:from-amber-500 dark:hover:to-purple-500 rounded-lg shadow-sm focus:ring-2 focus:ring-amber-500 focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed"
-                            aria-label={t('competences.actions.add', 'Ajouter')}
-                        >
-                            {loading ? (
-                                <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                                </svg>
-                            ) : (
-                                <Check className="w-5 h-5 mx-auto" />
-                            )}
-                        </button>
-                    </div>
-
-                    <div className="text-sm text-gray-500 dark:text-gray-400">
-                        {t('competences.input.help', 'Saisissez une compétence et appuyez sur le bouton ou la touche Entrée pour ajouter. Les compétences non reconnues seront ajoutées manuellement.')}
-                    </div>
-
-                    <div>
-                        <h3 className="text-lg font-semibold mb-4 text-gray-800 dark:text-white flex items-center gap-2">
-                            <BookOpen className="w-5 h-5 text-amber-500 dark:text-amber-400" />
-                            {t('competences.list.title', { count: sortedUserCompetences.length })}
-                        </h3>
-
-                        <div className="max-h-[250px] overflow-y-auto pr-2">
-                            <div className="flex flex-wrap gap-2">
-                                <AnimatePresence>
-                                    {sortedUserCompetences.map((competence) => (
-                                        <motion.div
-                                            key={competence.id}
-                                            initial={{ opacity: 0, scale: 0.8 }}
-                                            animate={{ opacity: 1, scale: 1 }}
-                                            exit={{ opacity: 0, scale: 0.8 }}
-                                            transition={{ duration: 0.2 }}
-                                        >
-                                            <Badge
-                                                variant="secondary"
-                                                className={`
-                          ${competence.is_manual
-                                                    ? 'bg-gradient-to-r from-purple-100 to-blue-100 hover:from-purple-200 hover:to-blue-200 dark:from-purple-900/40 dark:to-blue-900/40'
-                                                    : 'bg-gradient-to-r from-amber-100 to-purple-100 hover:from-amber-200 hover:to-purple-200 dark:from-amber-900/40 dark:to-purple-900/40'
-                                                }
-                                           text-gray-800 dark:text-gray-200 flex items-center gap-1 py-1 pl-3 pr-2 text-base`}
-
-                                            >
-                                                <span>{getLocalizedName(competence, i18n.language)}</span>
-                                                {competence.is_manual && (
-                                                    <span className="px-1 py-0.5 text-[8px] rounded bg-purple-200 dark:bg-purple-800 text-purple-800 dark:text-purple-200">
-                            {t('competences.manual.tag', 'Manuel')}
-                          </span>
-                                                )}
-                                                <button
-                                                    onClick={() => handleRemoveCompetence(competence.id)}
-                                                    disabled={loading}
-                                                    className="ml-1 p-1 rounded-full hover:bg-red-100 hover:text-red-500 dark:hover:bg-red-900/30 dark:hover:text-red-400 touch-manipulation disabled:opacity-50"
-                                                >
-                                                    <X className="h-3 w-3" />
-                                                </button>
-                                            </Badge>
-                                        </motion.div>
-                                    ))}
-                                </AnimatePresence>
-
-                                {/* État vide */}
-                                {sortedUserCompetences.length === 0 && (
-                                    <div className="w-full flex justify-center py-4">
-                                        <div className="text-gray-400 dark:text-gray-500 flex flex-col items-center gap-2">
-                                            <Plus className="h-8 w-8" />
-                                            <span>{t('competences.list.empty', 'Ajoutez vos premières compétences')}</span>
-                                        </div>
+                        {suggestions.length > 0 && (
+                            <div className="absolute z-10 w-full mt-1 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-600">
+                                {suggestions.map((competence) => (
+                                    <div
+                                        key={competence.id}
+                                        className="px-3 py-2 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 text-sm"
+                                        onClick={() => handleSuggestionClick(competence)}
+                                    >
+                                        {getLocalizedName(competence, i18n.language)}
                                     </div>
-                                )}
+                                ))}
                             </div>
-                        </div>
+                        )}
                     </div>
-                </CardContent>
-            </Card>
+
+                    <button
+                        onClick={addCompetence}
+                        disabled={!inputValue.trim() || loading || sortedUserCompetences.length >= 12}
+                        className="bg-teal-500 hover:bg-teal-600 text-white px-3 py-2 rounded-md text-sm disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1.5"
+                    >
+                        {loading ? (
+                            <svg className="animate-spin h-3 w-3" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                            </svg>
+                        ) : (
+                            <Plus className="w-3 w-3" />
+                        )}
+                        +
+                    </button>
+                </div>
+
+            </div>
         </div>
     );
 }

@@ -1,245 +1,203 @@
-import React, { useState, useEffect, useMemo } from 'react';
-import { Badge } from '@/Components/ui/badge';
-import { X, Plus, Check } from 'lucide-react';
-import { useToast } from '@/Components/ui/use-toast';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { motion, AnimatePresence } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
+import { X, Plus } from 'lucide-react';
+import { useToast } from '@/Components/ui/use-toast';
+import { motion, AnimatePresence } from 'framer-motion';
 
-const HobbyInput = ({ auth, availableHobbies, initialUserHobbies, onUpdate }) => {
-    const { t, i18n } = useTranslation();
-    const [userHobbies, setUserHobbies] = useState(initialUserHobbies);
+const getLocalizedName = (hobby, currentLanguage) => {
+    if (currentLanguage === 'en' && hobby.name_en) {
+        return hobby.name_en;
+    }
+    return hobby.name;
+};
+
+export default function HobbyInput({ auth, initialUserHobbies, availableHobbies, onUpdate }) {
+    const [hobbies, setHobbies] = useState(initialUserHobbies || []);
     const [inputValue, setInputValue] = useState('');
     const [suggestions, setSuggestions] = useState([]);
+    const [loading, setLoading] = useState(false);
     const { toast } = useToast();
+    const { t, i18n } = useTranslation();
 
     useEffect(() => {
-        setUserHobbies(initialUserHobbies);
+        setHobbies(initialUserHobbies || []);
     }, [initialUserHobbies]);
 
-    // Filtrer les suggestions en fonction de l'entrée utilisateur
+    // Filtrer les suggestions
     useEffect(() => {
         if (inputValue.trim().length > 0) {
             const filteredSuggestions = availableHobbies
                 .filter(hobby =>
+                    !hobbies.some(userHobby => userHobby.id === hobby.id) &&
                     getLocalizedName(hobby, i18n.language)
                         .toLowerCase()
-                        .includes(inputValue.toLowerCase()) &&
-                    !userHobbies.some(userHobby => userHobby.id === hobby.id)
+                        .includes(inputValue.toLowerCase())
                 )
-                .slice(0, 5); // Limiter à 5 suggestions
+                .slice(0, 5);
             setSuggestions(filteredSuggestions);
         } else {
             setSuggestions([]);
         }
-    }, [inputValue, availableHobbies, userHobbies, i18n.language]);
+    }, [inputValue, availableHobbies, hobbies, i18n.language]);
 
-    const getLocalizedName = (hobby, currentLanguage) => {
-        if (currentLanguage === 'en' && hobby.name_en) {
-            return hobby.name_en;
-        }
-        return hobby.name;
-    };
+    const addHobby = async (hobby = null) => {
+        const hobbyToAdd = hobby || {
+            id: `manual-${Date.now()}`,
+            name: inputValue.trim(),
+            name_en: inputValue.trim(),
+            is_manual: true
+        };
 
-    const addHobby = async () => {
-        if (!inputValue.trim()) return;
+        if (!hobbyToAdd.name.trim()) return;
 
-        // Vérifier si le hobby existe dans les suggestions
-        const existingHobby = suggestions.length > 0 ? suggestions[0] : null;
-
-        if (existingHobby) {
-            // Ajouter un hobby existant
-            try {
-                const response = await axios.post('/user-hobbies', {
+        setLoading(true);
+        try {
+            if (hobby) {
+                await axios.post('/user-hobbies', {
                     user_id: auth.user.id,
-                    hobby_id: existingHobby.id,
+                    hobby_id: hobby.id,
                 });
-
-                if (response.data.success) {
-                    const updatedHobbies = [...userHobbies, existingHobby];
-                    setUserHobbies(updatedHobbies);
-                    onUpdate(updatedHobbies);
-                    setInputValue('');
-                    setSuggestions([]);
-                }
-            } catch (error) {
-                toast({
-                    title: t('hobbies.errors.adding.title'),
-                    description: error.response?.data?.message || t('hobbies.errors.generic'),
-                    variant: 'destructive'
-                });
-            }
-        } else {
-            // Créer un hobby manuel
-            try {
-                const newId = `manual-${Date.now()}`;
-                const manualHobby = {
-                    id: newId,
-                    name: inputValue.trim(),
-                    name_en: inputValue.trim(),
-                    is_manual: true
-                };
-
+            } else {
                 await axios.post('/user-manual-hobbies', {
                     user_id: auth.user.id,
-                    hobby: manualHobby
-                });
-
-                const updatedHobbies = [...userHobbies, manualHobby];
-                setUserHobbies(updatedHobbies);
-                onUpdate(updatedHobbies);
-                setInputValue('');
-            } catch (error) {
-                toast({
-                    title: t('hobbies.errors.adding.title'),
-                    description: error.response?.data?.message || t('hobbies.errors.generic'),
-                    variant: 'destructive'
+                    hobby: hobbyToAdd
                 });
             }
-        }
-    };
 
-    const handleInputKeyDown = async (e) => {
-        if (e.key === 'Enter' && inputValue.trim()) {
-            e.preventDefault();
-            await addHobby();
-        }
-    };
+            const updatedHobbies = [...hobbies, hobbyToAdd];
+            setHobbies(updatedHobbies);
+            onUpdate(updatedHobbies);
 
-    const handleSuggestionClick = async (hobby) => {
-        try {
-            const response = await axios.post('/user-hobbies', {
-                user_id: auth.user.id,
-                hobby_id: hobby.id,
-            });
-
-            if (response.data.success) {
-                const updatedHobbies = [...userHobbies, hobby];
-                setUserHobbies(updatedHobbies);
-                onUpdate(updatedHobbies);
-                setInputValue('');
-                setSuggestions([]);
-            }
-        } catch (error) {
+            setInputValue('');
+            setSuggestions([]);
+            
             toast({
-                title: t('hobbies.errors.adding.title'),
-                description: error.response?.data?.message || t('hobbies.errors.generic'),
+                title: 'Centre d\'intérêt ajouté',
+                description: `${hobbyToAdd.name} a été ajouté`,
+                variant: 'default'
+            });
+        } catch (error) {
+            console.error('Error adding hobby:', error);
+            toast({
+                title: 'Erreur',
+                description: 'Impossible d\'ajouter le centre d\'intérêt',
                 variant: 'destructive'
             });
+        } finally {
+            setLoading(false);
         }
     };
 
-    const handleRemoveHobby = async (hobbyId) => {
+    const removeHobby = async (hobbyId) => {
+        setLoading(true);
         try {
             if (typeof hobbyId === 'string' && hobbyId.startsWith('manual-')) {
                 await axios.delete(`/user-manual-hobbies/${auth.user.id}/${hobbyId}`);
             } else {
                 await axios.delete(`/user-hobbies/${auth.user.id}/${hobbyId}`);
             }
-
-            const updatedHobbies = userHobbies.filter(h => h.id !== hobbyId);
-            setUserHobbies(updatedHobbies);
+            
+            const updatedHobbies = hobbies.filter(h => h.id !== hobbyId);
+            setHobbies(updatedHobbies);
             onUpdate(updatedHobbies);
-        } catch (error) {
+
             toast({
-                title: t('hobbies.errors.removing.title'),
-                description: error.response?.data?.message || t('hobbies.errors.generic'),
+                title: 'Centre d\'intérêt supprimé',
+                description: 'Le centre d\'intérêt a été supprimé avec succès',
+                variant: 'default'
+            });
+        } catch (error) {
+            console.error('Error removing hobby:', error);
+            toast({
+                title: 'Erreur',
+                description: 'Impossible de supprimer le centre d\'intérêt',
                 variant: 'destructive'
             });
+        } finally {
+            setLoading(false);
         }
     };
 
-    const sortedUserHobbies = useMemo(() => {
-        return [...userHobbies].sort((a, b) =>
-            getLocalizedName(a, i18n.language)
-                .localeCompare(getLocalizedName(b, i18n.language))
-        );
-    }, [userHobbies, i18n.language]);
-
     return (
         <div className="space-y-4">
-            <div className="flex items-stretch gap-2">
-                <div className="relative flex-grow">
-                    <input
-                        type="text"
-                        className="w-full p-3 border border-amber-200 rounded-lg shadow-sm focus:ring-2 focus:ring-amber-500 focus:border-transparent dark:bg-gray-900 dark:border-amber-800 dark:text-white"
-                        placeholder={t('hobbies.input.placeholder', 'Ajoutez vos passions, hobbies, intérêts...')}
-                        value={inputValue}
-                        onChange={(e) => setInputValue(e.target.value)}
-                        onKeyDown={handleInputKeyDown}
-                    />
-
-                    {suggestions.length > 0 && (
-                        <div className="absolute z-10 w-full mt-1 bg-white rounded-md shadow-lg dark:bg-gray-800 border border-amber-200 dark:border-amber-800">
-                            {suggestions.map((hobby) => (
-                                <div
-                                    key={hobby.id}
-                                    className="px-4 py-3 cursor-pointer hover:bg-amber-50 dark:hover:bg-amber-900/30 text-base touch-manipulation"
-                                    onClick={() => handleSuggestionClick(hobby)}
-                                >
-                                    {getLocalizedName(hobby, i18n.language)}
-                                </div>
-                            ))}
-                        </div>
-                    )}
-                </div>
-
-                <button
-                    onClick={addHobby}
-                    className="min-w-16 px-4 py-3 bg-gradient-to-r from-amber-500 to-purple-500 hover:from-amber-600 hover:to-purple-600 text-white dark:from-amber-400 dark:to-purple-400 dark:hover:from-amber-500 dark:hover:to-purple-500 rounded-lg shadow-sm focus:ring-2 focus:ring-amber-500 focus:outline-none"
-                    aria-label={t('hobbies.actions.add', 'Ajouter')}
-                >
-                    <Check className="w-5 h-5 mx-auto" />
-                </button>
+            {/* Header compact */}
+            <div>
+                <h4 className="text-base font-medium text-gray-800 dark:text-white mb-2">
+                    Centres d'intérêt <span className="text-sm text-gray-500">({hobbies.length}/6)</span>
+                </h4>
             </div>
 
-            <div className="text-sm text-gray-500 dark:text-gray-400">
-                {t('hobbies.input.help', 'Saisissez un hobby et appuyez sur le bouton ou Entrée pour ajouter.')}
-            </div>
-
-            <div className="flex flex-wrap gap-2 mt-4">
-                <AnimatePresence>
-                    {sortedUserHobbies.map((hobby) => (
-                        <motion.div
-                            key={hobby.id}
-                            initial={{ opacity: 0, scale: 0.8 }}
-                            animate={{ opacity: 1, scale: 1 }}
-                            exit={{ opacity: 0, scale: 0.8 }}
-                            transition={{ duration: 0.2 }}
-                        >
-                            <Badge
-                                variant="secondary"
-                                className={`
-                  ${hobby.is_manual
-                                    ? 'bg-gradient-to-r from-purple-100 to-blue-100 hover:from-purple-200 hover:to-blue-200 dark:from-purple-900/40 dark:to-blue-900/40'
-                                    : 'bg-gradient-to-r from-amber-100 to-purple-100 hover:from-amber-200 hover:to-purple-200 dark:from-amber-900/40 dark:to-purple-900/40'
-                                }
-                  text-gray-800 dark:text-gray-200 flex items-center gap-2 py-2 pl-3 pr-2 text-base`}
+            <div className="space-y-3">
+                {/* Tags des centres d'intérêt sélectionnés */}
+                <div className="flex flex-wrap gap-2">
+                    <AnimatePresence>
+                        {hobbies.map((hobby) => (
+                            <motion.div
+                                key={hobby.id}
+                                initial={{ opacity: 0, scale: 0.8 }}
+                                animate={{ opacity: 1, scale: 1 }}
+                                exit={{ opacity: 0, scale: 0.8 }}
+                                className="bg-purple-500 text-white px-2.5 py-1 rounded-full text-xs flex items-center gap-1.5 hover:bg-purple-600 transition-colors"
                             >
                                 <span>{getLocalizedName(hobby, i18n.language)}</span>
                                 <button
-                                    onClick={() => handleRemoveHobby(hobby.id)}
-                                    className="ml-1 p-1 rounded-full hover:bg-red-100 hover:text-red-500 dark:hover:bg-red-900/30 dark:hover:text-red-400 touch-manipulation"
+                                    onClick={() => removeHobby(hobby.id)}
+                                    className="hover:bg-teal-600 rounded-full p-0.5 transition-colors"
+                                    disabled={loading}
                                 >
-                                    <X className="h-3 w-3" />
+                                    <X className="w-3 h-3" />
                                 </button>
-                            </Badge>
-                        </motion.div>
-                    ))}
-                </AnimatePresence>
+                            </motion.div>
+                        ))}
+                    </AnimatePresence>
+                </div>
 
-                {/* Bouton pour ajouter si la liste est vide (encore plus intuitif) */}
-                {sortedUserHobbies.length === 0 && (
-                    <div className="w-full flex justify-center py-4">
-                        <div className="text-gray-400 dark:text-gray-500 flex flex-col items-center gap-2">
-                            <Plus className="h-8 w-8" />
-                            <span>{t('hobbies.list.empty', 'Ajoutez vos premiers hobbies')}</span>
-                        </div>
+                {/* Input d'ajout compact */}
+                <div className="flex gap-2">
+                    <div className="relative flex-1">
+                        <input
+                            type="text"
+                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-sm focus:ring-1 focus:ring-purple-500 focus:border-purple-500 dark:bg-gray-800 dark:text-white"
+                            placeholder="Ajouter centre d'intérêt..."
+                            value={inputValue}
+                            onChange={(e) => setInputValue(e.target.value)}
+                            onKeyDown={(e) => e.key === 'Enter' && addHobby()}
+                            disabled={loading}
+                        />
+
+                        {suggestions.length > 0 && (
+                            <div className="absolute z-10 w-full mt-1 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-600">
+                                {suggestions.map((hobby) => (
+                                    <div
+                                        key={hobby.id}
+                                        className="px-3 py-2 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 text-sm"
+                                        onClick={() => addHobby(hobby)}
+                                    >
+                                        {getLocalizedName(hobby, i18n.language)}
+                                    </div>
+                                ))}
+                            </div>
+                        )}
                     </div>
-                )}
+
+                    <button
+                        onClick={() => addHobby()}
+                        disabled={!inputValue.trim() || loading || hobbies.length >= 6}
+                        className="bg-purple-500 hover:bg-purple-600 text-white px-3 py-2 rounded-md text-sm disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1.5"
+                    >
+                        {loading ? (
+                            <svg className="animate-spin h-3 w-3" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                            </svg>
+                        ) : (
+                            <Plus className="w-3 w-3" />
+                        )}
+                        +
+                    </button>
+                </div>
             </div>
         </div>
     );
-};
-
-export default HobbyInput;
+}

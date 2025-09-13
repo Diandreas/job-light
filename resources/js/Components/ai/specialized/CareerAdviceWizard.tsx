@@ -11,7 +11,7 @@ import { Badge } from '@/Components/ui/badge';
 import {
     Brain, Target, TrendingUp, MapPin, Clock, Users,
     ChevronRight, ChevronLeft, Sparkles, CheckCircle,
-    ArrowRight, Lightbulb, Rocket, Award
+    ArrowRight, Lightbulb, Rocket, Award, Loader2
 } from 'lucide-react';
 import {
     Select,
@@ -180,62 +180,109 @@ Pouvez-vous me donner des conseils personnalisés pour atteindre mes objectifs d
     };
 
     return (
-        <div className="max-w-2xl mx-auto">
-            {/* Header avec progression */}
-            <div className="mb-6">
-                <div className="flex items-center justify-between mb-4">
-                    <div className="flex items-center gap-3">
-                        <div className="p-2 rounded-xl bg-gradient-to-r from-amber-500 to-purple-500">
-                            <Brain className="w-6 h-6 text-white" />
+        <div className="max-w-3xl mx-auto">
+            {/* Header avec progression modernisé */}
+            <div className="mb-8">
+                {/* Barre de progression circulaire moderne */}
+                <div className="text-center mb-6">
+                    <div className="flex justify-center items-center gap-2 mb-4">
+                        {WIZARD_STEPS.map((step, index) => {
+                            const Icon = step.icon;
+                            const isActive = index === currentStep;
+                            const isCompleted = index < currentStep;
+
+                            return (
+                                <React.Fragment key={step.id}>
+                                    <motion.div
+                                        initial={{ scale: 0.8 }}
+                                        animate={{
+                                            scale: isActive ? 1.2 : 1,
+                                            backgroundColor: isActive ? '#f59e0b' : isCompleted ? '#10b981' : '#d1d5db'
+                                        }}
+                                        transition={{ duration: 0.3 }}
+                                        className={`w-10 h-10 rounded-full flex items-center justify-center text-white shadow-lg
+                                            ${isActive ? 'bg-amber-500 shadow-amber-200' :
+                                              isCompleted ? 'bg-green-500 shadow-green-200' : 'bg-gray-300'}`}
+                                    >
+                                        {isCompleted ? (
+                                            <CheckCircle className="w-5 h-5" />
+                                        ) : (
+                                            <Icon className="w-5 h-5" />
+                                        )}
+                                    </motion.div>
+                                    {index < WIZARD_STEPS.length - 1 && (
+                                        <div className={`flex-1 h-0.5 ${isCompleted ? 'bg-green-500' : 'bg-gray-200'} transition-colors duration-300`} />
+                                    )}
+                                </React.Fragment>
+                            );
+                        })}
+                    </div>
+
+                    <motion.div
+                        key={currentStep}
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        className="space-y-2"
+                    >
+                        <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 flex items-center justify-center gap-3">
+                            {/* Mascotte comme icône du titre de l'étape */}
+                            <motion.div
+                                initial={{ scale: 0, rotate: -90 }}
+                                animate={{ scale: 1, rotate: 0 }}
+                                transition={{
+                                    type: "spring",
+                                    stiffness: 200,
+                                    damping: 15,
+                                    delay: 0.1
+                                }}
+                                className="relative"
+                            >
+                                <div className="w-7 h-7 rounded-lg overflow-hidden shadow-md">
+                                    <img
+                                        src="/mascot/mas.png"
+                                        alt="AI Assistant"
+                                        className="w-full h-full object-cover"
+                                    />
+                                </div>
+                                {/* Badge avec l'icône de l'étape */}
+                                <motion.div
+                                    initial={{ scale: 0, x: 3, y: -3 }}
+                                    animate={{ scale: 1, x: 0, y: 0 }}
+                                    transition={{ delay: 0.3 }}
+                                    className="absolute -bottom-1 -right-1 w-3.5 h-3.5 rounded-md bg-gradient-to-r from-amber-500 to-purple-500 flex items-center justify-center shadow-sm"
+                                >
+                                    <currentStepData.icon className="w-2 h-2 text-white" />
+                                </motion.div>
+                            </motion.div>
+                            {currentStepData.title}
+                        </h3>
+                        <div className="flex items-center justify-center gap-2 text-sm text-gray-600">
+                            <span>Étape {currentStep + 1} sur {WIZARD_STEPS.length}</span>
+                            <div className="w-1 h-1 bg-gray-400 rounded-full" />
+                            <div className="flex items-center gap-1">
+                                <Clock className="w-3 h-3" />
+                                <span>~2 min restantes</span>
+                            </div>
                         </div>
-                        <div>
-                            <h2 className="text-xl font-bold text-gray-800 dark:text-gray-200">
-                                {t('career_advice_wizard.title') || 'Assistant Carrière Personnalisé'}
-                            </h2>
-                            <p className="text-sm text-gray-600 dark:text-gray-400">
-                                {t('career_advice_wizard.step_progress', { current: currentStep + 1, total: WIZARD_STEPS.length }) || `Étape ${currentStep + 1} sur ${WIZARD_STEPS.length}`}
-                            </p>
+                    </motion.div>
+
+                    {/* Barre de progression linéaire */}
+                    <div className="mt-4 mx-auto max-w-md">
+                        <div className="w-full bg-gray-200 rounded-full h-1.5">
+                            <motion.div
+                                initial={{ width: 0 }}
+                                animate={{ width: `${progress}%` }}
+                                transition={{ duration: 0.5, ease: "easeOut" }}
+                                className="bg-gradient-to-r from-amber-500 to-purple-500 h-1.5 rounded-full shadow-sm"
+                            />
                         </div>
                     </div>
-                    <Badge variant="outline" className="bg-amber-50 text-amber-700 border-amber-200">
-                        <Sparkles className="w-3 h-3 mr-1" />
-                        {t('career_advice_wizard.personalized_ai') || 'IA Personnalisée'}
-                    </Badge>
-                </div>
-
-                <Progress value={progress} className="h-2 mb-2" />
-
-                {/* Navigation des étapes */}
-                <div className="flex items-center justify-between text-xs">
-                    {WIZARD_STEPS.map((step, index) => {
-                        const Icon = step.icon;
-                        const isActive = index === currentStep;
-                        const isCompleted = index < currentStep;
-
-                        return (
-                            <div
-                                key={step.id}
-                                className={`flex items-center gap-1 ${isActive ? 'text-blue-600 font-medium' :
-                                        isCompleted ? 'text-green-600' : 'text-gray-400'
-                                    }`}
-                            >
-                                <Icon className="w-3 h-3" />
-                                <span className="hidden sm:inline">{step.title}</span>
-                            </div>
-                        );
-                    })}
                 </div>
             </div>
 
-            {/* Contenu des étapes */}
-            <Card className="min-h-[400px]">
-                <CardHeader>
-                    <CardTitle className="flex items-center gap-2">
-                        <currentStepData.icon className="w-5 h-5 text-blue-600" />
-                        {currentStepData.title}
-                    </CardTitle>
-                </CardHeader>
-                <CardContent>
+            {/* Contenu des étapes modernisé */}
+            <Card className="min-h-[500px] border-0 shadow-xl bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm">
+                <CardContent className="p-8">
                     <AnimatePresence mode="wait">
                         <motion.div
                             key={currentStep}
@@ -489,29 +536,29 @@ Pouvez-vous me donner des conseils personnalisés pour atteindre mes objectifs d
                         </motion.div>
                     </AnimatePresence>
 
-                    {/* Navigation */}
-                    <div className="flex justify-between items-center mt-8 pt-4 border-t">
+                    {/* Navigation modernisée */}
+                    <div className="flex justify-between items-center mt-8 pt-6">
                         <Button
                             variant="outline"
                             onClick={handleBack}
                             disabled={currentStep === 0}
-                            className="flex items-center gap-2"
+                            className="flex items-center gap-2 px-6 py-3 rounded-xl border-2 hover:bg-gray-50 dark:hover:bg-gray-800 disabled:opacity-50 transition-all"
                         >
                             <ChevronLeft className="w-4 h-4" />
                             {t('common.previous') || 'Précédent'}
                         </Button>
 
-                        <div className="flex items-center gap-2 text-xs text-gray-500">
-                            <Clock className="w-3 h-3" />
-                            {t('career_advice_wizard.time_remaining') || '~2 min restantes'}
-                        </div>
-
                         <Button
                             onClick={handleNext}
                             disabled={!isStepValid() || isLoading}
-                            className="flex items-center gap-2 bg-gradient-to-r from-amber-500 to-purple-500 hover:from-amber-600 hover:to-purple-600"
+                            className="flex items-center gap-2 px-8 py-3 rounded-xl bg-gradient-to-r from-amber-500 to-purple-500 hover:from-amber-600 hover:to-purple-600 shadow-lg hover:shadow-xl disabled:opacity-50 transition-all text-white font-medium"
                         >
-                            {currentStep === WIZARD_STEPS.length - 1 ? (
+                            {isLoading ? (
+                                <>
+                                    <Loader2 className="w-4 h-4 animate-spin" />
+                                    {t('common.processing') || 'Traitement...'}
+                                </>
+                            ) : currentStep === WIZARD_STEPS.length - 1 ? (
                                 <>
                                     <Sparkles className="w-4 h-4" />
                                     {t('career_advice_wizard.generate_advice') || 'Générer conseils'}

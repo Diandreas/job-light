@@ -27,14 +27,17 @@ interface ServiceSelectorProps {
     onServiceSubmit: (serviceId: string, data: any) => void;
     isLoading: boolean;
     walletBalance: number;
+    onServiceSelect?: () => void;
+    onBackToServices?: () => void;
 }
 
 // Configuration des services - sera initialisée dans le composant
 
-export default function ServiceSelector({ userInfo, onServiceSubmit, isLoading, walletBalance }: ServiceSelectorProps) {
+export default function ServiceSelector({ userInfo, onServiceSubmit, isLoading, walletBalance, onServiceSelect, onBackToServices }: ServiceSelectorProps) {
     const { t } = useTranslation();
     const [selectedService, setSelectedService] = useState<string | null>(null);
     const [showServiceInterface, setShowServiceInterface] = useState(false);
+    const [mascotPosition, setMascotPosition] = useState({ x: 0, y: 0, show: true });
 
     // Configuration des services avec traductions
     const ENHANCED_SERVICES = [
@@ -104,16 +107,24 @@ export default function ServiceSelector({ userInfo, onServiceSubmit, isLoading, 
 
     const handleServiceSelect = (serviceId: string) => {
         const service = ENHANCED_SERVICES.find(s => s.id === serviceId);
-        
+
         if (!service) return;
-        
+
         if (walletBalance < service.cost) {
             // Gérer le manque de tokens
             return;
         }
 
-        setSelectedService(serviceId);
-        setShowServiceInterface(true);
+        // Faire disparaître la mascotte du haut
+        onServiceSelect?.();
+
+        // Animation de la mascotte vers l'icône du service
+        setMascotPosition({ x: 0, y: 0, show: false });
+
+        setTimeout(() => {
+            setSelectedService(serviceId);
+            setShowServiceInterface(true);
+        }, 500);
     };
 
     const handleServiceSubmit = (data: any) => {
@@ -127,6 +138,10 @@ export default function ServiceSelector({ userInfo, onServiceSubmit, isLoading, 
     const handleBack = () => {
         setShowServiceInterface(false);
         setSelectedService(null);
+        setMascotPosition({ x: 0, y: 0, show: true });
+
+        // Faire réapparaître la mascotte du haut
+        onBackToServices?.();
     };
 
     const getColorClasses = (color: string) => ({
@@ -141,33 +156,91 @@ export default function ServiceSelector({ userInfo, onServiceSubmit, isLoading, 
     if (showServiceInterface && selectedService) {
         const service = ENHANCED_SERVICES.find(s => s.id === selectedService);
         const SpecializedComponent = service?.component;
+        const ServiceIcon = service?.icon;
 
         if (SpecializedComponent) {
             return (
                 <div className="space-y-6">
-                    {/* Header avec retour */}
-                    <div className="flex items-center justify-between">
-                        <Button
-                            variant="outline"
-                            onClick={handleBack}
-                            className="flex items-center gap-2"
-                        >
-                            <ArrowRight className="w-4 h-4 rotate-180" />
-                            {t('common.back_to_services') || 'Retour aux services'}
-                        </Button>
-                        
-                        <Badge variant="outline" className="bg-amber-50 text-amber-700">
-                            <Star className="w-3 h-3 mr-1" />
-                            {service.cost} tokens
-                        </Badge>
+                    {/* Header avec mascotte animée et retour */}
+                    <div className="relative">
+                        <div className="flex items-center justify-between mb-6">
+                            <Button
+                                variant="outline"
+                                onClick={handleBack}
+                                className="flex items-center gap-2 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+                            >
+                                <ArrowRight className="w-4 h-4 rotate-180" />
+                                {t('common.back_to_services') || 'Retour aux services'}
+                            </Button>
+
+                            <Badge variant="outline" className="bg-amber-50 text-amber-700 border-amber-200">
+                                <Star className="w-3 h-3 mr-1" />
+                                {service.cost} tokens
+                            </Badge>
+                        </div>
+
+                        {/* Titre du service avec mascotte comme icône */}
+                        <div className="text-center mb-8">
+                            <motion.h2
+                                initial={{ opacity: 0, y: 20 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                transition={{ delay: 0.3 }}
+                                className="text-2xl font-bold bg-gradient-to-r from-amber-600 to-purple-600 bg-clip-text text-transparent flex items-center justify-center gap-3"
+                            >
+                                {/* Mascotte comme icône du titre */}
+                                <motion.div
+                                    initial={{ scale: 0, rotate: -180 }}
+                                    animate={{ scale: 1, rotate: 0 }}
+                                    transition={{
+                                        type: "spring",
+                                        stiffness: 260,
+                                        damping: 20,
+                                        delay: 0.2
+                                    }}
+                                    className="relative"
+                                >
+                                    <div className="w-8 h-8 rounded-lg overflow-hidden shadow-md">
+                                        <img
+                                            src="/mascot/mas.png"
+                                            alt="AI Assistant"
+                                            className="w-full h-full object-cover"
+                                        />
+                                    </div>
+                                    {/* Badge avec l'icône du service */}
+                                    <motion.div
+                                        initial={{ scale: 0, x: 5, y: -5 }}
+                                        animate={{ scale: 1, x: 0, y: 0 }}
+                                        transition={{ delay: 0.5 }}
+                                        className={`absolute -bottom-1 -right-1 w-4 h-4 rounded-md bg-gradient-to-r from-${service.color}-500 to-${service.color}-600 flex items-center justify-center shadow-sm`}
+                                    >
+                                        <ServiceIcon className="w-2.5 h-2.5 text-white" />
+                                    </motion.div>
+                                </motion.div>
+                                {service.title}
+                            </motion.h2>
+                            <motion.p
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: 1 }}
+                                transition={{ delay: 0.4 }}
+                                className="text-gray-600 dark:text-gray-400 mt-2"
+                            >
+                                {service.description}
+                            </motion.p>
+                        </div>
                     </div>
 
-                    {/* Interface spécialisée */}
-                    <SpecializedComponent
-                        userInfo={userInfo}
-                        onSubmit={handleServiceSubmit}
-                        isLoading={isLoading}
-                    />
+                    {/* Interface spécialisée avec animation */}
+                    <motion.div
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.5 }}
+                    >
+                        <SpecializedComponent
+                            userInfo={userInfo}
+                            onSubmit={handleServiceSubmit}
+                            isLoading={isLoading}
+                        />
+                    </motion.div>
                 </div>
             );
         }
@@ -214,9 +287,8 @@ export default function ServiceSelector({ userInfo, onServiceSubmit, isLoading, 
                                 whileHover={{ y: -2 }}
                                 whileTap={{ scale: 0.98 }}
                             >
-                                <Card className={`cursor-pointer transition-all duration-300 border-2 ${
-                                    canAfford ? 'hover:shadow-lg hover:border-amber-300 dark:hover:border-amber-600' : 'opacity-60 border-gray-200'
-                                }`}>
+                                <Card className={`cursor-pointer transition-all duration-300 border-2 ${canAfford ? 'hover:shadow-lg hover:border-amber-300 dark:hover:border-amber-600' : 'opacity-60 border-gray-200'
+                                    }`}>
                                     <CardContent className="p-4">
                                         <div className="flex items-start justify-between mb-3">
                                             <div className={`p-2 rounded-lg bg-gradient-to-r from-${service.color}-500 to-${service.color}-600`}>
@@ -271,11 +343,10 @@ export default function ServiceSelector({ userInfo, onServiceSubmit, isLoading, 
                                             onClick={() => handleServiceSelect(service.id)}
                                             disabled={!canAfford || !service.component}
                                             size="sm"
-                                            className={`w-full text-xs ${
-                                                service.component && canAfford
+                                            className={`w-full text-xs ${service.component && canAfford
                                                     ? 'bg-gradient-to-r from-amber-500 to-purple-500 hover:from-amber-600 hover:to-purple-600'
                                                     : 'bg-gray-400'
-                                            }`}
+                                                }`}
                                         >
                                             {!service.component ? (
                                                 <>

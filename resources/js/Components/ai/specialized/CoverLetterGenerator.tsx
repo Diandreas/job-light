@@ -194,24 +194,14 @@ Créez une lettre de motivation personnalisée qui met en valeur mon profil pour
     };
 
     return (
-        <div className="max-w-4xl mx-auto space-y-6">
-            {/* Header */}
-            <div className="text-center mb-8">
-                <div className="flex items-center justify-center gap-3 mb-4">
-                    <div className="p-3 rounded-xl bg-gradient-to-r from-amber-500 to-purple-500">
-                        <FileText className="w-8 h-8 text-white" />
-                    </div>
-                    <div>
-                        <h2 className="text-2xl font-bold text-gray-800 dark:text-gray-200">
-                            Générateur de Lettre de Motivation IA
-                        </h2>
-                        <p className="text-gray-600 dark:text-gray-400">
-                            Créez une lettre personnalisée et optimisée ATS
-                        </p>
-                    </div>
-                </div>
-
-                {atsScore && (
+        <div className="max-w-4xl mx-auto space-y-4">
+            {/* Score ATS si disponible */}
+            {atsScore && (
+                <motion.div
+                    initial={{ opacity: 0, y: -10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="flex justify-center"
+                >
                     <Badge
                         variant="outline"
                         className={`${atsScore >= 80 ? 'bg-green-50 text-green-700 border-green-200' :
@@ -221,20 +211,27 @@ Créez une lettre de motivation personnalisée qui met en valeur mon profil pour
                         <TrendingUp className="w-3 h-3 mr-1" />
                         Score ATS: {atsScore}%
                     </Badge>
-                )}
-            </div>
+                </motion.div>
+            )}
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 {/* Formulaire principal */}
-                <div className="lg:col-span-2 space-y-6">
-                    <Card>
-                        <CardHeader>
-                            <CardTitle className="flex items-center gap-2">
-                                <Target className="w-5 h-5 text-green-600" />
-                                Informations sur le Poste
-                            </CardTitle>
-                        </CardHeader>
-                        <CardContent className="space-y-4">
+                <div className="lg:col-span-2 space-y-4">
+                    <motion.div
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.1 }}
+                    >
+                        <Card className="border-0 shadow-lg bg-white/90 dark:bg-gray-900/90 backdrop-blur-sm">
+                            <CardContent className="p-6 space-y-4">
+                                <div className="flex items-center gap-2 mb-4">
+                                    <div className="w-8 h-8 rounded-lg bg-gradient-to-r from-green-500 to-emerald-500 flex items-center justify-center">
+                                        <Target className="w-4 h-4 text-white" />
+                                    </div>
+                                    <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+                                        Informations sur le Poste
+                                    </h3>
+                                </div>
                             <Tabs value={formData.inputMethod} onValueChange={(value) =>
                                 setFormData(prev => ({ ...prev, inputMethod: value as 'manual' | 'paste' | 'url' }))
                             }>
@@ -322,18 +319,26 @@ Créez une lettre de motivation personnalisée qui met en valeur mon profil pour
                                     </div>
                                 </TabsContent>
                             </Tabs>
-                        </CardContent>
-                    </Card>
+                            </CardContent>
+                        </Card>
+                    </motion.div>
 
                     {/* Personnalisation */}
-                    <Card>
-                        <CardHeader>
-                            <CardTitle className="flex items-center gap-2">
-                                <Sparkles className="w-5 h-5 text-purple-600" />
-                                Personnalisation
-                            </CardTitle>
-                        </CardHeader>
-                        <CardContent className="space-y-4">
+                    <motion.div
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.2 }}
+                    >
+                        <Card className="border-0 shadow-lg bg-white/90 dark:bg-gray-900/90 backdrop-blur-sm">
+                            <CardContent className="p-6 space-y-4">
+                                <div className="flex items-center gap-2 mb-4">
+                                    <div className="w-8 h-8 rounded-lg bg-gradient-to-r from-purple-500 to-pink-500 flex items-center justify-center">
+                                        <Sparkles className="w-4 h-4 text-white" />
+                                    </div>
+                                    <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+                                        Personnalisation
+                                    </h3>
+                                </div>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div>
                                     <Label>Ton de la lettre</Label>
@@ -402,22 +407,22 @@ Créez une lettre de motivation personnalisée qui met en valeur mon profil pour
                                     ))}
                                 </div>
                             </div>
-                        </CardContent>
-                    </Card>
+                            </CardContent>
+                        </Card>
+                    </motion.div>
                 </div>
 
-                {/* Panneau latéral - Conseils et aperçu */}
-                <div className="space-y-6">
+                {/* Panneau latéral modernisé */}
+                <motion.div
+                    initial={{ opacity: 0, x: 20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 0.3 }}
+                    className="space-y-4"
+                >
                     {/* Score ATS */}
                     {atsScore && (
-                        <Card>
-                            <CardHeader>
-                                <CardTitle className="flex items-center gap-2 text-sm">
-                                    <TrendingUp className="w-4 h-4" />
-                                    Analyse ATS
-                                </CardTitle>
-                            </CardHeader>
-                            <CardContent>
+                        <Card className="border-0 shadow-lg bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-950/50 dark:to-indigo-950/50">
+                            <CardContent className="p-4">
                                 <div className="text-center mb-4">
                                     <div className={`text-3xl font-bold ${atsScore >= 80 ? 'text-green-600' :
                                             atsScore >= 60 ? 'text-orange-600' : 'text-red-600'
@@ -448,25 +453,27 @@ Créez une lettre de motivation personnalisée qui met en valeur mon profil pour
                     )}
 
                     {/* Conseils personnalisés */}
-                    <Card>
-                        <CardHeader>
-                            <CardTitle className="flex items-center gap-2 text-sm">
-                                <Lightbulb className="w-4 h-4 text-amber-600" />
-                                Conseils Personnalisés
-                            </CardTitle>
-                        </CardHeader>
-                        <CardContent className="space-y-3">
+                    <Card className="border-0 shadow-lg bg-gradient-to-br from-amber-50 to-orange-50 dark:from-amber-950/50 dark:to-orange-950/50">
+                        <CardContent className="p-4">
+                            <div className="flex items-center gap-2 mb-3">
+                                <div className="w-6 h-6 rounded-md bg-gradient-to-r from-amber-500 to-orange-500 flex items-center justify-center">
+                                    <Lightbulb className="w-3 h-3 text-white" />
+                                </div>
+                                <h4 className="font-medium text-gray-900 dark:text-gray-100 text-sm">
+                                    Conseils IA
+                                </h4>
+                            </div>
                             <div className="text-xs space-y-2">
                                 <div className="flex items-start gap-2">
-                                    <CheckCircle className="w-3 h-3 text-green-600 mt-0.5" />
+                                    <CheckCircle className="w-3 h-3 text-green-600 mt-0.5 flex-shrink-0" />
                                     <span>Mentionnez vos {userInfo?.experiences?.length || 0} expériences</span>
                                 </div>
                                 <div className="flex items-start gap-2">
-                                    <CheckCircle className="w-3 h-3 text-green-600 mt-0.5" />
+                                    <CheckCircle className="w-3 h-3 text-green-600 mt-0.5 flex-shrink-0" />
                                     <span>Mettez en avant vos compétences en {userInfo?.competences?.[0]?.name}</span>
                                 </div>
                                 <div className="flex items-start gap-2">
-                                    <CheckCircle className="w-3 h-3 text-green-600 mt-0.5" />
+                                    <CheckCircle className="w-3 h-3 text-green-600 mt-0.5 flex-shrink-0" />
                                     <span>Adaptez le ton à la culture d'entreprise</span>
                                 </div>
                             </div>
@@ -475,18 +482,20 @@ Créez une lettre de motivation personnalisée qui met en valeur mon profil pour
 
                     {/* Aperçu des points clés */}
                     {formData.keyPoints.length > 0 && (
-                        <Card>
-                            <CardHeader>
-                                <CardTitle className="flex items-center gap-2 text-sm">
-                                    <Star className="w-4 h-4 text-purple-600" />
-                                    Points Clés
-                                </CardTitle>
-                            </CardHeader>
-                            <CardContent>
+                        <Card className="border-0 shadow-lg bg-gradient-to-br from-purple-50 to-pink-50 dark:from-purple-950/50 dark:to-pink-950/50">
+                            <CardContent className="p-4">
+                                <div className="flex items-center gap-2 mb-3">
+                                    <div className="w-6 h-6 rounded-md bg-gradient-to-r from-purple-500 to-pink-500 flex items-center justify-center">
+                                        <Star className="w-3 h-3 text-white" />
+                                    </div>
+                                    <h4 className="font-medium text-gray-900 dark:text-gray-100 text-sm">
+                                        Points Clés
+                                    </h4>
+                                </div>
                                 <div className="space-y-2">
                                     {formData.keyPoints.map((point, index) => (
                                         <div key={index} className="text-xs flex items-center gap-2">
-                                            <div className="w-1.5 h-1.5 bg-purple-500 rounded-full" />
+                                            <div className="w-1.5 h-1.5 bg-purple-500 rounded-full flex-shrink-0" />
                                             {point}
                                         </div>
                                     ))}
@@ -494,16 +503,21 @@ Créez une lettre de motivation personnalisée qui met en valeur mon profil pour
                             </CardContent>
                         </Card>
                     )}
-                </div>
+                </motion.div>
             </div>
 
-            {/* Bouton de génération */}
-            <div className="text-center">
+            {/* Bouton de génération modernisé */}
+            <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.4 }}
+                className="text-center pt-6"
+            >
                 <Button
                     onClick={handleSubmit}
                     disabled={!isFormValid() || isLoading}
                     size="lg"
-                    className="bg-gradient-to-r from-amber-500 to-purple-500 hover:from-amber-600 hover:to-purple-600 px-8"
+                    className="bg-gradient-to-r from-amber-500 to-purple-500 hover:from-amber-600 hover:to-purple-600 shadow-lg hover:shadow-xl disabled:opacity-50 transition-all px-8 py-3 rounded-xl font-medium"
                 >
                     {isLoading ? (
                         <>
@@ -517,7 +531,12 @@ Créez une lettre de motivation personnalisée qui met en valeur mon profil pour
                         </>
                     )}
                 </Button>
-            </div>
+                {!isFormValid() && (
+                    <p className="text-xs text-gray-500 mt-2">
+                        Veuillez remplir tous les champs obligatoires
+                    </p>
+                )}
+            </motion.div>
         </div>
     );
 }

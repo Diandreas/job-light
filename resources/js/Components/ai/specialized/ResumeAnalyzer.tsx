@@ -186,25 +186,14 @@ Donnez-moi une analyse détaillée avec :
     };
 
     return (
-        <div className="max-w-6xl mx-auto space-y-6">
-            {/* Header avec score actuel */}
-            <div className="text-center mb-8">
-                <div className="flex items-center justify-center gap-4 mb-6">
-                    <div className="p-3 rounded-xl bg-gradient-to-r from-amber-500 to-purple-500">
-                        <PenTool className="w-8 h-8 text-white" />
-                    </div>
-                    <div>
-                        <h2 className="text-2xl font-bold text-gray-800 dark:text-gray-200">
-                            Analyseur de CV IA
-                        </h2>
-                        <p className="text-gray-600 dark:text-gray-400">
-                            Optimisez votre CV avec des recommandations personnalisées
-                        </p>
-                    </div>
-                </div>
-
-                {/* Score actuel */}
-                <div className={`inline-flex items-center gap-3 px-6 py-3 rounded-xl border ${getScoreBg(currentScore)}`}>
+        <div className="max-w-6xl mx-auto space-y-4">
+            {/* Score actuel en haut */}
+            <motion.div
+                initial={{ opacity: 0, y: -20 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="flex justify-center"
+            >
+                <div className={`inline-flex items-center gap-3 px-6 py-3 rounded-xl border shadow-lg ${getScoreBg(currentScore)}`}>
                     <div className="text-center">
                         <div className={`text-3xl font-bold ${getScoreColor(currentScore)}`}>
                             {Math.round(currentScore)}
@@ -221,16 +210,26 @@ Donnez-moi une analyse détaillée avec :
                         </div>
                     </div>
                 </div>
-            </div>
+            </motion.div>
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 {/* Configuration de l'analyse */}
-                <div className="lg:col-span-2 space-y-6">
-                    <Card>
-                        <CardHeader>
-                            <CardTitle>Type d'Analyse</CardTitle>
-                        </CardHeader>
-                        <CardContent>
+                <div className="lg:col-span-2 space-y-4">
+                    <motion.div
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.1 }}
+                    >
+                        <Card className="border-0 shadow-lg bg-white/90 dark:bg-gray-900/90 backdrop-blur-sm">
+                            <CardContent className="p-6">
+                                <div className="flex items-center gap-2 mb-4">
+                                    <div className="w-8 h-8 rounded-lg bg-gradient-to-r from-blue-500 to-cyan-500 flex items-center justify-center">
+                                        <Eye className="w-4 h-4 text-white" />
+                                    </div>
+                                    <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+                                        Type d'Analyse
+                                    </h3>
+                                </div>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 {ANALYSIS_TYPES.map(type => {
                                     const Icon = type.icon;
@@ -259,16 +258,27 @@ Donnez-moi une analyse détaillée avec :
                                     );
                                 })}
                             </div>
-                        </CardContent>
-                    </Card>
+                            </CardContent>
+                        </Card>
+                    </motion.div>
 
                     {/* Configuration spécifique selon le type */}
                     {formData.analysisType === 'targeted' && (
-                        <Card>
-                            <CardHeader>
-                                <CardTitle>Poste Cible</CardTitle>
-                            </CardHeader>
-                            <CardContent className="space-y-4">
+                        <motion.div
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ delay: 0.2 }}
+                        >
+                            <Card className="border-0 shadow-lg bg-white/90 dark:bg-gray-900/90 backdrop-blur-sm">
+                                <CardContent className="p-6 space-y-4">
+                                    <div className="flex items-center gap-2 mb-4">
+                                        <div className="w-8 h-8 rounded-lg bg-gradient-to-r from-green-500 to-emerald-500 flex items-center justify-center">
+                                            <Target className="w-4 h-4 text-white" />
+                                        </div>
+                                        <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+                                            Poste Cible
+                                        </h3>
+                                    </div>
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                     <div>
                                         <Label htmlFor="targetPosition">Intitulé du poste visé</Label>

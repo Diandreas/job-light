@@ -9,6 +9,11 @@ use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use App\Models\ReferralLevel;
+use App\Models\PushNotification;
+use App\Models\UserNotificationPreference;
+use App\Models\UserDeviceToken;
+use App\Models\UserMessage;
+use App\Models\CompanyReview;
 
 class User extends Authenticatable
 {

@@ -111,4 +111,43 @@ class NotificationController extends Controller
             'unread_count' => $notifications->count()
         ]);
     }
+
+    /**
+     * Afficher la page des préférences de notification
+     */
+    public function showSettings(Request $request)
+    {
+        $user = Auth::user();
+        $preferences = $user->getNotificationPreferences();
+
+        return Inertia::render('Settings/Notifications', [
+            'preferences' => $preferences
+        ]);
+    }
+
+    /**
+     * Mettre à jour les préférences de notification
+     */
+    public function updateSettings(Request $request)
+    {
+        $request->validate([
+            'email_job_matches' => 'boolean',
+            'email_application_updates' => 'boolean',
+            'email_new_messages' => 'boolean',
+            'push_job_matches' => 'boolean',
+            'push_application_updates' => 'boolean',
+            'push_new_messages' => 'boolean',
+            'job_alert_keywords' => 'array',
+            'preferred_locations' => 'array',
+            'preferred_employment_types' => 'array'
+        ]);
+
+        $user = Auth::user();
+        $preferences = $user->getNotificationPreferences();
+        
+        $preferences->update($request->all());
+
+        return redirect()->route('settings.notifications')
+            ->with('success', 'Vos préférences de notification ont été mises à jour avec succès !');
+    }
 }

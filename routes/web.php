@@ -502,6 +502,12 @@ Route::prefix('job-portal')->name('job-portal.')->group(function () {
     });
 });
 
+// Routes Préférences de notification
+Route::prefix('settings')->name('settings.')->middleware(['auth'])->group(function () {
+    Route::get('/notifications', [App\Http\Controllers\NotificationController::class, 'showSettings'])->name('notifications');
+    Route::put('/notifications', [App\Http\Controllers\NotificationController::class, 'updateSettings'])->name('notifications.update');
+});
+
 // Routes Statistiques (admin/partenaires)
 Route::prefix('statistics')->name('statistics.')->middleware(['auth'])->group(function () {
     Route::get('/', [App\Http\Controllers\StatisticsController::class, 'index'])->name('index');

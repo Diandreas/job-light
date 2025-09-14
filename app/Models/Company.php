@@ -80,4 +80,42 @@ class Company extends Model
         return $this->subscription_expires_at === null || 
                $this->subscription_expires_at->isFuture();
     }
-}
+
+    /**
+     * Get reviews for this company.
+     */
+    public function reviews()
+    {
+        return $this->hasMany(CompanyReview::class);
+    }
+
+    /**
+     * Get approved reviews for this company.
+     */
+    public function approvedReviews()
+    {
+        return $this->hasMany(CompanyReview::class)->approved();
+    }
+
+    /**
+     * Update the company's average rating based on approved reviews.
+     */
+    public function updateRating()
+    {
+        $approvedReviews = $this->approvedReviews();
+        $count = $approvedReviews->count();
+        $average = $count > 0 ? $approvedReviews->avg('rating') : null;
+
+        $this->update([
+            'rating' => $average,
+            'rating_count' => $count
+        ]);
+    }
+
+    /**
+     * Get company members.
+     */
+    public function members()
+    {
+        return $this->hasMany(CompanyMember::class);
+    }

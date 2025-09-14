@@ -14,7 +14,8 @@ import { Alert, AlertDescription } from '@/Components/ui/alert';
 import {
     ArrowLeft, MapPin, Clock, Building, DollarSign, Users,
     Wifi, Calendar, Star, Send, CheckCircle, AlertCircle,
-    Eye, Share2, Bookmark, FileText, Target, Briefcase, Globe
+    Eye, Share2, Bookmark, FileText, Target, Briefcase, Globe,
+    Phone, Mail, ExternalLink, MessageSquare
 } from 'lucide-react';
 import {
     Dialog,
@@ -53,6 +54,10 @@ interface JobShowProps {
         created_at: string;
         views_count: number;
         applications_count: number;
+        posting_type: string; // 'standard' ou 'simple_ad'
+        contact_info: any; // Pour les annonces simples
+        contact_via_platform: boolean;
+        additional_instructions: string;
         company: {
             id: number;
             name: string;

@@ -233,7 +233,96 @@ class JobPortalController extends Controller
     }
 
     /**
-     * Publier une offre d'emploi
+     * Afficher le formulaire de création d'annonce simple
+     */
+    public function createSimpleAdForm()
+    {
+        return Inertia::render('JobPortal/CreateSimpleAd');
+    }
+
+    /**
+     * Créer une annonce simple
+     */
+    public function createSimpleAd(Request $request)
+    {
+        $request->validate([
+            'title' => 'required|string|max:255',
+            'description' => 'required|string|min:100',
+            'requirements' => 'nullable|string',
+            'location' => 'nullable|string|max:255',
+            'employment_type' => 'required|in:full-time,part-time,contract,internship,freelance',
+            'experience_level' => 'nullable|in:entry,mid,senior,executive',
+            'salary_min' => 'nullable|numeric|min:0',
+            'salary_max' => 'nullable|numeric|min:0',
+            'remote_work' => 'boolean',
+            'industry' => 'nullable|string|max:100',
+            'application_deadline' => 'nullable|date|after:today',
+            'contact_info' => 'required|array',
+            'contact_info.method' => 'required|in:email,phone,website,message',
+            'contact_info.email' => 'required_if:contact_info.method,email|email',
+            'contact_info.phone' => 'required_if:contact_info.method,phone|string',
+            'contact_info.website' => 'required_if:contact_info.method,website|url',
+            'contact_via_platform' => 'boolean',
+            'company_name' => 'nullable|string|max:255',
+            'company_description' => 'nullable|string'
+        ]);
+
+        $user = Auth::user();
+
+        // Créer ou récupérer l'entreprise
+        if ($request->company_name) {
+            $company = Company::firstOrCreate([
+                'name' => $request->company_name,
+                'email' => $user ? $user->email : $request->contact_info['email']
+            ], [
+                'type' => 'individual',
+                'status' => 'active',
+                'description' => $request->company_description,
+                'can_post_jobs' => true,
+                'job_posting_limit' => 10 // Limite pour annonces simples
+            ]);
+        } else {
+            // Entreprise par défaut pour les annonces simples
+            $company = Company::firstOrCreate([
+                'name' => 'Annonce individuelle',
+                'email' => $user ? $user->email : $request->contact_info['email']
+            ], [
+                'type' => 'individual',
+                'status' => 'active',
+                'can_post_jobs' => true,
+                'job_posting_limit' => 10
+            ]);
+        }
+
+        // Créer l'annonce simple
+        $job = JobPosting::create([
+            'company_id' => $company->id,
+            'posted_by_user_id' => $user ? $user->id : null,
+            'title' => $request->title,
+            'description' => $request->description,
+            'requirements' => $request->requirements,
+            'location' => $request->location,
+            'employment_type' => $request->employment_type,
+            'experience_level' => $request->experience_level,
+            'salary_min' => $request->salary_min,
+            'salary_max' => $request->salary_max,
+            'salary_currency' => 'EUR',
+            'remote_work' => $request->boolean('remote_work'),
+            'industry' => $request->industry,
+            'application_deadline' => $request->application_deadline,
+            'status' => 'published',
+            'posting_type' => 'simple_ad',
+            'contact_info' => $request->contact_info,
+            'contact_via_platform' => $request->boolean('contact_via_platform'),
+            'additional_instructions' => $request->contact_info['instructions'] ?? null
+        ]);
+
+        return redirect()->route('job-portal.show', $job->id)
+            ->with('success', 'Votre annonce a été publiée avec succès !');
+    }
+
+    /**
+     * Publier une offre d'emploi standard
      */
     public function createJob(Request $request)
     {

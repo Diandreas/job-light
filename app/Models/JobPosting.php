@@ -33,7 +33,11 @@ class JobPosting extends Model
         'target_associations', // JSON array des associations à notifier
         'posted_by_user_id',
         'views_count',
-        'applications_count'
+        'applications_count',
+        'posting_type', // 'standard', 'simple_ad'
+        'contact_info', // Pour annonces simples
+        'contact_via_platform',
+        'additional_instructions'
     ];
 
     protected $casts = [
@@ -46,7 +50,9 @@ class JobPosting extends Model
         'target_associations' => 'array',
         'application_deadline' => 'datetime',
         'views_count' => 'integer',
-        'applications_count' => 'integer'
+        'applications_count' => 'integer',
+        'contact_info' => 'array',
+        'contact_via_platform' => 'boolean'
     ];
 
     // Relations
@@ -121,5 +127,40 @@ class JobPosting extends Model
         }
         
         return false;
+    }
+
+    // Méthodes pour les annonces simples
+    public function isSimpleAd()
+    {
+        return $this->posting_type === 'simple_ad';
+    }
+
+    public function canApplyViaplatform()
+    {
+        return !$this->isSimpleAd() || $this->contact_via_platform;
+    }
+
+    public function getContactMethod()
+    {
+        if (!$this->isSimpleAd()) {
+            return 'platform'; // Candidature via la plateforme
+        }
+
+        if ($this->contact_via_platform) {
+            return 'platform'; // Annonce simple mais contact via plateforme
+        }
+
+        return 'external'; // Contact direct externe
+    }
+
+    // Scopes pour les annonces simples
+    public function scopeStandardJobs($query)
+    {
+        return $query->where('posting_type', 'standard');
+    }
+
+    public function scopeSimpleAds($query)
+    {
+        return $query->where('posting_type', 'simple_ad');
     }
 }

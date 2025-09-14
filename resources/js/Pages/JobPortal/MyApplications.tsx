@@ -1,15 +1,23 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Head, Link } from '@inertiajs/react';
 import { motion } from 'framer-motion';
-import { useTranslation } from 'react-i18next';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Button } from '@/Components/ui/button';
 import { Card, CardHeader, CardTitle, CardContent } from '@/Components/ui/card';
 import { Badge } from '@/Components/ui/badge';
+import { Input } from '@/Components/ui/input';
+import { Alert, AlertDescription } from '@/Components/ui/alert';
 import {
-    ArrowLeft, Building, Calendar, Clock, CheckCircle,
-    AlertCircle, XCircle, Eye, Mail, FileText, MapPin,
-    Briefcase, TrendingUp, Users
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from '@/Components/ui/select';
+import {
+    Send, Search, Eye, Calendar, Building, MapPin, 
+    CheckCircle, Clock, Star, XCircle, Award, TrendingUp,
+    FileText, ExternalLink, MessageSquare, Filter
 } from 'lucide-react';
 
 interface MyApplicationsProps {
@@ -17,10 +25,10 @@ interface MyApplicationsProps {
     applications: {
         data: Array<{
             id: number;
-            cover_letter: string;
             status: string;
+            cover_letter: string;
             applied_at: string;
-            jobPosting: {
+            job_posting: {
                 id: number;
                 title: string;
                 description: string;
@@ -29,6 +37,8 @@ interface MyApplicationsProps {
                 salary_min: number;
                 salary_max: number;
                 salary_currency: string;
+                remote_work: boolean;
+                posting_type: string;
                 company: {
                     id: number;
                     name: string;
@@ -43,240 +53,386 @@ interface MyApplicationsProps {
 }
 
 const STATUS_CONFIG = {
-    pending: {
+    'pending': {
         label: 'En attente',
+        color: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-300',
         icon: Clock,
-        color: 'bg-yellow-100 text-yellow-800 border-yellow-200',
         description: 'Votre candidature est en cours d\'examen'
     },
-    reviewed: {
+    'reviewed': {
         label: 'Examinée',
+        color: 'bg-blue-100 text-blue-800 dark:bg-blue-900/20 dark:text-blue-300',
         icon: Eye,
-        color: 'bg-blue-100 text-blue-800 border-blue-200',
-        description: 'Votre candidature a été examinée par l\'entreprise'
+        description: 'Votre candidature a été examinée par l\'employeur'
     },
-    shortlisted: {
-        label: 'Présélectionné',
-        icon: CheckCircle,
-        color: 'bg-green-100 text-green-800 border-green-200',
-        description: 'Félicitations ! Vous êtes dans la liste restreinte'
+    'shortlisted': {
+        label: 'Présélectionnée',
+        color: 'bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-300',
+        icon: Star,
+        description: 'Félicitations ! Vous êtes présélectionné(e)'
     },
-    rejected: {
+    'rejected': {
         label: 'Non retenue',
+        color: 'bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-300',
         icon: XCircle,
-        color: 'bg-red-100 text-red-800 border-red-200',
         description: 'Votre candidature n\'a pas été retenue cette fois'
     },
-    hired: {
-        label: 'Embauché',
-        icon: CheckCircle,
-        color: 'bg-emerald-100 text-emerald-800 border-emerald-200',
-        description: 'Félicitations ! Vous avez obtenu le poste'
+    'hired': {
+        label: 'Embauchée',
+        color: 'bg-purple-100 text-purple-800 dark:bg-purple-900/20 dark:text-purple-300',
+        icon: Award,
+        description: 'Félicitations ! Vous avez été sélectionné(e)'
     }
 };
 
-export default function MyApplications({ auth, applications = { data: [], links: [], meta: { total: 0, last_page: 1 } } }: MyApplicationsProps) {
-    const { t } = useTranslation();
+const EMPLOYMENT_TYPE_LABELS = {
+    'full-time': 'Temps plein',
+    'part-time': 'Temps partiel',
+    'contract': 'Contrat',
+    'internship': 'Stage',
+    'freelance': 'Freelance'
+};
+
+export default function MyApplications({ auth, applications }: MyApplicationsProps) {
+    const [selectedStatus, setSelectedStatus] = useState('all');
+    const [searchTerm, setSearchTerm] = useState('');
+    const [sortBy, setSortBy] = useState('newest');
 
     const formatSalary = (min: number, max: number, currency: string) => {
-        if (!min && !max) return 'Salaire non spécifié';
+        if (!min && !max) return 'Non spécifié';
         if (min && max) return `${min.toLocaleString()} - ${max.toLocaleString()} ${currency}`;
         if (min) return `À partir de ${min.toLocaleString()} ${currency}`;
         return `Jusqu'à ${max.toLocaleString()} ${currency}`;
     };
 
-    const getStatusStats = () => {
-        const stats = {
-            total: applications?.data?.length || 0,
-            pending: 0,
-            reviewed: 0,
-            shortlisted: 0,
-            rejected: 0,
-            hired: 0
-        };
+    const getStatusConfig = (status: string) => STATUS_CONFIG[status] || STATUS_CONFIG['pending'];
 
-        applications?.data?.forEach(app => {
-            stats[app.status]++;
-        });
-
-        return stats;
+    // Statistiques des candidatures
+    const stats = {
+        total: applications?.meta?.total || 0,
+        pending: applications?.data?.filter(app => app.status === 'pending').length || 0,
+        reviewed: applications?.data?.filter(app => app.status === 'reviewed').length || 0,
+        shortlisted: applications?.data?.filter(app => app.status === 'shortlisted').length || 0,
+        hired: applications?.data?.filter(app => app.status === 'hired').length || 0,
+        rejected: applications?.data?.filter(app => app.status === 'rejected').length || 0
     };
-
-    const stats = getStatusStats();
 
     return (
         <AuthenticatedLayout user={auth.user}>
             <Head>
-                <title>Mes Candidatures | JobLight</title>
-                <meta name="description" content="Suivez l'état de toutes vos candidatures d'emploi en un seul endroit." />
+                <title>Mes candidatures - JobLight</title>
+                <meta name="description" content="Suivez l'état de vos candidatures d'emploi sur JobLight" />
             </Head>
 
             <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-                <div className="max-w-6xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
+                <div className="max-w-7xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
                     {/* Header */}
                     <div className="flex items-center justify-between mb-8">
                         <div>
-                            <div className="flex items-center gap-4 mb-2">
-                                <Link href={route('job-portal.index')} className="inline-flex items-center gap-2 text-gray-600 hover:text-gray-800 transition-colors">
-                                    <ArrowLeft className="w-4 h-4" />
-                                    Retour aux offres
-                                </Link>
-                            </div>
-                            <h1 className="text-3xl font-bold text-gray-800 dark:text-gray-200">
-                                Mes Candidatures
+                            <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100">
+                                📋 Mes candidatures
                             </h1>
-                            <p className="text-gray-600 dark:text-gray-400">
-                                Suivez l'état de vos {applications?.meta?.total || 0} candidature{(applications?.meta?.total || 0) > 1 ? 's' : ''}
+                            <p className="text-gray-600 dark:text-gray-400 mt-2">
+                                Suivez l'état de vos candidatures et leurs réponses
                             </p>
                         </div>
+
+                        <Link href={route('job-portal.index')}>
+                            <Button className="bg-gradient-to-r from-blue-500 to-purple-500">
+                                <Search className="w-4 h-4 mr-2" />
+                                Rechercher des offres
+                            </Button>
+                        </Link>
                     </div>
 
                     {/* Statistiques */}
-                    <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-8">
+                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-8">
                         <Card>
-                            <CardContent className="p-4 text-center">
-                                <div className="text-2xl font-bold text-gray-800 dark:text-gray-200">{stats.total}</div>
-                                <div className="text-xs text-gray-600 dark:text-gray-400">Total</div>
+                            <CardContent className="p-4">
+                                <div className="text-center">
+                                    <div className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+                                        {stats.total}
+                                    </div>
+                                    <div className="text-sm text-gray-600 dark:text-gray-400">
+                                        Total
+                                    </div>
+                                </div>
                             </CardContent>
                         </Card>
+
                         <Card>
-                            <CardContent className="p-4 text-center">
-                                <div className="text-2xl font-bold text-yellow-600">{stats.pending}</div>
-                                <div className="text-xs text-gray-600 dark:text-gray-400">En attente</div>
+                            <CardContent className="p-4">
+                                <div className="text-center">
+                                    <div className="text-2xl font-bold text-yellow-600">
+                                        {stats.pending}
+                                    </div>
+                                    <div className="text-sm text-gray-600 dark:text-gray-400">
+                                        En attente
+                                    </div>
+                                </div>
                             </CardContent>
                         </Card>
+
                         <Card>
-                            <CardContent className="p-4 text-center">
-                                <div className="text-2xl font-bold text-green-600">{stats.shortlisted}</div>
-                                <div className="text-xs text-gray-600 dark:text-gray-400">Présélectionné</div>
+                            <CardContent className="p-4">
+                                <div className="text-center">
+                                    <div className="text-2xl font-bold text-blue-600">
+                                        {stats.reviewed}
+                                    </div>
+                                    <div className="text-sm text-gray-600 dark:text-gray-400">
+                                        Examinées
+                                    </div>
+                                </div>
                             </CardContent>
                         </Card>
+
                         <Card>
-                            <CardContent className="p-4 text-center">
-                                <div className="text-2xl font-bold text-red-600">{stats.rejected}</div>
-                                <div className="text-xs text-gray-600 dark:text-gray-400">Rejetées</div>
+                            <CardContent className="p-4">
+                                <div className="text-center">
+                                    <div className="text-2xl font-bold text-green-600">
+                                        {stats.shortlisted}
+                                    </div>
+                                    <div className="text-sm text-gray-600 dark:text-gray-400">
+                                        Présélectionnées
+                                    </div>
+                                </div>
                             </CardContent>
                         </Card>
+
                         <Card>
-                            <CardContent className="p-4 text-center">
-                                <div className="text-2xl font-bold text-emerald-600">{stats.hired}</div>
-                                <div className="text-xs text-gray-600 dark:text-gray-400">Embauché</div>
+                            <CardContent className="p-4">
+                                <div className="text-center">
+                                    <div className="text-2xl font-bold text-purple-600">
+                                        {stats.hired}
+                                    </div>
+                                    <div className="text-sm text-gray-600 dark:text-gray-400">
+                                        Embauchées
+                                    </div>
+                                </div>
+                            </CardContent>
+                        </Card>
+
+                        <Card>
+                            <CardContent className="p-4">
+                                <div className="text-center">
+                                    <div className="text-2xl font-bold text-red-600">
+                                        {stats.rejected}
+                                    </div>
+                                    <div className="text-sm text-gray-600 dark:text-gray-400">
+                                        Non retenues
+                                    </div>
+                                </div>
                             </CardContent>
                         </Card>
                     </div>
 
+                    {/* Filtres */}
+                    <Card className="mb-6">
+                        <CardContent className="p-6">
+                            <div className="flex flex-col md:flex-row gap-4">
+                                <div className="flex-1">
+                                    <div className="relative">
+                                        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+                                        <Input
+                                            type="text"
+                                            placeholder="Rechercher dans mes candidatures..."
+                                            value={searchTerm}
+                                            onChange={(e) => setSearchTerm(e.target.value)}
+                                            className="pl-10"
+                                        />
+                                    </div>
+                                </div>
+
+                                <Select value={selectedStatus} onValueChange={setSelectedStatus}>
+                                    <SelectTrigger className="w-full md:w-48">
+                                        <SelectValue placeholder="Tous les statuts" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        <SelectItem value="all">Tous les statuts</SelectItem>
+                                        <SelectItem value="pending">En attente</SelectItem>
+                                        <SelectItem value="reviewed">Examinées</SelectItem>
+                                        <SelectItem value="shortlisted">Présélectionnées</SelectItem>
+                                        <SelectItem value="hired">Embauchées</SelectItem>
+                                        <SelectItem value="rejected">Non retenues</SelectItem>
+                                    </SelectContent>
+                                </Select>
+
+                                <Select value={sortBy} onValueChange={setSortBy}>
+                                    <SelectTrigger className="w-full md:w-48">
+                                        <SelectValue placeholder="Trier par" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        <SelectItem value="newest">Plus récentes</SelectItem>
+                                        <SelectItem value="oldest">Plus anciennes</SelectItem>
+                                        <SelectItem value="status">Statut</SelectItem>
+                                        <SelectItem value="company">Entreprise</SelectItem>
+                                    </SelectContent>
+                                </Select>
+                            </div>
+                        </CardContent>
+                    </Card>
+
                     {/* Liste des candidatures */}
-                    {applications?.data && applications.data.length > 0 ? (
-                        <div className="space-y-4">
-                            {applications.data.map((application, index) => {
-                                const statusConfig = STATUS_CONFIG[application.status];
-                                const StatusIcon = statusConfig.icon;
-                                
-                                return (
-                                    <motion.div
-                                        key={application.id}
-                                        initial={{ opacity: 0, y: 20 }}
-                                        animate={{ opacity: 1, y: 0 }}
-                                        transition={{ delay: index * 0.05 }}
-                                    >
-                                        <Card className="hover:shadow-md transition-shadow">
-                                            <CardContent className="p-6">
-                                                <div className="flex justify-between items-start mb-4">
-                                                    <div className="flex items-start gap-4 flex-1">
-                                                        <div className="w-12 h-12 bg-gray-100 dark:bg-gray-800 rounded-lg flex items-center justify-center">
-                                                            {application.jobPosting.company.logo_path ? (
-                                                                <img 
-                                                                    src={application.jobPosting.company.logo_path} 
-                                                                    alt={application.jobPosting.company.name} 
-                                                                    className="w-8 h-8 object-contain" 
-                                                                />
-                                                            ) : (
-                                                                <Building className="w-6 h-6 text-gray-400" />
-                                                            )}
-                                                        </div>
-                                                        <div className="flex-1">
+                    <div className="space-y-6">
+                        {applications?.data?.map((application, index) => {
+                            const statusConfig = getStatusConfig(application.status);
+                            const StatusIcon = statusConfig.icon;
+                            
+                            return (
+                                <motion.div
+                                    key={application.id}
+                                    initial={{ opacity: 0, y: 20 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    transition={{ delay: index * 0.05 }}
+                                >
+                                    <Card className="hover:shadow-lg transition-all duration-300">
+                                        <CardContent className="p-6">
+                                            <div className="flex items-start gap-4">
+                                                <div className="w-12 h-12 bg-gray-100 dark:bg-gray-800 rounded-lg flex items-center justify-center flex-shrink-0">
+                                                    {application.job_posting.company.logo_path ? (
+                                                        <img 
+                                                            src={application.job_posting.company.logo_path} 
+                                                            alt={application.job_posting.company.name} 
+                                                            className="w-8 h-8 object-contain" 
+                                                        />
+                                                    ) : (
+                                                        <Building className="w-6 h-6 text-gray-400" />
+                                                    )}
+                                                </div>
+
+                                                <div className="flex-1 min-w-0">
+                                                    <div className="flex items-start justify-between mb-3">
+                                                        <div>
                                                             <h3 className="text-lg font-bold text-gray-800 dark:text-gray-200 mb-1">
                                                                 <Link 
-                                                                    href={route('job-portal.show', application.jobPosting.id)}
+                                                                    href={route('job-portal.show', application.job_posting.id)}
                                                                     className="hover:text-blue-600 transition-colors"
                                                                 >
-                                                                    {application.jobPosting.title}
+                                                                    {application.job_posting.title}
                                                                 </Link>
                                                             </h3>
-                                                            <div className="flex items-center gap-4 text-sm text-gray-600 dark:text-gray-400 mb-2">
-                                                                <div className="flex items-center gap-1">
-                                                                    <Building className="w-4 h-4" />
-                                                                    {application.jobPosting.company.name}
-                                                                </div>
-                                                                {application.jobPosting.location && (
+                                                            <div className="flex items-center gap-4 text-sm text-gray-600 dark:text-gray-400">
+                                                                <span className="font-medium">{application.job_posting.company.name}</span>
+                                                                {application.job_posting.location && (
                                                                     <div className="flex items-center gap-1">
                                                                         <MapPin className="w-4 h-4" />
-                                                                        {application.jobPosting.location}
+                                                                        {application.job_posting.location}
                                                                     </div>
                                                                 )}
                                                                 <div className="flex items-center gap-1">
                                                                     <Calendar className="w-4 h-4" />
-                                                                    Candidature : {new Date(application.applied_at).toLocaleDateString('fr-FR')}
+                                                                    Candidature envoyée le {new Date(application.applied_at).toLocaleDateString('fr-FR')}
                                                                 </div>
                                                             </div>
-                                                            <div className="text-sm text-gray-600 dark:text-gray-400">
-                                                                {formatSalary(
-                                                                    application.jobPosting.salary_min,
-                                                                    application.jobPosting.salary_max,
-                                                                    application.jobPosting.salary_currency
+                                                        </div>
+
+                                                        <div className="flex items-center gap-3">
+                                                            <Badge className={statusConfig.color}>
+                                                                <StatusIcon className="w-3 h-3 mr-1" />
+                                                                {statusConfig.label}
+                                                            </Badge>
+                                                            {application.job_posting.posting_type === 'simple_ad' && (
+                                                                <Badge variant="outline" className="bg-blue-50 text-blue-700">
+                                                                    Annonce simple
+                                                                </Badge>
+                                                            )}
+                                                        </div>
+                                                    </div>
+
+                                                    <p className="text-gray-600 dark:text-gray-400 text-sm mb-4 line-clamp-2">
+                                                        {application.job_posting.description.substring(0, 200)}...
+                                                    </p>
+
+                                                    <div className="flex items-center gap-4 mb-4">
+                                                        <Badge variant="outline">
+                                                            {EMPLOYMENT_TYPE_LABELS[application.job_posting.employment_type]}
+                                                        </Badge>
+                                                        {application.job_posting.remote_work && (
+                                                            <Badge className="bg-green-100 text-green-800">
+                                                                Télétravail
+                                                            </Badge>
+                                                        )}
+                                                        {(application.job_posting.salary_min || application.job_posting.salary_max) && (
+                                                            <div className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                                                                💰 {formatSalary(
+                                                                    application.job_posting.salary_min, 
+                                                                    application.job_posting.salary_max, 
+                                                                    application.job_posting.salary_currency
                                                                 )}
                                                             </div>
-                                                        </div>
+                                                        )}
                                                     </div>
-                                                    
-                                                    <div className="text-right">
-                                                        <Badge className={`${statusConfig.color} mb-2`}>
-                                                            <StatusIcon className="w-3 h-3 mr-1" />
-                                                            {statusConfig.label}
-                                                        </Badge>
-                                                        <div className="text-xs text-gray-500">
-                                                            {statusConfig.description}
-                                                        </div>
-                                                    </div>
-                                                </div>
 
-                                                {/* Lettre de motivation (aperçu) */}
-                                                <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-4 border-l-4 border-blue-500">
-                                                    <div className="flex items-center gap-2 mb-2">
-                                                        <FileText className="w-4 h-4 text-blue-600" />
-                                                        <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                                                            Votre lettre de motivation
-                                                        </span>
+                                                    {/* Message de statut */}
+                                                    <Alert className={`mb-4 border-l-4 ${
+                                                        application.status === 'shortlisted' || application.status === 'hired' 
+                                                            ? 'border-l-green-500 bg-green-50 dark:bg-green-900/20' 
+                                                            : application.status === 'rejected'
+                                                                ? 'border-l-red-500 bg-red-50 dark:bg-red-900/20'
+                                                                : 'border-l-blue-500 bg-blue-50 dark:bg-blue-900/20'
+                                                    }`}>
+                                                        <StatusIcon className="w-4 h-4" />
+                                                        <AlertDescription>
+                                                            {statusConfig.description}
+                                                        </AlertDescription>
+                                                    </Alert>
+
+                                                    {/* Lettre de motivation */}
+                                                    {application.cover_letter && (
+                                                        <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-4 mb-4">
+                                                            <h4 className="font-medium text-gray-800 dark:text-gray-200 mb-2 flex items-center gap-2">
+                                                                <FileText className="w-4 h-4" />
+                                                                Votre lettre de motivation
+                                                            </h4>
+                                                            <p className="text-sm text-gray-600 dark:text-gray-400 line-clamp-3">
+                                                                {application.cover_letter}
+                                                            </p>
+                                                        </div>
+                                                    )}
+
+                                                    <div className="flex items-center justify-between pt-4 border-t">
+                                                        <div className="flex items-center gap-4">
+                                                            {application.status === 'shortlisted' && (
+                                                                <div className="text-sm text-green-600 font-medium">
+                                                                    🎉 Vous pourriez être contacté(e) prochainement !
+                                                                </div>
+                                                            )}
+                                                            {application.status === 'hired' && (
+                                                                <div className="text-sm text-purple-600 font-medium">
+                                                                    🎊 Félicitations ! Vous avez décroché le poste !
+                                                                </div>
+                                                            )}
+                                                            {application.status === 'rejected' && (
+                                                                <div className="text-sm text-gray-600">
+                                                                    💙 Ne vous découragez pas, d'autres opportunités vous attendent
+                                                                </div>
+                                                            )}
+                                                        </div>
+
+                                                        <div className="flex items-center gap-2">
+                                                            <Link href={route('job-portal.show', application.job_posting.id)}>
+                                                                <Button variant="outline" size="sm">
+                                                                    <Eye className="w-4 h-4 mr-2" />
+                                                                    Voir l'offre
+                                                                </Button>
+                                                            </Link>
+                                                            
+                                                            {application.job_posting.posting_type === 'standard' && (
+                                                                <Button variant="outline" size="sm" disabled>
+                                                                    <MessageSquare className="w-4 h-4 mr-2" />
+                                                                    Contacter
+                                                                </Button>
+                                                            )}
+                                                        </div>
                                                     </div>
-                                                    <p className="text-sm text-gray-600 dark:text-gray-400 line-clamp-2">
-                                                        {application.cover_letter}
-                                                    </p>
                                                 </div>
-                                            </CardContent>
-                                        </Card>
-                                    </motion.div>
-                                );
-                            })}
-                        </div>
-                    ) : (
-                        <div className="text-center py-12">
-                            <div className="w-16 h-16 bg-gray-200 dark:bg-gray-700 rounded-full flex items-center justify-center mx-auto mb-4">
-                                <Briefcase className="w-8 h-8 text-gray-400" />
-                            </div>
-                            <h3 className="text-lg font-medium text-gray-800 dark:text-gray-200 mb-2">
-                                Aucune candidature
-                            </h3>
-                            <p className="text-gray-600 dark:text-gray-400 mb-6">
-                                Vous n'avez pas encore postulé à des offres d'emploi
-                            </p>
-                            <Link href={route('job-portal.index')}>
-                                <Button className="bg-gradient-to-r from-amber-500 to-purple-500 hover:from-amber-600 hover:to-purple-600">
-                                    <TrendingUp className="w-4 h-4 mr-2" />
-                                    Découvrir les offres
-                                </Button>
-                            </Link>
-                        </div>
-                    )}
+                                            </div>
+                                        </CardContent>
+                                    </Card>
+                                </motion.div>
+                            );
+                        })}
+                    </div>
 
                     {/* Pagination */}
                     {applications?.meta?.last_page > 1 && (
@@ -298,34 +454,26 @@ export default function MyApplications({ auth, applications = { data: [], links:
                         </div>
                     )}
 
-                    {/* Conseils */}
-                    <Card className="mt-8 bg-gradient-to-r from-amber-50 to-purple-50 dark:from-amber-950/50 dark:to-purple-950/50 border-amber-200">
-                        <CardContent className="p-6">
-                            <div className="flex items-start gap-4">
-                                <div className="w-12 h-12 bg-gradient-to-r from-amber-500 to-purple-500 rounded-xl flex items-center justify-center">
-                                    <TrendingUp className="w-6 h-6 text-white" />
-                                </div>
-                                <div>
-                                    <h3 className="font-bold text-amber-800 dark:text-amber-300 mb-2">
-                                        💡 Conseils pour améliorer vos candidatures
-                                    </h3>
-                                    <ul className="text-sm text-amber-700 dark:text-amber-400 space-y-1">
-                                        <li>• Personnalisez votre lettre de motivation pour chaque offre</li>
-                                        <li>• Utilisez les mots-clés de l'offre d'emploi</li>
-                                        <li>• Optimisez votre CV avec notre IA</li>
-                                        <li>• Suivez l'entreprise sur LinkedIn avant de postuler</li>
-                                    </ul>
-                                    <div className="mt-4">
-                                        <Link href={route('career-advisor.index')}>
-                                            <Button size="sm" className="bg-amber-600 hover:bg-amber-700 text-white">
-                                                Améliorer mon profil avec l'IA
-                                            </Button>
-                                        </Link>
-                                    </div>
-                                </div>
+                    {/* Message si aucune candidature */}
+                    {(!applications?.data || applications.data.length === 0) && (
+                        <div className="text-center py-12">
+                            <div className="w-16 h-16 bg-gray-200 dark:bg-gray-700 rounded-full flex items-center justify-center mx-auto mb-4">
+                                <Send className="w-8 h-8 text-gray-400" />
                             </div>
-                        </CardContent>
-                    </Card>
+                            <h3 className="text-lg font-medium text-gray-800 dark:text-gray-200 mb-2">
+                                Aucune candidature envoyée
+                            </h3>
+                            <p className="text-gray-600 dark:text-gray-400 mb-6">
+                                Explorez nos offres d'emploi et commencez à postuler
+                            </p>
+                            <Link href={route('job-portal.index')}>
+                                <Button className="bg-gradient-to-r from-blue-500 to-purple-500">
+                                    <Search className="w-4 h-4 mr-2" />
+                                    Découvrir les offres
+                                </Button>
+                            </Link>
+                        </div>
+                    )}
                 </div>
             </div>
         </AuthenticatedLayout>

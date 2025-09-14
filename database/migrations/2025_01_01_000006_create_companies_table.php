@@ -15,23 +15,23 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->string('email')->unique();
-            $table->string('phone')->nullable();
+            $table->string('phone', 20)->nullable();
             $table->text('address')->nullable();
-            $table->string('website')->nullable();
-            $table->string('industry')->nullable();
+            $table->string('website', 255)->nullable();
+            $table->string('industry', 100)->nullable();
             $table->text('description')->nullable();
-            $table->string('logo_path')->nullable();
+            $table->string('logo_path', 500)->nullable();
             $table->enum('status', ['active', 'inactive', 'suspended'])->default('active');
             $table->enum('type', ['partner', 'client', 'organization'])->default('client');
-            $table->string('partner_code')->nullable()->unique(); // Pour APIDCA, etc.
+            $table->string('partner_code', 50)->nullable()->unique();
             
-            // Contacts
-            $table->string('contact_person')->nullable();
-            $table->string('contact_email')->nullable();
-            $table->string('contact_phone')->nullable();
-            $table->string('billing_email')->nullable();
+            // Contact information
+            $table->string('contact_person', 100)->nullable();
+            $table->string('contact_email', 255)->nullable();
+            $table->string('contact_phone', 20)->nullable();
+            $table->string('billing_email', 255)->nullable();
             
-            // Abonnements et permissions
+            // Subscription and permissions
             $table->enum('subscription_type', ['free', 'basic', 'premium'])->default('free');
             $table->timestamp('subscription_expires_at')->nullable();
             $table->boolean('can_post_jobs')->default(false);
@@ -41,9 +41,14 @@ return new class extends Migration
             $table->boolean('auto_notify_members')->default(false);
             
             $table->timestamps();
+            
+            // Indexes
+            $table->index(['status', 'type']);
+            $table->index(['subscription_type']);
+            $table->index(['partner_code']);
         });
 
-        // Table pour les membres d'organisations (comme APIDCA)
+        // Company members table
         Schema::create('company_members', function (Blueprint $table) {
             $table->id();
             $table->foreignId('company_id')->constrained()->onDelete('cascade');
@@ -54,6 +59,7 @@ return new class extends Migration
             $table->timestamps();
             
             $table->unique(['company_id', 'user_id']);
+            $table->index(['company_id', 'role']);
         });
     }
 

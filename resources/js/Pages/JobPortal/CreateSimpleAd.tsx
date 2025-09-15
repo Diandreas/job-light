@@ -115,14 +115,14 @@ export default function CreateSimpleAd({ auth, errors, flash }: CreateSimpleAdPr
 
     const ContactMethodSelector = () => (
         <div className="space-y-4">
-            <Label className="text-base font-semibold">Comment souhaitez-vous être contacté ?</Label>
+            <Label className="text-base font-semibold">{t('jobPortal.createJob.contactMethodQuestion')}</Label>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {[
-                    { value: 'email', label: 'Par email', icon: Mail, description: 'Les candidats vous contacteront par email' },
-                    { value: 'phone', label: 'Par téléphone', icon: Phone, description: 'Affichage de votre numéro de téléphone' },
-                    { value: 'website', label: 'Site web/Formulaire', icon: Globe, description: 'Redirection vers votre site ou formulaire' },
-                    { value: 'message', label: 'Via la plateforme', icon: MessageSquare, description: 'Messages internes à la plateforme' }
+                    { value: 'email', label: t('jobPortal.createJob.contactMethod.email'), icon: Mail, description: t('jobPortal.createJob.contactMethod.emailDesc') },
+                    { value: 'phone', label: t('jobPortal.createJob.contactMethod.phone'), icon: Phone, description: t('jobPortal.createJob.contactMethod.phoneDesc') },
+                    { value: 'website', label: t('jobPortal.createJob.contactMethod.website'), icon: Globe, description: t('jobPortal.createJob.contactMethod.websiteDesc') },
+                    { value: 'message', label: t('jobPortal.createJob.contactMethod.platform'), icon: MessageSquare, description: t('jobPortal.createJob.contactMethod.platformDesc') }
                 ].map((method) => (
                     <div
                         key={method.value}
@@ -147,9 +147,9 @@ export default function CreateSimpleAd({ auth, errors, flash }: CreateSimpleAdPr
     return (
         <Layout user={auth.user}>
             <Head
-                title={`${t('jobPortal.createJob.title') || 'Publier une annonce simple'} - JobLight`}
+                title={`${t('jobPortal.createJob.title')} - JobLight`}
             >
-                <meta name="description" content={t('jobPortal.createJob.description') || 'Publiez rapidement une annonce d\'emploi'} />
+                <meta name="description" content={t('jobPortal.createJob.description')} />
             </Head>
 
             <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
@@ -223,13 +223,13 @@ export default function CreateSimpleAd({ auth, errors, flash }: CreateSimpleAdPr
                                     </CardHeader>
                                     <CardContent className="space-y-6">
                                         <div>
-                                            <Label htmlFor="title">Titre du poste *</Label>
+                                            <Label htmlFor="title">{t('jobPortal.createJob.jobTitle')} *</Label>
                                             <Input
                                                 id="title"
                                                 type="text"
                                                 value={data.title}
                                                 onChange={(e) => setData('title', e.target.value)}
-                                                placeholder="Ex: Développeur Web, Assistant(e) administratif, Chef de projet..."
+                                                placeholder={t('jobPortal.createJob.jobTitlePlaceholder')}
                                                 className="mt-2"
                                                 required
                                             />
@@ -239,12 +239,12 @@ export default function CreateSimpleAd({ auth, errors, flash }: CreateSimpleAdPr
                                         </div>
 
                                         <div>
-                                            <Label htmlFor="description">Description du poste *</Label>
+                                            <Label htmlFor="description">{t('jobPortal.createJob.jobDescription')} *</Label>
                                             <Textarea
                                                 id="description"
                                                 value={data.description}
                                                 onChange={(e) => setData('description', e.target.value)}
-                                                placeholder="Décrivez le poste, les missions principales, l'environnement de travail..."
+                                                placeholder={t('jobPortal.createJob.descriptionPlaceholder')}
                                                 rows={6}
                                                 className="mt-2"
                                                 required
@@ -255,12 +255,12 @@ export default function CreateSimpleAd({ auth, errors, flash }: CreateSimpleAdPr
                                         </div>
 
                                         <div>
-                                            <Label htmlFor="requirements">Profil recherché</Label>
+                                            <Label htmlFor="requirements">{t('jobPortal.createJob.requirements')}</Label>
                                             <Textarea
                                                 id="requirements"
                                                 value={data.requirements}
                                                 onChange={(e) => setData('requirements', e.target.value)}
-                                                placeholder="Compétences requises, formation, expérience..."
+                                                placeholder={t('jobPortal.createJob.requirementsPlaceholder')}
                                                 rows={4}
                                                 className="mt-2"
                                             />
@@ -268,10 +268,10 @@ export default function CreateSimpleAd({ auth, errors, flash }: CreateSimpleAdPr
 
                                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                             <div>
-                                                <Label htmlFor="employment_type">Type de contrat</Label>
+                                                <Label htmlFor="employment_type">{t('jobPortal.createJob.employmentType')}</Label>
                                                 <Select value={data.employment_type} onValueChange={(value) => setData('employment_type', value)}>
                                                     <SelectTrigger className="mt-2">
-                                                        <SelectValue placeholder="Choisir un type" />
+                                                        <SelectValue placeholder={t('jobPortal.createJob.selectTypePlaceholder')} />
                                                     </SelectTrigger>
                                                     <SelectContent>
                                                         {EMPLOYMENT_TYPES.map(type => (
@@ -287,10 +287,10 @@ export default function CreateSimpleAd({ auth, errors, flash }: CreateSimpleAdPr
                                             </div>
 
                                             <div>
-                                                <Label htmlFor="experience_level">Niveau d'expérience</Label>
+                                                <Label htmlFor="experience_level">{t('jobPortal.createJob.experienceLevel')}</Label>
                                                 <Select value={data.experience_level} onValueChange={(value) => setData('experience_level', value)}>
                                                     <SelectTrigger className="mt-2">
-                                                        <SelectValue placeholder="Choisir un niveau" />
+                                                        <SelectValue placeholder={t('jobPortal.createJob.selectLevelPlaceholder')} />
                                                     </SelectTrigger>
                                                     <SelectContent>
                                                         {EXPERIENCE_LEVELS.map(level => (
@@ -305,7 +305,7 @@ export default function CreateSimpleAd({ auth, errors, flash }: CreateSimpleAdPr
 
                                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                             <div>
-                                                <Label htmlFor="location">Localisation</Label>
+                                                <Label htmlFor="location">{t('jobPortal.createJob.location')}</Label>
                                                 <div className="relative mt-2">
                                                     <MapPin className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
                                                     <Input
@@ -313,20 +313,20 @@ export default function CreateSimpleAd({ auth, errors, flash }: CreateSimpleAdPr
                                                         type="text"
                                                         value={data.location}
                                                         onChange={(e) => setData('location', e.target.value)}
-                                                        placeholder="Ville, région..."
+                                                        placeholder={t('jobPortal.createJob.locationPlaceholder')}
                                                         className="pl-10"
                                                     />
                                                 </div>
                                             </div>
 
                                             <div>
-                                                <Label htmlFor="industry">Secteur d'activité</Label>
+                                                <Label htmlFor="industry">{t('jobPortal.createJob.industry')}</Label>
                                                 <Input
                                                     id="industry"
                                                     type="text"
                                                     value={data.industry}
                                                     onChange={(e) => setData('industry', e.target.value)}
-                                                    placeholder="Ex: Informatique, Commerce, Santé..."
+                                                    placeholder={t('jobPortal.createJob.industryPlaceholder')}
                                                     className="mt-2"
                                                 />
                                             </div>
@@ -338,7 +338,7 @@ export default function CreateSimpleAd({ auth, errors, flash }: CreateSimpleAdPr
                                                 checked={data.remote_work}
                                                 onCheckedChange={(checked) => setData('remote_work', checked)}
                                             />
-                                            <Label htmlFor="remote_work">Télétravail possible</Label>
+                                            <Label htmlFor="remote_work">{t('jobPortal.createJob.remoteWork')}</Label>
                                         </div>
                                     </CardContent>
                                 </Card>
@@ -354,7 +354,7 @@ export default function CreateSimpleAd({ auth, errors, flash }: CreateSimpleAdPr
                             >
                                 <Card>
                                     <CardHeader>
-                                        <CardTitle>2. Informations de contact</CardTitle>
+                                        <CardTitle>2. {t('jobPortal.createJob.contactInfo')}</CardTitle>
                                     </CardHeader>
                                     <CardContent className="space-y-6">
                                         <ContactMethodSelector />
@@ -362,13 +362,13 @@ export default function CreateSimpleAd({ auth, errors, flash }: CreateSimpleAdPr
                                         {/* Champs conditionnels selon la méthode de contact */}
                                         {data.contact_method === 'email' && (
                                             <div>
-                                                <Label htmlFor="contact_email">Adresse email de contact *</Label>
+                                                <Label htmlFor="contact_email">{t('jobPortal.createJob.contactEmail')} *</Label>
                                                 <Input
                                                     id="contact_email"
                                                     type="email"
                                                     value={data.contact_email}
                                                     onChange={(e) => setData('contact_email', e.target.value)}
-                                                    placeholder="contact@entreprise.com"
+                                                    placeholder={t('jobPortal.createJob.contactEmailPlaceholder')}
                                                     className="mt-2"
                                                     required
                                                 />
@@ -377,13 +377,13 @@ export default function CreateSimpleAd({ auth, errors, flash }: CreateSimpleAdPr
 
                                         {data.contact_method === 'phone' && (
                                             <div>
-                                                <Label htmlFor="contact_phone">Numéro de téléphone *</Label>
+                                                <Label htmlFor="contact_phone">{t('jobPortal.createJob.contactPhone')} *</Label>
                                                 <Input
                                                     id="contact_phone"
                                                     type="tel"
                                                     value={data.contact_phone}
                                                     onChange={(e) => setData('contact_phone', e.target.value)}
-                                                    placeholder="+33 1 23 45 67 89"
+                                                    placeholder={t('jobPortal.createJob.contactPhonePlaceholder')}
                                                     className="mt-2"
                                                     required
                                                 />
@@ -392,13 +392,13 @@ export default function CreateSimpleAd({ auth, errors, flash }: CreateSimpleAdPr
 
                                         {data.contact_method === 'website' && (
                                             <div>
-                                                <Label htmlFor="contact_website">Site web ou formulaire *</Label>
+                                                <Label htmlFor="contact_website">{t('jobPortal.createJob.contactWebsite')} *</Label>
                                                 <Input
                                                     id="contact_website"
                                                     type="url"
                                                     value={data.contact_website}
                                                     onChange={(e) => setData('contact_website', e.target.value)}
-                                                    placeholder="https://www.entreprise.com/candidature"
+                                                    placeholder={t('jobPortal.createJob.contactWebsitePlaceholder')}
                                                     className="mt-2"
                                                     required
                                                 />
@@ -413,18 +413,18 @@ export default function CreateSimpleAd({ auth, errors, flash }: CreateSimpleAdPr
                                                     onCheckedChange={(checked) => setData('contact_via_platform', checked)}
                                                 />
                                                 <Label htmlFor="contact_via_platform">
-                                                    Recevoir les candidatures via la messagerie de la plateforme
+                                                    {t('jobPortal.createJob.contactViaPlatform')}
                                                 </Label>
                                             </div>
                                         )}
 
                                         <div>
-                                            <Label htmlFor="contact_instructions">Instructions supplémentaires</Label>
+                                            <Label htmlFor="contact_instructions">{t('jobPortal.createJob.contactInstructions')}</Label>
                                             <Textarea
                                                 id="contact_instructions"
                                                 value={data.contact_instructions}
                                                 onChange={(e) => setData('contact_instructions', e.target.value)}
-                                                placeholder="Précisions sur la candidature, documents à fournir, horaires de contact..."
+                                                placeholder={t('jobPortal.createJob.contactInstructionsPlaceholder')}
                                                 rows={3}
                                                 className="mt-2"
                                             />
@@ -432,28 +432,28 @@ export default function CreateSimpleAd({ auth, errors, flash }: CreateSimpleAdPr
 
                                         {/* Informations entreprise optionnelles */}
                                         <div className="pt-6 border-t">
-                                            <h4 className="font-medium mb-4">Informations sur l'entreprise (optionnel)</h4>
+                                            <h4 className="font-medium mb-4">{t('jobPortal.createJob.companyInfoOptional')}</h4>
                                             
                                             <div className="space-y-4">
                                                 <div>
-                                                    <Label htmlFor="company_name">Nom de l'entreprise</Label>
+                                                    <Label htmlFor="company_name">{t('jobPortal.createJob.companyName')}</Label>
                                                     <Input
                                                         id="company_name"
                                                         type="text"
                                                         value={data.company_name}
                                                         onChange={(e) => setData('company_name', e.target.value)}
-                                                        placeholder="Nom de votre entreprise"
+                                                        placeholder={t('jobPortal.createJob.companyNamePlaceholder')}
                                                         className="mt-2"
                                                     />
                                                 </div>
 
                                                 <div>
-                                                    <Label htmlFor="company_description">Description de l'entreprise</Label>
+                                                    <Label htmlFor="company_description">{t('jobPortal.createJob.companyDescription')}</Label>
                                                     <Textarea
                                                         id="company_description"
                                                         value={data.company_description}
                                                         onChange={(e) => setData('company_description', e.target.value)}
-                                                        placeholder="Présentation de votre entreprise, secteur d'activité, taille..."
+                                                        placeholder={t('jobPortal.createJob.companyDescriptionPlaceholder')}
                                                         rows={3}
                                                         className="mt-2"
                                                     />

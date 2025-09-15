@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Head, useForm } from '@inertiajs/react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Button } from "@/Components/ui/button";
@@ -28,7 +28,7 @@ import {
     TabsTrigger,
 } from "@/Components/ui/tabs";
 import { Textarea } from "@/Components/ui/textarea";
-import { __ } from '@/utils/translation';
+import { useTranslation } from 'react-i18next';
 import {
     Palette, Eye, Save, RefreshCw, QrCode, Share,
     Briefcase, Award, Heart, FileText, Contact,
@@ -37,107 +37,7 @@ import {
     GripVertical, EyeOff
 } from 'lucide-react';
 
-// Traductions complètes
-const translations = {
-    fr: {
-        portfolioStudio: 'Portfolio Studio Pro',
-        advancedConfig: 'Configuration avancée de votre portfolio',
-        qrCode: 'QR Code',
-        preview: 'Aperçu',
-        hide: 'Masquer',
-        sharePortfolio: 'Partager votre Portfolio',
-        scanQr: 'Scannez le QR code pour accéder à votre portfolio',
-        close: 'Fermer',
-        designStyle: 'Design & Style',
-        customizeAppearance: 'Personnalisez l\'apparence de votre portfolio',
-        chooseTheme: 'Choisissez votre thème',
-        primaryColor: 'Couleur principale',
-        selectColor: 'Sélectionnez la couleur dominante de votre portfolio',
-        default: 'Par défaut',
-        sectionManagement: 'Gestion des Sections',
-        organizePortfolio: 'Organisez et configurez les sections de votre portfolio',
-        active: 'Actives',
-        empty: 'Vides',
-        noContent: 'Aucun contenu disponible',
-        element: 'élément',
-        elements: 'éléments',
-        emptySectionsOrange: 'Les sections vides sont marquées en orange',
-        allSectionsContent: 'Toutes vos sections contiennent du contenu !',
-        showAll: 'Afficher tout',
-        hideEmpty: 'Masquer vides',
-        saveChanges: 'Sauvegarder les modifications',
-        saving: 'Sauvegarde en cours...',
-        livePreview: 'Aperçu Live',
-        realtimePreview: 'Prévisualisation en temps réel',
-        fullscreen: 'Plein écran',
-        professional: 'Pro',
-        creative: 'Créatif',
-        minimal: 'Minimal',
-        modern: 'Moderne',
-        classicClean: 'Classique et épuré',
-        colorfulDynamic: 'Coloré et dynamique',
-        simpleModern: 'Simple et moderne',
-        trendyStyled: 'Tendance et stylé',
-        experiences: 'Expériences',
-        competences: 'Compétences',
-        hobbies: 'Centres d\'intérêt',
-        summary: 'Résumé',
-        contact_info: 'Contact',
-        languages: 'Langues',
-        services: 'Services',
-        about: 'À propos',
-        theme: 'Thème'
-    },
-    en: {
-        portfolioStudio: 'Portfolio Studio Pro',
-        advancedConfig: 'Advanced portfolio configuration',
-        qrCode: 'QR Code',
-        preview: 'Preview',
-        hide: 'Hide',
-        sharePortfolio: 'Share your Portfolio',
-        scanQr: 'Scan the QR code to access your portfolio',
-        close: 'Close',
-        designStyle: 'Design & Style',
-        customizeAppearance: 'Customize your portfolio appearance',
-        chooseTheme: 'Choose your theme',
-        primaryColor: 'Primary Color',
-        selectColor: 'Select your portfolio dominant color',
-        default: 'Default',
-        sectionManagement: 'Section Management',
-        organizePortfolio: 'Organize and configure your portfolio sections',
-        active: 'Active',
-        empty: 'Empty',
-        noContent: 'No content available',
-        element: 'element',
-        elements: 'elements',
-        emptySectionsOrange: 'Empty sections are marked in orange',
-        allSectionsContent: 'All your sections contain content!',
-        showAll: 'Show all',
-        hideEmpty: 'Hide empty',
-        saveChanges: 'Save changes',
-        saving: 'Saving...',
-        livePreview: 'Live Preview',
-        realtimePreview: 'Real-time preview',
-        fullscreen: 'Fullscreen',
-        professional: 'Pro',
-        creative: 'Creative',
-        minimal: 'Minimal',
-        modern: 'Modern',
-        classicClean: 'Classic and clean',
-        colorfulDynamic: 'Colorful and dynamic',
-        simpleModern: 'Simple and modern',
-        trendyStyled: 'Trendy and styled',
-        experiences: 'Experiences',
-        competences: 'Skills',
-        hobbies: 'Hobbies',
-        summary: 'Summary',
-        contact_info: 'Contact',
-        languages: 'Languages',
-        services: 'Services',
-        about: 'About',
-        theme: 'Theme'
-    }
-};
+
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import ServiceManager from '@/Components/Portfolio/ServiceManager';
@@ -165,16 +65,7 @@ const SECTION_ICONS = {
     testimonials: Heart,
 };
 
-const getSectionLabels = (t: any) => ({
-    experiences: t.experiences,
-    competences: t.competences,
-    hobbies: t.hobbies,
-    summary: t.summary,
-    contact_info: t.contact_info,
-    languages: t.languages,
-    services: t.services,
-    about: t.about,
-});
+
 
 const DESIGN_OPTIONS = [
     { value: 'professional', labelKey: 'professional', descKey: 'classicClean' },
@@ -189,68 +80,77 @@ export default function EditClean({ auth, portfolio, settings, cvData = portfoli
     const [previewMode, setPreviewMode] = useState(false);
     const [showQR, setShowQR] = useState(false);
     
-    // Détection de la langue (par défaut français)
-    const currentLang = document.documentElement.lang || 'fr';
-    const t = translations[currentLang] || translations.fr;
+    const { t } = useTranslation();
 
-    // Créer les sections avec compteurs corrects
-    const createSections = (): Section[] => {
-        const sectionsData = [
-            {
-                key: 'experiences',
-                count: Array.isArray(cvData?.experiences) ? cvData.experiences.length : 0,
-                isActive: settings.show_experiences ?? true
-            },
-            {
-                key: 'competences',
-                count: Array.isArray(cvData?.competences) ? cvData.competences.length :
-                    Array.isArray(cvData?.skills) ? cvData.skills.length : 0,
-                isActive: settings.show_competences ?? true
-            },
-            {
-                key: 'hobbies',
-                count: Array.isArray(cvData?.hobbies) ? cvData.hobbies.length : 0,
-                isActive: settings.show_hobbies ?? true
-            },
-            {
-                key: 'languages',
-                count: Array.isArray(cvData?.languages) ? cvData.languages.length : 0,
-                isActive: settings.show_languages ?? true
-            },
-            {
-                key: 'summary',
-                count: (cvData?.summary || (cvData?.summaries && cvData.summaries.length > 0)) ? 1 : 0,
-                isActive: settings.show_summary ?? true
-            },
-            {
-                key: 'contact_info',
-                count: [
-                    cvData?.personalInfo?.email || cvData?.email,
-                    cvData?.personalInfo?.phone || cvData?.phone_number || cvData?.phone,
-                    cvData?.personalInfo?.address || cvData?.address
-                ].filter(Boolean).length,
-                isActive: settings.show_contact_info ?? true
-            },
-            {
-                key: 'services',
-                count: Array.isArray(services) ? services.length : 0,
-                isActive: settings.show_services ?? false
-            },
-        ];
+    const [sections, setSections] = useState<Section[]>([]);
 
-        // Appliquer l'ordre sauvegardé
-        const sectionOrder = settings.section_order || {};
+    useEffect(() => {
+        const createSections = (): Section[] => {
+            const sectionsData = [
+                {
+                    key: 'experiences',
+                    count: Array.isArray(cvData?.experiences) ? cvData.experiences.length : 0,
+                    isActive: settings.show_experiences ?? true
+                },
+                {
+                    key: 'competences',
+                    count: Array.isArray(cvData?.competences) ? cvData.competences.length :
+                        Array.isArray(cvData?.skills) ? cvData.skills.length : 0,
+                    isActive: settings.show_competences ?? true
+                },
+                {
+                    key: 'hobbies',
+                    count: Array.isArray(cvData?.hobbies) ? cvData.hobbies.length : 0,
+                    isActive: settings.show_hobbies ?? true
+                },
+                {
+                    key: 'languages',
+                    count: Array.isArray(cvData?.languages) ? cvData.languages.length : 0,
+                    isActive: settings.show_languages ?? true
+                },
+                {
+                    key: 'summary',
+                    count: (cvData?.summary || (cvData?.summaries && cvData.summaries.length > 0)) ? 1 : 0,
+                    isActive: settings.show_summary ?? true
+                },
+                {
+                    key: 'contact_info',
+                    count: [
+                        cvData?.personalInfo?.email || cvData?.email,
+                        cvData?.personalInfo?.phone || cvData?.phone_number || cvData?.phone,
+                        cvData?.personalInfo?.address || cvData?.address
+                    ].filter(Boolean).length,
+                    isActive: settings.show_contact_info ?? true
+                },
+                {
+                    key: 'services',
+                    count: Array.isArray(services) ? services.length : 0,
+                    isActive: settings.show_services ?? false
+                },
+            ];
 
-        const sectionLabels = getSectionLabels(t);
-        return sectionsData.map((section) => ({
-            ...section,
-            label: sectionLabels[section.key],
-            icon: SECTION_ICONS[section.key],
-            order: sectionOrder[section.key] ?? 999,
-        })).sort((a, b) => a.order - b.order);
-    };
+            // Appliquer l'ordre sauvegardé
+            const sectionOrder = settings.section_order || {};
 
-    const [sections, setSections] = useState<Section[]>(createSections);
+            const sectionLabels = {
+                experiences: t('portfolio.edit.experiences'),
+                competences: t('portfolio.edit.competences'),
+                hobbies: t('portfolio.edit.hobbies'),
+                summary: t('portfolio.edit.summary'),
+                contact_info: t('portfolio.edit.contact_info'),
+                languages: t('portfolio.edit.languages'),
+                services: t('portfolio.edit.services'),
+                about: t('portfolio.edit.about'),
+            };
+            return sectionsData.map((section) => ({
+                ...section,
+                label: sectionLabels[section.key],
+                icon: SECTION_ICONS[section.key],
+                order: sectionOrder[section.key] ?? 999,
+            })).sort((a, b) => a.order - b.order);
+        };
+        setSections(createSections());
+    }, [t, cvData, settings, services]);
 
     const { data, setData, put, processing } = useForm({
         design: settings.design || 'professional',
@@ -328,7 +228,7 @@ export default function EditClean({ auth, portfolio, settings, cvData = portfoli
         <AuthenticatedLayout
             user={auth.user}
         >
-            <Head title={__('portfolio.edit.portfolio_express')} />
+            <Head title={t('portfolio.edit.portfolio_express')} />
 
             <div className="py-2 bg-gray-50 dark:bg-gray-900 min-h-screen">
                 <div className="mx-auto max-w-7xl px-2 sm:px-3 lg:px-4">
@@ -354,8 +254,8 @@ export default function EditClean({ auth, portfolio, settings, cvData = portfoli
                                         <div className="w-12 h-12 bg-gradient-to-r from-purple-600 to-amber-500 rounded-xl mx-auto mb-3 flex items-center justify-center">
                                             <QrCode className="h-6 w-6 text-white" />
                                         </div>
-                                        <h3 className="font-bold text-xl text-gray-900 dark:text-white mb-2">{t.sharePortfolio}</h3>
-                                        <p className="text-gray-600 dark:text-gray-300 text-sm">{t.scanQr}</p>
+                                        <h3 className="font-bold text-xl text-gray-900 dark:text-white mb-2">{t('portfolio.edit.sharePortfolio')}</h3>
+                                        <p className="text-gray-600 dark:text-gray-300 text-sm">{t('portfolio.edit.scanQr')}</p>
                                     </div>
                                     <div className="text-center mb-4">
                                         <div className="p-4 bg-gray-50 dark:bg-gray-700 rounded-xl shadow-inner mb-3">
@@ -374,7 +274,7 @@ export default function EditClean({ auth, portfolio, settings, cvData = portfoli
                                         onClick={() => setShowQR(false)}
                                         className="w-full h-10 font-semibold border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 text-sm"
                                     >
-                                        {t.close}
+                                        {t('portfolio.edit.close')}
                                     </Button>
                                 </motion.div>
                             </motion.div>
@@ -399,8 +299,8 @@ export default function EditClean({ auth, portfolio, settings, cvData = portfoli
                                                     <Palette className="h-5 w-5 text-white" />
                                                 </div>
                                                 <div>
-                                                    <h3 className="text-lg font-bold text-gray-900 dark:text-white">{t.designStyle}</h3>
-                                                    <p className="text-xs text-gray-600 dark:text-gray-300 font-medium">{t.customizeAppearance}</p>
+                                                    <h3 className="text-lg font-bold text-gray-900 dark:text-white">{t('portfolio.edit.designStyle')}</h3>
+                                                    <p className="text-xs text-gray-600 dark:text-gray-300 font-medium">{t('portfolio.edit.customizeAppearance')}</p>
                                                 </div>
                                             </div>
                                             <div className="flex items-center gap-3">
@@ -410,7 +310,7 @@ export default function EditClean({ auth, portfolio, settings, cvData = portfoli
                                                     size="sm"
                                                 >
                                                     <QrCode className="h-4 w-4 mr-2" />
-                                                    {t.qrCode}
+                                                    {t('portfolio.edit.qrCode')}
                                                 </Button>
                                                 <Button
                                                     onClick={() => setPreviewMode(!previewMode)}
@@ -418,7 +318,7 @@ export default function EditClean({ auth, portfolio, settings, cvData = portfoli
                                                     size="sm"
                                                 >
                                                     <Eye className="h-4 w-4 mr-1" />
-                                                    {previewMode ? t.hide : t.preview}
+                                                    {previewMode ? t('portfolio.edit.hide') : t('portfolio.edit.preview')}
                                                 </Button>
                                             </div>
                                         </CardTitle>
@@ -426,7 +326,7 @@ export default function EditClean({ auth, portfolio, settings, cvData = portfoli
                                     <CardContent className="space-y-3">
                                         {/* Sélection du design */}
                                         <div>
-                                            <Label className="text-sm font-semibold text-gray-800 dark:text-gray-200 mb-2 block">{t.chooseTheme}</Label>
+                                            <Label className="text-sm font-semibold text-gray-800 dark:text-gray-200 mb-2 block">{t('portfolio.edit.chooseTheme')}</Label>
                                             <div className="grid grid-cols-2 lg:grid-cols-4 gap-2">
                                                 {DESIGN_OPTIONS.map((option) => (
                                                     <motion.div
@@ -442,7 +342,7 @@ export default function EditClean({ auth, portfolio, settings, cvData = portfoli
                                                         onClick={() => setData('design', option.value)}
                                                     >
                                                         <div className="flex items-center justify-between mb-2">
-                                                            <h4 className="font-bold text-gray-900 dark:text-white text-sm">{t[option.labelKey]}</h4>
+                                                            <h4 className="font-bold text-gray-900 dark:text-white text-sm">{t(`portfolio.edit.${option.labelKey}`)}</h4>
                                                             {data.design === option.value && (
                                                                 <div className="w-4 h-4 bg-violet-500 rounded-full flex items-center justify-center">
                                                                     <svg className="w-2 h-2 text-white" fill="currentColor" viewBox="0 0 20 20">
@@ -451,7 +351,7 @@ export default function EditClean({ auth, portfolio, settings, cvData = portfoli
                                                                 </div>
                                                             )}
                                                         </div>
-                                                        <p className="text-xs text-gray-600 dark:text-gray-400 leading-relaxed">{t[option.descKey]}</p>
+                                                        <p className="text-xs text-gray-600 dark:text-gray-400 leading-relaxed">{t(`portfolio.edit.${option.descKey}`)}</p>
                                                     </motion.div>
                                                 ))}
                                             </div>
@@ -461,8 +361,8 @@ export default function EditClean({ auth, portfolio, settings, cvData = portfoli
                                         <div className="bg-gradient-to-r from-gray-50 to-violet-50 dark:from-gray-800 dark:to-violet-900/30 p-4 rounded-xl border border-gray-200 dark:border-gray-600">
                                             <div className="flex items-center justify-between">
                                                 <div>
-                                                    <Label className="text-sm font-semibold text-gray-800 dark:text-gray-200 mb-1 block">{t.primaryColor}</Label>
-                                                    <p className="text-xs text-gray-600 dark:text-gray-400">{t.selectColor}</p>
+                                                    <Label className="text-sm font-semibold text-gray-800 dark:text-gray-200 mb-1 block">{t('portfolio.edit.primaryColor')}</Label>
+                                                    <p className="text-xs text-gray-600 dark:text-gray-400">{t('portfolio.edit.selectColor')}</p>
                                                 </div>
                                                 <div className="flex items-center gap-4">
                                                     <div className="text-center">
@@ -483,7 +383,7 @@ export default function EditClean({ auth, portfolio, settings, cvData = portfoli
                                                         size="sm"
                                                         className="border-2 border-amber-200 dark:border-amber-600 text-amber-700 dark:text-amber-300 hover:bg-amber-50 dark:hover:bg-amber-900/20 font-medium text-xs"
                                                     >
-                                                        {t.default}
+                                                        {t('portfolio.edit.default')}
                                                     </Button>
                                                 </div>
                                             </div>
@@ -501,16 +401,16 @@ export default function EditClean({ auth, portfolio, settings, cvData = portfoli
                                                     <Settings className="h-5 w-5 text-white" />
                                                 </div>
                                                 <div>
-                                                    <h3 className="text-lg font-bold text-gray-900 dark:text-white">{t.sectionManagement}</h3>
-                                                    <p className="text-xs text-gray-600 dark:text-gray-300 font-medium">{t.organizePortfolio}</p>
+                                                    <h3 className="text-lg font-bold text-gray-900 dark:text-white">{t('portfolio.edit.sectionManagement')}</h3>
+                                                    <p className="text-xs text-gray-600 dark:text-gray-300 font-medium">{t('portfolio.edit.organizePortfolio')}</p>
                                                 </div>
                                             </div>
                                             <div className="flex items-center gap-3">
                                                 <Badge className="bg-emerald-100 dark:bg-emerald-900 text-emerald-800 dark:text-emerald-200 font-semibold px-2 py-1 text-xs">
-                                                    {sections.filter(s => s.isActive).length}/{sections.length} {t.active}
+                                                    {sections.filter(s => s.isActive).length}/{sections.length} {t('portfolio.edit.active')}
                                                 </Badge>
                                                 <Badge className="bg-orange-100 dark:bg-orange-900 text-orange-800 dark:text-orange-200 font-semibold px-2 py-1 text-xs">
-                                                    {sections.filter(s => s.count === 0).length} {t.empty}
+                                                    {sections.filter(s => s.count === 0).length} {t('portfolio.edit.empty')}
                                                 </Badge>
                                             </div>
                                         </CardTitle>
@@ -564,8 +464,8 @@ export default function EditClean({ auth, portfolio, settings, cvData = portfoli
                                                                     </span>
                                                                     <span className="text-xs text-gray-600 dark:text-gray-400">
                                                                         {section.count === 0
-                                                                            ? t.noContent
-                                                                            : `${section.count} ${section.count > 1 ? t.elements : t.element}`
+                                                                            ? t('portfolio.edit.noContent')
+                                                                            : `${section.count} ${section.count > 1 ? t('portfolio.edit.elements') : t('portfolio.edit.element')}`
                                                                         }
                                                                     </span>
                                                                 </div>
@@ -604,8 +504,8 @@ export default function EditClean({ auth, portfolio, settings, cvData = portfoli
                                         <div className="flex items-center justify-between pt-3 border-t border-gray-200 dark:border-gray-600">
                                             <div className="text-xs text-gray-600 dark:text-gray-400 bg-blue-50 dark:bg-blue-900/20 px-2 py-1 rounded-lg">
                                                 💡 {sections.filter(s => s.count === 0).length > 0
-                                                    ? t.emptySectionsOrange
-                                                    : t.allSectionsContent}
+                                                    ? t('portfolio.edit.emptySectionsOrange')
+                                                    : t('portfolio.edit.allSectionsContent')}
                                             </div>
                                             <div className="flex gap-2">
                                                 <Button
@@ -634,7 +534,7 @@ export default function EditClean({ auth, portfolio, settings, cvData = portfoli
                                                     className="h-8 px-3 border-emerald-200 dark:border-emerald-600 text-emerald-700 dark:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-900/20 text-xs"
                                                 >
                                                     <Eye className="h-3 w-3 mr-1" />
-                                                    {t.showAll}
+                                                    {t('portfolio.edit.showAll')}
                                                 </Button>
                                                 <Button
                                                     type="button"
@@ -662,7 +562,7 @@ export default function EditClean({ auth, portfolio, settings, cvData = portfoli
                                                     className="h-8 px-3 border-orange-200 dark:border-orange-600 text-orange-700 dark:text-orange-400 hover:bg-orange-50 dark:hover:bg-orange-900/20 text-xs"
                                                 >
                                                     <EyeOff className="h-3 w-3 mr-1" />
-                                                    {t.hideEmpty}
+                                                    {t('portfolio.edit.hideEmpty')}
                                                 </Button>
                                             </div>
                                         </div>
@@ -688,12 +588,12 @@ export default function EditClean({ auth, portfolio, settings, cvData = portfoli
                                             {processing ? (
                                                 <>
                                                     <RefreshCw className="h-5 w-5 mr-2 animate-spin" />
-                                                    {t.saving}
+                                                    {t('portfolio.edit.saving')}
                                                 </>
                                             ) : (
                                                 <>
                                                     <Save className="h-5 w-5 mr-2" />
-                                                    {t.saveChanges}
+                                                    {t('portfolio.edit.saveChanges')}
                                                 </>
                                             )}
                                         </Button>
@@ -718,8 +618,8 @@ export default function EditClean({ auth, portfolio, settings, cvData = portfoli
                                                 <Eye className="h-6 w-6 text-white" />
                                             </div>
                                             <div>
-                                                <span className="text-xl font-bold text-gray-900 block">Aperçu Live</span>
-                                                <span className="text-sm text-gray-600">Prévisualisation en temps réel</span>
+                                                <span className="text-xl font-bold text-gray-900 block">{t('portfolio.edit.livePreview')}</span>
+                                                <span className="text-sm text-gray-600">{t('portfolio.edit.realtimePreview')}</span>
                                             </div>
                                         </CardTitle>
                                     </CardHeader>
@@ -730,7 +630,7 @@ export default function EditClean({ auth, portfolio, settings, cvData = portfoli
                                                     src={portfolioUrl}
                                                     className="w-full h-full border-0 scale-75 origin-top-left transition-all duration-300"
                                                     style={{ width: '133.33%', height: '133.33%' }}
-                                                    title={__('portfolio.edit.portfolio_preview')}
+                                                    title={t('portfolio.edit.portfolio_preview')}
                                                     loading="lazy"
                                                 />
                                             </div>
@@ -743,7 +643,7 @@ export default function EditClean({ auth, portfolio, settings, cvData = portfoli
                                                     className="flex-1 h-9 border border-purple-200 dark:border-purple-600 text-purple-700 dark:text-purple-400 hover:bg-purple-50 dark:hover:bg-purple-900/20 hover:border-purple-300 font-medium text-sm"
                                                 >
                                                     <Share className="h-3 w-3 mr-1" />
-                                                    {t.fullscreen}
+                                                    {t('portfolio.edit.fullscreen')}
                                                 </Button>
                                                 <Button
                                                     onClick={() => setShowQR(true)}

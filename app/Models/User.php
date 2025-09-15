@@ -9,6 +9,11 @@ use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use App\Models\ReferralLevel;
+use App\Models\PushNotification;
+use App\Models\UserNotificationPreference;
+use App\Models\UserDeviceToken;
+use App\Models\UserMessage;
+use App\Models\CompanyReview;
 
 class User extends Authenticatable
 {
@@ -417,7 +422,7 @@ class User extends Authenticatable
      */
     public function languages()
     {
-        return $this->belongsToMany(language::class, 'user_languages', 'user_id', 'language_id')
+        return $this->belongsToMany(Language::class, 'user_languages', 'user_id', 'language_id')
             ->withPivot('language_level')
             ->withTimestamps();
     }
@@ -457,4 +462,90 @@ class User extends Authenticatable
     {
         return $this->hasMany(JobApplication::class);
     }
+
+    /**
+     * Get push notifications for this user.
+     */
+    public function pushNotifications()
+    {
+        return $this->hasMany(PushNotification::class);
+    }
+
+    /**
+     * Get notification preferences for this user.
+     */
+    public function notificationPreferences()
+    {
+        return $this->hasOne(UserNotificationPreference::class);
+    }
+
+    /**
+     * Get device tokens for push notifications.
+     */
+    public function deviceTokens()
+    {
+        return $this->hasMany(UserDeviceToken::class);
+    }
+
+    /**
+     * Get messages sent by this user.
+     */
+    public function sentMessages()
+    {
+        return $this->hasMany(UserMessage::class, 'from_user_id');
+    }
+
+    /**
+     * Get messages received by this user.
+     */
+    public function receivedMessages()
+    {
+        return $this->hasMany(UserMessage::class, 'to_user_id');
+    }
+
+    /**
+     * Get all messages for this user (sent or received).
+     */
+    public function allMessages()
+    {
+        return UserMessage::where('from_user_id', $this->id)
+            ->orWhere('to_user_id', $this->id);
+    }
+
+    /**
+     * Get company reviews written by this user.
+     */
+    public function companyReviews()
+    {
+        return $this->hasMany(CompanyReview::class);
+    }
+
+    /**
+     * Get or create notification preferences for this user.
+     */
+    public function getNotificationPreferences()
+    {
+        return $this->notificationPreferences()->firstOrCreate([
+            'user_id' => $this->id
+        ]);
+    }
+
+    /**
+     * Check if user should receive job match notifications.
+     */
+    public function shouldReceiveJobMatches($type = 'email')
+    {
+        $preferences = $this->getNotificationPreferences();
+        return $preferences->shouldReceiveJobMatches($type);
+    }
+
+    /**
+     * Check if user should receive application update notifications.
+     */
+    public function shouldReceiveApplicationUpdates($type = 'email')
+    {
+        $preferences = $this->getNotificationPreferences();
+        return $preferences->shouldReceiveApplicationUpdates($type);
+    }
+
 }

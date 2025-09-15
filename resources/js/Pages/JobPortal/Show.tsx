@@ -4,7 +4,6 @@ import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import { useToast } from '@/Components/ui/use-toast';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
-import GuestLayout from '@/Layouts/GuestLayout';
 import { Button } from '@/Components/ui/button';
 import { Card, CardHeader, CardTitle, CardContent } from '@/Components/ui/card';
 import { Badge } from '@/Components/ui/badge';
@@ -14,7 +13,8 @@ import { Alert, AlertDescription } from '@/Components/ui/alert';
 import {
     ArrowLeft, MapPin, Clock, Building, DollarSign, Users,
     Wifi, Calendar, Star, Send, CheckCircle, AlertCircle,
-    Eye, Share2, Bookmark, FileText, Target, Briefcase, Globe
+    Eye, Share2, Bookmark, FileText, Target, Briefcase, Globe,
+    Phone, Mail, ExternalLink, MessageSquare
 } from 'lucide-react';
 import {
     Dialog,
@@ -33,6 +33,10 @@ import {
 
 interface JobShowProps {
     auth?: { user: any };
+    selectedCvModel?: {
+        id: number;
+        name: string;
+    };
     job: {
         id: number;
         title: string;
@@ -53,6 +57,10 @@ interface JobShowProps {
         created_at: string;
         views_count: number;
         applications_count: number;
+        posting_type: string; // 'standard' ou 'simple_ad'
+        contact_info: any; // Pour les annonces simples
+        contact_via_platform: boolean;
+        additional_instructions: string;
         company: {
             id: number;
             name: string;
@@ -67,31 +75,33 @@ interface JobShowProps {
     canApply: boolean;
 }
 
-export default function JobShow({ auth, job, hasApplied = false, similarJobs = [], canApply = false }: JobShowProps) {
+export default function JobShow({ auth, job, hasApplied = false, similarJobs = [], canApply = false, selectedCvModel }: JobShowProps) {
     const { t } = useTranslation();
     const { toast } = useToast();
     const [showApplicationDialog, setShowApplicationDialog] = useState(false);
-    const [selectedCvModel, setSelectedCvModel] = useState<number | null>(null);
+    const [selectedCvModelLocal, setSelectedCvModelLocal] = useState<number | null>(selectedCvModel?.id || null);
 
     const { data, setData, post, processing } = useForm({
         cover_letter: '',
-        cv_model_id: null
+        cv_model_id: selectedCvModel?.id || null
     });
 
     const handleApply = (e: React.FormEvent) => {
         e.preventDefault();
-        
+
         if (!selectedCvModel) {
             toast({
                 title: "CV requis",
-                description: "Veuillez sélectionner un modèle de CV",
+                description: "Vous devez d'abord sélectionner un modèle de CV",
                 variant: "destructive"
             });
+            // Rediriger vers la page de gestion des CV
+            window.location.href = route('userCvModels.index');
             return;
         }
 
         post(route('job-portal.apply', job.id), {
-            data: { ...data, cv_model_id: selectedCvModel },
+            data: { ...data, cv_model_id: selectedCvModel.id },
             onSuccess: () => {
                 toast({
                     title: "Candidature envoyée !",
@@ -133,21 +143,81 @@ export default function JobShow({ auth, job, hasApplied = false, similarJobs = [
         }
     };
 
-    const Layout = auth?.user ? AuthenticatedLayout : GuestLayout;
+    const Layout = AuthenticatedLayout;
+
+    // Guard clause for missing job data
+    if (!job) {
+        return (
+            <Layout user={auth.user}>
+                <Head>
+                    <title>Offre non trouvée | JobLight</title>
+                </Head>
+                <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
+                    <div className="text-center">
+                        <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-2">
+                            Offre d'emploi non trouvée
+                        </h1>
+                        <p className="text-gray-600 dark:text-gray-400">
+                            Cette offre n'existe pas ou n'est plus disponible.
+                        </p>
+                    </div>
+                </div>
+            </Layout>
+        );
+    }
 
     return (
-        <Layout {...(auth?.user ? { user: auth.user } : {})}>
+        <Layout user={auth.user}>
             <Head>
-                <title>{job.title} chez {job.company.name} | JobLight</title>
-                <meta name="description" content={`${job.title} - ${job.company.name}. ${job.description.substring(0, 160)}...`} />
-                <meta name="keywords" content={`emploi, ${job.title}, ${job.company.name}, ${job.location}, ${job.industry}`} />
-                
+                <title>{(job?.title && job?.company?.name) ? `${job.title} chez ${job.company.name} | JobLight` : 'JobLight - Offres d\'emploi'}</title>
+                {job?.title && job?.company?.name && job?.description && (
+                    <meta name="description" content={`${job.title} - ${job.company.name}. ${job.description.substring(0, 160)}...`} />
+                )}
+                {job?.title && (
+                    <meta name="keywords" content={`emploi, ${job.title}${job.company?.name ? `, ${job.company.name}` : ''}${job.location ? `, ${job.location}` : ''}${job.industry ? `, ${job.industry}` : ''}`} />
+                )}
+
                 {/* Open Graph */}
-                <meta property="og:title" content={`${job.title} chez ${job.company.name}`} />
-                <meta property="og:description" content={job.description.substring(0, 200)} />
-                <meta property="og:type" content="article" />
-                <meta property="og:url" content={window.location.href} />
+                {job?.title && job?.company?.name && (
+                    <meta property="og:title" content={`${job.title} chez ${job.company.name}`} />
+                )}
+                {job?.description && (
+                    <meta property="og:description" content={job.description.substring(0, 200)} />
+                )}
+                <meta property="og:type" content="website" />
             </Head>
+
+            {/* Hero Section with Background */}
+            <div className="relative min-h-[400px] mb-8">
+                <div
+                    className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+                    style={{
+                        backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('/images/hero/business-meeting.png')`
+                    }}
+                />
+                <div className="relative z-10 flex items-center justify-center min-h-[400px] text-white text-center px-4">
+                    <div>
+                        <h1 className="text-4xl md:text-5xl font-bold mb-4">
+                            {job.title}
+                        </h1>
+                        <p className="text-xl md:text-2xl mb-6">
+                            chez {job.company.name}
+                        </p>
+                        <div className="flex items-center justify-center gap-4 text-lg">
+                            {job.location && (
+                                <div className="flex items-center gap-2">
+                                    <MapPin className="w-5 h-5" />
+                                    {job.location}
+                                </div>
+                            )}
+                            <div className="flex items-center gap-2">
+                                <Calendar className="w-5 h-5" />
+                                {new Date(job.created_at).toLocaleDateString('fr-FR')}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
             <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
                 <div className="max-w-6xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
@@ -174,26 +244,6 @@ export default function JobShow({ auth, job, hasApplied = false, similarJobs = [
                                             )}
                                         </div>
                                         <div className="flex-1">
-                                            <h1 className="text-2xl md:text-3xl font-bold text-gray-800 dark:text-gray-200 mb-2">
-                                                {job.title}
-                                            </h1>
-                                            <div className="flex items-center gap-4 text-gray-600 dark:text-gray-400 mb-3">
-                                                <div className="flex items-center gap-1">
-                                                    <Building className="w-4 h-4" />
-                                                    {job.company.name}
-                                                </div>
-                                                {job.location && (
-                                                    <div className="flex items-center gap-1">
-                                                        <MapPin className="w-4 h-4" />
-                                                        {job.location}
-                                                    </div>
-                                                )}
-                                                <div className="flex items-center gap-1">
-                                                    <Calendar className="w-4 h-4" />
-                                                    {new Date(job.created_at).toLocaleDateString('fr-FR')}
-                                                </div>
-                                            </div>
-                                            
                                             <div className="flex flex-wrap gap-2">
                                                 <Badge variant="outline">
                                                     {job.employment_type}
@@ -226,12 +276,26 @@ export default function JobShow({ auth, job, hasApplied = false, similarJobs = [
                                                 </Button>
                                             ) : (
                                                 <Dialog open={showApplicationDialog} onOpenChange={setShowApplicationDialog}>
-                                                    <DialogTrigger asChild>
-                                                        <Button size="lg" className="bg-gradient-to-r from-amber-500 to-purple-500 hover:from-amber-600 hover:to-purple-600">
-                                                            <Send className="w-4 h-4 mr-2" />
-                                                            Postuler maintenant
-                                                        </Button>
-                                                    </DialogTrigger>
+                                                    <Button
+                                                        size="lg"
+                                                        className="bg-gradient-to-r from-amber-500 to-purple-500 hover:from-amber-600 hover:to-purple-600"
+                                                        onClick={() => {
+                                                            if (!selectedCvModel) {
+                                                                toast({
+                                                                    title: "CV requis",
+                                                                    description: "Vous devez d'abord sélectionner un modèle de CV",
+                                                                    variant: "destructive"
+                                                                });
+                                                                // Rediriger vers la page de gestion des CV
+                                                                window.location.href = route('userCvModels.index');
+                                                                return;
+                                                            }
+                                                            setShowApplicationDialog(true);
+                                                        }}
+                                                    >
+                                                        <Send className="w-4 h-4 mr-2" />
+                                                        Postuler maintenant
+                                                    </Button>
                                                     <DialogContent className="max-w-2xl">
                                                         <DialogHeader>
                                                             <DialogTitle>Postuler à {job.title}</DialogTitle>
@@ -251,21 +315,21 @@ export default function JobShow({ auth, job, hasApplied = false, similarJobs = [
                                                                     {data.cover_letter.length}/2000 caractères (minimum 100)
                                                                 </div>
                                                             </div>
-                                                            
+
                                                             <div>
                                                                 <Label>Modèle de CV à utiliser *</Label>
-                                                                <div className="mt-2 p-4 border border-amber-200 rounded-lg bg-amber-50">
+                                                                <div className="mt-2 p-4 border border-green-200 rounded-lg bg-green-50">
                                                                     <div className="flex items-center gap-2 mb-2">
-                                                                        <FileText className="w-4 h-4 text-amber-600" />
-                                                                        <span className="text-sm font-medium text-amber-800">
-                                                                            Votre CV sera automatiquement joint
+                                                                        <FileText className="w-4 h-4 text-green-600" />
+                                                                        <span className="text-sm font-medium text-green-800">
+                                                                            CV sélectionné : {selectedCvModel?.name || 'Modèle par défaut'}
                                                                         </span>
                                                                     </div>
-                                                                    <p className="text-xs text-amber-700">
-                                                                        Sélectionnez le modèle de CV que vous souhaitez envoyer avec votre candidature.
+                                                                    <p className="text-xs text-green-700">
+                                                                        Ce modèle de CV sera automatiquement joint à votre candidature.
                                                                     </p>
-                                                                    <Link href={route('userCvModels.index')} className="text-xs text-amber-600 hover:text-amber-700 underline">
-                                                                        Gérer mes modèles de CV →
+                                                                    <Link href={route('userCvModels.index')} className="text-xs text-green-600 hover:text-green-700 underline">
+                                                                        Changer de modèle de CV →
                                                                     </Link>
                                                                 </div>
                                                             </div>
@@ -274,8 +338,8 @@ export default function JobShow({ auth, job, hasApplied = false, similarJobs = [
                                                                 <Button type="button" variant="outline" onClick={() => setShowApplicationDialog(false)}>
                                                                     Annuler
                                                                 </Button>
-                                                                <Button 
-                                                                    type="submit" 
+                                                                <Button
+                                                                    type="submit"
                                                                     disabled={processing || data.cover_letter.length < 100}
                                                                     className="bg-gradient-to-r from-amber-500 to-purple-500 hover:from-amber-600 hover:to-purple-600"
                                                                 >
@@ -336,7 +400,7 @@ export default function JobShow({ auth, job, hasApplied = false, similarJobs = [
                             )}
 
                             {/* Compétences requises */}
-                            {job.skills_required && job.skills_required.length > 0 && (
+                            {job.skills_required && Array.isArray(job.skills_required) && job.skills_required.length > 0 && (
                                 <Card>
                                     <CardHeader>
                                         <CardTitle>Compétences recherchées</CardTitle>
@@ -459,9 +523,9 @@ export default function JobShow({ auth, job, hasApplied = false, similarJobs = [
                                     )}
 
                                     {job.company.website && (
-                                        <a 
-                                            href={job.company.website} 
-                                            target="_blank" 
+                                        <a
+                                            href={job.company.website}
+                                            target="_blank"
                                             rel="noopener noreferrer"
                                             className="text-blue-600 hover:text-blue-700 text-sm flex items-center gap-1"
                                         >

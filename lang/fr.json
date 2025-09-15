@@ -839,5 +839,53 @@
             "title": "Revue de CV",
             "description": "Suggestions d'amélioration de CV"
         }
+    },
+    "portfolio": {
+        "index": {
+            "link_copied_title": "Lien copié !",
+            "link_copied_description": "Le lien vers votre portfolio a été copié dans le presse-papiers.",
+            "error": "Erreur",
+            "copy_error_description": "Impossible de copier le lien.",
+            "features": {
+                "templates": "Modèles Uniques",
+                "templates_desc": "Choisissez parmi des designs professionnels et créatifs.",
+                "custom_sections": "Sections Personnalisées",
+                "custom_sections_desc": "Ajoutez, supprimez et réorganisez les sections à votre guise.",
+                "professional_photo": "Photo Professionnelle",
+                "professional_photo_desc": "Intégrez une photo qui vous met en valeur.",
+                "smooth_animations": "Animations Fluides",
+                "smooth_animations_desc": "Des transitions élégantes pour une expérience utilisateur moderne.",
+                "responsive": "100% Responsive",
+                "responsive_desc": "Votre portfolio est parfait sur tous les appareils.",
+                "performance": "Performance Optimale",
+                "performance_desc": "Un chargement rapide pour ne perdre aucun visiteur."
+            },
+            "title": "Mon Super Portfolio",
+            "premium": "Premium",
+            "copied": "Copié !",
+            "share": "Partager",
+            "customize": "Personnaliser mon Portfolio",
+            "premium_activated": "Fonctionnalité Premium activée !",
+            "premium_description": "Vous bénéficiez de tous les avantages du portfolio Premium. Partagez votre parcours unique avec le monde.",
+            "quick_actions": "Actions Rapides",
+            "manage_portfolio_description": "Gérez et partagez votre portfolio en un clic.",
+            "public_link_label": "Votre lien public",
+            "customize_design": "Personnaliser le design",
+            "view_public_portfolio": "Voir le portfolio public",
+            "manage_sections": "Gérer les sections",
+            "live_preview": "Aperçu en direct",
+            "online": "En ligne",
+            "preview_description": "Voici à quoi ressemble votre portfolio pour les visiteurs.",
+            "portfolio_preview_title": "Aperçu du Portfolio",
+            "premium_features": "Fonctionnalités Premium",
+            "premium_features_description": "Débloquez tout le potentiel de votre portfolio avec ces fonctionnalités exclusives.",
+            "stats": {
+                "responsive": "Responsive",
+                "templates_pro": "Modèles Pro",
+                "sections": "Sections illimitées",
+                "ultra_fast": "Ultra-rapide"
+            },
+            "start_customization": "Commencer la personnalisation"
+        }
     }
 }

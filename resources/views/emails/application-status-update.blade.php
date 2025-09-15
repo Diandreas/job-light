@@ -1,147 +1,168 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html>
 <head>
-    <meta charset="UTF-8">
+    <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mise à jour de votre candidature</title>
+    <title>{{ $statusMessage['email_subject'] }}</title>
     <style>
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
             line-height: 1.6;
             color: #333;
-            margin: 0;
-            padding: 0;
-            background-color: #f8f9fa;
-        }
-        .container {
             max-width: 600px;
             margin: 0 auto;
-            background: white;
-            border-radius: 8px;
-            overflow: hidden;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 20px;
         }
         .header {
-            background: linear-gradient(135deg, #10b981 0%, #3b82f6 100%);
+            @if($application->status === 'shortlisted' || $application->status === 'hired')
+                background: linear-gradient(135deg, #10b981, #3b82f6);
+            @elseif($application->status === 'rejected')
+                background: linear-gradient(135deg, #ef4444, #f97316);
+            @else
+                background: linear-gradient(135deg, #f59e0b, #8b5cf6);
+            @endif
             color: white;
-            padding: 20px;
+            padding: 30px 20px;
             text-align: center;
+            border-radius: 8px 8px 0 0;
         }
         .content {
-            padding: 25px;
+            background: #fff;
+            padding: 30px;
+            border: 1px solid #e5e7eb;
+            border-top: none;
         }
         .status-card {
-            background: #f0f9ff;
-            border: 1px solid #0ea5e9;
+            @if($application->status === 'shortlisted' || $application->status === 'hired')
+                background: #ecfdf5;
+                border: 1px solid #10b981;
+            @elseif($application->status === 'rejected')
+                background: #fef2f2;
+                border: 1px solid #ef4444;
+            @else
+                background: #f9fafb;
+                border: 1px solid #f59e0b;
+            @endif
             border-radius: 8px;
             padding: 20px;
-            margin: 15px 0;
-            text-align: center;
+            margin: 20px 0;
         }
-        .job-details {
-            background: #f8fafc;
-            border: 1px solid #e2e8f0;
+        .job-info {
+            background: #f9fafb;
+            border: 1px solid #e5e7eb;
             border-radius: 8px;
-            padding: 15px;
-            margin: 15px 0;
+            padding: 20px;
+            margin: 20px 0;
         }
-        .btn {
-            background: linear-gradient(135deg, #f59e0b 0%, #8b5cf6 100%);
+        .cta-button {
+            background: linear-gradient(135deg, #f59e0b, #8b5cf6);
             color: white;
-            padding: 12px 25px;
+            padding: 12px 24px;
             text-decoration: none;
             border-radius: 6px;
-            font-weight: bold;
             display: inline-block;
-            margin: 10px 0;
+            font-weight: 500;
+            margin: 20px 0;
         }
         .footer {
-            background: #f7fafc;
+            background: #f3f4f6;
             padding: 20px;
             text-align: center;
-            font-size: 12px;
-            color: #718096;
-            border-top: 1px solid #e2e8f0;
+            border-radius: 0 0 8px 8px;
+            border: 1px solid #e5e7eb;
+            border-top: none;
+            font-size: 14px;
+            color: #6b7280;
+        }
+        .status-icon {
+            font-size: 48px;
+            margin-bottom: 15px;
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="header">
-            <h1 style="margin: 0; font-size: 24px;">Mise à jour de candidature</h1>
-            <p style="margin: 5px 0 0 0; opacity: 0.9;">{{ $job->company->name }}</p>
-        </div>
-
-        <div class="content">
-            <p>Bonjour <strong>{{ $user->name }}</strong>,</p>
-            
-            <p>Nous avons une mise à jour concernant votre candidature pour le poste de <strong>{{ $job->title }}</strong>.</p>
-
-            <div class="status-card">
-                <h2 style="margin: 0 0 10px 0; color: #0ea5e9;">{{ $statusMessage }}</h2>
-                <p style="margin: 0; font-size: 14px; color: #0369a1;">
-                    Statut : <strong>{{ ucfirst($application->status) }}</strong>
-                </p>
-            </div>
-
-            <div class="job-details">
-                <h3 style="margin-top: 0; color: #374151;">Détails de l'offre</h3>
-                <p><strong>Poste :</strong> {{ $job->title }}</p>
-                <p><strong>Entreprise :</strong> {{ $job->company->name }}</p>
-                @if($job->location)
-                    <p><strong>Localisation :</strong> {{ $job->location }}</p>
-                @endif
-                <p><strong>Date de candidature :</strong> {{ $application->applied_at->format('d/m/Y à H:i') }}</p>
-            </div>
-
-            @if($application->status === 'shortlisted')
-                <div style="background: #ecfdf5; border: 1px solid #10b981; border-radius: 8px; padding: 15px; margin: 15px 0;">
-                    <h4 style="color: #059669; margin-top: 0;">🎉 Félicitations !</h4>
-                    <p style="color: #047857; margin-bottom: 0;">
-                        Votre profil a retenu l'attention de l'entreprise. Vous devriez recevoir un contact prochainement pour la suite du processus de recrutement.
-                    </p>
-                </div>
-            @elseif($application->status === 'hired')
-                <div style="background: #fef3c7; border: 1px solid #f59e0b; border-radius: 8px; padding: 15px; margin: 15px 0;">
-                    <h4 style="color: #d97706; margin-top: 0;">🎊 Excellent !</h4>
-                    <p style="color: #92400e; margin-bottom: 0;">
-                        Vous avez été sélectionné(e) pour ce poste ! L'entreprise devrait vous contacter très prochainement avec les détails.
-                    </p>
-                </div>
+    <div class="header">
+        <div class="status-icon">
+            @if($application->status === 'shortlisted' || $application->status === 'hired')
+                🎉
             @elseif($application->status === 'rejected')
-                <div style="background: #fef2f2; border: 1px solid #ef4444; border-radius: 8px; padding: 15px; margin: 15px 0;">
-                    <h4 style="color: #dc2626; margin-top: 0;">Candidature non retenue</h4>
-                    <p style="color: #991b1b; margin-bottom: 0;">
-                        Votre candidature n'a pas été retenue pour ce poste. Ne vous découragez pas ! D'autres opportunités vous attendent.
-                    </p>
-                </div>
+                💙
+            @elseif($application->status === 'reviewed')
+                👀
+            @else
+                📋
             @endif
+        </div>
+        <h1>{{ $statusMessage['title'] }}</h1>
+        <p>Mise à jour de votre candidature</p>
+    </div>
 
-            <div style="text-align: center; margin: 25px 0;">
-                <a href="{{ route('job-portal.my-applications') }}" class="btn">
-                    Voir mes candidatures
-                </a>
-            </div>
-
-            @if($application->status === 'rejected')
-                <p><strong>💡 Conseils pour vos prochaines candidatures :</strong></p>
-                <ul style="color: #4a5568; padding-left: 20px;">
-                    <li>Utilisez l'IA de Guidy pour optimiser votre CV</li>
-                    <li>Personnalisez votre lettre de motivation</li>
-                    <li>Consultez nos conseils carrière</li>
-                    <li>Continuez à postuler - la persévérance paie !</li>
-                </ul>
+    <div class="content">
+        <p>Bonjour {{ $user->name }},</p>
+        
+        <div class="status-card">
+            <h3 style="margin-top: 0;">{{ $statusMessage['body'] }}</h3>
+            
+            @if($application->status === 'shortlisted')
+                <p>
+                    <strong>Félicitations !</strong> Votre profil a retenu l'attention de l'employeur. 
+                    Vous pourriez être contacté(e) prochainement pour la suite du processus de recrutement.
+                </p>
+            @elseif($application->status === 'hired')
+                <p>
+                    <strong>Excellent !</strong> Vous avez été sélectionné(e) pour ce poste ! 
+                    L'employeur devrait vous contacter très bientôt pour finaliser les détails.
+                </p>
+            @elseif($application->status === 'rejected')
+                <p>
+                    Bien que votre candidature n'ait pas été retenue cette fois-ci, nous vous encourageons 
+                    à continuer vos recherches. De nouvelles opportunités correspondant à votre profil 
+                    sont publiées régulièrement.
+                </p>
+            @elseif($application->status === 'reviewed')
+                <p>
+                    Votre candidature a été examinée par l'employeur. Vous devriez recevoir une réponse 
+                    dans les prochains jours concernant la suite du processus.
+                </p>
             @endif
         </div>
 
-        <div class="footer">
-            <p><strong>JobLight by Guidy</strong> - Votre assistant carrière intelligent</p>
-            <p style="margin: 5px 0 0 0;">
-                <a href="{{ route('job-portal.index') }}" style="color: #3b82f6; text-decoration: none;">
-                    Découvrir plus d'opportunités
-                </a>
+        <div class="job-info">
+            <h4 style="margin-top: 0;">📋 Détails de l'offre</h4>
+            <p><strong>Poste :</strong> {{ $job->title }}</p>
+            <p><strong>Entreprise :</strong> {{ $company->name }}</p>
+            @if($job->location)
+                <p><strong>Localisation :</strong> {{ $job->location }}</p>
+            @endif
+            <p><strong>Candidature envoyée le :</strong> {{ $application->applied_at->format('d/m/Y à H:i') }}</p>
+        </div>
+
+        @if($application->status === 'rejected')
+            <p>
+                <strong>Continuez vos recherches :</strong><br>
+                Ne vous découragez pas ! Consultez nos autres offres d'emploi qui pourraient vous intéresser.
             </p>
-        </div>
+            
+            <a href="{{ route('job-portal.index') }}" class="cta-button">
+                Voir d'autres offres →
+            </a>
+        @else
+            <a href="{{ route('job-portal.my-applications') }}" class="cta-button">
+                Voir mes candidatures →
+            </a>
+        @endif
+
+        <p>
+            Bonne continuation dans vos recherches !<br>
+            L'équipe JobLight
+        </p>
+    </div>
+
+    <div class="footer">
+        <p>
+            <a href="{{ route('job-portal.my-applications') }}" style="color: #6b7280;">Mes candidatures</a> |
+            <a href="{{ route('job-portal.index') }}" style="color: #6b7280;">Rechercher des offres</a>
+        </p>
     </div>
 </body>
 </html>

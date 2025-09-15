@@ -154,8 +154,14 @@ export default function JobPortalIndex({ auth, jobs = { data: [], links: [], met
 
             <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
                 {/* Hero Section */}
-                <div className="bg-gradient-to-r from-amber-500 to-purple-500 text-white">
-                    <div className="max-w-7xl mx-auto px-4 py-16 sm:px-6 lg:px-8">
+                <div className="relative bg-gradient-to-r from-amber-500 to-purple-500 text-white">
+                    <div
+                        className="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-20"
+                        style={{
+                            backgroundImage: `url('/images/hero/business-meeting.png')`
+                        }}
+                    />
+                    <div className="relative z-10 max-w-7xl mx-auto px-4 py-16 sm:px-6 lg:px-8">
                         <div className="text-center">
                             <motion.h1
                                 initial={{ opacity: 0, y: 20 }}
@@ -227,8 +233,8 @@ export default function JobPortalIndex({ auth, jobs = { data: [], links: [], met
                                                 className="pl-10 h-12 text-gray-800"
                                             />
                                         </div>
-                                        <Button 
-                                            type="submit" 
+                                        <Button
+                                            type="submit"
                                             disabled={processing}
                                             className="h-12 bg-gradient-to-r from-amber-500 to-purple-500 hover:from-amber-600 hover:to-purple-600"
                                         >
@@ -259,8 +265,8 @@ export default function JobPortalIndex({ auth, jobs = { data: [], links: [], met
                                         <label className="text-xs font-medium text-gray-700 dark:text-gray-300 mb-2 block">
                                             Type de contrat
                                         </label>
-                                        <Select 
-                                            value={data.employment_type} 
+                                        <Select
+                                            value={data.employment_type}
                                             onValueChange={(value) => setData('employment_type', value)}
                                         >
                                             <SelectTrigger className="h-9">
@@ -281,8 +287,8 @@ export default function JobPortalIndex({ auth, jobs = { data: [], links: [], met
                                         <label className="text-xs font-medium text-gray-700 dark:text-gray-300 mb-2 block">
                                             Niveau d'expérience
                                         </label>
-                                        <Select 
-                                            value={data.experience_level} 
+                                        <Select
+                                            value={data.experience_level}
                                             onValueChange={(value) => setData('experience_level', value)}
                                         >
                                             <SelectTrigger className="h-9">
@@ -379,16 +385,21 @@ export default function JobPortalIndex({ auth, jobs = { data: [], links: [], met
                                             </DialogHeader>
                                             <div className="p-4 text-center">
                                                 <Zap className="w-12 h-12 text-amber-600 mx-auto mb-4" />
-                                                <h3 className="text-lg font-bold mb-2">Fonctionnalité en développement</h3>
+                                                <h3 className="text-lg font-bold mb-2">Publier une offre d'emploi</h3>
                                                 <p className="text-gray-600 mb-4">
-                                                    La publication d'offres sera bientôt disponible. 
-                                                    Contactez-nous pour être notifié du lancement.
+                                                    Créez votre annonce d'emploi en quelques minutes et trouvez les meilleurs candidats.
                                                 </p>
-                                                <Button asChild>
-                                                    <a href="mailto:guidy.makeitreall@gmail.com">
-                                                        Nous contacter
-                                                    </a>
-                                                </Button>
+                                                <div className="space-y-3">
+                                                    <Button asChild className="w-full">
+                                                        <Link href={route('job-portal.create-simple-ad-form')}>
+                                                            <Send className="w-4 h-4 mr-2" />
+                                                            Créer une annonce simple
+                                                        </Link>
+                                                    </Button>
+                                                    <p className="text-xs text-gray-500">
+                                                        Gratuit • Publication immédiate
+                                                    </p>
+                                                </div>
                                             </div>
                                         </DialogContent>
                                     </Dialog>
@@ -416,6 +427,12 @@ export default function JobPortalIndex({ auth, jobs = { data: [], links: [], met
                                                 <Button variant="outline" size="sm">
                                                     <Eye className="w-4 h-4 mr-2" />
                                                     Mes candidatures
+                                                </Button>
+                                            </Link>
+                                            <Link href={route('job-portal.my-jobs')}>
+                                                <Button variant="outline" size="sm">
+                                                    <Briefcase className="w-4 h-4 mr-2" />
+                                                    Mes offres
                                                 </Button>
                                             </Link>
                                             <Link href={route('job-portal.profiles')}>
@@ -476,7 +493,7 @@ export default function JobPortalIndex({ auth, jobs = { data: [], links: [], met
                                                             </p>
                                                         </div>
                                                     </div>
-                                                    
+
                                                     <div className="text-right">
                                                         <div className="text-sm font-semibold text-gray-800 dark:text-gray-200 mb-1">
                                                             {formatSalary(job.salary_min, job.salary_max, job.salary_currency)}
@@ -506,7 +523,7 @@ export default function JobPortalIndex({ auth, jobs = { data: [], links: [], met
                                                             {job.applications_count} candidature{job.applications_count > 1 ? 's' : ''}
                                                         </div>
                                                     </div>
-                                                    
+
                                                     <Link href={route('job-portal.show', job.id)}>
                                                         <Button size="sm" className="group-hover:bg-blue-600 group-hover:text-white transition-colors">
                                                             Voir l'offre
@@ -528,11 +545,10 @@ export default function JobPortalIndex({ auth, jobs = { data: [], links: [], met
                                             <Link
                                                 key={index}
                                                 href={link.url || '#'}
-                                                className={`px-3 py-2 rounded-lg text-sm transition-colors ${
-                                                    link.active 
-                                                        ? 'bg-blue-600 text-white' 
+                                                className={`px-3 py-2 rounded-lg text-sm transition-colors ${link.active
+                                                        ? 'bg-blue-600 text-white'
                                                         : 'bg-white text-gray-600 hover:bg-gray-50 border'
-                                                }`}
+                                                    }`}
                                                 dangerouslySetInnerHTML={{ __html: link.label }}
                                             />
                                         ))}

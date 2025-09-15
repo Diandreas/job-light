@@ -20,6 +20,7 @@ class JobPortalController extends Controller
     public function __construct(ApidcaNotificationService $notificationService)
     {
         $this->notificationService = $notificationService;
+        $this->middleware('auth')->only(['apply', 'myApplications', 'myJobs', 'profiles', 'updateApplicationStatus', 'bulkUpdateApplications']);
     }
 
     /**
@@ -99,12 +100,19 @@ class JobPortalController extends Controller
         // Incrémenter les vues
         $job->increment('views_count');
 
-        // Vérifier si l'utilisateur a déjà postulé
+        // Vérifier si l'utilisateur a déjà postulé et récupérer son CV sélectionné
         $hasApplied = false;
+        $selectedCvModel = null;
         if (Auth::check()) {
             $hasApplied = $job->applications()
                 ->where('user_id', Auth::id())
                 ->exists();
+
+            // Récupérer le modèle de CV sélectionné par l'utilisateur
+            $user = Auth::user();
+            if ($user->selected_cv_model_id) {
+                $selectedCvModel = $user->selected_cv_model;
+            }
         }
 
         // Offres similaires
@@ -123,7 +131,8 @@ class JobPortalController extends Controller
             'job' => $job,
             'hasApplied' => $hasApplied,
             'similarJobs' => $similarJobs,
-            'canApply' => Auth::check()
+            'canApply' => Auth::check(),
+            'selectedCvModel' => $selectedCvModel
         ]);
     }
 
@@ -132,7 +141,6 @@ class JobPortalController extends Controller
      */
     public function apply(Request $request, JobPosting $job)
     {
-        $this->middleware('auth');
 
         $request->validate([
             'cover_letter' => 'required|string|min:100|max:2000',
@@ -181,17 +189,13 @@ class JobPortalController extends Controller
      */
     public function searchProfiles(Request $request)
     {
-        $this->middleware('auth');
-
         $user = Auth::user();
-        
-        // Vérifier les permissions (entreprise ou admin)
-        if (!$user->can('access-profiles') && !$user->can('access-admin')) {
-            return response()->json(['error' => 'Accès non autorisé'], 403);
-        }
+
+        // Pour l'instant, permettre l'accès à tous les utilisateurs authentifiés
+        // TODO: Implémenter un système de permissions plus sophistiqué si nécessaire
 
         $query = User::whereNotNull('email_verified_at')
-            ->with(['profession', 'experiences', 'competences'])
+            ->with(['profession', 'experiences', 'competences', 'languages'])
             ->where('id', '!=', $user->id);
 
         // Filtres de recherche
@@ -233,11 +237,99 @@ class JobPortalController extends Controller
     }
 
     /**
-     * Publier une offre d'emploi
+     * Afficher le formulaire de création d'annonce simple
+     */
+    public function createSimpleAdForm()
+    {
+        return Inertia::render('JobPortal/CreateSimpleAd');
+    }
+
+    /**
+     * Créer une annonce simple
+     */
+    public function createSimpleAd(Request $request)
+    {
+        $request->validate([
+            'title' => 'required|string|max:255',
+            'description' => 'required|string|min:100',
+            'requirements' => 'nullable|string',
+            'location' => 'nullable|string|max:255',
+            'employment_type' => 'required|in:full-time,part-time,contract,internship,freelance',
+            'experience_level' => 'nullable|in:entry,mid,senior,executive',
+            'salary_min' => 'nullable|numeric|min:0',
+            'salary_max' => 'nullable|numeric|min:0',
+            'remote_work' => 'boolean',
+            'industry' => 'nullable|string|max:100',
+            'application_deadline' => 'nullable|date|after:today',
+            'contact_info' => 'required|array',
+            'contact_info.method' => 'required|in:email,phone,website,message',
+            'contact_info.email' => 'required_if:contact_info.method,email|email',
+            'contact_info.phone' => 'required_if:contact_info.method,phone|string',
+            'contact_info.website' => 'required_if:contact_info.method,website|url',
+            'contact_via_platform' => 'boolean',
+            'company_name' => 'nullable|string|max:255',
+            'company_description' => 'nullable|string'
+        ]);
+
+        $user = Auth::user();
+
+        // Créer ou récupérer l'entreprise
+        if ($request->company_name) {
+            $company = Company::firstOrCreate([
+                'name' => $request->company_name,
+                'email' => $user ? $user->email : $request->contact_info['email']
+            ], [
+                'type' => 'individual',
+                'status' => 'active',
+                'description' => $request->company_description,
+                'can_post_jobs' => true,
+                'job_posting_limit' => 10 // Limite pour annonces simples
+            ]);
+        } else {
+            // Entreprise par défaut pour les annonces simples
+            $company = Company::firstOrCreate([
+                'name' => 'Annonce individuelle',
+                'email' => $user ? $user->email : $request->contact_info['email']
+            ], [
+                'type' => 'individual',
+                'status' => 'active',
+                'can_post_jobs' => true,
+                'job_posting_limit' => 10
+            ]);
+        }
+
+        // Créer l'annonce simple
+        $job = JobPosting::create([
+            'company_id' => $company->id,
+            'posted_by_user_id' => $user ? $user->id : null,
+            'title' => $request->title,
+            'description' => $request->description,
+            'requirements' => $request->requirements,
+            'location' => $request->location,
+            'employment_type' => $request->employment_type,
+            'experience_level' => $request->experience_level,
+            'salary_min' => $request->salary_min,
+            'salary_max' => $request->salary_max,
+            'salary_currency' => 'EUR',
+            'remote_work' => $request->boolean('remote_work'),
+            'industry' => $request->industry,
+            'application_deadline' => $request->application_deadline,
+            'status' => 'published',
+            'posting_type' => 'simple_ad',
+            'contact_info' => $request->contact_info,
+            'contact_via_platform' => $request->boolean('contact_via_platform'),
+            'additional_instructions' => $request->contact_info['instructions'] ?? null
+        ]);
+
+        return redirect()->route('job-portal.show', $job->id)
+            ->with('success', 'Votre annonce a été publiée avec succès !');
+    }
+
+    /**
+     * Publier une offre d'emploi standard
      */
     public function createJob(Request $request)
     {
-        $this->middleware('auth');
 
         $request->validate([
             'title' => 'required|string|max:255',
@@ -338,7 +430,6 @@ class JobPortalController extends Controller
      */
     public function myApplications()
     {
-        $this->middleware('auth');
 
         $applications = Auth::user()->jobApplications()
             ->with(['jobPosting.company'])
@@ -355,7 +446,6 @@ class JobPortalController extends Controller
      */
     public function myJobs()
     {
-        $this->middleware('auth');
 
         $jobs = JobPosting::where('posted_by_user_id', Auth::id())
             ->with(['company', 'applications.user'])
@@ -372,7 +462,6 @@ class JobPortalController extends Controller
      */
     public function jobApplications(JobPosting $job)
     {
-        $this->middleware('auth');
 
         // Vérifier les permissions
         if ($job->posted_by_user_id !== Auth::id() && !Auth::user()->can('access-admin')) {
@@ -395,7 +484,6 @@ class JobPortalController extends Controller
      */
     public function updateApplicationStatus(Request $request, JobApplication $application)
     {
-        $this->middleware('auth');
 
         $request->validate([
             'status' => 'required|in:pending,reviewed,shortlisted,rejected,hired'

@@ -13,23 +13,23 @@ class DatabaseSeeder extends Seeder
     {
         // Création des utilisateurs de base
         // $this->call(AdminUserSeeder::class);
-
+        $this->call(JobPortalSeeder::class);
         // Données géographiques (base)
-        $this->call(CountriesSeeder::class);
-        $this->call(AddressesSeeder::class);
+        // $this->call(CountriesSeeder::class);
+        // $this->call(AddressesSeeder::class);
 
-        // Professions et compétences
-        $this->call(ProfessionCategorySeeder::class);
-        $this->call(ProfessionSeeder::class);
-        $this->call(CompetencesSeeder::class);
+        // // Professions et compétences
+        // $this->call(ProfessionCategorySeeder::class);
+        // $this->call(ProfessionSeeder::class);
+        // $this->call(CompetencesSeeder::class);
 
-        // Catégories d'expérience
-        $this->call(ExperienceCategoriesSeeder::class);
+        // // Catégories d'expérience
+        // $this->call(ExperienceCategoriesSeeder::class);
 
-        // Hobbies et intérêts
-        $this->call(HobbiesSeeder::class);
+        // // Hobbies et intérêts
+        // $this->call(HobbiesSeeder::class);
 
-        // Langues
-        $this->call(LanguageSeeder::class);
+        // // Langues
+        // $this->call(LanguageSeeder::class);
     }
 }

@@ -871,6 +871,11 @@ const PersonalInfoCard = ({ item, onEdit, updateCvInformation }) => {
     const { toast } = useToast();
     const { t } = useTranslation();
 
+    // Null check for item prop
+    if (!item) {
+        return null;
+    }
+
     // Log pour déboguer les propriétés de l'item
     useEffect(() => {
         console.log('PersonalInfoCard - props item:', item);
@@ -1674,7 +1679,7 @@ export default function CvInterface({ auth, cvInformation: initialCvInformation 
                     />
                 ) : (
                     <PersonalInfoCard
-                        item={cvInformation.personalInformation}
+                        item={cvInformation.personalInformation || {}}
                         onEdit={handleEdit}
                         updateCvInformation={updateCvInformation}
                     />

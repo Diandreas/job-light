@@ -28,6 +28,7 @@ interface ProfilesProps {
             id: number;
             name: string;
             email: string;
+            username: string;
             profession: { name: string } | null;
             full_profession: string;
             address: string;
@@ -109,20 +110,20 @@ export default function Profiles({ auth, profiles = { data: [], links: [], meta:
     if (!canAccessProfiles) {
         return (
             <AuthenticatedLayout user={auth.user}>
-                <Head title="Recherche de Profils - Accès Restreint" />
+                <Head title={t('jobPortal.profile.accessRestricted')} />
                 <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
                     <Card className="max-w-md">
                         <CardContent className="p-8 text-center">
                             <Users className="w-16 h-16 text-gray-400 mx-auto mb-4" />
                             <h2 className="text-xl font-bold text-gray-800 dark:text-gray-200 mb-2">
-                                Accès Restreint
+                                {t('jobPortal.profile.accessRestricted')}
                             </h2>
                             <p className="text-gray-600 dark:text-gray-400 mb-6">
-                                La recherche de profils est réservée aux entreprises partenaires et aux recruteurs certifiés.
+                                {t('jobPortal.profile.accessMessage')}
                             </p>
                             <Button asChild>
                                 <a href="mailto:guidy.makeitreall@gmail.com">
-                                    Demander l'accès
+                                    {t('jobPortal.profile.requestAccess')}
                                 </a>
                             </Button>
                         </CardContent>
@@ -134,9 +135,10 @@ export default function Profiles({ auth, profiles = { data: [], links: [], meta:
 
     return (
         <AuthenticatedLayout user={auth.user}>
-            <Head>
-                <title>Recherche de Profils | JobLight</title>
-                <meta name="description" content="Trouvez les meilleurs candidats pour vos postes. Recherchez par compétences, localisation et expérience." />
+            <Head
+                title={`${t('jobPortal.profile.pageTitle') || 'Recherche de Profils'} | JobLight`}
+            >
+                <meta name="description" content={t('jobPortal.profile.pageDescription') || 'Trouvez les meilleurs candidats'} />
             </Head>
 
             <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
@@ -146,17 +148,17 @@ export default function Profiles({ auth, profiles = { data: [], links: [], meta:
                         <div className="flex items-center justify-between">
                             <div>
                                 <h1 className="text-2xl font-bold text-gray-800 dark:text-gray-200">
-                                    Recherche de Profils
+                                    {t('jobPortal.profile.profileSearch')}
                                 </h1>
                                 <p className="text-gray-600 dark:text-gray-400">
-                                    Trouvez les candidats parfaits pour vos postes
+                                    {t('jobPortal.profile.findCandidates')}
                                 </p>
                             </div>
                             
                             <Link href={route('job-portal.index')}>
                                 <Button variant="outline">
                                     <ArrowRight className="w-4 h-4 mr-2 rotate-180" />
-                                    Retour aux offres
+                                    {t('jobPortal.profile.backToJobs')}
                                 </Button>
                             </Link>
                         </div>
@@ -169,7 +171,7 @@ export default function Profiles({ auth, profiles = { data: [], links: [], meta:
                         <CardHeader>
                             <CardTitle className="flex items-center gap-2">
                                 <Filter className="w-5 h-5" />
-                                Filtres de recherche
+                                {t('jobPortal.profile.searchFilters')}
                             </CardTitle>
                         </CardHeader>
                         <CardContent>
@@ -178,7 +180,7 @@ export default function Profiles({ auth, profiles = { data: [], links: [], meta:
                                     <div>
                                         <Input
                                             type="text"
-                                            placeholder="Profession, métier..."
+                                            placeholder={t('jobPortal.profile.professionPlaceholder')}
                                             value={data.profession}
                                             onChange={(e) => setData('profession', e.target.value)}
                                         />
@@ -186,7 +188,7 @@ export default function Profiles({ auth, profiles = { data: [], links: [], meta:
                                     <div>
                                         <Input
                                             type="text"
-                                            placeholder="Localisation..."
+                                            placeholder={t('jobPortal.profile.locationPlaceholder')}
                                             value={data.location}
                                             onChange={(e) => setData('location', e.target.value)}
                                         />
@@ -197,21 +199,21 @@ export default function Profiles({ auth, profiles = { data: [], links: [], meta:
                                             onValueChange={(value) => setData('experience_years', value)}
                                         >
                                             <SelectTrigger>
-                                                <SelectValue placeholder="Expérience" />
+                                                <SelectValue placeholder={t('jobPortal.profile.experiencePlaceholder')} />
                                             </SelectTrigger>
                                             <SelectContent>
-                                                <SelectItem value="all">Toute expérience</SelectItem>
-                                                <SelectItem value="1">1+ an</SelectItem>
-                                                <SelectItem value="3">3+ ans</SelectItem>
-                                                <SelectItem value="5">5+ ans</SelectItem>
-                                                <SelectItem value="10">10+ ans</SelectItem>
+                                                <SelectItem value="all">{t('jobPortal.profile.anyExperience')}</SelectItem>
+                                                <SelectItem value="1">{t('jobPortal.profile.oneYearPlus')}</SelectItem>
+                                                <SelectItem value="3">{t('jobPortal.profile.threeYearsPlus')}</SelectItem>
+                                                <SelectItem value="5">{t('jobPortal.profile.fiveYearsPlus')}</SelectItem>
+                                                <SelectItem value="10">{t('jobPortal.profile.tenYearsPlus')}</SelectItem>
                                             </SelectContent>
                                         </Select>
                                     </div>
                                     <div>
                                         <Input
                                             type="text"
-                                            placeholder="Compétences (séparées par ,)"
+                                            placeholder={t('jobPortal.profile.skillsPlaceholder')}
                                             value={data.skills}
                                             onChange={(e) => setData('skills', e.target.value)}
                                         />
@@ -221,10 +223,10 @@ export default function Profiles({ auth, profiles = { data: [], links: [], meta:
                                 <div className="flex gap-2">
                                     <Button type="submit" disabled={processing}>
                                         <Search className="w-4 h-4 mr-2" />
-                                        Rechercher
+                                        {t('jobPortal.profile.search')}
                                     </Button>
                                     <Button type="button" variant="outline" onClick={clearFilters}>
-                                        Effacer
+                                        {t('jobPortal.profile.clear')}
                                     </Button>
                                 </div>
                             </form>
@@ -234,7 +236,7 @@ export default function Profiles({ auth, profiles = { data: [], links: [], meta:
                     {/* Résultats */}
                     <div className="mb-6">
                         <p className="text-gray-600 dark:text-gray-400">
-                            {profiles?.meta?.total || 0} profil{(profiles?.meta?.total || 0) > 1 ? 's' : ''} trouvé{(profiles?.meta?.total || 0) > 1 ? 's' : ''}
+                            {t('jobPortal.profile.profilesFound', { count: profiles?.meta?.total || 0 })}
                         </p>
                     </div>
 
@@ -253,7 +255,7 @@ export default function Profiles({ auth, profiles = { data: [], links: [], meta:
                                         <div className="text-center mb-4">
                                             <div className="w-16 h-16 bg-gradient-to-r from-amber-500 to-purple-500 rounded-full flex items-center justify-center mx-auto mb-3">
                                                 {profile.photo ? (
-                                                    <img src={profile.photo} alt={profile.name} className="w-14 h-14 rounded-full object-cover" />
+                                                    <img src={`/storage/${profile.photo}`} alt={profile.name} className="w-14 h-14 rounded-full object-cover" />
                                                 ) : (
                                                     <User className="w-8 h-8 text-white" />
                                                 )}
@@ -262,7 +264,7 @@ export default function Profiles({ auth, profiles = { data: [], links: [], meta:
                                                 {profile.name}
                                             </h3>
                                             <p className="text-sm text-gray-600 dark:text-gray-400">
-                                                {profile.profession?.name || profile.full_profession || 'Profession non spécifiée'}
+                                                {profile.profession?.name || profile.full_profession || t('jobPortal.profile.professionNotSpecified')}
                                             </p>
                                             {profile.address && (
                                                 <div className="flex items-center justify-center gap-1 text-xs text-gray-500 mt-1">
@@ -277,11 +279,11 @@ export default function Profiles({ auth, profiles = { data: [], links: [], meta:
                                             <div className="flex items-center gap-2 mb-2">
                                                 <Briefcase className="w-4 h-4 text-blue-600" />
                                                 <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                                                    Expérience
+                                                    {t('jobPortal.profile.experience')}
                                                 </span>
                                             </div>
                                             <div className="text-sm text-gray-600 dark:text-gray-400">
-                                                {calculateExperience(profile.experiences)} ans • {profile.experiences.length} poste{profile.experiences.length > 1 ? 's' : ''}
+                                                {t('jobPortal.profile.experienceYears', { years: calculateExperience(profile.experiences) })} • {t('jobPortal.profile.positions', { count: profile.experiences.length })}
                                             </div>
                                             {profile.experiences.slice(0, 2).map(exp => (
                                                 <div key={exp.id} className="text-xs text-gray-500 mt-1">
@@ -296,7 +298,7 @@ export default function Profiles({ auth, profiles = { data: [], links: [], meta:
                                                 <div className="flex items-center gap-2 mb-2">
                                                     <Star className="w-4 h-4 text-purple-600" />
                                                     <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                                                        Compétences
+                                                        {t('jobPortal.profile.skills')}
                                                     </span>
                                                 </div>
                                                 <div className="flex flex-wrap gap-1">
@@ -320,7 +322,7 @@ export default function Profiles({ auth, profiles = { data: [], links: [], meta:
                                                 <div className="flex items-center gap-2 mb-2">
                                                     <Globe className="w-4 h-4 text-green-600" />
                                                     <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                                                        Langues
+                                                        {t('jobPortal.profile.languages')}
                                                     </span>
                                                 </div>
                                                 <div className="text-xs text-gray-600 dark:text-gray-400">
@@ -332,10 +334,10 @@ export default function Profiles({ auth, profiles = { data: [], links: [], meta:
 
                                         {/* Actions */}
                                         <div className="space-y-2">
-                                            <Link href={route('portfolio.show', profile.id)}>
+                                            <Link href={route('portfolio.show', profile.username || profile.email)}>
                                                 <Button className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700">
                                                     <Eye className="w-4 h-4 mr-2" />
-                                                    Voir le portfolio
+                                                    {t('jobPortal.profile.viewPortfolio')}
                                                     <ExternalLink className="w-3 h-3 ml-2" />
                                                 </Button>
                                             </Link>
@@ -345,7 +347,7 @@ export default function Profiles({ auth, profiles = { data: [], links: [], meta:
                                                     <Button variant="outline" size="sm" asChild className="flex-1">
                                                         <a href={profile.linkedin} target="_blank" rel="noopener noreferrer">
                                                             <Linkedin className="w-3 h-3 mr-1" />
-                                                            LinkedIn
+                                                            {t('jobPortal.profile.linkedin')}
                                                         </a>
                                                     </Button>
                                                 )}
@@ -353,14 +355,14 @@ export default function Profiles({ auth, profiles = { data: [], links: [], meta:
                                                     <Button variant="outline" size="sm" asChild className="flex-1">
                                                         <a href={profile.github} target="_blank" rel="noopener noreferrer">
                                                             <Github className="w-3 h-3 mr-1" />
-                                                            GitHub
+                                                            {t('jobPortal.profile.github')}
                                                         </a>
                                                     </Button>
                                                 )}
                                                 <Button variant="outline" size="sm" asChild className="flex-1">
                                                     <a href={`mailto:${profile.email}`}>
                                                         <Mail className="w-3 h-3 mr-1" />
-                                                        Contact
+                                                        {t('jobPortal.profile.contact')}
                                                     </a>
                                                 </Button>
                                             </div>
@@ -398,13 +400,13 @@ export default function Profiles({ auth, profiles = { data: [], links: [], meta:
                                 <Users className="w-8 h-8 text-gray-400" />
                             </div>
                             <h3 className="text-lg font-medium text-gray-800 dark:text-gray-200 mb-2">
-                                Aucun profil trouvé
+                                {t('jobPortal.profile.noProfilesFound')}
                             </h3>
                             <p className="text-gray-600 dark:text-gray-400 mb-4">
-                                Essayez de modifier vos critères de recherche
+                                {t('jobPortal.profile.tryModifyingSearch')}
                             </p>
                             <Button onClick={clearFilters} variant="outline">
-                                Voir tous les profils
+                                {t('jobPortal.profile.viewAllProfiles')}
                             </Button>
                         </div>
                     )}

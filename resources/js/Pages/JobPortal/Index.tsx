@@ -79,25 +79,25 @@ interface JobPortalIndexProps {
     };
 }
 
-const EMPLOYMENT_TYPES = [
-    { value: 'full-time', label: 'Temps plein' },
-    { value: 'part-time', label: 'Temps partiel' },
-    { value: 'contract', label: 'Contrat' },
-    { value: 'internship', label: 'Stage' },
-    { value: 'freelance', label: 'Freelance' }
-];
-
-const EXPERIENCE_LEVELS = [
-    { value: 'entry', label: 'Débutant' },
-    { value: 'mid', label: 'Intermédiaire' },
-    { value: 'senior', label: 'Senior' },
-    { value: 'executive', label: 'Exécutif' }
-];
-
 export default function JobPortalIndex({ auth, jobs = { data: [], links: [], meta: { total: 0, last_page: 1 } }, stats = { total_jobs: 0, companies_hiring: 0, remote_jobs: 0, new_this_week: 0 }, topCompanies = [], filters = {} }: JobPortalIndexProps) {
     const { t } = useTranslation();
     const [showFilters, setShowFilters] = useState(false);
     const [showPostJobDialog, setShowPostJobDialog] = useState(false);
+
+    const EMPLOYMENT_TYPES = [
+        { value: 'full-time', label: t('jobPortal.fullTime') },
+        { value: 'part-time', label: t('jobPortal.partTime') },
+        { value: 'contract', label: t('jobPortal.contract') },
+        { value: 'internship', label: t('jobPortal.internship') },
+        { value: 'freelance', label: t('jobPortal.freelance') }
+    ];
+
+    const EXPERIENCE_LEVELS = [
+        { value: 'entry', label: t('jobPortal.createJob.entry') },
+        { value: 'mid', label: t('jobPortal.createJob.mid') },
+        { value: 'senior', label: t('jobPortal.createJob.senior') },
+        { value: 'executive', label: t('jobPortal.createJob.executive') }
+    ];
 
     const { data, setData, get, processing } = useForm({
         search: filters.search || '',
@@ -127,10 +127,10 @@ export default function JobPortalIndex({ auth, jobs = { data: [], links: [], met
     };
 
     const formatSalary = (min: number, max: number, currency: string) => {
-        if (!min && !max) return 'Salaire non spécifié';
+        if (!min && !max) return t('jobPortal.salaryNotSpecified');
         if (min && max) return `${min.toLocaleString()} - ${max.toLocaleString()} ${currency}`;
-        if (min) return `À partir de ${min.toLocaleString()} ${currency}`;
-        return `Jusqu'à ${max.toLocaleString()} ${currency}`;
+        if (min) return t('jobPortal.salaryFrom', { amount: min.toLocaleString(), currency });
+        return t('jobPortal.salaryUpTo', { amount: max.toLocaleString(), currency });
     };
 
     const getEmploymentTypeIcon = (type: string) => {
@@ -145,11 +145,12 @@ export default function JobPortalIndex({ auth, jobs = { data: [], links: [], met
     const Layout = auth?.user ? AuthenticatedLayout : GuestLayout;
 
     return (
-        <Layout {...(auth?.user ? { user: auth.user } : {})}>
-            <Head>
-                <title>JobLight - Portail d'Emploi | Trouvez votre prochain poste</title>
-                <meta name="description" content="Découvrez des milliers d'offres d'emploi sur JobLight. Recherchez par secteur, localisation et niveau d'expérience. Candidatez directement avec votre CV Guidy." />
-                <meta name="keywords" content="emploi, job, offres emploi, recrutement, carrière, JobLight, Guidy" />
+        <Layout {...(auth?.user && auth.user ? { user: auth.user } : {})}>
+            <Head
+                title={`${t('jobPortal.title') || 'Portail d\'Emploi'} | ${t('jobPortal.subtitle') || 'JobLight'}`}
+            >
+                <meta name="description" content={t('jobPortal.metaDescription') || 'Plateforme d\'emploi JobLight'} />
+                <meta name="keywords" content={t('jobPortal.metaKeywords') || 'emploi, job, recrutement'} />
             </Head>
 
             <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
@@ -176,7 +177,7 @@ export default function JobPortalIndex({ auth, jobs = { data: [], links: [], met
                                 transition={{ delay: 0.1 }}
                                 className="text-xl md:text-2xl mb-8 opacity-90"
                             >
-                                Trouvez votre prochain emploi ou le candidat parfait
+                                {t('jobPortal.subtitle')}
                             </motion.p>
 
                             {/* Statistiques */}
@@ -188,19 +189,19 @@ export default function JobPortalIndex({ auth, jobs = { data: [], links: [], met
                             >
                                 <div className="bg-white/10 backdrop-blur-sm rounded-lg p-4">
                                     <div className="text-2xl font-bold">{stats.total_jobs.toLocaleString()}</div>
-                                    <div className="text-sm opacity-90">Offres actives</div>
+                                    <div className="text-sm opacity-90">{t('jobPortal.stats.activeOffers')}</div>
                                 </div>
                                 <div className="bg-white/10 backdrop-blur-sm rounded-lg p-4">
                                     <div className="text-2xl font-bold">{stats.companies_hiring}</div>
-                                    <div className="text-sm opacity-90">Entreprises</div>
+                                    <div className="text-sm opacity-90">{t('jobPortal.stats.companies')}</div>
                                 </div>
                                 <div className="bg-white/10 backdrop-blur-sm rounded-lg p-4">
                                     <div className="text-2xl font-bold">{stats.remote_jobs}</div>
-                                    <div className="text-sm opacity-90">Télétravail</div>
+                                    <div className="text-sm opacity-90">{t('jobPortal.stats.remoteJobs')}</div>
                                 </div>
                                 <div className="bg-white/10 backdrop-blur-sm rounded-lg p-4">
                                     <div className="text-2xl font-bold">{stats.new_this_week}</div>
-                                    <div className="text-sm opacity-90">Cette semaine</div>
+                                    <div className="text-sm opacity-90">{t('jobPortal.stats.thisWeek')}</div>
                                 </div>
                             </motion.div>
 
@@ -217,7 +218,7 @@ export default function JobPortalIndex({ auth, jobs = { data: [], links: [], met
                                             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
                                             <Input
                                                 type="text"
-                                                placeholder="Poste, entreprise, mot-clé..."
+                                                placeholder={t('jobPortal.searchPlaceholder')}
                                                 value={data.search}
                                                 onChange={(e) => setData('search', e.target.value)}
                                                 className="pl-10 h-12 text-gray-800"
@@ -227,7 +228,7 @@ export default function JobPortalIndex({ auth, jobs = { data: [], links: [], met
                                             <MapPin className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
                                             <Input
                                                 type="text"
-                                                placeholder="Ville, région..."
+                                                placeholder={t('jobPortal.locationPlaceholder')}
                                                 value={data.location}
                                                 onChange={(e) => setData('location', e.target.value)}
                                                 className="pl-10 h-12 text-gray-800"
@@ -239,7 +240,7 @@ export default function JobPortalIndex({ auth, jobs = { data: [], links: [], met
                                             className="h-12 bg-gradient-to-r from-amber-500 to-purple-500 hover:from-amber-600 hover:to-purple-600"
                                         >
                                             <Search className="w-5 h-5 mr-2" />
-                                            Rechercher
+                                            {t('jobPortal.search')}
                                         </Button>
                                     </div>
                                 </form>
@@ -257,23 +258,23 @@ export default function JobPortalIndex({ auth, jobs = { data: [], links: [], met
                                 <CardHeader>
                                     <CardTitle className="flex items-center gap-2 text-sm">
                                         <SlidersHorizontal className="w-4 h-4" />
-                                        Filtres
+                                        {t('jobPortal.filters')}
                                     </CardTitle>
                                 </CardHeader>
                                 <CardContent className="space-y-4">
                                     <div>
                                         <label className="text-xs font-medium text-gray-700 dark:text-gray-300 mb-2 block">
-                                            Type de contrat
+                                            {t('jobPortal.employmentType')}
                                         </label>
                                         <Select
                                             value={data.employment_type}
                                             onValueChange={(value) => setData('employment_type', value)}
                                         >
                                             <SelectTrigger className="h-9">
-                                                <SelectValue placeholder="Tous les types" />
+                                                <SelectValue placeholder={t('jobPortal.allTypes')} />
                                             </SelectTrigger>
                                             <SelectContent>
-                                                <SelectItem value="all">Tous les types</SelectItem>
+                                                <SelectItem value="all">{t('jobPortal.allTypes')}</SelectItem>
                                                 {EMPLOYMENT_TYPES.map(type => (
                                                     <SelectItem key={type.value} value={type.value}>
                                                         {type.label}
@@ -285,17 +286,17 @@ export default function JobPortalIndex({ auth, jobs = { data: [], links: [], met
 
                                     <div>
                                         <label className="text-xs font-medium text-gray-700 dark:text-gray-300 mb-2 block">
-                                            Niveau d'expérience
+                                            {t('jobPortal.experienceLevel')}
                                         </label>
                                         <Select
                                             value={data.experience_level}
                                             onValueChange={(value) => setData('experience_level', value)}
                                         >
                                             <SelectTrigger className="h-9">
-                                                <SelectValue placeholder="Tous les niveaux" />
+                                                <SelectValue placeholder={t('jobPortal.allLevels')} />
                                             </SelectTrigger>
                                             <SelectContent>
-                                                <SelectItem value="all">Tous les niveaux</SelectItem>
+                                                <SelectItem value="all">{t('jobPortal.allLevels')}</SelectItem>
                                                 {EXPERIENCE_LEVELS.map(level => (
                                                     <SelectItem key={level.value} value={level.value}>
                                                         {level.label}
@@ -314,16 +315,16 @@ export default function JobPortalIndex({ auth, jobs = { data: [], links: [], met
                                             className="rounded border-gray-300"
                                         />
                                         <label htmlFor="remote" className="text-xs font-medium text-gray-700 dark:text-gray-300">
-                                            Télétravail possible
+                                            {t('jobPortal.remoteWorkPossible')}
                                         </label>
                                     </div>
 
                                     <div className="flex gap-2">
                                         <Button onClick={handleSearch} size="sm" className="flex-1">
-                                            Appliquer
+                                            {t('jobPortal.apply')}
                                         </Button>
                                         <Button onClick={clearFilters} variant="outline" size="sm">
-                                            Reset
+                                            {t('jobPortal.reset')}
                                         </Button>
                                     </div>
                                 </CardContent>
@@ -334,7 +335,7 @@ export default function JobPortalIndex({ auth, jobs = { data: [], links: [], met
                                 <CardHeader>
                                     <CardTitle className="flex items-center gap-2 text-sm">
                                         <Building className="w-4 h-4" />
-                                        Entreprises qui recrutent
+                                        {t('jobPortal.companiesHiring')}
                                     </CardTitle>
                                 </CardHeader>
                                 <CardContent>
@@ -353,7 +354,7 @@ export default function JobPortalIndex({ auth, jobs = { data: [], links: [], met
                                                         {company.name}
                                                     </div>
                                                     <div className="text-xs text-gray-500">
-                                                        {company.job_postings_count} offre{company.job_postings_count > 1 ? 's' : ''}
+                                                        {company.job_postings_count} {t('jobPortal.offer', { count: company.job_postings_count })}
                                                     </div>
                                                 </div>
                                             </div>
@@ -367,37 +368,37 @@ export default function JobPortalIndex({ auth, jobs = { data: [], links: [], met
                                 <CardContent className="p-4 text-center">
                                     <Target className="w-8 h-8 text-amber-600 mx-auto mb-3" />
                                     <h3 className="font-bold text-amber-800 dark:text-amber-300 mb-2">
-                                        Vous recrutez ?
+                                        {t('jobPortal.areYouRecruiting')}
                                     </h3>
                                     <p className="text-xs text-amber-700 dark:text-amber-400 mb-3">
-                                        Publiez vos offres et trouvez les meilleurs candidats
+                                        {t('jobPortal.publishOffersDescription')}
                                     </p>
                                     <Dialog open={showPostJobDialog} onOpenChange={setShowPostJobDialog}>
                                         <DialogTrigger asChild>
                                             <Button size="sm" className="w-full bg-amber-600 hover:bg-amber-700">
                                                 <Send className="w-3 h-3 mr-2" />
-                                                Publier une offre
+                                                {t('jobPortal.publishOffer')}
                                             </Button>
                                         </DialogTrigger>
                                         <DialogContent className="max-w-2xl">
                                             <DialogHeader>
-                                                <DialogTitle>Publier une offre d'emploi</DialogTitle>
+                                                <DialogTitle>{t('jobPortal.publishJobOffer')}</DialogTitle>
                                             </DialogHeader>
                                             <div className="p-4 text-center">
                                                 <Zap className="w-12 h-12 text-amber-600 mx-auto mb-4" />
-                                                <h3 className="text-lg font-bold mb-2">Publier une offre d'emploi</h3>
+                                                <h3 className="text-lg font-bold mb-2">{t('jobPortal.publishJobOffer')}</h3>
                                                 <p className="text-gray-600 mb-4">
-                                                    Créez votre annonce d'emploi en quelques minutes et trouvez les meilleurs candidats.
+                                                    {t('jobPortal.createJobDescription')}
                                                 </p>
                                                 <div className="space-y-3">
                                                     <Button asChild className="w-full">
                                                         <Link href={route('job-portal.create-simple-ad-form')}>
                                                             <Send className="w-4 h-4 mr-2" />
-                                                            Créer une annonce simple
+                                                            {t('jobPortal.createSimpleAd')}
                                                         </Link>
                                                     </Button>
                                                     <p className="text-xs text-gray-500">
-                                                        Gratuit • Publication immédiate
+                                                        {t('jobPortal.freeImmediatePublication')}
                                                     </p>
                                                 </div>
                                             </div>
@@ -413,10 +414,10 @@ export default function JobPortalIndex({ auth, jobs = { data: [], links: [], met
                             <div className="flex items-center justify-between mb-6">
                                 <div>
                                     <h2 className="text-2xl font-bold text-gray-800 dark:text-gray-200">
-                                        Offres d'emploi
+                                        {t('jobPortal.jobOffers')}
                                     </h2>
                                     <p className="text-gray-600 dark:text-gray-400">
-                                        {jobs?.meta?.total || 0} offre{(jobs?.meta?.total || 0) > 1 ? 's' : ''} trouvée{(jobs?.meta?.total || 0) > 1 ? 's' : ''}
+                                        {jobs?.meta?.total || 0} {t('jobPortal.offersFound', { count: jobs?.meta?.total || 0 })}
                                     </p>
                                 </div>
 
@@ -426,19 +427,19 @@ export default function JobPortalIndex({ auth, jobs = { data: [], links: [], met
                                             <Link href={route('job-portal.my-applications')}>
                                                 <Button variant="outline" size="sm">
                                                     <Eye className="w-4 h-4 mr-2" />
-                                                    Mes candidatures
+                                                    {t('jobPortal.myApplications.title')}
                                                 </Button>
                                             </Link>
                                             <Link href={route('job-portal.my-jobs')}>
                                                 <Button variant="outline" size="sm">
                                                     <Briefcase className="w-4 h-4 mr-2" />
-                                                    Mes offres
+                                                    {t('jobPortal.myJobs.title')}
                                                 </Button>
                                             </Link>
                                             <Link href={route('job-portal.profiles')}>
                                                 <Button variant="outline" size="sm">
                                                     <Users className="w-4 h-4 mr-2" />
-                                                    Rechercher profils
+                                                    {t('jobPortal.searchProfiles')}
                                                 </Button>
                                             </Link>
                                         </>
@@ -505,7 +506,7 @@ export default function JobPortalIndex({ auth, jobs = { data: [], links: [], met
                                                             {job.remote_work && (
                                                                 <Badge className="bg-green-100 text-green-800 text-xs">
                                                                     <Wifi className="w-3 h-3 mr-1" />
-                                                                    Remote
+                                                                    {t('jobPortal.remote')}
                                                                 </Badge>
                                                             )}
                                                         </div>
@@ -516,17 +517,17 @@ export default function JobPortalIndex({ auth, jobs = { data: [], links: [], met
                                                     <div className="flex items-center gap-4 text-xs text-gray-500">
                                                         <div className="flex items-center gap-1">
                                                             <Eye className="w-3 h-3" />
-                                                            {job.views_count} vues
+                                                            {job.views_count} {t('jobPortal.views')}
                                                         </div>
                                                         <div className="flex items-center gap-1">
                                                             <Users className="w-3 h-3" />
-                                                            {job.applications_count} candidature{job.applications_count > 1 ? 's' : ''}
+                                                            {job.applications_count} {t('jobPortal.applications', { count: job.applications_count })}
                                                         </div>
                                                     </div>
 
                                                     <Link href={route('job-portal.show', job.id)}>
                                                         <Button size="sm" className="group-hover:bg-blue-600 group-hover:text-white transition-colors">
-                                                            Voir l'offre
+                                                            {t('jobPortal.viewOffer')}
                                                             <ArrowRight className="w-4 h-4 ml-2" />
                                                         </Button>
                                                     </Link>
@@ -563,13 +564,13 @@ export default function JobPortalIndex({ auth, jobs = { data: [], links: [], met
                                         <Search className="w-8 h-8 text-gray-400" />
                                     </div>
                                     <h3 className="text-lg font-medium text-gray-800 dark:text-gray-200 mb-2">
-                                        Aucune offre trouvée
+                                        {t('jobPortal.noOffersFound')}
                                     </h3>
                                     <p className="text-gray-600 dark:text-gray-400 mb-4">
-                                        Essayez de modifier vos critères de recherche
+                                        {t('jobPortal.modifySearchCriteria')}
                                     </p>
                                     <Button onClick={clearFilters} variant="outline">
-                                        Voir toutes les offres
+                                        {t('jobPortal.viewAllOffers')}
                                     </Button>
                                 </div>
                             )}

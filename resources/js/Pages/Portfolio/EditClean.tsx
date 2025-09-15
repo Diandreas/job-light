@@ -327,44 +327,6 @@ export default function EditClean({ auth, portfolio, settings, cvData = portfoli
     return (
         <AuthenticatedLayout
             user={auth.user}
-            header={
-                <div className="flex items-center justify-between bg-gradient-to-r from-white via-gray-50 to-white p-6 rounded-2xl shadow-lg border border-gray-200">
-                    <div className="flex items-center gap-4">
-                        <div className="w-12 h-12 rounded-2xl bg-gradient-to-r from-amber-500 to-purple-600 flex items-center justify-center shadow-lg">
-                            <Sparkles className="h-6 w-6 text-white" />
-                        </div>
-                        <div>
-                            <h2 className="text-2xl font-bold text-gray-900 bg-gradient-to-r from-gray-900 to-gray-700 bg-clip-text">Portfolio Studio Pro</h2>
-                            <p className="text-sm text-gray-600 font-medium">Configuration avancée de votre portfolio</p>
-                        </div>
-                    </div>
-                    <div className="flex items-center gap-3">
-                        <Button
-                            onClick={() => setShowQR(!showQR)}
-                            variant="outline"
-                            size="default"
-                            className="h-11 px-5 border-gray-300 hover:bg-gray-50 font-medium transition-all duration-200 shadow-sm hover:shadow-md"
-                        >
-                            <QrCode className="h-4 w-4 mr-2" />
-                            QR Code
-                        </Button>
-                        <Button
-                            onClick={() => setPreviewMode(!previewMode)}
-                            variant={previewMode ? "default" : "outline"}
-                            size="default"
-                            className={cn(
-                                "h-10 px-4 font-medium transition-all duration-200 text-sm",
-                                previewMode
-                                    ? "bg-gradient-to-r from-purple-600 to-amber-500 text-white shadow-lg hover:shadow-xl"
-                                    : "border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 shadow-sm hover:shadow-md"
-                            )}
-                        >
-                            <Eye className="h-4 w-4 mr-1" />
-                            {previewMode ? t.hide : t.preview}
-                        </Button>
-                    </div>
-                </div>
-            }
         >
             <Head title={__('portfolio.edit.portfolio_express')} />
 
@@ -441,9 +403,24 @@ export default function EditClean({ auth, portfolio, settings, cvData = portfoli
                                                     <p className="text-xs text-gray-600 dark:text-gray-300 font-medium">{t.customizeAppearance}</p>
                                                 </div>
                                             </div>
-                                            <Badge className="bg-violet-100 dark:bg-violet-900 text-violet-800 dark:text-violet-200 font-semibold px-2 py-1 text-xs">
-                                                {t.theme}: {t[DESIGN_OPTIONS.find(d => d.value === data.design)?.labelKey] || t.professional}
-                                            </Badge>
+                                            <div className="flex items-center gap-3">
+                                                <Button
+                                                    onClick={() => setShowQR(!showQR)}
+                                                    variant="outline"
+                                                    size="sm"
+                                                >
+                                                    <QrCode className="h-4 w-4 mr-2" />
+                                                    {t.qrCode}
+                                                </Button>
+                                                <Button
+                                                    onClick={() => setPreviewMode(!previewMode)}
+                                                    variant={previewMode ? "default" : "outline"}
+                                                    size="sm"
+                                                >
+                                                    <Eye className="h-4 w-4 mr-1" />
+                                                    {previewMode ? t.hide : t.preview}
+                                                </Button>
+                                            </div>
                                         </CardTitle>
                                     </CardHeader>
                                     <CardContent className="space-y-3">

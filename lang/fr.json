@@ -883,7 +883,11 @@
                 "responsive": "Responsive",
                 "templates_pro": "Modèles Pro",
                 "sections": "Sections illimitées",
-                "ultra_fast": "Ultra-rapide"
+                "ultra_fast": "Ultra-rapide",
+                "responsive_value": "100%",
+                "templates_pro_value": "4",
+                "sections_value": "∞",
+                "ultra_fast_value": "⚡"
             },
             "start_customization": "Commencer la personnalisation"
         }

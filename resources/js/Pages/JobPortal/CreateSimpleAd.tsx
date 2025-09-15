@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Head, useForm } from '@inertiajs/react';
 import { motion } from 'framer-motion';
+import { useTranslation } from 'react-i18next';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Button } from '@/Components/ui/button';
 import { Card, CardHeader, CardTitle, CardContent } from '@/Components/ui/card';
@@ -31,22 +32,23 @@ interface CreateSimpleAdProps {
     };
 }
 
-const EMPLOYMENT_TYPES = [
-    { value: 'full-time', label: 'Temps plein', icon: Briefcase },
-    { value: 'part-time', label: 'Temps partiel', icon: Clock },
-    { value: 'contract', label: 'Contrat', icon: Users },
-    { value: 'internship', label: 'Stage', icon: Building },
-    { value: 'freelance', label: 'Freelance', icon: Zap }
-];
-
-const EXPERIENCE_LEVELS = [
-    { value: 'entry', label: 'Débutant (0-2 ans)' },
-    { value: 'mid', label: 'Intermédiaire (2-5 ans)' },
-    { value: 'senior', label: 'Senior (5+ ans)' },
-    { value: 'executive', label: 'Direction/Cadre' }
-];
-
 export default function CreateSimpleAd({ auth, errors, flash }: CreateSimpleAdProps) {
+    const { t } = useTranslation();
+
+    const EMPLOYMENT_TYPES = [
+        { value: 'full-time', label: t('jobPortal.fullTime'), icon: Briefcase },
+        { value: 'part-time', label: t('jobPortal.partTime'), icon: Clock },
+        { value: 'contract', label: t('jobPortal.contract'), icon: Users },
+        { value: 'internship', label: t('jobPortal.internship'), icon: Building },
+        { value: 'freelance', label: t('jobPortal.freelance'), icon: Zap }
+    ];
+
+    const EXPERIENCE_LEVELS = [
+        { value: 'entry', label: t('jobPortal.createJob.entry') },
+        { value: 'mid', label: t('jobPortal.createJob.mid') },
+        { value: 'senior', label: t('jobPortal.createJob.senior') },
+        { value: 'executive', label: t('jobPortal.createJob.executive') }
+    ];
     const [step, setStep] = useState(1);
     const [previewMode, setPreviewMode] = useState(false);
 
@@ -144,9 +146,10 @@ export default function CreateSimpleAd({ auth, errors, flash }: CreateSimpleAdPr
 
     return (
         <Layout user={auth.user}>
-            <Head>
-                <title>Publier une annonce simple - JobLight</title>
-                <meta name="description" content="Publiez rapidement une annonce d'emploi avec vos informations de contact" />
+            <Head
+                title={`${t('jobPortal.createJob.title') || 'Publier une annonce simple'} - JobLight`}
+            >
+                <meta name="description" content={t('jobPortal.createJob.description') || 'Publiez rapidement une annonce d\'emploi'} />
             </Head>
 
             <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
@@ -158,11 +161,10 @@ export default function CreateSimpleAd({ auth, errors, flash }: CreateSimpleAdPr
                             animate={{ opacity: 1, y: 0 }}
                             className="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-4"
                         >
-                            📢 Publier une annonce simple
+                            📢 {t('jobPortal.createJob.createSimpleAd')}
                         </motion.h1>
                         <p className="text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
-                            Créez rapidement une annonce d'emploi avec vos informations de contact. 
-                            Les candidats vous contacteront directement selon la méthode que vous choisissez.
+                            {t('jobPortal.createJob.description')}
                         </p>
                     </div>
 
@@ -217,7 +219,7 @@ export default function CreateSimpleAd({ auth, errors, flash }: CreateSimpleAdPr
                             >
                                 <Card>
                                     <CardHeader>
-                                        <CardTitle>1. Informations sur le poste</CardTitle>
+                                        <CardTitle>1. {t('jobPortal.createJob.basicInfo')}</CardTitle>
                                     </CardHeader>
                                     <CardContent className="space-y-6">
                                         <div>

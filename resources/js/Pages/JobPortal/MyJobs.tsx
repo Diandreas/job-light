@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Head, Link, useForm } from '@inertiajs/react';
 import { motion } from 'framer-motion';
+import { useTranslation } from 'react-i18next';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Button } from '@/Components/ui/button';
 import { Card, CardHeader, CardTitle, CardContent } from '@/Components/ui/card';
@@ -71,22 +72,23 @@ const STATUS_COLORS = {
     'expired': 'bg-orange-100 text-orange-800'
 };
 
-const STATUS_LABELS = {
-    'draft': 'Brouillon',
-    'published': 'Publiée',
-    'closed': 'Fermée',
-    'expired': 'Expirée'
-};
-
-const EMPLOYMENT_TYPE_LABELS = {
-    'full-time': 'Temps plein',
-    'part-time': 'Temps partiel',
-    'contract': 'Contrat',
-    'internship': 'Stage',
-    'freelance': 'Freelance'
-};
-
 export default function MyJobs({ auth, jobs }: MyJobsProps) {
+    const { t } = useTranslation();
+
+    const STATUS_LABELS = {
+        'draft': t('jobPortal.myJobs.status.draft'),
+        'published': t('jobPortal.myJobs.status.published'),
+        'closed': t('jobPortal.myJobs.status.closed'),
+        'expired': t('jobPortal.myJobs.status.expired')
+    };
+
+    const EMPLOYMENT_TYPE_LABELS = {
+        'full-time': t('jobPortal.fullTime'),
+        'part-time': t('jobPortal.partTime'),
+        'contract': t('jobPortal.contract'),
+        'internship': t('jobPortal.internship'),
+        'freelance': t('jobPortal.freelance')
+    };
     const [selectedStatus, setSelectedStatus] = useState('all');
     const [searchTerm, setSearchTerm] = useState('');
     const [sortBy, setSortBy] = useState('newest');
@@ -94,26 +96,27 @@ export default function MyJobs({ auth, jobs }: MyJobsProps) {
     const { delete: deleteJob } = useForm();
 
     const formatSalary = (min: number, max: number, currency: string) => {
-        if (!min && !max) return 'Non spécifié';
+        if (!min && !max) return t('jobPortal.myJobs.notSpecified');
         if (min && max) return `${min.toLocaleString()} - ${max.toLocaleString()} ${currency}`;
-        if (min) return `À partir de ${min.toLocaleString()} ${currency}`;
-        return `Jusqu'à ${max.toLocaleString()} ${currency}`;
+        if (min) return `${t('jobPortal.myJobs.from')} ${min.toLocaleString()} ${currency}`;
+        return `${t('jobPortal.myJobs.upTo')} ${max.toLocaleString()} ${currency}`;
     };
 
     const getStatusColor = (status: string) => STATUS_COLORS[status] || 'bg-gray-100 text-gray-800';
     const getStatusLabel = (status: string) => STATUS_LABELS[status] || status;
 
     const handleDeleteJob = (jobId: number) => {
-        if (confirm('Êtes-vous sûr de vouloir supprimer cette offre ?')) {
+        if (confirm(t('jobPortal.myJobs.confirmDelete'))) {
             deleteJob(route('job-portal.delete-job', jobId));
         }
     };
 
     return (
         <AuthenticatedLayout user={auth.user}>
-            <Head>
-                <title>Mes offres d'emploi - JobLight</title>
-                <meta name="description" content="Gérez vos offres d'emploi publiées sur JobLight" />
+            <Head
+                title={`${t('jobPortal.myJobs.pageTitle') || 'Mes offres d\'emploi'} - JobLight`}
+            >
+                <meta name="description" content={t('jobPortal.myJobs.pageDescription') || 'Gérez vos offres d\'emploi publiées'} />
             </Head>
 
             <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
@@ -122,10 +125,10 @@ export default function MyJobs({ auth, jobs }: MyJobsProps) {
                     <div className="flex items-center justify-between mb-8">
                         <div>
                             <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100">
-                                💼 Mes offres d'emploi
+                                💼 {t('jobPortal.myJobs.title')}
                             </h1>
                             <p className="text-gray-600 dark:text-gray-400 mt-2">
-                                Gérez vos offres publiées et suivez les candidatures
+                                {t('jobPortal.myJobs.description')}
                             </p>
                         </div>
 
@@ -133,7 +136,7 @@ export default function MyJobs({ auth, jobs }: MyJobsProps) {
                             <Link href={route('job-portal.create-simple-ad-form')}>
                                 <Button className="bg-gradient-to-r from-green-500 to-blue-500">
                                     <Plus className="w-4 h-4 mr-2" />
-                                    Nouvelle annonce simple
+                                    {t('jobPortal.myJobs.newSimpleAd')}
                                 </Button>
                             </Link>
                             
@@ -141,18 +144,18 @@ export default function MyJobs({ auth, jobs }: MyJobsProps) {
                                 <DialogTrigger asChild>
                                     <Button variant="outline">
                                         <Plus className="w-4 h-4 mr-2" />
-                                        Offre complète
+                                        {t('jobPortal.myJobs.fullOffer')}
                                     </Button>
                                 </DialogTrigger>
                                 <DialogContent>
                                     <DialogHeader>
-                                        <DialogTitle>Créer une offre complète</DialogTitle>
+                                        <DialogTitle>{t('jobPortal.myJobs.createFullOffer')}</DialogTitle>
                                     </DialogHeader>
                                     <div className="p-4 text-center">
                                         <Briefcase className="w-12 h-12 text-blue-600 mx-auto mb-4" />
-                                        <h3 className="text-lg font-bold mb-2">Créer une nouvelle offre d'emploi</h3>
+                                        <h3 className="text-lg font-bold mb-2">{t('jobPortal.myJobs.createNewJobOffer')}</h3>
                                         <p className="text-gray-600 mb-6">
-                                            Publiez votre offre d'emploi et trouvez les meilleurs candidats.
+                                            {t('jobPortal.myJobs.publishJobDescription')}
                                         </p>
                                         <div className="space-y-3">
                                             <Button
@@ -162,10 +165,10 @@ export default function MyJobs({ auth, jobs }: MyJobsProps) {
                                                 }}
                                             >
                                                 <Plus className="w-4 h-4 mr-2" />
-                                                Créer une annonce
+                                                {t('jobPortal.myJobs.createAd')}
                                             </Button>
                                             <p className="text-xs text-gray-500">
-                                                Publication immédiate • Gratuit
+                                                {t('jobPortal.myJobs.immediatePublication')}
                                             </p>
                                         </div>
                                     </div>
@@ -181,7 +184,7 @@ export default function MyJobs({ auth, jobs }: MyJobsProps) {
                                 <div className="flex items-center justify-between">
                                     <div>
                                         <p className="text-sm font-medium text-gray-600 dark:text-gray-400">
-                                            Total offres
+                                            {t('jobPortal.myJobs.totalOffers')}
                                         </p>
                                         <p className="text-2xl font-bold text-gray-900 dark:text-gray-100">
                                             {jobs?.meta?.total || 0}
@@ -199,7 +202,7 @@ export default function MyJobs({ auth, jobs }: MyJobsProps) {
                                 <div className="flex items-center justify-between">
                                     <div>
                                         <p className="text-sm font-medium text-gray-600 dark:text-gray-400">
-                                            Vues totales
+                                            {t('jobPortal.myJobs.totalViews')}
                                         </p>
                                         <p className="text-2xl font-bold text-gray-900 dark:text-gray-100">
                                             {jobs?.data?.reduce((sum, job) => sum + job.views_count, 0) || 0}
@@ -217,7 +220,7 @@ export default function MyJobs({ auth, jobs }: MyJobsProps) {
                                 <div className="flex items-center justify-between">
                                     <div>
                                         <p className="text-sm font-medium text-gray-600 dark:text-gray-400">
-                                            Candidatures
+                                            {t('jobPortal.myJobs.applications')}
                                         </p>
                                         <p className="text-2xl font-bold text-gray-900 dark:text-gray-100">
                                             {jobs?.data?.reduce((sum, job) => sum + job.applications_count, 0) || 0}
@@ -235,7 +238,7 @@ export default function MyJobs({ auth, jobs }: MyJobsProps) {
                                 <div className="flex items-center justify-between">
                                     <div>
                                         <p className="text-sm font-medium text-gray-600 dark:text-gray-400">
-                                            Offres actives
+                                            {t('jobPortal.myJobs.activeOffers')}
                                         </p>
                                         <p className="text-2xl font-bold text-gray-900 dark:text-gray-100">
                                             {jobs?.data?.filter(job => job.status === 'published').length || 0}
@@ -258,7 +261,7 @@ export default function MyJobs({ auth, jobs }: MyJobsProps) {
                                         <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
                                         <Input
                                             type="text"
-                                            placeholder="Rechercher dans mes offres..."
+                                            placeholder={t('jobPortal.myJobs.searchPlaceholder')}
                                             value={searchTerm}
                                             onChange={(e) => setSearchTerm(e.target.value)}
                                             className="pl-10"
@@ -268,26 +271,26 @@ export default function MyJobs({ auth, jobs }: MyJobsProps) {
 
                                 <Select value={selectedStatus} onValueChange={setSelectedStatus}>
                                     <SelectTrigger className="w-full md:w-48">
-                                        <SelectValue placeholder="Tous les statuts" />
+                                        <SelectValue placeholder={t('jobPortal.myJobs.allStatuses')} />
                                     </SelectTrigger>
                                     <SelectContent>
-                                        <SelectItem value="all">Tous les statuts</SelectItem>
-                                        <SelectItem value="published">Publiées</SelectItem>
-                                        <SelectItem value="draft">Brouillons</SelectItem>
-                                        <SelectItem value="closed">Fermées</SelectItem>
-                                        <SelectItem value="expired">Expirées</SelectItem>
+                                        <SelectItem value="all">{t('jobPortal.myJobs.allStatuses')}</SelectItem>
+                                        <SelectItem value="published">{t('jobPortal.myJobs.status.published')}</SelectItem>
+                                        <SelectItem value="draft">{t('jobPortal.myJobs.status.draft')}</SelectItem>
+                                        <SelectItem value="closed">{t('jobPortal.myJobs.status.closed')}</SelectItem>
+                                        <SelectItem value="expired">{t('jobPortal.myJobs.status.expired')}</SelectItem>
                                     </SelectContent>
                                 </Select>
 
                                 <Select value={sortBy} onValueChange={setSortBy}>
                                     <SelectTrigger className="w-full md:w-48">
-                                        <SelectValue placeholder="Trier par" />
+                                        <SelectValue placeholder={t('jobPortal.myJobs.sortBy')} />
                                     </SelectTrigger>
                                     <SelectContent>
-                                        <SelectItem value="newest">Plus récentes</SelectItem>
-                                        <SelectItem value="oldest">Plus anciennes</SelectItem>
-                                        <SelectItem value="views">Plus de vues</SelectItem>
-                                        <SelectItem value="applications">Plus de candidatures</SelectItem>
+                                        <SelectItem value="newest">{t('jobPortal.myJobs.newest')}</SelectItem>
+                                        <SelectItem value="oldest">{t('jobPortal.myJobs.oldest')}</SelectItem>
+                                        <SelectItem value="views">{t('jobPortal.myJobs.mostViews')}</SelectItem>
+                                        <SelectItem value="applications">{t('jobPortal.myJobs.mostApplications')}</SelectItem>
                                     </SelectContent>
                                 </Select>
                             </div>
@@ -327,7 +330,7 @@ export default function MyJobs({ auth, jobs }: MyJobsProps) {
                                                         </Badge>
                                                         {job.posting_type === 'simple_ad' && (
                                                             <Badge variant="outline" className="bg-blue-50 text-blue-700">
-                                                                Annonce simple
+                                                                {t('jobPortal.myJobs.simpleAd')}
                                                             </Badge>
                                                         )}
                                                     </div>
@@ -347,7 +350,7 @@ export default function MyJobs({ auth, jobs }: MyJobsProps) {
                                                         {job.remote_work && (
                                                             <div className="flex items-center gap-1">
                                                                 <Wifi className="w-4 h-4" />
-                                                                Remote
+                                                                {t('jobPortal.myJobs.remote')}
                                                             </div>
                                                         )}
                                                     </div>
@@ -379,34 +382,34 @@ export default function MyJobs({ auth, jobs }: MyJobsProps) {
                                                     <DropdownMenuItem asChild>
                                                         <Link href={route('job-portal.show', job.id)}>
                                                             <Eye className="w-4 h-4 mr-2" />
-                                                            Voir l'offre
+                                                            {t('jobPortal.myJobs.viewOffer')}
                                                         </Link>
                                                     </DropdownMenuItem>
                                                     {job.posting_type === 'standard' && (
                                                         <DropdownMenuItem asChild>
                                                             <Link href={route('job-portal.applications', job.id)}>
                                                                 <Users className="w-4 h-4 mr-2" />
-                                                                Candidatures ({job.applications_count})
+                                                                {t('jobPortal.myJobs.applicationsCount', { count: job.applications_count })}
                                                             </Link>
                                                         </DropdownMenuItem>
                                                     )}
                                                     <DropdownMenuItem>
                                                         <Edit className="w-4 h-4 mr-2" />
-                                                        Modifier
+                                                        {t('jobPortal.myJobs.edit')}
                                                     </DropdownMenuItem>
                                                     <DropdownMenuItem>
                                                         <Copy className="w-4 h-4 mr-2" />
-                                                        Dupliquer
+                                                        {t('jobPortal.myJobs.duplicate')}
                                                     </DropdownMenuItem>
                                                     {job.status === 'published' ? (
                                                         <DropdownMenuItem>
                                                             <Pause className="w-4 h-4 mr-2" />
-                                                            Mettre en pause
+                                                            {t('jobPortal.myJobs.pause')}
                                                         </DropdownMenuItem>
                                                     ) : job.status === 'draft' && (
                                                         <DropdownMenuItem>
                                                             <Play className="w-4 h-4 mr-2" />
-                                                            Publier
+                                                            {t('jobPortal.myJobs.publish')}
                                                         </DropdownMenuItem>
                                                     )}
                                                     <DropdownMenuItem 
@@ -414,7 +417,7 @@ export default function MyJobs({ auth, jobs }: MyJobsProps) {
                                                         className="text-red-600"
                                                     >
                                                         <Trash2 className="w-4 h-4 mr-2" />
-                                                        Supprimer
+                                                        {t('jobPortal.myJobs.delete')}
                                                     </DropdownMenuItem>
                                                 </DropdownMenuContent>
                                             </DropdownMenu>
@@ -425,16 +428,16 @@ export default function MyJobs({ auth, jobs }: MyJobsProps) {
                                             <div className="flex items-center gap-6 text-sm text-gray-500">
                                                 <div className="flex items-center gap-1">
                                                     <Eye className="w-4 h-4" />
-                                                    {job.views_count} vues
+                                                    {t('jobPortal.myJobs.viewsCount', { count: job.views_count })}
                                                 </div>
                                                 <div className="flex items-center gap-1">
                                                     <Users className="w-4 h-4" />
-                                                    {job.applications_count} candidature{job.applications_count > 1 ? 's' : ''}
+                                                    {t('jobPortal.myJobs.applicationsCount', { count: job.applications_count })}
                                                 </div>
                                                 {job.application_deadline && (
                                                     <div className="flex items-center gap-1">
                                                         <Clock className="w-4 h-4" />
-                                                        Expire le {new Date(job.application_deadline).toLocaleDateString('fr-FR')}
+                                                        {t('jobPortal.myJobs.expiresOn')} {new Date(job.application_deadline).toLocaleDateString('fr-FR')}
                                                     </div>
                                                 )}
                                             </div>
@@ -443,14 +446,14 @@ export default function MyJobs({ auth, jobs }: MyJobsProps) {
                                                 <Link href={route('job-portal.show', job.id)}>
                                                     <Button variant="outline" size="sm">
                                                         <Eye className="w-4 h-4 mr-2" />
-                                                        Voir
+                                                        {t('jobPortal.myJobs.view')}
                                                     </Button>
                                                 </Link>
                                                 {job.posting_type === 'standard' && job.applications_count > 0 && (
                                                     <Link href={route('job-portal.applications', job.id)}>
                                                         <Button size="sm">
                                                             <Users className="w-4 h-4 mr-2" />
-                                                            Candidatures
+                                                            {t('jobPortal.myJobs.applications')}
                                                         </Button>
                                                     </Link>
                                                 )}
@@ -489,15 +492,15 @@ export default function MyJobs({ auth, jobs }: MyJobsProps) {
                                 <Briefcase className="w-8 h-8 text-gray-400" />
                             </div>
                             <h3 className="text-lg font-medium text-gray-800 dark:text-gray-200 mb-2">
-                                Aucune offre publiée
+                                {t('jobPortal.myJobs.noJobsPublished')}
                             </h3>
                             <p className="text-gray-600 dark:text-gray-400 mb-6">
-                                Commencez par publier votre première offre d'emploi
+                                {t('jobPortal.myJobs.publishFirstJob')}
                             </p>
                             <Link href={route('job-portal.create-simple-ad-form')}>
                                 <Button className="bg-gradient-to-r from-green-500 to-blue-500">
                                     <Plus className="w-4 h-4 mr-2" />
-                                    Créer ma première annonce
+                                    {t('jobPortal.myJobs.createFirstAd')}
                                 </Button>
                             </Link>
                         </div>

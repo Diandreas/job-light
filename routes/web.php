@@ -476,30 +476,32 @@ Route::prefix('guest-cv')->name('guest-cv.')->group(function () {
 Route::prefix('job-portal')->name('job-portal.')->group(function () {
     // Pages publiques - Coming Soon temporaire
     Route::get('/', [App\Http\Controllers\JobPortalController::class, 'index'])->name('index');
-    Route::get('/{job}', [App\Http\Controllers\JobPortalController::class, 'show'])->name('show');
-    
+
     // Création d'annonces simples (accessible sans authentification)
     Route::get('/create/simple-ad', [App\Http\Controllers\JobPortalController::class, 'createSimpleAdForm'])->name('create-simple-ad-form');
     Route::post('/create/simple-ad', [App\Http\Controllers\JobPortalController::class, 'createSimpleAd'])->name('create-simple-ad');
-    
+
     // API publique
     Route::get('/api/search-suggestions', [App\Http\Controllers\JobPortalController::class, 'searchSuggestions'])->name('search-suggestions');
-    
-    // Routes authentifiées
+
+    // Routes authentifiées (routes spécifiques AVANT les routes avec paramètres)
     Route::middleware(['auth'])->group(function () {
-        // Candidatures
-        Route::post('/{job}/apply', [App\Http\Controllers\JobPortalController::class, 'apply'])->name('apply');
+        // Routes spécifiques d'abord
         Route::get('/my/applications', [App\Http\Controllers\JobPortalController::class, 'myApplications'])->name('my-applications');
-        
+        Route::get('/my/jobs', [App\Http\Controllers\JobPortalController::class, 'myJobs'])->name('my-jobs');
+        Route::get('/profiles', [App\Http\Controllers\JobPortalController::class, 'searchProfiles'])->name('profiles');
+
         // Publication d'offres
         Route::post('/create', [App\Http\Controllers\JobPortalController::class, 'createJob'])->name('create');
-        Route::get('/my/jobs', [App\Http\Controllers\JobPortalController::class, 'myJobs'])->name('my-jobs');
-        Route::get('/{job}/applications', [App\Http\Controllers\JobPortalController::class, 'jobApplications'])->name('applications');
         Route::patch('/applications/{application}/status', [App\Http\Controllers\JobPortalController::class, 'updateApplicationStatus'])->name('applications.update-status');
-        
-        // Recherche de profils (entreprises)
-        Route::get('/profiles', [App\Http\Controllers\JobPortalController::class, 'searchProfiles'])->name('profiles');
+
+        // Routes avec paramètres EN DERNIER
+        Route::post('/{job}/apply', [App\Http\Controllers\JobPortalController::class, 'apply'])->name('apply');
+        Route::get('/{job}/applications', [App\Http\Controllers\JobPortalController::class, 'jobApplications'])->name('applications');
     });
+
+    // Route paramétrique pour les offres individuelles - DOIT être en dernier
+    Route::get('/{job}', [App\Http\Controllers\JobPortalController::class, 'show'])->name('show');
 });
 
 // Routes Préférences de notification

@@ -91,8 +91,8 @@ export default function JobShow({ auth, job, hasApplied = false, similarJobs = [
 
         if (!selectedCvModel) {
             toast({
-                title: "CV requis",
-                description: "Vous devez d'abord sélectionner un modèle de CV",
+                title: t('jobPortal.show.cvRequired'),
+                description: t('jobPortal.show.mustSelectCvModel'),
                 variant: "destructive"
             });
             // Rediriger vers la page de gestion des CV
@@ -104,15 +104,15 @@ export default function JobShow({ auth, job, hasApplied = false, similarJobs = [
             data: { ...data, cv_model_id: selectedCvModel.id },
             onSuccess: () => {
                 toast({
-                    title: "Candidature envoyée !",
-                    description: "Votre candidature a été transmise à l'entreprise",
+                    title: t('jobPortal.show.applicationSentTitle'),
+                    description: t('jobPortal.show.applicationSentDescription'),
                 });
                 setShowApplicationDialog(false);
                 window.location.reload();
             },
             onError: (errors) => {
                 toast({
-                    title: "Erreur",
+                    title: t('jobPortal.show.error'),
                     description: Object.values(errors)[0] as string,
                     variant: "destructive"
                 });
@@ -121,24 +121,24 @@ export default function JobShow({ auth, job, hasApplied = false, similarJobs = [
     };
 
     const formatSalary = (min: number, max: number, currency: string) => {
-        if (!min && !max) return 'Salaire à négocier';
+        if (!min && !max) return t('jobPortal.show.salaryNegotiable');
         if (min && max) return `${min.toLocaleString()} - ${max.toLocaleString()} ${currency}`;
-        if (min) return `À partir de ${min.toLocaleString()} ${currency}`;
-        return `Jusqu'à ${max.toLocaleString()} ${currency}`;
+        if (min) return `${t('jobPortal.show.from')} ${min.toLocaleString()} ${currency}`;
+        return `${t('jobPortal.show.upTo')} ${max.toLocaleString()} ${currency}`;
     };
 
     const shareJob = () => {
         if (navigator.share) {
             navigator.share({
                 title: job.title,
-                text: `Découvrez cette offre d'emploi : ${job.title} chez ${job.company.name}`,
+                text: t('jobPortal.show.shareText', { title: job.title, company: job.company.name }),
                 url: window.location.href
             });
         } else {
             navigator.clipboard.writeText(window.location.href);
             toast({
-                title: "Lien copié !",
-                description: "Le lien de l'offre a été copié dans le presse-papier"
+                title: t('jobPortal.show.linkCopied'),
+                description: t('jobPortal.show.linkCopiedDescription')
             });
         }
     };
@@ -149,16 +149,16 @@ export default function JobShow({ auth, job, hasApplied = false, similarJobs = [
     if (!job) {
         return (
             <Layout user={auth.user}>
-                <Head>
-                    <title>Offre non trouvée | JobLight</title>
-                </Head>
+                <Head
+                    title={`${t('jobPortal.show.jobNotFound') || 'Offre non trouvée'} | JobLight`}
+                />
                 <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
                     <div className="text-center">
                         <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-2">
-                            Offre d'emploi non trouvée
+                            {t('jobPortal.show.jobNotFoundMessage')}
                         </h1>
                         <p className="text-gray-600 dark:text-gray-400">
-                            Cette offre n'existe pas ou n'est plus disponible.
+                            {t('jobPortal.show.jobNotAvailable')}
                         </p>
                     </div>
                 </div>
@@ -168,8 +168,9 @@ export default function JobShow({ auth, job, hasApplied = false, similarJobs = [
 
     return (
         <Layout user={auth.user}>
-            <Head>
-                <title>{(job?.title && job?.company?.name) ? `${job.title} chez ${job.company.name} | JobLight` : 'JobLight - Offres d\'emploi'}</title>
+            <Head
+                title={(job?.title && job?.company?.name) ? `${job.title} ${t('jobPortal.show.at') || 'chez'} ${job.company.name} | JobLight` : `JobLight - ${t('jobPortal.show.jobOffers') || 'Offres d\'emploi'}`}
+            >
                 {job?.title && job?.company?.name && job?.description && (
                     <meta name="description" content={`${job.title} - ${job.company.name}. ${job.description.substring(0, 160)}...`} />
                 )}
@@ -201,7 +202,7 @@ export default function JobShow({ auth, job, hasApplied = false, similarJobs = [
                             {job.title}
                         </h1>
                         <p className="text-xl md:text-2xl mb-6">
-                            chez {job.company.name}
+                            {t('jobPortal.show.at')} {job.company.name}
                         </p>
                         <div className="flex items-center justify-center gap-4 text-lg">
                             {job.location && (
@@ -225,7 +226,7 @@ export default function JobShow({ auth, job, hasApplied = false, similarJobs = [
                     <div className="mb-6">
                         <Link href={route('job-portal.index')} className="inline-flex items-center gap-2 text-gray-600 hover:text-gray-800 transition-colors">
                             <ArrowLeft className="w-4 h-4" />
-                            Retour aux offres
+                            {t('jobPortal.show.backToJobs')}
                         </Link>
                     </div>
 
@@ -254,7 +255,7 @@ export default function JobShow({ auth, job, hasApplied = false, similarJobs = [
                                                 {job.remote_work && (
                                                     <Badge className="bg-green-100 text-green-800">
                                                         <Wifi className="w-3 h-3 mr-1" />
-                                                        Télétravail
+                                                        {t('jobPortal.show.remote')}
                                                     </Badge>
                                                 )}
                                                 {job.industry && (
@@ -272,7 +273,7 @@ export default function JobShow({ auth, job, hasApplied = false, similarJobs = [
                                             hasApplied ? (
                                                 <Button disabled className="bg-green-100 text-green-800">
                                                     <CheckCircle className="w-4 h-4 mr-2" />
-                                                    Candidature envoyée
+                                                    {t('jobPortal.show.applicationSent')}
                                                 </Button>
                                             ) : (
                                                 <Dialog open={showApplicationDialog} onOpenChange={setShowApplicationDialog}>
@@ -282,8 +283,8 @@ export default function JobShow({ auth, job, hasApplied = false, similarJobs = [
                                                         onClick={() => {
                                                             if (!selectedCvModel) {
                                                                 toast({
-                                                                    title: "CV requis",
-                                                                    description: "Vous devez d'abord sélectionner un modèle de CV",
+                                                                    title: t('jobPortal.show.cvRequired'),
+                                                                    description: t('jobPortal.show.mustSelectCvModel'),
                                                                     variant: "destructive"
                                                                 });
                                                                 // Rediriger vers la page de gestion des CV
@@ -294,56 +295,56 @@ export default function JobShow({ auth, job, hasApplied = false, similarJobs = [
                                                         }}
                                                     >
                                                         <Send className="w-4 h-4 mr-2" />
-                                                        Postuler maintenant
+                                                        {t('jobPortal.show.applyNow')}
                                                     </Button>
                                                     <DialogContent className="max-w-2xl">
                                                         <DialogHeader>
-                                                            <DialogTitle>Postuler à {job.title}</DialogTitle>
+                                                            <DialogTitle>{t('jobPortal.show.applyTo')} {job.title}</DialogTitle>
                                                         </DialogHeader>
                                                         <form onSubmit={handleApply} className="space-y-4">
                                                             <div>
-                                                                <Label htmlFor="cover_letter">Lettre de motivation *</Label>
+                                                                <Label htmlFor="cover_letter">{t('jobPortal.show.coverLetter')} *</Label>
                                                                 <Textarea
                                                                     id="cover_letter"
                                                                     value={data.cover_letter}
                                                                     onChange={(e) => setData('cover_letter', e.target.value)}
-                                                                    placeholder="Expliquez pourquoi vous êtes le candidat idéal pour ce poste..."
+                                                                    placeholder={t('jobPortal.show.coverLetterPlaceholder')}
                                                                     rows={6}
                                                                     required
                                                                 />
                                                                 <div className="text-xs text-gray-500 mt-1">
-                                                                    {data.cover_letter.length}/2000 caractères (minimum 100)
+                                                                    {data.cover_letter.length}/2000 {t('jobPortal.show.characters')} ({t('jobPortal.show.minimum')} 100)
                                                                 </div>
                                                             </div>
 
                                                             <div>
-                                                                <Label>Modèle de CV à utiliser *</Label>
+                                                                <Label>{t('jobPortal.show.cvModelToUse')} *</Label>
                                                                 <div className="mt-2 p-4 border border-green-200 rounded-lg bg-green-50">
                                                                     <div className="flex items-center gap-2 mb-2">
                                                                         <FileText className="w-4 h-4 text-green-600" />
                                                                         <span className="text-sm font-medium text-green-800">
-                                                                            CV sélectionné : {selectedCvModel?.name || 'Modèle par défaut'}
+                                                                            {t('jobPortal.show.selectedCv')} : {selectedCvModel?.name || t('jobPortal.show.defaultModel')}
                                                                         </span>
                                                                     </div>
                                                                     <p className="text-xs text-green-700">
-                                                                        Ce modèle de CV sera automatiquement joint à votre candidature.
+                                                                        {t('jobPortal.show.cvAutoAttached')}
                                                                     </p>
                                                                     <Link href={route('userCvModels.index')} className="text-xs text-green-600 hover:text-green-700 underline">
-                                                                        Changer de modèle de CV →
+                                                                        {t('jobPortal.show.changeCvModel')} →
                                                                     </Link>
                                                                 </div>
                                                             </div>
 
                                                             <div className="flex justify-end gap-3">
                                                                 <Button type="button" variant="outline" onClick={() => setShowApplicationDialog(false)}>
-                                                                    Annuler
+                                                                    {t('jobPortal.show.cancel')}
                                                                 </Button>
                                                                 <Button
                                                                     type="submit"
                                                                     disabled={processing || data.cover_letter.length < 100}
                                                                     className="bg-gradient-to-r from-amber-500 to-purple-500 hover:from-amber-600 hover:to-purple-600"
                                                                 >
-                                                                    {processing ? 'Envoi...' : 'Envoyer ma candidature'}
+                                                                    {processing ? t('jobPortal.show.sending') : t('jobPortal.show.sendApplication')}
                                                                 </Button>
                                                             </div>
                                                         </form>
@@ -355,15 +356,15 @@ export default function JobShow({ auth, job, hasApplied = false, similarJobs = [
                                                 <AlertCircle className="w-4 h-4" />
                                                 <AlertDescription>
                                                     <Link href={route('login')} className="text-blue-600 hover:text-blue-700 font-medium">
-                                                        Connectez-vous
-                                                    </Link> pour postuler à cette offre
+                                                        {t('jobPortal.show.signIn')}
+                                                    </Link> {t('jobPortal.show.toApplyToJob')}
                                                 </AlertDescription>
                                             </Alert>
                                         )}
 
                                         <Button variant="outline" onClick={shareJob}>
                                             <Share2 className="w-4 h-4 mr-2" />
-                                            Partager
+                                            {t('jobPortal.show.share')}
                                         </Button>
                                     </div>
                                 </CardContent>
@@ -372,7 +373,7 @@ export default function JobShow({ auth, job, hasApplied = false, similarJobs = [
                             {/* Description du poste */}
                             <Card>
                                 <CardHeader>
-                                    <CardTitle>Description du poste</CardTitle>
+                                    <CardTitle>{t('jobPortal.show.jobDescription')}</CardTitle>
                                 </CardHeader>
                                 <CardContent>
                                     <div className="prose prose-sm max-w-none text-gray-700 dark:text-gray-300">
@@ -387,7 +388,7 @@ export default function JobShow({ auth, job, hasApplied = false, similarJobs = [
                             {job.requirements && (
                                 <Card>
                                     <CardHeader>
-                                        <CardTitle>Exigences du poste</CardTitle>
+                                        <CardTitle>{t('jobPortal.show.jobRequirements')}</CardTitle>
                                     </CardHeader>
                                     <CardContent>
                                         <div className="prose prose-sm max-w-none text-gray-700 dark:text-gray-300">
@@ -403,7 +404,7 @@ export default function JobShow({ auth, job, hasApplied = false, similarJobs = [
                             {job.skills_required && Array.isArray(job.skills_required) && job.skills_required.length > 0 && (
                                 <Card>
                                     <CardHeader>
-                                        <CardTitle>Compétences recherchées</CardTitle>
+                                        <CardTitle>{t('jobPortal.show.requiredSkills')}</CardTitle>
                                     </CardHeader>
                                     <CardContent>
                                         <div className="flex flex-wrap gap-2">
@@ -423,7 +424,7 @@ export default function JobShow({ auth, job, hasApplied = false, similarJobs = [
                             {/* Informations clés */}
                             <Card>
                                 <CardHeader>
-                                    <CardTitle className="text-lg">Informations clés</CardTitle>
+                                    <CardTitle className="text-lg">{t('jobPortal.show.keyInformation')}</CardTitle>
                                 </CardHeader>
                                 <CardContent className="space-y-4">
                                     <div className="flex items-center gap-3">
@@ -432,7 +433,7 @@ export default function JobShow({ auth, job, hasApplied = false, similarJobs = [
                                             <div className="font-medium text-gray-800 dark:text-gray-200">
                                                 {formatSalary(job.salary_min, job.salary_max, job.salary_currency)}
                                             </div>
-                                            <div className="text-xs text-gray-500">Rémunération</div>
+                                            <div className="text-xs text-gray-500">{t('jobPortal.show.salary')}</div>
                                         </div>
                                     </div>
 
@@ -442,7 +443,7 @@ export default function JobShow({ auth, job, hasApplied = false, similarJobs = [
                                             <div className="font-medium text-gray-800 dark:text-gray-200">
                                                 {job.employment_type}
                                             </div>
-                                            <div className="text-xs text-gray-500">Type de contrat</div>
+                                            <div className="text-xs text-gray-500">{t('jobPortal.show.contractType')}</div>
                                         </div>
                                     </div>
 
@@ -452,7 +453,7 @@ export default function JobShow({ auth, job, hasApplied = false, similarJobs = [
                                             <div className="font-medium text-gray-800 dark:text-gray-200">
                                                 {job.experience_level}
                                             </div>
-                                            <div className="text-xs text-gray-500">Niveau requis</div>
+                                            <div className="text-xs text-gray-500">{t('jobPortal.show.requiredLevel')}</div>
                                         </div>
                                     </div>
 
@@ -463,7 +464,7 @@ export default function JobShow({ auth, job, hasApplied = false, similarJobs = [
                                                 <div className="font-medium text-gray-800 dark:text-gray-200">
                                                     {job.location}
                                                 </div>
-                                                <div className="text-xs text-gray-500">Localisation</div>
+                                                <div className="text-xs text-gray-500">{t('jobPortal.show.location')}</div>
                                             </div>
                                         </div>
                                     )}
@@ -473,9 +474,9 @@ export default function JobShow({ auth, job, hasApplied = false, similarJobs = [
                                             <Wifi className="w-5 h-5 text-green-600" />
                                             <div>
                                                 <div className="font-medium text-gray-800 dark:text-gray-200">
-                                                    Télétravail possible
+                                                    {t('jobPortal.show.remoteWorkPossible')}
                                                 </div>
-                                                <div className="text-xs text-gray-500">Modalité</div>
+                                                <div className="text-xs text-gray-500">{t('jobPortal.show.modality')}</div>
                                             </div>
                                         </div>
                                     )}
@@ -487,7 +488,7 @@ export default function JobShow({ auth, job, hasApplied = false, similarJobs = [
                                                 <div className="font-medium text-gray-800 dark:text-gray-200">
                                                     {new Date(job.application_deadline).toLocaleDateString('fr-FR')}
                                                 </div>
-                                                <div className="text-xs text-gray-500">Date limite</div>
+                                                <div className="text-xs text-gray-500">{t('jobPortal.show.deadline')}</div>
                                             </div>
                                         </div>
                                     )}
@@ -497,7 +498,7 @@ export default function JobShow({ auth, job, hasApplied = false, similarJobs = [
                             {/* Informations entreprise */}
                             <Card>
                                 <CardHeader>
-                                    <CardTitle className="text-lg">À propos de l'entreprise</CardTitle>
+                                    <CardTitle className="text-lg">{t('jobPortal.show.aboutCompany')}</CardTitle>
                                 </CardHeader>
                                 <CardContent>
                                     <div className="text-center mb-4">
@@ -530,7 +531,7 @@ export default function JobShow({ auth, job, hasApplied = false, similarJobs = [
                                             className="text-blue-600 hover:text-blue-700 text-sm flex items-center gap-1"
                                         >
                                             <Globe className="w-4 h-4" />
-                                            Site web de l'entreprise
+                                            {t('jobPortal.show.companyWebsite')}
                                         </a>
                                     )}
                                 </CardContent>
@@ -539,17 +540,17 @@ export default function JobShow({ auth, job, hasApplied = false, similarJobs = [
                             {/* Statistiques */}
                             <Card>
                                 <CardHeader>
-                                    <CardTitle className="text-lg">Statistiques</CardTitle>
+                                    <CardTitle className="text-lg">{t('jobPortal.show.statistics')}</CardTitle>
                                 </CardHeader>
                                 <CardContent>
                                     <div className="grid grid-cols-2 gap-4 text-center">
                                         <div>
                                             <div className="text-2xl font-bold text-blue-600">{job.views_count}</div>
-                                            <div className="text-xs text-gray-500">Vues</div>
+                                            <div className="text-xs text-gray-500">{t('jobPortal.show.views')}</div>
                                         </div>
                                         <div>
                                             <div className="text-2xl font-bold text-purple-600">{job.applications_count}</div>
-                                            <div className="text-xs text-gray-500">Candidatures</div>
+                                            <div className="text-xs text-gray-500">{t('jobPortal.show.applications')}</div>
                                         </div>
                                     </div>
                                 </CardContent>
@@ -561,7 +562,7 @@ export default function JobShow({ auth, job, hasApplied = false, similarJobs = [
                     {similarJobs.length > 0 && (
                         <div className="mt-12">
                             <h2 className="text-2xl font-bold text-gray-800 dark:text-gray-200 mb-6">
-                                Offres similaires
+                                {t('jobPortal.show.similarJobs')}
                             </h2>
                             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                                 {similarJobs.map(similarJob => (
@@ -581,7 +582,7 @@ export default function JobShow({ auth, job, hasApplied = false, similarJobs = [
                                                 </Badge>
                                                 {similarJob.remote_work && (
                                                     <Badge className="bg-green-100 text-green-800 text-xs">
-                                                        Remote
+                                                        {t('jobPortal.show.remote')}
                                                     </Badge>
                                                 )}
                                             </div>

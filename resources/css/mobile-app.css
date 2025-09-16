@@ -173,3 +173,10 @@ textarea {
 .swipe-element {
     touch-action: pan-x pan-y;
 }
+
+/* Ensure content doesn't get hidden behind mobile tab bar */
+@media (max-width: 768px) {
+    .mobile-safe-area {
+        padding-bottom: calc(60px + env(safe-area-inset-bottom)) !important;
+    }
+}

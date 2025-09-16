@@ -237,7 +237,7 @@ const ModelCard = ({ model, isActive, onSelect, onAdd, onPreview, loading, inCat
                             className={`w-full transition-all duration-200 ${isActive
                                 ? 'border-amber-200 dark:border-amber-700 text-amber-700 dark:text-amber-400 hover:bg-amber-50 dark:hover:bg-amber-900/20'
                                 : 'bg-gradient-to-r from-amber-500 to-purple-500 hover:from-amber-600 hover:to-purple-600 text-white shadow-lg hover:shadow-xl'
-                            }`}
+                                }`}
                             disabled={isActive || loading}
                             onClick={() => onSelect(model.id)}
                         >
@@ -263,7 +263,7 @@ const ModelCard = ({ model, isActive, onSelect, onAdd, onPreview, loading, inCat
                                 className={`w-full transition-all duration-200 ${isActive
                                     ? 'border-amber-200 dark:border-amber-700 text-amber-700 dark:text-amber-400 hover:bg-amber-50 dark:hover:bg-amber-900/20'
                                     : 'bg-gradient-to-r from-amber-500 to-purple-500 hover:from-amber-600 hover:to-purple-600 text-white shadow-lg hover:shadow-xl'
-                                }`}
+                                    }`}
                                 disabled={loading}
                                 onClick={() => onSelect(model.id)}
                             >
@@ -379,7 +379,7 @@ const ModelPreview = ({ model, onClose, onAdd, onSelect, isActive, inCatalog, lo
                                             className={`flex-1 transition-all duration-200 ${isActive
                                                 ? 'border-amber-200 dark:border-amber-700 text-amber-700 dark:text-amber-400 hover:bg-amber-50 dark:hover:bg-amber-900/20'
                                                 : 'bg-gradient-to-r from-amber-500 to-purple-500 hover:from-amber-600 hover:to-purple-600 text-white'
-                                            }`}
+                                                }`}
                                             disabled={isActive || loading}
                                             onClick={() => {
                                                 onSelect(model.id);
@@ -410,7 +410,7 @@ const ModelPreview = ({ model, onClose, onAdd, onSelect, isActive, inCatalog, lo
                                                 className={`transition-all duration-200 ${isActive
                                                     ? 'border-amber-200 dark:border-amber-700 text-amber-700 dark:text-amber-400 hover:bg-amber-50 dark:hover:bg-amber-900/20'
                                                     : 'bg-gradient-to-r from-amber-500 to-purple-500 hover:from-amber-600 hover:to-purple-600 text-white'
-                                                }`}
+                                                    }`}
                                                 disabled={loading}
                                                 onClick={() => {
                                                     onSelect(model.id);
@@ -594,34 +594,34 @@ export default function CvModelsIndex({ auth, userCvModels, availableCvModels, m
 
             <AnimatePresence>
 
-                    <motion.div
-                        initial={{ x: -100, opacity: 0 }}
-                        animate={{ x: 0, opacity: 1 }}
-                        exit={{ x: -100, opacity: 0 }}
-                        transition={{
-                            type: "spring",
-                            stiffness: 100,
-                            damping: 20,
-                            duration: 0.5
-                        }}
-                        className="fixed right-0 top-1/2 -translate-y-1/2 z-50"
-                    >
-                        <Link href="/cv-infos/show">
-                            <motion.div
-                                whileHover={{
-                                    scale: 1.05,
-                                    x: 10
-                                }}
-                                whileTap={{ scale: 0.95 }}
-                            >
-                                <Button className="bg-gradient-to-r from-amber-500 to-purple-500 hover:from-amber-600 hover:to-purple-600 text-white h-12 px-4 text-sm shadow-lg hover:shadow-xl transition-all duration-200 rounded-l-full rounded-r-none">
-                                    <FileText className="w-5 h-5 mr-2" />
-                                    <span className="hidden sm:inline">{t('cv_models.export_cv')}</span>
-                                    <span className="sm:hidden">{t('cv_models.export')}</span>
-                                </Button>
-                            </motion.div>
-                        </Link>
-                    </motion.div>
+                <motion.div
+                    initial={{ x: -100, opacity: 0 }}
+                    animate={{ x: 0, opacity: 1 }}
+                    exit={{ x: -100, opacity: 0 }}
+                    transition={{
+                        type: "spring",
+                        stiffness: 100,
+                        damping: 20,
+                        duration: 0.5
+                    }}
+                    className="fixed right-0 top-1/2 -translate-y-1/2 z-50"
+                >
+                    <Link href="/cv-infos/show">
+                        <motion.div
+                            whileHover={{
+                                scale: 1.05,
+                                x: 10
+                            }}
+                            whileTap={{ scale: 0.95 }}
+                        >
+                            <Button className="bg-gradient-to-r from-amber-500 to-purple-500 hover:from-amber-600 hover:to-purple-600 text-white h-12 px-4 text-sm shadow-lg hover:shadow-xl transition-all duration-200 rounded-l-full rounded-r-none">
+                                <FileText className="w-5 h-5 mr-2" />
+                                <span className="hidden sm:inline">{t('cv_models.export_cv')}</span>
+                                <span className="sm:hidden">{t('cv_models.export')}</span>
+                            </Button>
+                        </motion.div>
+                    </Link>
+                </motion.div>
             </AnimatePresence>
             <div className="min-h-screen bg-gradient-to-b from-amber-50/30 dark:from-gray-900 to-white dark:to-gray-800 pb-16">
                 <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-3 sm:py-6">
@@ -673,19 +673,19 @@ export default function CvModelsIndex({ auth, userCvModels, availableCvModels, m
                                         <SelectValue />
                                     </SelectTrigger>
                                     <SelectContent>
-                                        <SelectItem value="price_asc">Prix ↑</SelectItem>
-                                        <SelectItem value="price_desc">Prix ↓</SelectItem>
-                                        <SelectItem value="name_asc">Nom A-Z</SelectItem>
-                                        <SelectItem value="name_desc">Nom Z-A</SelectItem>
+                                        <SelectItem value="price_asc">{t('cv_models.sort.price_asc')}</SelectItem>
+                                        <SelectItem value="price_desc">{t('cv_models.sort.price_desc')}</SelectItem>
+                                        <SelectItem value="name_asc">{t('cv_models.sort.name_asc')}</SelectItem>
+                                        <SelectItem value="name_desc">{t('cv_models.sort.name_desc')}</SelectItem>
                                     </SelectContent>
                                 </Select>
 
-                                 {/*Sélecteur de vue*/}
+                                {/*Sélecteur de vue*/}
                                 <ToggleGroup type="single" value={viewMode} onValueChange={setViewMode}>
-                                    <ToggleGroupItem value="grid" aria-label="Vue grille" className="border-amber-100 dark:border-gray-700">
+                                    <ToggleGroupItem value="grid" aria-label={t('cv_models.view.grid')} className="border-amber-100 dark:border-gray-700">
                                         <Grid3X3 className="w-4 h-4" />
                                     </ToggleGroupItem>
-                                    <ToggleGroupItem value="list" aria-label="Vue liste" className="border-amber-100 dark:border-gray-700">
+                                    <ToggleGroupItem value="list" aria-label={t('cv_models.view.list')} className="border-amber-100 dark:border-gray-700">
                                         <List className="w-4 h-4" />
                                     </ToggleGroupItem>
                                 </ToggleGroup>

@@ -316,9 +316,9 @@
         "back_to_services": "Retour aux services",
         "previous": "Précédent",
         "add": "Ajouter",
-        "notSpecified": "Non spécifié",
+        "create": "Créer",
         "update": "Mettre à jour",
-        "create": "Créer"
+        "notSpecified": "Non spécifié"
     },
     "wallet": {
         "balance": "Solde",
@@ -345,6 +345,7 @@
         "use": "Utiliser",
         "view": "Aperçu",
         "add_to_catalog": "Ajouter au catalogue",
+        "free": "Gratuit",
         "model_active_from_discover": "Vous utilisez actuellement un modèle de la section Découvrir",
         "preview": {
             "free": "Gratuit"
@@ -364,6 +365,16 @@
             "max_models_reached": "Vous ne pouvez pas ajouter plus de {{max}} modèles",
             "error": "Une erreur s'est produite",
             "model_from_discover_selected": "Modèle sélectionné depuis la section Découvrir"
+        },
+        "sort": {
+            "price_asc": "Prix ↑",
+            "price_desc": "Prix ↓",
+            "name_asc": "Nom A-Z",
+            "name_desc": "Nom Z-A"
+        },
+        "view": {
+            "grid": "Vue grille",
+            "list": "Vue liste"
         }
     },
     "auth": {
@@ -451,13 +462,15 @@
             "download_success": "Téléchargement réussi",
             "download_success_description": "Votre CV a été téléchargé avec succès",
             "download_error": "Erreur de téléchargement",
-            "download_not_allowed": "Téléchargement non autorisé pour ce template"
+            "download_not_allowed": "Téléchargement non autorisé pour ce template",
+            "processing": "Traitement en cours..."
         },
         "wallet": {
             "current_balance": "Solde actuel",
             "model_price": "Prix du template",
             "insufficient_tokens": "Vous n'avez pas assez de jetons pour utiliser ce template. Veuillez recharger votre compte.",
             "recharge_tokens": "Recharger mes jetons",
+            "recharge": "Recharger",
             "insufficient_access": {
                 "title": "Accès insuffisant"
             }
@@ -469,7 +482,28 @@
         "preview": {
             "title": "Aperçu du CV",
             "loading": "Chargement de l'aperçu..."
-        }
+        },
+        "status": {
+            "unlocked_access": "Accès débloqué",
+            "ready_to_export": "Prêt à exporter",
+            "insufficient_tokens": "Tokens insuffisants"
+        },
+        "customization": {
+            "title": "Personnalisation"
+        },
+        "navigation": {
+            "back_to_edit": "Retour à l'édition",
+            "change_model": "Changer de modèle",
+            "edit_cv": "Modifier le CV"
+        },
+        "loading": "Chargement...",
+        "free": "Gratuit",
+        "tokens": "tokens",
+        "download_pdf": "Télécharger PDF",
+        "print": "Imprimer",
+        "printing": "Impression...",
+        "reset": "Réinitialiser",
+        "for_export": "pour l'export"
     },
     "career_advisor": {
         "title": "Conseiller de Carrière IA",

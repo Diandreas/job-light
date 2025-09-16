@@ -59,7 +59,7 @@ const StatusBadge = ({ hasDownloaded, canAccessFeatures, isAndroidApp, isReady }
         return (
             <div className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 rounded-full text-xs font-medium border border-emerald-200 dark:border-emerald-500/20">
                 <div className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse"></div>
-                Accès débloqué
+                {t('cv_preview.status.unlocked_access')}
             </div>
         );
     }
@@ -68,7 +68,7 @@ const StatusBadge = ({ hasDownloaded, canAccessFeatures, isAndroidApp, isReady }
         return (
             <div className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-amber-50 dark:bg-amber-500/10 text-amber-600 dark:text-amber-400 rounded-full text-xs font-medium border border-amber-200 dark:border-amber-500/20">
                 <Star className="w-3 h-3" />
-                Prêt à exporter
+                {t('cv_preview.status.ready_to_export')}
             </div>
         );
     }
@@ -76,7 +76,7 @@ const StatusBadge = ({ hasDownloaded, canAccessFeatures, isAndroidApp, isReady }
     return (
         <div className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-red-50 dark:bg-red-500/10 text-red-600 dark:text-red-400 rounded-full text-xs font-medium border border-red-200 dark:border-red-500/20">
             <AlertCircle className="w-3 h-3" />
-            Tokens insuffisants
+            {t('cv_preview.status.insufficient_tokens')}
         </div>
     );
 };
@@ -509,7 +509,7 @@ export default function Show({ auth, cvInformation, selectedCvModel }) {
                                                     transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
                                                     className="w-8 h-8 mx-auto mb-2 border-2 border-amber-500 border-t-transparent rounded-full"
                                                 />
-                                                <p className="text-sm text-gray-600">Chargement...</p>
+                                                <p className="text-sm text-gray-600">{t('cv_preview.loading')}</p>
                                             </div>
                                         </motion.div>
                                     )}
@@ -540,7 +540,7 @@ export default function Show({ auth, cvInformation, selectedCvModel }) {
                             </h2>
                             <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
                                 <Star className="w-4 h-4 text-amber-500" />
-                                <span>{selectedCvModel.price === 0 ? 'Gratuit' : `${selectedCvModel.price} tokens`}</span>
+                                <span>{selectedCvModel.price === 0 ? t('cv_preview.free') : `${selectedCvModel.price} ${t('cv_preview.tokens')}`}</span>
                             </div>
                         </div>
 
@@ -551,7 +551,7 @@ export default function Show({ auth, cvInformation, selectedCvModel }) {
                                 <Alert variant="destructive" className="text-sm">
                                     <AlertCircle className="h-4 w-4" />
                                     <AlertDescription>
-                                        Tokens insuffisants pour l'export
+                                        {t('cv_preview.status.insufficient_tokens')} {t('cv_preview.for_export')}
                                     </AlertDescription>
                                 </Alert>
                             )}
@@ -570,7 +570,7 @@ export default function Show({ auth, cvInformation, selectedCvModel }) {
                                             onClick={handleColorReset}
                                             variant="outline"
                                             size="sm"
-                                            title="Réinitialiser"
+                                            title={t('cv_preview.reset')}
                                         >
                                             <RotateCcw className="w-4 h-4" />
                                         </Button>
@@ -601,7 +601,7 @@ export default function Show({ auth, cvInformation, selectedCvModel }) {
                                                 size="sm"
                                             >
                                                 <Download className="mr-2 h-4 w-4" />
-                                                {isDownloading ? 'Téléchargement...' : 'Télécharger PDF'}
+                                                {isDownloading ? t('cv_preview.loading') : t('cv_preview.download_pdf')}
                                             </Button>
                                         ) : (
                                             <Button
@@ -611,7 +611,7 @@ export default function Show({ auth, cvInformation, selectedCvModel }) {
                                                 size="sm"
                                             >
                                                 <Printer className="mr-2 h-4 w-4" />
-                                                {isLoading ? 'Impression...' : 'Imprimer'}
+                                                {isLoading ? t('cv_preview.printing') : t('cv_preview.print')}
                                             </Button>
                                         )}
                                     </div>

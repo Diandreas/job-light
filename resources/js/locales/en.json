@@ -314,7 +314,11 @@
         "comingSoon": "Coming Soon",
         "start": "Start",
         "back_to_services": "Back to services",
-        "previous": "Previous"
+        "previous": "Previous",
+        "add": "Add",
+        "create": "Create",
+        "update": "Update",
+        "notSpecified": "Not specified"
     },
     "wallet": {
         "balance": "Balance",
@@ -341,6 +345,7 @@
         "use": "Use",
         "view": "Preview",
         "add_to_catalog": "Add to catalog",
+        "free": "Free",
         "model_active_from_discover": "You are currently using a model from the Discover section",
         "preview": {
             "free": "Free"
@@ -360,6 +365,16 @@
             "max_models_reached": "You cannot add more than {{max}} models",
             "error": "An error occurred",
             "model_from_discover_selected": "Model selected from Discover section"
+        },
+        "sort": {
+            "price_asc": "Price ↑",
+            "price_desc": "Price ↓",
+            "name_asc": "Name A-Z",
+            "name_desc": "Name Z-A"
+        },
+        "view": {
+            "grid": "Grid view",
+            "list": "List view"
         }
     },
     "auth": {
@@ -447,13 +462,15 @@
             "download_success": "Download successful",
             "download_success_description": "Your CV has been downloaded successfully",
             "download_error": "Download error",
-            "download_not_allowed": "Download not allowed for this template"
+            "download_not_allowed": "Download not allowed for this template",
+            "processing": "Processing..."
         },
         "wallet": {
             "current_balance": "Current balance",
             "model_price": "Template price",
             "insufficient_tokens": "You don't have enough tokens to use this template. Please reload your account.",
             "recharge_tokens": "Reload my tokens",
+            "recharge": "Reload",
             "insufficient_access": {
                 "title": "Insufficient access"
             }
@@ -465,7 +482,28 @@
         "preview": {
             "title": "CV Preview",
             "loading": "Loading preview..."
-        }
+        },
+        "status": {
+            "unlocked_access": "Unlocked access",
+            "ready_to_export": "Ready to export",
+            "insufficient_tokens": "Insufficient tokens"
+        },
+        "customization": {
+            "title": "Customization"
+        },
+        "navigation": {
+            "back_to_edit": "Back to edit",
+            "change_model": "Change model",
+            "edit_cv": "Edit CV"
+        },
+        "loading": "Loading...",
+        "free": "Free",
+        "tokens": "tokens",
+        "download_pdf": "Download PDF",
+        "print": "Print",
+        "printing": "Printing...",
+        "reset": "Reset",
+        "for_export": "for export"
     },
     "career_advisor": {
         "title": "AI Career Advisor",

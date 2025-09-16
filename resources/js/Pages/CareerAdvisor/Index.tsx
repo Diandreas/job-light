@@ -1165,53 +1165,6 @@ export default function EnhancedCareerAdvisor({ auth, userInfo, chatHistories })
                                 </div>
                             </div>
 
-                            {/* Footer informatif - disparaît quand on clique sur commencer */}
-                            <AnimatePresence>
-                                {showTopMascot && (
-                                    <motion.div
-                                        className="bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-800 px-4 py-4"
-                                        initial={{ opacity: 1, y: 0 }}
-                                        exit={{
-                                            opacity: 0,
-                                            y: 20,
-                                            transition: { duration: 0.3, ease: "easeInOut" }
-                                        }}
-                                    >
-                                        <div className="max-w-2xl mx-auto text-center">
-                                            <div className="flex items-center justify-center gap-2 mb-3">
-                                                <div className="flex items-center gap-2 px-3 py-1.5 bg-gradient-to-r from-amber-50 to-purple-50 dark:from-amber-900/20 dark:to-purple-900/20 border border-amber-200 dark:border-amber-700 rounded-full">
-                                                    <selectedService.icon className="h-4 w-4 text-amber-600 dark:text-amber-400" />
-                                                    <span className="text-sm font-medium text-gray-900 dark:text-gray-100">
-                                                        {t(`services.${selectedService.id}.title`)}
-                                                    </span>
-                                                </div>
-                                            </div>
-
-                                            <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">
-                                                {t('components.career_advisor.interface.selected_service')}
-                                            </h3>
-                                            <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
-                                                {t('components.career_advisor.interface.service_description')}
-                                            </p>
-
-                                            <div className="flex items-center justify-center gap-6 text-xs text-gray-500 dark:text-gray-400">
-                                                <div className="flex items-center gap-1">
-                                                    <Coins className="h-3.5 w-3.5 text-amber-500" />
-                                                    <span>{t('components.career_advisor.interface.cost')}: {selectedService.cost} {t('components.career_advisor.interface.credits')}</span>
-                                                </div>
-                                                <div className="flex items-center gap-1">
-                                                    <Wallet className="h-3.5 w-3.5 text-green-500" />
-                                                    <span>{t('components.career_advisor.interface.balance')}: {walletBalance.toLocaleString()}</span>
-                                                </div>
-                                                <div className="flex items-center gap-1">
-                                                    <Star className="h-3.5 w-3.5 text-purple-500" />
-                                                    <span>{t('components.career_advisor.interface.advanced_ai')}</span>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </motion.div>
-                                )}
-                            </AnimatePresence>
                         </div>
                     ) : (
                         <div className="flex-1 flex flex-col min-h-0">

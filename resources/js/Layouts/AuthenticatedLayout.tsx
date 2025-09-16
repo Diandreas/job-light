@@ -6,14 +6,13 @@ import { Toaster } from "@/Components/ui/toaster";
 import { ThemeToggle } from '@/Components/ThemeToggle';
 import { MobileTabBar } from '@/Components/MobileTabBar';
 import {
-    Folder, Star, Eye, Menu, X, Brain, Layout,
+    Folder, Star, Eye, Brain, Layout,
     ChevronRight, ChevronLeft, Sparkles, LucideIcon, Coins,
     Globe, Mail, Phone, MapPin, Linkedin, Github, MessageSquare,
-    MenuIcon, ChevronDown, ChevronUp, Home, BookCopy, Award,
+    ChevronDown, ChevronUp, Home, BookCopy, Award,
     Calendar, Sun, Moon, Languages, RefreshCw, CheckCircle, User
 } from 'lucide-react';
 import Dropdown from '@/Components/Dropdown';
-import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/Components/ui/sheet";
 import { Button } from '@/Components/ui/button';
 import { cn } from "@/lib/utils";
 import { motion, AnimatePresence } from 'framer-motion';
@@ -145,7 +144,6 @@ interface AuthenticatedProps {
 export default function Authenticated({ user, header, children, hideHeaderOnMobile = false, hideSidebar = false }: PropsWithChildren<AuthenticatedProps>) {
     const { t, i18n } = useTranslation();
     const { url } = usePage();
-    const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const [isNavOpen, setIsNavOpen] = useState(false);
     const [isReferralDialogOpen, setIsReferralDialogOpen] = useState(false);
     const [isJobPortalDialogOpen, setIsJobPortalDialogOpen] = useState(false);
@@ -745,14 +743,6 @@ export default function Authenticated({ user, header, children, hideHeaderOnMobi
                                         </Dropdown.Link>
                                     </Dropdown.Content>
                                 </Dropdown>
-                                <Button
-                                    variant="ghost"
-                                    size="sm"
-                                    className="md:hidden h-7 w-7 sm:h-8 sm:w-8 p-0"
-                                    onClick={() => setIsMobileMenuOpen(true)}
-                                >
-                                    <Menu className="h-4 w-4 sm:h-5 sm:w-5 text-gray-700 dark:text-gray-100" />
-                                </Button>
                             </div>
                         </div>
                     </div>
@@ -800,26 +790,6 @@ export default function Authenticated({ user, header, children, hideHeaderOnMobi
                     </div>
                 )}
 
-                <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
-                    <SheetContent side="right" className="bg-white dark:bg-gray-900 w-[250px] sm:w-[300px] border-amber-100 dark:border-gray-700 p-3 sm:p-4">
-                        <SheetHeader className="text-left">
-                            <SheetTitle className="flex items-center gap-1.5 sm:gap-2 text-base sm:text-lg">
-                                <Sparkles className="h-4 w-4 sm:h-5 sm:w-4 text-amber-500 dark:text-amber-400" />
-                                <span className="bg-gradient-to-r from-amber-500 to-purple-500 dark:from-amber-400 dark:to-purple-400 text-transparent bg-clip-text">
-                                    {isCareerAdvisorPage ? 'Guidy AI ' : t('menu.title')}
-                                </span>
-                            </SheetTitle>
-                        </SheetHeader>
-                        <div className="mt-4 sm:mt-6 flex flex-col gap-2 sm:gap-3">
-                            {mainMenuItems.map((item, index) => (
-                                //@ts-ignore
-                                (!item.adminOnly || user.UserType === 1) && (
-                                    <NavButton key={index} item={item} compact={true} />
-                                )
-                            ))}
-                        </div>
-                    </SheetContent>
-                </Sheet>
 
                 {showNav && !isCareerAdvisorPage && !hideSidebar && <MobileNav />}
 
@@ -850,7 +820,7 @@ export default function Authenticated({ user, header, children, hideHeaderOnMobi
                     )}
 
                     <main className={cn(
-                        "flex-1 min-w-0",
+                        "flex-1 min-w-0 mobile-safe-area",
                         isCareerAdvisorPage && "h-screen" // Hauteur full screen pour career-advisor
                     )}>
                         {children}

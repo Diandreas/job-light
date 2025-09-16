@@ -190,7 +190,7 @@ export default function CompetenceInput({ auth, availableCompetences, initialUse
             {/* Header compact */}
             <div>
                 <h4 className="text-base font-medium text-gray-800 dark:text-white mb-2">
-                    Compétences <span className="text-sm text-gray-500">({sortedUserCompetences.length}/12)</span>
+                    {t('cvInterface.skills.title')} <span className="text-sm text-gray-500">({sortedUserCompetences.length}/12)</span>
                 </h4>
             </div>
 
@@ -225,7 +225,7 @@ export default function CompetenceInput({ auth, availableCompetences, initialUse
                         <input
                             type="text"
                             className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-sm focus:ring-1 focus:ring-teal-500 focus:border-teal-500 dark:bg-gray-800 dark:text-white"
-                            placeholder="Ajouter compétence..."
+                            placeholder={t('cvInterface.skills.addPlaceholder')}
                             value={inputValue}
                             onChange={(e) => setInputValue(e.target.value)}
                             onKeyDown={handleInputKeyDown}

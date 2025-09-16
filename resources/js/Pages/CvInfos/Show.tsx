@@ -465,11 +465,11 @@ export default function Show({ auth, cvInformation, selectedCvModel }) {
                         <div className="flex items-center gap-3">
                             <Link href={route('cv-infos.index')} className="flex items-center gap-2 text-gray-600 hover:text-gray-800">
                                 <ArrowLeft className="h-4 w-4" />
-                                <span className="font-semibold text-sm">Retour à l'édition</span>
+                                <span className="font-semibold text-sm">{t('cv_preview.navigation.back_to_edit')}</span>
                             </Link>
                             <div className="w-px h-4 bg-gray-300"></div>
                             <h1 className="font-semibold text-gray-800 dark:text-white text-sm">
-                                Aperçu final
+                                {t('cv_preview.title')}
                             </h1>
                         </div>
                         <div className="flex items-center gap-2">
@@ -558,7 +558,7 @@ export default function Show({ auth, cvInformation, selectedCvModel }) {
 
                             {/* Personnalisation couleur */}
                             <div className="space-y-3">
-                                <h3 className="font-medium text-gray-800 dark:text-white text-sm">Personnalisation</h3>
+                                <h3 className="font-medium text-gray-800 dark:text-white text-sm">{t('cv_preview.customization.title')}</h3>
                                 <div className="flex gap-2">
                                     <ColorPicker
                                         defaultColor={currentColor}
@@ -580,7 +580,7 @@ export default function Show({ auth, cvInformation, selectedCvModel }) {
 
                             {/* Actions d'export */}
                             <div className="space-y-3">
-                                <h3 className="font-medium text-gray-800 dark:text-white text-sm">Export</h3>
+                                <h3 className="font-medium text-gray-800 dark:text-white text-sm">{t('cv_preview.export.title')}</h3>
 
                                 {!hasDownloaded && !canAccessFeatures ? (
                                     <Button
@@ -589,7 +589,7 @@ export default function Show({ auth, cvInformation, selectedCvModel }) {
                                         size="sm"
                                     >
                                         <Coins className="mr-2 h-4 w-4" />
-                                        Recharger les tokens
+                                        {t('cv_preview.wallet.recharge')}
                                     </Button>
                                 ) : (
                                     <div className="space-y-2">
@@ -625,13 +625,13 @@ export default function Show({ auth, cvInformation, selectedCvModel }) {
                                 <Link href={route('userCvModels.index')} className="flex-1">
                                     <Button variant="outline" className="w-full" size="sm">
                                         <ArrowLeft className="w-4 h-4 mr-2" />
-                                        Changer de modèle
+                                        {t('cv_preview.navigation.change_model')}
                                     </Button>
                                 </Link>
                                 <Link href={route('cv-infos.index')} className="flex-1">
                                     <Button variant="outline" className="w-full" size="sm">
                                         <Eye className="w-4 h-4 mr-2" />
-                                        Modifier le CV
+                                        {t('cv_preview.navigation.edit_cv')}
                                     </Button>
                                 </Link>
                             </div>

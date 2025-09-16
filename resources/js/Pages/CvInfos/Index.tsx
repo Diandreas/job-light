@@ -8,8 +8,8 @@ import {
     ChevronRight, ChevronLeft, Mail, Phone, MapPin, Linkedin,
     Github, PencilIcon, Sparkles, CircleChevronRight, Star,
     Camera, Upload, FileUp, Bot, AlertCircle, X, Plus, Menu, Coins, Trash2, Globe,
-    ArrowRight, Play, SkipForward, HelpCircle, Check,
-    Eye
+    ArrowRight, Play, SkipForward, HelpCircle, Check, Eye,
+    Loader2, RefreshCw, RotateCcw, Settings
 } from 'lucide-react';
 import axios from 'axios';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
@@ -18,6 +18,12 @@ import { Button } from "@/Components/ui/button";
 import { useToast } from '@/Components/ui/use-toast';
 import { ScrollArea } from "@/Components/ui/scroll-area";
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "@/Components/ui/sheet";
+import {
+    Dialog,
+    DialogContent,
+    DialogHeader,
+    DialogTitle,
+} from "@/Components/ui/dialog";
 import { Progress } from "@/Components/ui/progress";
 import { Alert, AlertDescription } from "@/Components/ui/alert";
 import { Separator } from "@/Components/ui/separator";
@@ -40,20 +46,20 @@ import ReactCrop, { centerCrop, makeAspectCrop } from 'react-image-crop';
 import 'react-image-crop/dist/ReactCrop.css';
 import { cn } from '@/lib/utils';
 
-const SIDEBAR_ITEMS = [
-    { id: 'personalInfo', label: 'Informations Personnelles', icon: User, color: 'text-amber-500' },
-    { id: 'summary', label: 'Résumé', icon: FileText, color: 'text-purple-500' },
-    { id: 'experience', label: 'Expériences', icon: Briefcase, color: 'text-amber-600' },
-    { id: 'profession', label: 'Formation', icon: GraduationCap, color: 'text-amber-500' },
-    { id: 'skills', label: 'Compétences & Autres', icon: Code, color: 'text-purple-600' }
+const getSidebarItems = (t: any) => [
+    { id: 'personalInfo', label: t('cvInterface.sidebar.personalInfo'), icon: User, color: 'text-amber-500' },
+    { id: 'summary', label: t('cvInterface.sidebar.summary'), icon: FileText, color: 'text-purple-500' },
+    { id: 'experience', label: t('cvInterface.sidebar.experience'), icon: Briefcase, color: 'text-amber-600' },
+    { id: 'profession', label: t('cvInterface.sidebar.profession'), icon: GraduationCap, color: 'text-amber-500' },
+    { id: 'skills', label: t('cvInterface.sidebar.skills'), icon: Code, color: 'text-purple-600' }
 ];
 
-const PERSONAL_INFO_FIELDS = [
-    { label: "Email", key: "email", icon: Mail },
-    { label: "Téléphone", key: "phone", icon: Phone },
-    { label: "Adresse", key: "address", icon: MapPin },
-    { label: "LinkedIn", key: "linkedin", icon: Linkedin },
-    { label: "GitHub", key: "github", icon: Github }
+const getPersonalInfoFields = (t: any) => [
+    { label: t('cvInterface.personalInfo.email'), key: "email", icon: Mail },
+    { label: t('cvInterface.personalInfo.phone'), key: "phone", icon: Phone },
+    { label: t('cvInterface.personalInfo.address'), key: "address", icon: MapPin },
+    { label: t('cvInterface.personalInfo.linkedin'), key: "linkedin", icon: Linkedin },
+    { label: t('cvInterface.personalInfo.github'), key: "github", icon: Github }
 ];
 
 // Hook pour gérer le scroll et le positionnement avec sélecteurs dynamiques et stabilité
@@ -870,6 +876,7 @@ const PersonalInfoCard = ({ item, onEdit, updateCvInformation }) => {
     const [imageRef, setImageRef] = useState(null);
     const { toast } = useToast();
     const { t } = useTranslation();
+    const PERSONAL_INFO_FIELDS = getPersonalInfoFields(t);
 
     // Null check for item prop
     if (!item) {
@@ -1019,7 +1026,7 @@ const PersonalInfoCard = ({ item, onEdit, updateCvInformation }) => {
         <div className="space-y-3 sm:space-y-4">
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 sm:gap-4">
                 <h2 className="text-lg sm:text-xl font-bold text-gray-800 dark:text-white">
-                    {t('cv.interface.personal.title')}
+                    {t('cvInterface.steps.step1')}
                 </h2>
                 <Button
                     onClick={onEdit}
@@ -1086,7 +1093,7 @@ const PersonalInfoCard = ({ item, onEdit, updateCvInformation }) => {
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-4">
                     {PERSONAL_INFO_FIELDS.map(({ label, key, icon: Icon }) => (
-                        <div key={label} className="flex items-start gap-2 sm:gap-3">
+                        <div key={key} className="flex items-start gap-2 sm:gap-3">
                             <div className="mt-0.5">
                                 <Icon className="h-3 w-3 sm:h-5 sm:w-5 text-amber-500" />
                             </div>
@@ -1193,25 +1200,25 @@ const IntegratedLivePreview = ({ cvInformation, selectedCvModel, availableModels
             const mockHtml = `
                 <div style="padding: 20px; font-family: Arial, sans-serif; background: white; min-height: 400px;">
                     <div style="text-align: center; margin-bottom: 20px;">
-                        <h1 style="color: #f59e0b; margin: 0;">${cvInformation.personalInformation?.firstName || 'Prénom'}</h1>
+                        <h1 style="color: #f59e0b; margin: 0;">${cvInformation.personalInformation?.firstName || t('cvInterface.personalInfo.firstName')}</h1>
                         <h2 style="color: #8b5cf6; margin: 5px 0 0 0; font-size: 18px;">${selectedCvModel.name}</h2>
                     </div>
                     <div style="margin: 20px 0;">
-                        <h3 style="color: #374151; border-bottom: 2px solid #f59e0b; padding-bottom: 5px;">Profil</h3>
-                        <p style="color: #6b7280; line-height: 1.6;">Aperçu en temps réel du CV avec le modèle sélectionné.</p>
+                        <h3 style="color: #374151; border-bottom: 2px solid #f59e0b; padding-bottom: 5px;">${t('cvInterface.summary.title')}</h3>
+                        <p style="color: #6b7280; line-height: 1.6;">${t('cvInterface.preview.description')}</p>
                     </div>
                     <div style="margin: 20px 0;">
-                        <h3 style="color: #374151; border-bottom: 2px solid #8b5cf6; padding-bottom: 5px;">Informations</h3>
-                        <p style="color: #6b7280;">Email: ${cvInformation.personalInformation?.email || 'Non spécifié'}</p>
-                        <p style="color: #6b7280;">Téléphone: ${cvInformation.personalInformation?.phone || 'Non spécifié'}</p>
+                        <h3 style="color: #374151; border-bottom: 2px solid #8b5cf6; padding-bottom: 5px;">${t('cvInterface.personalInfo.title')}</h3>
+                        <p style="color: #6b7280;">Email: ${cvInformation.personalInformation?.email || t('common.notSpecified')}</p>
+                        <p style="color: #6b7280;">${t('cvInterface.personalInfo.phone')}: ${cvInformation.personalInformation?.phone || t('common.notSpecified')}</p>
                     </div>
                 </div>
             `;
             setPreviewHtml(mockHtml);
         } catch (error) {
             toast({
-                title: "Erreur d'aperçu",
-                description: "Impossible de générer l'aperçu",
+                title: t('cvInterface.previewError.title'),
+                description: t('cvInterface.previewError.description'),
                 variant: "destructive"
             });
         } finally {
@@ -1266,7 +1273,7 @@ const IntegratedLivePreview = ({ cvInformation, selectedCvModel, availableModels
                             "h-7 w-7 p-0 border-0",
                             autoRefresh ? "text-amber-600 bg-amber-50 dark:bg-amber-900/20" : "text-gray-400"
                         )}
-                        title={autoRefresh ? "Auto-refresh activé" : "Auto-refresh désactivé"}
+                        title={autoRefresh ? t('cvInterface.autoRefresh.enabled') : t('cvInterface.autoRefresh.disabled')}
                     >
                         <RefreshCw className={cn("w-3.5 h-3.5", autoRefresh && isGenerating && "animate-spin")} />
                     </Button>
@@ -1542,6 +1549,8 @@ const SectionNavigation = ({ currentSection, nextSection, prevSection, canProgre
 
 export default function CvInterface({ auth, cvInformation: initialCvInformation }) {
     const { t } = useTranslation();
+    const SIDEBAR_ITEMS = getSidebarItems(t);
+    const PERSONAL_INFO_FIELDS = getPersonalInfoFields(t);
     const [activeSection, setActiveSection] = useState('personalInfo');
     const [cvInformation, setCvInformation] = useState(initialCvInformation);
     const [isEditing, setIsEditing] = useState(false);
@@ -1597,11 +1606,11 @@ export default function CvInterface({ auth, cvInformation: initialCvInformation 
 
     // Utilisation des traductions pour les éléments de la sidebar
     const translatedSidebarItems = [
-        { id: 'personalInfo', label: t('cv.sidebar.personalInfo'), icon: User, color: 'text-amber-500' },
-        { id: 'summary', label: t('cv.sidebar.summary'), icon: FileText, color: 'text-purple-500' },
-        { id: 'experience', label: t('cv.sidebar.experience'), icon: Briefcase, color: 'text-amber-600' },
-        { id: 'profession', label: t('cv.sidebar.profession', 'Titre du CV'), icon: GraduationCap, color: 'text-amber-500' },
-        { id: 'skills', label: 'Compétences & Autres', icon: Code, color: 'text-purple-600' }
+        { id: 'personalInfo', label: t('cvInterface.steps.step1'), icon: User, color: 'text-amber-500' },
+        { id: 'summary', label: t('cvInterface.steps.step2'), icon: FileText, color: 'text-purple-500' },
+        { id: 'experience', label: t('cvInterface.steps.step3'), icon: Briefcase, color: 'text-amber-600' },
+        { id: 'profession', label: t('cvInterface.steps.step4'), icon: GraduationCap, color: 'text-amber-500' },
+        { id: 'skills', label: t('cvInterface.steps.step5'), icon: Code, color: 'text-purple-600' }
     ];
 
     // Utilisation des traductions pour les champs d'information personnelle
@@ -1698,7 +1707,7 @@ export default function CvInterface({ auth, cvInformation: initialCvInformation 
                     <div className="space-y-4 sm:space-y-5">
                         <div className="flex justify-between items-center">
                             <h2 className="text-lg sm:text-xl font-bold text-gray-800 dark:text-white">
-                                Compétences & Autres
+                                {t('cvInterface.steps.step5')}
                             </h2>
                         </div>
 
@@ -1993,26 +2002,28 @@ export default function CvInterface({ auth, cvInformation: initialCvInformation 
                         </div>
                         <div className="flex items-center gap-2">
                             {/* Bouton Voir CV */}
-                            <Button
-                                variant="ghost"
-                                size="sm"
-                                onClick={() => window.open('/cvinfos/show', '_blank')}
-                                className="flex items-center gap-1 text-purple-600 hover:text-purple-700 hover:bg-purple-50 dark:text-purple-400 dark:hover:bg-purple-900/20 transition-all border-0"
-                            >
-                                <FileText className="w-4 h-4" />
-                                <span className="text-xs sm:text-sm">{t('cv.interface.viewCv')}</span>
-                            </Button>
+                            <Link href={route('cv-infos.show', auth.user.id)}>
+                                <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    className="flex items-center gap-1 text-purple-600 hover:text-purple-700 hover:bg-purple-50 dark:text-purple-400 dark:hover:bg-purple-900/20 transition-all border-0"
+                                >
+                                    <FileText className="w-4 h-4" />
+                                    <span className="text-xs sm:text-sm">{t('cv.interface.viewCv')}</span>
+                                </Button>
+                            </Link>
 
                             {/* Bouton Changer modèle */}
-                            <Button
-                                variant="ghost"
-                                size="sm"
-                                onClick={() => window.open('/models/index', '_blank')}
-                                className="flex items-center gap-1 text-blue-600 hover:text-blue-700 hover:bg-blue-50 dark:text-blue-400 dark:hover:bg-blue-900/20 transition-all border-0"
-                            >
-                                <Sparkles className="w-4 h-4" />
-                                <span className="text-xs sm:text-sm">{t('cv.interface.changeModel')}</span>
-                            </Button>
+                            <Link href={route('userCvModels.index')}>
+                                <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    className="flex items-center gap-1 text-blue-600 hover:text-blue-700 hover:bg-blue-50 dark:text-blue-400 dark:hover:bg-blue-900/20 transition-all border-0"
+                                >
+                                    <Sparkles className="w-4 h-4" />
+                                    <span className="text-xs sm:text-sm">{t('cv.interface.changeModel')}</span>
+                                </Button>
+                            </Link>
 
                             {/* Bouton Live Preview (desktop seulement) */}
                             {isDesktop && (

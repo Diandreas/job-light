@@ -892,6 +892,32 @@
             "start_customization": "Commencer la personnalisation"
         },
         "edit": {
+            "portfolioConfig": "Configuration Portfolio",
+            "quickConfig": "Configuration rapide",
+            "designStyle": "Design & Style",
+            "customizeAppearance": "Personnalisez l'apparence de votre portfolio",
+            "chooseTheme": "Choisissez votre thème",
+            "primaryColor": "Couleur principale",
+            "selectColor": "Sélectionnez la couleur dominante de votre portfolio",
+            "portfolioSections": "Sections du Portfolio",
+            "sectionManagement": "Gestion des Sections",
+            "organizePortfolio": "Organisez et configurez les sections de votre portfolio",
+            "organizePortfolioSections": "Organisez les sections de votre portfolio",
+            "save": "Sauvegarder",
+            "saving": "Sauvegarde...",
+            "viewFullscreen": "Voir en plein écran",
+            "manageServices": "Gérer les services",
+            "servicesManagement": "Gestion des Services",
+            "servicesDescription": "Ajoutez, modifiez ou organisez vos services professionnels",
+            "othersServices": "autres services",
+            "active": "Actives",
+            "activeSections": "actives",
+            "empty": "Vides",
+            "noContent": "Aucun contenu disponible",
+            "element": "élément",
+            "elements": "éléments",
+            "emptySectionsOrange": "Les sections vides sont marquées en orange",
+            "allSectionsContent": "Toutes vos sections contiennent du contenu !",
             "portfolio_express": "Portfolio Express",
             "portfolio_preview": "Aperçu du Portfolio",
             "portfolioStudio": "Portfolio Studio Pro",
@@ -902,7 +928,6 @@
             "sharePortfolio": "Partager votre Portfolio",
             "scanQr": "Scannez le QR code pour accéder à votre portfolio",
             "close": "Fermer",
-            "designStyle": "Design & Style",
             "customizeAppearance": "Personnalisez l'apparence de votre portfolio",
             "chooseTheme": "Choisissez votre thème",
             "primaryColor": "Couleur principale",
@@ -920,11 +945,10 @@
             "showAll": "Afficher tout",
             "hideEmpty": "Masquer vides",
             "saveChanges": "Sauvegarder les modifications",
-            "saving": "Sauvegarde en cours...",
             "livePreview": "Aperçu Live",
             "realtimePreview": "Prévisualisation en temps réel",
             "fullscreen": "Plein écran",
-            "professional": "Pro",
+            "professional": "Professionnel",
             "creative": "Créatif",
             "minimal": "Minimal",
             "modern": "Moderne",
@@ -942,5 +966,129 @@
             "about": "À propos",
             "theme": "Thème"
         }
+    },
+    "tutorial": {
+        "welcome": {
+            "title": "Bienvenue dans votre espace CV !",
+            "description": "Cette visite guidée vous aidera à découvrir toutes les fonctionnalités pour créer un CV professionnel."
+        },
+        "navbar": {
+            "title": "Navigation principale",
+            "description": "Accédez rapidement à vos différents espaces : CV, portfolio, assistant carrière."
+        },
+        "cvNavigation": {
+            "title": "Navigation du CV",
+            "description": "Utilisez cette barre pour naviguer entre les différentes sections de votre CV."
+        },
+        "progress": {
+            "title": "Barre de progression",
+            "description": "Suivez votre avancement dans la completion de votre CV professionnel."
+        },
+        "import": {
+            "title": "Importation intelligente",
+            "description": "Importez un CV existant et laissez notre IA extraire automatiquement les informations."
+        },
+        "sidebar": {
+            "title": "Sections du CV",
+            "description": "Cliquez sur une section pour la modifier. Les icônes colorées indiquent les sections complétées."
+        },
+        "personalInfo": {
+            "title": "Informations personnelles",
+            "description": "Commencez par remplir vos informations de base. C'est la fondation de votre CV."
+        },
+        "navigation": {
+            "title": "Navigation entre sections",
+            "description": "Utilisez les boutons Précédent/Suivant ou cliquez directement sur les sections dans la barre latérale."
+        },
+        "tabbar": {
+            "title": "Onglets principaux",
+            "description": "Basculez entre l'édition de votre CV, le choix de modèles premium et l'aperçu final."
+        }
+    },
+    "cvInterface": {
+        "sidebar": {
+            "personalInfo": "Informations personnelles",
+            "summary": "Résumé",
+            "experience": "Expériences",
+            "profession": "Formation",
+            "skills": "Compétences & Autres"
+        },
+        "personalInfo": {
+            "email": "E-mail",
+            "phone": "Téléphone",
+            "address": "Adresse",
+            "linkedin": "LinkedIn",
+            "github": "GitHub"
+        },
+        "previewError": {
+            "title": "Erreur d'aperçu",
+            "description": "Impossible de générer l'aperçu"
+        },
+        "autoRefresh": {
+            "enabled": "Auto-refresh activé",
+            "disabled": "Auto-refresh désactivé"
+        }
+    },
+    "jobPortal": {
+        "title": "Portail d'Emploi",
+        "subtitle": "Trouvez votre prochain emploi",
+        "metaDescription": "Découvrez les meilleures opportunités d'emploi et donnez un nouvel élan à votre carrière",
+        "metaKeywords": "emploi, job, recrutement, carrière, offres d'emploi",
+        "searchPlaceholder": "Poste, entreprise...",
+        "locationPlaceholder": "Ville, région...",
+        "search": "Rechercher",
+        "filters": "Filtres",
+        "employmentType": "Type de contrat",
+        "experienceLevel": "Niveau d'expérience",
+        "allTypes": "Tous les types",
+        "allLevels": "Tous les niveaux",
+        "remoteWorkPossible": "Télétravail possible",
+        "apply": "Appliquer",
+        "reset": "Effacer",
+        "companiesHiring": "Entreprises qui recrutent",
+        "areYouRecruiting": "Vous recrutez ?",
+        "publishOffersDescription": "Publiez vos offres d'emploi et trouvez les meilleurs talents",
+        "publishOffer": "Publier une offre",
+        "publishJobOffer": "Publier une offre d'emploi",
+        "createJobDescription": "Créez et publiez votre offre d'emploi en quelques minutes",
+        "createSimpleAd": "Créer une annonce simple",
+        "freeImmediatePublication": "Publication gratuite et immédiate",
+        "jobOffers": "Offres d'emploi",
+        "offersFound": "offres trouvées",
+        "offer": "offre",
+        "viewOffer": "Voir l'offre",
+        "views": "vues",
+        "applications": "candidatures",
+        "remote": "Télétravail",
+        "noOffersFound": "Aucune offre trouvée",
+        "modifySearchCriteria": "Essayez de modifier vos critères de recherche",
+        "viewAllOffers": "Voir toutes les offres",
+        "salaryNotSpecified": "Salaire non spécifié",
+        "salaryFrom": "À partir de {{amount}} {{currency}}",
+        "salaryUpTo": "Jusqu'à {{amount}} {{currency}}",
+        "fullTime": "Temps plein",
+        "partTime": "Temps partiel",
+        "contract": "Contrat",
+        "internship": "Stage",
+        "freelance": "Freelance",
+        "stats": {
+            "activeOffers": "Offres actives",
+            "companies": "Entreprises",
+            "remoteJobs": "Télétravail",
+            "thisWeek": "Cette semaine"
+        },
+        "createJob": {
+            "entry": "Débutant",
+            "mid": "Intermédiaire",
+            "senior": "Senior",
+            "executive": "Cadre"
+        },
+        "myApplications": {
+            "title": "Mes candidatures"
+        },
+        "myJobs": {
+            "title": "Mes offres"
+        },
+        "searchProfiles": "Rechercher des profils"
     }
 }

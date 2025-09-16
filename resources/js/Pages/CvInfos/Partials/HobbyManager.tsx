@@ -71,17 +71,17 @@ export default function HobbyInput({ auth, initialUserHobbies, availableHobbies,
 
             setInputValue('');
             setSuggestions([]);
-            
+
             toast({
-                title: 'Centre d\'intérêt ajouté',
-                description: `${hobbyToAdd.name} a été ajouté`,
+                title: t('cvInterface.hobbies.added'),
+                description: t('cvInterface.hobbies.addedDescription', { hobby: hobbyToAdd.name }),
                 variant: 'default'
             });
         } catch (error) {
             console.error('Error adding hobby:', error);
             toast({
-                title: 'Erreur',
-                description: 'Impossible d\'ajouter le centre d\'intérêt',
+                title: t('cvInterface.hobbies.error'),
+                description: t('cvInterface.hobbies.addError'),
                 variant: 'destructive'
             });
         } finally {
@@ -97,21 +97,21 @@ export default function HobbyInput({ auth, initialUserHobbies, availableHobbies,
             } else {
                 await axios.delete(`/user-hobbies/${auth.user.id}/${hobbyId}`);
             }
-            
+
             const updatedHobbies = hobbies.filter(h => h.id !== hobbyId);
             setHobbies(updatedHobbies);
             onUpdate(updatedHobbies);
 
             toast({
-                title: 'Centre d\'intérêt supprimé',
-                description: 'Le centre d\'intérêt a été supprimé avec succès',
+                title: t('cvInterface.hobbies.removed'),
+                description: t('cvInterface.hobbies.removedDescription'),
                 variant: 'default'
             });
         } catch (error) {
             console.error('Error removing hobby:', error);
             toast({
-                title: 'Erreur',
-                description: 'Impossible de supprimer le centre d\'intérêt',
+                title: t('cvInterface.hobbies.error'),
+                description: t('cvInterface.hobbies.removeError'),
                 variant: 'destructive'
             });
         } finally {
@@ -124,7 +124,7 @@ export default function HobbyInput({ auth, initialUserHobbies, availableHobbies,
             {/* Header compact */}
             <div>
                 <h4 className="text-base font-medium text-gray-800 dark:text-white mb-2">
-                    Centres d'intérêt <span className="text-sm text-gray-500">({hobbies.length}/6)</span>
+                    {t('cvInterface.hobbies.title')} <span className="text-sm text-gray-500">({hobbies.length}/6)</span>
                 </h4>
             </div>
 
@@ -159,7 +159,7 @@ export default function HobbyInput({ auth, initialUserHobbies, availableHobbies,
                         <input
                             type="text"
                             className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-sm focus:ring-1 focus:ring-purple-500 focus:border-purple-500 dark:bg-gray-800 dark:text-white"
-                            placeholder="Ajouter centre d'intérêt..."
+                            placeholder={t('cvInterface.hobbies.placeholder')}
                             value={inputValue}
                             onChange={(e) => setInputValue(e.target.value)}
                             onKeyDown={(e) => e.key === 'Enter' && addHobby()}

@@ -324,7 +324,7 @@ const ExperienceManager: React.FC<Props> = ({ auth, experiences: initialExperien
                                         {' - '}
                                         {exp.date_end
                                             ? new Date(exp.date_end).toLocaleDateString('fr-FR', { month: '2-digit', year: '2-digit' })
-                                            : 'En cours'
+                                            : t('cvInterface.experience.ongoing')
                                         }
                                     </span>
                                 </div>
@@ -347,18 +347,18 @@ const ExperienceManager: React.FC<Props> = ({ auth, experiences: initialExperien
                     {isAcademic ? (
                         <Badge className="bg-amber-100 text-amber-800 dark:bg-amber-900 dark:text-amber-200">
                             <GraduationCap className="w-3 h-3 mr-1" />
-                            Formation
+                            {t('cvInterface.experience.education')}
                         </Badge>
                     ) : (
                         <Badge className="bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200">
                             <Briefcase className="w-3 h-3 mr-1" />
-                            Professionnel
+                            {t('cvInterface.experience.professional')}
                         </Badge>
                     )}
 
                     <div className="flex items-center text-xs text-gray-500">
                         <Calendar className="w-3 h-3 mr-1" />
-                        {new Date(exp.date_start).toLocaleDateString('fr-FR')} - {exp.date_end ? new Date(exp.date_end).toLocaleDateString('fr-FR') : 'En cours'}
+                        {new Date(exp.date_start).toLocaleDateString('fr-FR')} - {exp.date_end ? new Date(exp.date_end).toLocaleDateString('fr-FR') : t('cvInterface.experience.ongoing')}
                     </div>
                 </div>
 
@@ -371,7 +371,7 @@ const ExperienceManager: React.FC<Props> = ({ auth, experiences: initialExperien
                     </div>
 
                     <div>
-                        <h4 className="text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Description</h4>
+                        <h4 className="text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">{t('cvInterface.experience.description')}</h4>
                         <p className="text-sm text-gray-600 dark:text-gray-300 leading-relaxed">
                             {exp.description}
                         </p>
@@ -379,7 +379,7 @@ const ExperienceManager: React.FC<Props> = ({ auth, experiences: initialExperien
 
                     {exp.output && (
                         <div className="bg-amber-50 dark:bg-amber-900/20 p-3 rounded-lg">
-                            <h4 className="text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">Résultats</h4>
+                            <h4 className="text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">{t('cvInterface.experience.results')}</h4>
                             <p className="text-sm text-gray-600 dark:text-gray-300">{exp.output}</p>
                         </div>
                     )}
@@ -387,7 +387,7 @@ const ExperienceManager: React.FC<Props> = ({ auth, experiences: initialExperien
                     {exp.attachment_path && (
                         <div className="flex items-center gap-2 p-2 bg-gray-50 dark:bg-gray-800 rounded">
                             <FileText className="w-4 h-4 text-amber-500" />
-                            <span className="text-sm text-gray-600 dark:text-gray-300">Document joint</span>
+                            <span className="text-sm text-gray-600 dark:text-gray-300">{t('cvInterface.experience.attachedDocument')}</span>
                             <Button variant="ghost" size="sm" onClick={() => window.open(exp.attachment_path, '_blank')}>
                                 <Eye className="w-3 h-3" />
                             </Button>
@@ -398,11 +398,11 @@ const ExperienceManager: React.FC<Props> = ({ auth, experiences: initialExperien
                 <div className="flex gap-2 pt-4 border-t dark:border-gray-700">
                     <Button onClick={() => handleEdit(exp)} variant="outline" className="flex-1">
                         <Edit className="w-3 h-3 mr-1" />
-                        Modifier
+                        {t('common.edit')}
                     </Button>
                     <Button onClick={() => handleDelete(exp.id)} variant="outline" className="text-red-600 hover:bg-red-50 flex-1">
                         <Trash2 className="w-3 h-3 mr-1" />
-                        Supprimer
+                        {t('common.delete')}
                     </Button>
                 </div>
             </div>
@@ -415,15 +415,15 @@ const ExperienceManager: React.FC<Props> = ({ auth, experiences: initialExperien
             <div className="flex items-center justify-between">
                 <div>
                     <h1 className="text-xl font-bold text-gray-900 dark:text-white">
-                        Mes Expériences
+                        {t('cvInterface.experience.title')}
                     </h1>
                     <p className="text-sm text-gray-600 dark:text-gray-400">
-                        Gérez vos formations et expériences professionnelles
+                        {t('cvInterface.experience.description')}
                     </p>
                 </div>
                 <Button onClick={handleAddNew} className="bg-amber-500 hover:bg-amber-600 text-white">
                     <Plus className="w-4 h-4 mr-1" />
-                    Ajouter
+                    {t('common.add')}
                 </Button>
             </div>
 
@@ -432,11 +432,11 @@ const ExperienceManager: React.FC<Props> = ({ auth, experiences: initialExperien
                 <TabsList className="grid w-full grid-cols-2 bg-gray-100 dark:bg-gray-800">
                     <TabsTrigger value="academic" className="flex items-center gap-2">
                         <GraduationCap className="w-4 h-4" />
-                        Formation ({academicExperiences.length})
+                        {t('cvInterface.experience.education')} ({academicExperiences.length})
                     </TabsTrigger>
                     <TabsTrigger value="professional" className="flex items-center gap-2">
                         <Briefcase className="w-4 h-4" />
-                        Professionnel ({professionalExperiences.length})
+                        {t('cvInterface.experience.professional')} ({professionalExperiences.length})
                     </TabsTrigger>
                 </TabsList>
 
@@ -446,7 +446,7 @@ const ExperienceManager: React.FC<Props> = ({ auth, experiences: initialExperien
                     <div className="relative mb-4">
                         <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
                         <Input
-                            placeholder="Rechercher une expérience..."
+                            placeholder={t('cvInterface.experience.searchPlaceholder')}
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
                             className="pl-10"
@@ -465,7 +465,7 @@ const ExperienceManager: React.FC<Props> = ({ auth, experiences: initialExperien
                                         <CardContent>
                                             <GraduationCap className="w-12 h-12 text-gray-400 mx-auto mb-3" />
                                             <p className="text-gray-500">
-                                                {searchTerm ? 'Aucune formation trouvée' : 'Aucune formation ajoutée'}
+                                                {searchTerm ? t('cvInterface.experience.noEducationFound') : t('cvInterface.experience.noEducationAdded')}
                                             </p>
                                         </CardContent>
                                     </Card>
@@ -486,7 +486,7 @@ const ExperienceManager: React.FC<Props> = ({ auth, experiences: initialExperien
                                         <CardContent>
                                             <Briefcase className="w-12 h-12 text-gray-400 mx-auto mb-3" />
                                             <p className="text-gray-500">
-                                                {searchTerm ? 'Aucune expérience trouvée' : 'Aucune expérience professionnelle ajoutée'}
+                                                {searchTerm ? t('cvInterface.experience.noExperienceFound') : t('cvInterface.experience.noProfessionalExperienceAdded')}
                                             </p>
                                         </CardContent>
                                     </Card>
@@ -521,14 +521,14 @@ const ExperienceManager: React.FC<Props> = ({ auth, experiences: initialExperien
                                 <Briefcase className="w-5 h-5 text-purple-500" />
                             )}
                             {data.id
-                                ? `Modifier ${currentFormType === 'academic' ? 'la formation' : 'l\'expérience'}`
-                                : `Nouvelle ${currentFormType === 'academic' ? 'formation' : 'expérience'}`
+                                ? (currentFormType === 'academic' ? t('cvInterface.experience.editEducation') : t('cvInterface.experience.editExperience'))
+                                : (currentFormType === 'academic' ? t('cvInterface.experience.newEducation') : t('cvInterface.experience.newExperience'))
                             }
                         </SheetTitle>
                         <SheetDescription>
                             {currentFormType === 'academic'
-                                ? 'Ajoutez vos diplômes, certifications et formations'
-                                : 'Ajoutez vos expériences professionnelles et projets'
+                                ? t('cvInterface.experience.academicDescription')
+                                : t('cvInterface.experience.professionalDescription')
                             }
                         </SheetDescription>
                     </SheetHeader>
@@ -538,15 +538,15 @@ const ExperienceManager: React.FC<Props> = ({ auth, experiences: initialExperien
                         <div className="space-y-4">
                             <div>
                                 <Label htmlFor="name">
-                                    {currentFormType === 'academic' ? 'Nom du diplôme/formation' : 'Poste/Titre'}
+                                    {currentFormType === 'academic' ? t('cvInterface.experience.degreeName') : t('cvInterface.experience.positionTitle')}
                                 </Label>
                                 <Input
                                     id="name"
                                     value={data.name}
                                     onChange={(e) => setData('name', e.target.value)}
                                     placeholder={currentFormType === 'academic'
-                                        ? 'Ex: Master en Informatique'
-                                        : 'Ex: Développeur Full Stack'
+                                        ? t('cvInterface.experience.degreeExample')
+                                        : t('cvInterface.experience.positionExample')
                                     }
                                 />
                                 {errors.name && <p className="text-sm text-red-600">{errors.name}</p>}
@@ -554,15 +554,15 @@ const ExperienceManager: React.FC<Props> = ({ auth, experiences: initialExperien
 
                             <div>
                                 <Label htmlFor="InstitutionName">
-                                    {currentFormType === 'academic' ? 'Établissement' : 'Entreprise/Organisation'}
+                                    {currentFormType === 'academic' ? t('cvInterface.experience.institution') : t('cvInterface.experience.company')}
                                 </Label>
                                 <Input
                                     id="InstitutionName"
                                     value={data.InstitutionName}
                                     onChange={(e) => setData('InstitutionName', e.target.value)}
                                     placeholder={currentFormType === 'academic'
-                                        ? 'Ex: Université de Paris'
-                                        : 'Ex: TechCorp SAS'
+                                        ? t('cvInterface.experience.institutionExample')
+                                        : t('cvInterface.experience.companyExample')
                                     }
                                 />
                                 {errors.InstitutionName && <p className="text-sm text-red-600">{errors.InstitutionName}</p>}
@@ -571,7 +571,7 @@ const ExperienceManager: React.FC<Props> = ({ auth, experiences: initialExperien
                             {/* Dates */}
                             <div className="grid grid-cols-2 gap-4">
                                 <div>
-                                    <Label htmlFor="date_start">Date de début</Label>
+                                    <Label htmlFor="date_start">{t('cvInterface.experience.startDate')}</Label>
                                     <Input
                                         id="date_start"
                                         type="date"
@@ -581,7 +581,7 @@ const ExperienceManager: React.FC<Props> = ({ auth, experiences: initialExperien
                                     {errors.date_start && <p className="text-sm text-red-600">{errors.date_start}</p>}
                                 </div>
                                 <div>
-                                    <Label htmlFor="date_end">Date de fin (optionnel)</Label>
+                                    <Label htmlFor="date_end">{t('cvInterface.experience.endDate')}</Label>
                                     <Input
                                         id="date_end"
                                         type="date"
@@ -595,13 +595,13 @@ const ExperienceManager: React.FC<Props> = ({ auth, experiences: initialExperien
                             {/* Type d'expérience (seulement pour professionnel) */}
                             {currentFormType === 'professional' && (
                                 <div>
-                                    <Label>Type d'expérience</Label>
+                                    <Label>{t('cvInterface.experience.experienceType')}</Label>
                                     <Select
                                         value={data.experience_categories_id}
                                         onValueChange={(value) => setData('experience_categories_id', value)}
                                     >
                                         <SelectTrigger>
-                                            <SelectValue placeholder="Sélectionnez le type" />
+                                            <SelectValue placeholder={t('cvInterface.experience.selectType')} />
                                         </SelectTrigger>
                                         <SelectContent>
                                             {categories
@@ -619,15 +619,15 @@ const ExperienceManager: React.FC<Props> = ({ auth, experiences: initialExperien
 
                             {/* Description */}
                             <div>
-                                <Label htmlFor="description">Description</Label>
+                                <Label htmlFor="description">{t('cvInterface.experience.description')}</Label>
                                 <Textarea
                                     id="description"
                                     rows={4}
                                     value={data.description}
                                     onChange={(e) => setData('description', e.target.value)}
                                     placeholder={currentFormType === 'academic'
-                                        ? 'Décrivez le contenu de la formation, les matières principales...'
-                                        : 'Décrivez vos responsabilités, missions et réalisations...'
+                                        ? t('cvInterface.experience.academicDescriptionPlaceholder')
+                                        : t('cvInterface.experience.professionalDescriptionPlaceholder')
                                     }
                                 />
                                 {errors.description && <p className="text-sm text-red-600">{errors.description}</p>}
@@ -636,15 +636,15 @@ const ExperienceManager: React.FC<Props> = ({ auth, experiences: initialExperien
                             {/* Résultats */}
                             <div>
                                 <Label htmlFor="output">
-                                    {currentFormType === 'academic' ? 'Mention/Résultats' : 'Résultats obtenus'}
+                                    {currentFormType === 'academic' ? t('cvInterface.experience.gradeResults') : t('cvInterface.experience.achievements')}
                                 </Label>
                                 <Input
                                     id="output"
                                     value={data.output}
                                     onChange={(e) => setData('output', e.target.value)}
                                     placeholder={currentFormType === 'academic'
-                                        ? 'Ex: Mention Bien, 15.5/20'
-                                        : 'Ex: Augmentation de 30% des ventes'
+                                        ? t('cvInterface.experience.gradeExample')
+                                        : t('cvInterface.experience.achievementExample')
                                     }
                                 />
                                 {errors.output && <p className="text-sm text-red-600">{errors.output}</p>}
@@ -652,7 +652,7 @@ const ExperienceManager: React.FC<Props> = ({ auth, experiences: initialExperien
 
                             {/* Pièce jointe */}
                             <div>
-                                <Label htmlFor="attachment">Document (PDF, DOC, Image)</Label>
+                                <Label htmlFor="attachment">{t('cvInterface.experience.document')}</Label>
                                 <Input
                                     id="attachment"
                                     type="file"
@@ -665,7 +665,7 @@ const ExperienceManager: React.FC<Props> = ({ auth, experiences: initialExperien
                             {/* Références */}
                             <div className="space-y-3">
                                 <div className="flex items-center justify-between">
-                                    <Label>Références/Contacts</Label>
+                                    <Label>{t('cvInterface.experience.references')}</Label>
                                     <Button
                                         type="button"
                                         variant="outline"
@@ -673,7 +673,7 @@ const ExperienceManager: React.FC<Props> = ({ auth, experiences: initialExperien
                                         onClick={handleAddReference}
                                     >
                                         <Plus className="w-3 h-3 mr-1" />
-                                        Ajouter
+                                        {t('common.add')}
                                     </Button>
                                 </div>
 
@@ -682,7 +682,7 @@ const ExperienceManager: React.FC<Props> = ({ auth, experiences: initialExperien
                                         <div className="space-y-3">
                                             <div className="flex gap-2">
                                                 <Input
-                                                    placeholder="Nom complet"
+                                                    placeholder={t('cvInterface.experience.fullName')}
                                                     value={ref.name}
                                                     onChange={(e) => handleReferenceChange(index, 'name', e.target.value)}
                                                     className="flex-1"
@@ -697,19 +697,19 @@ const ExperienceManager: React.FC<Props> = ({ auth, experiences: initialExperien
                                                 </Button>
                                             </div>
                                             <Input
-                                                placeholder="Fonction/Titre"
+                                                placeholder={t('cvInterface.experience.position')}
                                                 value={ref.function}
                                                 onChange={(e) => handleReferenceChange(index, 'function', e.target.value)}
                                             />
                                             <div className="grid grid-cols-2 gap-2">
                                                 <Input
-                                                    placeholder="Email"
+                                                    placeholder={t('cvInterface.experience.email')}
                                                     type="email"
                                                     value={ref.email}
                                                     onChange={(e) => handleReferenceChange(index, 'email', e.target.value)}
                                                 />
                                                 <Input
-                                                    placeholder="Téléphone"
+                                                    placeholder={t('cvInterface.experience.phone')}
                                                     value={ref.telephone}
                                                     onChange={(e) => handleReferenceChange(index, 'telephone', e.target.value)}
                                                 />
@@ -723,10 +723,10 @@ const ExperienceManager: React.FC<Props> = ({ auth, experiences: initialExperien
                         {/* Actions */}
                         <div className="flex gap-3 pt-6 border-t">
                             <Button type="submit" disabled={isLoading} className="flex-1">
-                                {isLoading ? 'Enregistrement...' : (data.id ? 'Mettre à jour' : 'Enregistrer')}
+                                {isLoading ? t('common.saving') : (data.id ? t('common.update') : t('common.save'))}
                             </Button>
                             <Button type="button" variant="outline" onClick={resetForm} className="flex-1">
-                                Annuler
+                                {t('common.cancel')}
                             </Button>
                         </div>
                     </form>

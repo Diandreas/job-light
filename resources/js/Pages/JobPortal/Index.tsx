@@ -169,7 +169,7 @@ export default function JobPortalIndex({ auth, jobs = { data: [], links: [], met
                                 animate={{ opacity: 1, y: 0 }}
                                 className="text-4xl md:text-5xl font-bold mb-4"
                             >
-                                JobLight Portal
+                                {t('jobPortal.title')}
                             </motion.h1>
                             <motion.p
                                 initial={{ opacity: 0, y: 20 }}
@@ -486,7 +486,7 @@ export default function JobPortalIndex({ auth, jobs = { data: [], links: [], met
                                                                 )}
                                                                 <div className="flex items-center gap-1">
                                                                     <Calendar className="w-4 h-4" />
-                                                                    {new Date(job.created_at).toLocaleDateString('fr-FR')}
+                                                                    {new Date(job.created_at).toLocaleDateString()}
                                                                 </div>
                                                             </div>
                                                             <p className="text-gray-600 dark:text-gray-400 text-sm line-clamp-2 mb-3">
@@ -547,8 +547,8 @@ export default function JobPortalIndex({ auth, jobs = { data: [], links: [], met
                                                 key={index}
                                                 href={link.url || '#'}
                                                 className={`px-3 py-2 rounded-lg text-sm transition-colors ${link.active
-                                                        ? 'bg-blue-600 text-white'
-                                                        : 'bg-white text-gray-600 hover:bg-gray-50 border'
+                                                    ? 'bg-blue-600 text-white'
+                                                    : 'bg-white text-gray-600 hover:bg-gray-50 border'
                                                     }`}
                                                 dangerouslySetInnerHTML={{ __html: link.label }}
                                             />

@@ -185,11 +185,11 @@ export default function ProfessionInput({ auth, availableProfessions, initialUse
                     <CardTitle className="text-lg font-semibold">
                         <div className="flex items-center gap-2">
                             <GraduationCap className="w-5 h-5 text-amber-500 dark:text-amber-400" />
-{t('cv.title.section', 'Titre du CV')}
+                            {t('cvInterface.profession.title')}
                         </div>
                     </CardTitle>
                     <CardDescription className="dark:text-gray-400">
-{t('cv.title.description', 'Choisissez le titre professionnel qui apparaîtra sur votre CV')}
+                        {t('cvInterface.profession.description')}
                     </CardDescription>
                 </CardHeader>
 
@@ -199,7 +199,7 @@ export default function ProfessionInput({ auth, availableProfessions, initialUse
                             <input
                                 type="text"
                                 className="w-full p-3 border border-amber-200 rounded-lg shadow-sm focus:ring-2 focus:ring-amber-500 focus:border-transparent dark:bg-gray-900 dark:border-amber-800 dark:text-white"
-                                placeholder={t('cv.title.placeholder', 'Ex: Développeur Web, Ingénieur, Chef de projet...')}
+                                placeholder={t('cvInterface.profession.placeholder')}
                                 value={inputValue}
                                 onChange={(e) => setInputValue(e.target.value)}
                                 onKeyDown={handleInputKeyDown}
@@ -225,7 +225,7 @@ export default function ProfessionInput({ auth, availableProfessions, initialUse
                             onClick={handleAddProfession}
                             disabled={loading || !inputValue.trim()}
                             className="min-w-16 px-4 py-3 bg-gradient-to-r from-amber-500 to-purple-500 hover:from-amber-600 hover:to-purple-600 text-white dark:from-amber-400 dark:to-purple-400 dark:hover:from-amber-500 dark:hover:to-purple-500 rounded-lg shadow-sm focus:ring-2 focus:ring-amber-500 focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed"
-                            aria-label={t('professions.actions.add', 'Ajouter')}
+                            aria-label={t('cvInterface.profession.add')}
                         >
                             {loading ? (
                                 <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
@@ -239,7 +239,7 @@ export default function ProfessionInput({ auth, availableProfessions, initialUse
                     </div>
 
                     <div className="text-sm text-gray-500 dark:text-gray-400">
-{t('cv.title.help', 'Ce titre apparaîtra en haut de votre CV. Choisissez un titre qui correspond à votre domaine ou au poste visé.')}
+                        {t('cvInterface.profession.help')}
                     </div>
 
                     {/* Section profession actuelle */}
@@ -249,14 +249,14 @@ export default function ProfessionInput({ auth, availableProfessions, initialUse
                                 <div className="flex items-center gap-2">
                                     <GraduationCap className="w-5 h-5 text-amber-500 dark:text-amber-400" />
                                     <h3 className="text-lg font-semibold dark:text-white">
-{t('cv.title.current', 'Titre actuel')}
+                                        {t('cvInterface.profession.current')}
                                     </h3>
                                 </div>
                                 <button
                                     onClick={handleClearProfession}
                                     disabled={loading}
                                     className="p-2 rounded-full hover:bg-red-100 dark:hover:bg-red-900/30 text-red-400 hover:text-red-500 dark:text-red-400 dark:hover:text-red-300 disabled:opacity-50"
-                                    aria-label={t('professions.actions.remove', 'Supprimer')}
+                                    aria-label={t('cvInterface.profession.remove')}
                                 >
                                     <X className="w-4 h-4" />
                                 </button>
@@ -266,9 +266,9 @@ export default function ProfessionInput({ auth, availableProfessions, initialUse
                                     variant="secondary"
                                     className={`
                     ${currentProfession.type === 'standard'
-                                        ? 'bg-gradient-to-r from-amber-100 to-purple-100 hover:from-amber-200 hover:to-purple-200 dark:from-amber-900/40 dark:to-purple-900/40'
-                                        : 'bg-gradient-to-r from-purple-100 to-blue-100 hover:from-purple-200 hover:to-blue-200 dark:from-purple-900/40 dark:to-blue-900/40'
-                                    }
+                                            ? 'bg-gradient-to-r from-amber-100 to-purple-100 hover:from-amber-200 hover:to-purple-200 dark:from-amber-900/40 dark:to-purple-900/40'
+                                            : 'bg-gradient-to-r from-purple-100 to-blue-100 hover:from-purple-200 hover:to-blue-200 dark:from-purple-900/40 dark:to-blue-900/40'
+                                        }
                     text-gray-800 dark:text-gray-200 py-2 px-3 text-base`}
                                 >
                                     {currentProfession.type === 'standard'
@@ -277,8 +277,8 @@ export default function ProfessionInput({ auth, availableProfessions, initialUse
 
                                     {currentProfession.type === 'manual' && (
                                         <span className="ml-2 px-1 py-0.5 text-[10px] rounded bg-purple-200 dark:bg-purple-800 text-purple-800 dark:text-purple-200">
-                      {t('professions.manual.tag', 'Manuel')}
-                    </span>
+                                            {t('cvInterface.profession.manual')}
+                                        </span>
                                     )}
                                 </Badge>
 

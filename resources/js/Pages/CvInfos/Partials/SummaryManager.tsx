@@ -102,9 +102,9 @@ const SummaryManager: React.FC<Props> = ({ auth, summaries: initialSummaries, se
             ));
 
             onUpdate(newSelectedSummary);
-            showToast(t('toast.success.title'), t('toast.success.selected'));
+            showToast(t('cvInterface.summary.successTitle'), t('cvInterface.summary.selected'));
         } catch (error) {
-            showToast(t('toast.error.title'), t('toast.error.select'), "destructive");
+            showToast(t('cvInterface.summary.errorTitle'), t('cvInterface.summary.selectError'), "destructive");
         }
     };
 
@@ -120,10 +120,10 @@ const SummaryManager: React.FC<Props> = ({ auth, summaries: initialSummaries, se
             setSelectedSummary(newSelectedSummary);
             onUpdate(newSelectedSummary);
 
-            showToast(t('toast.success.title'), t('toast.success.created'));
+            showToast(t('cvInterface.summary.successTitle'), t('cvInterface.summary.created'));
             resetForm();
         } catch (error) {
-            showToast(t('toast.error.title'), t('toast.error.create'), "destructive");
+            showToast(t('cvInterface.summary.errorTitle'), t('cvInterface.summary.createError'), "destructive");
         }
     };
 
@@ -148,10 +148,10 @@ const SummaryManager: React.FC<Props> = ({ auth, summaries: initialSummaries, se
                 onUpdate(newSelectedSummary);
             }
 
-            showToast(t('toast.success.title'), t('toast.success.updated'));
+            showToast(t('cvInterface.summary.successTitle'), t('cvInterface.summary.updated'));
             resetForm();
         } catch (error) {
-            showToast(t('toast.error.title'), t('toast.error.update'), "destructive");
+            showToast(t('cvInterface.summary.errorTitle'), t('cvInterface.summary.updateError'), "destructive");
         }
     };
 
@@ -166,9 +166,9 @@ const SummaryManager: React.FC<Props> = ({ auth, summaries: initialSummaries, se
                 onUpdate([]);
             }
 
-            showToast(t('toast.success.title'), t('toast.success.deleted'));
+            showToast(t('cvInterface.summary.successTitle'), t('cvInterface.summary.deleted'));
         } catch (error) {
-            showToast(t('toast.error.title'), t('toast.error.delete'), "destructive");
+            showToast(t('cvInterface.summary.errorTitle'), t('cvInterface.summary.deleteError'), "destructive");
         }
     };
 
@@ -192,10 +192,10 @@ const SummaryManager: React.FC<Props> = ({ auth, summaries: initialSummaries, se
             {/* Header Jobii style compact */}
             <div className="space-y-2">
                 <h3 className="text-lg font-semibold text-gray-800 dark:text-white">
-                    {t('summary.title', 'Résumé professionnel')}
+                    {t('cvInterface.summary.title')}
                 </h3>
                 <p className="text-sm text-gray-600 dark:text-gray-400">
-                    {t('summary.description', 'Décrivez votre profil professionnel en quelques lignes')}
+                    {t('cvInterface.summary.description')}
                 </p>
             </div>
 
@@ -225,14 +225,14 @@ const SummaryManager: React.FC<Props> = ({ auth, summaries: initialSummaries, se
                     <div className="text-center p-6 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg">
                         <BookOpen className="w-8 h-8 text-gray-400 mx-auto mb-2" />
                         <p className="text-sm text-gray-500 dark:text-gray-400 mb-3">
-                            {t('summary.noneSelected', 'Aucun résumé sélectionné')}
+                            {t('cvInterface.summary.noneSelected')}
                         </p>
                         <Button
                             onClick={() => setIsFormVisible(true)}
                             className="bg-black hover:bg-gray-800 text-white text-sm px-4 py-2"
                         >
                             <PlusIcon className="w-4 h-4 mr-2" />
-                            {t('summary.create', 'Créer un résumé')}
+                            {t('cvInterface.summary.create')}
                         </Button>
                     </div>
                 )}
@@ -241,18 +241,17 @@ const SummaryManager: React.FC<Props> = ({ auth, summaries: initialSummaries, se
                 {summaries.length > 0 && (
                     <div className="space-y-2">
                         <h5 className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                            {t('summary.available', 'Résumés disponibles')}
+                            {t('cvInterface.summary.available')}
                         </h5>
                         <div className="flex flex-wrap gap-2">
                             {summaries.map((summary) => (
                                 <button
                                     key={summary.id}
                                     onClick={() => handleSelectSummary(summary.id)}
-                                    className={`px-3 py-2 rounded-lg text-sm transition-colors ${
-                                        selectedSummary.some(s => s.id === summary.id)
-                                            ? 'bg-teal-500 text-white'
-                                            : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
-                                    }`}
+                                    className={`px-3 py-2 rounded-lg text-sm transition-colors ${selectedSummary.some(s => s.id === summary.id)
+                                        ? 'bg-teal-500 text-white'
+                                        : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
+                                        }`}
                                 >
                                     {summary.name}
                                 </button>
@@ -272,7 +271,7 @@ const SummaryManager: React.FC<Props> = ({ auth, summaries: initialSummaries, se
                         >
                             <div className="flex justify-between items-center">
                                 <h5 className="font-medium text-gray-800 dark:text-white">
-                                    {data.id ? t('summary.editTitle', 'Modifier le résumé') : t('summary.newTitle', 'Nouveau résumé')}
+                                    {data.id ? t('cvInterface.summary.editTitle') : t('cvInterface.summary.newTitle')}
                                 </h5>
                                 <Button
                                     variant="ghost"
@@ -288,7 +287,7 @@ const SummaryManager: React.FC<Props> = ({ auth, summaries: initialSummaries, se
                                     <Input
                                         value={data.name}
                                         onChange={e => setData('name', e.target.value)}
-                                        placeholder={t('summary.namePlaceholder', 'Titre du poste visé')}
+                                        placeholder={t('cvInterface.summary.namePlaceholder')}
                                         className="w-full"
                                     />
                                 </div>
@@ -297,7 +296,7 @@ const SummaryManager: React.FC<Props> = ({ auth, summaries: initialSummaries, se
                                     <Textarea
                                         value={data.description}
                                         onChange={e => setData('description', e.target.value)}
-                                        placeholder={t('summary.descriptionPlaceholder', 'Décrivez votre profil professionnel...')}
+                                        placeholder={t('cvInterface.summary.descriptionPlaceholder')}
                                         rows={3}
                                         className="w-full"
                                     />
@@ -309,14 +308,14 @@ const SummaryManager: React.FC<Props> = ({ auth, summaries: initialSummaries, se
                                         disabled={processing}
                                         className="bg-black hover:bg-gray-800 text-white flex-1"
                                     >
-                                        {data.id ? t('common.edit', 'Modifier') : t('common.create', 'Créer')}
+                                        {data.id ? t('common.edit') : t('common.create')}
                                     </Button>
                                     <Button
                                         type="button"
                                         variant="outline"
                                         onClick={resetForm}
                                     >
-                                        {t('common.cancel', 'Annuler')}
+                                        {t('common.cancel')}
                                     </Button>
                                 </div>
                             </form>

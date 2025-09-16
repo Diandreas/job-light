@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { Button } from "@/Components/ui/button";
 import {
     FileText, Edit2, Trash2, File,
@@ -36,12 +37,13 @@ const formatFileSize = (bytes: number): string => {
 };
 
 const AttachmentsTab: React.FC<AttachmentsTabProps> = ({
-                                                           experiences,
-                                                           attachmentSummary,
-                                                           onEditExperience,
-                                                           onDeleteAttachment,
-                                                           onPreviewAttachment
-                                                       }) => {
+    experiences,
+    attachmentSummary,
+    onEditExperience,
+    onDeleteAttachment,
+    onPreviewAttachment
+}) => {
+    const { t } = useTranslation();
     const experiencesWithAttachments = experiences.filter(exp => exp.attachment_path);
     const usagePercentage = (attachmentSummary.total_size / attachmentSummary.max_size) * 100;
 
@@ -50,10 +52,10 @@ const AttachmentsTab: React.FC<AttachmentsTabProps> = ({
             {/* Header simplifié style Jobii */}
             <div className="space-y-2">
                 <h3 className="text-lg font-semibold text-gray-800 dark:text-white">
-                    Pièces jointes ({experiencesWithAttachments.length})
+                    {t('cvInterface.attachments.title')} ({experiencesWithAttachments.length})
                 </h3>
                 <p className="text-sm text-gray-600 dark:text-gray-400">
-                    Gérez vos documents joints aux expériences
+                    {t('cvInterface.attachments.description')}
                 </p>
             </div>
 
@@ -63,19 +65,19 @@ const AttachmentsTab: React.FC<AttachmentsTabProps> = ({
                     <p className="text-2xl font-bold text-gray-900 dark:text-white">
                         {attachmentSummary.files_count}
                     </p>
-                    <p className="text-xs text-gray-500 dark:text-gray-400">Fichiers</p>
+                    <p className="text-xs text-gray-500 dark:text-gray-400">{t('cvInterface.attachments.files')}</p>
                 </div>
                 <div className="text-center p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
                     <p className="text-2xl font-bold text-gray-900 dark:text-white">
                         {formatFileSize(attachmentSummary.total_size)}
                     </p>
-                    <p className="text-xs text-gray-500 dark:text-gray-400">Utilisé</p>
+                    <p className="text-xs text-gray-500 dark:text-gray-400">{t('cvInterface.attachments.used')}</p>
                 </div>
                 <div className="text-center p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
                     <p className="text-2xl font-bold text-gray-900 dark:text-white">
                         {Math.round(usagePercentage)}%
                     </p>
-                    <p className="text-xs text-gray-500 dark:text-gray-400">Rempli</p>
+                    <p className="text-xs text-gray-500 dark:text-gray-400">{t('cvInterface.attachments.filled')}</p>
                 </div>
             </div>
 
@@ -83,8 +85,8 @@ const AttachmentsTab: React.FC<AttachmentsTabProps> = ({
             <div className="space-y-3">
                 {experiencesWithAttachments.length > 0 ? (
                     experiencesWithAttachments.map((experience) => (
-                        <div 
-                            key={experience.id} 
+                        <div
+                            key={experience.id}
                             className="flex items-center justify-between p-4 border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
                         >
                             <div className="flex-1 min-w-0">
@@ -102,7 +104,7 @@ const AttachmentsTab: React.FC<AttachmentsTabProps> = ({
                                     </div>
                                 </div>
                             </div>
-                            
+
                             <div className="flex items-center gap-1 ml-3">
                                 <Button
                                     variant="ghost"
@@ -137,10 +139,10 @@ const AttachmentsTab: React.FC<AttachmentsTabProps> = ({
                             <File className="w-6 h-6 text-gray-400" />
                         </div>
                         <p className="text-gray-500 dark:text-gray-400 text-sm">
-                            Aucune pièce jointe disponible
+                            {t('cvInterface.attachments.noAttachments')}
                         </p>
                         <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">
-                            Ajoutez des documents à vos expériences pour les voir ici
+                            {t('cvInterface.attachments.noAttachmentsDescription')}
                         </p>
                     </div>
                 )}
@@ -154,10 +156,10 @@ const AttachmentsTab: React.FC<AttachmentsTabProps> = ({
                     </div>
                     <div>
                         <p className="font-medium text-amber-800 dark:text-amber-200 text-sm">
-                            Stockage presque plein
+                            {t('cvInterface.attachments.storageAlmostFull')}
                         </p>
                         <p className="text-xs text-amber-600 dark:text-amber-300 mt-1">
-                            Vous approchez de la limite. Pensez à supprimer d'anciennes pièces jointes.
+                            {t('cvInterface.attachments.storageAlmostFullDescription')}
                         </p>
                     </div>
                 </div>

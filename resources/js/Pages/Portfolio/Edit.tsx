@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Head, useForm } from '@inertiajs/react';
+import { useTranslation } from 'react-i18next';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Button } from "@/Components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/Components/ui/card";
@@ -31,65 +32,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import CVSectionManager from '@/Components/Portfolio/CVSectionManager';
 import ServiceManager from '@/Components/Portfolio/ServiceManager';
-import { __ } from '@/utils/translation';
 
-// Traductions
-const translations = {
-    fr: {
-        portfolioConfig: 'Configuration Portfolio',
-        quickConfig: 'Configuration rapide',
-        designStyle: 'Design & Style',
-        portfolioSections: 'Sections du Portfolio',
-        services: 'Services',
-        experiences: 'Expériences',
-        competences: 'Compétences',
-        hobbies: 'Centres d\'intérêt',
-        summary: 'Résumé',
-        contact_info: 'Contact',
-        languages: 'Langues',
-        about: 'À propos',
-        preview: 'Aperçu',
-        hide: 'Masquer',
-        save: 'Sauvegarder',
-        saving: 'Sauvegarde...',
-        qrCode: 'QR Code',
-        sharePortfolio: 'Partager votre Portfolio',
-        close: 'Fermer',
-        livePreview: 'Aperçu Live',
-        viewFullscreen: 'Voir en pleine page',
-        professional: 'Pro',
-        creative: 'Créatif',
-        minimal: 'Minimal',
-        modern: 'Moderne'
-    },
-    en: {
-        portfolioConfig: 'Portfolio Configuration',
-        quickConfig: 'Quick Configuration',
-        designStyle: 'Design & Style',
-        portfolioSections: 'Portfolio Sections',
-        services: 'Services',
-        experiences: 'Experiences',
-        competences: 'Skills',
-        hobbies: 'Hobbies',
-        summary: 'Summary',
-        contact_info: 'Contact',
-        languages: 'Languages',
-        about: 'About',
-        preview: 'Preview',
-        hide: 'Hide',
-        save: 'Save',
-        saving: 'Saving...',
-        qrCode: 'QR Code',
-        sharePortfolio: 'Share your Portfolio',
-        close: 'Close',
-        livePreview: 'Live Preview',
-        viewFullscreen: 'View Fullscreen',
-        professional: 'Pro',
-        creative: 'Creative',
-        minimal: 'Minimal',
-        modern: 'Modern'
-    }
-};
 
 interface Section {
     key: string;
@@ -112,25 +55,15 @@ const SECTION_ICONS = {
     testimonials: Heart,
 };
 
-const getSectionLabel = (key: string, lang: string) => {
-    const labels = {
-        experiences: lang === 'en' ? 'Experiences' : 'Expériences',
-        competences: lang === 'en' ? 'Skills' : 'Compétences',
-        hobbies: lang === 'en' ? 'Hobbies' : 'Centres d\'intérêt',
-        summary: lang === 'en' ? 'Summary' : 'Résumé',
-        contact_info: lang === 'en' ? 'Contact' : 'Contact',
-        languages: lang === 'en' ? 'Languages' : 'Langues',
-        services: lang === 'en' ? 'Services' : 'Services',
-        about: lang === 'en' ? 'About' : 'À propos',
-    };
-    return labels[key] || key;
+const getSectionLabel = (key: string, t: any) => {
+    return t(`portfolio.edit.${key}`);
 };
 
-const DESIGN_OPTIONS = [
-    { value: 'professional', label: 'Professionnel', desc: 'Classique et épuré' },
-    { value: 'creative', label: 'Créatif', desc: 'Coloré et dynamique' },
-    { value: 'minimal', label: 'Minimal', desc: 'Simple et moderne' },
-    { value: 'modern', label: 'Moderne', desc: 'Tendance et stylé' },
+const getDesignOptions = (t: any) => [
+    { value: 'professional', label: t('portfolio.edit.professional'), desc: t('portfolio.edit.classicClean') },
+    { value: 'creative', label: t('portfolio.edit.creative'), desc: t('portfolio.edit.colorfulDynamic') },
+    { value: 'minimal', label: t('portfolio.edit.minimal'), desc: t('portfolio.edit.simpleModern') },
+    { value: 'modern', label: t('portfolio.edit.modern'), desc: t('portfolio.edit.trendyStyled') },
 ];
 
 const TESTIMONIAL_ICONS = {
@@ -138,9 +71,8 @@ const TESTIMONIAL_ICONS = {
 };
 
 export default function EditClean({ auth, portfolio, settings, cvData = portfolio, customSections, services, sectionGroups = {} }) {
-    // Langue par défaut (vous pouvez la récupérer des settings utilisateur)
-    const [currentLang, setCurrentLang] = useState('fr');
-    const t = translations[currentLang] || translations.fr;
+    const { t } = useTranslation();
+    const DESIGN_OPTIONS = getDesignOptions(t);
     const [showServiceModal, setShowServiceModal] = useState(false);
     const [previewMode, setPreviewMode] = useState(false);
     const [showQR, setShowQR] = useState(false);
@@ -195,7 +127,7 @@ export default function EditClean({ auth, portfolio, settings, cvData = portfoli
 
         return sectionsData.map((section) => ({
             ...section,
-            label: getSectionLabel(section.key, currentLang),
+            label: getSectionLabel(section.key, t),
             icon: SECTION_ICONS[section.key],
             order: sectionOrder[section.key] ?? 999,
         })).sort((a, b) => a.order - b.order);
@@ -277,18 +209,10 @@ export default function EditClean({ auth, portfolio, settings, cvData = portfoli
                         </div>
                         <div>
                             <h2 className="text-xl font-bold text-gray-900">Portfolio Studio</h2>
-                            <p className="text-sm text-gray-600 font-medium">{t.quickConfig}</p>
+                            <p className="text-sm text-gray-600 font-medium">{t('portfolio.edit.quickConfig')}</p>
                         </div>
                     </div>
                     <div className="flex items-center gap-3">
-                        <select
-                            value={currentLang}
-                            onChange={(e) => setCurrentLang(e.target.value)}
-                            className="text-sm border border-gray-300 rounded-lg px-3 py-2 h-10 bg-white focus:border-blue-500 transition-colors"
-                        >
-                            <option value="fr">🇫🇷 FR</option>
-                            <option value="en">🇺🇸 EN</option>
-                        </select>
                         <Button
                             onClick={() => setShowQR(!showQR)}
                             variant="outline"
@@ -296,7 +220,7 @@ export default function EditClean({ auth, portfolio, settings, cvData = portfoli
                             className="h-10 px-4 border-gray-300 hover:bg-gray-50"
                         >
                             <QrCode className="h-4 w-4 mr-2" />
-                            {t.qrCode}
+                            {t('portfolio.edit.qrCode')}
                         </Button>
                         <Button
                             onClick={() => setPreviewMode(!previewMode)}
@@ -310,13 +234,13 @@ export default function EditClean({ auth, portfolio, settings, cvData = portfoli
                             )}
                         >
                             <Eye className="h-4 w-4 mr-2" />
-                            {previewMode ? t.hide : t.preview}
+                            {previewMode ? t('portfolio.edit.hide') : t('portfolio.edit.preview')}
                         </Button>
                     </div>
                 </div>
             }
         >
-            <Head title="Portfolio Express" />
+            <Head title={t('portfolio.edit.portfolio_express')} />
 
             <div className="py-6 md:py-8 bg-gray-50 min-h-screen">
                 <div className="mx-auto max-w-7xl px-4 md:px-6">
@@ -338,7 +262,7 @@ export default function EditClean({ auth, portfolio, settings, cvData = portfoli
                                     className="bg-white rounded-2xl p-6 max-w-md w-full shadow-2xl border border-gray-200"
                                     onClick={(e) => e.stopPropagation()}
                                 >
-                                    <h3 className="font-bold text-xl text-center mb-6 text-gray-900">{t.sharePortfolio}</h3>
+                                    <h3 className="font-bold text-xl text-center mb-6 text-gray-900">{t('portfolio.edit.sharePortfolio')}</h3>
                                     <div className="text-center mb-6">
                                         <div className="p-4 bg-gray-50 rounded-xl shadow-inner mb-4">
                                             <img
@@ -356,7 +280,7 @@ export default function EditClean({ auth, portfolio, settings, cvData = portfoli
                                         onClick={() => setShowQR(false)}
                                         className="w-full h-11 font-medium border-gray-300 hover:bg-gray-50"
                                     >
-                                        {t.close}
+                                        {t('portfolio.edit.close')}
                                     </Button>
                                 </motion.div>
                             </motion.div>
@@ -379,12 +303,12 @@ export default function EditClean({ auth, portfolio, settings, cvData = portfoli
                                     {processing ? (
                                         <>
                                             <RefreshCw className="h-4 w-4 mr-2 animate-spin" />
-                                            {__('portfolio.edit.saving')}
+                                            {t('portfolio.edit.saving')}
                                         </>
                                     ) : (
                                         <>
                                             <Save className="h-4 w-4 mr-2" />
-                                            {__('portfolio.edit.save')}
+                                            {t('portfolio.edit.save')}
                                         </>
                                     )}
                                 </Button>
@@ -401,8 +325,8 @@ export default function EditClean({ auth, portfolio, settings, cvData = portfoli
                                                     <Palette className="h-6 w-6 text-amber-600" />
                                                 </div>
                                                 <div>
-                                                    <span className="text-lg font-bold text-gray-900">{t.designStyle}</span>
-                                                    <p className="text-sm text-gray-600">Personnalisez l'apparence de votre portfolio</p>
+                                                    <span className="text-lg font-bold text-gray-900">{t('portfolio.edit.designStyle')}</span>
+                                                    <p className="text-sm text-gray-600">{t('portfolio.edit.customizeAppearance')}</p>
                                                 </div>
                                             </div>
                                             <div className="flex items-center gap-4">
@@ -420,10 +344,10 @@ export default function EditClean({ auth, portfolio, settings, cvData = portfoli
                                                     onChange={(e) => setData('design', e.target.value)}
                                                     className="text-sm border-2 border-gray-300 rounded-xl px-4 py-3 h-12 bg-white transition-colors focus:border-amber-500 focus:ring-2 focus:ring-amber-200 shadow-sm"
                                                 >
-                                                    <option value="professional">{t.professional}</option>
-                                                    <option value="creative">{t.creative}</option>
-                                                    <option value="minimal">{t.minimal}</option>
-                                                    <option value="modern">{t.modern}</option>
+                                                    <option value="professional">{t('portfolio.edit.professional')}</option>
+                                                    <option value="creative">{t('portfolio.edit.creative')}</option>
+                                                    <option value="minimal">{t('portfolio.edit.minimal')}</option>
+                                                    <option value="modern">{t('portfolio.edit.modern')}</option>
                                                 </select>
                                             </div>
                                         </div>
@@ -439,12 +363,12 @@ export default function EditClean({ auth, portfolio, settings, cvData = portfoli
                                                     <Settings className="h-6 w-6 text-green-600" />
                                                 </div>
                                                 <div>
-                                                    <span className="text-lg font-bold text-gray-900">{t.portfolioSections}</span>
-                                                    <p className="text-sm text-gray-600">Organisez les sections de votre portfolio</p>
+                                                    <span className="text-lg font-bold text-gray-900">{t('portfolio.edit.portfolioSections')}</span>
+                                                    <p className="text-sm text-gray-600">{t('portfolio.edit.organizePortfolioSections')}</p>
                                                 </div>
                                             </div>
                                             <Badge variant="secondary" className="text-sm px-3 py-2 bg-green-100 text-green-800 font-semibold rounded-full">
-                                                {sections.filter(s => s.isActive).length}/{sections.length} actives
+                                                {sections.filter(s => s.isActive).length}/{sections.length} {t('portfolio.edit.activeSections')}
                                             </Badge>
                                         </div>
 
@@ -494,7 +418,7 @@ export default function EditClean({ auth, portfolio, settings, cvData = portfoli
                                                                 {section.label}
                                                             </span>
                                                             <span className="text-xs text-gray-500 dark:text-gray-400">
-                                                                {section.count} élément{section.count !== 1 ? 's' : ''}
+                                                                {section.count} {section.count !== 1 ? t('portfolio.edit.elements') : t('portfolio.edit.element')}
                                                             </span>
                                                         </div>
 
@@ -531,11 +455,11 @@ export default function EditClean({ auth, portfolio, settings, cvData = portfoli
                                                         <Wrench className="h-5 w-5 md:h-6 md:w-6 text-blue-600 dark:text-blue-400" />
                                                     </div>
                                                     <div>
-                                                        <span className="text-base md:text-lg font-semibold text-gray-900 dark:text-white">{t.services}</span>
-                                                        <p className="text-sm text-gray-600 dark:text-gray-300">Gérez vos services professionnels</p>
+                                                        <span className="text-base md:text-lg font-semibold text-gray-900 dark:text-white">{t('portfolio.edit.services')}</span>
+                                                        <p className="text-sm text-gray-600 dark:text-gray-300">{t('portfolio.edit.servicesDescription')}</p>
                                                     </div>
                                                     <Badge variant="secondary" className="text-sm px-3 py-1.5 h-7 bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400 font-medium">
-                                                        {services?.length || 0} services
+                                                        {services?.length || 0} {t('portfolio.edit.services')}
                                                     </Badge>
                                                 </div>
                                                 <Button
@@ -546,7 +470,7 @@ export default function EditClean({ auth, portfolio, settings, cvData = portfoli
                                                     className="flex items-center gap-2 h-10 px-4 border-2 border-blue-200 dark:border-blue-700 text-blue-700 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20"
                                                 >
                                                     <Plus className="h-4 w-4" />
-                                                    Gérer les services
+                                                    {t('portfolio.edit.manageServices')}
                                                 </Button>
                                             </div>
 
@@ -560,7 +484,7 @@ export default function EditClean({ auth, portfolio, settings, cvData = portfoli
                                                     ))}
                                                     {services.length > 4 && (
                                                         <div className="p-4 bg-gray-100 dark:bg-slate-700 rounded-lg border border-gray-200 dark:border-slate-600 text-sm flex items-center justify-center text-gray-600 dark:text-gray-400 font-medium">
-                                                            +{services.length - 4} autres services
+                                                            +{services.length - 4} {t('portfolio.edit.othersServices')}
                                                         </div>
                                                     )}
                                                 </div>
@@ -573,9 +497,9 @@ export default function EditClean({ auth, portfolio, settings, cvData = portfoli
                                 <Dialog open={showServiceModal} onOpenChange={setShowServiceModal}>
                                     <DialogContent className="max-w-6xl max-h-[80vh] overflow-y-auto">
                                         <DialogHeader>
-                                            <DialogTitle>Gestion des Services</DialogTitle>
+                                            <DialogTitle>{t('portfolio.edit.servicesManagement')}</DialogTitle>
                                             <DialogDescription>
-                                                Ajoutez, modifiez ou organisez vos services professionnels
+                                                {t('portfolio.edit.servicesDescription')}
                                             </DialogDescription>
                                         </DialogHeader>
                                         <ServiceManager
@@ -616,8 +540,8 @@ export default function EditClean({ auth, portfolio, settings, cvData = portfoli
                                                     <Eye className="h-5 w-5 text-purple-600 dark:text-purple-400" />
                                                 </div>
                                                 <div>
-                                                    <h3 className="font-bold text-lg text-gray-900 dark:text-white">{t.livePreview}</h3>
-                                                    <p className="text-sm text-gray-600 dark:text-gray-300">Aperçu en temps réel</p>
+                                                    <h3 className="font-bold text-lg text-gray-900 dark:text-white">{t('portfolio.edit.livePreview')}</h3>
+                                                    <p className="text-sm text-gray-600 dark:text-gray-300">{t('portfolio.edit.realtimePreview')}</p>
                                                 </div>
                                             </div>
                                         </div>
@@ -628,7 +552,7 @@ export default function EditClean({ auth, portfolio, settings, cvData = portfoli
                                                     src={portfolioUrl}
                                                     className="h-full w-full border-0 scale-75 origin-top-left transition-all duration-300"
                                                     style={{ width: '133.33%', height: '133.33%' }}
-                                                    title="Aperçu portfolio"
+                                                    title={t('portfolio.edit.livePreview')}
                                                     loading="lazy"
                                                 />
                                             </div>
@@ -641,7 +565,7 @@ export default function EditClean({ auth, portfolio, settings, cvData = portfoli
                                                     className="flex-1 h-10 border-2 border-purple-200 dark:border-purple-700 text-purple-700 dark:text-purple-400 hover:bg-purple-50 dark:hover:bg-purple-900/20 font-medium"
                                                 >
                                                     <ExternalLink className="h-4 w-4 mr-2" />
-                                                    {t.viewFullscreen}
+                                                    {t('portfolio.edit.viewFullscreen')}
                                                 </Button>
                                                 <Button
                                                     onClick={() => setShowQR(true)}

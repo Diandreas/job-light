@@ -484,6 +484,30 @@
     "common": {
         "loading": "Loading..."
     },
+    "cvInterface": {
+        "sidebar": {
+            "personalInfo": "Personal Information",
+            "summary": "Summary",
+            "experience": "Experiences",
+            "profession": "Education",
+            "skills": "Skills & Others"
+        },
+        "personalInfo": {
+            "email": "Email",
+            "phone": "Phone",
+            "address": "Address",
+            "linkedin": "LinkedIn",
+            "github": "GitHub"
+        },
+        "previewError": {
+            "title": "Preview error",
+            "description": "Unable to generate preview"
+        },
+        "autoRefresh": {
+            "enabled": "Auto-refresh enabled",
+            "disabled": "Auto-refresh disabled"
+        }
+    },
     "auth": {
         "register": {
             "value": "Register",
@@ -842,6 +866,32 @@
     },
     "portfolio": {
         "edit": {
+            "portfolioConfig": "Portfolio Configuration",
+            "quickConfig": "Quick Configuration",
+            "designStyle": "Design & Style",
+            "customizeAppearance": "Customize your portfolio appearance",
+            "chooseTheme": "Choose your theme",
+            "primaryColor": "Primary Color",
+            "selectColor": "Select your portfolio dominant color",
+            "portfolioSections": "Portfolio Sections",
+            "sectionManagement": "Section Management",
+            "organizePortfolio": "Organize and configure your portfolio sections",
+            "organizePortfolioSections": "Organize your portfolio sections",
+            "save": "Save",
+            "saving": "Saving...",
+            "viewFullscreen": "View Fullscreen",
+            "manageServices": "Manage services",
+            "servicesManagement": "Service Management",
+            "servicesDescription": "Add, edit or organize your professional services",
+            "othersServices": "other services",
+            "active": "Active",
+            "activeSections": "active",
+            "empty": "Empty",
+            "noContent": "No content available",
+            "element": "element",
+            "elements": "elements",
+            "emptySectionsOrange": "Empty sections are marked in orange",
+            "allSectionsContent": "All your sections contain content!",
             "portfolio_express": "Portfolio Express",
             "portfolio_preview": "Portfolio Preview",
             "portfolioStudio": "Portfolio Studio Pro",
@@ -852,7 +902,6 @@
             "sharePortfolio": "Share your Portfolio",
             "scanQr": "Scan the QR code to access your portfolio",
             "close": "Close",
-            "designStyle": "Design & Style",
             "customizeAppearance": "Customize your portfolio appearance",
             "chooseTheme": "Choose your theme",
             "primaryColor": "Primary Color",
@@ -870,11 +919,10 @@
             "showAll": "Show all",
             "hideEmpty": "Hide empty",
             "saveChanges": "Save changes",
-            "saving": "Saving...",
             "livePreview": "Live Preview",
             "realtimePreview": "Real-time preview",
             "fullscreen": "Fullscreen",
-            "professional": "Pro",
+            "professional": "Professional",
             "creative": "Creative",
             "minimal": "Minimal",
             "modern": "Modern",
@@ -892,5 +940,105 @@
             "about": "About",
             "theme": "Theme"
         }
+    },
+    "tutorial": {
+        "welcome": {
+            "title": "Welcome to your CV space!",
+            "description": "This guided tour will help you discover all the features to create a professional CV."
+        },
+        "navbar": {
+            "title": "Main navigation",
+            "description": "Quickly access your different spaces: CV, portfolio, career assistant."
+        },
+        "cvNavigation": {
+            "title": "CV Navigation",
+            "description": "Use this bar to navigate between the different sections of your CV."
+        },
+        "progress": {
+            "title": "Progress bar",
+            "description": "Track your progress in completing your professional CV."
+        },
+        "import": {
+            "title": "Smart import",
+            "description": "Import an existing CV and let our AI automatically extract the information."
+        },
+        "sidebar": {
+            "title": "CV Sections",
+            "description": "Click on a section to edit it. Colored icons indicate completed sections."
+        },
+        "personalInfo": {
+            "title": "Personal information",
+            "description": "Start by filling in your basic information. This is the foundation of your CV."
+        },
+        "navigation": {
+            "title": "Navigation between sections",
+            "description": "Use the Previous/Next buttons or click directly on sections in the sidebar."
+        },
+        "tabbar": {
+            "title": "Main tabs",
+            "description": "Switch between editing your CV, choosing premium templates and final preview."
+        }
+    },
+    "jobPortal": {
+        "title": "Job Portal",
+        "subtitle": "Find your next job",
+        "metaDescription": "Discover the best job opportunities and give new momentum to your career",
+        "metaKeywords": "jobs, employment, recruitment, career, job offers",
+        "searchPlaceholder": "Job title, company...",
+        "locationPlaceholder": "City, region...",
+        "search": "Search",
+        "filters": "Filters",
+        "employmentType": "Contract type",
+        "experienceLevel": "Experience level",
+        "allTypes": "All types",
+        "allLevels": "All levels",
+        "remoteWorkPossible": "Remote work possible",
+        "apply": "Apply",
+        "reset": "Clear",
+        "companiesHiring": "Companies hiring",
+        "areYouRecruiting": "Are you recruiting?",
+        "publishOffersDescription": "Post your job offers and find the best talents",
+        "publishOffer": "Post a job",
+        "publishJobOffer": "Post a job offer",
+        "createJobDescription": "Create and publish your job offer in minutes",
+        "createSimpleAd": "Create a simple ad",
+        "freeImmediatePublication": "Free and immediate publication",
+        "jobOffers": "Job offers",
+        "offersFound": "offers found",
+        "offer": "offer",
+        "viewOffer": "View offer",
+        "views": "views",
+        "applications": "applications",
+        "remote": "Remote",
+        "noOffersFound": "No offers found",
+        "modifySearchCriteria": "Try modifying your search criteria",
+        "viewAllOffers": "View all offers",
+        "salaryNotSpecified": "Salary not specified",
+        "salaryFrom": "From {{amount}} {{currency}}",
+        "salaryUpTo": "Up to {{amount}} {{currency}}",
+        "fullTime": "Full-time",
+        "partTime": "Part-time",
+        "contract": "Contract",
+        "internship": "Internship",
+        "freelance": "Freelance",
+        "stats": {
+            "activeOffers": "Active offers",
+            "companies": "Companies",
+            "remoteJobs": "Remote jobs",
+            "thisWeek": "This week"
+        },
+        "createJob": {
+            "entry": "Entry level",
+            "mid": "Mid level",
+            "senior": "Senior",
+            "executive": "Executive"
+        },
+        "myApplications": {
+            "title": "My applications"
+        },
+        "myJobs": {
+            "title": "My jobs"
+        },
+        "searchProfiles": "Search profiles"
     }
 }

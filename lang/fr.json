@@ -1209,5 +1209,44 @@
             "title": "Mes offres"
         },
         "searchProfiles": "Rechercher des profils"
+    },
+    "components": {
+        "career_advisor": {
+            "interface": {
+                "ai_advisor": "Assistant IA",
+                "new_chat": "Nouveau chat",
+                "history": "Historique",
+                "collapse": "Réduire",
+                "menu": "Menu",
+                "export": "Exporter",
+                "export_success": "Document exporté avec succès",
+                "export_file_downloaded": "Fichier {{format}} téléchargé",
+                "export_error": "Erreur d'exportation",
+                "export_failed": "L'exportation a échoué",
+                "delete_conversation": "Supprimer la conversation",
+                "irreversible_action": "Cette action est irréversible",
+                "no_conversations": "Aucune conversation",
+                "sort_recent": "Plus récent",
+                "sort_oldest": "Plus ancien",
+                "sort_service": "Par service",
+                "progress_characters": "caractères",
+                "send": "Envoyer",
+                "demonstration": "Démonstration",
+                "artifact_test": "Test d'artefact pour {{service}}",
+                "analysis_complete": "Analyse terminée",
+                "analysis_ready": "Votre {{service}} est prêt",
+                "error": "Erreur",
+                "error_occurred": "Une erreur est survenue",
+                "artifact_action": "Action sur artefact",
+                "artifact_action_executed": "Action {{action}} exécutée",
+                "custom_request": "Demande personnalisée",
+                "insufficient_balance": "Solde insuffisant",
+                "insufficient_tokens": "Jetons insuffisants"
+            }
+        },
+        "sidebar": {
+            "active": "Actif",
+            "pro_badge": "Pro"
+        }
     }
 }

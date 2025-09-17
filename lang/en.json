@@ -1159,5 +1159,44 @@
             "title": "My jobs"
         },
         "searchProfiles": "Search profiles"
+    },
+    "components": {
+        "career_advisor": {
+            "interface": {
+                "ai_advisor": "AI Advisor",
+                "new_chat": "New chat",
+                "history": "History",
+                "collapse": "Collapse",
+                "menu": "Menu",
+                "export": "Export",
+                "export_success": "Document exported successfully",
+                "export_file_downloaded": "{{format}} file downloaded",
+                "export_error": "Export error",
+                "export_failed": "Export failed",
+                "delete_conversation": "Delete conversation",
+                "irreversible_action": "This action is irreversible",
+                "no_conversations": "No conversations",
+                "sort_recent": "Most recent",
+                "sort_oldest": "Oldest",
+                "sort_service": "By service",
+                "progress_characters": "characters",
+                "send": "Send",
+                "demonstration": "Demonstration",
+                "artifact_test": "Artifact test for {{service}}",
+                "analysis_complete": "Analysis complete",
+                "analysis_ready": "Your {{service}} is ready",
+                "error": "Error",
+                "error_occurred": "An error occurred",
+                "artifact_action": "Artifact action",
+                "artifact_action_executed": "Action {{action}} executed",
+                "custom_request": "Custom request",
+                "insufficient_balance": "Insufficient balance",
+                "insufficient_tokens": "Insufficient tokens"
+            }
+        },
+        "sidebar": {
+            "active": "Active",
+            "pro_badge": "Pro"
+        }
     }
 }

@@ -267,7 +267,7 @@ export default function ServiceSelector({ userInfo, onServiceSubmit, isLoading, 
                 <div className="flex items-center justify-center gap-4 mb-8">
                     <Badge variant="outline" className="bg-green-50 text-green-700">
                         <Sparkles className="w-3 h-3 mr-1" />
-                        {t('wallet.balance')}: {walletBalance} {t('common.tokens')}
+                        {t('wallet.balance')}: {walletBalance}
                     </Badge>
                 </div>
             </div>
@@ -344,8 +344,8 @@ export default function ServiceSelector({ userInfo, onServiceSubmit, isLoading, 
                                             disabled={!canAfford || !service.component}
                                             size="sm"
                                             className={`w-full text-xs ${service.component && canAfford
-                                                    ? 'bg-gradient-to-r from-amber-500 to-purple-500 hover:from-amber-600 hover:to-purple-600'
-                                                    : 'bg-gray-400'
+                                                ? 'bg-gradient-to-r from-amber-500 to-purple-500 hover:from-amber-600 hover:to-purple-600'
+                                                : 'bg-gray-400'
                                                 }`}
                                         >
                                             {!service.component ? (

@@ -381,10 +381,36 @@ const UltraCompactSidebar = ({
     selectedService,
     activeChat,
     onChatSelect,
-    onChatDelete
+    onChatDelete,
+    isMobile = false
 }) => {
     const { t } = useTranslation();
-    const filteredChats = userChats.filter(chat => chat.service_id === selectedService.id);
+    const [sortBy, setSortBy] = useState('recent'); // recent, service, oldest
+
+    // Trier les chats selon le critère sélectionné
+    const getSortedChats = (chats) => {
+        const filteredChats = chats.filter(chat => chat.service_id === selectedService.id);
+
+        switch (sortBy) {
+            case 'oldest':
+                return filteredChats.sort((a, b) => {
+                    const dateA = new Date(a.created_at).getTime();
+                    const dateB = new Date(b.created_at).getTime();
+                    return dateA - dateB;
+                });
+            case 'service':
+                return filteredChats.sort((a, b) => a.service_id.localeCompare(b.service_id));
+            case 'recent':
+            default:
+                return filteredChats.sort((a, b) => {
+                    const dateA = new Date(a.created_at).getTime();
+                    const dateB = new Date(b.created_at).getTime();
+                    return dateB - dateA;
+                });
+        }
+    };
+
+    const sortedChats = getSortedChats(userChats);
 
     return (
         <div className={cn(
@@ -453,37 +479,85 @@ const UltraCompactSidebar = ({
                     </div>
                 )}
 
-                {/* Toggle button */}
-                <Button
-                    onClick={onToggleCollapse}
-                    variant="ghost"
-                    size="sm"
-                    className={cn(
-                        "mt-2 transition-all",
-                        isCollapsed ? "w-8 h-8 p-0 mx-auto" : "w-full h-6"
-                    )}
-                >
-                    {isCollapsed ? (
-                        <ChevronRight className="h-3.5 w-3.5" />
-                    ) : (
-                        <div className="flex items-center justify-between w-full">
-                            <span className="text-xs">{t('components.career_advisor.interface.collapse')}</span>
-                            <ChevronLeft className="h-3.5 w-3.5" />
-                        </div>
-                    )}
-                </Button>
+                {/* Toggle button - masqué en mode mobile */}
+                {!isMobile && (
+                    <Button
+                        onClick={onToggleCollapse}
+                        variant="ghost"
+                        size="sm"
+                        className={cn(
+                            "mt-2 transition-all",
+                            isCollapsed ? "w-8 h-8 p-0 mx-auto" : "w-full h-6"
+                        )}
+                    >
+                        {isCollapsed ? (
+                            <ChevronRight className="h-3.5 w-3.5" />
+                        ) : (
+                            <div className="flex items-center justify-between w-full">
+                                <span className="text-xs">{t('components.career_advisor.interface.collapse')}</span>
+                                <ChevronLeft className="h-3.5 w-3.5" />
+                            </div>
+                        )}
+                    </Button>
+                )}
             </div>
 
             {/* Chat history */}
             <div className="flex-1 p-2 min-h-0">
                 {!isCollapsed && (
-                    <div className="flex items-center justify-between mb-2">
-                        <h3 className="text-xs font-semibold text-gray-700 dark:text-gray-300">
-                            {t('components.career_advisor.interface.history')}
-                        </h3>
-                        <Badge variant="outline" className="text-xs h-4 px-1.5 border-amber-200 text-amber-600">
-                            {filteredChats.length}
-                        </Badge>
+                    <div className="mb-2">
+                        <div className="flex items-center justify-between mb-2">
+                            <h3 className="text-xs font-semibold text-gray-700 dark:text-gray-300">
+                                {t('components.career_advisor.interface.history')}
+                            </h3>
+                            <Badge variant="outline" className="text-xs h-4 px-1.5 border-amber-200 text-amber-600">
+                                {sortedChats.length}
+                            </Badge>
+                        </div>
+
+                        {/* Menu de tri */}
+                        <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                                <Button
+                                    variant="outline"
+                                    size="sm"
+                                    className="w-full h-6 text-xs justify-between"
+                                >
+                                    <div className="flex items-center gap-1">
+                                        <Settings className="h-3 w-3" />
+                                        <span>
+                                            {sortBy === 'recent' && t('components.career_advisor.interface.sort_recent')}
+                                            {sortBy === 'oldest' && t('components.career_advisor.interface.sort_oldest')}
+                                            {sortBy === 'service' && t('components.career_advisor.interface.sort_service')}
+                                        </span>
+                                    </div>
+                                    <ChevronDown className="h-3 w-3" />
+                                </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="start" className="w-48">
+                                <DropdownMenuItem
+                                    onClick={() => setSortBy('recent')}
+                                    className="text-xs"
+                                >
+                                    <Clock className="h-3.5 w-3.5 mr-2" />
+                                    {t('components.career_advisor.interface.sort_recent')}
+                                </DropdownMenuItem>
+                                <DropdownMenuItem
+                                    onClick={() => setSortBy('oldest')}
+                                    className="text-xs"
+                                >
+                                    <History className="h-3.5 w-3.5 mr-2" />
+                                    {t('components.career_advisor.interface.sort_oldest')}
+                                </DropdownMenuItem>
+                                <DropdownMenuItem
+                                    onClick={() => setSortBy('service')}
+                                    className="text-xs"
+                                >
+                                    <Briefcase className="h-3.5 w-3.5 mr-2" />
+                                    {t('components.career_advisor.interface.sort_service')}
+                                </DropdownMenuItem>
+                            </DropdownMenuContent>
+                        </DropdownMenu>
                     </div>
                 )}
 
@@ -493,7 +567,7 @@ const UltraCompactSidebar = ({
                         isCollapsed && "flex flex-col items-center"
                     )}>
                         <AnimatePresence>
-                            {filteredChats.map(chat => (
+                            {sortedChats.map(chat => (
                                 isCollapsed ? (
                                     <TooltipProvider key={chat.context_id}>
                                         <Tooltip>
@@ -532,7 +606,7 @@ const UltraCompactSidebar = ({
                             ))}
                         </AnimatePresence>
 
-                        {filteredChats.length === 0 && !isCollapsed && (
+                        {sortedChats.length === 0 && !isCollapsed && (
                             <div className="text-center py-6">
                                 <MessageSquare className="h-8 w-8 text-gray-300 dark:text-gray-600 mx-auto mb-2" />
                                 <p className="text-xs text-gray-500 dark:text-gray-400">
@@ -1055,6 +1129,7 @@ export default function EnhancedCareerAdvisor({ auth, userInfo, chatHistories })
                         activeChat={activeChat}
                         onChatSelect={handleChatSelection}
                         onChatDelete={confirmDeleteChat}
+                        isMobile={false}
                     />
                 </div>
 
@@ -1083,6 +1158,7 @@ export default function EnhancedCareerAdvisor({ auth, userInfo, chatHistories })
                                                 activeChat={activeChat}
                                                 onChatSelect={handleChatSelection}
                                                 onChatDelete={confirmDeleteChat}
+                                                isMobile={true}
                                             />
                                         </div>
                                     </SheetContent>

@@ -2,22 +2,8 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { useForm } from '@inertiajs/react';
 import { useTranslation } from 'react-i18next';
 import { Button } from '@/Components/ui/button';
-import {
-    Card,
-    CardContent,
-    CardHeader,
-    CardTitle,
-    CardDescription
-} from '@/Components/ui/card';
-import {
-    Drawer,
-    DrawerContent,
-    DrawerHeader,
-    DrawerTitle,
-    DrawerClose
-} from "@/Components/ui/drawer";
+import { Card, CardContent } from '@/Components/ui/card';
 import { Input } from '@/Components/ui/input';
-import { Label } from '@/Components/ui/label';
 import { Textarea } from "@/Components/ui/textarea";
 import {
     Select,
@@ -27,27 +13,18 @@ import {
     SelectValue
 } from "@/Components/ui/select";
 import { useToast } from '@/Components/ui/use-toast';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/Components/ui/tabs";
-import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "@/Components/ui/sheet";
 import {
     Briefcase,
     GraduationCap,
-    FileText,
     Building2,
     Search,
     Plus,
     Edit,
     Trash2,
-    Eye,
-    BookOpen,
-    Users,
-    Award,
-    PencilRuler,
-    ChevronRight,
-    Calendar
+    Calendar,
+    X,
+    Check
 } from 'lucide-react';
-import { Badge } from "@/Components/ui/badge";
-import { ScrollArea } from "@/Components/ui/scroll-area";
 import { motion, AnimatePresence } from 'framer-motion';
 import axios from "axios";
 
@@ -90,68 +67,89 @@ interface Props {
 const ExperienceManager: React.FC<Props> = ({ auth, experiences: initialExperiences, categories, onUpdate }) => {
     const { t } = useTranslation();
 
-    // States
+    // States ultra-compacts
     const [experiences, setExperiences] = useState<Experience[]>(initialExperiences);
-    const [isFormOpen, setIsFormOpen] = useState(false);
+    const [isAdding, setIsAdding] = useState(false);
+    const [editingId, setEditingId] = useState<number | null>(null);
     const [isLoading, setIsLoading] = useState(false);
     const [searchTerm, setSearchTerm] = useState('');
-    const [currentTab, setCurrentTab] = useState('academic');
-    const [selectedExperience, setSelectedExperience] = useState<Experience | null>(null);
-    const [isDetailOpen, setIsDetailOpen] = useState(false);
-    const [currentFormType, setCurrentFormType] = useState<'academic' | 'professional'>('academic');
 
     const { toast } = useToast();
 
-    const { data, setData, reset, errors } = useForm({
-        id: '',
-        name: '',
-        description: '',
-        date_start: '',
-        date_end: '',
-        output: '',
-        experience_categories_id: '',
-        comment: '',
-        InstitutionName: '',
-        attachment: null as File | null,
-        references: [] as Reference[]
+    // Données pour auto-complétion
+    const jobTitles = [
+        'Développeur Full Stack', 'Développeur Frontend', 'Développeur Backend',
+        'Chef de Projet', 'Product Manager', 'UX/UI Designer', 'Data Analyst',
+        'DevOps Engineer', 'Scrum Master', 'Business Analyst'
+    ];
+
+    const companies = [
+        'Google', 'Microsoft', 'Apple', 'Amazon', 'Meta', 'Netflix', 'Spotify',
+        'Airbnb', 'Uber', 'Tesla', 'OpenAI', 'GitHub', 'Stripe', 'Shopify'
+    ];
+
+    // Filtrer les expériences selon le terme de recherche
+    const filteredExperiences = experiences.filter(exp => {
+        if (!searchTerm) return true;
+        const searchLower = searchTerm.toLowerCase();
+        return exp.name?.toLowerCase().includes(searchLower) ||
+            exp.description?.toLowerCase().includes(searchLower) ||
+            exp.InstitutionName?.toLowerCase().includes(searchLower);
     });
 
-    // Séparer les expériences par type
-    const academicExperiences = experiences.filter(exp => exp.experience_categories_id === '2'); // Formation
-    const professionalExperiences = experiences.filter(exp => exp.experience_categories_id !== '2'); // Autres
-
-    // Filtrer les expériences selon l'onglet actuel et le terme de recherche
-    const getFilteredExperiences = () => {
-        const currentExperiences = currentTab === 'academic' ? academicExperiences : professionalExperiences;
-
-        if (!searchTerm) return currentExperiences;
-
-        const searchLower = searchTerm.toLowerCase();
-        return currentExperiences.filter(exp =>
-            exp.name?.toLowerCase().includes(searchLower) ||
-            exp.description?.toLowerCase().includes(searchLower) ||
-            exp.InstitutionName?.toLowerCase().includes(searchLower)
-        );
-    };
-
-    const filteredExperiences = getFilteredExperiences();
+    // Séparer les expériences par type pour l'affichage
+    const academicExperiences = filteredExperiences.filter(exp => exp.experience_categories_id === '2');
+    const professionalExperiences = filteredExperiences.filter(exp => exp.experience_categories_id !== '2');
 
     // Effects
     useEffect(() => {
         setExperiences(initialExperiences);
     }, [initialExperiences]);
 
-    // Handlers
-    const handleEdit = (experience: Experience) => {
-        setData({
-            ...experience,
-            experience_categories_id: experience.experience_categories_id.toString(),
-            attachment: null,
-            references: experience.references || []
-        });
-        setCurrentFormType(experience.experience_categories_id === '2' ? 'academic' : 'professional');
-        setIsFormOpen(true);
-        setIsDetailOpen(false);
+    // Handlers ultra-compacts
+    const handleSave = async (experienceData: Partial<Experience>) => {
+        setIsLoading(true);
+        try {
+            const formData = new FormData();
+            Object.entries(experienceData).forEach(([key, value]) => {
+                if (value !== null && value !== undefined) {
+                    formData.append(key, String(value));
+                }
+            });
+
+            const response = experienceData.id
+                ? await axios.post(`/experiences/${experienceData.id}`, formData, {
+                    headers: { 'Content-Type': 'multipart/form-data' },
+                    params: { _method: 'PUT' }
+                })
+                : await axios.post('/experiences', formData, {
+                    headers: { 'Content-Type': 'multipart/form-data' }
+                });
+
+            const updatedExperience = response.data.experience;
+            const updatedExperiences = experienceData.id
+                ? experiences.map(exp => exp.id === updatedExperience.id ? updatedExperience : exp)
+                : [...experiences, updatedExperience];
+
+            setExperiences(updatedExperiences);
+            onUpdate(updatedExperiences);
+
+            toast({
+                title: experienceData.id ? t('experiences.success.updated') : t('experiences.success.created'),
+                description: t('experiences.success.formDescription'),
+            });
+
+            setIsAdding(false);
+            setEditingId(null);
+        } catch (error: any) {
+            toast({
+                title: t('experiences.errors.title'),
+                description: error.response?.data?.message || t('experiences.errors.save'),
+                variant: "destructive",
+            });
+        } finally {
+            setIsLoading(false);
+        }
     };
 
     const handleDelete = async (experienceId: number) => {
@@ -160,7 +158,6 @@ const ExperienceManager: React.FC<Props> = ({ auth, experiences: initialExperien
             const updatedExperiences = experiences.filter(exp => exp.id !== experienceId);
             setExperiences(updatedExperiences);
             onUpdate(updatedExperiences);
-            setIsDetailOpen(false);
 
             toast({
                 title: t('experiences.success.deleted'),
@@ -175,563 +172,455 @@ const ExperienceManager: React.FC<Props> = ({ auth, experiences: initialExperien
         }
     };
 
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
-        setIsLoading(true);
+    // Composant SmartInput avec auto-complétion
+    const SmartInput: React.FC<{
+        value: string;
+        onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+        placeholder: string;
+        suggestions: string[];
+    }> = ({ value, onChange, placeholder, suggestions }) => {
+        const [showSuggestions, setShowSuggestions] = useState(false);
+        const [filteredSuggestions, setFilteredSuggestions] = useState<string[]>([]);
 
-        try {
-            const formData = new FormData();
+        useEffect(() => {
+            if (value.length > 1) {
+                const filtered = suggestions.filter(s =>
+                    s.toLowerCase().includes(value.toLowerCase())
+                );
+                setFilteredSuggestions(filtered.slice(0, 5));
+                setShowSuggestions(filtered.length > 0);
+            } else {
+                setShowSuggestions(false);
+            }
+        }, [value, suggestions]);
 
-            Object.entries(data).forEach(([key, value]) => {
-                if (value !== null && value !== undefined) {
-                    if (key === 'attachment' && value instanceof File) {
-                        formData.append('attachment', value);
-                    } else if (key === 'references' && Array.isArray(value)) {
-                        formData.append('references', JSON.stringify(value));
-                    } else if (key !== 'attachment') {
-                        formData.append(key, String(value));
-                    }
-                }
-            });
+        return (
+            <div className="relative">
+                <Input
+                    value={value}
+                    onChange={onChange}
+                    placeholder={placeholder}
+                    onFocus={() => setShowSuggestions(true)}
+                    onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
+                />
 
-            const response = data.id
-                ? await axios.post(`/experiences/${data.id}`, formData, {
-                    headers: { 'Content-Type': 'multipart/form-data' },
-                    params: { _method: 'PUT' }
-                })
-                : await axios.post('/experiences', formData, {
-                    headers: { 'Content-Type': 'multipart/form-data' }
-                });
-
-            const updatedExperience = response.data.experience;
-            const updatedExperiences = data.id
-                ? experiences.map(exp => exp.id === updatedExperience.id ? updatedExperience : exp)
-                : [...experiences, updatedExperience];
-
-            setExperiences(updatedExperiences);
-            onUpdate(updatedExperiences);
-
-            toast({
-                title: data.id ? t('experiences.success.updated') : t('experiences.success.created'),
-                description: t('experiences.success.formDescription'),
-            });
-
-            resetForm();
-        } catch (error: any) {
-            toast({
-                title: t('experiences.errors.title'),
-                description: error.response?.data?.message || t('experiences.errors.save'),
-                variant: "destructive",
-            });
-        } finally {
-            setIsLoading(false);
-        }
+                {showSuggestions && filteredSuggestions.length > 0 && (
+                    <motion.div
+                        initial={{ opacity: 0, y: -10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        className="absolute top-full left-0 right-0 mt-1 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg z-10"
+                    >
+                        {filteredSuggestions.map((suggestion, index) => (
+                            <button
+                                key={index}
+                                onClick={() => {
+                                    onChange({ target: { value: suggestion } } as React.ChangeEvent<HTMLInputElement>);
+                                    setShowSuggestions(false);
+                                }}
+                                className="w-full px-3 py-2 text-left hover:bg-gray-50 dark:hover:bg-gray-700 text-sm"
+                            >
+                                {suggestion}
+                            </button>
+                        ))}
+                    </motion.div>
+                )}
+            </div>
+        );
     };
 
-    const resetForm = () => {
-        reset();
-        setData({
-            id: '',
-            name: '',
-            description: '',
-            date_start: '',
-            date_end: '',
-            output: '',
-            experience_categories_id: currentFormType === 'academic' ? '2' : '1',
-            comment: '',
-            InstitutionName: '',
-            attachment: null,
-            references: []
-        });
-        setIsFormOpen(false);
-    };
-
-    const handleAddReference = () => {
-        setData('references', [...data.references, { name: '', function: '', email: '', telephone: '' }]);
-    };
-
-    const handleRemoveReference = (index: number) => {
-        setData('references', data.references.filter((_, i) => i !== index));
-    };
-
-    const handleReferenceChange = (index: number, field: keyof Reference, value: string) => {
-        const updatedReferences = [...data.references];
-        updatedReferences[index][field] = value;
-        setData('references', updatedReferences);
-    };
-
-    const handleOpenDetail = (experience: Experience) => {
-        setSelectedExperience(experience);
-        setIsDetailOpen(true);
-    };
-
-    const handleAddNew = () => {
-        setCurrentFormType(currentTab as 'academic' | 'professional');
-        setData({
-            id: '',
-            name: '',
-            description: '',
-            date_start: '',
-            date_end: '',
-            output: '',
-            experience_categories_id: currentTab === 'academic' ? '2' : '1',
-            comment: '',
-            InstitutionName: '',
-            attachment: null,
-            references: []
-        });
-        setIsFormOpen(true);
-    };
-
-    // Composant de carte d'expérience compact
-    const ExperienceCard: React.FC<{ experience: Experience }> = ({ experience: exp }) => {
+    // Composant de carte d'expérience ultra-compacte
+    const ExperienceCard: React.FC<{
+        experience: Experience;
+        isEditing: boolean;
+        onEdit: () => void;
+        onSave: (data: Partial<Experience>) => void;
+        onCancel: () => void;
+        onDelete: (id: number) => void;
+    }> = ({ experience: exp, isEditing, onEdit, onSave, onCancel, onDelete }) => {
+        const [formData, setFormData] = useState(exp);
         const isAcademic = exp.experience_categories_id === '2';
+
+        if (isEditing) {
+            return (
+                <motion.div
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: 'auto' }}
+                    exit={{ opacity: 0, height: 0 }}
+                    className="bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-4"
+                >
+                    <div className="space-y-3">
+                        {/* Ligne 1: Titre et Type */}
+                        <div className="flex gap-2">
+                            <SmartInput
+                                value={formData.name}
+                                onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
+                                placeholder="Titre du poste"
+                                suggestions={jobTitles}
+                            />
+                            <Select
+                                value={formData.experience_categories_id}
+                                onValueChange={(value) => setFormData(prev => ({ ...prev, experience_categories_id: value }))}
+                            >
+                                <SelectTrigger className="w-32">
+                                    <SelectValue />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="1">Pro</SelectItem>
+                                    <SelectItem value="2">Formation</SelectItem>
+                                    <SelectItem value="3">Stage</SelectItem>
+                                </SelectContent>
+                            </Select>
+                        </div>
+
+                        {/* Ligne 2: Institution et Dates */}
+                        <div className="flex gap-2">
+                            <SmartInput
+                                value={formData.InstitutionName}
+                                onChange={(e) => setFormData(prev => ({ ...prev, InstitutionName: e.target.value }))}
+                                placeholder="Entreprise/Institution"
+                                suggestions={companies}
+                            />
+                            <Input
+                                type="date"
+                                value={formData.date_start}
+                                onChange={(e) => setFormData(prev => ({ ...prev, date_start: e.target.value }))}
+                                className="w-32"
+                            />
+                            <Input
+                                type="date"
+                                value={formData.date_end || ''}
+                                onChange={(e) => setFormData(prev => ({ ...prev, date_end: e.target.value }))}
+                                placeholder="En cours"
+                                className="w-32"
+                            />
+                        </div>
+
+                        {/* Ligne 3: Description (optionnelle) */}
+                        <Textarea
+                            value={formData.description}
+                            onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
+                            placeholder="Description (optionnelle)"
+                            rows={2}
+                        />
+
+                        {/* Actions */}
+                        <div className="flex gap-2 justify-end">
+                            <Button size="sm" variant="outline" onClick={onCancel}>
+                                <X className="w-3 h-3 mr-1" />
+                                Annuler
+                            </Button>
+                            <Button size="sm" onClick={() => onSave(formData)} disabled={isLoading}>
+                                <Check className="w-3 h-3 mr-1" />
+                                {isLoading ? 'Sauvegarde...' : 'Sauvegarder'}
+                            </Button>
+                        </div>
+                    </div>
+                </motion.div>
+            );
+        }
 
         return (
             <motion.div
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -10 }}
-                className="w-full"
+                whileHover={{ scale: 1.02 }}
+                className="group bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-4 hover:shadow-md transition-all"
             >
-                <Card
-                    className="border-l-4 border-l-amber-400 dark:border-l-amber-500 hover:shadow-sm transition-all cursor-pointer bg-white dark:bg-gray-800"
-                    onClick={() => handleOpenDetail(exp)}
-                >
-                    <CardContent className="p-3">
-                        <div className="flex items-center justify-between">
-                            <div className="flex-1 min-w-0">
-                                <div className="flex items-center gap-2 mb-1">
-                                    {isAcademic ? (
-                                        <GraduationCap className="w-4 h-4 text-amber-500" />
-                                    ) : (
-                                        <Briefcase className="w-4 h-4 text-purple-500" />
-                                    )}
-                                    <h3 className="font-medium text-sm text-gray-900 dark:text-white truncate">
-                                        {exp.name}
-                                    </h3>
-                                </div>
-
-                                <div className="flex items-center gap-1 mb-1 text-xs text-gray-600 dark:text-gray-300">
-                                    <Building2 className="w-3 h-3" />
-                                    <span className="truncate">{exp.InstitutionName}</span>
-                                </div>
-
-                                <div className="flex items-center gap-1 text-xs text-gray-500 dark:text-gray-400">
-                                    <Calendar className="w-3 h-3" />
-                                    <span>
-                                        {new Date(exp.date_start).toLocaleDateString('fr-FR', { month: '2-digit', year: '2-digit' })}
-                                        {' - '}
-                                        {exp.date_end
-                                            ? new Date(exp.date_end).toLocaleDateString('fr-FR', { month: '2-digit', year: '2-digit' })
-                                            : t('cvInterface.experience.ongoing')
-                                        }
-                                    </span>
-                                </div>
-                            </div>
-                            <ChevronRight className="w-4 h-4 text-gray-400" />
+                <div className="flex items-start justify-between">
+                    <div className="flex-1 min-w-0">
+                        {/* Header compact */}
+                        <div className="flex items-center gap-2 mb-1">
+                            <div className={`w-2 h-2 rounded-full ${isAcademic ? 'bg-amber-400' : 'bg-purple-400'}`} />
+                            <h3 className="font-semibold text-gray-900 dark:text-white truncate">
+                                {exp.name}
+                            </h3>
                         </div>
-                    </CardContent>
-                </Card>
+
+                        {/* Institution et dates sur une ligne */}
+                        <div className="flex items-center gap-3 text-sm text-gray-600 dark:text-gray-300 mb-2">
+                            <span className="truncate">{exp.InstitutionName}</span>
+                            <span className="text-gray-400">•</span>
+                            <span className="whitespace-nowrap">
+                                {new Date(exp.date_start).toLocaleDateString('fr-FR', { month: '2-digit', year: '2-digit' })}
+                                {' - '}
+                                {exp.date_end
+                                    ? new Date(exp.date_end).toLocaleDateString('fr-FR', { month: '2-digit', year: '2-digit' })
+                                    : t('cvInterface.experience.ongoing')
+                                }
+                            </span>
+                        </div>
+
+                        {/* Description tronquée */}
+                        {exp.description && (
+                            <p className="text-sm text-gray-500 dark:text-gray-400 line-clamp-2">
+                                {exp.description}
+                            </p>
+                        )}
+                    </div>
+
+                    {/* Actions au hover */}
+                    <div className="opacity-0 group-hover:opacity-100 transition-opacity flex gap-1 ml-2">
+                        <Button size="sm" variant="ghost" onClick={onEdit} className="h-8 w-8 p-0">
+                            <Edit className="w-3 h-3" />
+                        </Button>
+                        <Button size="sm" variant="ghost" onClick={() => onDelete(exp.id)} className="h-8 w-8 p-0 text-red-500 hover:text-red-700">
+                            <Trash2 className="w-3 h-3" />
+                        </Button>
+                    </div>
+                </div>
             </motion.div>
         );
     };
 
-    // Composant de détail d'expérience
-    const ExperienceDetail: React.FC<{ experience: Experience }> = ({ experience: exp }) => {
-        const isAcademic = exp.experience_categories_id === '2';
+    // Formulaire d'ajout inline ultra-compact
+    const InlineExperienceForm: React.FC<{
+        onSave: (data: Partial<Experience>) => void;
+        onCancel: () => void;
+    }> = ({ onSave, onCancel }) => {
+        const [formData, setFormData] = useState<Partial<Experience>>({
+            name: '',
+            InstitutionName: '',
+            date_start: '',
+            date_end: '',
+            description: '',
+            experience_categories_id: '1'
+        });
 
         return (
-            <div className="space-y-4">
-                <div className="flex items-center gap-2">
-                    {isAcademic ? (
-                        <Badge className="bg-amber-100 text-amber-800 dark:bg-amber-900 dark:text-amber-200">
-                            <GraduationCap className="w-3 h-3 mr-1" />
-                            {t('cvInterface.experience.education')}
-                        </Badge>
-                    ) : (
-                        <Badge className="bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200">
-                            <Briefcase className="w-3 h-3 mr-1" />
-                            {t('cvInterface.experience.professional')}
-                        </Badge>
-                    )}
-
-                    <div className="flex items-center text-xs text-gray-500">
-                        <Calendar className="w-3 h-3 mr-1" />
-                        {new Date(exp.date_start).toLocaleDateString('fr-FR')} - {exp.date_end ? new Date(exp.date_end).toLocaleDateString('fr-FR') : t('cvInterface.experience.ongoing')}
-                    </div>
-                </div>
-
+            <motion.div
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: 'auto' }}
+                exit={{ opacity: 0, height: 0 }}
+                className="bg-gradient-to-r from-amber-50 to-orange-50 dark:from-amber-900/20 dark:to-orange-900/20 border border-amber-200 dark:border-amber-700 rounded-lg p-4"
+            >
                 <div className="space-y-3">
-                    <div>
-                        <div className="flex items-center gap-1 mb-1">
-                            <Building2 className="w-4 h-4 text-amber-500" />
-                            <span className="font-medium text-sm">{exp.InstitutionName}</span>
-                        </div>
+                    <div className="flex items-center gap-2 mb-3">
+                        <Plus className="w-4 h-4 text-amber-600" />
+                        <h3 className="font-semibold text-amber-800 dark:text-amber-200">Ajouter une expérience</h3>
                     </div>
 
-                    <div>
-                        <h4 className="text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">{t('cvInterface.experience.description')}</h4>
-                        <p className="text-sm text-gray-600 dark:text-gray-300 leading-relaxed">
-                            {exp.description}
-                        </p>
+                    {/* Ligne 1: Titre et Type */}
+                    <div className="flex gap-2">
+                        <SmartInput
+                            value={formData.name || ''}
+                            onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
+                            placeholder="Ex: Développeur Full Stack"
+                            suggestions={jobTitles}
+                        />
+                        <Select
+                            value={formData.experience_categories_id || '1'}
+                            onValueChange={(value) => setFormData(prev => ({ ...prev, experience_categories_id: value }))}
+                        >
+                            <SelectTrigger className="w-32">
+                                <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>
+                                <SelectItem value="1">Pro</SelectItem>
+                                <SelectItem value="2">Formation</SelectItem>
+                                <SelectItem value="3">Stage</SelectItem>
+                            </SelectContent>
+                        </Select>
                     </div>
 
-                    {exp.output && (
-                        <div className="bg-amber-50 dark:bg-amber-900/20 p-3 rounded-lg">
-                            <h4 className="text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">{t('cvInterface.experience.results')}</h4>
-                            <p className="text-sm text-gray-600 dark:text-gray-300">{exp.output}</p>
-                        </div>
-                    )}
-
-                    {exp.attachment_path && (
-                        <div className="flex items-center gap-2 p-2 bg-gray-50 dark:bg-gray-800 rounded">
-                            <FileText className="w-4 h-4 text-amber-500" />
-                            <span className="text-sm text-gray-600 dark:text-gray-300">{t('cvInterface.experience.attachedDocument')}</span>
-                            <Button variant="ghost" size="sm" onClick={() => window.open(exp.attachment_path, '_blank')}>
-                                <Eye className="w-3 h-3" />
-                            </Button>
-                        </div>
-                    )}
-                </div>
-
-                <div className="flex gap-2 pt-4 border-t dark:border-gray-700">
-                    <Button onClick={() => handleEdit(exp)} variant="outline" className="flex-1">
-                        <Edit className="w-3 h-3 mr-1" />
-                        {t('common.edit')}
-                    </Button>
-                    <Button onClick={() => handleDelete(exp.id)} variant="outline" className="text-red-600 hover:bg-red-50 flex-1">
-                        <Trash2 className="w-3 h-3 mr-1" />
-                        {t('common.delete')}
-                    </Button>
-                </div>
-            </div>
-        );
-    };
-
-    return (
-        <div className="max-w-4xl mx-auto p-4 space-y-4">
-            {/* En-tête */}
-            <div className="flex items-center justify-between">
-                <div>
-                    <h1 className="text-xl font-bold text-gray-900 dark:text-white">
-                        {t('cvInterface.experience.title')}
-                    </h1>
-                    <p className="text-sm text-gray-600 dark:text-gray-400">
-                        {t('cvInterface.experience.description')}
-                    </p>
-                </div>
-                <Button onClick={handleAddNew} className="bg-amber-500 hover:bg-amber-600 text-white">
-                    <Plus className="w-4 h-4 mr-1" />
-                    {t('common.add')}
-                </Button>
-            </div>
-
-            {/* Onglets principaux */}
-            <Tabs value={currentTab} onValueChange={setCurrentTab}>
-                <TabsList className="grid w-full grid-cols-2 bg-gray-100 dark:bg-gray-800">
-                    <TabsTrigger value="academic" className="flex items-center gap-2">
-                        <GraduationCap className="w-4 h-4" />
-                        {t('cvInterface.experience.education')} ({academicExperiences.length})
-                    </TabsTrigger>
-                    <TabsTrigger value="professional" className="flex items-center gap-2">
-                        <Briefcase className="w-4 h-4" />
-                        {t('cvInterface.experience.professional')} ({professionalExperiences.length})
-                    </TabsTrigger>
-                </TabsList>
-
-                {/* Contenu des onglets */}
-                <div className="mt-4">
-                    {/* Barre de recherche */}
-                    <div className="relative mb-4">
-                        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+                    {/* Ligne 2: Institution et Dates */}
+                    <div className="flex gap-2">
+                        <SmartInput
+                            value={formData.InstitutionName || ''}
+                            onChange={(e) => setFormData(prev => ({ ...prev, InstitutionName: e.target.value }))}
+                            placeholder="Ex: Google Inc."
+                            suggestions={companies}
+                        />
                         <Input
-                            placeholder={t('cvInterface.experience.searchPlaceholder')}
-                            value={searchTerm}
-                            onChange={(e) => setSearchTerm(e.target.value)}
-                            className="pl-10"
+                            type="date"
+                            value={formData.date_start || ''}
+                            onChange={(e) => setFormData(prev => ({ ...prev, date_start: e.target.value }))}
+                            className="w-32"
+                        />
+                        <Input
+                            type="date"
+                            value={formData.date_end || ''}
+                            onChange={(e) => setFormData(prev => ({ ...prev, date_end: e.target.value }))}
+                            placeholder="En cours"
+                            className="w-32"
                         />
                     </div>
 
-                    <TabsContent value="academic" className="mt-0">
-                        <div className="space-y-3">
-                            <AnimatePresence>
-                                {filteredExperiences.length > 0 ? (
-                                    filteredExperiences.map((exp) => (
-                                        <ExperienceCard key={exp.id} experience={exp} />
-                                    ))
-                                ) : (
-                                    <Card className="text-center py-8">
-                                        <CardContent>
-                                            <GraduationCap className="w-12 h-12 text-gray-400 mx-auto mb-3" />
-                                            <p className="text-gray-500">
-                                                {searchTerm ? t('cvInterface.experience.noEducationFound') : t('cvInterface.experience.noEducationAdded')}
-                                            </p>
-                                        </CardContent>
-                                    </Card>
-                                )}
-                            </AnimatePresence>
-                        </div>
-                    </TabsContent>
+                    {/* Ligne 3: Description (optionnelle) */}
+                    <Textarea
+                        value={formData.description || ''}
+                        onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
+                        placeholder="Description (optionnelle)"
+                        rows={2}
+                    />
 
-                    <TabsContent value="professional" className="mt-0">
-                        <div className="space-y-3">
-                            <AnimatePresence>
-                                {filteredExperiences.length > 0 ? (
-                                    filteredExperiences.map((exp) => (
-                                        <ExperienceCard key={exp.id} experience={exp} />
-                                    ))
-                                ) : (
-                                    <Card className="text-center py-8">
-                                        <CardContent>
-                                            <Briefcase className="w-12 h-12 text-gray-400 mx-auto mb-3" />
-                                            <p className="text-gray-500">
-                                                {searchTerm ? t('cvInterface.experience.noExperienceFound') : t('cvInterface.experience.noProfessionalExperienceAdded')}
-                                            </p>
-                                        </CardContent>
-                                    </Card>
-                                )}
-                            </AnimatePresence>
-                        </div>
-                    </TabsContent>
-                </div>
-            </Tabs>
-
-            {/* Drawer pour les détails */}
-            <Drawer open={isDetailOpen} onOpenChange={setIsDetailOpen}>
-                <DrawerContent className="max-h-[85vh]">
-                    <DrawerHeader>
-                        <DrawerTitle>{selectedExperience?.name}</DrawerTitle>
-                        <DrawerClose />
-                    </DrawerHeader>
-                    <div className="px-4 pb-4">
-                        {selectedExperience && <ExperienceDetail experience={selectedExperience} />}
+                    {/* Actions */}
+                    <div className="flex gap-2 justify-end">
+                        <Button variant="outline" onClick={onCancel} className="flex-1">
+                            <X className="w-3 h-3 mr-1" />
+                            Annuler
+                        </Button>
+                        <Button
+                            onClick={() => onSave(formData)}
+                            disabled={isLoading || !formData.name || !formData.InstitutionName || !formData.date_start}
+                            className="flex-1 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600"
+                        >
+                            <Check className="w-3 h-3 mr-1" />
+                            {isLoading ? 'Ajout...' : 'Ajouter'}
+                        </Button>
                     </div>
-                </DrawerContent>
-            </Drawer>
+                </div>
+            </motion.div>
+        );
+    };
 
-            {/* Formulaire */}
-            <Sheet open={isFormOpen} onOpenChange={setIsFormOpen}>
-                <SheetContent className="w-full max-w-2xl overflow-y-auto">
-                    <SheetHeader className="mb-6">
-                        <SheetTitle className="flex items-center gap-2">
-                            {currentFormType === 'academic' ? (
-                                <GraduationCap className="w-5 h-5 text-amber-500" />
-                            ) : (
-                                <Briefcase className="w-5 h-5 text-purple-500" />
-                            )}
-                            {data.id
-                                ? (currentFormType === 'academic' ? t('cvInterface.experience.editEducation') : t('cvInterface.experience.editExperience'))
-                                : (currentFormType === 'academic' ? t('cvInterface.experience.newEducation') : t('cvInterface.experience.newExperience'))
-                            }
-                        </SheetTitle>
-                        <SheetDescription>
-                            {currentFormType === 'academic'
-                                ? t('cvInterface.experience.academicDescription')
-                                : t('cvInterface.experience.professionalDescription')
-                            }
-                        </SheetDescription>
-                    </SheetHeader>
+    // Bouton d'ajout minimaliste
+    const AddExperienceButton: React.FC<{ onClick: () => void }> = ({ onClick }) => (
+        <motion.button
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+            onClick={onClick}
+            className="w-full p-4 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg hover:border-amber-400 dark:hover:border-amber-500 hover:bg-amber-50 dark:hover:bg-amber-900/20 transition-all group"
+        >
+            <div className="flex items-center justify-center gap-2 text-gray-500 group-hover:text-amber-600 dark:group-hover:text-amber-400">
+                <Plus className="w-4 h-4" />
+                <span className="font-medium">Ajouter une expérience</span>
+            </div>
+        </motion.button>
+    );
 
-                    <form onSubmit={handleSubmit} className="space-y-6">
-                        {/* Informations de base */}
-                        <div className="space-y-4">
-                            <div>
-                                <Label htmlFor="name">
-                                    {currentFormType === 'academic' ? t('cvInterface.experience.degreeName') : t('cvInterface.experience.positionTitle')}
-                                </Label>
-                                <Input
-                                    id="name"
-                                    value={data.name}
-                                    onChange={(e) => setData('name', e.target.value)}
-                                    placeholder={currentFormType === 'academic'
-                                        ? t('cvInterface.experience.degreeExample')
-                                        : t('cvInterface.experience.positionExample')
-                                    }
-                                />
-                                {errors.name && <p className="text-sm text-red-600">{errors.name}</p>}
-                            </div>
+    return (
+        <div className="max-w-4xl mx-auto p-4 space-y-6">
+            {/* Header ultra-compact */}
+            <div className="flex items-center justify-between bg-white dark:bg-gray-800 p-4 rounded-lg border">
+                <div className="flex items-center gap-4">
+                    <h1 className="text-xl font-semibold text-gray-900 dark:text-white">
+                        {t('cvInterface.experience.title')}
+                    </h1>
+                    <div className="flex gap-2">
+                        <div className="flex items-center gap-1 px-2 py-1 bg-amber-100 dark:bg-amber-900 rounded-full">
+                            <GraduationCap className="w-3 h-3 text-amber-600" />
+                            <span className="text-xs font-medium text-amber-800 dark:text-amber-200">
+                                Formation ({academicExperiences.length})
+                            </span>
+                        </div>
+                        <div className="flex items-center gap-1 px-2 py-1 bg-purple-100 dark:bg-purple-900 rounded-full">
+                            <Briefcase className="w-3 h-3 text-purple-600" />
+                            <span className="text-xs font-medium text-purple-800 dark:text-purple-200">
+                                Pro ({professionalExperiences.length})
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
-                            <div>
-                                <Label htmlFor="InstitutionName">
-                                    {currentFormType === 'academic' ? t('cvInterface.experience.institution') : t('cvInterface.experience.company')}
-                                </Label>
-                                <Input
-                                    id="InstitutionName"
-                                    value={data.InstitutionName}
-                                    onChange={(e) => setData('InstitutionName', e.target.value)}
-                                    placeholder={currentFormType === 'academic'
-                                        ? t('cvInterface.experience.institutionExample')
-                                        : t('cvInterface.experience.companyExample')
-                                    }
-                                />
-                                {errors.InstitutionName && <p className="text-sm text-red-600">{errors.InstitutionName}</p>}
-                            </div>
+            {/* Barre de recherche améliorée */}
+            <div className="relative">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <Search className="h-4 w-4 text-gray-400" />
+                </div>
+                <Input
+                    type="text"
+                    placeholder="Rechercher par nom, institution ou description..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    className="pl-10 pr-4 py-3 border-0 bg-gray-50 dark:bg-gray-800 focus:bg-white dark:focus:bg-gray-700 rounded-xl shadow-sm focus:shadow-md transition-all"
+                />
+                {searchTerm && (
+                    <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => setSearchTerm('')}
+                        className="absolute right-2 top-1/2 transform -translate-y-1/2 h-6 w-6 p-0"
+                    >
+                        <X className="h-3 w-3" />
+                    </Button>
+                )}
+            </div>
 
-                            {/* Dates */}
-                            <div className="grid grid-cols-2 gap-4">
-                                <div>
-                                    <Label htmlFor="date_start">{t('cvInterface.experience.startDate')}</Label>
-                                    <Input
-                                        id="date_start"
-                                        type="date"
-                                        value={data.date_start}
-                                        onChange={(e) => setData('date_start', e.target.value)}
+            {/* Liste des expériences avec sections */}
+            <div className="space-y-6">
+                {/* Section Formation */}
+                {academicExperiences.length > 0 && (
+                    <div className="space-y-3">
+                        <div className="flex items-center gap-2">
+                            <GraduationCap className="w-4 h-4 text-amber-500" />
+                            <h2 className="font-semibold text-gray-900 dark:text-white">Formation</h2>
+                        </div>
+                        <div className="space-y-3">
+                            <AnimatePresence>
+                                {academicExperiences.map((exp) => (
+                                    <ExperienceCard
+                                        key={exp.id}
+                                        experience={exp}
+                                        isEditing={editingId === exp.id}
+                                        onEdit={() => setEditingId(exp.id)}
+                                        onSave={(data) => handleSave({ ...data, id: exp.id })}
+                                        onCancel={() => setEditingId(null)}
+                                        onDelete={handleDelete}
                                     />
-                                    {errors.date_start && <p className="text-sm text-red-600">{errors.date_start}</p>}
-                                </div>
-                                <div>
-                                    <Label htmlFor="date_end">{t('cvInterface.experience.endDate')}</Label>
-                                    <Input
-                                        id="date_end"
-                                        type="date"
-                                        value={data.date_end || ''}
-                                        onChange={(e) => setData('date_end', e.target.value)}
-                                    />
-                                    {errors.date_end && <p className="text-sm text-red-600">{errors.date_end}</p>}
-                                </div>
-                            </div>
-
-                            {/* Type d'expérience (seulement pour professionnel) */}
-                            {currentFormType === 'professional' && (
-                                <div>
-                                    <Label>{t('cvInterface.experience.experienceType')}</Label>
-                                    <Select
-                                        value={data.experience_categories_id}
-                                        onValueChange={(value) => setData('experience_categories_id', value)}
-                                    >
-                                        <SelectTrigger>
-                                            <SelectValue placeholder={t('cvInterface.experience.selectType')} />
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                            {categories
-                                                .filter(cat => cat.id !== 2) // Exclure "Formation"
-                                                .map((cat) => (
-                                                    <SelectItem key={cat.id} value={cat.id.toString()}>
-                                                        {cat.name}
-                                                    </SelectItem>
-                                                ))
-                                            }
-                                        </SelectContent>
-                                    </Select>
-                                </div>
-                            )}
-
-                            {/* Description */}
-                            <div>
-                                <Label htmlFor="description">{t('cvInterface.experience.description')}</Label>
-                                <Textarea
-                                    id="description"
-                                    rows={4}
-                                    value={data.description}
-                                    onChange={(e) => setData('description', e.target.value)}
-                                    placeholder={currentFormType === 'academic'
-                                        ? t('cvInterface.experience.academicDescriptionPlaceholder')
-                                        : t('cvInterface.experience.professionalDescriptionPlaceholder')
-                                    }
-                                />
-                                {errors.description && <p className="text-sm text-red-600">{errors.description}</p>}
-                            </div>
-
-                            {/* Résultats */}
-                            <div>
-                                <Label htmlFor="output">
-                                    {currentFormType === 'academic' ? t('cvInterface.experience.gradeResults') : t('cvInterface.experience.achievements')}
-                                </Label>
-                                <Input
-                                    id="output"
-                                    value={data.output}
-                                    onChange={(e) => setData('output', e.target.value)}
-                                    placeholder={currentFormType === 'academic'
-                                        ? t('cvInterface.experience.gradeExample')
-                                        : t('cvInterface.experience.achievementExample')
-                                    }
-                                />
-                                {errors.output && <p className="text-sm text-red-600">{errors.output}</p>}
-                            </div>
-
-                            {/* Pièce jointe */}
-                            <div>
-                                <Label htmlFor="attachment">{t('cvInterface.experience.document')}</Label>
-                                <Input
-                                    id="attachment"
-                                    type="file"
-                                    onChange={(e) => setData('attachment', e.target.files?.[0] || null)}
-                                    accept=".pdf,.doc,.docx,.png,.jpg,.jpeg"
-                                />
-                                {errors.attachment && <p className="text-sm text-red-600">{errors.attachment}</p>}
-                            </div>
-
-                            {/* Références */}
-                            <div className="space-y-3">
-                                <div className="flex items-center justify-between">
-                                    <Label>{t('cvInterface.experience.references')}</Label>
-                                    <Button
-                                        type="button"
-                                        variant="outline"
-                                        size="sm"
-                                        onClick={handleAddReference}
-                                    >
-                                        <Plus className="w-3 h-3 mr-1" />
-                                        {t('common.add')}
-                                    </Button>
-                                </div>
-
-                                {data.references.map((ref, index) => (
-                                    <Card key={index} className="p-4">
-                                        <div className="space-y-3">
-                                            <div className="flex gap-2">
-                                                <Input
-                                                    placeholder={t('cvInterface.experience.fullName')}
-                                                    value={ref.name}
-                                                    onChange={(e) => handleReferenceChange(index, 'name', e.target.value)}
-                                                    className="flex-1"
-                                                />
-                                                <Button
-                                                    type="button"
-                                                    variant="ghost"
-                                                    size="sm"
-                                                    onClick={() => handleRemoveReference(index)}
-                                                >
-                                                    <Trash2 className="w-4 h-4 text-red-500" />
-                                                </Button>
-                                            </div>
-                                            <Input
-                                                placeholder={t('cvInterface.experience.position')}
-                                                value={ref.function}
-                                                onChange={(e) => handleReferenceChange(index, 'function', e.target.value)}
-                                            />
-                                            <div className="grid grid-cols-2 gap-2">
-                                                <Input
-                                                    placeholder={t('cvInterface.experience.email')}
-                                                    type="email"
-                                                    value={ref.email}
-                                                    onChange={(e) => handleReferenceChange(index, 'email', e.target.value)}
-                                                />
-                                                <Input
-                                                    placeholder={t('cvInterface.experience.phone')}
-                                                    value={ref.telephone}
-                                                    onChange={(e) => handleReferenceChange(index, 'telephone', e.target.value)}
-                                                />
-                                            </div>
-                                        </div>
-                                    </Card>
                                 ))}
-                            </div>
+                            </AnimatePresence>
                         </div>
+                    </div>
+                )}
 
-                        {/* Actions */}
-                        <div className="flex gap-3 pt-6 border-t">
-                            <Button type="submit" disabled={isLoading} className="flex-1">
-                                {isLoading ? t('common.saving') : (data.id ? t('common.update') : t('common.save'))}
-                            </Button>
-                            <Button type="button" variant="outline" onClick={resetForm} className="flex-1">
-                                {t('common.cancel')}
-                            </Button>
+                {/* Section Professionnel */}
+                {professionalExperiences.length > 0 && (
+                    <div className="space-y-3">
+                        <div className="flex items-center gap-2">
+                            <Briefcase className="w-4 h-4 text-purple-500" />
+                            <h2 className="font-semibold text-gray-900 dark:text-white">Expérience Professionnelle</h2>
                         </div>
-                    </form>
-                </SheetContent>
-            </Sheet>
+                        <div className="space-y-3">
+                            <AnimatePresence>
+                                {professionalExperiences.map((exp) => (
+                                    <ExperienceCard
+                                        key={exp.id}
+                                        experience={exp}
+                                        isEditing={editingId === exp.id}
+                                        onEdit={() => setEditingId(exp.id)}
+                                        onSave={(data) => handleSave({ ...data, id: exp.id })}
+                                        onCancel={() => setEditingId(null)}
+                                        onDelete={handleDelete}
+                                    />
+                                ))}
+                            </AnimatePresence>
+                        </div>
+                    </div>
+                )}
+
+                {/* Formulaire d'ajout inline */}
+                {isAdding ? (
+                    <InlineExperienceForm
+                        onSave={(data) => handleSave(data)}
+                        onCancel={() => setIsAdding(false)}
+                    />
+                ) : (
+                    <AddExperienceButton onClick={() => setIsAdding(true)} />
+                )}
+
+                {/* État vide */}
+                {filteredExperiences.length === 0 && !isAdding && (
+                    <div className="text-center py-12">
+                        <div className="w-24 h-24 mx-auto mb-4 text-gray-300">
+                            <Briefcase className="w-full h-full" />
+                        </div>
+                        <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">
+                            {searchTerm ? 'Aucune expérience trouvée' : 'Aucune expérience ajoutée'}
+                        </h3>
+                        <p className="text-gray-500 mb-4">
+                            {searchTerm
+                                ? 'Essayez avec d\'autres mots-clés'
+                                : 'Commencez par ajouter votre première expérience'
+                            }
+                        </p>
+                        {!searchTerm && (
+                            <Button onClick={() => setIsAdding(true)} className="bg-gradient-to-r from-amber-500 to-orange-500">
+                                <Plus className="w-4 h-4 mr-2" />
+                                Ajouter une expérience
+                            </Button>
+                        )}
+                    </div>
+                )}
+            </div>
         </div>
     );
 };

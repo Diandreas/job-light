@@ -418,7 +418,7 @@ export default function MinimalDesign({
                         transition={{ delay: 2.4, duration: 0.8 }}
                         className="text-center text-xs text-gray-400 tracking-wide"
                     >
-                        {user.name} • {new Date().getFullYear()}
+                        {user.name} • {new Date().getFullYear()} • Réalisé avec Guidy
                     </motion.p>
                 </div>
             </footer>

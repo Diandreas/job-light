@@ -345,6 +345,7 @@ class GuestCvController extends Controller
     {
         $groupedExperiences = [];
         $categoryTranslations = [];
+        $categoryRankings = [];
 
         foreach ($experiences as $experience) {
             $categoryName = $experience['category_name'] ?? 'Autre';
@@ -353,10 +354,16 @@ class GuestCvController extends Controller
             if (!isset($groupedExperiences[$categoryName])) {
                 $groupedExperiences[$categoryName] = [];
                 $categoryTranslations[$categoryName] = $categoryNameEn;
+                $categoryRankings[$categoryName] = $experience['category_ranking'] ?? 999;
             }
             
             $groupedExperiences[$categoryName][] = $experience;
         }
+
+        // Trier les catégories selon leur ranking (ordre chronologique)
+        uksort($groupedExperiences, function($a, $b) use ($categoryRankings) {
+            return $categoryRankings[$a] <=> $categoryRankings[$b];
+        });
 
         return [
             'experiences' => $groupedExperiences,

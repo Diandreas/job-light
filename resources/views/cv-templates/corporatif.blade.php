@@ -329,14 +329,23 @@
                 @endif
             </div>
 
-            {{-- Education Section (ID 1) --}}
+            {{-- Education Section (première catégorie selon l'ordre chronologique) --}}
             <div class="left-section">
-                <div class="section-heading">
-                    {{ $currentLocale === 'fr' ? 'ÉDUCATION' : 'EDUCATION' }}
-                </div>
+                @php
+                    $firstCategory = array_key_first($experiencesByCategory);
+                    $firstExperiences = $experiencesByCategory[$firstCategory] ?? [];
+                @endphp
+                
+                @if($firstCategory)
+                    <div class="section-heading">
+                        @if($currentLocale === 'fr')
+                            {{ $firstCategory }}
+                        @else
+                            {{ $categoryTranslations[$firstCategory]['name_en'] ?? $firstCategory }}
+                        @endif
+                    </div>
 
-                @foreach($cvInformation['experiences'] ?? [] as $experience)
-                    @if($experience['experience_categories_id'] == 1)
+                    @foreach($firstExperiences as $experience)
                         <div class="education-item">
                             <div class="degree">{{ $experience['name'] }}</div>
                             <div class="school">{{ $experience['InstitutionName'] }}</div>
@@ -354,8 +363,8 @@
                                 </div>
                             @endif
                         </div>
-                    @endif
-                @endforeach
+                    @endforeach
+                @endif
             </div>
 
             {{-- Expertise/Skills Section --}}

@@ -288,12 +288,18 @@
             </div>
         </div>
 
-        <!-- Section Éducation -->
-        <div class="main-section">
-            <div class="main-section-title">{{ $currentLocale === 'fr' ? 'ÉDUCATION' : 'EDUCATION' }}</div>
+        {{-- Expériences par catégorie (ordre chronologique respecté) --}}
+        @foreach($experiencesByCategory as $category => $experiences)
+            <div class="main-section">
+                <div class="main-section-title">
+                    @if($currentLocale === 'fr')
+                        {{ $category }}
+                    @else
+                        {{ $categoryTranslations[$category]['name_en'] ?? $category }}
+                    @endif
+                </div>
 
-            @foreach($cvInformation['experiences'] ?? [] as $experience)
-                @if(isset($experience['experience_categories_id']) && $experience['experience_categories_id'] == 1)
+                @foreach($experiences as $experience)
                     <div class="timeline-item">
                         <div class="timeline-marker">
                             <div class="timeline-marker-dot"></div>
@@ -317,42 +323,9 @@
                             </div>
                         </div>
                     </div>
-                @endif
-            @endforeach
-        </div>
-
-        <!-- Section Expérience -->
-        <div class="main-section">
-            <div class="main-section-title">{{ $currentLocale === 'fr' ? 'EXPÉRIENCE' : 'EXPERIENCE' }}</div>
-
-            @foreach($cvInformation['experiences'] ?? [] as $experience)
-                @if(isset($experience['experience_categories_id']) && $experience['experience_categories_id'] == 2)
-                    <div class="timeline-item">
-                        <div class="timeline-marker">
-                            <div class="timeline-marker-dot"></div>
-                        </div>
-                        <div class="timeline-content">
-                            <div class="timeline-years">
-                                {{ \Carbon\Carbon::parse($experience['date_start'])->format('Y') }} -
-                                @if($experience['date_end'])
-                                    {{ \Carbon\Carbon::parse($experience['date_end'])->format('Y') }}
-                                @else
-                                    {{ $currentLocale === 'fr' ? 'Présent' : 'Present' }}
-                                @endif
-                            </div>
-                            <div class="timeline-title">{{ $experience['name'] }}</div>
-                            <div class="timeline-place">{{ $experience['InstitutionName'] }}</div>
-                            <div class="timeline-description">
-                                {{ $experience['description'] }}
-                                @if($experience['output'])
-                                    <br>{{ $experience['output'] }}
-                                @endif
-                            </div>
-                        </div>
-                    </div>
-                @endif
-            @endforeach
-        </div>
+                @endforeach
+            </div>
+        @endforeach
     </div>
 
     <!-- Colonne latérale (droite) -->

@@ -2021,7 +2021,7 @@
             "whatsapp": "WhatsApp"
         },
         "footer": {
-            "generatedBy": "Professional portfolio generated with JobLight"
+            "generatedBy": "Professional portfolio generated with Guidy"
         },
         "dates": {
             "present": "Present",
@@ -2120,10 +2120,20 @@
             "creative": "Creative",
             "minimal": "Minimal",
             "modern": "Modern",
+            "glassmorphism": "Glassmorphism",
+            "neonCyber": "Neon Cyber",
+            "elegantCorporate": "Elegant Corporate",
+            "artisticShowcase": "Artistic Showcase",
+            "dynamicTech": "Dynamic Tech",
             "classicClean": "Classic and clean",
             "colorfulDynamic": "Colorful and dynamic",
             "simpleModern": "Simple and modern",
             "trendyStyled": "Trendy and styled",
+            "glassmorphismDesc": "Crystal design with glass effects and animated particles",
+            "neonCyberDesc": "Futuristic cyberpunk theme with neons and glitch effects",
+            "elegantCorporateDesc": "Sophisticated corporate design with elegant animations",
+            "artisticShowcaseDesc": "Creative portfolio with masonry layout and artistic effects",
+            "dynamicTechDesc": "Interactive technological interface with dashboards",
             "experiences": "Experiences",
             "competences": "Skills",
             "hobbies": "Hobbies",

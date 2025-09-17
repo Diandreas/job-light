@@ -666,7 +666,7 @@ export default function CreativeDesign({
                     transition={{ delay: 2.4, duration: 0.8 }}
                 >
                     <p className="text-gray-600 font-medium">
-                        ✨ Portfolio créatif de {user.name} • Généré avec passion par JobLight ✨
+                        ✨ Portfolio créatif de {user.name} • Généré avec passion par Guidy ✨
                     </p>
                     <p className="text-gray-500 text-sm mt-2">
                         © {new Date().getFullYear()} - Conçu pour inspirer

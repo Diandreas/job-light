@@ -623,7 +623,7 @@ export default function ModernDesign({
                         className="text-center"
                     >
                         <p className="text-gray-400 mb-4">
-                            🚀 Portfolio moderne de {user.name} • Propulsé par JobLight
+                            🚀 Portfolio moderne de {user.name} • Propulsé par Guidy
                         </p>
                         <div className="flex justify-center gap-4">
                             <Button

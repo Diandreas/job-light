@@ -55,6 +55,8 @@ const InfoCard = ({ icon: Icon, title, value, type = "default", compact = false 
 };
 
 const StatusBadge = ({ hasDownloaded, canAccessFeatures, isAndroidApp, isReady }) => {
+    const { t } = useTranslation();
+
     if (hasDownloaded) {
         return (
             <div className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 rounded-full text-xs font-medium border border-emerald-200 dark:border-emerald-500/20">

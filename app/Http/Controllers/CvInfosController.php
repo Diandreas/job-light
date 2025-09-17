@@ -472,10 +472,27 @@ class CvInfosController extends Controller
 
     private function groupExperiencesByCategory($experiences)
     {
-        // Grouper par catégorie avec support de traduction
+        // Grouper par catégorie avec support de traduction et respecter l'ordre chronologique
         $grouped = collect($experiences)->groupBy(function ($experience) {
             return $experience['category_name']; // Utiliser le nom français comme clé
         })->toArray();
+
+        // Trier les catégories selon leur ranking (ordre chronologique)
+        $sortedGrouped = [];
+        $categoryRankings = [];
+        
+        // Récupérer les rankings des catégories
+        foreach ($experiences as $experience) {
+            $categoryName = $experience['category_name'];
+            if (!isset($categoryRankings[$categoryName])) {
+                $categoryRankings[$categoryName] = $experience['category_ranking'] ?? 999;
+            }
+        }
+        
+        // Trier par ranking (ordre chronologique)
+        uksort($grouped, function($a, $b) use ($categoryRankings) {
+            return $categoryRankings[$a] <=> $categoryRankings[$b];
+        });
 
         // Modifions la structure des traductions
         $categoryTranslations = [];

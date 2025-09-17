@@ -965,6 +965,125 @@
             "services": "Services",
             "about": "À propos",
             "theme": "Thème"
+        },
+        "designs": {
+            "artistic": {
+                "title": "Showcase Artistique",
+                "subtitle": "Professionnel Créatif",
+                "projects": "Projets",
+                "projectsCompleted": "Créations réalisées",
+                "skills": "Compétences",
+                "skillsMastered": "Compétences Maîtrisées",
+                "hobbies": "Centres d'intérêt",
+                "artisticPassions": "Passions Artistiques",
+                "creativePortfolio": "Portfolio Créatif & Innovant",
+                "creativeUniverse": "Mon Univers Créatif",
+                "experienceGallery": "Galerie d'Expériences",
+                "skillsPalette": "Palette de Compétences",
+                "hobbiesCollage": "Collage de Passions",
+                "letsCreate": "Créons Ensemble",
+                "transformIdeas": "Transformons vos idées en œuvres d'art numériques. Contactez-moi pour démarrer votre projet créatif !",
+                "artisticShowcase": "Showcase Artistique de",
+                "artMeetsTech": "L'art rencontre la technologie"
+            },
+            "creative": {
+                "title": "Design Créatif",
+                "myJourney": "Mon Parcours",
+                "superPowers": "Mes Super-Pouvoirs",
+                "passions": "Passions",
+                "contact": "Contact",
+                "creativePortfolio": "Portfolio Créatif de",
+                "designedToInspire": "Conçu pour inspirer"
+            },
+            "tech": {
+                "title": "Design Tech Dynamique",
+                "systemStatus": "SYSTEM_STATUS.exe",
+                "performanceMetrics": "PERFORMANCE_METRICS",
+                "networkStatus": "NETWORK_STATUS",
+                "experienceLog": "EXPERIENCE_LOG.json",
+                "skillMatrix": "SKILL_MATRIX.sys",
+                "interestCloud": "INTEREST_CLOUD.js",
+                "contactInterface": "CONTACT_INTERFACE.exe",
+                "dynamicTechPortfolio": "DYNAMIC_TECH_PORTFOLIO.sys",
+                "poweredBy": "POWERED_BY: Guidy.framework()"
+            },
+            "elegant": {
+                "title": "Design Corporate Élégant",
+                "professionalExecutive": "Cadre Professionnel",
+                "letsStartProject": "Démarrons un Projet",
+                "readyToTransform": "Prêt à transformer vos idées en réalité ? Contactez-moi pour discuter de votre prochain projet.",
+                "sendEmail": "Envoyer un Email",
+                "callNow": "Appeler Maintenant",
+                "professionalJourney": "Parcours Professionnel",
+                "technicalExcellence": "Excellence Technique",
+                "personalInterests": "Centres d'Intérêt",
+                "elegantPortfolio": "Portfolio Élégant de",
+                "createdWithExcellence": "Créé avec excellence par",
+                "sophisticatedCorporate": "Design Corporate Sophistiqué"
+            },
+            "glassmorphism": {
+                "title": "Design Glassmorphism",
+                "professionalJourney": "Mon Parcours Professionnel",
+                "technicalSkills": "Compétences Techniques",
+                "mastery": "Maîtrise",
+                "holographicPortfolio": "Portfolio Holographique de",
+                "generatedBy": "Généré par Guidy"
+            },
+            "minimal": {
+                "title": "Design Minimal",
+                "simpleContact": "Contact simple",
+                "experiences": "Expériences",
+                "skills": "Compétences",
+                "hobbies": "Centres d'intérêt",
+                "languages": "Langues",
+                "detailedContact": "Contact détaillé si activé"
+            },
+            "modern": {
+                "title": "Design Moderne"
+            },
+            "neon": {
+                "title": "Design Neon Cyber"
+            },
+            "professional": {
+                "title": "Design Professionnel"
+            }
+        },
+        "sections": {
+            "about": "À propos",
+            "experiences": "Expériences",
+            "competences": "Compétences",
+            "hobbies": "Centres d'intérêt",
+            "summary": "Résumé",
+            "contact": "Contact",
+            "languages": "Langues",
+            "services": "Services"
+        },
+        "common": {
+            "email": "E-mail",
+            "phone": "Téléphone",
+            "address": "Adresse",
+            "linkedin": "LinkedIn",
+            "github": "GitHub",
+            "viewDocument": "Voir le document",
+            "references": "Références",
+            "function": "Fonction",
+            "telephone": "Tél",
+            "results": "Résultats",
+            "period": "Période",
+            "present": "Présent",
+            "unspecified": "Non spécifiée",
+            "category": "Catégorie",
+            "attachment": "Pièce jointe",
+            "skills": "Compétences",
+            "mastery": "Maîtrise",
+            "level": "Niveau",
+            "status": "Statut",
+            "online": "En ligne",
+            "available": "Disponible",
+            "secure": "Sécurisé",
+            "loaded": "Chargé",
+            "active": "Actif",
+            "inactive": "Inactif"
         }
     },
     "tutorial": {

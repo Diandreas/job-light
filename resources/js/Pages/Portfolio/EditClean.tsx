@@ -37,12 +37,10 @@ import {
     GripVertical, EyeOff
 } from 'lucide-react';
 
-
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import ServiceManager from '@/Components/Portfolio/ServiceManager';
 import SectionGroupManager from '@/Components/Portfolio/SectionGroupManager';
-
 
 interface Section {
     key: string;
@@ -65,21 +63,22 @@ const SECTION_ICONS = {
     testimonials: Heart,
 };
 
-
-
 const DESIGN_OPTIONS = [
     { value: 'professional', labelKey: 'professional', descKey: 'classicClean' },
     { value: 'creative', labelKey: 'creative', descKey: 'colorfulDynamic' },
     { value: 'minimal', labelKey: 'minimal', descKey: 'simpleModern' },
     { value: 'modern', labelKey: 'modern', descKey: 'trendyStyled' },
+    { value: 'glassmorphism', labelKey: 'glassmorphism', descKey: 'glassmorphismDesc', icon: '🔮' },
+    { value: 'neon_cyber', labelKey: 'neonCyber', descKey: 'neonCyberDesc', icon: '🌐' },
+    { value: 'elegant_corporate', labelKey: 'elegantCorporate', descKey: 'elegantCorporateDesc', icon: '🏢' },
+    { value: 'artistic_showcase', labelKey: 'artisticShowcase', descKey: 'artisticShowcaseDesc', icon: '🎭' },
+    { value: 'dynamic_tech', labelKey: 'dynamicTech', descKey: 'dynamicTechDesc', icon: '⚡' },
 ];
-
-
 
 export default function EditClean({ auth, portfolio, settings, cvData = portfolio, customSections, services, groupedSections = {} }) {
     const [previewMode, setPreviewMode] = useState(false);
     const [showQR, setShowQR] = useState(false);
-    
+
     const { t } = useTranslation();
 
     const [sections, setSections] = useState<Section[]>([]);
@@ -129,7 +128,6 @@ export default function EditClean({ auth, portfolio, settings, cvData = portfoli
                 },
             ];
 
-            // Appliquer l'ordre sauvegardé
             const sectionOrder = settings.section_order || {};
 
             const sectionLabels = {
@@ -175,32 +173,6 @@ export default function EditClean({ auth, portfolio, settings, cvData = portfoli
         });
     };
 
-    const handleMoveSection = (sectionKey: string, direction: 'up' | 'down') => {
-        const currentIndex = sections.findIndex(s => s.key === sectionKey);
-        if (currentIndex === -1) return;
-
-        const newIndex = direction === 'up' ? currentIndex - 1 : currentIndex + 1;
-        if (newIndex < 0 || newIndex >= sections.length) return;
-
-        const newSections = [...sections];
-        const [movedSection] = newSections.splice(currentIndex, 1);
-        newSections.splice(newIndex, 0, movedSection);
-
-        const updatedSections = newSections.map((section, index) => ({
-            ...section,
-            order: index
-        }));
-
-        setSections(updatedSections);
-
-        // Mettre à jour l'ordre dans le formulaire
-        const sectionOrder = {};
-        updatedSections.forEach((section, index) => {
-            sectionOrder[section.key] = index;
-        });
-        setData('section_order', sectionOrder);
-    };
-
     const handleToggleSection = (sectionKey: string) => {
         setSections(prevSections => {
             const updatedSections = prevSections.map(section =>
@@ -209,7 +181,6 @@ export default function EditClean({ auth, portfolio, settings, cvData = portfoli
                     : section
             );
 
-            // Update form data using the new state
             const toggledSection = updatedSections.find(s => s.key === sectionKey);
             if (toggledSection) {
                 setData(`show_${sectionKey}` as any, toggledSection.isActive);
@@ -219,19 +190,16 @@ export default function EditClean({ auth, portfolio, settings, cvData = portfoli
         });
     };
 
-
     const generateQRCode = () => {
         return `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(portfolioUrl)}`;
     };
 
     return (
-        <AuthenticatedLayout
-            user={auth.user}
-        >
+        <AuthenticatedLayout user={auth.user}>
             <Head title={t('portfolio.edit.portfolio_express')} />
 
-            <div className="py-2 bg-gray-50 dark:bg-gray-900 min-h-screen">
-                <div className="mx-auto max-w-7xl px-2 sm:px-3 lg:px-4">
+            <div className="py-4 bg-white dark:bg-gray-950 min-h-screen">
+                <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
 
                     {/* QR Code Modal */}
                     <AnimatePresence>
@@ -247,32 +215,32 @@ export default function EditClean({ auth, portfolio, settings, cvData = portfoli
                                     initial={{ scale: 0.9, opacity: 0 }}
                                     animate={{ scale: 1, opacity: 1 }}
                                     exit={{ scale: 0.9, opacity: 0 }}
-                                    className="bg-white dark:bg-gray-800 rounded-2xl p-6 max-w-md w-full shadow-2xl border border-gray-200 dark:border-gray-600"
+                                    className="bg-white dark:bg-gray-800 rounded-lg p-6 max-w-md w-full shadow-lg border border-gray-200 dark:border-gray-600"
                                     onClick={(e) => e.stopPropagation()}
                                 >
                                     <div className="text-center mb-4">
-                                        <div className="w-12 h-12 bg-gradient-to-r from-purple-600 to-amber-500 rounded-xl mx-auto mb-3 flex items-center justify-center">
-                                            <QrCode className="h-6 w-6 text-white" />
+                                        <div className="w-10 h-10 bg-blue-600 rounded-lg mx-auto mb-3 flex items-center justify-center">
+                                            <QrCode className="h-5 w-5 text-white" />
                                         </div>
-                                        <h3 className="font-bold text-xl text-gray-900 dark:text-white mb-2">{t('portfolio.edit.sharePortfolio')}</h3>
+                                        <h3 className="font-semibold text-lg text-gray-900 dark:text-white mb-2">{t('portfolio.edit.sharePortfolio')}</h3>
                                         <p className="text-gray-600 dark:text-gray-300 text-sm">{t('portfolio.edit.scanQr')}</p>
                                     </div>
                                     <div className="text-center mb-4">
-                                        <div className="p-4 bg-gray-50 dark:bg-gray-700 rounded-xl shadow-inner mb-3">
+                                        <div className="p-3 bg-gray-50 dark:bg-gray-700 rounded-lg mb-3">
                                             <img
                                                 src={generateQRCode()}
                                                 alt="QR Code"
-                                                className="mx-auto rounded-xl"
+                                                className="mx-auto rounded-lg"
                                             />
                                         </div>
-                                        <p className="text-xs text-gray-600 dark:text-gray-400 break-all bg-gray-100 dark:bg-gray-700 p-2 rounded-lg font-mono">
+                                        <p className="text-xs text-gray-600 dark:text-gray-400 break-all bg-gray-100 dark:bg-gray-700 p-2 rounded font-mono">
                                             {portfolioUrl}
                                         </p>
                                     </div>
                                     <Button
                                         variant="outline"
                                         onClick={() => setShowQR(false)}
-                                        className="w-full h-10 font-semibold border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 text-sm"
+                                        className="w-full h-9 font-medium text-sm"
                                     >
                                         {t('portfolio.edit.close')}
                                     </Button>
@@ -281,41 +249,35 @@ export default function EditClean({ auth, portfolio, settings, cvData = portfoli
                         )}
                     </AnimatePresence>
 
-                    <div className={cn("grid gap-8", previewMode ? "lg:grid-cols-3" : "lg:grid-cols-1")}>
+                    <div className={cn("grid gap-6", previewMode ? "grid-cols-1 lg:grid-cols-3" : "grid-cols-1 lg:grid-cols-2")}>
 
-                        {/* Configuration principale */}
-                        <div className={cn("space-y-3", previewMode ? "lg:col-span-2" : "lg:col-span-1")}>
-
-
-
-                            <form onSubmit={onSubmit} id="portfolio-form" className="space-y-4">
-
+                        {/* Colonne 1: Choix de modèle */}
+                        <div className="space-y-4">
+                            <form onSubmit={onSubmit} id="portfolio-form">
                                 {/* Design & Couleur */}
-                                <Card className="bg-white dark:bg-gray-800 shadow-lg border-l-4 border-l-violet-500 hover:shadow-xl transition-shadow duration-300">
-                                    <CardHeader className="pb-3 bg-gradient-to-r from-violet-50 to-purple-50 dark:from-violet-900/30 dark:to-purple-900/30">
+                                <Card className="border border-gray-200 dark:border-gray-700 shadow-sm">
+                                    <CardHeader className="pb-4">
                                         <CardTitle className="flex items-center justify-between">
-                                            <div className="flex items-center gap-4">
-                                                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-violet-500 to-purple-600 flex items-center justify-center shadow-lg">
-                                                    <Palette className="h-5 w-5 text-white" />
-                                                </div>
+                                            <div className="flex items-center gap-3">
+                                                <Palette className="h-5 w-5 text-gray-600 dark:text-gray-400" />
                                                 <div>
-                                                    <h3 className="text-lg font-bold text-gray-900 dark:text-white">{t('portfolio.edit.designStyle')}</h3>
-                                                    <p className="text-xs text-gray-600 dark:text-gray-300 font-medium">{t('portfolio.edit.customizeAppearance')}</p>
+                                                    <h3 className="text-base font-semibold text-gray-900 dark:text-white">{t('portfolio.edit.designStyle')}</h3>
                                                 </div>
                                             </div>
-                                            <div className="flex items-center gap-3">
+                                            <div className="flex items-center gap-2">
                                                 <Button
                                                     onClick={() => setShowQR(!showQR)}
-                                                    variant="outline"
+                                                    variant="ghost"
                                                     size="sm"
+                                                    className="h-8 px-2"
                                                 >
-                                                    <QrCode className="h-4 w-4 mr-2" />
-                                                    {t('portfolio.edit.qrCode')}
+                                                    <QrCode className="h-4 w-4" />
                                                 </Button>
                                                 <Button
                                                     onClick={() => setPreviewMode(!previewMode)}
-                                                    variant={previewMode ? "default" : "outline"}
+                                                    variant={previewMode ? "default" : "ghost"}
                                                     size="sm"
+                                                    className="h-8 px-3"
                                                 >
                                                     <Eye className="h-4 w-4 mr-1" />
                                                     {previewMode ? t('portfolio.edit.hide') : t('portfolio.edit.preview')}
@@ -323,324 +285,308 @@ export default function EditClean({ auth, portfolio, settings, cvData = portfoli
                                             </div>
                                         </CardTitle>
                                     </CardHeader>
-                                    <CardContent className="space-y-3">
+                                    <CardContent className="space-y-4">
                                         {/* Sélection du design */}
                                         <div>
-                                            <Label className="text-sm font-semibold text-gray-800 dark:text-gray-200 mb-2 block">{t('portfolio.edit.chooseTheme')}</Label>
-                                            <div className="grid grid-cols-2 lg:grid-cols-4 gap-2">
+                                            <Label className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-3 block">{t('portfolio.edit.chooseTheme')}</Label>
+                                            <div className="grid grid-cols-3 gap-2">
                                                 {DESIGN_OPTIONS.map((option) => (
                                                     <motion.div
                                                         key={option.value}
-                                                        whileHover={{ scale: 1.02 }}
-                                                        whileTap={{ scale: 0.98 }}
+                                                        whileHover={{ scale: 1.01 }}
+                                                        whileTap={{ scale: 0.99 }}
                                                         className={cn(
-                                                            "p-3 rounded-xl border-2 cursor-pointer transition-all duration-200 hover:shadow-md",
+                                                            "p-2 rounded-lg border cursor-pointer transition-all duration-200 relative",
                                                             data.design === option.value
-                                                                ? "border-violet-500 bg-gradient-to-br from-violet-50 to-purple-50 dark:from-violet-900/30 dark:to-purple-900/30 shadow-md ring-1 ring-violet-300"
-                                                                : "border-gray-200 dark:border-gray-600 hover:border-violet-300 bg-white dark:bg-gray-700 hover:bg-gradient-to-br hover:from-gray-50 hover:to-violet-50 dark:hover:from-gray-600 dark:hover:to-violet-900/20"
+                                                                ? "border-blue-500 bg-blue-50 dark:bg-blue-950 ring-1 ring-blue-200"
+                                                                : "border-gray-200 dark:border-gray-600 hover:border-gray-300 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-750"
                                                         )}
                                                         onClick={() => setData('design', option.value)}
                                                     >
-                                                        <div className="flex items-center justify-between mb-2">
-                                                            <h4 className="font-bold text-gray-900 dark:text-white text-sm">{t(`portfolio.edit.${option.labelKey}`)}</h4>
-                                                            {data.design === option.value && (
-                                                                <div className="w-4 h-4 bg-violet-500 rounded-full flex items-center justify-center">
-                                                                    <svg className="w-2 h-2 text-white" fill="currentColor" viewBox="0 0 20 20">
-                                                                        <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                                                                    </svg>
-                                                                </div>
-                                                            )}
+                                                        <div className="text-center">
+                                                            <div className="text-sm mb-1">
+                                                                {option.icon || '🎨'}
+                                                            </div>
+                                                            <h4 className="font-medium text-gray-900 dark:text-white text-xs">
+                                                                {option.labelKey === 'glassmorphism' ? 'Glassmorphism' :
+                                                                 option.labelKey === 'neonCyber' ? 'Neon Cyber' :
+                                                                 option.labelKey === 'elegantCorporate' ? 'Corporate' :
+                                                                 option.labelKey === 'artisticShowcase' ? 'Artistique' :
+                                                                 option.labelKey === 'dynamicTech' ? 'Tech' :
+                                                                 t(`portfolio.edit.${option.labelKey}`)}
+                                                            </h4>
                                                         </div>
-                                                        <p className="text-xs text-gray-600 dark:text-gray-400 leading-relaxed">{t(`portfolio.edit.${option.descKey}`)}</p>
+
+                                                        {/* Selected Indicator */}
+                                                        {data.design === option.value && (
+                                                            <motion.div
+                                                                initial={{ scale: 0 }}
+                                                                animate={{ scale: 1 }}
+                                                                className="absolute -top-1 -right-1 w-4 h-4 bg-blue-500 rounded-full flex items-center justify-center"
+                                                            >
+                                                                <svg className="w-2 h-2 text-white" fill="currentColor" viewBox="0 0 20 20">
+                                                                    <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                                                                </svg>
+                                                            </motion.div>
+                                                        )}
+
+                                                        {/* New Badge for our custom designs */}
+                                                        {option.icon && (
+                                                            <div className="absolute top-1 left-1">
+                                                                <span className="bg-orange-500 text-white text-xs px-1.5 py-0.5 rounded font-medium">
+                                                                    NEW
+                                                                </span>
+                                                            </div>
+                                                        )}
                                                     </motion.div>
                                                 ))}
                                             </div>
                                         </div>
 
                                         {/* Couleur principale */}
-                                        <div className="bg-gradient-to-r from-gray-50 to-violet-50 dark:from-gray-800 dark:to-violet-900/30 p-4 rounded-xl border border-gray-200 dark:border-gray-600">
+                                        <div className="border border-gray-200 dark:border-gray-600 p-3 rounded-lg">
                                             <div className="flex items-center justify-between">
                                                 <div>
-                                                    <Label className="text-sm font-semibold text-gray-800 dark:text-gray-200 mb-1 block">{t('portfolio.edit.primaryColor')}</Label>
-                                                    <p className="text-xs text-gray-600 dark:text-gray-400">{t('portfolio.edit.selectColor')}</p>
+                                                    <Label className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 block">{t('portfolio.edit.primaryColor')}</Label>
                                                 </div>
-                                                <div className="flex items-center gap-4">
-                                                    <div className="text-center">
-                                                        <Input
-                                                            type="color"
-                                                            value={data.primary_color}
-                                                            onChange={(e) => setData('primary_color', e.target.value)}
-                                                            className="w-16 h-12 rounded-xl cursor-pointer border-2 border-white shadow-md hover:shadow-lg transition-shadow"
-                                                        />
-                                                        <p className="text-xs text-gray-500 dark:text-gray-400 font-mono mt-1 bg-white dark:bg-gray-700 px-2 py-1 rounded-md">
-                                                            {data.primary_color}
-                                                        </p>
-                                                    </div>
+                                                <div className="flex items-center gap-3">
+                                                    <Input
+                                                        type="color"
+                                                        value={data.primary_color}
+                                                        onChange={(e) => setData('primary_color', e.target.value)}
+                                                        className="w-10 h-8 rounded cursor-pointer border"
+                                                    />
+                                                    <span className="text-xs text-gray-500 dark:text-gray-400 font-mono">
+                                                        {data.primary_color}
+                                                    </span>
                                                     <Button
                                                         type="button"
                                                         onClick={() => setData('primary_color', '#f59e0b')}
                                                         variant="outline"
                                                         size="sm"
-                                                        className="border-2 border-amber-200 dark:border-amber-600 text-amber-700 dark:text-amber-300 hover:bg-amber-50 dark:hover:bg-amber-900/20 font-medium text-xs"
+                                                        className="h-7 px-2 text-xs"
                                                     >
                                                         {t('portfolio.edit.default')}
                                                     </Button>
                                                 </div>
                                             </div>
                                         </div>
-                                    </CardContent>
-                                </Card>
 
-
-                                {/* Visibilité des Sections - Interface Simplifiée */}
-                                <Card className="bg-white dark:bg-gray-800 shadow-lg border-l-4 border-l-emerald-500 hover:shadow-xl transition-shadow duration-300">
-                                    <CardHeader className="pb-3 bg-gradient-to-r from-emerald-50 to-green-50 dark:from-emerald-900/30 dark:to-green-900/30">
-                                        <CardTitle className="flex items-center justify-between">
-                                            <div className="flex items-center gap-4">
-                                                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-500 to-green-600 flex items-center justify-center shadow-lg">
-                                                    <Settings className="h-5 w-5 text-white" />
-                                                </div>
-                                                <div>
-                                                    <h3 className="text-lg font-bold text-gray-900 dark:text-white">{t('portfolio.edit.sectionManagement')}</h3>
-                                                    <p className="text-xs text-gray-600 dark:text-gray-300 font-medium">{t('portfolio.edit.organizePortfolio')}</p>
-                                                </div>
-                                            </div>
-                                            <div className="flex items-center gap-3">
-                                                <Badge className="bg-emerald-100 dark:bg-emerald-900 text-emerald-800 dark:text-emerald-200 font-semibold px-2 py-1 text-xs">
-                                                    {sections.filter(s => s.isActive).length}/{sections.length} {t('portfolio.edit.active')}
-                                                </Badge>
-                                                <Badge className="bg-orange-100 dark:bg-orange-900 text-orange-800 dark:text-orange-200 font-semibold px-2 py-1 text-xs">
-                                                    {sections.filter(s => s.count === 0).length} {t('portfolio.edit.empty')}
-                                                </Badge>
-                                            </div>
-                                        </CardTitle>
-                                    </CardHeader>
-                                    <CardContent className="space-y-2">
-                                        <div className="grid grid-cols-1 gap-2">
-                                            {sections.map((section, index) => {
-                                                const IconComponent = section.icon;
-                                                return (
-                                                    <motion.div
-                                                        key={section.key}
-                                                        initial={{ opacity: 0, x: -20 }}
-                                                        animate={{ opacity: 1, x: 0 }}
-                                                        transition={{ delay: index * 0.05 }}
-                                                        whileHover={{ scale: 1.01 }}
-                                                        className={cn(
-                                                            "flex items-center gap-3 p-3 rounded-xl border transition-all duration-200 hover:shadow-sm",
-                                                            section.count === 0
-                                                                ? "cursor-not-allowed opacity-60 border-orange-200 dark:border-orange-800 bg-gradient-to-r from-orange-50 to-red-50 dark:from-orange-900/20 dark:to-red-900/20"
-                                                                : section.isActive
-                                                                    ? "cursor-pointer border-emerald-300 dark:border-emerald-600 bg-gradient-to-r from-emerald-50 to-green-50 dark:from-emerald-900/20 dark:to-green-900/20 hover:border-emerald-400 shadow-sm"
-                                                                    : "cursor-pointer border-gray-200 dark:border-gray-600 bg-gradient-to-r from-gray-50 to-slate-50 dark:from-gray-700 dark:to-slate-700 opacity-75 hover:opacity-90 hover:border-gray-300 dark:hover:border-gray-500"
-                                                        )}
-                                                        onClick={() => section.count > 0 && handleToggleSection(section.key)}
-                                                    >
-                                                        {/* Section Icon */}
-                                                        <div className={cn(
-                                                            "flex items-center justify-center w-8 h-8 rounded-xl transition-all duration-200 shrink-0",
-                                                            section.count === 0
-                                                                ? "bg-orange-100 dark:bg-orange-800 text-orange-500 dark:text-orange-400"
-                                                                : section.isActive
-                                                                    ? "bg-emerald-100 dark:bg-emerald-800 text-emerald-600 dark:text-emerald-300 shadow-md"
-                                                                    : "bg-gray-100 dark:bg-gray-600 text-gray-400 dark:text-gray-300"
-                                                        )}>
-                                                            <IconComponent className="w-4 h-4" />
-                                                        </div>
-
-                                                        {/* Section Info */}
-                                                        <div className="flex-1 min-w-0">
-                                                            <div className="flex items-center justify-between">
-                                                                <div>
-                                                                    <span className={cn(
-                                                                        "text-sm font-semibold block",
-                                                                        section.count === 0
-                                                                            ? "text-orange-700 dark:text-orange-400"
-                                                                            : section.isActive
-                                                                                ? "text-gray-900 dark:text-white"
-                                                                                : "text-gray-500 dark:text-gray-400"
-                                                                    )}>
-                                                                        {section.label}
-                                                                    </span>
-                                                                    <span className="text-xs text-gray-600 dark:text-gray-400">
-                                                                        {section.count === 0
-                                                                            ? t('portfolio.edit.noContent')
-                                                                            : `${section.count} ${section.count > 1 ? t('portfolio.edit.elements') : t('portfolio.edit.element')}`
-                                                                        }
-                                                                    </span>
-                                                                </div>
-                                                                <div className="flex items-center gap-2">
-                                                                    <Badge
-                                                                        className={cn(
-                                                                            "text-xs px-2 py-0.5 font-semibold rounded-full",
-                                                                            section.count === 0
-                                                                                ? "bg-orange-100 dark:bg-orange-800 text-orange-700 dark:text-orange-300"
-                                                                                : "bg-blue-100 dark:bg-blue-800 text-blue-700 dark:text-blue-300"
-                                                                        )}
-                                                                    >
-                                                                        {section.count}
-                                                                    </Badge>
-                                                                    <Switch
-                                                                        checked={section.isActive}
-                                                                        disabled={section.count === 0}
-                                                                        onCheckedChange={() => { }}
-                                                                        onClick={(e) => {
-                                                                            e.stopPropagation();
-                                                                            if (section.count > 0) {
-                                                                                handleToggleSection(section.key);
-                                                                            }
-                                                                        }}
-                                                                        className="data-[state=checked]:bg-emerald-500 shrink-0"
-                                                                    />
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    </motion.div>
-                                                );
-                                            })}
-                                        </div>
-
-                                        {/* Actions rapides */}
-                                        <div className="flex items-center justify-between pt-3 border-t border-gray-200 dark:border-gray-600">
-                                            <div className="text-xs text-gray-600 dark:text-gray-400 bg-blue-50 dark:bg-blue-900/20 px-2 py-1 rounded-lg">
-                                                💡 {sections.filter(s => s.count === 0).length > 0
-                                                    ? t('portfolio.edit.emptySectionsOrange')
-                                                    : t('portfolio.edit.allSectionsContent')}
-                                            </div>
-                                            <div className="flex gap-2">
-                                                <Button
-                                                    type="button"
-                                                    variant="outline"
-                                                    size="default"
-                                                    onClick={() => {
-                                                        setSections(prevSections => {
-                                                            const updatedSections = prevSections.map(section =>
-                                                                (!section.isActive && section.count > 0)
-                                                                    ? { ...section, isActive: true }
-                                                                    : section
-                                                            );
-
-                                                            // Update form data for all changed sections
-                                                            updatedSections.forEach(section => {
-                                                                const originalSection = prevSections.find(s => s.key === section.key);
-                                                                if (originalSection && originalSection.isActive !== section.isActive) {
-                                                                    setData(`show_${section.key}` as any, section.isActive);
-                                                                }
-                                                            });
-
-                                                            return updatedSections;
-                                                        });
-                                                    }}
-                                                    className="h-8 px-3 border-emerald-200 dark:border-emerald-600 text-emerald-700 dark:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-900/20 text-xs"
-                                                >
-                                                    <Eye className="h-3 w-3 mr-1" />
-                                                    {t('portfolio.edit.showAll')}
-                                                </Button>
-                                                <Button
-                                                    type="button"
-                                                    variant="outline"
-                                                    size="default"
-                                                    onClick={() => {
-                                                        setSections(prevSections => {
-                                                            const updatedSections = prevSections.map(section =>
-                                                                (section.isActive && section.count === 0)
-                                                                    ? { ...section, isActive: false }
-                                                                    : section
-                                                            );
-
-                                                            // Update form data for all changed sections
-                                                            updatedSections.forEach(section => {
-                                                                const originalSection = prevSections.find(s => s.key === section.key);
-                                                                if (originalSection && originalSection.isActive !== section.isActive) {
-                                                                    setData(`show_${section.key}` as any, section.isActive);
-                                                                }
-                                                            });
-
-                                                            return updatedSections;
-                                                        });
-                                                    }}
-                                                    className="h-8 px-3 border-orange-200 dark:border-orange-600 text-orange-700 dark:text-orange-400 hover:bg-orange-50 dark:hover:bg-orange-900/20 text-xs"
-                                                >
-                                                    <EyeOff className="h-3 w-3 mr-1" />
-                                                    {t('portfolio.edit.hideEmpty')}
-                                                </Button>
-                                            </div>
+                                        {/* Bouton de sauvegarde */}
+                                        <div className="pt-4">
+                                            <Button
+                                                type="submit"
+                                                disabled={processing}
+                                                className="w-full bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 font-medium"
+                                            >
+                                                {processing ? (
+                                                    <>
+                                                        <RefreshCw className="h-4 w-4 mr-2 animate-spin" />
+                                                        {t('portfolio.edit.saving')}
+                                                    </>
+                                                ) : (
+                                                    <>
+                                                        <Save className="h-4 w-4 mr-2" />
+                                                        {t('portfolio.edit.saveChanges')}
+                                                    </>
+                                                )}
+                                            </Button>
                                         </div>
                                     </CardContent>
                                 </Card>
-
-
-
-
-
-                                {/* Bouton de sauvegarde */}
-                                <div className="flex justify-center pt-4">
-                                    <motion.div
-                                        whileHover={{ scale: 1.02 }}
-                                        whileTap={{ scale: 0.98 }}
-                                    >
-                                        <Button
-                                            type="submit"
-                                            disabled={processing}
-                                            size="lg"
-                                            className="bg-gradient-to-r from-violet-600 via-purple-600 to-amber-500 hover:from-violet-700 hover:via-purple-700 hover:to-amber-600 text-white px-12 py-3 text-base font-semibold shadow-xl hover:shadow-2xl transition-all duration-300 rounded-xl"
-                                        >
-                                            {processing ? (
-                                                <>
-                                                    <RefreshCw className="h-5 w-5 mr-2 animate-spin" />
-                                                    {t('portfolio.edit.saving')}
-                                                </>
-                                            ) : (
-                                                <>
-                                                    <Save className="h-5 w-5 mr-2" />
-                                                    {t('portfolio.edit.saveChanges')}
-                                                </>
-                                            )}
-                                        </Button>
-                                    </motion.div>
-                                </div>
-
                             </form>
                         </div>
 
-                        {/* Preview (if active) */}
+                        {/* Colonne 2: Visibilité des Sections */}
+                        <div className="space-y-4">
+                            <Card className="border border-gray-200 dark:border-gray-700 shadow-sm">
+                                <CardHeader className="pb-3">
+                                    <CardTitle className="flex items-center justify-between">
+                                        <div className="flex items-center gap-3">
+                                            <Settings className="h-5 w-5 text-gray-600 dark:text-gray-400" />
+                                            <div>
+                                                <h3 className="text-base font-semibold text-gray-900 dark:text-white">{t('portfolio.edit.sectionManagement')}</h3>
+                                            </div>
+                                        </div>
+                                        <div className="flex items-center gap-2">
+                                            <Badge variant="secondary" className="text-xs">
+                                                {sections.filter(s => s.isActive).length}/{sections.length}
+                                            </Badge>
+                                        </div>
+                                    </CardTitle>
+                                </CardHeader>
+                                <CardContent className="space-y-2">
+                                    <div className="grid grid-cols-1 gap-2">
+                                        {sections.map((section, index) => {
+                                            const IconComponent = section.icon;
+                                            return (
+                                                <motion.div
+                                                    key={section.key}
+                                                    initial={{ opacity: 0, x: -20 }}
+                                                    animate={{ opacity: 1, x: 0 }}
+                                                    transition={{ delay: index * 0.05 }}
+                                                    whileHover={{ scale: 1.01 }}
+                                                    className={cn(
+                                                        "flex items-center gap-3 p-2 rounded-lg border transition-all duration-200",
+                                                        section.count === 0
+                                                            ? "cursor-not-allowed opacity-60 border-orange-200 dark:border-orange-600 bg-orange-50 dark:bg-orange-950"
+                                                            : section.isActive
+                                                                ? "cursor-pointer border-green-200 dark:border-green-600 bg-green-50 dark:bg-green-950"
+                                                                : "cursor-pointer border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-800 opacity-75 hover:opacity-90"
+                                                    )}
+                                                    onClick={() => section.count > 0 && handleToggleSection(section.key)}
+                                                >
+                                                    {/* Section Icon */}
+                                                    <div className={cn(
+                                                        "flex items-center justify-center w-6 h-6 rounded transition-all duration-200 shrink-0",
+                                                        section.count === 0
+                                                            ? "bg-orange-100 dark:bg-orange-800 text-orange-500 dark:text-orange-400"
+                                                            : section.isActive
+                                                                ? "bg-green-100 dark:bg-green-800 text-green-600 dark:text-green-300"
+                                                                : "bg-gray-100 dark:bg-gray-600 text-gray-400 dark:text-gray-300"
+                                                    )}>
+                                                        <IconComponent className="w-3 h-3" />
+                                                    </div>
+
+                                                    {/* Section Info */}
+                                                    <div className="flex-1 min-w-0">
+                                                        <div className="flex items-center justify-between">
+                                                            <div>
+                                                                <span className={cn(
+                                                                    "text-sm font-medium block",
+                                                                    section.count === 0
+                                                                        ? "text-orange-700 dark:text-orange-400"
+                                                                        : section.isActive
+                                                                            ? "text-gray-900 dark:text-white"
+                                                                            : "text-gray-500 dark:text-gray-400"
+                                                                )}>
+                                                                    {section.label}
+                                                                </span>
+                                                            </div>
+                                                            <div className="flex items-center gap-2">
+                                                                <span className="text-xs text-gray-500 dark:text-gray-400">
+                                                                    {section.count}
+                                                                </span>
+                                                                <Switch
+                                                                    checked={section.isActive}
+                                                                    disabled={section.count === 0}
+                                                                    onCheckedChange={() => { }}
+                                                                    onClick={(e) => {
+                                                                        e.stopPropagation();
+                                                                        if (section.count > 0) {
+                                                                            handleToggleSection(section.key);
+                                                                        }
+                                                                    }}
+                                                                    className="data-[state=checked]:bg-green-500 shrink-0"
+                                                                />
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </motion.div>
+                                            );
+                                        })}
+                                    </div>
+
+                                    {/* Actions rapides */}
+                                    <div className="flex justify-end pt-3 border-t border-gray-200 dark:border-gray-600">
+                                        <div className="flex gap-2">
+                                            <Button
+                                                type="button"
+                                                variant="outline"
+                                                size="sm"
+                                                onClick={() => {
+                                                    setSections(prevSections => {
+                                                        const updatedSections = prevSections.map(section =>
+                                                            (!section.isActive && section.count > 0)
+                                                                ? { ...section, isActive: true }
+                                                                : section
+                                                        );
+
+                                                        updatedSections.forEach(section => {
+                                                            const originalSection = prevSections.find(s => s.key === section.key);
+                                                            if (originalSection && originalSection.isActive !== section.isActive) {
+                                                                setData(`show_${section.key}` as any, section.isActive);
+                                                            }
+                                                        });
+
+                                                        return updatedSections;
+                                                    });
+                                                }}
+                                                className="h-7 px-2 text-xs"
+                                            >
+                                                <Eye className="h-3 w-3 mr-1" />
+                                                {t('portfolio.edit.showAll')}
+                                            </Button>
+                                            <Button
+                                                type="button"
+                                                variant="outline"
+                                                size="sm"
+                                                onClick={() => {
+                                                    setSections(prevSections => {
+                                                        const updatedSections = prevSections.map(section =>
+                                                            (section.isActive && section.count === 0)
+                                                                ? { ...section, isActive: false }
+                                                                : section
+                                                        );
+
+                                                        updatedSections.forEach(section => {
+                                                            const originalSection = prevSections.find(s => s.key === section.key);
+                                                            if (originalSection && originalSection.isActive !== section.isActive) {
+                                                                setData(`show_${section.key}` as any, section.isActive);
+                                                            }
+                                                        });
+
+                                                        return updatedSections;
+                                                    });
+                                                }}
+                                                className="h-7 px-2 text-xs"
+                                            >
+                                                <EyeOff className="h-3 w-3 mr-1" />
+                                                {t('portfolio.edit.hideEmpty')}
+                                            </Button>
+                                        </div>
+                                    </div>
+                                </CardContent>
+                            </Card>
+                        </div>
+
+                        {/* Colonne 3: Prévisualisation */}
                         {previewMode && (
                             <motion.div
                                 initial={{ opacity: 0, x: 30 }}
                                 animate={{ opacity: 1, x: 0 }}
-                                transition={{ duration: 0.4 }}
-                                className="lg:col-span-1"
+                                exit={{ opacity: 0, x: 30 }}
+                                transition={{ duration: 0.3 }}
+                                className="space-y-4"
                             >
-                                <Card className="sticky top-6 shadow-2xl bg-white border-l-4 border-l-purple-500 overflow-hidden">
-                                    <CardHeader className="pb-4 bg-gradient-to-r from-purple-50 to-pink-50">
-                                        <CardTitle className="flex items-center justify-center gap-3">
-                                            <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center shadow-lg">
-                                                <Eye className="h-6 w-6 text-white" />
-                                            </div>
+                                <Card className="sticky top-6 border border-gray-200 dark:border-gray-700 shadow-sm overflow-hidden">
+                                    <CardHeader className="pb-3">
+                                        <CardTitle className="flex items-center gap-3">
+                                            <Eye className="h-5 w-5 text-gray-600 dark:text-gray-400" />
                                             <div>
-                                                <span className="text-xl font-bold text-gray-900 block">{t('portfolio.edit.livePreview')}</span>
-                                                <span className="text-sm text-gray-600">{t('portfolio.edit.realtimePreview')}</span>
+                                                <span className="text-base font-semibold text-gray-900 dark:text-white">{t('portfolio.edit.livePreview')}</span>
                                             </div>
                                         </CardTitle>
                                     </CardHeader>
                                     <CardContent className="p-0">
-                                        <div className="p-4">
-                                            <div className="aspect-[3/4] bg-gradient-to-br from-gray-100 to-gray-200 rounded-2xl overflow-hidden border-2 border-purple-200 shadow-inner">
+                                        <div className="p-3">
+                                            <div className="aspect-[3/4] bg-gray-100 dark:bg-gray-800 rounded-lg overflow-hidden border border-gray-200 dark:border-gray-600">
                                                 <iframe
                                                     src={portfolioUrl}
-                                                    className="w-full h-full border-0 scale-75 origin-top-left transition-all duration-300"
+                                                    className="w-full h-full border-0 scale-75 origin-top-left"
                                                     style={{ width: '133.33%', height: '133.33%' }}
                                                     title={t('portfolio.edit.portfolio_preview')}
                                                     loading="lazy"
                                                 />
                                             </div>
                                         </div>
-                                        <div className="p-3 bg-gray-50 dark:bg-gray-700 border-t border-gray-200 dark:border-gray-600">
-                                            <div className="flex gap-1">
+                                        <div className="p-3 bg-gray-50 dark:bg-gray-900 border-t border-gray-200 dark:border-gray-600">
+                                            <div className="flex gap-2">
                                                 <Button
                                                     onClick={() => window.open(portfolioUrl, '_blank')}
                                                     variant="outline"
-                                                    className="flex-1 h-9 border border-purple-200 dark:border-purple-600 text-purple-700 dark:text-purple-400 hover:bg-purple-50 dark:hover:bg-purple-900/20 hover:border-purple-300 font-medium text-sm"
+                                                    size="sm"
+                                                    className="flex-1 h-8 text-xs"
                                                 >
                                                     <Share className="h-3 w-3 mr-1" />
                                                     {t('portfolio.edit.fullscreen')}
@@ -648,7 +594,8 @@ export default function EditClean({ auth, portfolio, settings, cvData = portfoli
                                                 <Button
                                                     onClick={() => setShowQR(true)}
                                                     variant="outline"
-                                                    className="h-9 px-3 border border-purple-200 dark:border-purple-600 text-purple-700 dark:text-purple-400 hover:bg-purple-50 dark:hover:bg-purple-900/20 hover:border-purple-300 text-sm"
+                                                    size="sm"
+                                                    className="h-8 px-2 text-xs"
                                                 >
                                                     <QrCode className="h-3 w-3" />
                                                 </Button>

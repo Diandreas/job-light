@@ -83,6 +83,7 @@ export default function EditClean({ auth, portfolio, settings, cvData = portfoli
     const [isMobile, setIsMobile] = useState(false);
     const [previewKey, setPreviewKey] = useState(0);
     const [isRefreshing, setIsRefreshing] = useState(false);
+    const [dragY, setDragY] = useState(0);
 
     const { t } = useTranslation();
 
@@ -182,25 +183,12 @@ export default function EditClean({ auth, portfolio, settings, cvData = portfoli
 
     const onSubmit = (e) => {
         e.preventDefault();
-        setIsRefreshing(true);
         put(route('portfolio.update'), {
             preserveState: true,
             preserveScroll: true,
             onSuccess: () => {
-                // Refresh preview with cache busting
+                // Simple refresh de la preview
                 setPreviewKey(prev => prev + 1);
-
-                // Add a small delay to ensure the server has processed the changes
-                setTimeout(() => {
-                    setIsRefreshing(false);
-                    // Show success feedback on mobile
-                    if (isMobile) {
-                        setShowMobileControls(false);
-                    }
-                }, 500);
-            },
-            onError: () => {
-                setIsRefreshing(false);
             }
         });
     };
@@ -242,39 +230,13 @@ export default function EditClean({ auth, portfolio, settings, cvData = portfoli
                     {isMobile ? (
                         <div className="h-screen relative">
                             {/* Mobile Preview - TRUE Full Screen */}
-                            <div className="w-full h-full absolute inset-0 relative">
-                                {/* Refresh overlay */}
-                                {isRefreshing && (
-                                    <motion.div
-                                        initial={{ opacity: 0 }}
-                                        animate={{ opacity: 1 }}
-                                        className="absolute inset-0 bg-black/20 backdrop-blur-sm z-30 flex items-center justify-center"
-                                    >
-                                        <motion.div
-                                            initial={{ scale: 0.8, opacity: 0 }}
-                                            animate={{ scale: 1, opacity: 1 }}
-                                            className="bg-white/90 dark:bg-gray-800/90 rounded-2xl p-6 shadow-2xl flex flex-col items-center gap-3"
-                                        >
-                                            <motion.div
-                                                animate={{ rotate: 360 }}
-                                                transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-                                                className="w-8 h-8 border-3 border-blue-500 border-t-transparent rounded-full"
-                                            />
-                                            <p className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                                                Mise à jour en cours...
-                                            </p>
-                                        </motion.div>
-                                    </motion.div>
-                                )}
-
-                                <iframe
-                                    key={`preview-${previewKey}`}
-                                    src={`${portfolioUrl}?v=${previewKey}&t=${Date.now()}`}
-                                    className="w-full h-full border-0"
-                                    title={t('portfolio.edit.portfolio_preview')}
-                                    loading="lazy"
-                                />
-                            </div>
+                            <iframe
+                                key={`preview-${previewKey}`}
+                                src={`${portfolioUrl}?v=${previewKey}`}
+                                className="w-full h-full border-0 absolute inset-0"
+                                title={t('portfolio.edit.portfolio_preview')}
+                                loading="lazy"
+                            />
 
                             {/* Floating Action Buttons */}
                             <div className="fixed top-4 right-4 z-50 flex flex-col gap-3">
@@ -292,7 +254,10 @@ export default function EditClean({ auth, portfolio, settings, cvData = portfoli
                                 <motion.button
                                     whileHover={{ scale: 1.05 }}
                                     whileTap={{ scale: 0.95 }}
-                                    onClick={() => setShowMobileControls(!showMobileControls)}
+                                    onClick={() => {
+                                        setDragY(0); // Reset la position du drag
+                                        setShowMobileControls(!showMobileControls);
+                                    }}
                                     className={cn(
                                         "w-14 h-14 rounded-full shadow-xl flex items-center justify-center transition-all duration-300 border-2",
                                         showMobileControls
@@ -307,62 +272,14 @@ export default function EditClean({ auth, portfolio, settings, cvData = portfoli
                                         {showMobileControls ? (
                                             <X className="w-6 h-6" />
                                         ) : (
-                                            <Settings className="w-6 h-6" />
+                                            <Edit className="w-6 h-6" />
                                         )}
                                     </motion.div>
                                 </motion.button>
 
-                                {/* Quick Actions - Expandable */}
-                                <AnimatePresence>
-                                    {showMobileControls && (
-                                        <motion.div
-                                            initial={{ opacity: 0, y: -20, scale: 0.8 }}
-                                            animate={{ opacity: 1, y: 0, scale: 1 }}
-                                            exit={{ opacity: 0, y: -20, scale: 0.8 }}
-                                            transition={{ duration: 0.2, delay: 0.1 }}
-                                            className="flex flex-col gap-2"
-                                        >
-                                            {/* Quick Design Toggle */}
-                                            <motion.button
-                                                whileHover={{ scale: 1.05 }}
-                                                whileTap={{ scale: 0.95 }}
-                                                onClick={() => {
-                                                    const designs = ['professional', 'creative', 'minimal', 'modern', 'artistic_showcase'];
-                                                    const current = designs.indexOf(data.design);
-                                                    const next = (current + 1) % designs.length;
-                                                    setData('design', designs[next]);
-                                                }}
-                                                className="w-12 h-12 bg-white/90 dark:bg-gray-800/90 backdrop-blur-md rounded-full shadow-lg border border-gray-200/50 dark:border-gray-600/50 flex items-center justify-center text-gray-700 dark:text-gray-300 hover:bg-white dark:hover:bg-gray-800 transition-all duration-200"
-                                                title="Changer de design"
-                                            >
-                                                <Palette className="w-5 h-5" />
-                                            </motion.button>
-
-                                            {/* Quick Color Picker */}
-                                            <motion.div
-                                                whileHover={{ scale: 1.05 }}
-                                                whileTap={{ scale: 0.95 }}
-                                                className="relative"
-                                            >
-                                                <input
-                                                    type="color"
-                                                    value={data.primary_color}
-                                                    onChange={(e) => setData('primary_color', e.target.value)}
-                                                    className="w-12 h-12 rounded-full shadow-lg border-4 border-white dark:border-gray-800 cursor-pointer appearance-none bg-transparent"
-                                                    title="Changer la couleur"
-                                                    style={{
-                                                        backgroundColor: data.primary_color,
-                                                        WebkitAppearance: 'none',
-                                                        MozAppearance: 'none'
-                                                    }}
-                                                />
-                                            </motion.div>
-                                        </motion.div>
-                                    )}
-                                </AnimatePresence>
                             </div>
 
-                            {/* Compact Settings Panel - Slide from right */}
+                            {/* Bottom Drawer */}
                             <AnimatePresence>
                                 {showMobileControls && (
                                     <>
@@ -371,42 +288,81 @@ export default function EditClean({ auth, portfolio, settings, cvData = portfoli
                                             initial={{ opacity: 0 }}
                                             animate={{ opacity: 1 }}
                                             exit={{ opacity: 0 }}
-                                            className="fixed inset-0 bg-black/30 z-40"
+                                            className="fixed inset-0 bg-black/50 z-40"
                                             onClick={() => setShowMobileControls(false)}
                                         />
 
-                                        {/* Compact Side Panel */}
+                                        {/* Bottom Sheet */}
                                         <motion.div
-                                            initial={{ x: '100%', opacity: 0 }}
-                                            animate={{ x: 0, opacity: 1 }}
-                                            exit={{ x: '100%', opacity: 0 }}
-                                            transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-                                            className="fixed top-0 right-0 h-full w-80 bg-white/95 dark:bg-gray-900/95 backdrop-blur-xl shadow-2xl z-50 overflow-hidden"
+                                            initial={{ y: '100%' }}
+                                            animate={{ y: 0 }}
+                                            exit={{ y: '100%' }}
+                                            transition={{ type: 'spring', damping: 30, stiffness: 300 }}
+                                            drag="y"
+                                            dragConstraints={{ top: 0, bottom: 0 }}
+                                            dragElastic={{ top: 0, bottom: 0.2 }}
+                                            onDragEnd={(_, info) => {
+                                                if (info.offset.y > 100) {
+                                                    setShowMobileControls(false);
+                                                    setDragY(0); // Reset pour la prochaine fois
+                                                }
+                                            }}
+                                            className="fixed bottom-0 left-0 right-0 bg-white dark:bg-gray-900 rounded-t-2xl shadow-2xl z-50 max-h-[80vh] overflow-hidden"
                                         >
-                                            {/* Header */}
-                                            <div className="px-6 py-4 border-b border-gray-200/50 dark:border-gray-700/50 flex items-center justify-between">
-                                                <h3 className="text-xl font-bold text-gray-900 dark:text-white">
-                                                    ⚙️ Paramètres
-                                                </h3>
-                                                <motion.button
-                                                    whileHover={{ scale: 1.1 }}
-                                                    whileTap={{ scale: 0.9 }}
-                                                    onClick={() => setShowMobileControls(false)}
-                                                    className="w-8 h-8 rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
-                                                >
-                                                    <X className="w-4 h-4" />
-                                                </motion.button>
+                                            {/* Handle - Draggable */}
+                                            <div
+                                                className="flex justify-center py-3 cursor-grab active:cursor-grabbing"
+                                                onTouchStart={(e) => e.stopPropagation()}
+                                            >
+                                                <div className="w-12 h-1 bg-gray-400 dark:bg-gray-500 rounded-full" />
+                                            </div>
+
+                                            {/* Header avec Save Button */}
+                                            <div className="px-4 py-3 border-b border-gray-200 dark:border-gray-700">
+                                                <div className="flex items-center justify-between mb-3">
+                                                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+                                                        Paramètres
+                                                    </h3>
+                                                    <Button
+                                                        onClick={() => setShowMobileControls(false)}
+                                                        variant="ghost"
+                                                        size="sm"
+                                                        className="h-8 w-8 p-0"
+                                                    >
+                                                        <X className="h-4 w-4" />
+                                                    </Button>
+                                                </div>
+                                                {/* Save Button dans le header */}
+                                                <form onSubmit={onSubmit}>
+                                                    <Button
+                                                        type="submit"
+                                                        disabled={processing}
+                                                        className="w-full bg-blue-600 hover:bg-blue-700 text-white h-10 font-medium"
+                                                    >
+                                                        {processing ? (
+                                                            <>
+                                                                <RefreshCw className="h-4 w-4 mr-2 animate-spin" />
+                                                                Sauvegarde...
+                                                            </>
+                                                        ) : (
+                                                            <>
+                                                                <Save className="h-4 w-4 mr-2" />
+                                                                Sauvegarder
+                                                            </>
+                                                        )}
+                                                    </Button>
+                                                </form>
                                             </div>
 
                                             {/* Content */}
-                                            <div className="overflow-y-auto h-[calc(100vh-140px)]">
-                                                <div className="p-6 space-y-8">
-                                                    {/* Design Selection - Enhanced */}
+                                            <div className="overflow-y-auto max-h-[calc(80vh-160px)]">
+                                                <div className="p-4 space-y-4">
+                                                    {/* Design Selection - Compact */}
                                                     <div>
-                                                        <h4 className="text-base font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
-                                                            🎨 Style de design
+                                                        <h4 className="text-sm font-medium text-gray-900 dark:text-white mb-2">
+                                                            Design
                                                         </h4>
-                                                        <div className="grid grid-cols-2 gap-3">
+                                                        <div className="grid grid-cols-3 gap-1.5">
                                                             {DESIGN_OPTIONS.map((option) => (
                                                                 <motion.div
                                                                     key={option.value}
@@ -419,11 +375,11 @@ export default function EditClean({ auth, portfolio, settings, cvData = portfoli
                                                                     )}
                                                                     onClick={() => setData('design', option.value)}
                                                                 >
-                                                                    <div className="text-center p-3">
-                                                                        <div className="text-2xl mb-2">
+                                                                    <div className="text-center p-1.5">
+                                                                        <div className="text-base mb-0.5">
                                                                             {option.icon || '🎨'}
                                                                         </div>
-                                                                        <h5 className="font-semibold text-gray-900 dark:text-white text-sm">
+                                                                        <h5 className="font-medium text-gray-900 dark:text-white text-xs leading-tight">
                                                                             {option.labelKey === 'glassmorphism' ? 'Glass' :
                                                                                 option.labelKey === 'neonCyber' ? 'Neon' :
                                                                                     option.labelKey === 'elegantCorporate' ? 'Corp' :
@@ -444,96 +400,90 @@ export default function EditClean({ auth, portfolio, settings, cvData = portfoli
                                                         </div>
                                                     </div>
 
-                                                    {/* Color Picker */}
+                                                    {/* Color Picker - Compact */}
                                                     <div>
-                                                        <h4 className="text-base font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
-                                                            🎨 Couleur principale
+                                                        <h4 className="text-sm font-medium text-gray-900 dark:text-white mb-2">
+                                                            Couleur
                                                         </h4>
-                                                        <div className="bg-gray-50 dark:bg-gray-800 rounded-xl p-4">
-                                                            <div className="flex items-center gap-4 mb-3">
-                                                                <Input
-                                                                    type="color"
-                                                                    value={data.primary_color}
-                                                                    onChange={(e) => setData('primary_color', e.target.value)}
-                                                                    className="w-20 h-12 rounded-xl cursor-pointer border-2"
-                                                                />
-                                                                <div className="flex-1">
-                                                                    <span className="text-sm text-gray-500 dark:text-gray-400 font-mono block">
-                                                                        {data.primary_color}
-                                                                    </span>
-                                                                    <div
-                                                                        className="w-full h-3 rounded-full mt-1"
-                                                                        style={{ backgroundColor: data.primary_color }}
-                                                                    />
-                                                                </div>
-                                                            </div>
+                                                        <div className="flex items-center gap-2">
+                                                            <Input
+                                                                type="color"
+                                                                value={data.primary_color}
+                                                                onChange={(e) => setData('primary_color', e.target.value)}
+                                                                className="w-12 h-8 rounded cursor-pointer border"
+                                                            />
+                                                            <span className="text-xs text-gray-500 dark:text-gray-400 font-mono flex-1">
+                                                                {data.primary_color}
+                                                            </span>
                                                             <Button
                                                                 type="button"
                                                                 onClick={() => setData('primary_color', '#f59e0b')}
                                                                 variant="outline"
                                                                 size="sm"
-                                                                className="w-full h-10"
+                                                                className="h-7 px-2 text-xs"
                                                             >
-                                                                Couleur par défaut
+                                                                Reset
                                                             </Button>
                                                         </div>
                                                     </div>
 
-                                                    {/* Sections - Enhanced List */}
+                                                    {/* Sections - Ultra Compact */}
                                                     <div>
-                                                        <div className="flex items-center justify-between mb-4">
-                                                            <h4 className="text-base font-semibold text-gray-900 dark:text-white flex items-center gap-2">
-                                                                📋 Sections
-                                                            </h4>
-                                                            <Badge variant="secondary" className="text-sm px-3 py-1">
+                                                        <div className="flex items-center justify-between mb-2">
+                                                            <div>
+                                                                <h4 className="text-sm font-medium text-gray-900 dark:text-white">
+                                                                    Sections visibles
+                                                                </h4>
+                                                                <p className="text-xs text-gray-500 dark:text-gray-400">
+                                                                    Tap pour afficher/masquer
+                                                                </p>
+                                                            </div>
+                                                            <Badge variant="secondary" className="text-xs px-1.5 py-0.5">
                                                                 {sections.filter(s => s.isActive).length}/{sections.length}
                                                             </Badge>
                                                         </div>
-                                                        <div className="space-y-3">
+                                                        <div className="grid grid-cols-2 gap-1.5">
                                                             {sections.map((section) => {
                                                                 const IconComponent = section.icon;
                                                                 return (
                                                                     <div
                                                                         key={section.key}
                                                                         className={cn(
-                                                                            "flex items-center justify-between p-4 rounded-xl border-2 transition-all duration-200",
+                                                                            "flex flex-col items-center p-2 rounded-lg border transition-all cursor-pointer",
                                                                             section.count === 0
                                                                                 ? "border-orange-200 dark:border-orange-600 bg-orange-50 dark:bg-orange-950 opacity-60"
                                                                                 : section.isActive
                                                                                     ? "border-green-300 dark:border-green-600 bg-green-50 dark:bg-green-950"
-                                                                                    : "border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-800"
+                                                                                    : "border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700"
                                                                         )}
+                                                                        onClick={() => {
+                                                                            if (section.count > 0) {
+                                                                                handleToggleSection(section.key);
+                                                                            }
+                                                                        }}
                                                                     >
-                                                                        <div className="flex items-center gap-4">
-                                                                            <div className={cn(
-                                                                                "w-10 h-10 rounded-xl flex items-center justify-center",
-                                                                                section.count === 0
-                                                                                    ? "bg-orange-100 dark:bg-orange-800 text-orange-500"
-                                                                                    : section.isActive
-                                                                                        ? "bg-green-100 dark:bg-green-800 text-green-600"
-                                                                                        : "bg-gray-100 dark:bg-gray-600 text-gray-400"
-                                                                            )}>
-                                                                                <IconComponent className="w-5 h-5" />
-                                                                            </div>
-                                                                            <div className="flex-1">
-                                                                                <span className="text-base font-semibold text-gray-900 dark:text-white block">
-                                                                                    {section.label}
-                                                                                </span>
-                                                                                <div className="text-sm text-gray-500 dark:text-gray-400">
-                                                                                    {section.count} élément{section.count !== 1 ? 's' : ''}
-                                                                                </div>
-                                                                            </div>
+                                                                        <div className={cn(
+                                                                            "w-6 h-6 rounded-full flex items-center justify-center mb-1",
+                                                                            section.count === 0
+                                                                                ? "bg-orange-100 dark:bg-orange-800 text-orange-500"
+                                                                                : section.isActive
+                                                                                    ? "bg-green-100 dark:bg-green-800 text-green-600"
+                                                                                    : "bg-gray-100 dark:bg-gray-600 text-gray-400"
+                                                                        )}>
+                                                                            <IconComponent className="w-3 h-3" />
                                                                         </div>
-                                                                        <Switch
-                                                                            checked={section.isActive}
-                                                                            disabled={section.count === 0}
-                                                                            onCheckedChange={() => {
-                                                                                if (section.count > 0) {
-                                                                                    handleToggleSection(section.key);
-                                                                                }
-                                                                            }}
-                                                                            className="data-[state=checked]:bg-green-500"
-                                                                        />
+                                                                        <span className="text-xs font-medium text-gray-900 dark:text-white text-center leading-tight">
+                                                                            {section.label.split(' ')[0]}
+                                                                        </span>
+                                                                        <div className="text-xs text-gray-500 text-center">
+                                                                            {section.count}
+                                                                        </div>
+                                                                        <div className="mt-1">
+                                                                            <div className={cn(
+                                                                                "w-3 h-3 rounded-full",
+                                                                                section.isActive ? "bg-green-500" : "bg-gray-300"
+                                                                            )} />
+                                                                        </div>
                                                                     </div>
                                                                 );
                                                             })}
@@ -541,41 +491,6 @@ export default function EditClean({ auth, portfolio, settings, cvData = portfoli
                                                     </div>
 
                                                 </div>
-                                            </div>
-
-                                            {/* Fixed Save Button */}
-                                            <div className="absolute bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-white via-white to-transparent dark:from-gray-900 dark:via-gray-900 dark:to-transparent">
-                                                <form onSubmit={onSubmit}>
-                                                    <motion.button
-                                                        type="submit"
-                                                        disabled={processing || isRefreshing}
-                                                        whileHover={{ scale: processing || isRefreshing ? 1 : 1.02 }}
-                                                        whileTap={{ scale: processing || isRefreshing ? 1 : 0.98 }}
-                                                        className={cn(
-                                                            "w-full h-14 font-bold rounded-2xl shadow-xl transition-all duration-200 flex items-center justify-center gap-3",
-                                                            processing || isRefreshing
-                                                                ? "bg-gray-400 cursor-not-allowed"
-                                                                : "bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white"
-                                                        )}
-                                                    >
-                                                        {processing ? (
-                                                            <>
-                                                                <RefreshCw className="h-5 w-5 animate-spin" />
-                                                                <span>Sauvegarde...</span>
-                                                            </>
-                                                        ) : isRefreshing ? (
-                                                            <>
-                                                                <RefreshCw className="h-5 w-5 animate-spin" />
-                                                                <span>Actualisation...</span>
-                                                            </>
-                                                        ) : (
-                                                            <>
-                                                                <Save className="h-5 w-5" />
-                                                                <span>Sauvegarder les modifications</span>
-                                                            </>
-                                                        )}
-                                                    </motion.button>
-                                                </form>
                                             </div>
                                         </motion.div>
                                     </>
@@ -905,20 +820,10 @@ export default function EditClean({ auth, portfolio, settings, cvData = portfoli
                                         </CardHeader>
                                         <CardContent className="p-0">
                                             <div className="p-3">
-                                                <div className="aspect-[3/4] bg-gray-100 dark:bg-gray-800 rounded-lg overflow-hidden border border-gray-200 dark:border-gray-600 relative">
-                                                    {/* Desktop refresh overlay */}
-                                                    {isRefreshing && (
-                                                        <div className="absolute inset-0 bg-black/10 backdrop-blur-sm z-10 flex items-center justify-center">
-                                                            <div className="bg-white/90 dark:bg-gray-800/90 rounded-lg p-3 shadow-lg flex items-center gap-2">
-                                                                <RefreshCw className="h-4 w-4 animate-spin text-blue-500" />
-                                                                <span className="text-sm text-gray-700 dark:text-gray-300">Actualisation...</span>
-                                                            </div>
-                                                        </div>
-                                                    )}
-
+                                                <div className="aspect-[3/4] bg-gray-100 dark:bg-gray-800 rounded-lg overflow-hidden border border-gray-200 dark:border-gray-600">
                                                     <iframe
                                                         key={`desktop-preview-${previewKey}`}
-                                                        src={`${portfolioUrl}?v=${previewKey}&t=${Date.now()}`}
+                                                        src={`${portfolioUrl}?v=${previewKey}`}
                                                         className="w-full h-full border-0 scale-75 origin-top-left"
                                                         style={{ width: '133.33%', height: '133.33%' }}
                                                         title={t('portfolio.edit.portfolio_preview')}

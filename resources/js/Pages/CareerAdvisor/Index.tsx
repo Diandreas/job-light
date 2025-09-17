@@ -10,7 +10,6 @@ import { useMedian } from '@/Hooks/useMedian';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { ScrollArea } from "@/Components/ui/scroll-area";
 import { AnimatePresence, motion } from 'framer-motion';
-import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/Components/ui/sheet";
 import {
     Brain, Wallet, Clock, Loader, Download, Coins, Trash2,
     MessageSquare, Calendar, Menu, Send, Plus,
@@ -378,6 +377,7 @@ const UltraCompactSidebar = ({
     onChatSelect,
     onChatDelete,
     onServiceSelect,
+    onCloseMobile = null,
     isMobile = false
 }) => {
     const { t } = useTranslation();
@@ -394,6 +394,23 @@ const UltraCompactSidebar = ({
                 "border-b border-gray-200 dark:border-gray-800",
                 isMobile ? "p-4" : "p-2"
             )}>
+                {/* Bouton fermeture mobile */}
+                {isMobile && onCloseMobile && (
+                    <div className="flex justify-end mb-2">
+                        <Button
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                onCloseMobile();
+                            }}
+                            variant="ghost"
+                            size="sm"
+                            className="h-8 w-8 p-0"
+                        >
+                            <ChevronLeft className="h-4 w-4" />
+                        </Button>
+                    </div>
+                )}
+
                 {isCollapsed ? (
                     <div className="flex flex-col items-center gap-2">
                         <Avatar className="w-8 h-8">
@@ -403,7 +420,10 @@ const UltraCompactSidebar = ({
                             </AvatarFallback>
                         </Avatar>
                         <Button
-                            onClick={onNewChat}
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                onNewChat();
+                            }}
                             size="sm"
                             className="w-8 h-8 p-0 bg-gradient-to-r from-amber-500 to-purple-500"
                         >
@@ -456,7 +476,10 @@ const UltraCompactSidebar = ({
                                 {SERVICES.map((service) => (
                                     <DropdownMenuItem
                                         key={service.id}
-                                        onSelect={() => onServiceSelect(service)}
+                                        onSelect={(e) => {
+                                            e.stopPropagation();
+                                            onServiceSelect(service);
+                                        }}
                                         className="text-xs"
                                     >
                                         <service.icon className="h-3.5 w-3.5 mr-2" />
@@ -469,7 +492,10 @@ const UltraCompactSidebar = ({
 
 
                         <Button
-                            onClick={onNewChat}
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                onNewChat();
+                            }}
                             className="w-full h-7 bg-gradient-to-r from-amber-500 to-purple-500 text-white text-xs"
                         >
                             <Plus className="h-3.5 w-3.5 mr-1" />
@@ -1075,41 +1101,48 @@ export default function EnhancedCareerAdvisor({ auth, userInfo, chatHistories })
         });
     };
 
-    // Nouveau sidebar mobile utilisant le même composant que desktop
+    // Sidebar mobile simple avec Tailwind CSS
     const MobileSidebarComplete = () => {
-
         return (
-            <Sheet open={isMobileSidebarOpen} onOpenChange={setIsMobileSidebarOpen}>
-                <SheetContent side="left" className="w-[320px] sm:w-[400px] p-0 bg-white dark:bg-gray-900">
-                    {/* Titre caché pour l'accessibilité */}
-                    <SheetTitle className="sr-only">Menu de navigation</SheetTitle>
+            <>
+                {/* Overlay */}
+                {isMobileSidebarOpen && (
+                    <div
+                        className="fixed inset-0 bg-black bg-opacity-50 z-40 md:hidden"
+                        onClick={() => setIsMobileSidebarOpen(false)}
+                    />
+                )}
 
-                    <div className="h-full">
-                        <UltraCompactSidebar
-                            isCollapsed={false}
-                            onToggleCollapse={() => { }}
-                            walletBalance={walletBalance}
-                            onNewChat={createNewChat}
-                            userChats={userChats}
-                            selectedService={selectedService}
-                            activeChat={activeChat}
-                            onChatSelect={(chat) => {
-                                handleChatSelection(chat);
-                                // Fermeture avec délai pour une meilleure UX
-                                setTimeout(() => {
-                                    setIsMobileSidebarOpen(false);
-                                }, 200);
-                            }}
-                            onChatDelete={confirmDeleteChat}
-                            onServiceSelect={(service) => {
-                                handleServiceSelection(service);
-                                // Ne pas fermer automatiquement le sidebar mobile
-                            }}
-                            isMobile={true}
-                        />
-                    </div>
-                </SheetContent>
-            </Sheet>
+                {/* Sidebar */}
+                <div className={`
+                    fixed top-0 left-0 h-full w-80 bg-white dark:bg-gray-900 transform transition-transform duration-300 ease-in-out z-50 md:hidden
+                    ${isMobileSidebarOpen ? 'translate-x-0' : '-translate-x-full'}
+                `}>
+                    <UltraCompactSidebar
+                        isCollapsed={false}
+                        onToggleCollapse={() => { }}
+                        walletBalance={walletBalance}
+                        onNewChat={createNewChat}
+                        userChats={userChats}
+                        selectedService={selectedService}
+                        activeChat={activeChat}
+                        onChatSelect={(chat) => {
+                            handleChatSelection(chat);
+                            // Fermeture avec délai pour une meilleure UX
+                            setTimeout(() => {
+                                setIsMobileSidebarOpen(false);
+                            }, 200);
+                        }}
+                        onChatDelete={confirmDeleteChat}
+                        onServiceSelect={(service) => {
+                            handleServiceSelection(service);
+                            // Ne pas fermer automatiquement le sidebar mobile
+                        }}
+                        onCloseMobile={() => setIsMobileSidebarOpen(false)}
+                        isMobile={true}
+                    />
+                </div>
+            </>
         );
     };
 

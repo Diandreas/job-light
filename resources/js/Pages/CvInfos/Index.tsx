@@ -50,7 +50,7 @@ const getSidebarItems = (t: any) => [
     { id: 'personalInfo', label: t('cvInterface.steps.step1'), icon: User, color: 'text-amber-500' },
     { id: 'professionSummary', label: t('cvInterface.steps.step2'), icon: FileText, color: 'text-blue-500' },
     { id: 'experience', label: t('cvInterface.steps.step3'), icon: Briefcase, color: 'text-amber-600' },
-    { id: 'skills', label: t('cvInterface.steps.step4'), icon: Code, color: 'text-purple-600' }
+    { id: 'skills', label: t('cvInterface.steps.step5'), icon: Code, color: 'text-purple-600' }
 ];
 
 const getPersonalInfoFields = (t: any) => [
@@ -1602,14 +1602,6 @@ export default function CvInterface({ auth, cvInformation: initialCvInformation 
     }, [cvInformation]);
 
 
-    // Utilisation des traductions pour les champs d'information personnelle
-    const translatedPersonalInfoFields = [
-        { label: t('cv.personal.email'), key: "email", icon: Mail },
-        { label: t('cv.personal.phone'), key: "phone", icon: Phone },
-        { label: t('cv.personal.address'), key: "address", icon: MapPin },
-        { label: t('cv.personal.linkedin'), key: "linkedin", icon: Linkedin },
-        { label: t('cv.personal.github'), key: "github", icon: Github }
-    ];
 
     const updateCvInformation = useCallback((section, data) => {
         console.log(`Mise à jour de la section ${section}:`, data);
@@ -1618,10 +1610,10 @@ export default function CvInterface({ auth, cvInformation: initialCvInformation 
             if (section === 'summaries') {
                 newState.summaries = data;
                 if (Array.isArray(data) && data.length > 0) {
-                    const existingIds = new Set(newState.allsummaries.map(s => s.id));
+                    const existingIds = new Set((newState.allsummaries || []).map(s => s.id));
                     data.forEach(summary => {
                         if (!existingIds.has(summary.id)) {
-                            newState.allsummaries.push(summary);
+                            newState.allsummaries = [...(newState.allsummaries || []), summary];
                         } else {
                             const index = newState.allsummaries.findIndex(s => s.id === summary.id);
                             if (index !== -1) {
@@ -1630,6 +1622,9 @@ export default function CvInterface({ auth, cvInformation: initialCvInformation 
                         }
                     });
                 }
+            } else if (section === 'cv_title') {
+                // Mettre à jour le titre CV dans auth.user pour la cohérence
+                newState.cv_title = data;
             } else {
                 newState[section] = Array.isArray(data) ? [...data] : { ...data };
             }
@@ -1640,10 +1635,10 @@ export default function CvInterface({ auth, cvInformation: initialCvInformation 
 
     const completionStatus = {
         personalInfo: Boolean(cvInformation.personalInformation?.firstName),
-        professionSummary: (cvInformation.summaries?.length > 0) &&
-            (Boolean(cvInformation.userProfession) ||
-                Boolean(cvInformation.personalInformation?.full_profession) ||
-                Boolean(localStorage.getItem('manual_profession'))),
+        professionSummary: (Boolean(cvInformation.userProfession) ||
+            Boolean(cvInformation.personalInformation?.full_profession) ||
+            Boolean(localStorage.getItem('manual_profession'))) &&
+            (cvInformation.summaries?.length > 0),
         experience: cvInformation.experiences?.length > 0,
         skills: (cvInformation.competences?.length > 0) ||
             (cvInformation.languages?.length > 0) ||
@@ -1686,9 +1681,9 @@ export default function CvInterface({ auth, cvInformation: initialCvInformation 
                 return (
                     <ProfessionSummaryManager
                         auth={auth}
-                        summaries={cvInformation.allsummaries}
-                        selectedSummary={cvInformation.summaries}
-                        availableProfessions={cvInformation.availableProfessions}
+                        summaries={cvInformation.allsummaries || []}
+                        selectedSummary={cvInformation.summaries || []}
+                        availableProfessions={cvInformation.availableProfessions || []}
                         initialUserProfession={cvInformation.userProfession}
                         onSummaryUpdate={(summaries) => updateCvInformation('summaries', summaries)}
                         onProfessionUpdate={(profession, manualText) => {

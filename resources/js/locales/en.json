@@ -884,6 +884,87 @@
                 "tooLarge": "File is too large",
                 "tooLargeDescription": "Maximum file size is 5MB"
             }
+        },
+        "manager": {
+            "title": "Experience Management",
+            "types": {
+                "professional": "Pro",
+                "academic": "Education",
+                "internship": "Internship",
+                "employment": "Employment",
+                "freelance": "Freelance"
+            },
+            "placeholders": {
+                "jobTitle": "Job title",
+                "institution": "Company/Institution",
+                "ongoing": "Ongoing",
+                "searchExperience": "Search by name, institution or description...",
+                "optionalDescription": "Description (optional)"
+            },
+            "buttons": {
+                "addEducation": "Add education",
+                "addProfessional": "Add professional experience",
+                "addExperience": "Add experience",
+                "cancel": "Cancel",
+                "save": "Save",
+                "saving": "Saving...",
+                "adding": "Adding..."
+            },
+            "messages": {
+                "noExperienceFound": "No experience found",
+                "noExperienceAdded": "No experience added",
+                "tryOtherKeywords": "Try with other keywords",
+                "useButtonsAbove": "Use the buttons above to add your experiences"
+            },
+            "counts": {
+                "education": "Education",
+                "professional": "Pro"
+            },
+            "examples": {
+                "jobTitles": {
+                    "fullStack": "Full Stack Developer",
+                    "frontend": "Frontend Developer",
+                    "backend": "Backend Developer",
+                    "projectManager": "Project Manager",
+                    "productManager": "Product Manager",
+                    "uxDesigner": "UX/UI Designer",
+                    "dataAnalyst": "Data Analyst",
+                    "devOps": "DevOps Engineer",
+                    "scrumMaster": "Scrum Master",
+                    "businessAnalyst": "Business Analyst"
+                },
+                "companies": {
+                    "google": "Google",
+                    "microsoft": "Microsoft",
+                    "apple": "Apple",
+                    "amazon": "Amazon",
+                    "meta": "Meta",
+                    "netflix": "Netflix",
+                    "spotify": "Spotify",
+                    "airbnb": "Airbnb",
+                    "uber": "Uber",
+                    "tesla": "Tesla",
+                    "openai": "OpenAI",
+                    "github": "GitHub",
+                    "stripe": "Stripe",
+                    "shopify": "Shopify"
+                },
+                "educationTitles": {
+                    "masterIT": "Master in Computer Science",
+                    "licenceMath": "Bachelor in Mathematics",
+                    "phdPhysics": "PhD in Physics",
+                    "btsIT": "BTS Computer Science",
+                    "dutCivil": "DUT Civil Engineering"
+                },
+                "institutions": {
+                    "uniParis": "University of Paris",
+                    "polytechnique": "École Polytechnique",
+                    "hec": "HEC Paris",
+                    "sorbonne": "Sorbonne University",
+                    "insaLyon": "INSA Lyon"
+                }
+            },
+            "ongoing": "Ongoing"
         }
     },
     "cvInterface": {
@@ -925,6 +1006,7 @@
             "description": "Manage your professional, academic and volunteer experiences",
             "education": "Education",
             "professional": "Professional",
+            "ongoing": "Ongoing",
             "searchPlaceholder": "Search experience...",
             "noEducationFound": "No education found",
             "noEducationAdded": "No education added",

@@ -13,6 +13,7 @@ import {
     SelectValue
 } from "@/Components/ui/select";
 import { useToast } from '@/Components/ui/use-toast';
+import { ScrollArea } from "@/Components/ui/scroll-area";
 import {
     Briefcase,
     GraduationCap,
@@ -69,7 +70,8 @@ const ExperienceManager: React.FC<Props> = ({ auth, experiences: initialExperien
 
     // States ultra-compacts
     const [experiences, setExperiences] = useState<Experience[]>(initialExperiences);
-    const [isAdding, setIsAdding] = useState(false);
+    const [isAddingAcademic, setIsAddingAcademic] = useState(false);
+    const [isAddingProfessional, setIsAddingProfessional] = useState(false);
     const [editingId, setEditingId] = useState<number | null>(null);
     const [isLoading, setIsLoading] = useState(false);
     const [searchTerm, setSearchTerm] = useState('');
@@ -78,14 +80,33 @@ const ExperienceManager: React.FC<Props> = ({ auth, experiences: initialExperien
 
     // Données pour auto-complétion
     const jobTitles = [
-        'Développeur Full Stack', 'Développeur Frontend', 'Développeur Backend',
-        'Chef de Projet', 'Product Manager', 'UX/UI Designer', 'Data Analyst',
-        'DevOps Engineer', 'Scrum Master', 'Business Analyst'
+        t('experiences.manager.examples.jobTitles.fullStack'),
+        t('experiences.manager.examples.jobTitles.frontend'),
+        t('experiences.manager.examples.jobTitles.backend'),
+        t('experiences.manager.examples.jobTitles.projectManager'),
+        t('experiences.manager.examples.jobTitles.productManager'),
+        t('experiences.manager.examples.jobTitles.uxDesigner'),
+        t('experiences.manager.examples.jobTitles.dataAnalyst'),
+        t('experiences.manager.examples.jobTitles.devOps'),
+        t('experiences.manager.examples.jobTitles.scrumMaster'),
+        t('experiences.manager.examples.jobTitles.businessAnalyst')
     ];
 
     const companies = [
-        'Google', 'Microsoft', 'Apple', 'Amazon', 'Meta', 'Netflix', 'Spotify',
-        'Airbnb', 'Uber', 'Tesla', 'OpenAI', 'GitHub', 'Stripe', 'Shopify'
+        t('experiences.manager.examples.companies.google'),
+        t('experiences.manager.examples.companies.microsoft'),
+        t('experiences.manager.examples.companies.apple'),
+        t('experiences.manager.examples.companies.amazon'),
+        t('experiences.manager.examples.companies.meta'),
+        t('experiences.manager.examples.companies.netflix'),
+        t('experiences.manager.examples.companies.spotify'),
+        t('experiences.manager.examples.companies.airbnb'),
+        t('experiences.manager.examples.companies.uber'),
+        t('experiences.manager.examples.companies.tesla'),
+        t('experiences.manager.examples.companies.openai'),
+        t('experiences.manager.examples.companies.github'),
+        t('experiences.manager.examples.companies.stripe'),
+        t('experiences.manager.examples.companies.shopify')
     ];
 
     // Filtrer les expériences selon le terme de recherche
@@ -139,7 +160,8 @@ const ExperienceManager: React.FC<Props> = ({ auth, experiences: initialExperien
                 description: t('experiences.success.formDescription'),
             });
 
-            setIsAdding(false);
+            setIsAddingAcademic(false);
+            setIsAddingProfessional(false);
             setEditingId(null);
         } catch (error: any) {
             toast({
@@ -254,7 +276,7 @@ const ExperienceManager: React.FC<Props> = ({ auth, experiences: initialExperien
                             <SmartInput
                                 value={formData.name}
                                 onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
-                                placeholder="Titre du poste"
+                                placeholder={t('experiences.manager.placeholders.jobTitle')}
                                 suggestions={jobTitles}
                             />
                             <Select
@@ -265,9 +287,9 @@ const ExperienceManager: React.FC<Props> = ({ auth, experiences: initialExperien
                                     <SelectValue />
                                 </SelectTrigger>
                                 <SelectContent>
-                                    <SelectItem value="1">Pro</SelectItem>
-                                    <SelectItem value="2">Formation</SelectItem>
-                                    <SelectItem value="3">Stage</SelectItem>
+                                    <SelectItem value="1">{t('experiences.manager.types.professional')}</SelectItem>
+                                    <SelectItem value="2">{t('experiences.manager.types.academic')}</SelectItem>
+                                    <SelectItem value="3">{t('experiences.manager.types.internship')}</SelectItem>
                                 </SelectContent>
                             </Select>
                         </div>
@@ -277,7 +299,7 @@ const ExperienceManager: React.FC<Props> = ({ auth, experiences: initialExperien
                             <SmartInput
                                 value={formData.InstitutionName}
                                 onChange={(e) => setFormData(prev => ({ ...prev, InstitutionName: e.target.value }))}
-                                placeholder="Entreprise/Institution"
+                                placeholder={t('experiences.manager.placeholders.institution')}
                                 suggestions={companies}
                             />
                             <Input
@@ -290,7 +312,7 @@ const ExperienceManager: React.FC<Props> = ({ auth, experiences: initialExperien
                                 type="date"
                                 value={formData.date_end || ''}
                                 onChange={(e) => setFormData(prev => ({ ...prev, date_end: e.target.value }))}
-                                placeholder="En cours"
+                                placeholder={t('experiences.manager.placeholders.ongoing')}
                                 className="w-32"
                             />
                         </div>
@@ -299,7 +321,7 @@ const ExperienceManager: React.FC<Props> = ({ auth, experiences: initialExperien
                         <Textarea
                             value={formData.description}
                             onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
-                            placeholder="Description (optionnelle)"
+                            placeholder={t('experiences.manager.placeholders.optionalDescription')}
                             rows={2}
                         />
 
@@ -307,11 +329,11 @@ const ExperienceManager: React.FC<Props> = ({ auth, experiences: initialExperien
                         <div className="flex gap-2 justify-end">
                             <Button size="sm" variant="outline" onClick={onCancel}>
                                 <X className="w-3 h-3 mr-1" />
-                                Annuler
+                                {t('experiences.manager.buttons.cancel')}
                             </Button>
                             <Button size="sm" onClick={() => onSave(formData)} disabled={isLoading}>
                                 <Check className="w-3 h-3 mr-1" />
-                                {isLoading ? 'Sauvegarde...' : 'Sauvegarder'}
+                                {isLoading ? t('experiences.manager.buttons.saving') : t('experiences.manager.buttons.save')}
                             </Button>
                         </div>
                     </div>
@@ -370,8 +392,8 @@ const ExperienceManager: React.FC<Props> = ({ auth, experiences: initialExperien
         );
     };
 
-    // Formulaire d'ajout inline ultra-compact
-    const InlineExperienceForm: React.FC<{
+    // Formulaire d'ajout formation
+    const AcademicForm: React.FC<{
         onSave: (data: Partial<Experience>) => void;
         onCancel: () => void;
     }> = ({ onSave, onCancel }) => {
@@ -381,7 +403,7 @@ const ExperienceManager: React.FC<Props> = ({ auth, experiences: initialExperien
             date_start: '',
             date_end: '',
             description: '',
-            experience_categories_id: '1'
+            experience_categories_id: '2' // Formation
         });
 
         return (
@@ -393,8 +415,111 @@ const ExperienceManager: React.FC<Props> = ({ auth, experiences: initialExperien
             >
                 <div className="space-y-3">
                     <div className="flex items-center gap-2 mb-3">
-                        <Plus className="w-4 h-4 text-amber-600" />
-                        <h3 className="font-semibold text-amber-800 dark:text-amber-200">Ajouter une expérience</h3>
+                        <GraduationCap className="w-4 h-4 text-amber-600" />
+                        <h3 className="font-semibold text-amber-800 dark:text-amber-200">{t('experiences.manager.buttons.addEducation')}</h3>
+                    </div>
+
+                    {/* Ligne 1: Titre (fixé sur Formation) */}
+                    <div className="flex gap-2">
+                        <SmartInput
+                            value={formData.name || ''}
+                            onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
+                            placeholder={t('experiences.manager.examples.educationTitles.masterIT')}
+                            suggestions={[
+                                t('experiences.manager.examples.educationTitles.masterIT'),
+                                t('experiences.manager.examples.educationTitles.licenceMath'),
+                                t('experiences.manager.examples.educationTitles.phdPhysics'),
+                                t('experiences.manager.examples.educationTitles.btsIT'),
+                                t('experiences.manager.examples.educationTitles.dutCivil')
+                            ]}
+                        />
+                        <div className="w-28 flex items-center justify-center px-3 py-2 bg-amber-100 dark:bg-amber-900 rounded-md">
+                            <span className="text-xs font-medium text-amber-800 dark:text-amber-200">{t('experiences.manager.types.academic')}</span>
+                        </div>
+                    </div>
+
+                    {/* Ligne 2: Institution et Dates */}
+                    <div className="flex gap-2">
+                        <SmartInput
+                            value={formData.InstitutionName || ''}
+                            onChange={(e) => setFormData(prev => ({ ...prev, InstitutionName: e.target.value }))}
+                            placeholder={t('experiences.manager.examples.institutions.uniParis')}
+                            suggestions={[
+                                t('experiences.manager.examples.institutions.uniParis'),
+                                t('experiences.manager.examples.institutions.polytechnique'),
+                                t('experiences.manager.examples.institutions.hec'),
+                                t('experiences.manager.examples.institutions.sorbonne'),
+                                t('experiences.manager.examples.institutions.insaLyon')
+                            ]}
+                        />
+                        <Input
+                            type="date"
+                            value={formData.date_start || ''}
+                            onChange={(e) => setFormData(prev => ({ ...prev, date_start: e.target.value }))}
+                            className="w-32"
+                        />
+                        <Input
+                            type="date"
+                            value={formData.date_end || ''}
+                            onChange={(e) => setFormData(prev => ({ ...prev, date_end: e.target.value }))}
+                            placeholder={t('experiences.manager.placeholders.ongoing')}
+                            className="w-32"
+                        />
+                    </div>
+
+                    {/* Ligne 3: Description (optionnelle) */}
+                    <Textarea
+                        value={formData.description || ''}
+                        onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
+                        placeholder={t('experiences.manager.placeholders.optionalDescription')}
+                        rows={2}
+                    />
+
+                    {/* Actions */}
+                    <div className="flex gap-2 justify-end">
+                        <Button variant="outline" onClick={onCancel} className="flex-1">
+                            <X className="w-3 h-3 mr-1" />
+                            {t('experiences.manager.buttons.cancel')}
+                        </Button>
+                        <Button
+                            onClick={() => onSave(formData)}
+                            disabled={isLoading || !formData.name || !formData.InstitutionName || !formData.date_start}
+                            className="flex-1 bg-gradient-to-r from-amber-500 to-yellow-500 hover:from-amber-600 hover:to-yellow-600"
+                        >
+                            <Check className="w-3 h-3 mr-1" />
+                            {isLoading ? t('experiences.manager.buttons.adding') : t('common.add')}
+                        </Button>
+                    </div>
+                </div>
+            </motion.div>
+        );
+    };
+
+    // Formulaire d'ajout professionnel
+    const ProfessionalForm: React.FC<{
+        onSave: (data: Partial<Experience>) => void;
+        onCancel: () => void;
+    }> = ({ onSave, onCancel }) => {
+        const [formData, setFormData] = useState<Partial<Experience>>({
+            name: '',
+            InstitutionName: '',
+            date_start: '',
+            date_end: '',
+            description: '',
+            experience_categories_id: '1' // Professionnel
+        });
+
+        return (
+            <motion.div
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: 'auto' }}
+                exit={{ opacity: 0, height: 0 }}
+                className="bg-gradient-to-r from-purple-50 to-blue-50 dark:from-purple-900/20 dark:to-blue-900/20 border border-purple-200 dark:border-purple-700 rounded-lg p-4"
+            >
+                <div className="space-y-3">
+                    <div className="flex items-center gap-2 mb-3">
+                        <Briefcase className="w-4 h-4 text-purple-600" />
+                        <h3 className="font-semibold text-purple-800 dark:text-purple-200">{t('experiences.manager.buttons.addProfessional')}</h3>
                     </div>
 
                     {/* Ligne 1: Titre et Type */}
@@ -402,7 +527,7 @@ const ExperienceManager: React.FC<Props> = ({ auth, experiences: initialExperien
                         <SmartInput
                             value={formData.name || ''}
                             onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
-                            placeholder="Ex: Développeur Full Stack"
+                            placeholder={t('experiences.manager.examples.jobTitles.fullStack')}
                             suggestions={jobTitles}
                         />
                         <Select
@@ -413,9 +538,9 @@ const ExperienceManager: React.FC<Props> = ({ auth, experiences: initialExperien
                                 <SelectValue />
                             </SelectTrigger>
                             <SelectContent>
-                                <SelectItem value="1">Pro</SelectItem>
-                                <SelectItem value="2">Formation</SelectItem>
-                                <SelectItem value="3">Stage</SelectItem>
+                                <SelectItem value="1">{t('experiences.manager.types.employment')}</SelectItem>
+                                <SelectItem value="3">{t('experiences.manager.types.internship')}</SelectItem>
+                                <SelectItem value="4">{t('experiences.manager.types.freelance')}</SelectItem>
                             </SelectContent>
                         </Select>
                     </div>
@@ -425,7 +550,7 @@ const ExperienceManager: React.FC<Props> = ({ auth, experiences: initialExperien
                         <SmartInput
                             value={formData.InstitutionName || ''}
                             onChange={(e) => setFormData(prev => ({ ...prev, InstitutionName: e.target.value }))}
-                            placeholder="Ex: Google Inc."
+                            placeholder={t('experiences.manager.examples.companies.google')}
                             suggestions={companies}
                         />
                         <Input
@@ -438,7 +563,7 @@ const ExperienceManager: React.FC<Props> = ({ auth, experiences: initialExperien
                             type="date"
                             value={formData.date_end || ''}
                             onChange={(e) => setFormData(prev => ({ ...prev, date_end: e.target.value }))}
-                            placeholder="En cours"
+                            placeholder={t('experiences.manager.placeholders.ongoing')}
                             className="w-32"
                         />
                     </div>
@@ -447,7 +572,7 @@ const ExperienceManager: React.FC<Props> = ({ auth, experiences: initialExperien
                     <Textarea
                         value={formData.description || ''}
                         onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
-                        placeholder="Description (optionnelle)"
+                        placeholder={t('experiences.manager.placeholders.optionalDescription')}
                         rows={2}
                     />
 
@@ -455,15 +580,15 @@ const ExperienceManager: React.FC<Props> = ({ auth, experiences: initialExperien
                     <div className="flex gap-2 justify-end">
                         <Button variant="outline" onClick={onCancel} className="flex-1">
                             <X className="w-3 h-3 mr-1" />
-                            Annuler
+                            {t('experiences.manager.buttons.cancel')}
                         </Button>
                         <Button
                             onClick={() => onSave(formData)}
                             disabled={isLoading || !formData.name || !formData.InstitutionName || !formData.date_start}
-                            className="flex-1 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600"
+                            className="flex-1 bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600"
                         >
                             <Check className="w-3 h-3 mr-1" />
-                            {isLoading ? 'Ajout...' : 'Ajouter'}
+                            {isLoading ? t('experiences.manager.buttons.adding') : t('common.add')}
                         </Button>
                     </div>
                 </div>
@@ -481,33 +606,55 @@ const ExperienceManager: React.FC<Props> = ({ auth, experiences: initialExperien
         >
             <div className="flex items-center justify-center gap-2 text-gray-500 group-hover:text-amber-600 dark:group-hover:text-amber-400">
                 <Plus className="w-4 h-4" />
-                <span className="font-medium">Ajouter une expérience</span>
+                <span className="font-medium">{t('experiences.manager.buttons.addExperience')}</span>
             </div>
         </motion.button>
     );
 
     return (
         <div className="max-w-4xl mx-auto p-4 space-y-6">
-            {/* Header ultra-compact */}
-            <div className="flex items-center justify-between bg-white dark:bg-gray-800 p-4 rounded-lg border">
-                <div className="flex items-center gap-4">
-                    <h1 className="text-xl font-semibold text-gray-900 dark:text-white">
-                        {t('cvInterface.experience.title')}
-                    </h1>
-                    <div className="flex gap-2">
-                        <div className="flex items-center gap-1 px-2 py-1 bg-amber-100 dark:bg-amber-900 rounded-full">
-                            <GraduationCap className="w-3 h-3 text-amber-600" />
-                            <span className="text-xs font-medium text-amber-800 dark:text-amber-200">
-                                Formation ({academicExperiences.length})
-                            </span>
-                        </div>
-                        <div className="flex items-center gap-1 px-2 py-1 bg-purple-100 dark:bg-purple-900 rounded-full">
-                            <Briefcase className="w-3 h-3 text-purple-600" />
-                            <span className="text-xs font-medium text-purple-800 dark:text-purple-200">
-                                Pro ({professionalExperiences.length})
-                            </span>
+            {/* Header avec boutons d'ajout séparés */}
+            <div className="bg-white dark:bg-gray-800 p-4 rounded-lg border">
+                <div className="flex items-center justify-between mb-4">
+                    <div className="flex items-center gap-4">
+                        <h1 className="text-xl font-semibold text-gray-900 dark:text-white">
+                            {t('cvInterface.experience.title')}
+                        </h1>
+                        <div className="flex gap-2">
+                            <div className="flex items-center gap-1 px-2 py-1 bg-amber-100 dark:bg-amber-900 rounded-full">
+                                <GraduationCap className="w-3 h-3 text-amber-600" />
+                                <span className="text-xs font-medium text-amber-800 dark:text-amber-200">
+                                    {t('experiences.manager.counts.education')} ({academicExperiences.length})
+                                </span>
+                            </div>
+                            <div className="flex items-center gap-1 px-2 py-1 bg-purple-100 dark:bg-purple-900 rounded-full">
+                                <Briefcase className="w-3 h-3 text-purple-600" />
+                                <span className="text-xs font-medium text-purple-800 dark:text-purple-200">
+                                    {t('experiences.manager.counts.professional')} ({professionalExperiences.length})
+                                </span>
+                            </div>
                         </div>
                     </div>
+                </div>
+
+                {/* Boutons d'ajout séparés */}
+                <div className="flex gap-3">
+                    <Button
+                        onClick={() => setIsAddingAcademic(true)}
+                        className="flex-1 bg-gradient-to-r from-amber-500 to-yellow-500 hover:from-amber-600 hover:to-yellow-600"
+                        disabled={isAddingAcademic || isAddingProfessional}
+                    >
+                        <GraduationCap className="w-4 h-4 mr-2" />
+                        {t('experiences.manager.buttons.addEducation')}
+                    </Button>
+                    <Button
+                        onClick={() => setIsAddingProfessional(true)}
+                        className="flex-1 bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600"
+                        disabled={isAddingAcademic || isAddingProfessional}
+                    >
+                        <Briefcase className="w-4 h-4 mr-2" />
+                        {t('experiences.manager.buttons.addProfessional')}
+                    </Button>
                 </div>
             </div>
 
@@ -518,7 +665,7 @@ const ExperienceManager: React.FC<Props> = ({ auth, experiences: initialExperien
                 </div>
                 <Input
                     type="text"
-                    placeholder="Rechercher par nom, institution ou description..."
+                    placeholder={t('experiences.manager.placeholders.searchExperience')}
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
                     className="pl-10 pr-4 py-3 border-0 bg-gray-50 dark:bg-gray-800 focus:bg-white dark:focus:bg-gray-700 rounded-xl shadow-sm focus:shadow-md transition-all"
@@ -535,92 +682,93 @@ const ExperienceManager: React.FC<Props> = ({ auth, experiences: initialExperien
                 )}
             </div>
 
-            {/* Liste des expériences avec sections */}
-            <div className="space-y-6">
-                {/* Section Formation */}
-                {academicExperiences.length > 0 && (
-                    <div className="space-y-3">
-                        <div className="flex items-center gap-2">
-                            <GraduationCap className="w-4 h-4 text-amber-500" />
-                            <h2 className="font-semibold text-gray-900 dark:text-white">Formation</h2>
-                        </div>
+            {/* Formulaires d'ajout */}
+            {isAddingAcademic && (
+                <AcademicForm
+                    onSave={(data) => handleSave(data)}
+                    onCancel={() => setIsAddingAcademic(false)}
+                />
+            )}
+
+            {isAddingProfessional && (
+                <ProfessionalForm
+                    onSave={(data) => handleSave(data)}
+                    onCancel={() => setIsAddingProfessional(false)}
+                />
+            )}
+
+            {/* Liste des expériences avec ScrollArea */}
+            <ScrollArea className="h-[600px] w-full border border-gray-200 dark:border-gray-700 rounded-lg">
+                <div className="p-4 space-y-6">
+                    {/* Section Formation */}
+                    {academicExperiences.length > 0 && (
                         <div className="space-y-3">
-                            <AnimatePresence>
-                                {academicExperiences.map((exp) => (
-                                    <ExperienceCard
-                                        key={exp.id}
-                                        experience={exp}
-                                        isEditing={editingId === exp.id}
-                                        onEdit={() => setEditingId(exp.id)}
-                                        onSave={(data) => handleSave({ ...data, id: exp.id })}
-                                        onCancel={() => setEditingId(null)}
-                                        onDelete={handleDelete}
-                                    />
-                                ))}
-                            </AnimatePresence>
+                            <div className="flex items-center gap-2">
+                                <GraduationCap className="w-4 h-4 text-amber-500" />
+                                <h2 className="font-semibold text-gray-900 dark:text-white">{t('experiences.manager.types.academic')}</h2>
+                            </div>
+                            <div className="space-y-3">
+                                <AnimatePresence>
+                                    {academicExperiences.map((exp) => (
+                                        <ExperienceCard
+                                            key={exp.id}
+                                            experience={exp}
+                                            isEditing={editingId === exp.id}
+                                            onEdit={() => setEditingId(exp.id)}
+                                            onSave={(data) => handleSave({ ...data, id: exp.id })}
+                                            onCancel={() => setEditingId(null)}
+                                            onDelete={handleDelete}
+                                        />
+                                    ))}
+                                </AnimatePresence>
+                            </div>
                         </div>
-                    </div>
-                )}
+                    )}
 
-                {/* Section Professionnel */}
-                {professionalExperiences.length > 0 && (
-                    <div className="space-y-3">
-                        <div className="flex items-center gap-2">
-                            <Briefcase className="w-4 h-4 text-purple-500" />
-                            <h2 className="font-semibold text-gray-900 dark:text-white">Expérience Professionnelle</h2>
-                        </div>
+                    {/* Section Professionnel */}
+                    {professionalExperiences.length > 0 && (
                         <div className="space-y-3">
-                            <AnimatePresence>
-                                {professionalExperiences.map((exp) => (
-                                    <ExperienceCard
-                                        key={exp.id}
-                                        experience={exp}
-                                        isEditing={editingId === exp.id}
-                                        onEdit={() => setEditingId(exp.id)}
-                                        onSave={(data) => handleSave({ ...data, id: exp.id })}
-                                        onCancel={() => setEditingId(null)}
-                                        onDelete={handleDelete}
-                                    />
-                                ))}
-                            </AnimatePresence>
+                            <div className="flex items-center gap-2">
+                                <Briefcase className="w-4 h-4 text-purple-500" />
+                                <h2 className="font-semibold text-gray-900 dark:text-white">{t('cvInterface.experience.professional')}</h2>
+                            </div>
+                            <div className="space-y-3">
+                                <AnimatePresence>
+                                    {professionalExperiences.map((exp) => (
+                                        <ExperienceCard
+                                            key={exp.id}
+                                            experience={exp}
+                                            isEditing={editingId === exp.id}
+                                            onEdit={() => setEditingId(exp.id)}
+                                            onSave={(data) => handleSave({ ...data, id: exp.id })}
+                                            onCancel={() => setEditingId(null)}
+                                            onDelete={handleDelete}
+                                        />
+                                    ))}
+                                </AnimatePresence>
+                            </div>
                         </div>
-                    </div>
-                )}
+                    )}
 
-                {/* Formulaire d'ajout inline */}
-                {isAdding ? (
-                    <InlineExperienceForm
-                        onSave={(data) => handleSave(data)}
-                        onCancel={() => setIsAdding(false)}
-                    />
-                ) : (
-                    <AddExperienceButton onClick={() => setIsAdding(true)} />
-                )}
-
-                {/* État vide */}
-                {filteredExperiences.length === 0 && !isAdding && (
-                    <div className="text-center py-12">
-                        <div className="w-24 h-24 mx-auto mb-4 text-gray-300">
-                            <Briefcase className="w-full h-full" />
+                    {/* État vide */}
+                    {filteredExperiences.length === 0 && !isAddingAcademic && !isAddingProfessional && (
+                        <div className="text-center py-12">
+                            <div className="w-24 h-24 mx-auto mb-4 text-gray-300">
+                                <Briefcase className="w-full h-full" />
+                            </div>
+                            <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">
+                                {searchTerm ? t('experiences.manager.messages.noExperienceFound') : t('experiences.manager.messages.noExperienceAdded')}
+                            </h3>
+                            <p className="text-gray-500 mb-4">
+                                {searchTerm
+                                    ? t('experiences.manager.messages.tryOtherKeywords')
+                                    : t('experiences.manager.messages.useButtonsAbove')
+                                }
+                            </p>
                         </div>
-                        <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">
-                            {searchTerm ? 'Aucune expérience trouvée' : 'Aucune expérience ajoutée'}
-                        </h3>
-                        <p className="text-gray-500 mb-4">
-                            {searchTerm
-                                ? 'Essayez avec d\'autres mots-clés'
-                                : 'Commencez par ajouter votre première expérience'
-                            }
-                        </p>
-                        {!searchTerm && (
-                            <Button onClick={() => setIsAdding(true)} className="bg-gradient-to-r from-amber-500 to-orange-500">
-                                <Plus className="w-4 h-4 mr-2" />
-                                Ajouter une expérience
-                            </Button>
-                        )}
-                    </div>
-                )}
-            </div>
+                    )}
+                </div>
+            </ScrollArea>
         </div>
     );
 };

@@ -884,6 +884,87 @@
                 "tooLarge": "Le fichier est trop volumineux",
                 "tooLargeDescription": "La taille maximale du fichier est de 5 Mo"
             }
+        },
+        "manager": {
+            "title": "Gestion des Expériences",
+            "types": {
+                "professional": "Pro",
+                "academic": "Formation",
+                "internship": "Stage",
+                "employment": "Emploi",
+                "freelance": "Freelance"
+            },
+            "placeholders": {
+                "jobTitle": "Titre du poste",
+                "institution": "Entreprise/Institution",
+                "ongoing": "En cours",
+                "searchExperience": "Rechercher par nom, institution ou description...",
+                "optionalDescription": "Description (optionnelle)"
+            },
+            "buttons": {
+                "addEducation": "Ajouter une formation",
+                "addProfessional": "Ajouter une expérience professionnelle",
+                "addExperience": "Ajouter une expérience",
+                "cancel": "Annuler",
+                "save": "Sauvegarder",
+                "saving": "Sauvegarde...",
+                "adding": "Ajout..."
+            },
+            "messages": {
+                "noExperienceFound": "Aucune expérience trouvée",
+                "noExperienceAdded": "Aucune expérience ajoutée",
+                "tryOtherKeywords": "Essayez avec d'autres mots-clés",
+                "useButtonsAbove": "Utilisez les boutons ci-dessus pour ajouter vos expériences"
+            },
+            "counts": {
+                "education": "Formation",
+                "professional": "Pro"
+            },
+            "examples": {
+                "jobTitles": {
+                    "fullStack": "Développeur Full Stack",
+                    "frontend": "Développeur Frontend",
+                    "backend": "Développeur Backend",
+                    "projectManager": "Chef de Projet",
+                    "productManager": "Product Manager",
+                    "uxDesigner": "UX/UI Designer",
+                    "dataAnalyst": "Data Analyst",
+                    "devOps": "DevOps Engineer",
+                    "scrumMaster": "Scrum Master",
+                    "businessAnalyst": "Business Analyst"
+                },
+                "companies": {
+                    "google": "Google",
+                    "microsoft": "Microsoft",
+                    "apple": "Apple",
+                    "amazon": "Amazon",
+                    "meta": "Meta",
+                    "netflix": "Netflix",
+                    "spotify": "Spotify",
+                    "airbnb": "Airbnb",
+                    "uber": "Uber",
+                    "tesla": "Tesla",
+                    "openai": "OpenAI",
+                    "github": "GitHub",
+                    "stripe": "Stripe",
+                    "shopify": "Shopify"
+                },
+                "educationTitles": {
+                    "masterIT": "Master en Informatique",
+                    "licenceMath": "Licence en Mathématiques",
+                    "phdPhysics": "Doctorat en Physique",
+                    "btsIT": "BTS Informatique",
+                    "dutCivil": "DUT Génie Civil"
+                },
+                "institutions": {
+                    "uniParis": "Université de Paris",
+                    "polytechnique": "École Polytechnique",
+                    "hec": "HEC Paris",
+                    "sorbonne": "Sorbonne Université",
+                    "insaLyon": "INSA Lyon"
+                }
+            },
+            "ongoing": "En cours"
         }
     },
     "cvInterface": {
@@ -925,6 +1006,7 @@
             "description": "Gérez vos expériences professionnelles, académiques et bénévoles",
             "education": "Formation",
             "professional": "Professionnel",
+            "ongoing": "En cours",
             "searchPlaceholder": "Rechercher une expérience...",
             "noEducationFound": "Aucune formation trouvée",
             "noEducationAdded": "Aucune formation ajoutée",

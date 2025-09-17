@@ -264,12 +264,6 @@ export default function ServiceSelector({ userInfo, onServiceSubmit, isLoading, 
                     </p>
                 </motion.div>
 
-                <div className="flex items-center justify-center gap-4 mb-8">
-                    <Badge variant="outline" className="bg-green-50 text-green-700">
-                        <Sparkles className="w-3 h-3 mr-1" />
-                        {t('wallet.balance')}: {walletBalance}
-                    </Badge>
-                </div>
             </div>
 
             {/* Grille des services compacts */}

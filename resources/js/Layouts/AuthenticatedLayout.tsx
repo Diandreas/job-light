@@ -748,34 +748,18 @@ export default function Authenticated({ user, header, children, hideHeaderOnMobi
                     </div>
                 </nav>
 
-                {/* Bouton menu flottant pour career-advisor mobile */}
+                {/* Bouton menu simple pour career-advisor mobile */}
                 {isCareerAdvisorPage && (
-                    <div className="md:hidden fixed top-4 left-4 z-50">
-                        <motion.div
-                            initial={{ scale: 0, opacity: 0 }}
-                            animate={{ scale: 1, opacity: 1 }}
-                            transition={{ delay: 0.5, type: "spring", stiffness: 300 }}
-                            className="relative"
+                    <div className="md:hidden fixed top-14 sm:top-20 left-4 z-50">
+                        <button
+                            onClick={() => {
+                                // Émettre un événement personnalisé pour ouvrir le sidebar
+                                window.dispatchEvent(new CustomEvent('toggleCareerAdvisorSidebar'));
+                            }}
+                            className="bg-white dark:bg-gray-800 px-3 py-2 rounded-lg shadow-md hover:shadow-lg transition-shadow border border-gray-200 dark:border-gray-600"
                         >
-                            <Button
-                                onClick={() => {
-                                    // Émettre un événement personnalisé pour ouvrir le sidebar
-                                    window.dispatchEvent(new CustomEvent('toggleCareerAdvisorSidebar'));
-                                }}
-                                className="h-12 w-12 rounded-full bg-gradient-to-r from-amber-500 to-purple-500 hover:from-amber-600 hover:to-purple-600 shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-105 active:scale-95"
-                            >
-                                <Menu className="h-5 w-5 text-white" />
-                            </Button>
-
-                            {/* Indicateur de notification subtil */}
-                            <motion.div
-                                animate={{ scale: [1, 1.1, 1] }}
-                                transition={{ duration: 3, repeat: Infinity }}
-                                className="absolute -top-1 -right-1 w-3 h-3 bg-gradient-to-r from-amber-500 to-purple-500 rounded-full flex items-center justify-center shadow-lg"
-                            >
-                                <span className="text-white text-[8px] font-bold">AI</span>
-                            </motion.div>
-                        </motion.div>
+                            <span className="text-gray-700 dark:text-gray-200 text-sm font-medium">Menu</span>
+                        </button>
                     </div>
                 )}
 

@@ -741,7 +741,7 @@ export default function NeonCyberDesign({
                                 <NeonCard glow="green" className="p-8 text-center">
                                     <h2 className="text-3xl font-bold text-green-400 mb-6 flex items-center justify-center gap-3 font-mono">
                                         <Contact className="w-8 h-8" />
-                                        <GlitchText>CONTACT.EXE</GlitchText>
+                                        <GlitchText>{t('portfolio.designs.neon.contact')}</GlitchText>
                                     </h2>
                                     <div className="font-mono text-gray-300 mb-8">
                                         <div className="text-cyan-400">$ ./initiate_contact.sh</div>

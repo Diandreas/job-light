@@ -13,10 +13,10 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/Components/ui/sheet";
 import {
     Brain, Wallet, Clock, Loader, Download, Coins, Trash2,
-    MessageSquare, Calendar, History, Menu, Send, Plus,
+    MessageSquare, Calendar, Menu, Send, Plus,
     FileText, Presentation, ChevronDown, FileSpreadsheet,
     FileInput, MessageCircleQuestion, PenTool, Sparkles, ChevronRight, ChevronLeft,
-    Smartphone, Monitor, Zap, MoreHorizontal, Settings, Star,
+    Smartphone, Monitor, Zap, MoreHorizontal, Star,
     TrendingUp, Target, Users, BookOpen, Award, Briefcase
 } from 'lucide-react';
 import EnhancedMessageBubble from '@/Components/ai/enhanced/EnhancedMessageBubble';
@@ -277,12 +277,7 @@ const CompactHeader = ({
                                     <div className="w-1.5 h-1.5 bg-green-500 rounded-full" />
                                     <span className="text-xs text-gray-500 dark:text-gray-400">{t('components.sidebar.active')}</span>
                                 </div>
-                                <div className="flex items-center gap-1">
-                                    <Wallet className="h-3 w-3 text-amber-500" />
-                                    <span className="text-xs font-medium text-amber-600 dark:text-amber-400">
-                                        {walletBalance.toLocaleString()}
-                                    </span>
-                                </div>
+
                             </div>
                         </div>
                     </div>
@@ -371,7 +366,7 @@ const CompactHeader = ({
     );
 };
 
-// Sidebar ultra-compacte
+// Sidebar ultra-compacte améliorée
 const UltraCompactSidebar = ({
     isCollapsed,
     onToggleCollapse,
@@ -382,43 +377,23 @@ const UltraCompactSidebar = ({
     activeChat,
     onChatSelect,
     onChatDelete,
+    onServiceSelect,
     isMobile = false
 }) => {
     const { t } = useTranslation();
-    const [sortBy, setSortBy] = useState('recent'); // recent, service, oldest
-
-    // Trier les chats selon le critère sélectionné
-    const getSortedChats = (chats) => {
-        const filteredChats = chats.filter(chat => chat.service_id === selectedService.id);
-
-        switch (sortBy) {
-            case 'oldest':
-                return filteredChats.sort((a, b) => {
-                    const dateA = new Date(a.created_at).getTime();
-                    const dateB = new Date(b.created_at).getTime();
-                    return dateA - dateB;
-                });
-            case 'service':
-                return filteredChats.sort((a, b) => a.service_id.localeCompare(b.service_id));
-            case 'recent':
-            default:
-                return filteredChats.sort((a, b) => {
-                    const dateA = new Date(a.created_at).getTime();
-                    const dateB = new Date(b.created_at).getTime();
-                    return dateB - dateA;
-                });
-        }
-    };
-
-    const sortedChats = getSortedChats(userChats);
+    const filteredChats = userChats.filter(chat => chat.service_id === selectedService.id);
 
     return (
         <div className={cn(
-            "bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-800 flex flex-col transition-all duration-300",
-            isCollapsed ? "w-12" : "w-64"
+            "bg-white dark:bg-gray-900 flex flex-col transition-all duration-300 h-full",
+            isMobile ? "w-full" : (isCollapsed ? "w-12" : "w-64"),
+            !isMobile && "border-r border-gray-200 dark:border-gray-800"
         )}>
             {/* Header */}
-            <div className="p-2 border-b border-gray-200 dark:border-gray-800">
+            <div className={cn(
+                "border-b border-gray-200 dark:border-gray-800",
+                isMobile ? "p-4" : "p-2"
+            )}>
                 {isCollapsed ? (
                     <div className="flex flex-col items-center gap-2">
                         <Avatar className="w-8 h-8">
@@ -460,14 +435,38 @@ const UltraCompactSidebar = ({
                             </div>
                         </div>
 
-                        {/* Wallet compact */}
-                        <div className="bg-gradient-to-r from-amber-50 to-purple-50 dark:from-amber-900/20 dark:to-purple-900/20 border border-amber-200 dark:border-amber-700 px-2 py-1 rounded-lg flex items-center gap-2">
-                            <div className="w-1.5 h-1.5 bg-green-500 rounded-full" />
-                            <Wallet className="h-3 w-3 text-amber-600 dark:text-amber-400" />
-                            <span className="text-xs font-semibold text-amber-700 dark:text-amber-300">
-                                {walletBalance.toLocaleString()}
-                            </span>
-                        </div>
+                        {/* Sélecteur de service */}
+                        <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                                <Button
+                                    variant="outline"
+                                    size="sm"
+                                    className="w-full h-7 text-xs justify-between"
+                                >
+                                    <div className="flex items-center gap-1">
+                                        <selectedService.icon className="h-3 w-3" />
+                                        <span className="truncate">
+                                            {t(`services.${selectedService.id}.title`)}
+                                        </span>
+                                    </div>
+                                    <ChevronDown className="h-3 w-3" />
+                                </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="start" className="w-56">
+                                {SERVICES.map((service) => (
+                                    <DropdownMenuItem
+                                        key={service.id}
+                                        onSelect={() => onServiceSelect(service)}
+                                        className="text-xs"
+                                    >
+                                        <service.icon className="h-3.5 w-3.5 mr-2" />
+                                        {t(`services.${service.id}.title`)}
+                                    </DropdownMenuItem>
+                                ))}
+                            </DropdownMenuContent>
+                        </DropdownMenu>
+
+
 
                         <Button
                             onClick={onNewChat}
@@ -503,61 +502,18 @@ const UltraCompactSidebar = ({
             </div>
 
             {/* Chat history */}
-            <div className="flex-1 p-2 min-h-0">
+            <div className={cn(
+                "flex-1 min-h-0",
+                isMobile ? "p-4" : "p-2"
+            )}>
                 {!isCollapsed && (
-                    <div className="mb-2">
-                        <div className="flex items-center justify-between mb-2">
-                            <h3 className="text-xs font-semibold text-gray-700 dark:text-gray-300">
-                                {t('components.career_advisor.interface.history')}
-                            </h3>
-                            <Badge variant="outline" className="text-xs h-4 px-1.5 border-amber-200 text-amber-600">
-                                {sortedChats.length}
-                            </Badge>
-                        </div>
-
-                        {/* Menu de tri */}
-                        <DropdownMenu>
-                            <DropdownMenuTrigger asChild>
-                                <Button
-                                    variant="outline"
-                                    size="sm"
-                                    className="w-full h-6 text-xs justify-between"
-                                >
-                                    <div className="flex items-center gap-1">
-                                        <Settings className="h-3 w-3" />
-                                        <span>
-                                            {sortBy === 'recent' && t('components.career_advisor.interface.sort_recent')}
-                                            {sortBy === 'oldest' && t('components.career_advisor.interface.sort_oldest')}
-                                            {sortBy === 'service' && t('components.career_advisor.interface.sort_service')}
-                                        </span>
-                                    </div>
-                                    <ChevronDown className="h-3 w-3" />
-                                </Button>
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent align="start" className="w-48">
-                                <DropdownMenuItem
-                                    onClick={() => setSortBy('recent')}
-                                    className="text-xs"
-                                >
-                                    <Clock className="h-3.5 w-3.5 mr-2" />
-                                    {t('components.career_advisor.interface.sort_recent')}
-                                </DropdownMenuItem>
-                                <DropdownMenuItem
-                                    onClick={() => setSortBy('oldest')}
-                                    className="text-xs"
-                                >
-                                    <History className="h-3.5 w-3.5 mr-2" />
-                                    {t('components.career_advisor.interface.sort_oldest')}
-                                </DropdownMenuItem>
-                                <DropdownMenuItem
-                                    onClick={() => setSortBy('service')}
-                                    className="text-xs"
-                                >
-                                    <Briefcase className="h-3.5 w-3.5 mr-2" />
-                                    {t('components.career_advisor.interface.sort_service')}
-                                </DropdownMenuItem>
-                            </DropdownMenuContent>
-                        </DropdownMenu>
+                    <div className="flex items-center justify-between mb-2">
+                        <h3 className="text-xs font-semibold text-gray-700 dark:text-gray-300">
+                            {t('components.career_advisor.interface.history')}
+                        </h3>
+                        <Badge variant="outline" className="text-xs h-4 px-1.5 border-amber-200 text-amber-600">
+                            {filteredChats.length}
+                        </Badge>
                     </div>
                 )}
 
@@ -567,7 +523,7 @@ const UltraCompactSidebar = ({
                         isCollapsed && "flex flex-col items-center"
                     )}>
                         <AnimatePresence>
-                            {sortedChats.map(chat => (
+                            {filteredChats.map(chat => (
                                 isCollapsed ? (
                                     <TooltipProvider key={chat.context_id}>
                                         <Tooltip>
@@ -606,7 +562,7 @@ const UltraCompactSidebar = ({
                             ))}
                         </AnimatePresence>
 
-                        {sortedChats.length === 0 && !isCollapsed && (
+                        {filteredChats.length === 0 && !isCollapsed && (
                             <div className="text-center py-6">
                                 <MessageSquare className="h-8 w-8 text-gray-300 dark:text-gray-600 mx-auto mb-2" />
                                 <p className="text-xs text-gray-500 dark:text-gray-400">
@@ -682,10 +638,23 @@ export default function EnhancedCareerAdvisor({ auth, userInfo, chatHistories })
 
     useEffect(() => {
         loadUserChats();
+
+        // Écouter l'événement personnalisé du bouton menu flottant
+        const handleToggleSidebar = () => {
+            setIsMobileSidebarOpen(prev => !prev);
+            // Effet de vibration tactile si disponible
+            if ('vibrate' in navigator) {
+                navigator.vibrate(50);
+            }
+        };
+
+        window.addEventListener('toggleCareerAdvisorSidebar', handleToggleSidebar);
+
         return () => {
             if (thinkingIntervalRef.current) {
                 clearInterval(thinkingIntervalRef.current);
             }
+            window.removeEventListener('toggleCareerAdvisorSidebar', handleToggleSidebar);
         };
     }, []);
 
@@ -976,7 +945,10 @@ export default function EnhancedCareerAdvisor({ auth, userInfo, chatHistories })
         setActiveChat(null);
         setData('contextId', crypto.randomUUID());
         setData('question', '');
-        setIsMobileSidebarOpen(false);
+        // Effet de vibration pour confirmer l'action
+        if ('vibrate' in navigator) {
+            navigator.vibrate([50, 100, 50]);
+        }
     };
 
     const handleKeyDown = (e) => {
@@ -1103,8 +1075,46 @@ export default function EnhancedCareerAdvisor({ auth, userInfo, chatHistories })
         });
     };
 
+    // Nouveau sidebar mobile utilisant le même composant que desktop
+    const MobileSidebarComplete = () => {
+
+        return (
+            <Sheet open={isMobileSidebarOpen} onOpenChange={setIsMobileSidebarOpen}>
+                <SheetContent side="left" className="w-[320px] sm:w-[400px] p-0 bg-white dark:bg-gray-900">
+                    {/* Titre caché pour l'accessibilité */}
+                    <SheetTitle className="sr-only">Menu de navigation</SheetTitle>
+
+                    <div className="h-full">
+                        <UltraCompactSidebar
+                            isCollapsed={false}
+                            onToggleCollapse={() => { }}
+                            walletBalance={walletBalance}
+                            onNewChat={createNewChat}
+                            userChats={userChats}
+                            selectedService={selectedService}
+                            activeChat={activeChat}
+                            onChatSelect={(chat) => {
+                                handleChatSelection(chat);
+                                // Fermeture avec délai pour une meilleure UX
+                                setTimeout(() => {
+                                    setIsMobileSidebarOpen(false);
+                                }, 200);
+                            }}
+                            onChatDelete={confirmDeleteChat}
+                            onServiceSelect={(service) => {
+                                handleServiceSelection(service);
+                                // Ne pas fermer automatiquement le sidebar mobile
+                            }}
+                            isMobile={true}
+                        />
+                    </div>
+                </SheetContent>
+            </Sheet>
+        );
+    };
+
     return (
-        <AuthenticatedLayout user={auth.user} hideHeaderOnMobile={true}>
+        <AuthenticatedLayout user={auth.user}>
             <div className="opacity-10">
                 <FluidCursorEffect zIndex={100} />
             </div>
@@ -1129,76 +1139,13 @@ export default function EnhancedCareerAdvisor({ auth, userInfo, chatHistories })
                         activeChat={activeChat}
                         onChatSelect={handleChatSelection}
                         onChatDelete={confirmDeleteChat}
+                        onServiceSelect={handleServiceSelection}
                         isMobile={false}
                     />
                 </div>
 
                 {/* Zone principale */}
                 <div className="flex-1 flex flex-col min-w-0 bg-gray-50 dark:bg-gray-900 h-full">
-                    {/* Header Mobile */}
-                    <div className="lg:hidden px-3 py-2 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800">
-                        <div className="flex items-center justify-between">
-                            <div className="flex items-center gap-2">
-                                <Sheet open={isMobileSidebarOpen} onOpenChange={setIsMobileSidebarOpen}>
-                                    <SheetTrigger asChild>
-                                        <Button variant="outline" size="sm" className="h-8 px-2">
-                                            <Menu className="h-4 w-4 mr-1" />
-                                            <span className="text-xs">{t('components.career_advisor.interface.menu')}</span>
-                                        </Button>
-                                    </SheetTrigger>
-                                    <SheetContent side="left" className="w-[280px] p-0">
-                                        <div className="h-full">
-                                            <UltraCompactSidebar
-                                                isCollapsed={false}
-                                                onToggleCollapse={() => { }}
-                                                walletBalance={walletBalance}
-                                                onNewChat={createNewChat}
-                                                userChats={userChats}
-                                                selectedService={selectedService}
-                                                activeChat={activeChat}
-                                                onChatSelect={handleChatSelection}
-                                                onChatDelete={confirmDeleteChat}
-                                                isMobile={true}
-                                            />
-                                        </div>
-                                    </SheetContent>
-                                </Sheet>
-
-                                <DropdownMenu>
-                                    <DropdownMenuTrigger asChild>
-                                        <Button variant="outline" size="sm" className="h-8 px-2">
-                                            <selectedService.icon className="h-3.5 w-3.5 mr-1" />
-                                            <span className="text-xs max-w-[80px] truncate">
-                                                {t(`services.${selectedService.id}.title`)}
-                                            </span>
-                                            <ChevronDown className="h-3 w-3 ml-1" />
-                                        </Button>
-                                    </DropdownMenuTrigger>
-                                    <DropdownMenuContent align="start">
-                                        {SERVICES.map((service) => (
-                                            <DropdownMenuItem
-                                                key={service.id}
-                                                onSelect={() => handleServiceSelection(service)}
-                                                className="text-xs"
-                                            >
-                                                <service.icon className="h-3.5 w-3.5 mr-2" />
-                                                {t(`services.${service.id}.title`)}
-                                            </DropdownMenuItem>
-                                        ))}
-                                    </DropdownMenuContent>
-                                </DropdownMenu>
-                            </div>
-
-                            <div className="flex items-center gap-2">
-                                <div className="bg-gradient-to-r from-amber-50 to-purple-50 dark:from-amber-900/20 dark:to-purple-900/20 border border-amber-200 dark:border-amber-700 px-2 py-1 rounded-lg flex items-center gap-1">
-                                    <Wallet className="h-3 w-3 text-amber-600 dark:text-amber-400" />
-                                    <span className="text-xs font-semibold text-amber-700 dark:text-amber-300">
-                                        {walletBalance.toLocaleString()}
-                                    </span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
 
                     {/* Contenu principal */}
                     {!activeChat ? (
@@ -1360,6 +1307,9 @@ export default function EnhancedCareerAdvisor({ auth, userInfo, chatHistories })
                 serviceId={selectedService.id}
                 messageContent={currentArtifactContent}
             />
+
+            {/* Nouveau sidebar mobile complet */}
+            <MobileSidebarComplete />
 
             {/* Styles supplémentaires */}
             <style>{`

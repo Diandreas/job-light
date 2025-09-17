@@ -263,7 +263,7 @@ export default function CreativeDesign({
                                 }}
                             >
                                 <Briefcase className="w-8 h-8" />
-                                Mon Parcours
+                                {t('portfolio.designs.creative.myJourney')}
                             </motion.div>
                         </div>
 
@@ -430,7 +430,7 @@ export default function CreativeDesign({
                                         }}
                                     >
                                         <Zap className="w-6 h-6" />
-                                        Mes Super-Pouvoirs
+                                        {t('portfolio.designs.creative.superPowers')}
                                     </motion.div>
 
                                     <div className="flex flex-wrap gap-3">
@@ -483,7 +483,7 @@ export default function CreativeDesign({
                                         }}
                                     >
                                         <Heart className="w-5 h-5" />
-                                        Passions
+                                        {t('portfolio.designs.creative.passions')}
                                     </motion.div>
 
                                     <div className="space-y-3">

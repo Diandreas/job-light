@@ -459,7 +459,7 @@ export default function ElegantCorporateDesign({
                                         asChild
                                     >
                                         <a href="#contact">
-                                            Collaborons ensemble
+                                            {t('portfolio.designs.corporate.collaborate')}
                                             <ArrowUpRight className="w-5 h-5 ml-2" />
                                         </a>
                                     </Button>
@@ -476,7 +476,7 @@ export default function ElegantCorporateDesign({
                                         <div className="text-3xl font-bold text-gray-900 mb-2">
                                             <AnimatedCounter value={cvData?.experiences?.length || 0} suffix="+" />
                                         </div>
-                                        <p className="text-gray-600 font-medium">Expériences</p>
+                                        <p className="text-gray-600 font-medium">{t('portfolio.designs.corporate.experiences')}</p>
                                     </ElegantCard>
 
                                     <ElegantCard gradient="purple" delay={0.4} className="p-6 text-center">
@@ -486,7 +486,7 @@ export default function ElegantCorporateDesign({
                                         <div className="text-3xl font-bold text-gray-900 mb-2">
                                             <AnimatedCounter value={cvData?.skills?.length || 0} suffix="+" />
                                         </div>
-                                        <p className="text-gray-600 font-medium">Compétences</p>
+                                        <p className="text-gray-600 font-medium">{t('portfolio.designs.corporate.skills')}</p>
                                     </ElegantCard>
 
                                     <ElegantCard gradient="emerald" delay={0.5} className="p-6 text-center">
@@ -496,7 +496,7 @@ export default function ElegantCorporateDesign({
                                         <div className="text-3xl font-bold text-gray-900 mb-2">
                                             <AnimatedCounter value={Math.floor(Math.random() * 50) + 10} suffix="%" />
                                         </div>
-                                        <p className="text-gray-600 font-medium">Croissance</p>
+                                        <p className="text-gray-600 font-medium">{t('portfolio.designs.corporate.growth')}</p>
                                     </ElegantCard>
 
                                     <ElegantCard gradient="amber" delay={0.6} className="p-6 text-center">
@@ -506,7 +506,7 @@ export default function ElegantCorporateDesign({
                                         <div className="text-3xl font-bold text-gray-900 mb-2">
                                             <AnimatedCounter value={Math.floor(Math.random() * 500) + 100} suffix="+" />
                                         </div>
-                                        <p className="text-gray-600 font-medium">Clients</p>
+                                        <p className="text-gray-600 font-medium">{t('portfolio.designs.corporate.clients')}</p>
                                     </ElegantCard>
                                 </div>
 
@@ -518,7 +518,7 @@ export default function ElegantCorporateDesign({
                                                 <FileText className="w-6 h-6 text-white" />
                                             </div>
                                             <div>
-                                                <h3 className="text-lg font-semibold text-gray-900 mb-3">Vision Professionnelle</h3>
+                                                <h3 className="text-lg font-semibold text-gray-900 mb-3">{t('portfolio.designs.corporate.professionalVision')}</h3>
                                                 <p className="text-gray-600 leading-relaxed italic">
                                                     "{safeText(cvData?.summary || cvData?.summaries?.[0]).substring(0, 200)}..."
                                                 </p>
@@ -542,7 +542,7 @@ export default function ElegantCorporateDesign({
                                 viewport={{ once: true }}
                             >
                                 <h2 className="text-4xl lg:text-5xl font-bold text-gray-900 mb-6">
-                                    Parcours Professionnel
+                                    {t('portfolio.designs.corporate.professionalJourney')}
                                 </h2>
                                 <div className="w-24 h-1 bg-gradient-to-r from-indigo-500 to-purple-500 mx-auto rounded-full"></div>
                             </motion.div>
@@ -572,7 +572,7 @@ export default function ElegantCorporateDesign({
                                 viewport={{ once: true }}
                             >
                                 <h2 className="text-4xl lg:text-5xl font-bold text-gray-900 mb-6">
-                                    Excellence Technique
+                                    {t('portfolio.designs.corporate.technicalExcellence')}
                                 </h2>
                                 <div className="w-24 h-1 bg-gradient-to-r from-emerald-500 to-teal-500 mx-auto rounded-full"></div>
                             </motion.div>
@@ -632,7 +632,7 @@ export default function ElegantCorporateDesign({
                                 viewport={{ once: true }}
                             >
                                 <h2 className="text-4xl lg:text-5xl font-bold text-gray-900 mb-6">
-                                    Centres d'Intérêt
+                                    {t('portfolio.designs.corporate.personalInterests')}
                                 </h2>
                                 <div className="w-24 h-1 bg-gradient-to-r from-pink-500 to-rose-500 mx-auto rounded-full"></div>
                             </motion.div>
@@ -673,10 +673,10 @@ export default function ElegantCorporateDesign({
                                 viewport={{ once: true }}
                             >
                                 <h2 className="text-4xl lg:text-5xl font-bold mb-6">
-                                    Démarrons un Projet
+                                    {t('portfolio.designs.corporate.startProject')}
                                 </h2>
                                 <p className="text-xl text-indigo-200 mb-12 max-w-2xl mx-auto">
-                                    Prêt à transformer vos idées en réalité ? Contactez-moi pour discuter de votre prochain projet.
+                                    {t('portfolio.designs.corporate.readyToTransform')}
                                 </p>
 
                                 <div className="flex flex-col sm:flex-row gap-6 justify-center">
@@ -688,7 +688,7 @@ export default function ElegantCorporateDesign({
                                         >
                                             <a href={`mailto:${user.email}`}>
                                                 <Mail className="w-5 h-5 mr-2" />
-                                                Envoyer un Email
+                                                {t('portfolio.designs.corporate.sendEmail')}
                                             </a>
                                         </Button>
                                     )}
@@ -701,7 +701,7 @@ export default function ElegantCorporateDesign({
                                         >
                                             <a href={`tel:${user.phone}`}>
                                                 <Phone className="w-5 h-5 mr-2" />
-                                                Appeler Maintenant
+                                                {t('portfolio.designs.corporate.callNow')}
                                             </a>
                                         </Button>
                                     )}
@@ -725,13 +725,13 @@ export default function ElegantCorporateDesign({
                                 className="space-y-4"
                             >
                                 <h3 className="text-2xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
-                                    🏢 Portfolio Élégant de {user.name}
+                                    🏢 {t('portfolio.designs.corporate.elegantPortfolio')} {user.name}
                                 </h3>
                                 <p className="text-gray-600 font-medium">
-                                    Créé avec excellence par <span className="font-bold text-indigo-600">Guidy</span>
+                                    {t('portfolio.designs.corporate.createdWithExcellence')} <span className="font-bold text-indigo-600">Guidy</span>
                                 </p>
                                 <div className="text-sm text-gray-500">
-                                    © {new Date().getFullYear()} • Design Corporate Sophistiqué
+                                    © {new Date().getFullYear()} • {t('portfolio.designs.corporate.sophisticatedDesign')}
                                 </div>
                             </motion.div>
                         </ElegantCard>

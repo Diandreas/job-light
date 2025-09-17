@@ -10,7 +10,7 @@ import {
     ChevronRight, ChevronLeft, Sparkles, LucideIcon, Coins,
     Globe, Mail, Phone, MapPin, Linkedin, Github, MessageSquare,
     ChevronDown, ChevronUp, Home, BookCopy, Award,
-    Calendar, Sun, Moon, Languages, RefreshCw, CheckCircle, User
+    Calendar, Sun, Moon, Languages, RefreshCw, CheckCircle, User, Menu
 } from 'lucide-react';
 import Dropdown from '@/Components/Dropdown';
 import { Button } from '@/Components/ui/button';
@@ -154,7 +154,7 @@ export default function Authenticated({ user, header, children, hideHeaderOnMobi
     const isCareerAdvisorPage = route().current('career-advisor.index');
 
     // Décider si on doit masquer le header sur mobile
-    const shouldHideHeaderOnMobile = hideHeaderOnMobile || isCareerAdvisorPage;
+    const shouldHideHeaderOnMobile = hideHeaderOnMobile;
 
     const handleJobPortalClick = (e: React.MouseEvent) => {
         e.preventDefault();
@@ -748,45 +748,34 @@ export default function Authenticated({ user, header, children, hideHeaderOnMobi
                     </div>
                 </nav>
 
-                {/* Header mobile spécial pour career-advisor - plus compact */}
-                {isCareerAdvisorPage && shouldHideHeaderOnMobile && (
-                    <div className="md:hidden sticky top-0 z-50 bg-white/95 dark:bg-gray-900/95 backdrop-blur-md border-b border-gray-200 dark:border-gray-700">
-                        <div className="flex items-center justify-between px-3 py-1.5"> {/* Réduit padding */}
-                            <div className="flex items-center gap-2">
-                                <Sparkles className="h-4 w-4 text-amber-500 dark:text-amber-400" />
-                                <span className="font-bold text-base bg-gradient-to-r from-amber-500 to-purple-500 text-transparent bg-clip-text">
-                                    Guidy AI
-                                </span>
-                                <Badge variant="secondary" className="text-[10px] px-1 py-0 h-3.5 bg-amber-50 text-amber-600 dark:bg-amber-900/30 dark:text-amber-300">
-                                    <Sparkles className="w-2 h-2 mr-0.5" />
-                                    PRO
-                                </Badge>
-                            </div>
-                            <div className="flex items-center gap-2">
-                                <TokenDisplay />
-                                <ThemeToggle />
-                                <Dropdown>
-                                    <Dropdown.Trigger>
-                                        <Button variant="ghost" className="p-0 h-6 w-6"> {/* Plus petit */}
-                                            <div className="h-5 w-5 rounded-full bg-gradient-to-r from-amber-500 to-purple-500 flex items-center justify-center">
-                                                <span className="text-white font-medium text-[10px]">
-                                                    {user.name.charAt(0).toUpperCase()}
-                                                </span>
-                                            </div>
-                                        </Button>
-                                    </Dropdown.Trigger>
-                                    {/*@ts-ignore*/}
-                                    <Dropdown.Content className="bg-white dark:bg-gray-900 dark:border-gray-700">
-                                        <Dropdown.Link href={route('profile.edit')} className="text-gray-700 dark:text-gray-900 hover:bg-amber-50 dark:hover:bg-amber-500/20 text-xs py-1.5 px-2">
-                                            {t('profile.edit')}
-                                        </Dropdown.Link>
-                                        <Dropdown.Link href={route('logout')} method="post" as="button" className="text-gray-700 dark:text-gray-900 hover:bg-amber-50 dark:hover:bg-amber-500/20 text-xs py-1.5 px-2">
-                                            {t('auth.logout')}
-                                        </Dropdown.Link>
-                                    </Dropdown.Content>
-                                </Dropdown>
-                            </div>
-                        </div>
+                {/* Bouton menu flottant pour career-advisor mobile */}
+                {isCareerAdvisorPage && (
+                    <div className="md:hidden fixed top-4 left-4 z-50">
+                        <motion.div
+                            initial={{ scale: 0, opacity: 0 }}
+                            animate={{ scale: 1, opacity: 1 }}
+                            transition={{ delay: 0.5, type: "spring", stiffness: 300 }}
+                            className="relative"
+                        >
+                            <Button
+                                onClick={() => {
+                                    // Émettre un événement personnalisé pour ouvrir le sidebar
+                                    window.dispatchEvent(new CustomEvent('toggleCareerAdvisorSidebar'));
+                                }}
+                                className="h-12 w-12 rounded-full bg-gradient-to-r from-amber-500 to-purple-500 hover:from-amber-600 hover:to-purple-600 shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-105 active:scale-95"
+                            >
+                                <Menu className="h-5 w-5 text-white" />
+                            </Button>
+
+                            {/* Indicateur de notification subtil */}
+                            <motion.div
+                                animate={{ scale: [1, 1.1, 1] }}
+                                transition={{ duration: 3, repeat: Infinity }}
+                                className="absolute -top-1 -right-1 w-3 h-3 bg-gradient-to-r from-amber-500 to-purple-500 rounded-full flex items-center justify-center shadow-lg"
+                            >
+                                <span className="text-white text-[8px] font-bold">AI</span>
+                            </motion.div>
+                        </motion.div>
                     </div>
                 )}
 

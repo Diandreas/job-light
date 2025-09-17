@@ -496,7 +496,7 @@ export default function GlassmorphismDesign({
                                         <HolographicText className="text-3xl font-bold">
                                             {cvData?.experiences?.length || 0}
                                         </HolographicText>
-                                        <p className="text-white/80 font-medium">Expériences</p>
+                                        <p className="text-white/80 font-medium">{t('portfolio.sections.experiences')}</p>
                                     </div>
                                     <div className="text-center">
                                         <div className="w-16 h-16 mx-auto mb-4 rounded-2xl bg-gradient-to-r from-purple-400 to-pink-400 flex items-center justify-center">
@@ -505,7 +505,7 @@ export default function GlassmorphismDesign({
                                         <HolographicText className="text-3xl font-bold">
                                             {cvData?.competences?.length || 0}
                                         </HolographicText>
-                                        <p className="text-white/80 font-medium">Compétences</p>
+                                        <p className="text-white/80 font-medium">{t('portfolio.sections.skills')}</p>
                                     </div>
                                     <div className="text-center">
                                         <div className="w-16 h-16 mx-auto mb-4 rounded-2xl bg-gradient-to-r from-green-400 to-emerald-400 flex items-center justify-center">
@@ -523,7 +523,7 @@ export default function GlassmorphismDesign({
                                         <HolographicText className="text-3xl font-bold">
                                             {cvData?.hobbies?.length || 0}
                                         </HolographicText>
-                                        <p className="text-white/80 font-medium">Passions</p>
+                                        <p className="text-white/80 font-medium">{t('portfolio.sections.hobbies')}</p>
                                     </div>
                                 </div>
                             </CrystalCard>
@@ -571,7 +571,7 @@ export default function GlassmorphismDesign({
                             viewport={{ once: true }}
                         >
                             <HolographicText className="text-5xl font-bold mb-6">
-                                Mon Parcours Professionnel
+                                {t('portfolio.designs.glassmorphism.professionalJourney')}
                             </HolographicText>
 
                             {/* Simple elegant divider */}
@@ -735,7 +735,7 @@ export default function GlassmorphismDesign({
                             viewport={{ once: true }}
                         >
                             <HolographicText className="text-5xl font-bold mb-4">
-                                Compétences Techniques
+                                {t('portfolio.designs.glassmorphism.technicalSkills')}
                             </HolographicText>
                             <div className="w-32 h-1 mx-auto bg-gradient-to-r from-green-400 to-blue-400 rounded-full" />
                         </motion.div>
@@ -924,7 +924,7 @@ export default function GlassmorphismDesign({
                         }}
                     >
                         <HolographicText className="text-lg">
-                            ✨ Portfolio Holographique de {user.name} • Généré par Guidy ✨
+                            ✨ {t('portfolio.designs.glassmorphism.holographicPortfolio')} {user.name} • {t('portfolio.designs.glassmorphism.generatedBy')} Guidy ✨
                         </HolographicText>
                     </div>
                 </motion.div>

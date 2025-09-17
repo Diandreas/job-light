@@ -488,7 +488,7 @@ export default function ArtisticShowcaseDesign({
                                         </div>
                                         <div>
                                             <h3 className="text-lg md:text-xl font-bold text-gray-900">
-                                                {cvData?.experiences?.length || 0}+ Projets
+                                                {cvData?.experiences?.length || 0}+ {t('portfolio.designs.artistic.projects')}
                                             </h3>
                                             <p className="text-xs md:text-sm text-gray-600">{t('portfolio.designs.artistic.projectsCompleted')}</p>
                                         </div>
@@ -576,7 +576,7 @@ export default function ArtisticShowcaseDesign({
                                 whileInView={{ opacity: 1, y: 0 }}
                                 viewport={{ once: true }}
                             >
-                                Expériences
+                                {t('portfolio.sections.experiences')}
                             </motion.h2>
 
                             <div className="columns-1 md:columns-2 lg:columns-3 gap-2 md:gap-4 space-y-2 md:space-y-4">
@@ -695,7 +695,7 @@ export default function ArtisticShowcaseDesign({
                                 whileInView={{ opacity: 1, y: 0 }}
                                 viewport={{ once: true }}
                             >
-                                Compétences
+                                {t('portfolio.sections.skills')}
                             </motion.h2>
 
                             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-6">
@@ -763,7 +763,7 @@ export default function ArtisticShowcaseDesign({
                                 whileInView={{ opacity: 1, y: 0 }}
                                 viewport={{ once: true }}
                             >
-                                Loisirs
+                                {t('portfolio.sections.hobbies')}
                             </motion.h2>
 
                             <div className="flex flex-wrap justify-center gap-2 md:gap-6">
@@ -809,10 +809,10 @@ export default function ArtisticShowcaseDesign({
                                 viewport={{ once: true }}
                             >
                                 <h2 className="text-2xl md:text-5xl font-bold mb-4 md:mb-8 relative">
-                                    Contact
+                                    {t('portfolio.sections.contact')}
                                 </h2>
                                 <p className="text-sm md:text-xl text-purple-200 mb-6 md:mb-12 max-w-2xl mx-auto">
-                                    Collaborons ensemble
+                                    {t('portfolio.designs.artistic.collaborate')}
                                 </p>
 
                                 <div className="flex flex-col sm:flex-row gap-3 md:gap-6 justify-center">

@@ -32,7 +32,7 @@ import { useTranslation } from 'react-i18next';
 import {
     Palette, Eye, Save, RefreshCw, QrCode, Share,
     Briefcase, Award, Heart, FileText, Contact,
-    Globe, Wrench, User, ArrowUp, ArrowDown,
+    Globe, Wrench, User, ArrowUp, ArrowDown, ArrowLeft,
     Settings, Sparkles, Plus, Edit, Trash2,
     GripVertical, EyeOff, Menu, X, ChevronUp
 } from 'lucide-react';
@@ -238,8 +238,20 @@ export default function EditClean({ auth, portfolio, settings, cvData = portfoli
                                 loading="lazy"
                             />
 
-                            {/* Floating Action Buttons */}
-                            <div className="fixed top-4 right-4 z-50 flex flex-col gap-3">
+                            {/* Back Button - Top Left */}
+                            <div className="fixed top-20 left-4 z-50">
+                                <motion.button
+                                    whileHover={{ scale: 1.05 }}
+                                    whileTap={{ scale: 0.95 }}
+                                    onClick={() => window.history.back()}
+                                    className="w-12 h-12 bg-white/90 dark:bg-gray-800/90 backdrop-blur-md rounded-full shadow-lg border border-gray-200/50 dark:border-gray-600/50 flex items-center justify-center text-gray-700 dark:text-gray-300 hover:bg-white dark:hover:bg-gray-800 transition-all duration-200"
+                                >
+                                    <ArrowLeft className="w-5 h-5" />
+                                </motion.button>
+                            </div>
+
+                            {/* Floating Action Buttons - Top Right */}
+                            <div className="fixed top-20 right-4 z-50 flex flex-col gap-3">
                                 {/* QR Code FAB */}
                                 <motion.button
                                     whileHover={{ scale: 1.05 }}

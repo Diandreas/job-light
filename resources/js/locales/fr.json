@@ -2005,6 +2005,112 @@
                 "dataMissing": "Les données utilisateur sont manquantes. Veuillez rafraîchir la page."
             }
         },
+        "designs": {
+            "artistic": {
+                "title": "Showcase Artistique",
+                "subtitle": "Professionnel Créatif",
+                "projects": "Projets",
+                "projectsCompleted": "Créations réalisées",
+                "skills": "Compétences",
+                "skillsMastered": "Compétences Maîtrisées",
+                "hobbies": "Centres d'intérêt",
+                "artisticPassions": "Passions Artistiques",
+                "creativePortfolio": "Portfolio Créatif & Innovant",
+                "creativeUniverse": "Mon Univers Créatif",
+                "experienceGallery": "Galerie d'Expériences",
+                "collaborate": "Collaborons ensemble"
+            },
+            "creative": {
+                "title": "Portfolio Créatif",
+                "subtitle": "Professionnel Créatif",
+                "myJourney": "Mon Parcours",
+                "superPowers": "Mes Super-Pouvoirs",
+                "passions": "Passions",
+                "contact": "Contact",
+                "call": "Appeler",
+                "email": "Email"
+            },
+            "tech": {
+                "title": "Portfolio Technologique",
+                "subtitle": "Professionnel Tech",
+                "systemStatus": "STATUT_SYSTÈME.exe",
+                "performanceMetrics": "MÉTRIQUES_PERFORMANCE",
+                "networkStatus": "STATUT_RÉSEAU",
+                "experienceLog": "JOURNAL_EXPÉRIENCE.json",
+                "skillMatrix": "MATRICE_COMPÉTENCES.sys",
+                "interestCloud": "NUAGE_INTÉRÊTS.js",
+                "contactInterface": "INTERFACE_CONTACT.exe",
+                "emailProtocol": "PROTOCOLE_EMAIL",
+                "voiceChannel": "CANAL_VOCAL",
+                "linkedinApi": "API_LINKEDIN",
+                "gitRepo": "DÉPÔT_GIT",
+                "readme": "README.md",
+                "aboutMe": "# À Propos de Moi",
+                "statusOnline": "STATUT: EN LIGNE • DISPONIBLE • SÉCURISÉ",
+                "statusLoaded": "STATUT: CHARGÉ ✓",
+                "poweredBy": "ALIMENTÉ_PAR: Guidy.framework()",
+                "dynamicTechPortfolio": "PORTFOLIO_TECH_DYNAMIQUE.sys"
+            },
+            "corporate": {
+                "title": "Portfolio Corporate",
+                "subtitle": "Exécutif Professionnel",
+                "professionalJourney": "Parcours Professionnel",
+                "technicalExcellence": "Excellence Technique",
+                "personalInterests": "Centres d'Intérêt",
+                "startProject": "Démarrons un Projet",
+                "professionalVision": "Vision Professionnelle",
+                "experiences": "Expériences",
+                "skills": "Compétences",
+                "growth": "Croissance",
+                "clients": "Clients",
+                "collaborate": "Collaborons ensemble",
+                "sendEmail": "Envoyer un Email",
+                "callNow": "Appeler Maintenant",
+                "readyToTransform": "Prêt à transformer vos idées en réalité ? Contactez-moi pour discuter de votre prochain projet.",
+                "elegantPortfolio": "Portfolio Élégant",
+                "createdWithExcellence": "Créé avec excellence par",
+                "sophisticatedDesign": "Design Corporate Sophistiqué"
+            },
+            "glassmorphism": {
+                "title": "Portfolio Holographique",
+                "subtitle": "Professionnel Futuriste",
+                "professionalJourney": "Mon Parcours Professionnel",
+                "technicalSkills": "Compétences Techniques",
+                "holographicPortfolio": "Portfolio Holographique",
+                "generatedBy": "Généré par Guidy"
+            },
+            "minimal": {
+                "title": "Portfolio Minimaliste",
+                "subtitle": "Professionnel Épuré",
+                "experiences": "Expériences",
+                "skills": "Compétences",
+                "interests": "Centres d'intérêt",
+                "contact": "Contact"
+            },
+            "modern": {
+                "title": "Portfolio Moderne",
+                "subtitle": "Professionnel Contemporain",
+                "experiences": "Expériences",
+                "skills": "Compétences",
+                "interests": "Centres d'intérêt",
+                "contact": "Contact"
+            },
+            "neon": {
+                "title": "Portfolio Cyber",
+                "subtitle": "Professionnel Cyberpunk",
+                "contact": "CONTACT.EXE",
+                "neonPortfolio": "Portfolio Cyber",
+                "poweredBy": "Alimenté par Guidy"
+            },
+            "professional": {
+                "title": "Portfolio Professionnel",
+                "subtitle": "Professionnel Classique",
+                "experiences": "Expériences",
+                "skills": "Compétences",
+                "interests": "Centres d'intérêt",
+                "contact": "Contact"
+            }
+        },
         "controls": {
             "share": "Partager",
             "downloadCV": "CV PDF",
@@ -2134,6 +2240,36 @@
             "elegantCorporateDesc": "Design corporate sophistiqué avec animations élégantes",
             "artisticShowcaseDesc": "Portfolio créatif avec layout masonry et effets artistiques",
             "dynamicTechDesc": "Interface technologique interactive avec tableaux de bord",
+            "designs": {
+                "artistic": {
+                    "title": "Showcase Artistique",
+                    "subtitle": "Professionnel Créatif",
+                    "projects": "Projets",
+                    "projectsCompleted": "Créations réalisées",
+                    "skills": "Compétences",
+                    "skillsMastered": "Compétences Maîtrisées",
+                    "hobbies": "Centres d'intérêt",
+                    "artisticPassions": "Passions Artistiques",
+                    "creativePortfolio": "Portfolio Créatif & Innovant",
+                    "creativeUniverse": "Mon Univers Créatif",
+                    "experienceGallery": "Galerie d'Expériences",
+                    "skillsPalette": "Palette de Compétences",
+                    "hobbiesCollage": "Collage de Passions",
+                    "letsCreate": "Créons Ensemble",
+                    "transformIdeas": "Transformons vos idées en œuvres d'art numériques. Contactez-moi pour démarrer votre projet créatif !",
+                    "artisticShowcase": "Showcase Artistique de",
+                    "artMeetsTech": "L'art rencontre la technologie"
+                },
+                "creative": {
+                    "title": "Design Créatif",
+                    "myJourney": "Mon Parcours",
+                    "superPowers": "Mes Super-Pouvoirs",
+                    "passions": "Passions",
+                    "contact": "Contact",
+                    "creativePortfolio": "Portfolio Créatif de",
+                    "designedToInspire": "Conçu pour inspirer"
+                }
+            },
             "experiences": "Expériences",
             "competences": "Compétences",
             "hobbies": "Centres d'intérêt",

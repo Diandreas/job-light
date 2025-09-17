@@ -91,7 +91,7 @@
                 "insufficient": "Insufficient balance for AI analysis"
             },
             "viewCv": "View CV",
-            "changeModel": "Template",
+            "changeModel": "Choose a model",
             "update": {
                 "success": "Update successful",
                 "successDetail": "Your information has been saved successfully"

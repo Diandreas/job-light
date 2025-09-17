@@ -91,7 +91,7 @@
                 "insufficient": "Solde insuffisant pour l'analyse IA"
             },
             "viewCv": "Voir CV",
-            "changeModel": "Modèle",
+            "changeModel": "Choisir un modèle",
             "update": {
                 "success": "Mise à jour réussie",
                 "successDetail": "Vos informations ont été enregistrées avec succès"

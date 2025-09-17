@@ -29,6 +29,7 @@ import {
     DialogTitle,
     DialogTrigger,
 } from '@/Components/ui/dialog';
+import { formatPrice } from '@/utils/currency';
 
 interface JobPortalIndexProps {
     auth?: { user: any };
@@ -126,11 +127,31 @@ export default function JobPortalIndex({ auth, jobs = { data: [], links: [], met
         get(route('job-portal.index'));
     };
 
-    const formatSalary = (min: number, max: number, currency: string) => {
+    const formatSalary = (min: number, max: number, currency: string = 'FCFA', isCompact: boolean = false) => {
         if (!min && !max) return t('jobPortal.salaryNotSpecified');
-        if (min && max) return `${min.toLocaleString()} - ${max.toLocaleString()} ${currency}`;
-        if (min) return t('jobPortal.salaryFrom', { amount: min.toLocaleString(), currency });
-        return t('jobPortal.salaryUpTo', { amount: max.toLocaleString(), currency });
+
+        // Utilise FCFA par défaut si la devise n'est pas spécifiée ou est en EUR
+        const finalCurrency = (!currency || currency === 'EUR') ? 'FCFA' : currency;
+
+        // Fonction de formatage pour chaque montant
+        const formatAmount = (amount: number) => {
+            if (isCompact && amount >= 1000) {
+                if (amount >= 1000000) {
+                    return `${(amount / 1000000).toFixed(amount % 1000000 === 0 ? 0 : 1)}M`;
+                } else if (amount >= 1000) {
+                    return `${(amount / 1000).toFixed(amount % 1000 === 0 ? 0 : 1)}K`;
+                }
+            }
+            return new Intl.NumberFormat('fr-FR').format(amount);
+        };
+
+        if (min && max) {
+            return `${formatAmount(min)} - ${formatAmount(max)} ${finalCurrency}`;
+        }
+        if (min) {
+            return `${t('jobPortal.salaryFrom', { amount: formatAmount(min), currency: finalCurrency })}`;
+        }
+        return `${t('jobPortal.salaryUpTo', { amount: formatAmount(max), currency: finalCurrency })}`;
     };
 
     const getEmploymentTypeIcon = (type: string) => {
@@ -180,67 +201,68 @@ export default function JobPortalIndex({ auth, jobs = { data: [], links: [], met
                                 {t('jobPortal.subtitle')}
                             </motion.p>
 
-                            {/* Statistiques */}
+                            {/* Statistiques - Compact Mobile */}
                             <motion.div
                                 initial={{ opacity: 0, y: 20 }}
                                 animate={{ opacity: 1, y: 0 }}
                                 transition={{ delay: 0.2 }}
-                                className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8"
+                                className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4 mb-6 sm:mb-8"
                             >
-                                <div className="bg-white/10 backdrop-blur-sm rounded-lg p-4">
-                                    <div className="text-2xl font-bold">{stats.total_jobs.toLocaleString()}</div>
-                                    <div className="text-sm opacity-90">{t('jobPortal.stats.activeOffers')}</div>
+                                <div className="bg-white/10 backdrop-blur-sm rounded-lg p-3 sm:p-4">
+                                    <div className="text-lg sm:text-xl lg:text-2xl font-bold">{stats.total_jobs.toLocaleString()}</div>
+                                    <div className="text-xs sm:text-sm opacity-90 line-clamp-1">{t('jobPortal.stats.activeOffers')}</div>
                                 </div>
-                                <div className="bg-white/10 backdrop-blur-sm rounded-lg p-4">
-                                    <div className="text-2xl font-bold">{stats.companies_hiring}</div>
-                                    <div className="text-sm opacity-90">{t('jobPortal.stats.companies')}</div>
+                                <div className="bg-white/10 backdrop-blur-sm rounded-lg p-3 sm:p-4">
+                                    <div className="text-lg sm:text-xl lg:text-2xl font-bold">{stats.companies_hiring}</div>
+                                    <div className="text-xs sm:text-sm opacity-90 line-clamp-1">{t('jobPortal.stats.companies')}</div>
                                 </div>
-                                <div className="bg-white/10 backdrop-blur-sm rounded-lg p-4">
-                                    <div className="text-2xl font-bold">{stats.remote_jobs}</div>
-                                    <div className="text-sm opacity-90">{t('jobPortal.stats.remoteJobs')}</div>
+                                <div className="bg-white/10 backdrop-blur-sm rounded-lg p-3 sm:p-4">
+                                    <div className="text-lg sm:text-xl lg:text-2xl font-bold">{stats.remote_jobs}</div>
+                                    <div className="text-xs sm:text-sm opacity-90 line-clamp-1">{t('jobPortal.stats.remoteJobs')}</div>
                                 </div>
-                                <div className="bg-white/10 backdrop-blur-sm rounded-lg p-4">
-                                    <div className="text-2xl font-bold">{stats.new_this_week}</div>
-                                    <div className="text-sm opacity-90">{t('jobPortal.stats.thisWeek')}</div>
+                                <div className="bg-white/10 backdrop-blur-sm rounded-lg p-3 sm:p-4">
+                                    <div className="text-lg sm:text-xl lg:text-2xl font-bold">{stats.new_this_week}</div>
+                                    <div className="text-xs sm:text-sm opacity-90 line-clamp-1">{t('jobPortal.stats.thisWeek')}</div>
                                 </div>
                             </motion.div>
 
-                            {/* Barre de recherche principale */}
+                            {/* Barre de recherche principale - Compact Mobile */}
                             <motion.div
                                 initial={{ opacity: 0, y: 20 }}
                                 animate={{ opacity: 1, y: 0 }}
                                 transition={{ delay: 0.3 }}
                                 className="max-w-4xl mx-auto"
                             >
-                                <form onSubmit={handleSearch} className="bg-white/90 backdrop-blur-sm rounded-2xl p-6 shadow-xl">
-                                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                <form onSubmit={handleSearch} className="bg-white/90 backdrop-blur-sm rounded-xl sm:rounded-2xl p-4 sm:p-6 shadow-xl">
+                                    <div className="space-y-3 sm:space-y-0 sm:grid sm:grid-cols-1 md:grid-cols-3 sm:gap-4">
                                         <div className="relative">
-                                            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+                                            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4 sm:w-5 sm:h-5" />
                                             <Input
                                                 type="text"
                                                 placeholder={t('jobPortal.searchPlaceholder')}
                                                 value={data.search}
                                                 onChange={(e) => setData('search', e.target.value)}
-                                                className="pl-10 h-12 text-gray-800"
+                                                className="pl-10 h-10 sm:h-12 text-gray-800 text-sm sm:text-base"
                                             />
                                         </div>
                                         <div className="relative">
-                                            <MapPin className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+                                            <MapPin className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4 sm:w-5 sm:h-5" />
                                             <Input
                                                 type="text"
                                                 placeholder={t('jobPortal.locationPlaceholder')}
                                                 value={data.location}
                                                 onChange={(e) => setData('location', e.target.value)}
-                                                className="pl-10 h-12 text-gray-800"
+                                                className="pl-10 h-10 sm:h-12 text-gray-800 text-sm sm:text-base"
                                             />
                                         </div>
                                         <Button
                                             type="submit"
                                             disabled={processing}
-                                            className="h-12 bg-gradient-to-r from-amber-500 to-purple-500 hover:from-amber-600 hover:to-purple-600"
+                                            className="h-10 sm:h-12 bg-gradient-to-r from-amber-500 to-purple-500 hover:from-amber-600 hover:to-purple-600 text-sm sm:text-base"
                                         >
-                                            <Search className="w-5 h-5 mr-2" />
-                                            {t('jobPortal.search')}
+                                            <Search className="w-4 h-4 sm:w-5 sm:h-5 mr-1 sm:mr-2" />
+                                            <span className="hidden xs:inline">{t('jobPortal.search')}</span>
+                                            <span className="xs:hidden">🔍</span>
                                         </Button>
                                     </div>
                                 </form>
@@ -249,8 +271,8 @@ export default function JobPortalIndex({ auth, jobs = { data: [], links: [], met
                     </div>
                 </div>
 
-                <div className="max-w-7xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
-                    <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
+                <div className="max-w-7xl mx-auto px-3 py-4 sm:px-4 sm:py-6 lg:px-8 lg:py-8">
+                    <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 sm:gap-6 lg:gap-8">
                         {/* Sidebar - Filtres et entreprises */}
                         <div className="lg:col-span-1 space-y-6">
                             {/* Filtres avancés */}
@@ -447,8 +469,8 @@ export default function JobPortalIndex({ auth, jobs = { data: [], links: [], met
                                 </div>
                             </div>
 
-                            {/* Liste des offres */}
-                            <div className="space-y-4">
+                            {/* Liste des offres - Ultra compact mobile */}
+                            <div className="space-y-3 sm:space-y-4">
                                 {jobs?.data?.map((job, index) => (
                                     <motion.div
                                         key={job.id}
@@ -457,80 +479,92 @@ export default function JobPortalIndex({ auth, jobs = { data: [], links: [], met
                                         transition={{ delay: index * 0.05 }}
                                     >
                                         <Card className="hover:shadow-lg transition-all duration-300 group">
-                                            <CardContent className="p-6">
-                                                <div className="flex justify-between items-start mb-4">
-                                                    <div className="flex items-start gap-4 flex-1">
-                                                        <div className="w-12 h-12 bg-gray-100 dark:bg-gray-800 rounded-lg flex items-center justify-center flex-shrink-0">
+                                            <CardContent className="p-4 sm:p-6">
+                                                <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-3 sm:gap-4 mb-3 sm:mb-4">
+                                                    <div className="flex items-start gap-3 sm:gap-4 flex-1">
+                                                        <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gray-100 dark:bg-gray-800 rounded-lg flex items-center justify-center flex-shrink-0">
                                                             {job.company.logo_path ? (
-                                                                <img src={job.company.logo_path} alt={job.company.name} className="w-8 h-8 object-contain" />
+                                                                <img src={job.company.logo_path} alt={job.company.name} className="w-6 h-6 sm:w-8 sm:h-8 object-contain" />
                                                             ) : (
-                                                                <Building className="w-6 h-6 text-gray-400" />
+                                                                <Building className="w-5 h-5 sm:w-6 sm:h-6 text-gray-400" />
                                                             )}
                                                         </div>
                                                         <div className="flex-1 min-w-0">
-                                                            <h3 className="text-lg font-bold text-gray-800 dark:text-gray-200 group-hover:text-blue-600 transition-colors mb-1">
+                                                            <h3 className="text-base sm:text-lg font-bold text-gray-800 dark:text-gray-200 group-hover:text-blue-600 transition-colors mb-1 line-clamp-2 sm:line-clamp-1">
                                                                 <Link href={route('job-portal.show', job.id)}>
                                                                     {job.title}
                                                                 </Link>
                                                             </h3>
-                                                            <div className="flex items-center gap-4 text-sm text-gray-600 dark:text-gray-400 mb-2">
+                                                            <div className="flex flex-wrap items-center gap-2 sm:gap-3 text-xs sm:text-sm text-gray-600 dark:text-gray-400 mb-2">
                                                                 <div className="flex items-center gap-1">
-                                                                    <Building className="w-4 h-4" />
-                                                                    {job.company.name}
+                                                                    <Building className="w-3 h-3 sm:w-4 sm:h-4" />
+                                                                    <span className="truncate max-w-24 sm:max-w-none">{job.company.name}</span>
                                                                 </div>
                                                                 {job.location && (
                                                                     <div className="flex items-center gap-1">
-                                                                        <MapPin className="w-4 h-4" />
-                                                                        {job.location}
+                                                                        <MapPin className="w-3 h-3 sm:w-4 sm:h-4" />
+                                                                        <span className="truncate max-w-20 sm:max-w-none">{job.location}</span>
                                                                     </div>
                                                                 )}
                                                                 <div className="flex items-center gap-1">
-                                                                    <Calendar className="w-4 h-4" />
-                                                                    {new Date(job.created_at).toLocaleDateString()}
+                                                                    <Calendar className="w-3 h-3 sm:w-4 sm:h-4" />
+                                                                    <span className="hidden sm:inline">{new Date(job.created_at).toLocaleDateString()}</span>
+                                                                    <span className="sm:hidden">{new Date(job.created_at).toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit' })}</span>
                                                                 </div>
                                                             </div>
-                                                            <p className="text-gray-600 dark:text-gray-400 text-sm line-clamp-2 mb-3">
-                                                                {job.description.substring(0, 200)}...
+                                                            <p className="hidden sm:block text-gray-600 dark:text-gray-400 text-sm line-clamp-2 mb-3">
+                                                                {job.description.substring(0, 150)}...
                                                             </p>
                                                         </div>
                                                     </div>
 
-                                                    <div className="text-right">
-                                                        <div className="text-sm font-semibold text-gray-800 dark:text-gray-200 mb-1">
-                                                            {formatSalary(job.salary_min, job.salary_max, job.salary_currency)}
-                                                        </div>
-                                                        <div className="flex gap-1">
-                                                            <Badge variant="outline" className="text-xs">
-                                                                {EMPLOYMENT_TYPES.find(t => t.value === job.employment_type)?.label}
-                                                            </Badge>
-                                                            {job.remote_work && (
-                                                                <Badge className="bg-green-100 text-green-800 text-xs">
-                                                                    <Wifi className="w-3 h-3 mr-1" />
-                                                                    {t('jobPortal.remote')}
-                                                                </Badge>
-                                                            )}
+                                                    <div className="text-right sm:text-right">
+                                                        <div className="text-xs sm:text-sm font-semibold text-gray-800 dark:text-gray-200 mb-2">
+                                                            <span className="block md:hidden">{formatSalary(job.salary_min, job.salary_max, job.salary_currency, true)}</span>
+                                                            <span className="hidden md:block">{formatSalary(job.salary_min, job.salary_max, job.salary_currency, false)}</span>
                                                         </div>
                                                     </div>
                                                 </div>
 
-                                                <div className="flex items-center justify-between">
-                                                    <div className="flex items-center gap-4 text-xs text-gray-500">
-                                                        <div className="flex items-center gap-1">
-                                                            <Eye className="w-3 h-3" />
-                                                            {job.views_count} {t('jobPortal.views')}
-                                                        </div>
-                                                        <div className="flex items-center gap-1">
-                                                            <Users className="w-3 h-3" />
-                                                            {job.applications_count} {t('jobPortal.applications', { count: job.applications_count })}
-                                                        </div>
+                                                {/* Badges et actions - Ligne séparée sur mobile */}
+                                                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 pt-3 border-t sm:border-t-0">
+                                                    <div className="flex flex-wrap gap-1.5 sm:gap-2">
+                                                        <Badge variant="outline" className="text-xs whitespace-nowrap">
+                                                            {EMPLOYMENT_TYPES.find(t => t.value === job.employment_type)?.label}
+                                                        </Badge>
+                                                        {job.remote_work && (
+                                                            <Badge className="bg-green-100 text-green-800 text-xs whitespace-nowrap">
+                                                                <Wifi className="w-3 h-3 mr-1" />
+                                                                <span className="hidden sm:inline">{t('jobPortal.remote')}</span>
+                                                                <span className="sm:hidden">Remote</span>
+                                                            </Badge>
+                                                        )}
                                                     </div>
+                                                </div>
 
-                                                    <Link href={route('job-portal.show', job.id)}>
-                                                        <Button size="sm" className="group-hover:bg-blue-600 group-hover:text-white transition-colors">
-                                                            {t('jobPortal.viewOffer')}
-                                                            <ArrowRight className="w-4 h-4 ml-2" />
-                                                        </Button>
-                                                    </Link>
+                                                    {/* Stats et actions compactes */}
+                                                    <div className="flex items-center justify-between order-2 sm:order-1">
+                                                        <div className="flex items-center gap-3 sm:gap-4 text-xs text-gray-500">
+                                                            <div className="flex items-center gap-1">
+                                                                <Eye className="w-3 h-3" />
+                                                                <span>{job.views_count}</span>
+                                                                <span className="hidden sm:inline">{t('jobPortal.views')}</span>
+                                                            </div>
+                                                            <div className="flex items-center gap-1">
+                                                                <Users className="w-3 h-3" />
+                                                                <span>{job.applications_count}</span>
+                                                                <span className="hidden sm:inline">{t('jobPortal.applications', { count: job.applications_count })}</span>
+                                                            </div>
+                                                        </div>
+
+                                                        <Link href={route('job-portal.show', job.id)}>
+                                                            <Button size="sm" className="group-hover:bg-blue-600 group-hover:text-white transition-colors h-8 text-xs sm:text-sm">
+                                                                <span className="hidden sm:inline">{t('jobPortal.viewOffer')}</span>
+                                                                <span className="sm:hidden">Voir</span>
+                                                                <ArrowRight className="w-3 h-3 sm:w-4 sm:h-4 ml-1 sm:ml-2" />
+                                                            </Button>
+                                                        </Link>
+                                                    </div>
                                                 </div>
                                             </CardContent>
                                         </Card>

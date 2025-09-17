@@ -37,21 +37,20 @@ import {
 import PersonalInformationEdit from '@/Pages/CvInfos/Partials/PersonnalInfosEdit';
 import CompetenceManager from '@/Pages/CvInfos/Partials/CompetenceManager';
 import HobbyManager from '@/Pages/CvInfos/Partials/HobbyManager';
-import ProfessionManager from '@/Pages/CvInfos/Partials/ProfessionManager';
 import ExperienceManager from "@/Pages/CvInfos/Partials/ExperienceManager";
-import SummaryManager from '@/Pages/CvInfos/Partials/SummaryManager';
+import ProfessionSummaryManager from '@/Pages/CvInfos/Partials/ProfessionSummaryManager';
 import LanguageManager from '@/Pages/CvInfos/Partials/LanguageManager';
 import LivePreview from '@/Components/cv/LivePreview';
 import ReactCrop, { centerCrop, makeAspectCrop } from 'react-image-crop';
 import 'react-image-crop/dist/ReactCrop.css';
 import { cn } from '@/lib/utils';
+import { formatPrice } from '@/utils/currency';
 
 const getSidebarItems = (t: any) => [
-    { id: 'personalInfo', label: t('cvInterface.sidebar.personalInfo'), icon: User, color: 'text-amber-500' },
-    { id: 'summary', label: t('cvInterface.sidebar.summary'), icon: FileText, color: 'text-purple-500' },
-    { id: 'experience', label: t('cvInterface.sidebar.experience'), icon: Briefcase, color: 'text-amber-600' },
-    { id: 'profession', label: t('cvInterface.sidebar.profession'), icon: GraduationCap, color: 'text-amber-500' },
-    { id: 'skills', label: t('cvInterface.sidebar.skills'), icon: Code, color: 'text-purple-600' }
+    { id: 'personalInfo', label: t('cvInterface.steps.step1'), icon: User, color: 'text-amber-500' },
+    { id: 'professionSummary', label: t('cvInterface.steps.step2'), icon: FileText, color: 'text-blue-500' },
+    { id: 'experience', label: t('cvInterface.steps.step3'), icon: Briefcase, color: 'text-amber-600' },
+    { id: 'skills', label: t('cvInterface.steps.step4'), icon: Code, color: 'text-purple-600' }
 ];
 
 const getPersonalInfoFields = (t: any) => [
@@ -1448,15 +1447,13 @@ const IntegratedLivePreview = ({ cvInformation, selectedCvModel, availableModels
                                 </p>
 
                                 <div className="flex items-center justify-between">
-                                    {model.price === 0 ? (
-                                        <span className="text-xs px-2 py-1 bg-green-100 text-green-700 dark:bg-green-900/20 dark:text-green-400 rounded-full font-medium">
-                                            Gratuit
-                                        </span>
-                                    ) : (
-                                        <span className="text-xs px-2 py-1 bg-gray-100 text-gray-700 dark:bg-gray-700 dark:text-gray-300 rounded-full font-medium">
-                                            {model.price}€
-                                        </span>
-                                    )}
+                                    <span className={`text-xs px-2 py-1 rounded-full font-medium whitespace-nowrap ${model.price === 0 || !model.price
+                                        ? 'bg-green-100 text-green-700 dark:bg-green-900/20 dark:text-green-400'
+                                        : 'bg-blue-100 text-blue-700 dark:bg-blue-900/20 dark:text-blue-300'
+                                        }`}>
+                                        <span className="block md:hidden">{formatPrice(model.price, true)}</span>
+                                        <span className="hidden md:block">{formatPrice(model.price, false)}</span>
+                                    </span>
 
                                     {selectedCvModel?.id === model.id && (
                                         <span className="text-xs px-2 py-1 bg-gradient-to-r from-amber-500 to-purple-500 text-white rounded-full font-medium">
@@ -1551,7 +1548,7 @@ export default function CvInterface({ auth, cvInformation: initialCvInformation 
     const { t } = useTranslation();
     const SIDEBAR_ITEMS = getSidebarItems(t);
     const PERSONAL_INFO_FIELDS = getPersonalInfoFields(t);
-    const [activeSection, setActiveSection] = useState('personalInfo');
+    const [activeSection, setActiveSection] = useState('professionSummary');
     const [cvInformation, setCvInformation] = useState(initialCvInformation);
     const [isEditing, setIsEditing] = useState(false);
     const [isImporting, setIsImporting] = useState(false);
@@ -1604,14 +1601,6 @@ export default function CvInterface({ auth, cvInformation: initialCvInformation 
         }
     }, [cvInformation]);
 
-    // Utilisation des traductions pour les éléments de la sidebar
-    const translatedSidebarItems = [
-        { id: 'personalInfo', label: t('cvInterface.steps.step1'), icon: User, color: 'text-amber-500' },
-        { id: 'summary', label: t('cvInterface.steps.step2'), icon: FileText, color: 'text-purple-500' },
-        { id: 'experience', label: t('cvInterface.steps.step3'), icon: Briefcase, color: 'text-amber-600' },
-        { id: 'profession', label: t('cvInterface.steps.step4'), icon: GraduationCap, color: 'text-amber-500' },
-        { id: 'skills', label: t('cvInterface.steps.step5'), icon: Code, color: 'text-purple-600' }
-    ];
 
     // Utilisation des traductions pour les champs d'information personnelle
     const translatedPersonalInfoFields = [
@@ -1651,11 +1640,11 @@ export default function CvInterface({ auth, cvInformation: initialCvInformation 
 
     const completionStatus = {
         personalInfo: Boolean(cvInformation.personalInformation?.firstName),
-        summary: cvInformation.summaries?.length > 0,
+        professionSummary: (cvInformation.summaries?.length > 0) &&
+            (Boolean(cvInformation.userProfession) ||
+                Boolean(cvInformation.personalInformation?.full_profession) ||
+                Boolean(localStorage.getItem('manual_profession'))),
         experience: cvInformation.experiences?.length > 0,
-        profession: Boolean(cvInformation.myProfession) ||
-            Boolean(cvInformation.personalInformation?.full_profession) ||
-            Boolean(localStorage.getItem('manual_profession')),
         skills: (cvInformation.competences?.length > 0) ||
             (cvInformation.languages?.length > 0) ||
             (cvInformation.hobbies?.length > 0),
@@ -1693,13 +1682,19 @@ export default function CvInterface({ auth, cvInformation: initialCvInformation 
                         updateCvInformation={updateCvInformation}
                     />
                 );
-            case 'summary':
+            case 'professionSummary':
                 return (
-                    <SummaryManager
+                    <ProfessionSummaryManager
                         auth={auth}
                         summaries={cvInformation.allsummaries}
                         selectedSummary={cvInformation.summaries}
-                        onUpdate={(summaries) => updateCvInformation('summaries', summaries)}
+                        availableProfessions={cvInformation.availableProfessions}
+                        initialUserProfession={cvInformation.userProfession}
+                        onSummaryUpdate={(summaries) => updateCvInformation('summaries', summaries)}
+                        onProfessionUpdate={(profession, manualText) => {
+                            updateCvInformation('userProfession', profession);
+                            updateCvInformation('userFullProfession', manualText);
+                        }}
                     />
                 );
             case 'skills':
@@ -1740,63 +1735,6 @@ export default function CvInterface({ auth, cvInformation: initialCvInformation 
                             </div>
                         </div>
                     </div>
-                );
-            case 'profession':
-                return (
-                    <ProfessionManager
-                        auth={auth}
-                        availableProfessions={cvInformation.availableProfessions}
-                        initialUserProfession={cvInformation.myProfession}
-                        onUpdate={(profession, fullProfession) => {
-                            // Utiliser un setTimeout pour s'assurer que les mises à jour sont séquentielles
-                            setTimeout(() => {
-                                if (profession) {
-                                    console.log('Sélection de profession:', profession);
-                                    setCvInformation(prev => {
-                                        const updatedPersonalInfo = {
-                                            ...prev.personalInformation,
-                                            profession: profession.name,
-                                            full_profession: ''
-                                        };
-                                        console.log('Mise à jour combinée avec profession:', { myProfession: profession, personalInformation: updatedPersonalInfo });
-                                        return { ...prev, myProfession: profession, personalInformation: updatedPersonalInfo };
-                                    });
-                                    axios.post('/user-preferences', {
-                                        key: 'profession_state',
-                                        value: JSON.stringify({ type: 'profession', data: profession })
-                                    }).catch(e => console.error('Erreur lors de la sauvegarde des préférences:', e));
-                                } else if (fullProfession) {
-                                    console.log('Sélection de profession manuelle:', fullProfession);
-                                    setCvInformation(prev => {
-                                        const updatedPersonalInfo = {
-                                            ...prev.personalInformation,
-                                            profession: '',
-                                            full_profession: fullProfession
-                                        };
-                                        console.log('Mise à jour combinée avec profession manuelle:', { myProfession: { fullProfession }, personalInformation: updatedPersonalInfo });
-                                        return { ...prev, myProfession: { fullProfession }, personalInformation: updatedPersonalInfo };
-                                    });
-                                    localStorage.setItem('manual_profession', fullProfession);
-                                    axios.post('/user-preferences', {
-                                        key: 'profession_state',
-                                        value: JSON.stringify({ type: 'manual', data: fullProfession })
-                                    }).catch(e => console.error('Erreur lors de la sauvegarde des préférences:', e));
-                                } else {
-                                    console.log('Réinitialisation de profession');
-                                    setCvInformation(prev => {
-                                        const updatedPersonalInfo = {
-                                            ...prev.personalInformation,
-                                            profession: '',
-                                            full_profession: ''
-                                        };
-                                        console.log('Mise à jour combinée avec réinitialisation:', { myProfession: null, personalInformation: updatedPersonalInfo });
-                                        return { ...prev, myProfession: null, personalInformation: updatedPersonalInfo };
-                                    });
-                                    localStorage.removeItem('manual_profession');
-                                }
-                            }, 0);
-                        }}
-                    />
                 );
             case 'experience':
                 return (
@@ -1994,9 +1932,9 @@ export default function CvInterface({ auth, cvInformation: initialCvInformation 
                 )}>
                     {/* Header responsive amélioré - avec pourcentage et import intégrés */}
                     <div className="flex justify-between items-center mb-3 sm:mb-4">
-                        <div className="flex items-center gap-1.5 sm:gap-2">
+                        <div className="hidden sm:flex items-center gap-1.5 sm:gap-2">
                             <Sparkles className="h-5 w-5 sm:h-6 sm:w-6 text-amber-500 dark:text-amber-400" />
-                            <h2 className="font-bold text-base sm:text-xl bg-gradient-to-r from-amber-500 to-purple-500 dark:from-amber-400 dark:to-purple-400 text-transparent bg-clip-text">
+                            <h2 className="hidden sm:flex font-bold text-base sm:text-xl bg-gradient-to-r from-amber-500 to-purple-500 dark:from-amber-400 dark:to-purple-400 text-transparent bg-clip-text">
                                 {t('cv.interface.title')}
                             </h2>
                         </div>
@@ -2067,7 +2005,7 @@ export default function CvInterface({ auth, cvInformation: initialCvInformation 
                             <div className="w-11 sm:w-14 md:w-16 flex-shrink-0 bg-gray-50/50 dark:bg-gray-800/50 md:hidden" data-tutorial="sidebar">
                                 <ScrollArea className="h-full py-1.5 sm:py-2">
                                     <nav className="sticky top-0 p-1 sm:p-1.5 space-y-1.5 sm:space-y-2">
-                                        {translatedSidebarItems.map(item => (
+                                        {SIDEBAR_ITEMS.map(item => (
                                             <SidebarButton
                                                 key={item.id}
                                                 item={item}
@@ -2085,7 +2023,7 @@ export default function CvInterface({ auth, cvInformation: initialCvInformation 
                             <div className="hidden md:block w-48 lg:w-64 flex-shrink-0 bg-gray-50/30 dark:bg-gray-800/30" data-tutorial="sidebar">
                                 <ScrollArea className="h-full py-2 sm:py-3">
                                     <nav className="sticky top-0 p-1.5 sm:p-3 space-y-1.5 sm:space-y-2">
-                                        {translatedSidebarItems.map(item => (
+                                        {SIDEBAR_ITEMS.map(item => (
                                             <SidebarButton
                                                 key={item.id}
                                                 item={item}

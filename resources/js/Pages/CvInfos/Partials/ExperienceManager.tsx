@@ -228,7 +228,7 @@ const ExperienceManager: React.FC<Props> = ({ auth, experiences: initialExperien
         );
     };
 
-    // Composant de carte d'expérience ultra-compacte avec champs avancés
+    // Composant de carte d'expérience ultra-compacte
     const ExperienceCard: React.FC<{
         experience: Experience;
         isEditing: boolean;
@@ -238,8 +238,6 @@ const ExperienceManager: React.FC<Props> = ({ auth, experiences: initialExperien
         onDelete: (id: number) => void;
     }> = ({ experience: exp, isEditing, onEdit, onSave, onCancel, onDelete }) => {
         const [formData, setFormData] = useState(exp);
-        const [showAdvanced, setShowAdvanced] = useState(false);
-        const [attachment, setAttachment] = useState<File | null>(null);
         const isAcademic = exp.experience_categories_id === '2';
 
         if (isEditing) {
@@ -297,183 +295,21 @@ const ExperienceManager: React.FC<Props> = ({ auth, experiences: initialExperien
                             />
                         </div>
 
-                        {/* Ligne 3: Description */}
+                        {/* Ligne 3: Description (optionnelle) */}
                         <Textarea
                             value={formData.description}
                             onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
-                            placeholder="Description de l'expérience..."
+                            placeholder="Description (optionnelle)"
                             rows={2}
                         />
 
-                        {/* Bouton pour afficher les champs avancés */}
-                        <div className="flex justify-center">
-                            <Button
-                                type="button"
-                                variant="ghost"
-                                size="sm"
-                                onClick={() => setShowAdvanced(!showAdvanced)}
-                                className="text-xs text-gray-500 hover:text-gray-700"
-                            >
-                                {showAdvanced ? 'Masquer les détails' : 'Ajouter des détails'}
-                                <span className="ml-1">{showAdvanced ? '▲' : '▼'}</span>
-                            </Button>
-                        </div>
-
-                        {/* Champs avancés avec animation */}
-                        <AnimatePresence>
-                            {showAdvanced && (
-                                <motion.div
-                                    initial={{ opacity: 0, height: 0 }}
-                                    animate={{ opacity: 1, height: 'auto' }}
-                                    exit={{ opacity: 0, height: 0 }}
-                                    className="space-y-3 pt-3 border-t border-gray-200 dark:border-gray-600"
-                                >
-                                    {/* Résultats/Réalisations */}
-                                    <div>
-                                        <label className="text-xs font-medium text-gray-600 dark:text-gray-400 mb-1 block">
-                                            {isAcademic ? 'Mention/Résultats' : 'Réalisations clés'}
-                                        </label>
-                                        <Input
-                                            value={formData.output || ''}
-                                            onChange={(e) => setFormData(prev => ({ ...prev, output: e.target.value }))}
-                                            placeholder={isAcademic ? 'Ex: Mention Bien' : 'Ex: +30% de performance'}
-                                        />
-                                    </div>
-
-                                    {/* Pièce jointe */}
-                                    <div>
-                                        <label className="text-xs font-medium text-gray-600 dark:text-gray-400 mb-1 block">
-                                            Document (optionnel)
-                                        </label>
-                                        <div className="flex gap-2">
-                                            <Input
-                                                type="file"
-                                                onChange={(e) => setAttachment(e.target.files?.[0] || null)}
-                                                accept=".pdf,.doc,.docx,.png,.jpg,.jpeg"
-                                                className="flex-1"
-                                            />
-                                            {formData.attachment_path && (
-                                                <Button
-                                                    type="button"
-                                                    variant="outline"
-                                                    size="sm"
-                                                    onClick={() => window.open(formData.attachment_path, '_blank')}
-                                                >
-                                                    Voir
-                                                </Button>
-                                            )}
-                                        </div>
-                                    </div>
-
-                                    {/* Références compactes */}
-                                    <div>
-                                        <div className="flex items-center justify-between mb-2">
-                                            <label className="text-xs font-medium text-gray-600 dark:text-gray-400">
-                                                Références ({formData.references?.length || 0})
-                                            </label>
-                                            <Button
-                                                type="button"
-                                                variant="ghost"
-                                                size="sm"
-                                                onClick={() => {
-                                                    const newRef = { name: '', function: '', email: '', telephone: '' };
-                                                    setFormData(prev => ({
-                                                        ...prev,
-                                                        references: [...(prev.references || []), newRef]
-                                                    }));
-                                                }}
-                                                className="text-xs"
-                                            >
-                                                <Plus className="w-3 h-3 mr-1" />
-                                                Ajouter
-                                            </Button>
-                                        </div>
-
-                                        {/* Liste des références */}
-                                        <div className="space-y-2">
-                                            {(formData.references || []).map((ref, index) => (
-                                                <div key={index} className="p-2 bg-white dark:bg-gray-700 rounded border">
-                                                    <div className="flex gap-2 mb-2">
-                                                        <Input
-                                                            placeholder="Nom complet"
-                                                            value={ref.name}
-                                                            onChange={(e) => {
-                                                                const updatedRefs = [...(formData.references || [])];
-                                                                updatedRefs[index].name = e.target.value;
-                                                                setFormData(prev => ({ ...prev, references: updatedRefs }));
-                                                            }}
-                                                            className="flex-1"
-                                                        />
-                                                        <Button
-                                                            type="button"
-                                                            variant="ghost"
-                                                            size="sm"
-                                                            onClick={() => {
-                                                                const updatedRefs = (formData.references || []).filter((_, i) => i !== index);
-                                                                setFormData(prev => ({ ...prev, references: updatedRefs }));
-                                                            }}
-                                                            className="text-red-500 hover:text-red-700"
-                                                        >
-                                                            <Trash2 className="w-3 h-3" />
-                                                        </Button>
-                                                    </div>
-                                                    <div className="grid grid-cols-2 gap-2">
-                                                        <Input
-                                                            placeholder="Poste"
-                                                            value={ref.function}
-                                                            onChange={(e) => {
-                                                                const updatedRefs = [...(formData.references || [])];
-                                                                updatedRefs[index].function = e.target.value;
-                                                                setFormData(prev => ({ ...prev, references: updatedRefs }));
-                                                            }}
-                                                        />
-                                                        <Input
-                                                            placeholder="Email"
-                                                            type="email"
-                                                            value={ref.email}
-                                                            onChange={(e) => {
-                                                                const updatedRefs = [...(formData.references || [])];
-                                                                updatedRefs[index].email = e.target.value;
-                                                                setFormData(prev => ({ ...prev, references: updatedRefs }));
-                                                            }}
-                                                        />
-                                                    </div>
-                                                    <Input
-                                                        placeholder="Téléphone"
-                                                        value={ref.telephone}
-                                                        onChange={(e) => {
-                                                            const updatedRefs = [...(formData.references || [])];
-                                                            updatedRefs[index].telephone = e.target.value;
-                                                            setFormData(prev => ({ ...prev, references: updatedRefs }));
-                                                        }}
-                                                        className="mt-2"
-                                                    />
-                                                </div>
-                                            ))}
-                                        </div>
-                                    </div>
-                                </motion.div>
-                            )}
-                        </AnimatePresence>
-
                         {/* Actions */}
-                        <div className="flex gap-2 justify-end pt-3 border-t border-gray-200 dark:border-gray-600">
+                        <div className="flex gap-2 justify-end">
                             <Button size="sm" variant="outline" onClick={onCancel}>
                                 <X className="w-3 h-3 mr-1" />
                                 Annuler
                             </Button>
-                            <Button
-                                size="sm"
-                                onClick={() => {
-                                    const dataToSave = { ...formData };
-                                    if (attachment) {
-                                        // Ici vous pouvez gérer l'upload du fichier
-                                        // dataToSave.attachment = attachment;
-                                    }
-                                    onSave(dataToSave);
-                                }}
-                                disabled={isLoading}
-                            >
+                            <Button size="sm" onClick={() => onSave(formData)} disabled={isLoading}>
                                 <Check className="w-3 h-3 mr-1" />
                                 {isLoading ? 'Sauvegarde...' : 'Sauvegarder'}
                             </Button>
@@ -518,30 +354,6 @@ const ExperienceManager: React.FC<Props> = ({ auth, experiences: initialExperien
                                 {exp.description}
                             </p>
                         )}
-
-                        {/* Indicateurs d'éléments supplémentaires */}
-                        <div className="flex items-center gap-2 mt-2">
-                            {exp.output && (
-                                <div className="flex items-center gap-1 px-2 py-1 bg-green-100 dark:bg-green-900/20 rounded-full">
-                                    <div className="w-1.5 h-1.5 bg-green-500 rounded-full"></div>
-                                    <span className="text-xs text-green-700 dark:text-green-300">Résultats</span>
-                                </div>
-                            )}
-                            {exp.attachment_path && (
-                                <div className="flex items-center gap-1 px-2 py-1 bg-blue-100 dark:bg-blue-900/20 rounded-full">
-                                    <div className="w-1.5 h-1.5 bg-blue-500 rounded-full"></div>
-                                    <span className="text-xs text-blue-700 dark:text-blue-300">Document</span>
-                                </div>
-                            )}
-                            {exp.references && exp.references.length > 0 && (
-                                <div className="flex items-center gap-1 px-2 py-1 bg-purple-100 dark:bg-purple-900/20 rounded-full">
-                                    <div className="w-1.5 h-1.5 bg-purple-500 rounded-full"></div>
-                                    <span className="text-xs text-purple-700 dark:text-purple-300">
-                                        {exp.references.length} référence{exp.references.length > 1 ? 's' : ''}
-                                    </span>
-                                </div>
-                            )}
-                        </div>
                     </div>
 
                     {/* Actions au hover */}
@@ -558,7 +370,7 @@ const ExperienceManager: React.FC<Props> = ({ auth, experiences: initialExperien
         );
     };
 
-    // Formulaire d'ajout inline ultra-compact avec champs avancés
+    // Formulaire d'ajout inline ultra-compact
     const InlineExperienceForm: React.FC<{
         onSave: (data: Partial<Experience>) => void;
         onCancel: () => void;
@@ -569,13 +381,8 @@ const ExperienceManager: React.FC<Props> = ({ auth, experiences: initialExperien
             date_start: '',
             date_end: '',
             description: '',
-            experience_categories_id: '1',
-            output: '',
-            references: []
+            experience_categories_id: '1'
         });
-        const [showAdvanced, setShowAdvanced] = useState(false);
-        const [attachment, setAttachment] = useState<File | null>(null);
-        const isAcademic = formData.experience_categories_id === '2';
 
         return (
             <motion.div
@@ -636,167 +443,22 @@ const ExperienceManager: React.FC<Props> = ({ auth, experiences: initialExperien
                         />
                     </div>
 
-                    {/* Ligne 3: Description */}
+                    {/* Ligne 3: Description (optionnelle) */}
                     <Textarea
                         value={formData.description || ''}
                         onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
-                        placeholder="Description de l'expérience..."
+                        placeholder="Description (optionnelle)"
                         rows={2}
                     />
 
-                    {/* Bouton pour afficher les champs avancés */}
-                    <div className="flex justify-center">
-                        <Button
-                            type="button"
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => setShowAdvanced(!showAdvanced)}
-                            className="text-xs text-amber-600 hover:text-amber-700"
-                        >
-                            {showAdvanced ? 'Masquer les détails' : 'Ajouter des détails'}
-                            <span className="ml-1">{showAdvanced ? '▲' : '▼'}</span>
-                        </Button>
-                    </div>
-
-                    {/* Champs avancés avec animation */}
-                    <AnimatePresence>
-                        {showAdvanced && (
-                            <motion.div
-                                initial={{ opacity: 0, height: 0 }}
-                                animate={{ opacity: 1, height: 'auto' }}
-                                exit={{ opacity: 0, height: 0 }}
-                                className="space-y-3 pt-3 border-t border-amber-200 dark:border-amber-600"
-                            >
-                                {/* Résultats/Réalisations */}
-                                <div>
-                                    <label className="text-xs font-medium text-amber-700 dark:text-amber-300 mb-1 block">
-                                        {isAcademic ? 'Mention/Résultats' : 'Réalisations clés'}
-                                    </label>
-                                    <Input
-                                        value={formData.output || ''}
-                                        onChange={(e) => setFormData(prev => ({ ...prev, output: e.target.value }))}
-                                        placeholder={isAcademic ? 'Ex: Mention Bien' : 'Ex: +30% de performance'}
-                                    />
-                                </div>
-
-                                {/* Pièce jointe */}
-                                <div>
-                                    <label className="text-xs font-medium text-amber-700 dark:text-amber-300 mb-1 block">
-                                        Document (optionnel)
-                                    </label>
-                                    <Input
-                                        type="file"
-                                        onChange={(e) => setAttachment(e.target.files?.[0] || null)}
-                                        accept=".pdf,.doc,.docx,.png,.jpg,.jpeg"
-                                    />
-                                </div>
-
-                                {/* Références compactes */}
-                                <div>
-                                    <div className="flex items-center justify-between mb-2">
-                                        <label className="text-xs font-medium text-amber-700 dark:text-amber-300">
-                                            Références ({formData.references?.length || 0})
-                                        </label>
-                                        <Button
-                                            type="button"
-                                            variant="ghost"
-                                            size="sm"
-                                            onClick={() => {
-                                                const newRef = { name: '', function: '', email: '', telephone: '' };
-                                                setFormData(prev => ({
-                                                    ...prev,
-                                                    references: [...(prev.references || []), newRef]
-                                                }));
-                                            }}
-                                            className="text-xs text-amber-600 hover:text-amber-700"
-                                        >
-                                            <Plus className="w-3 h-3 mr-1" />
-                                            Ajouter
-                                        </Button>
-                                    </div>
-
-                                    {/* Liste des références */}
-                                    <div className="space-y-2">
-                                        {(formData.references || []).map((ref, index) => (
-                                            <div key={index} className="p-2 bg-white dark:bg-gray-700 rounded border">
-                                                <div className="flex gap-2 mb-2">
-                                                    <Input
-                                                        placeholder="Nom complet"
-                                                        value={ref.name}
-                                                        onChange={(e) => {
-                                                            const updatedRefs = [...(formData.references || [])];
-                                                            updatedRefs[index].name = e.target.value;
-                                                            setFormData(prev => ({ ...prev, references: updatedRefs }));
-                                                        }}
-                                                        className="flex-1"
-                                                    />
-                                                    <Button
-                                                        type="button"
-                                                        variant="ghost"
-                                                        size="sm"
-                                                        onClick={() => {
-                                                            const updatedRefs = (formData.references || []).filter((_, i) => i !== index);
-                                                            setFormData(prev => ({ ...prev, references: updatedRefs }));
-                                                        }}
-                                                        className="text-red-500 hover:text-red-700"
-                                                    >
-                                                        <Trash2 className="w-3 h-3" />
-                                                    </Button>
-                                                </div>
-                                                <div className="grid grid-cols-2 gap-2">
-                                                    <Input
-                                                        placeholder="Poste"
-                                                        value={ref.function}
-                                                        onChange={(e) => {
-                                                            const updatedRefs = [...(formData.references || [])];
-                                                            updatedRefs[index].function = e.target.value;
-                                                            setFormData(prev => ({ ...prev, references: updatedRefs }));
-                                                        }}
-                                                    />
-                                                    <Input
-                                                        placeholder="Email"
-                                                        type="email"
-                                                        value={ref.email}
-                                                        onChange={(e) => {
-                                                            const updatedRefs = [...(formData.references || [])];
-                                                            updatedRefs[index].email = e.target.value;
-                                                            setFormData(prev => ({ ...prev, references: updatedRefs }));
-                                                        }}
-                                                    />
-                                                </div>
-                                                <Input
-                                                    placeholder="Téléphone"
-                                                    value={ref.telephone}
-                                                    onChange={(e) => {
-                                                        const updatedRefs = [...(formData.references || [])];
-                                                        updatedRefs[index].telephone = e.target.value;
-                                                        setFormData(prev => ({ ...prev, references: updatedRefs }));
-                                                    }}
-                                                    className="mt-2"
-                                                />
-                                            </div>
-                                        ))}
-                                    </div>
-                                </div>
-                            </motion.div>
-                        )}
-                    </AnimatePresence>
-
                     {/* Actions */}
-                    <div className="flex gap-2 justify-end pt-3 border-t border-amber-200 dark:border-amber-600">
+                    <div className="flex gap-2 justify-end">
                         <Button variant="outline" onClick={onCancel} className="flex-1">
                             <X className="w-3 h-3 mr-1" />
                             Annuler
                         </Button>
                         <Button
-                            onClick={() => {
-                                const dataToSave = { ...formData };
-                                if (attachment) {
-                                    // Ici vous pouvez gérer l'upload du fichier
-                                    // dataToSave.attachment = attachment;
-                                }
-                                onSave(dataToSave);
-                            }}
+                            onClick={() => onSave(formData)}
                             disabled={isLoading || !formData.name || !formData.InstitutionName || !formData.date_start}
                             className="flex-1 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600"
                         >

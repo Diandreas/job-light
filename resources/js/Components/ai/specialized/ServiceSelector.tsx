@@ -12,7 +12,7 @@ import {
 } from "@/Components/ui/tooltip";
 import {
     Brain, FileText, MessageSquare, PenTool, Presentation,
-    ArrowRight, Sparkles, Star, Zap, Target, HelpCircle, Info
+    ArrowRight, Sparkles, Star, Zap, Target, Info
 } from 'lucide-react';
 
 // Import des interfaces spécialisées
@@ -289,39 +289,12 @@ export default function ServiceSelector({ userInfo, onServiceSubmit, isLoading, 
                                                 <Icon className="w-5 h-5 text-white" />
                                             </div>
 
-                                            <div className="flex items-center gap-2">
-                                                <Tooltip>
-                                                    <TooltipTrigger asChild>
-                                                        <Button variant="ghost" size="sm" className="h-6 w-6 p-0">
-                                                            <HelpCircle className="h-3 w-3 text-gray-500" />
-                                                        </Button>
-                                                    </TooltipTrigger>
-                                                    <TooltipContent className="max-w-xs">
-                                                        <div className="space-y-2">
-                                                            <p className="font-medium">{service.title}</p>
-                                                            <p className="text-sm">{service.description}</p>
-                                                            <div className="space-y-1">
-                                                                <p className="text-xs font-medium">Fonctionnalités :</p>
-                                                                <ul className="text-xs space-y-0.5">
-                                                                    {service.features.map(feature => (
-                                                                        <li key={feature} className="flex items-center gap-1">
-                                                                            <div className="w-1 h-1 bg-current rounded-full" />
-                                                                            {feature}
-                                                                        </li>
-                                                                    ))}
-                                                                </ul>
-                                                            </div>
-                                                        </div>
-                                                    </TooltipContent>
-                                                </Tooltip>
-
-                                                <Badge
-                                                    variant={canAfford ? "default" : "secondary"}
-                                                    className={`text-xs ${canAfford ? 'bg-amber-100 text-amber-700 border-amber-200' : 'bg-gray-100 text-gray-500'}`}
-                                                >
-                                                    {service.cost}
-                                                </Badge>
-                                            </div>
+                                            <Badge
+                                                variant={canAfford ? "default" : "secondary"}
+                                                className={`text-xs ${canAfford ? 'bg-amber-100 text-amber-700 border-amber-200' : 'bg-gray-100 text-gray-500'}`}
+                                            >
+                                                {service.cost}
+                                            </Badge>
                                         </div>
 
                                         <div className="mb-4">

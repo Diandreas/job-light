@@ -903,7 +903,9 @@
             },
             "buttons": {
                 "addEducation": "Ajouter une formation",
+                "addEducationShort": "Formation",
                 "addProfessional": "Ajouter une expérience professionnelle",
+                "addProfessionalShort": "Expérience pro",
                 "addExperience": "Ajouter une expérience",
                 "cancel": "Annuler",
                 "save": "Sauvegarder",
@@ -2313,6 +2315,11 @@
             "elegantCorporate": "Élégant Corporate",
             "artisticShowcase": "Showcase Artistique",
             "dynamicTech": "Tech Dynamique",
+            "glass": "Crystal Glass",
+            "neon": "Neon Futuriste",
+            "particle": "Particule Cosmique",
+            "wave": "Ocean Wave",
+            "morphing": "Morphing Fluide",
             "classicClean": "Classique et épuré",
             "colorfulDynamic": "Coloré et dynamique",
             "simpleModern": "Simple et moderne",
@@ -2322,6 +2329,11 @@
             "elegantCorporateDesc": "Design corporate sophistiqué avec animations élégantes",
             "artisticShowcaseDesc": "Portfolio créatif avec layout masonry et effets artistiques",
             "dynamicTechDesc": "Interface technologique interactive avec tableaux de bord",
+            "glassDesc": "Design sophistiqué avec effets de verre cristallin et particules flottantes",
+            "neonDesc": "Interface cyberpunk avec effets néon et animations de glitch",
+            "particleDesc": "Univers galactique avec système de particules et orbites animées",
+            "waveDesc": "Thème océanique avec vagues fluides et effets aquatiques",
+            "morphingDesc": "Design évolutif avec formes morphing et transitions liquides",
             "designs": {
                 "artistic": {
                     "title": "Showcase Artistique",

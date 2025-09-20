@@ -16,7 +16,8 @@
       "Bash(dir:*)",
       "Bash(npx tsc:*)",
       "WebFetch(domain:jobii.be)",
-      "Read(//c/Users/david/Pictures/Screenshots/**)"
+      "Read(//c/Users/david/Pictures/Screenshots/**)",
+      "Bash(node:*)"
     ],
     "deny": [],
     "ask": []

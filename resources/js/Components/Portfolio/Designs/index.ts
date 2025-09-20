@@ -8,6 +8,11 @@ import NeonCyberDesign from './NeonCyberDesign';
 import ElegantCorporateDesign from './ElegantCorporateDesign';
 import ArtisticShowcaseDesign from './ArtisticShowcaseDesign';
 import DynamicTechDesign from './DynamicTechDesign';
+import GlassDesign from './GlassDesign';
+import NeonDesign from './NeonDesign';
+import ParticleDesign from './ParticleDesign';
+import WaveDesign from './WaveDesign';
+import MorphingDesign from './MorphingDesign';
 
 // Export all designs
 export {
@@ -19,7 +24,12 @@ export {
     NeonCyberDesign,
     ElegantCorporateDesign,
     ArtisticShowcaseDesign,
-    DynamicTechDesign
+    DynamicTechDesign,
+    GlassDesign,
+    NeonDesign,
+    ParticleDesign,
+    WaveDesign,
+    MorphingDesign
 };
 
 // Design mapping for dynamic imports
@@ -32,7 +42,12 @@ export const PORTFOLIO_DESIGNS = {
     neon_cyber: NeonCyberDesign,
     elegant_corporate: ElegantCorporateDesign,
     artistic_showcase: ArtisticShowcaseDesign,
-    dynamic_tech: DynamicTechDesign
+    dynamic_tech: DynamicTechDesign,
+    glass: GlassDesign,
+    neon: NeonDesign,
+    particle: ParticleDesign,
+    wave: WaveDesign,
+    morphing: MorphingDesign
 } as const;
 
 // Design metadata
@@ -108,6 +123,46 @@ export const DESIGN_METADATA = {
         features: ['Circuit board animé', 'Dashboard interactif', 'Cubes 3D', 'Stats temps réel'],
         colors: ['#22c55e', '#06b6d4', '#8b5cf6'],
         icon: '⚡'
+    },
+    glass: {
+        name: 'Crystal Glass',
+        description: 'Design sophistiqué avec effets de verre cristallin et particules flottantes',
+        preview: '/images/designs/glass-preview.png',
+        features: ['Glassmorphism avancé', 'Particules flottantes', 'Effets de lumière', 'Animations 3D'],
+        colors: ['#3b82f6', '#8b5cf6', '#ec4899'],
+        icon: '💎'
+    },
+    neon: {
+        name: 'Neon Futuriste',
+        description: 'Interface cyberpunk avec effets néon et animations de glitch',
+        preview: '/images/designs/neon-preview.png',
+        features: ['Terminal interactif', 'Effets glitch', 'Néons animés', 'Scanlines'],
+        colors: ['#00ffff', '#ff00ff', '#ffff00'],
+        icon: '🌈'
+    },
+    particle: {
+        name: 'Particule Cosmique',
+        description: 'Univers galactique avec système de particules et orbites animées',
+        preview: '/images/designs/particle-preview.png',
+        features: ['Particules flottantes', 'Orbites animées', 'Mesh gradient', 'Effets spatiaux'],
+        colors: ['#8b5cf6', '#ec4899', '#3b82f6'],
+        icon: '✨'
+    },
+    wave: {
+        name: 'Ocean Wave',
+        description: 'Thème océanique avec vagues fluides et effets aquatiques',
+        preview: '/images/designs/wave-preview.png',
+        features: ['Vagues SVG animées', 'Effets aquatiques', 'Bulles flottantes', 'Parallax océan'],
+        colors: ['#0ea5e9', '#3b82f6', '#8b5cf6'],
+        icon: '🌊'
+    },
+    morphing: {
+        name: 'Morphing Fluide',
+        description: 'Design évolutif avec formes morphing et transitions liquides',
+        preview: '/images/designs/morphing-preview.png',
+        features: ['Formes morphing', 'Background fluide', 'Transitions liquides', 'Géométrie évolutive'],
+        colors: ['#ff006e', '#3a86ff', '#06ffa5'],
+        icon: '🔮'
     },
 };
 

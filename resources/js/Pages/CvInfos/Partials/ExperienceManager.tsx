@@ -350,17 +350,17 @@ const ExperienceManager: React.FC<Props> = ({ auth, experiences: initialExperien
                     <div className="flex-1 min-w-0">
                         {/* Header compact */}
                         <div className="flex items-center gap-2 mb-1">
-                            <div className={`w-2 h-2 rounded-full ${isAcademic ? 'bg-amber-400' : 'bg-purple-400'}`} />
-                            <h3 className="font-semibold text-gray-900 dark:text-white truncate">
+                            <div className={`w-2 h-2 rounded-full flex-shrink-0 ${isAcademic ? 'bg-amber-400' : 'bg-purple-400'}`} />
+                            <h3 className="font-semibold text-gray-900 dark:text-white truncate flex-1 min-w-0">
                                 {exp.name}
                             </h3>
                         </div>
 
                         {/* Institution et dates sur une ligne */}
                         <div className="flex items-center gap-3 text-sm text-gray-600 dark:text-gray-300 mb-2">
-                            <span className="truncate">{exp.InstitutionName}</span>
-                            <span className="text-gray-400">•</span>
-                            <span className="whitespace-nowrap">
+                            <span className="truncate flex-1 min-w-0">{exp.InstitutionName}</span>
+                            <span className="text-gray-400 flex-shrink-0">•</span>
+                            <span className="whitespace-nowrap flex-shrink-0">
                                 {new Date(exp.date_start).toLocaleDateString('fr-FR', { month: '2-digit', year: '2-digit' })}
                                 {' - '}
                                 {exp.date_end
@@ -433,8 +433,8 @@ const ExperienceManager: React.FC<Props> = ({ auth, experiences: initialExperien
                                 t('experiences.manager.examples.educationTitles.dutCivil')
                             ]}
                         />
-                        <div className="w-28 flex items-center justify-center px-3 py-2 bg-amber-100 dark:bg-amber-900 rounded-md">
-                            <span className="text-xs font-medium text-amber-800 dark:text-amber-200">{t('experiences.manager.types.academic')}</span>
+                        <div className="w-28 flex items-center justify-center px-3 py-2 bg-amber-100 dark:bg-amber-900 rounded-md flex-shrink-0">
+                            <span className="text-xs font-medium text-amber-800 dark:text-amber-200 truncate">{t('experiences.manager.types.academic')}</span>
                         </div>
                     </div>
 
@@ -616,20 +616,20 @@ const ExperienceManager: React.FC<Props> = ({ auth, experiences: initialExperien
             {/* Header avec boutons d'ajout séparés */}
             <div className="bg-white dark:bg-gray-800 p-4 rounded-lg border">
                 <div className="flex items-center justify-between mb-4">
-                    <div className="flex items-center gap-4">
-                        <h1 className="text-xl font-semibold text-gray-900 dark:text-white">
+                    <div className="flex items-center gap-4 flex-1 min-w-0">
+                        <h1 className="text-xl font-semibold text-gray-900 dark:text-white truncate">
                             {t('cvInterface.experience.title')}
                         </h1>
-                        <div className="flex gap-2">
+                        <div className="flex gap-2 flex-shrink-0">
                             <div className="flex items-center gap-1 px-2 py-1 bg-amber-100 dark:bg-amber-900 rounded-full">
-                                <GraduationCap className="w-3 h-3 text-amber-600" />
-                                <span className="text-xs font-medium text-amber-800 dark:text-amber-200">
+                                <GraduationCap className="w-3 h-3 text-amber-600 flex-shrink-0" />
+                                <span className="text-xs font-medium text-amber-800 dark:text-amber-200 truncate">
                                     {t('experiences.manager.counts.education')} ({academicExperiences.length})
                                 </span>
                             </div>
                             <div className="flex items-center gap-1 px-2 py-1 bg-purple-100 dark:bg-purple-900 rounded-full">
-                                <Briefcase className="w-3 h-3 text-purple-600" />
-                                <span className="text-xs font-medium text-purple-800 dark:text-purple-200">
+                                <Briefcase className="w-3 h-3 text-purple-600 flex-shrink-0" />
+                                <span className="text-xs font-medium text-purple-800 dark:text-purple-200 truncate">
                                     {t('experiences.manager.counts.professional')} ({professionalExperiences.length})
                                 </span>
                             </div>
@@ -653,7 +653,8 @@ const ExperienceManager: React.FC<Props> = ({ auth, experiences: initialExperien
                         disabled={isAddingAcademic || isAddingProfessional}
                     >
                         <Briefcase className="w-4 h-4 mr-2" />
-                        {t('experiences.manager.buttons.addProfessional')}
+                        <span className="hidden sm:inline">{t('experiences.manager.buttons.addProfessional')}</span>
+                        <span className="sm:hidden">{t('experiences.manager.buttons.addProfessionalShort')}</span>
                     </Button>
                 </div>
             </div>
@@ -704,8 +705,8 @@ const ExperienceManager: React.FC<Props> = ({ auth, experiences: initialExperien
                     {academicExperiences.length > 0 && (
                         <div className="space-y-3">
                             <div className="flex items-center gap-2">
-                                <GraduationCap className="w-4 h-4 text-amber-500" />
-                                <h2 className="font-semibold text-gray-900 dark:text-white">{t('experiences.manager.types.academic')}</h2>
+                                <GraduationCap className="w-4 h-4 text-amber-500 flex-shrink-0" />
+                                <h2 className="font-semibold text-gray-900 dark:text-white truncate">{t('experiences.manager.types.academic')}</h2>
                             </div>
                             <div className="space-y-3">
                                 <AnimatePresence>
@@ -729,8 +730,8 @@ const ExperienceManager: React.FC<Props> = ({ auth, experiences: initialExperien
                     {professionalExperiences.length > 0 && (
                         <div className="space-y-3">
                             <div className="flex items-center gap-2">
-                                <Briefcase className="w-4 h-4 text-purple-500" />
-                                <h2 className="font-semibold text-gray-900 dark:text-white">{t('cvInterface.experience.professional')}</h2>
+                                <Briefcase className="w-4 h-4 text-purple-500 flex-shrink-0" />
+                                <h2 className="font-semibold text-gray-900 dark:text-white truncate">{t('cvInterface.experience.professional')}</h2>
                             </div>
                             <div className="space-y-3">
                                 <AnimatePresence>
@@ -756,10 +757,10 @@ const ExperienceManager: React.FC<Props> = ({ auth, experiences: initialExperien
                             <div className="w-24 h-24 mx-auto mb-4 text-gray-300">
                                 <Briefcase className="w-full h-full" />
                             </div>
-                            <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">
+                            <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2 break-words">
                                 {searchTerm ? t('experiences.manager.messages.noExperienceFound') : t('experiences.manager.messages.noExperienceAdded')}
                             </h3>
-                            <p className="text-gray-500 mb-4">
+                            <p className="text-gray-500 mb-4 break-words">
                                 {searchTerm
                                     ? t('experiences.manager.messages.tryOtherKeywords')
                                     : t('experiences.manager.messages.useButtonsAbove')

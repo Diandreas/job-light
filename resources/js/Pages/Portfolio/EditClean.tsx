@@ -74,6 +74,11 @@ const DESIGN_OPTIONS = [
     { value: 'elegant_corporate', labelKey: 'elegantCorporate', descKey: 'elegantCorporateDesc', icon: '🏢' },
     { value: 'artistic_showcase', labelKey: 'artisticShowcase', descKey: 'artisticShowcaseDesc', icon: '🎭' },
     { value: 'dynamic_tech', labelKey: 'dynamicTech', descKey: 'dynamicTechDesc', icon: '⚡' },
+    { value: 'glass', labelKey: 'glass', descKey: 'glassDesc', icon: '💎' },
+    { value: 'neon', labelKey: 'neon', descKey: 'neonDesc', icon: '🌈' },
+    { value: 'particle', labelKey: 'particle', descKey: 'particleDesc', icon: '✨' },
+    { value: 'wave', labelKey: 'wave', descKey: 'waveDesc', icon: '🌊' },
+    { value: 'morphing', labelKey: 'morphing', descKey: 'morphingDesc', icon: '🔮' },
 ];
 
 export default function EditClean({ auth, portfolio, settings, cvData = portfolio, customSections, services, groupedSections = {} }) {
@@ -397,7 +402,12 @@ export default function EditClean({ auth, portfolio, settings, cvData = portfoli
                                                                                     option.labelKey === 'elegantCorporate' ? 'Corp' :
                                                                                         option.labelKey === 'artisticShowcase' ? 'Art' :
                                                                                             option.labelKey === 'dynamicTech' ? 'Tech' :
-                                                                                                t(`portfolio.edit.${option.labelKey}`)}
+                                                                                                option.labelKey === 'glass' ? 'Crystal' :
+                                                                                                    option.labelKey === 'neon' ? 'Futur' :
+                                                                                                        option.labelKey === 'particle' ? 'Cosmic' :
+                                                                                                            option.labelKey === 'wave' ? 'Ocean' :
+                                                                                                                option.labelKey === 'morphing' ? 'Fluid' :
+                                                                                                                    t(`portfolio.edit.${option.labelKey}`)}
                                                                         </h5>
                                                                     </div>
                                                                     {data.design === option.value && (
@@ -575,7 +585,12 @@ export default function EditClean({ auth, portfolio, settings, cvData = portfoli
                                                                             option.labelKey === 'elegantCorporate' ? 'Corporate' :
                                                                                 option.labelKey === 'artisticShowcase' ? 'Artistique' :
                                                                                     option.labelKey === 'dynamicTech' ? 'Tech' :
-                                                                                        t(`portfolio.edit.${option.labelKey}`)}
+                                                                                        option.labelKey === 'glass' ? 'Crystal Glass' :
+                                                                                            option.labelKey === 'neon' ? 'Neon Futuriste' :
+                                                                                                option.labelKey === 'particle' ? 'Particule Cosmique' :
+                                                                                                    option.labelKey === 'wave' ? 'Ocean Wave' :
+                                                                                                        option.labelKey === 'morphing' ? 'Morphing Fluide' :
+                                                                                                            t(`portfolio.edit.${option.labelKey}`)}
                                                                 </h4>
                                                             </div>
 

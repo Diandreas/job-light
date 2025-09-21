@@ -42,10 +42,10 @@ interface StatisticsProps {
 
 const COLORS = ['#3b82f6', '#ef4444', '#10b981', '#f59e0b', '#8b5cf6', '#ec4899', '#06b6d4', '#84cc16'];
 
-export default function StatisticsDashboard({ 
-    auth, overview, industries, locations, employmentTypes, 
-    topCompanies, topJobs, applications, salaries, performance, 
-    timeSeries, filters 
+export default function StatisticsDashboard({
+    auth, overview, industries, locations, employmentTypes,
+    topCompanies, topJobs, applications, salaries, performance,
+    timeSeries, filters
 }: StatisticsProps) {
     const [selectedPeriod, setSelectedPeriod] = useState(filters.period);
     const [selectedMetric, setSelectedMetric] = useState(filters.metric);
@@ -85,13 +85,12 @@ export default function StatisticsDashboard({
                         {growth && (
                             <div className="flex items-center mt-1 text-sm">
                                 {getGrowthIcon(growth.current, growth.previous)}
-                                <span className={`ml-1 ${
-                                    growth.current > growth.previous 
-                                        ? 'text-green-600' 
-                                        : growth.current < growth.previous 
-                                            ? 'text-red-600' 
-                                            : 'text-gray-600'
-                                }`}>
+                                <span className={`ml-1 ${growth.current > growth.previous
+                                    ? 'text-green-600'
+                                    : growth.current < growth.previous
+                                        ? 'text-red-600'
+                                        : 'text-gray-600'
+                                    }`}>
                                     {growth.label}
                                 </span>
                             </div>
@@ -125,7 +124,7 @@ export default function StatisticsDashboard({
                                     Analyses et métriques de performance de JobLight
                                 </p>
                             </div>
-                            
+
                             <div className="flex items-center gap-4">
                                 <Select value={selectedPeriod} onValueChange={setSelectedPeriod}>
                                     <SelectTrigger className="w-40">
@@ -157,11 +156,10 @@ export default function StatisticsDashboard({
                                 <button
                                     key={tab.id}
                                     onClick={() => setActiveTab(tab.id)}
-                                    className={`flex items-center px-4 py-2 rounded-md text-sm font-medium transition-colors ${
-                                        activeTab === tab.id
-                                            ? 'bg-white dark:bg-gray-700 text-blue-600 dark:text-blue-400 shadow-sm'
-                                            : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100'
-                                    }`}
+                                    className={`flex items-center px-4 py-2 rounded-md text-sm font-medium transition-colors ${activeTab === tab.id
+                                        ? 'bg-white dark:bg-gray-700 text-blue-600 dark:text-blue-400 shadow-sm'
+                                        : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100'
+                                        }`}
                                 >
                                     <tab.icon className="w-4 h-4 mr-2" />
                                     {tab.label}
@@ -242,11 +240,11 @@ export default function StatisticsDashboard({
                                                 <XAxis dataKey="date" />
                                                 <YAxis />
                                                 <Tooltip />
-                                                <Area 
-                                                    type="monotone" 
-                                                    dataKey="count" 
-                                                    stroke="#3b82f6" 
-                                                    fill="#3b82f6" 
+                                                <Area
+                                                    type="monotone"
+                                                    dataKey="count"
+                                                    stroke="#3b82f6"
+                                                    fill="#3b82f6"
                                                     fillOpacity={0.3}
                                                 />
                                             </AreaChart>
@@ -266,8 +264,8 @@ export default function StatisticsDashboard({
                                             <ResponsiveContainer width="100%" height="100%">
                                                 <BarChart data={industries.slice(0, 8)}>
                                                     <CartesianGrid strokeDasharray="3 3" />
-                                                    <XAxis 
-                                                        dataKey="industry" 
+                                                    <XAxis
+                                                        dataKey="industry"
                                                         angle={-45}
                                                         textAnchor="end"
                                                         height={80}
@@ -294,7 +292,7 @@ export default function StatisticsDashboard({
                                                         cx="50%"
                                                         cy="50%"
                                                         labelLine={false}
-                                                        label={({ employment_type, job_count }) => 
+                                                        label={({ employment_type, job_count }) =>
                                                             `${employment_type}: ${job_count}`
                                                         }
                                                         outerRadius={80}
@@ -302,9 +300,9 @@ export default function StatisticsDashboard({
                                                         dataKey="job_count"
                                                     >
                                                         {employmentTypes.map((entry, index) => (
-                                                            <Cell 
-                                                                key={`cell-${index}`} 
-                                                                fill={COLORS[index % COLORS.length]} 
+                                                            <Cell
+                                                                key={`cell-${index}`}
+                                                                fill={COLORS[index % COLORS.length]}
                                                             />
                                                         ))}
                                                     </Pie>

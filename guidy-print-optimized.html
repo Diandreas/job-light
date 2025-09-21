@@ -113,6 +113,55 @@
             margin-top: 10px;
         }
 
+        /* Indicateur mobile amélioré */
+        @media screen and (max-width: 768px) {
+            .scroll-indicator {
+                bottom: 20px;
+                animation: scrollIndicatorFadeIn 1s ease-out 2s forwards;
+            }
+
+            .scroll-arrow {
+                font-size: 2.5em;
+                animation: bounceArrow 1.2s ease-in-out infinite;
+            }
+
+            .scroll-text {
+                font-size: 1em;
+                background: rgba(255, 255, 255, 0.2);
+                padding: 8px 15px;
+                border-radius: 20px;
+                backdrop-filter: blur(10px);
+                border: 1px solid rgba(255, 255, 255, 0.3);
+            }
+
+            /* Animation de pulsation pour attirer l'attention */
+            .scroll-indicator::after {
+                content: '';
+                position: absolute;
+                top: -10px;
+                left: -10px;
+                right: -10px;
+                bottom: -10px;
+                border: 2px solid rgba(255, 255, 255, 0.3);
+                border-radius: 50%;
+                animation: pulseIndicator 2s ease-in-out infinite;
+            }
+        }
+
+        @keyframes pulseIndicator {
+
+            0%,
+            100% {
+                transform: scale(1);
+                opacity: 0.7;
+            }
+
+            50% {
+                transform: scale(1.1);
+                opacity: 0.3;
+            }
+        }
+
         @keyframes scrollIndicatorFadeIn {
             to {
                 opacity: 1;
@@ -650,6 +699,49 @@
             }
         }
 
+        /* Styles pour les images de capture */
+        .screenshot-container {
+            margin: 20px 0;
+            text-align: center;
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            border: 2px solid #fde68a;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .screenshot-image {
+            max-width: 100%;
+            height: auto;
+            max-height: 500px;
+            border-radius: 8px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+            transition: all 0.3s ease;
+            margin-bottom: 15px;
+            object-fit: contain;
+            background: #f8f9fa;
+        }
+
+        .screenshot-image:hover {
+            transform: scale(1.02);
+            box-shadow: 0 12px 35px rgba(0, 0, 0, 0.2);
+        }
+
+        .screenshot-caption {
+            font-size: 0.9em;
+            color: #92400e;
+            font-style: italic;
+            margin-top: 10px;
+            line-height: 1.4;
+        }
+
+        .screenshot-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+
         /* Responsive amélioré */
         @media screen and (max-width: 768px) {
             .intro-logo {
@@ -666,6 +758,52 @@
 
             .section {
                 padding: 20px;
+            }
+
+            /* Amélioration des images sur mobile */
+            .screenshot-grid {
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }
+
+            .screenshot-container {
+                padding: 15px;
+                margin: 15px 0;
+            }
+
+            .screenshot-image {
+                max-height: 300px;
+                width: 100%;
+                object-fit: contain;
+            }
+
+            .screenshot-caption {
+                font-size: 0.8em;
+                padding: 0 10px;
+            }
+
+            /* Réduction du seuil de scroll pour mobile */
+            .fullscreen-intro {
+                transition: transform 0.5s ease-in-out, opacity 0.5s ease-in-out;
+            }
+
+            .fullscreen-intro.scroll-away {
+                transform: scale(0.7) translateY(-80vh);
+            }
+        }
+
+        /* Optimisation pour très petits écrans */
+        @media screen and (max-width: 480px) {
+            .screenshot-image {
+                max-height: 250px;
+            }
+
+            .screenshot-container {
+                padding: 10px;
+            }
+
+            .screenshot-caption {
+                font-size: 0.75em;
             }
         }
 
@@ -1341,24 +1479,21 @@
 
             <h3><i class="fas fa-home icon-svg"></i> Dashboard Principal & Services IA</h3>
             <div class="screenshot-container">
-                <img src="CAPTURE/carreer advior service .png" alt="Services IA Guidy" class="screenshot-image"
-                    style="max-height: 400px;">
+                <img src="CAPTURE/carreer advior service .png" alt="Services IA Guidy" class="screenshot-image">
                 <div class="screenshot-caption">Interface des services IA spécialisés avec 4 modules : Conseil de
                     carrière, Générateur de lettres, Analyseur de CV, et Simulateur d'entretien</div>
             </div>
 
             <h3><i class="fas fa-robot icon-svg"></i> Assistant Carrière IA - Interface de Conversation</h3>
             <div class="screenshot-container">
-                <img src="CAPTURE/Exemple de conversation.png" alt="Conversation IA" class="screenshot-image"
-                    style="max-height: 400px;">
+                <img src="CAPTURE/Exemple de conversation.png" alt="Conversation IA" class="screenshot-image">
                 <div class="screenshot-caption">Interface de conversation intelligente avec l'IA pour conseils
                     personnalisés et génération de documents</div>
             </div>
 
             <h3><i class="fas fa-file-alt icon-svg"></i> Créateur de CV - Interface de Création</h3>
             <div class="screenshot-container">
-                <img src="CAPTURE/CV creation index.png" alt="Créateur de CV" class="screenshot-image"
-                    style="max-height: 400px;">
+                <img src="CAPTURE/CV creation index.png" alt="Créateur de CV" class="screenshot-image">
                 <div class="screenshot-caption">Interface de création de CV professionnel avec étapes guidées et
                     prévisualisation en temps réel</div>
             </div>
@@ -1366,7 +1501,7 @@
             <h3><i class="fas fa-eye icon-svg"></i> Prévisualisation CV - Résultat Final</h3>
             <div class="screenshot-container">
                 <img src="CAPTURE/cv Previsualisation ( cv creation ) .png" alt="Prévisualisation CV"
-                    class="screenshot-image" style="max-height: 400px;">
+                    class="screenshot-image">
                 <div class="screenshot-caption">CV final généré avec design professionnel, personnalisation des couleurs
                     et options d'export</div>
             </div>
@@ -1413,7 +1548,7 @@
             <h3><i class="fas fa-mobile-alt icon-svg"></i> Design Responsive & Mode Sombre</h3>
             <div class="screenshot-container">
                 <img src="CAPTURE/the application is fully responsive  optimised for mobile also and dark mode support.png"
-                    alt="Design Responsive" class="screenshot-image" style="max-height: 400px;">
+                    alt="Design Responsive" class="screenshot-image">
                 <div class="screenshot-caption">Application entièrement responsive optimisée pour mobile avec support du
                     mode sombre</div>
             </div>
@@ -1421,7 +1556,7 @@
             <h3><i class="fas fa-cogs icon-svg"></i> Composants Immersifs pour Chaque Service IA</h3>
             <div class="screenshot-container">
                 <img src="CAPTURE/des composant imerssif pour chaque type de service ia .png"
-                    alt="Composants Immersifs IA" class="screenshot-image" style="max-height: 400px;">
+                    alt="Composants Immersifs IA" class="screenshot-image">
                 <div class="screenshot-caption">Interface immersive avec composants spécialisés pour chaque type de
                     service IA (Conseil, Lettre, Analyse, Entretien)</div>
             </div>
@@ -1429,7 +1564,7 @@
             <h3><i class="fas fa-user-tie icon-svg"></i> Autres Composants du Career Advisor</h3>
             <div class="screenshot-container">
                 <img src="CAPTURE/another coompone tof carrer advisor .png" alt="Autres Composants Career Advisor"
-                    class="screenshot-image" style="max-height: 400px;">
+                    class="screenshot-image">
                 <div class="screenshot-caption">Composants supplémentaires du Career Advisor avec fonctionnalités
                     avancées et interface utilisateur moderne</div>
             </div>
@@ -1744,7 +1879,10 @@
 
         // Détecter le scroll pour faire disparaître l'intro
         function handleScroll() {
-            if (!hasScrolled && window.scrollY > 0) {
+            // Seuil de scroll réduit pour mobile
+            const scrollThreshold = window.innerWidth <= 768 ? 50 : 100;
+
+            if (!hasScrolled && window.scrollY > scrollThreshold) {
                 hasScrolled = true;
                 introScreen.classList.add('scroll-away');
                 document.body.style.overflow = 'auto';
@@ -1757,7 +1895,7 @@
                             section.classList.add('animate-in');
                         }, index * 200);
                     });
-                }, 800);
+                }, 600); // Réduit de 800ms à 600ms pour mobile
             }
         }
 
@@ -1776,9 +1914,29 @@
         window.addEventListener('wheel', function (e) {
             if (!hasScrolled && e.deltaY > 0) {
                 e.preventDefault();
-                window.scrollTo({ top: 100, behavior: 'smooth' });
+                const scrollAmount = window.innerWidth <= 768 ? 50 : 100;
+                window.scrollTo({ top: scrollAmount, behavior: 'smooth' });
             }
         }, { passive: false });
+
+        // Support pour les gestes tactiles sur mobile
+        let touchStartY = 0;
+        let touchEndY = 0;
+
+        window.addEventListener('touchstart', function (e) {
+            touchStartY = e.changedTouches[0].screenY;
+        }, { passive: true });
+
+        window.addEventListener('touchend', function (e) {
+            touchEndY = e.changedTouches[0].screenY;
+            const swipeThreshold = 50;
+
+            // Détecter un swipe vers le haut
+            if (!hasScrolled && touchStartY - touchEndY > swipeThreshold) {
+                const scrollAmount = window.innerWidth <= 768 ? 50 : 100;
+                window.scrollTo({ top: scrollAmount, behavior: 'smooth' });
+            }
+        }, { passive: true });
 
         // Scroll animations
         const observerOptions = {

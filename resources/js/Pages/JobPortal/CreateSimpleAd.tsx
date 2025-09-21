@@ -18,7 +18,7 @@ import {
     SelectValue,
 } from '@/Components/ui/select';
 import {
-    Briefcase, MapPin, DollarSign, Clock, Phone, Mail, 
+    Briefcase, MapPin, DollarSign, Clock, Phone, Mail,
     Globe, MessageSquare, Info, CheckCircle, AlertCircle,
     Users, Building, Zap
 } from 'lucide-react';
@@ -65,7 +65,7 @@ export default function CreateSimpleAd({ auth, errors, flash }: CreateSimpleAdPr
         remote_work: false,
         industry: '',
         application_deadline: '',
-        
+
         // Informations de contact
         contact_method: 'email', // 'email', 'phone', 'website', 'message'
         contact_email: auth?.user?.email || '',
@@ -73,7 +73,7 @@ export default function CreateSimpleAd({ auth, errors, flash }: CreateSimpleAdPr
         contact_website: '',
         contact_instructions: '',
         contact_via_platform: false,
-        
+
         // Entreprise (optionnel)
         company_name: '',
         company_description: ''
@@ -81,7 +81,7 @@ export default function CreateSimpleAd({ auth, errors, flash }: CreateSimpleAdPr
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        
+
         const formData = {
             ...data,
             posting_type: 'simple_ad',
@@ -116,7 +116,7 @@ export default function CreateSimpleAd({ auth, errors, flash }: CreateSimpleAdPr
     const ContactMethodSelector = () => (
         <div className="space-y-4">
             <Label className="text-base font-semibold">{t('jobPortal.createJob.contactMethodQuestion')}</Label>
-            
+
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {[
                     { value: 'email', label: t('jobPortal.createJob.contactMethod.email'), icon: Mail, description: t('jobPortal.createJob.contactMethod.emailDesc') },
@@ -127,11 +127,10 @@ export default function CreateSimpleAd({ auth, errors, flash }: CreateSimpleAdPr
                     <div
                         key={method.value}
                         onClick={() => setData('contact_method', method.value)}
-                        className={`p-4 border-2 rounded-lg cursor-pointer transition-all ${
-                            data.contact_method === method.value
+                        className={`p-4 border-2 rounded-lg cursor-pointer transition-all ${data.contact_method === method.value
                                 ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20'
                                 : 'border-gray-200 hover:border-gray-300'
-                        }`}
+                            }`}
                     >
                         <div className="flex items-center gap-3 mb-2">
                             <method.icon className="w-5 h-5 text-blue-600" />
@@ -173,17 +172,15 @@ export default function CreateSimpleAd({ auth, errors, flash }: CreateSimpleAdPr
                         <div className="flex items-center space-x-4">
                             {[1, 2, 3].map((stepNumber) => (
                                 <React.Fragment key={stepNumber}>
-                                    <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium ${
-                                        stepNumber <= step 
-                                            ? 'bg-blue-600 text-white' 
+                                    <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium ${stepNumber <= step
+                                            ? 'bg-blue-600 text-white'
                                             : 'bg-gray-200 text-gray-600'
-                                    }`}>
+                                        }`}>
                                         {stepNumber}
                                     </div>
                                     {stepNumber < 3 && (
-                                        <div className={`w-12 h-1 ${
-                                            stepNumber < step ? 'bg-blue-600' : 'bg-gray-200'
-                                        }`} />
+                                        <div className={`w-12 h-1 ${stepNumber < step ? 'bg-blue-600' : 'bg-gray-200'
+                                            }`} />
                                     )}
                                 </React.Fragment>
                             ))}
@@ -336,7 +333,7 @@ export default function CreateSimpleAd({ auth, errors, flash }: CreateSimpleAdPr
                                             <Checkbox
                                                 id="remote_work"
                                                 checked={data.remote_work}
-                                                onCheckedChange={(checked) => setData('remote_work', checked)}
+                                                onCheckedChange={(checked) => setData('remote_work', checked as boolean)}
                                             />
                                             <Label htmlFor="remote_work">{t('jobPortal.createJob.remoteWork')}</Label>
                                         </div>
@@ -410,7 +407,7 @@ export default function CreateSimpleAd({ auth, errors, flash }: CreateSimpleAdPr
                                                 <Checkbox
                                                     id="contact_via_platform"
                                                     checked={data.contact_via_platform}
-                                                    onCheckedChange={(checked) => setData('contact_via_platform', checked)}
+                                                    onCheckedChange={(checked) => setData('contact_via_platform', checked as boolean)}
                                                 />
                                                 <Label htmlFor="contact_via_platform">
                                                     {t('jobPortal.createJob.contactViaPlatform')}
@@ -433,7 +430,7 @@ export default function CreateSimpleAd({ auth, errors, flash }: CreateSimpleAdPr
                                         {/* Informations entreprise optionnelles */}
                                         <div className="pt-6 border-t">
                                             <h4 className="font-medium mb-4">{t('jobPortal.createJob.companyInfoOptional')}</h4>
-                                            
+
                                             <div className="space-y-4">
                                                 <div>
                                                     <Label htmlFor="company_name">{t('jobPortal.createJob.companyName')}</Label>
@@ -524,7 +521,7 @@ export default function CreateSimpleAd({ auth, errors, flash }: CreateSimpleAdPr
                                         <Alert>
                                             <Info className="w-4 h-4" />
                                             <AlertDescription>
-                                                <strong>Annonce simple :</strong> Les candidats vous contacteront directement selon la méthode choisie. 
+                                                <strong>Annonce simple :</strong> Les candidats vous contacteront directement selon la méthode choisie.
                                                 Votre annonce sera publiée immédiatement et restera active pendant 30 jours.
                                             </AlertDescription>
                                         </Alert>

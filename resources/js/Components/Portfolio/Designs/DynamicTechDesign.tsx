@@ -281,6 +281,7 @@ const LiveStats = () => {
         <TechCard className="p-6" glowColor="#06b6d4">
             <div className="flex items-center gap-3 mb-4">
                 <div className="w-3 h-3 bg-green-400 rounded-full animate-pulse"></div>
+                {/* @ts-ignore */}
                 <h3 className="text-lg font-bold font-mono">{t('portfolio.designs.tech.systemStatus')}</h3>
             </div>
             <div className="space-y-4">

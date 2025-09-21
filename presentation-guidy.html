@@ -1,0 +1,749 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guidy - Plateforme IA de Développement de Carrière | Présentation Commerciale</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            box-shadow: 0 0 30px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
+            animation: float 6s ease-in-out infinite;
+        }
+
+        @keyframes float {
+
+            0%,
+            100% {
+                transform: translate(0, 0) rotate(0deg);
+            }
+
+            50% {
+                transform: translate(-20px, -20px) rotate(180deg);
+            }
+        }
+
+        .header-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .logo {
+            font-size: 3em;
+            font-weight: bold;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .tagline {
+            font-size: 1.3em;
+            opacity: 0.9;
+            margin-bottom: 20px;
+        }
+
+        .badge {
+            display: inline-block;
+            background: rgba(255, 255, 255, 0.2);
+            padding: 8px 16px;
+            border-radius: 25px;
+            font-size: 0.9em;
+            margin-top: 10px;
+            backdrop-filter: blur(10px);
+        }
+
+        .main-content {
+            padding: 40px;
+        }
+
+        .section {
+            margin-bottom: 50px;
+            padding: 30px;
+            border-radius: 15px;
+            background: #f8f9fa;
+            border-left: 5px solid #667eea;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .section:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .section h2 {
+            color: #667eea;
+            font-size: 2em;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .section h3 {
+            color: #764ba2;
+            font-size: 1.4em;
+            margin: 25px 0 15px 0;
+            border-bottom: 2px solid #e9ecef;
+            padding-bottom: 10px;
+        }
+
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+            margin: 25px 0;
+        }
+
+        .feature-card {
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+            border-left: 4px solid #667eea;
+            transition: all 0.3s ease;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+        }
+
+        .feature-card h4 {
+            color: #667eea;
+            font-size: 1.2em;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .feature-card p {
+            color: #666;
+            line-height: 1.6;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .stat-number {
+            font-size: 2.5em;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            font-size: 0.9em;
+            opacity: 0.9;
+        }
+
+        .screenshot-placeholder {
+            background: linear-gradient(45deg, #f0f0f0 25%, transparent 25%),
+                linear-gradient(-45deg, #f0f0f0 25%, transparent 25%),
+                linear-gradient(45deg, transparent 75%, #f0f0f0 75%),
+                linear-gradient(-45deg, transparent 75%, #f0f0f0 75%);
+            background-size: 20px 20px;
+            background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
+            border: 2px dashed #667eea;
+            border-radius: 10px;
+            height: 300px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 20px 0;
+            color: #667eea;
+            font-size: 1.1em;
+            font-weight: bold;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .screenshot-placeholder::before {
+            content: "📱 Insérer capture d'écran ici";
+            background: white;
+            padding: 10px 20px;
+            border-radius: 5px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .highlight-box {
+            background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+            padding: 25px;
+            border-radius: 10px;
+            margin: 25px 0;
+            border-left: 5px solid #ff8a65;
+        }
+
+        .highlight-box h4 {
+            color: #d84315;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+
+        .tech-stack {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin: 20px 0;
+        }
+
+        .tech-badge {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 0.9em;
+            font-weight: bold;
+        }
+
+        .market-opportunity {
+            background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+            padding: 30px;
+            border-radius: 15px;
+            margin: 30px 0;
+        }
+
+        .market-opportunity h3 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+        }
+
+        .cta-section {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+            border-radius: 15px;
+            margin-top: 40px;
+        }
+
+        .cta-section h2 {
+            color: white;
+            margin-bottom: 20px;
+        }
+
+        .contact-info {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 10px;
+            margin-top: 20px;
+            border: 2px solid #e9ecef;
+        }
+
+        .contact-info h4 {
+            color: #667eea;
+            margin-bottom: 15px;
+        }
+
+        .contact-info p {
+            margin: 8px 0;
+            color: #666;
+        }
+
+        .icon {
+            width: 24px;
+            height: 24px;
+            display: inline-block;
+        }
+
+        ul,
+        ol {
+            margin: 15px 0;
+            padding-left: 30px;
+        }
+
+        li {
+            margin: 8px 0;
+            color: #555;
+        }
+
+        .strong {
+            font-weight: bold;
+            color: #333;
+        }
+
+        .emphasize {
+            background: linear-gradient(120deg, #a8edea 0%, #fed6e3 100%);
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-weight: bold;
+        }
+
+        @media print {
+            body {
+                background: white;
+            }
+
+            .container {
+                box-shadow: none;
+                border-radius: 0;
+            }
+
+            .section:hover {
+                transform: none;
+                box-shadow: none;
+            }
+
+            .feature-card:hover {
+                transform: none;
+                box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                margin: 10px;
+                border-radius: 5px;
+            }
+
+            .header,
+            .main-content {
+                padding: 20px;
+            }
+
+            .logo {
+                font-size: 2em;
+            }
+
+            .tagline {
+                font-size: 1.1em;
+            }
+
+            .feature-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <!-- Header Section -->
+        <header class="header">
+            <div class="header-content">
+                <div class="logo">🚀 Guidy</div>
+                <div class="tagline">Votre Assistant IA Intelligent pour le Développement de Carrière</div>
+                <div class="badge">Plateforme Complète • IA Avancée • Prêt pour Production</div>
+            </div>
+        </header>
+
+        <main class="main-content">
+            <!-- Executive Summary -->
+            <section class="section">
+                <h2>📊 Résumé Exécutif</h2>
+                <p class="strong">Guidy est une plateforme révolutionnaire d'intelligence artificielle dédiée au
+                    développement de carrière et au recrutement, intégrant un portail d'emploi complet.</p>
+
+                <div class="highlight-box">
+                    <h4>💡 Proposition de Valeur Unique</h4>
+                    <p>La première plateforme qui combine <span class="emphasize">création de CV IA</span>, <span
+                            class="emphasize">conseil en carrière personnalisé</span>, <span class="emphasize">portail
+                            d'emploi</span> et <span class="emphasize">système de paiement intégré</span> en une
+                        solution complète.</p>
+                </div>
+
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-number">100%</div>
+                        <div class="stat-label">Fonctionnel</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number">3+</div>
+                        <div class="stat-label">Paiements Intégrés</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number">5+</div>
+                        <div class="stat-label">Services IA</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number">∞</div>
+                        <div class="stat-label">Potentiel Croissance</div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Market Opportunity -->
+            <section class="section">
+                <h2>🌍 Opportunité Marché</h2>
+                <div class="market-opportunity">
+                    <h3>💼 Marché du Développement de Carrière & Recrutement</h3>
+                    <p><strong>Marché mondial estimé à 15+ milliards USD</strong> avec une croissance annuelle de 12-15%
+                    </p>
+                    <ul>
+                        <li><strong>Afrique Francophone :</strong> Marché émergent avec 200+ millions d'utilisateurs
+                            potentiels</li>
+                        <li><strong>Tendances 2024 :</strong> IA dans le recrutement (+45% d'adoption), travail à
+                            distance, économie freelance</li>
+                        <li><strong>Avantage concurrentiel :</strong> Première solution complète IA + Portail emploi +
+                            Paiements locaux</li>
+                    </ul>
+                </div>
+
+                <h3>🎯 Avantages Concurrentiels</h3>
+                <div class="feature-grid">
+                    <div class="feature-card">
+                        <h4>🧠 IA Intégrée</h4>
+                        <p>Assistant IA personnalisé pour conseil carrière, rédaction CV, préparation entretiens</p>
+                    </div>
+                    <div class="feature-card">
+                        <h4>💰 Paiements Locaux</h4>
+                        <p>Intégration CinetPay, Fapshi, Pluto pour paiements mobiles en Afrique</p>
+                    </div>
+                    <div class="feature-card">
+                        <h4>📱 Multi-Plateforme</h4>
+                        <p>Web responsive + notifications push + interface mobile optimisée</p>
+                    </div>
+                    <div class="feature-card">
+                        <h4>🔄 Écosystème Complet</h4>
+                        <p>CV Builder + Career Advisor + Job Portal + Portfolio Builder</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Core Features -->
+            <section class="section">
+                <h2>⚡ Fonctionnalités Principales</h2>
+
+                <h3>🤖 Services IA Avancés</h3>
+                <div class="feature-grid">
+                    <div class="feature-card">
+                        <h4>📝 Créateur de CV IA</h4>
+                        <p>Templates professionnels, export PDF haute qualité, personnalisation intelligente</p>
+                    </div>
+                    <div class="feature-card">
+                        <h4>🧭 Conseiller Carrière IA</h4>
+                        <p>Conseils personnalisés, analyse de profil, recommandations de postes</p>
+                    </div>
+                    <div class="feature-card">
+                        <h4>💌 Générateur de Lettres</h4>
+                        <p>Lettres de motivation adaptées aux offres spécifiques</p>
+                    </div>
+                    <div class="feature-card">
+                        <h4>🎤 Coach d'Entretien</h4>
+                        <p>Simulation d'entretiens, préparation intelligente, feedback personnalisé</p>
+                    </div>
+                </div>
+
+                <h3>💼 Portail d'Emploi Complet</h3>
+                <div class="feature-grid">
+                    <div class="feature-card">
+                        <h4>🏢 Pour Entreprises</h4>
+                        <p>Publication offres, gestion candidatures, recherche profils, statistiques</p>
+                    </div>
+                    <div class="feature-card">
+                        <h4>👥 Pour Candidats</h4>
+                        <p>Recherche avancée, candidatures, suivi, notifications temps réel</p>
+                    </div>
+                    <div class="feature-card">
+                        <h4>📢 Annonces Simples</h4>
+                        <p>Publication rapide sans compte, contact direct, interface simplifiée</p>
+                    </div>
+                    <div class="feature-card">
+                        <h4>📊 Analytics Avancés</h4>
+                        <p>Statistiques détaillées, exports CSV, métriques performance</p>
+                    </div>
+                </div>
+
+                <h3>💳 Système de Paiement Intégré</h3>
+                <div class="feature-grid">
+                    <div class="feature-card">
+                        <h4>🌐 CinetPay</h4>
+                        <p>Interface web complète, multiples moyens de paiement</p>
+                    </div>
+                    <div class="feature-card">
+                        <h4>📱 Fapshi</h4>
+                        <p>Paiements mobiles directs, fonctionnalités avancées</p>
+                    </div>
+                    <div class="feature-card">
+                        <h4>⚡ Pluto</h4>
+                        <p>API moderne, paiements mobiles simplifiés</p>
+                    </div>
+                    <div class="feature-card">
+                        <h4>🔄 Gestion Unifiée</h4>
+                        <p>API unifiée, recommandation automatique, gestion erreurs</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Technical Stack -->
+            <section class="section">
+                <h2>🛠️ Stack Technique</h2>
+                <h3>Backend & Infrastructure</h3>
+                <div class="tech-stack">
+                    <span class="tech-badge">Laravel 11</span>
+                    <span class="tech-badge">PHP 8.2+</span>
+                    <span class="tech-badge">MySQL/SQLite</span>
+                    <span class="tech-badge">Inertia.js</span>
+                    <span class="tech-badge">Mistral AI</span>
+                    <span class="tech-badge">Firebase</span>
+                </div>
+
+                <h3>Frontend & UI/UX</h3>
+                <div class="tech-stack">
+                    <span class="tech-badge">React 18</span>
+                    <span class="tech-badge">TypeScript</span>
+                    <span class="tech-badge">Tailwind CSS</span>
+                    <span class="tech-badge">Framer Motion</span>
+                    <span class="tech-badge">shadcn/ui</span>
+                    <span class="tech-badge">Responsive Design</span>
+                </div>
+
+                <h3>Intégrations & APIs</h3>
+                <div class="tech-stack">
+                    <span class="tech-badge">CinetPay API</span>
+                    <span class="tech-badge">Fapshi API</span>
+                    <span class="tech-badge">Pluto API</span>
+                    <span class="tech-badge">Firebase FCM</span>
+                    <span class="tech-badge">Email SMTP</span>
+                    <span class="tech-badge">PDF Generation</span>
+                </div>
+            </section>
+
+            <!-- Screenshots Section -->
+            <section class="section">
+                <h2>📱 Aperçu de l'Interface</h2>
+
+                <h3>🏠 Page d'Accueil</h3>
+                <div class="screenshot-placeholder">
+                    Interface moderne avec hero section, fonctionnalités principales, et call-to-action
+                </div>
+
+                <h3>🤖 Assistant IA Carrière</h3>
+                <div class="screenshot-placeholder">
+                    Chat interface avec services spécialisés, historique conversations, et outils IA
+                </div>
+
+                <h3>📝 Créateur de CV</h3>
+                <div class="screenshot-placeholder">
+                    Interface de création CV avec preview en temps réel et templates professionnels
+                </div>
+
+                <h3>💼 Portail d'Emploi</h3>
+                <div class="screenshot-placeholder">
+                    Recherche d'emplois avec filtres avancés et interface candidature
+                </div>
+
+                <h3>📊 Tableau de Bord</h3>
+                <div class="screenshot-placeholder">
+                    Statistiques et analytics avec graphiques et métriques de performance
+                </div>
+
+                <h3>💰 Système de Paiement</h3>
+                <div class="screenshot-placeholder">
+                    Interface de paiement avec sélection des fournisseurs et confirmation
+                </div>
+            </section>
+
+            <!-- Business Model -->
+            <section class="section">
+                <h2>💼 Modèle Économique</h2>
+
+                <h3>💰 Sources de Revenus</h3>
+                <div class="feature-grid">
+                    <div class="feature-card">
+                        <h4>💎 Abonnements Premium</h4>
+                        <p>Accès aux services IA avancés, templates premium, analytics détaillés</p>
+                    </div>
+                    <div class="feature-card">
+                        <h4>🏢 Commissions Recrutement</h4>
+                        <p>Commission sur les embauches réussies via la plateforme</p>
+                    </div>
+                    <div class="feature-card">
+                        <h4>📢 Publicité Ciblée</h4>
+                        <p>Annonces d'entreprises, promotion d'offres, placement premium</p>
+                    </div>
+                    <div class="feature-card">
+                        <h4>🛠️ Services B2B</h4>
+                        <p>Solutions sur mesure pour entreprises, intégrations personnalisées</p>
+                    </div>
+                </div>
+
+                <h3>📈 Potentiel de Croissance</h3>
+                <ul>
+                    <li><strong>Phase 1 :</strong> Acquisition utilisateurs locaux (0-10K utilisateurs)</li>
+                    <li><strong>Phase 2 :</strong> Expansion régionale Afrique Francophone (10K-100K utilisateurs)</li>
+                    <li><strong>Phase 3 :</strong> Expansion internationale (100K+ utilisateurs)</li>
+                    <li><strong>Phase 4 :</strong> Partenariats stratégiques et acquisitions</li>
+                </ul>
+            </section>
+
+            <!-- Competitive Advantage -->
+            <section class="section">
+                <h2>🏆 Avantages Concurrentiels</h2>
+
+                <div class="highlight-box">
+                    <h4>🎯 Différenciation Clé</h4>
+                    <p><strong>Guidy est la seule plateforme qui combine IA, portail emploi et paiements locaux en une
+                            solution intégrée.</strong></p>
+                </div>
+
+                <h3>🚀 Innovations Techniques</h3>
+                <ul>
+                    <li><strong>IA Conversationnelle :</strong> Assistant carrière personnalisé avec historique
+                        contextuel</li>
+                    <li><strong>Paiements Locaux :</strong> Intégration unique des 3 principaux fournisseurs africains
+                    </li>
+                    <li><strong>UX Moderne :</strong> Interface responsive avec animations fluides</li>
+                    <li><strong>Architecture Scalable :</strong> Prêt pour croissance rapide</li>
+                </ul>
+
+                <h3>🌍 Avantage Géographique</h3>
+                <ul>
+                    <li>Premier sur le marché africain francophone</li>
+                    <li>Paiements mobiles intégrés (MTN, Orange Money)</li>
+                    <li>Support multilingue (Français/Anglais)</li>
+                    <li>Conformité réglementaire locale</li>
+                </ul>
+            </section>
+
+            <!-- Investment Opportunity -->
+            <section class="section">
+                <h2>💎 Opportunité d'Investissement</h2>
+
+                <h3>🎯 Pourquoi Investir Maintenant ?</h3>
+                <div class="feature-grid">
+                    <div class="feature-card">
+                        <h4>✅ Produit Terminé</h4>
+                        <p>Application 100% fonctionnelle, prête pour déploiement immédiat</p>
+                    </div>
+                    <div class="feature-card">
+                        <h4>🚀 Marché en Croissance</h4>
+                        <p>IA et recrutement : +45% d'adoption annuelle mondiale</p>
+                    </div>
+                    <div class="feature-card">
+                        <h4>🌍 Marché Émergent</h4>
+                        <p>Afrique Francophone : 200M+ utilisateurs potentiels non exploités</p>
+                    </div>
+                    <div class="feature-card">
+                        <h4>💰 Revenus Diversifiés</h4>
+                        <p>Multiple sources de revenus avec potentiel de scalabilité</p>
+                    </div>
+                </div>
+
+                <h3>📊 Métriques de Succès Potentielles</h3>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-number">50K+</div>
+                        <div class="stat-label">Utilisateurs Actifs (12 mois)</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number">€500K+</div>
+                        <div class="stat-label">Chiffre d'Affaires Annuel</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number">15%</div>
+                        <div class="stat-label">Marge Nette Moyenne</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number">€5M+</div>
+                        <div class="stat-label">Valorisation Potentielle</div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Next Steps -->
+            <section class="section">
+                <h2>🚀 Prochaines Étapes</h2>
+
+                <h3>📅 Roadmap Immédiate (3-6 mois)</h3>
+                <ul>
+                    <li><strong>Déploiement Production :</strong> Mise en ligne avec infrastructure scalable</li>
+                    <li><strong>Marketing Digital :</strong> Campagnes acquisition utilisateurs</li>
+                    <li><strong>Partenariats :</strong> Accords avec entreprises et écoles</li>
+                    <li><strong>Optimisation :</strong> Amélioration UX basée sur feedback utilisateurs</li>
+                </ul>
+
+                <h3>🎯 Objectifs Moyen Terme (6-12 mois)</h3>
+                <ul>
+                    <li><strong>10K+ utilisateurs actifs</strong> avec engagement élevé</li>
+                    <li><strong>100+ entreprises partenaires</strong> utilisant la plateforme</li>
+                    <li><strong>€50K+ chiffre d'affaires mensuel</strong> récurrent</li>
+                    <li><strong>Expansion géographique</strong> vers 3-5 pays supplémentaires</li>
+                </ul>
+            </section>
+
+            <!-- Call to Action -->
+            <section class="cta-section">
+                <h2>🤝 Rejoignez la Révolution de l'Emploi IA</h2>
+                <p style="font-size: 1.2em; margin-bottom: 30px;">
+                    Guidy représente une opportunité unique d'investir dans l'avenir du recrutement et du développement
+                    de carrière,
+                    avec une technologie éprouvée et un marché en pleine expansion.
+                </p>
+
+                <div class="contact-info">
+                    <h4>📞 Contact & Démonstration</h4>
+                    <p><strong>📧 Email :</strong> guidy.makeitreall@gmail.com</p>
+                    <p><strong>📱 Téléphone :</strong> +237 693 427 913</p>
+                    <p><strong>🌐 Démonstration :</strong> Disponible sur demande</p>
+                    <p><strong>📋 Documentation :</strong> Documentation technique complète fournie</p>
+                </div>
+
+                <div style="margin-top: 30px; padding: 20px; background: rgba(255,255,255,0.1); border-radius: 10px;">
+                    <h3 style="color: white; margin-bottom: 15px;">🎁 Bonus pour Acheteur</h3>
+                    <ul style="text-align: left; max-width: 600px; margin: 0 auto;">
+                        <li>✅ Code source complet et documentation technique</li>
+                        <li>✅ Formation équipe sur maintenance et évolution</li>
+                        <li>✅ Support technique 3 mois inclus</li>
+                        <li>✅ Roadmap détaillée pour développement futur</li>
+                    </ul>
+                </div>
+            </section>
+        </main>
+    </div>
+</body>
+
+</html>

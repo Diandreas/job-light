@@ -1,0 +1,1871 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guidy - Plateforme IA de Développement de Carrière | Présentation Commerciale</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Times New Roman', serif;
+            line-height: 1.4;
+            color: #92400e;
+            background: white;
+            font-size: 12px;
+            overflow-x: hidden;
+        }
+
+        /* Animation d'ouverture */
+        .fullscreen-intro {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: linear-gradient(135deg, #d97706 0%, #f59e0b 50%, #fbbf24 100%);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            transform: scale(1);
+            transition: transform 0.8s ease-in-out, opacity 0.8s ease-in-out;
+        }
+
+        .fullscreen-intro.scroll-away {
+            transform: scale(0.8) translateY(-100vh);
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .intro-content {
+            text-align: center;
+            color: white;
+            animation: introContentFadeIn 1s ease-out 0.5s both;
+        }
+
+        .intro-logo {
+            font-size: 4em;
+            font-weight: bold;
+            margin-bottom: 20px;
+            font-family: 'Georgia', serif;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+            animation: logoFloat 2s ease-in-out infinite alternate;
+        }
+
+        .intro-logo-icon {
+            font-size: 1.2em;
+            animation: iconRotate 3s linear infinite;
+        }
+
+        .intro-tagline {
+            font-size: 1.5em;
+            opacity: 0.95;
+            margin-bottom: 30px;
+            font-style: italic;
+            animation: taglineSlideUp 1s ease-out 1s both;
+        }
+
+        .intro-badge {
+            display: inline-block;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            padding: 15px 30px;
+            border-radius: 30px;
+            font-size: 1.1em;
+            font-weight: bold;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            animation: badgePulse 2s ease-in-out infinite alternate;
+            backdrop-filter: blur(10px);
+        }
+
+        /* Indicateur de scroll */
+        .scroll-indicator {
+            position: absolute;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: white;
+            text-align: center;
+            opacity: 0;
+            animation: scrollIndicatorFadeIn 1s ease-out 3s forwards;
+        }
+
+        .scroll-arrow {
+            font-size: 2em;
+            animation: bounceArrow 1.5s ease-in-out infinite;
+            margin-bottom: 10px;
+        }
+
+        .scroll-text {
+            font-size: 1.1em;
+            font-weight: 500;
+            margin-top: 10px;
+        }
+
+        @keyframes scrollIndicatorFadeIn {
+            to {
+                opacity: 1;
+            }
+        }
+
+        @keyframes bounceArrow {
+
+            0%,
+            20%,
+            50%,
+            80%,
+            100% {
+                transform: translateY(0);
+            }
+
+            40% {
+                transform: translateY(-10px);
+            }
+
+            60% {
+                transform: translateY(-5px);
+            }
+        }
+
+        @keyframes introSlideOut {
+            to {
+                transform: scale(0.8) translateY(-100vh);
+                opacity: 0;
+                visibility: hidden;
+            }
+        }
+
+        @keyframes introContentFadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(50px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes logoFloat {
+            to {
+                transform: translateY(-10px);
+            }
+        }
+
+        @keyframes iconRotate {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        @keyframes taglineSlideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+
+            to {
+                opacity: 0.95;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes badgePulse {
+            to {
+                transform: scale(1.05);
+                box-shadow: 0 0 30px rgba(255, 255, 255, 0.3);
+            }
+        }
+
+        /* Container principal */
+        .container {
+            width: 100%;
+            margin: 0;
+            background: white;
+            padding: 20px;
+            opacity: 0;
+            animation: containerFadeIn 1s ease-out 4s both;
+        }
+
+        @keyframes containerFadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Header amélioré */
+        .header {
+            background: linear-gradient(135deg, #d97706 0%, #f59e0b 100%);
+            color: white;
+            padding: 40px 20px;
+            text-align: center;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(217, 119, 6, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            animation: shimmer 3s infinite;
+        }
+
+        @keyframes shimmer {
+            0% {
+                left: -100%;
+            }
+
+            100% {
+                left: 100%;
+            }
+        }
+
+        .logo {
+            font-size: 2.5em;
+            font-weight: bold;
+            margin-bottom: 15px;
+            font-family: 'Georgia', serif;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            z-index: 2;
+            position: relative;
+        }
+
+        .logo-icon {
+            font-size: 1.2em;
+            color: white;
+            animation: logoIconFloat 3s ease-in-out infinite;
+        }
+
+        @keyframes logoIconFloat {
+
+            0%,
+            100% {
+                transform: translateY(0) rotate(0deg);
+            }
+
+            25% {
+                transform: translateY(-5px) rotate(5deg);
+            }
+
+            75% {
+                transform: translateY(-3px) rotate(-3deg);
+            }
+        }
+
+        .tagline {
+            font-size: 1.2em;
+            opacity: 0.95;
+            margin-bottom: 20px;
+            font-style: italic;
+            z-index: 2;
+            position: relative;
+        }
+
+        .badge {
+            display: inline-block;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 25px;
+            font-size: 1em;
+            font-weight: bold;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+            z-index: 2;
+            position: relative;
+        }
+
+        .badge:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Sections avec animations */
+        .section {
+            margin-bottom: 30px;
+            padding: 25px;
+            border-radius: 15px;
+            background: #fef3c7;
+            border: 2px solid #fde68a;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            opacity: 0;
+            transform: translateY(30px);
+        }
+
+        .section.animate-in {
+            animation: sectionSlideIn 0.6s ease-out forwards;
+        }
+
+        @keyframes sectionSlideIn {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .section:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+        }
+
+        .section h2 {
+            color: #92400e;
+            font-size: 1.8em;
+            margin-bottom: 20px;
+            font-weight: bold;
+            border-bottom: 3px solid #f59e0b;
+            padding-bottom: 10px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .section h2::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: -100%;
+            width: 100%;
+            height: 3px;
+            background: linear-gradient(90deg, #d97706, #f59e0b);
+            animation: underlineSlide 1s ease-out 0.3s forwards;
+        }
+
+        @keyframes underlineSlide {
+            to {
+                left: 0;
+            }
+        }
+
+        .section h3 {
+            color: #a16207;
+            font-size: 1.4em;
+            margin: 20px 0 15px 0;
+            font-weight: bold;
+        }
+
+        /* Cards avec animations */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+            margin: 25px 0;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, #d97706, #f59e0b);
+            color: white;
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+            border: 2px solid #fbbf24;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .stat-card:hover::before {
+            left: 100%;
+        }
+
+        .stat-card:hover {
+            transform: scale(1.05) rotateY(5deg);
+            box-shadow: 0 10px 25px rgba(217, 119, 6, 0.4);
+        }
+
+        .stat-number {
+            font-size: 2em;
+            font-weight: bold;
+            margin-bottom: 8px;
+            z-index: 2;
+            position: relative;
+        }
+
+        .stat-label {
+            font-size: 0.9em;
+            opacity: 0.95;
+            z-index: 2;
+            position: relative;
+        }
+
+        /* Modules grid */
+        .modules-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .module-card {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            border: 2px solid #fde68a;
+            border-left: 5px solid #f59e0b;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .module-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #d97706, #f59e0b, #fbbf24);
+            transform: scaleX(0);
+            transition: transform 0.3s ease;
+        }
+
+        .module-card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .module-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            border-left-color: #d97706;
+        }
+
+        .module-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #d97706, #f59e0b);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+            color: white;
+            transition: all 0.3s ease;
+        }
+
+        .module-card:hover .module-icon {
+            transform: scale(1.1) rotate(5deg);
+        }
+
+        /* Executive summary spécial */
+        .executive-summary {
+            background: linear-gradient(135deg, #fef3c7, #fde68a);
+            border: 3px solid #92400e;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .executive-summary::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(146, 64, 14, 0.1) 0%, transparent 70%);
+            animation: backgroundRotate 10s linear infinite;
+        }
+
+        @keyframes backgroundRotate {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* Value proposition */
+        .value-proposition {
+            background: linear-gradient(135deg, #d97706, #f59e0b);
+            color: white;
+            border: 3px solid #fbbf24;
+            position: relative;
+        }
+
+        .value-proposition h2,
+        .value-proposition h3,
+        .value-proposition p {
+            color: white;
+            z-index: 2;
+            position: relative;
+        }
+
+        /* Highlight box */
+        .highlight-box {
+            background: linear-gradient(135deg, #fff8dc, #fef3c7);
+            padding: 25px;
+            border-radius: 12px;
+            margin: 20px 0;
+            border-left: 5px solid #f39c12;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .highlight-box::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background: linear-gradient(180deg, #f39c12, #f59e0b);
+            transition: width 0.3s ease;
+        }
+
+        .highlight-box:hover::before {
+            width: 100%;
+            opacity: 0.1;
+        }
+
+        /* Timeline améliorée */
+        .timeline {
+            position: relative;
+            margin: 40px 0;
+            padding-left: 40px;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 20px;
+            top: 0;
+            bottom: 0;
+            width: 4px;
+            background: linear-gradient(180deg, #d97706, #f59e0b, #fbbf24);
+            border-radius: 2px;
+        }
+
+        .timeline-item {
+            position: relative;
+            margin-bottom: 40px;
+            padding-left: 50px;
+        }
+
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -12px;
+            top: 10px;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #d97706, #f59e0b);
+            border: 4px solid #fbbf24;
+            transition: all 0.3s ease;
+        }
+
+        .timeline-item:hover::before {
+            transform: scale(1.2);
+            box-shadow: 0 0 20px rgba(217, 119, 6, 0.5);
+        }
+
+        .timeline-content {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            border: 2px solid #fde68a;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .timeline-content:hover {
+            transform: translateX(10px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+        }
+
+        /* CTA Section */
+        .cta-section {
+            background: linear-gradient(135deg, #1a252f 0%, #2c3e50 50%, #34495e 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+            border-radius: 15px;
+            margin-top: 40px;
+            border: 3px solid #f59e0b;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .cta-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(45deg, transparent 30%, rgba(245, 158, 11, 0.1) 50%, transparent 70%);
+            animation: cteShimmer 3s ease-in-out infinite;
+        }
+
+        @keyframes cteShimmer {
+
+            0%,
+            100% {
+                transform: translateX(-100%);
+            }
+
+            50% {
+                transform: translateX(100%);
+            }
+        }
+
+        /* Responsive amélioré */
+        @media screen and (max-width: 768px) {
+            .intro-logo {
+                font-size: 3em;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .modules-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .section {
+                padding: 20px;
+            }
+        }
+
+        /* Features list améliorée */
+        .features-list {
+            list-style: none;
+            padding: 0;
+            margin: 12px 0;
+        }
+
+        .features-list li {
+            padding: 5px 0;
+            color: #5d6d7e;
+            font-size: 0.9em;
+            position: relative;
+            padding-left: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .features-list li::before {
+            content: '✓';
+            position: absolute;
+            left: 0;
+            color: #27ae60;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+
+        .features-list li:hover {
+            color: #2c3e50;
+            transform: translateX(5px);
+        }
+
+        .features-list li:hover::before {
+            color: #f59e0b;
+            transform: scale(1.2);
+        }
+
+        /* Floating action button */
+        .scroll-to-top {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, #d97706, #f59e0b);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2em;
+            transition: all 0.3s ease;
+            z-index: 1000;
+            box-shadow: 0 5px 15px rgba(217, 119, 6, 0.3);
+        }
+
+        .scroll-to-top:hover {
+            transform: scale(1.1) translateY(-3px);
+            box-shadow: 0 8px 25px rgba(217, 119, 6, 0.5);
+        }
+
+        .scroll-to-top.visible {
+            display: flex;
+            animation: fadeInUp 0.3s ease;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Loading spinner pour les transitions */
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.9);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 10000;
+        }
+
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid #fde68a;
+            border-top: 5px solid #d97706;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Animation d'ouverture -->
+    <div class="fullscreen-intro" id="introScreen">
+        <div class="intro-content">
+            <div class="intro-logo">
+                <i class="fas fa-rocket intro-logo-icon"></i>
+                Guidy
+            </div>
+            <div class="intro-tagline">Plateforme IA de Développement de Carrière & Recrutement</div>
+            <div class="intro-badge">Prêt à l'emploi • Évolutif • Technologie éprouvée</div>
+        </div>
+        <div class="scroll-indicator">
+            <div class="scroll-arrow">
+                <i class="fas fa-chevron-down"></i>
+            </div>
+            <div class="scroll-text">Faites défiler pour découvrir</div>
+        </div>
+    </div>
+
+    <!-- Loading overlay -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="spinner"></div>
+    </div>
+
+    <!-- Scroll to top button -->
+    <button class="scroll-to-top" id="scrollToTop">
+        <i class="fas fa-arrow-up"></i>
+    </button>
+
+    <div class="container">
+        <!-- Header Section -->
+        <header class="header">
+            <div class="logo">
+                <i class="fas fa-rocket logo-icon"></i>
+                Guidy
+            </div>
+            <div class="tagline">Plateforme IA de Développement de Carrière & Recrutement</div>
+            <div class="badge">Prêt à l'emploi • Évolutif • Technologie éprouvée</div>
+        </header>
+
+        <!-- Présentation Générale -->
+        <section class="section executive-summary">
+            <h2>
+                <i class="fas fa-chart-line section-icon"></i>
+                Présentation de Guidy
+            </h2>
+            <p class="strong">Guidy est une plateforme complète de développement de carrière alimentée par l'IA qui
+                révolutionne la façon dont les professionnels créent leur CV, construisent leur portfolio, reçoivent des
+                conseils de carrière et trouvent des opportunités d'emploi.</p>
+
+            <div class="highlight-box">
+                <h4>
+                    <i class="fas fa-star section-icon"></i>
+                    Proposition de Valeur Unique
+                </h4>
+                <p>La seule plateforme combinant <span class="emphasize">conseils de carrière alimentés par l'IA</span>,
+                    <span class="emphasize">création de portfolio professionnel</span>, <span class="emphasize">portail
+                        d'emploi complet</span>, et <span class="emphasize">systèmes de paiement intégrés</span> dans un
+                    écosystème cohérent.
+                </p>
+            </div>
+
+            <div class="stats-grid large">
+                <div class="stat-card">
+                    <div class="stat-number">100%</div>
+                    <div class="stat-label">Prêt à l'emploi</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">4</div>
+                    <div class="stat-label">Modules Principaux</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">12+</div>
+                    <div class="stat-label">Modèles Portfolio</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">4</div>
+                    <div class="stat-label">Services IA</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">∞</div>
+                    <div class="stat-label">Potentiel de Croissance</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">📱</div>
+                    <div class="stat-label">Mobile First</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">🌙</div>
+                    <div class="stat-label">Mode Sombre</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">🚀</div>
+                    <div class="stat-label">Performance</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Modules Principaux -->
+        <section class="section market-opportunity">
+            <h2>
+                <i class="fas fa-cogs section-icon"></i>
+                Modules Principaux de Guidy
+            </h2>
+            <h3>
+                <i class="fas fa-file-alt section-icon"></i>
+                Module 1: Créateur de CV Professionnel (4 Étapes)
+            </h3>
+            <p><strong>Création de CV en 4 étapes simples et efficaces</strong></p>
+
+            <div class="timeline">
+                <div class="timeline-item">
+                    <div class="timeline-marker">Étape 1</div>
+                    <div class="timeline-content">
+                        <h4><i class="fas fa-user-plus icon-svg"></i> Informations Personnelles</h4>
+                        <ul>
+                            <li>Saisie des données de base (nom, contact, photo)</li>
+                            <li>Informations de localisation et disponibilité</li>
+                            <li>Objectif professionnel personnalisé</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="timeline-item">
+                    <div class="timeline-marker">Étape 2</div>
+                    <div class="timeline-content">
+                        <h4><i class="fas fa-briefcase icon-svg"></i> Expérience Professionnelle</h4>
+                        <ul>
+                            <li>Ajout des postes précédents avec descriptions détaillées</li>
+                            <li>Suggestions IA pour optimiser les descriptions</li>
+                            <li>Mise en avant des réalisations et compétences</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="timeline-item">
+                    <div class="timeline-marker">Étape 3</div>
+                    <div class="timeline-content">
+                        <h4><i class="fas fa-graduation-cap icon-svg"></i> Formation & Compétences</h4>
+                        <ul>
+                            <li>Parcours éducatif et certifications</li>
+                            <li>Compétences techniques et soft skills</li>
+                            <li>Langues parlées avec niveaux</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="timeline-item">
+                    <div class="timeline-marker">Étape 4</div>
+                    <div class="timeline-content">
+                        <h4><i class="fas fa-magic icon-svg"></i> Finalisation & Export</h4>
+                        <ul>
+                            <li>Choix du modèle de CV adapté au secteur</li>
+                            <li>Personnalisation des couleurs et mise en page</li>
+                            <li>Export PDF haute qualité et partage</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modules-grid">
+                <div class="module-card">
+                    <div class="module-icon"><i class="fas fa-palette"></i></div>
+                    <h4>Modèles Professionnels</h4>
+                    <p>Plus de 20 modèles adaptés à tous les secteurs</p>
+                    <ul class="features-list">
+                        <li>Designs modernes et élégants</li>
+                        <li>Compatible ATS (Applicant Tracking System)</li>
+                        <li>Personnalisation complète</li>
+                        <li>Prévisualisation en temps réel</li>
+                    </ul>
+                </div>
+                <div class="module-card">
+                    <div class="module-icon"><i class="fas fa-download"></i></div>
+                    <h4>Export & Partage</h4>
+                    <p>Multiples formats d'export et options de partage</p>
+                    <ul class="features-list">
+                        <li>Export PDF haute qualité</li>
+                        <li>Format Word compatible</li>
+                        <li>Liens de partage sécurisés</li>
+                        <li>Optimisation pour l'impression</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- Module Portfolio -->
+        <section class="section">
+            <h2>
+                <i class="fas fa-images section-icon"></i>
+                Module 2: Créateur de Portfolio Professionnel
+            </h2>
+
+            <h3>
+                <i class="fas fa-paint-brush icon-svg"></i>
+                Portfolio Créé Automatiquement à partir du CV
+            </h3>
+            <p><strong>Génération automatique de portfolio professionnel à partir des informations du CV avec
+                    personnalisation simple</strong></p>
+
+            <div class="modules-grid">
+                <div class="module-card">
+                    <div class="module-icon"><i class="fas fa-sync-alt"></i></div>
+                    <h4>Génération Automatique</h4>
+                    <p>Le portfolio se crée automatiquement à partir des données du CV</p>
+                    <ul class="features-list">
+                        <li>Import automatique des informations CV</li>
+                        <li>Mise en forme intelligente du contenu</li>
+                        <li>Suggestions de sections supplémentaires</li>
+                        <li>Optimisation pour le web</li>
+                    </ul>
+                </div>
+                <div class="module-card">
+                    <div class="module-icon"><i class="fas fa-sliders-h"></i></div>
+                    <h4>Personnalisation Simple</h4>
+                    <p>Interface intuitive pour personnaliser le portfolio</p>
+                    <ul class="features-list">
+                        <li>Modification facile du contenu</li>
+                        <li>Ajout de projets et réalisations</li>
+                        <li>Personnalisation des couleurs et polices</li>
+                        <li>Prévisualisation en temps réel</li>
+                    </ul>
+                </div>
+            </div>
+
+            <h3 class="section-break">
+                <i class="fas fa-th-large icon-svg"></i>
+                12 Modèles Innovants de Portfolio
+            </h3>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-number">12</div>
+                    <div class="stat-label">Modèles Innovants</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">100%</div>
+                    <div class="stat-label">Responsive</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">∞</div>
+                    <div class="stat-label">Personnalisation</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">SEO</div>
+                    <div class="stat-label">Optimisé</div>
+                </div>
+            </div>
+
+            <div class="modules-grid">
+                <div class="module-card">
+                    <div class="module-icon"><i class="fas fa-laptop-code"></i></div>
+                    <h4>Modèles Tech & Digital</h4>
+                    <p>Designs modernes pour développeurs et créatifs</p>
+                    <ul class="features-list">
+                        <li>Minimaliste & Élégant</li>
+                        <li>Dark Mode & Light Mode</li>
+                        <li>Animations fluides</li>
+                        <li>Showcase de projets</li>
+                    </ul>
+                </div>
+                <div class="module-card">
+                    <div class="module-icon"><i class="fas fa-briefcase"></i></div>
+                    <h4>Modèles Corporate</h4>
+                    <p>Designs professionnels pour le monde des affaires</p>
+                    <ul class="features-list">
+                        <li>Style corporate classique</li>
+                        <li>Mise en avant des réalisations</li>
+                        <li>Graphiques et statistiques</li>
+                        <li>Certifications et formations</li>
+                    </ul>
+                </div>
+                <div class="module-card">
+                    <div class="module-icon"><i class="fas fa-paint-brush"></i></div>
+                    <h4>Modèles Créatifs</h4>
+                    <p>Designs artistiques pour créateurs et designers</p>
+                    <ul class="features-list">
+                        <li>Galerie d'images immersive</li>
+                        <li>Typographie créative</li>
+                        <li>Palettes de couleurs uniques</li>
+                        <li>Présentation visuelle</li>
+                    </ul>
+                </div>
+                <div class="module-card">
+                    <div class="module-icon"><i class="fas fa-graduation-cap"></i></div>
+                    <h4>Modèles Académiques</h4>
+                    <p>Designs adaptés aux chercheurs et universitaires</p>
+                    <ul class="features-list">
+                        <li>Publications et recherches</li>
+                        <li>Présentation académique</li>
+                        <li>Citations et références</li>
+                        <li>CV académique intégré</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- Assistant IA -->
+        <section class="section">
+            <h3>
+                <i class="fas fa-robot icon-svg"></i>
+                Module 3: Assistant Carrière IA (4 Services)
+            </h3>
+            <p><strong>Assistant intelligent avec 4 services spécialisés pour accompagner votre développement
+                    professionnel</strong></p>
+
+            <div class="modules-grid">
+                <div class="module-card">
+                    <div class="module-icon"><i class="fas fa-lightbulb"></i></div>
+                    <h4>1. Conseil de Carrière</h4>
+                    <p>Guidance personnalisée pour votre évolution professionnelle</p>
+                    <ul class="features-list">
+                        <li>Analyse de votre profil et compétences</li>
+                        <li>Recommandations de parcours de carrière</li>
+                        <li>Identification des opportunités de croissance</li>
+                        <li>Conseils pour les transitions professionnelles</li>
+                    </ul>
+                </div>
+                <div class="module-card">
+                    <div class="module-icon"><i class="fas fa-microphone"></i></div>
+                    <h4>2. Préparation d'Entretien</h4>
+                    <p>Entraînement complet pour réussir vos entretiens</p>
+                    <ul class="features-list">
+                        <li>Questions d'entretien personnalisées</li>
+                        <li>Simulation d'entretiens en temps réel</li>
+                        <li>Conseils pour répondre aux questions difficiles</li>
+                        <li>Préparation aux entretiens techniques</li>
+                    </ul>
+                </div>
+                <div class="module-card">
+                    <div class="module-icon"><i class="fas fa-search"></i></div>
+                    <h4>3. Analyseur de CV</h4>
+                    <p>Optimisation intelligente de votre CV</p>
+                    <ul class="features-list">
+                        <li>Analyse ATS (Applicant Tracking System)</li>
+                        <li>Suggestions d'amélioration du contenu</li>
+                        <li>Optimisation des mots-clés</li>
+                        <li>Score de compatibilité avec les offres</li>
+                    </ul>
+                </div>
+                <div class="module-card">
+                    <div class="module-icon"><i class="fas fa-envelope"></i></div>
+                    <h4>4. Générateur de Lettre de Motivation</h4>
+                    <p>Création automatique de lettres personnalisées</p>
+                    <ul class="features-list">
+                        <li>Génération basée sur l'offre d'emploi</li>
+                        <li>Adaptation au style de l'entreprise</li>
+                        <li>Mise en avant des compétences pertinentes</li>
+                        <li>Export en PDF et Word</li>
+                    </ul>
+                </div>
+            </div>
+            <h3 class="section-break">
+                <i class="fas fa-search icon-svg"></i>
+                Module 4: Portail d'Emploi Scalable
+            </h3>
+            <p><strong>Plateforme complète de recrutement avec possibilités d'expansion illimitée</strong></p>
+
+            <div class="modules-grid">
+                <div class="module-card">
+                    <div class="module-icon"><i class="fas fa-building"></i></div>
+                    <h4>Outils Employeurs</h4>
+                    <p>Système complet de gestion du recrutement</p>
+                    <ul class="features-list">
+                        <li>Publication et gestion d'offres d'emploi</li>
+                        <li>Suivi des candidatures en temps réel</li>
+                        <li>Outils de sélection et évaluation</li>
+                        <li>Gestion des profils d'entreprise</li>
+                        <li>Analytics et rapports détaillés</li>
+                    </ul>
+                </div>
+                <div class="module-card">
+                    <div class="module-icon"><i class="fas fa-user-tie"></i></div>
+                    <h4>Fonctionnalités Candidats</h4>
+                    <p>Outils avancés de recherche et candidature</p>
+                    <ul class="features-list">
+                        <li>Algorithme de matching intelligent</li>
+                        <li>Candidatures en un clic</li>
+                        <li>Suivi des candidatures</li>
+                        <li>Notifications en temps réel</li>
+                        <li>Recommandations personnalisées</li>
+                    </ul>
+                </div>
+            </div>
+
+            <h3 class="section-break">
+                <i class="fas fa-expand-arrows-alt icon-svg"></i>
+                Scalabilité et Possibilités d'Expansion
+            </h3>
+            <div class="modules-grid">
+                <div class="module-card">
+                    <div class="module-icon"><i class="fas fa-globe"></i></div>
+                    <h4>Expansion Géographique</h4>
+                    <p>Déploiement dans de nouveaux marchés</p>
+                    <ul class="features-list">
+                        <li>Support multi-langues</li>
+                        <li>Adaptation aux réglementations locales</li>
+                        <li>Intégration avec les systèmes locaux</li>
+                        <li>Monétisation par région</li>
+                    </ul>
+                </div>
+                <div class="module-card">
+                    <div class="module-icon"><i class="fas fa-industry"></i></div>
+                    <h4>Spécialisation Sectorielle</h4>
+                    <p>Adaptation à différents secteurs d'activité</p>
+                    <ul class="features-list">
+                        <li>Portails spécialisés par secteur</li>
+                        <li>Fonctionnalités métier spécifiques</li>
+                        <li>Intégration avec outils sectoriels</li>
+                        <li>Certifications et validations</li>
+                    </ul>
+                </div>
+                <div class="module-card">
+                    <div class="module-icon"><i class="fas fa-plug"></i></div>
+                    <h4>Intégrations API</h4>
+                    <p>Connectivité avec systèmes externes</p>
+                    <ul class="features-list">
+                        <li>API REST complète</li>
+                        <li>Intégration RH existantes</li>
+                        <li>Webhooks et notifications</li>
+                        <li>Marketplace d'applications</li>
+                    </ul>
+                </div>
+                <div class="module-card">
+                    <div class="module-icon"><i class="fas fa-chart-line"></i></div>
+                    <h4>Analytics Avancés</h4>
+                    <p>Intelligence d'affaires et insights</p>
+                    <ul class="features-list">
+                        <li>Tableaux de bord personnalisés</li>
+                        <li>Prédictions de recrutement</li>
+                        <li>Analyse de tendances marché</li>
+                        <li>Rapports automatisés</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- Monétisation et Partenariats -->
+        <section class="section">
+            <h2>
+                <i class="fas fa-dollar-sign section-icon"></i>
+                Options de Monétisation et Partenariats
+            </h2>
+
+            <h3>
+                <i class="fas fa-credit-card icon-svg"></i>
+                Modèles de Monétisation Flexibles
+            </h3>
+            <p><strong>Plusieurs options pour monétiser tous les modules selon vos besoins</strong></p>
+
+            <div class="modules-grid">
+                <div class="module-card">
+                    <div class="module-icon"><i class="fas fa-crown"></i></div>
+                    <h4>Abonnements Utilisateurs</h4>
+                    <p>Modèle freemium avec options premium</p>
+                    <ul class="features-list">
+                        <li>Gratuit : CV basique + 1 modèle portfolio</li>
+                        <li>Premium : Tous les modèles + IA illimitée</li>
+                        <li>Pro : Fonctionnalités avancées + support</li>
+                        <li>Enterprise : Solutions sur mesure</li>
+                    </ul>
+                </div>
+                <div class="module-card">
+                    <div class="module-icon"><i class="fas fa-building"></i></div>
+                    <h4>Services Entreprises</h4>
+                    <p>Solutions complètes pour les entreprises</p>
+                    <ul class="features-list">
+                        <li>Publication d'offres d'emploi</li>
+                        <li>Accès à la base de candidats</li>
+                        <li>Outils de recrutement avancés</li>
+                        <li>Analytics et rapports détaillés</li>
+                    </ul>
+                </div>
+                <div class="module-card">
+                    <div class="module-icon"><i class="fas fa-users"></i></div>
+                    <h4>Particuliers & Freelancers</h4>
+                    <p>Tarifs adaptés aux indépendants</p>
+                    <ul class="features-list">
+                        <li>Publication d'annonces personnalisées</li>
+                        <li>Services de conseil en carrière</li>
+                        <li>Formation et certification</li>
+                        <li>Réseau professionnel intégré</li>
+                    </ul>
+                </div>
+                <div class="module-card">
+                    <div class="module-icon"><i class="fas fa-chart-bar"></i></div>
+                    <h4>Analytics & Insights</h4>
+                    <p>Données précieuses pour les décisions</p>
+                    <ul class="features-list">
+                        <li>Rapports de marché détaillés</li>
+                        <li>Tendances de recrutement</li>
+                        <li>Analyses de compétences</li>
+                        <li>Prédictions de carrière</li>
+                    </ul>
+                </div>
+            </div>
+
+            <h3 class="section-break">
+                <i class="fas fa-handshake icon-svg"></i>
+                Partenariats Stratégiques
+            </h3>
+            <p><strong>Opportunités de partenariats avec écoles, entreprises et associations</strong></p>
+
+            <div class="modules-grid">
+                <div class="module-card">
+                    <div class="module-icon"><i class="fas fa-graduation-cap"></i></div>
+                    <h4>Partenariats Éducatifs</h4>
+                    <p>Collaboration avec écoles et universités</p>
+                    <ul class="features-list">
+                        <li>Accès gratuit pour étudiants</li>
+                        <li>Intégration dans programmes scolaires</li>
+                        <li>Formation des enseignants</li>
+                        <li>Certifications académiques</li>
+                        <li>Suivi des parcours étudiants</li>
+                    </ul>
+                </div>
+                <div class="module-card">
+                    <div class="module-icon"><i class="fas fa-industry"></i></div>
+                    <h4>Partenariats Entreprises</h4>
+                    <p>Accords avec grandes entreprises</p>
+                    <ul class="features-list">
+                        <li>Accès privilégié aux talents</li>
+                        <li>Solutions RH personnalisées</li>
+                        <li>Formation interne des employés</li>
+                        <li>Co-branding et visibilité</li>
+                        <li>Tarifs préférentiels</li>
+                    </ul>
+                </div>
+                <div class="module-card">
+                    <div class="module-icon"><i class="fas fa-users-cog"></i></div>
+                    <h4>Partenariats Associations</h4>
+                    <p>Collaboration avec organisations professionnelles</p>
+                    <ul class="features-list">
+                        <li>Services pour membres d'associations</li>
+                        <li>Événements et conférences</li>
+                        <li>Certifications professionnelles</li>
+                        <li>Réseaux spécialisés</li>
+                        <li>Programmes de mentorat</li>
+                    </ul>
+                </div>
+                <div class="module-card">
+                    <div class="module-icon"><i class="fas fa-globe"></i></div>
+                    <h4>Expansion Internationale</h4>
+                    <p>Développement de nouveaux marchés</p>
+                    <ul class="features-list">
+                        <li>Franchises régionales</li>
+                        <li>Partenaires locaux</li>
+                        <li>Adaptation culturelle</li>
+                        <li>Réglementations locales</li>
+                        <li>Monétisation adaptée</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- Screenshots Section -->
+        <section class="section">
+            <h2>
+                <i class="fas fa-mobile-alt section-icon"></i>
+                Captures d'Écran de la Plateforme Guidy
+            </h2>
+
+            <h3><i class="fas fa-home icon-svg"></i> Dashboard Principal & Services IA</h3>
+            <div class="screenshot-container">
+                <img src="CAPTURE/carreer advior service .png" alt="Services IA Guidy" class="screenshot-image"
+                    style="max-height: 400px;">
+                <div class="screenshot-caption">Interface des services IA spécialisés avec 4 modules : Conseil de
+                    carrière, Générateur de lettres, Analyseur de CV, et Simulateur d'entretien</div>
+            </div>
+
+            <h3><i class="fas fa-robot icon-svg"></i> Assistant Carrière IA - Interface de Conversation</h3>
+            <div class="screenshot-container">
+                <img src="CAPTURE/Exemple de conversation.png" alt="Conversation IA" class="screenshot-image"
+                    style="max-height: 400px;">
+                <div class="screenshot-caption">Interface de conversation intelligente avec l'IA pour conseils
+                    personnalisés et génération de documents</div>
+            </div>
+
+            <h3><i class="fas fa-file-alt icon-svg"></i> Créateur de CV - Interface de Création</h3>
+            <div class="screenshot-container">
+                <img src="CAPTURE/CV creation index.png" alt="Créateur de CV" class="screenshot-image"
+                    style="max-height: 400px;">
+                <div class="screenshot-caption">Interface de création de CV professionnel avec étapes guidées et
+                    prévisualisation en temps réel</div>
+            </div>
+
+            <h3><i class="fas fa-eye icon-svg"></i> Prévisualisation CV - Résultat Final</h3>
+            <div class="screenshot-container">
+                <img src="CAPTURE/cv Previsualisation ( cv creation ) .png" alt="Prévisualisation CV"
+                    class="screenshot-image" style="max-height: 400px;">
+                <div class="screenshot-caption">CV final généré avec design professionnel, personnalisation des couleurs
+                    et options d'export</div>
+            </div>
+
+            <h3><i class="fas fa-images icon-svg"></i> Portfolio Builder - Interface d'Édition</h3>
+            <div class="screenshot-grid">
+                <div class="screenshot-container">
+                    <img src="CAPTURE/Portfolio edit view.png" alt="Édition Portfolio Desktop" class="screenshot-image">
+                    <div class="screenshot-caption">Interface d'édition portfolio - Vue Desktop</div>
+                </div>
+                <div class="screenshot-container">
+                    <img src="CAPTURE/portfolio edit mobile view.png" alt="Édition Portfolio Mobile"
+                        class="screenshot-image">
+                    <div class="screenshot-caption">Interface d'édition portfolio - Vue Mobile</div>
+                </div>
+            </div>
+
+            <h3><i class="fas fa-share-alt icon-svg"></i> Portfolio - Partage et Présentation</h3>
+            <div class="screenshot-grid">
+                <div class="screenshot-container">
+                    <img src="CAPTURE/Portfolio Index module .png" alt="Portfolio Index" class="screenshot-image">
+                    <div class="screenshot-caption">Page d'accueil du portfolio avec design moderne et responsive</div>
+                </div>
+                <div class="screenshot-container">
+                    <img src="CAPTURE/Portfolio sharing possible.png" alt="Partage Portfolio" class="screenshot-image">
+                    <div class="screenshot-caption">Modal de partage avec QR code et options de réseaux sociaux</div>
+                </div>
+            </div>
+
+            <h3><i class="fas fa-briefcase icon-svg"></i> Portail d'Emploi - Interface Complète</h3>
+            <div class="screenshot-grid">
+                <div class="screenshot-container">
+                    <img src="CAPTURE/job portal.png" alt="Portail d'Emploi" class="screenshot-image">
+                    <div class="screenshot-caption">Page principale du portail d'emploi avec recherche avancée et
+                        filtres</div>
+                </div>
+                <div class="screenshot-container">
+                    <img src="CAPTURE/job shiw.png" alt="Détail Offre d'Emploi" class="screenshot-image">
+                    <div class="screenshot-caption">Page de détail d'une offre d'emploi avec informations complètes
+                    </div>
+                </div>
+            </div>
+
+            <h3><i class="fas fa-mobile-alt icon-svg"></i> Design Responsive & Mode Sombre</h3>
+            <div class="screenshot-container">
+                <img src="CAPTURE/the application is fully responsive  optimised for mobile also and dark mode support.png"
+                    alt="Design Responsive" class="screenshot-image" style="max-height: 400px;">
+                <div class="screenshot-caption">Application entièrement responsive optimisée pour mobile avec support du
+                    mode sombre</div>
+            </div>
+
+            <h3><i class="fas fa-cogs icon-svg"></i> Composants Immersifs pour Chaque Service IA</h3>
+            <div class="screenshot-container">
+                <img src="CAPTURE/des composant imerssif pour chaque type de service ia .png"
+                    alt="Composants Immersifs IA" class="screenshot-image" style="max-height: 400px;">
+                <div class="screenshot-caption">Interface immersive avec composants spécialisés pour chaque type de
+                    service IA (Conseil, Lettre, Analyse, Entretien)</div>
+            </div>
+
+            <h3><i class="fas fa-user-tie icon-svg"></i> Autres Composants du Career Advisor</h3>
+            <div class="screenshot-container">
+                <img src="CAPTURE/another coompone tof carrer advisor .png" alt="Autres Composants Career Advisor"
+                    class="screenshot-image" style="max-height: 400px;">
+                <div class="screenshot-caption">Composants supplémentaires du Career Advisor avec fonctionnalités
+                    avancées et interface utilisateur moderne</div>
+            </div>
+        </section>
+
+        <!-- Business Model -->
+        <section class="section">
+            <h2>
+                <i class="fas fa-dollar-sign section-icon"></i>
+                Business Model & Revenue Streams
+            </h2>
+
+            <h3>
+                <i class="fas fa-credit-card icon-svg"></i>
+                Revenue Streams
+            </h3>
+            <div class="modules-grid">
+                <div class="module-card">
+                    <div class="module-icon">💎</div>
+                    <h4>Subscription Tiers</h4>
+                    <p>Premium access to AI services and advanced features</p>
+                    <ul class="features-list">
+                        <li>Freemium model with premium upgrades</li>
+                        <li>Monthly/annual subscription plans</li>
+                        <li>Enterprise licensing</li>
+                        <li>Student discounts</li>
+                    </ul>
+                </div>
+                <div class="module-card">
+                    <div class="module-icon">🏢</div>
+                    <h4>Employer Services</h4>
+                    <p>Recruitment and hiring solutions for businesses</p>
+                    <ul class="features-list">
+                        <li>Job posting fees</li>
+                        <li>Premium candidate access</li>
+                        <li>Recruitment analytics</li>
+                        <li>White-label solutions</li>
+                    </ul>
+                </div>
+            </div>
+
+            <h3>
+                <i class="fas fa-chart-line icon-svg"></i>
+                Projected Financial Performance
+            </h3>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-number">$2M+</div>
+                    <div class="stat-label">Year 1 Revenue</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">50K+</div>
+                    <div class="stat-label">Active Users</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">25%</div>
+                    <div class="stat-label">Gross Margin</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">$15M+</div>
+                    <div class="stat-label">Year 3 Revenue</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Investment Highlights -->
+        <section class="section investment-highlights">
+            <h2>
+                <i class="fas fa-star section-icon"></i>
+                Investment Highlights
+            </h2>
+
+            <h3>
+                <i class="fas fa-target icon-svg"></i>
+                Why Invest in Guidy Now?
+            </h3>
+            <div class="modules-grid">
+                <div class="module-card">
+                    <div class="module-icon">✅</div>
+                    <h4>Production Ready</h4>
+                    <p>Fully functional platform with proven technology stack</p>
+                </div>
+                <div class="module-card">
+                    <div class="module-icon">🚀</div>
+                    <h4>Market Timing</h4>
+                    <p>Perfect timing with AI adoption surge and remote work trends</p>
+                </div>
+                <div class="module-card">
+                    <div class="module-icon">🌍</div>
+                    <h4>Global Scalability</h4>
+                    <p>Architecture designed for rapid international expansion</p>
+                </div>
+                <div class="module-card">
+                    <div class="module-icon">💰</div>
+                    <h4>Diversified Revenue</h4>
+                    <p>Multiple revenue streams with recurring subscription model</p>
+                </div>
+            </div>
+
+            <h3>
+                <i class="fas fa-trophy icon-svg"></i>
+                Competitive Advantages
+            </h3>
+            <ul>
+                <li><strong>First-Mover Advantage:</strong> Only platform combining AI career guidance with
+                    comprehensive job matching</li>
+                <li><strong>Technology Integration:</strong> Seamless integration of AI, portfolio building, and
+                    recruitment tools</li>
+                <li><strong>User Experience:</strong> Modern, intuitive interface with mobile-first design</li>
+                <li><strong>Scalable Architecture:</strong> Built for rapid growth and international expansion</li>
+                <li><strong>Data Network Effects:</strong> Platform improves with more users and job data</li>
+            </ul>
+        </section>
+
+        <!-- Growth Timeline -->
+        <section class="section">
+            <h2>
+                <i class="fas fa-calendar-alt section-icon"></i>
+                Realistic Growth Timeline
+            </h2>
+
+            <div class="timeline">
+                <div class="timeline-item">
+                    <div class="timeline-marker">Q1 2024</div>
+                    <div class="timeline-content">
+                        <h4>Foundation & Launch</h4>
+                        <ul>
+                            <li><strong>Users:</strong> 500-1,000 early adopters</li>
+                            <li><strong>Revenue:</strong> $5K-15K MRR</li>
+                            <li><strong>Team:</strong> 3-5 core developers</li>
+                            <li><strong>Focus:</strong> Product-market fit validation</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="timeline-item">
+                    <div class="timeline-marker">Q2 2024</div>
+                    <div class="timeline-content">
+                        <h4>Market Penetration</h4>
+                        <ul>
+                            <li><strong>Users:</strong> 2,500-5,000 active users</li>
+                            <li><strong>Revenue:</strong> $25K-50K MRR</li>
+                            <li><strong>Team:</strong> 8-12 employees</li>
+                            <li><strong>Focus:</strong> Marketing campaigns & partnerships</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="timeline-item">
+                    <div class="timeline-marker">Q3 2024</div>
+                    <div class="timeline-content">
+                        <h4>Scale & Optimize</h4>
+                        <ul>
+                            <li><strong>Users:</strong> 8,000-15,000 active users</li>
+                            <li><strong>Revenue:</strong> $75K-150K MRR</li>
+                            <li><strong>Team:</strong> 15-20 employees</li>
+                            <li><strong>Focus:</strong> Enterprise features & AI enhancement</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="timeline-item">
+                    <div class="timeline-marker">Q4 2024</div>
+                    <div class="timeline-content">
+                        <h4>Market Leadership</h4>
+                        <ul>
+                            <li><strong>Users:</strong> 25,000-40,000 active users</li>
+                            <li><strong>Revenue:</strong> $200K-350K MRR</li>
+                            <li><strong>Team:</strong> 25-35 employees</li>
+                            <li><strong>Focus:</strong> Series A funding & expansion</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="timeline-item">
+                    <div class="timeline-marker">Q1 2025</div>
+                    <div class="timeline-content">
+                        <h4>Regional Expansion</h4>
+                        <ul>
+                            <li><strong>Users:</strong> 60,000-100,000 active users</li>
+                            <li><strong>Revenue:</strong> $500K-800K MRR</li>
+                            <li><strong>Team:</strong> 40-60 employees</li>
+                            <li><strong>Focus:</strong> International markets (Canada, UK)</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="timeline-item">
+                    <div class="timeline-marker">Q2 2025</div>
+                    <div class="timeline-content">
+                        <h4>AI Innovation</h4>
+                        <ul>
+                            <li><strong>Users:</strong> 150,000-250,000 active users</li>
+                            <li><strong>Revenue:</strong> $1.2M-2M MRR</li>
+                            <li><strong>Team:</strong> 70-100 employees</li>
+                            <li><strong>Focus:</strong> Advanced AI features & enterprise</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="timeline-item">
+                    <div class="timeline-marker">Q3 2025</div>
+                    <div class="timeline-content">
+                        <h4>Platform Evolution</h4>
+                        <ul>
+                            <li><strong>Users:</strong> 300,000-500,000 active users</li>
+                            <li><strong>Revenue:</strong> $2.5M-4M MRR</li>
+                            <li><strong>Team:</strong> 120-180 employees</li>
+                            <li><strong>Focus:</strong> Series B funding & acquisitions</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="timeline-item">
+                    <div class="timeline-marker">Q4 2025</div>
+                    <div class="timeline-content">
+                        <h4>Global Presence</h4>
+                        <ul>
+                            <li><strong>Users:</strong> 600,000-1M active users</li>
+                            <li><strong>Revenue:</strong> $5M-8M MRR</li>
+                            <li><strong>Team:</strong> 200-300 employees</li>
+                            <li><strong>Focus:</strong> IPO preparation & global expansion</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <h3>
+                <i class="fas fa-chart-bar icon-svg"></i>
+                Key Growth Metrics
+            </h3>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-number">85%</div>
+                    <div class="stat-label">User Retention Rate</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">$45</div>
+                    <div class="stat-label">Average Revenue Per User</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">6.2x</div>
+                    <div class="stat-label">Revenue Growth Rate</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">$50M+</div>
+                    <div class="stat-label">Valuation Target</div>
+                </div>
+            </div>
+
+            <h3>
+                <i class="fas fa-flag-checkered icon-svg"></i>
+                Strategic Milestones
+            </h3>
+            <div class="modules-grid">
+                <div class="module-card">
+                    <div class="module-icon">🏆</div>
+                    <h4>Market Position</h4>
+                    <ul class="features-list">
+                        <li>Top 3 career platform in US</li>
+                        <li>Leading AI-powered recruitment tool</li>
+                        <li>Strong enterprise customer base</li>
+                        <li>International market presence</li>
+                    </ul>
+                </div>
+                <div class="module-card">
+                    <div class="module-icon">💰</div>
+                    <h4>Financial Goals</h4>
+                    <ul class="features-list">
+                        <li>$50M+ annual recurring revenue</li>
+                        <li>Profitable unit economics</li>
+                        <li>Strong gross margins (70%+)</li>
+                        <li>IPO-ready financials</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- CTA Section -->
+        <section class="cta-section">
+            <h2>
+                <i class="fas fa-shopping-cart section-icon" style="color: white;"></i>
+                Acquérez Guidy - L'Avenir du Développement de Carrière
+            </h2>
+            <p style="font-size: 1.2em; margin-bottom: 30px; z-index: 2; position: relative;">
+                Guidy représente une opportunité unique d'acquérir une plateforme complète de développement de carrière
+                et de technologie de recrutement.
+                Avec une plateforme éprouvée, une demande croissante du marché et une architecture évolutive, vous êtes
+                positionné pour capturer une part significative du marché de la technologie de carrière.
+            </p>
+
+            <div class="contact-info" style="z-index: 2; position: relative;">
+                <h4><i class="fas fa-handshake"></i> Opportunités d'Achat et de Partenariat</h4>
+                <p><strong style="color: #f59e0b;"><i class="fas fa-envelope"></i> Email:</strong> <span
+                        style="color: #ffffff; font-weight: 600;">guidy.makeitreall@gmail.com</span></p>
+                <p><strong style="color: #f59e0b;"><i class="fas fa-phone"></i> Téléphone:</strong> <span
+                        style="color: #ffffff; font-weight: 600;">+237 693 427 913</span></p>
+                <p><strong style="color: #f59e0b;"><i class="fas fa-desktop"></i> Démo:</strong> <span
+                        style="color: #ffffff; font-weight: 500;">Démonstration en direct de la plateforme disponible
+                        sur demande</span></p>
+            </div>
+        </section>
+    </div>
+
+    <script>
+        // Animation d'ouverture avec scroll
+        let introScreen = document.getElementById('introScreen');
+        let hasScrolled = false;
+
+        // Empêcher le scroll initial
+        document.body.style.overflow = 'hidden';
+
+        // Détecter le scroll pour faire disparaître l'intro
+        function handleScroll() {
+            if (!hasScrolled && window.scrollY > 0) {
+                hasScrolled = true;
+                introScreen.classList.add('scroll-away');
+                document.body.style.overflow = 'auto';
+
+                // Déclencher les animations des sections après la disparition de l'intro
+                setTimeout(() => {
+                    const sections = document.querySelectorAll('.section');
+                    sections.forEach((section, index) => {
+                        setTimeout(() => {
+                            section.classList.add('animate-in');
+                        }, index * 200);
+                    });
+                }, 800);
+            }
+        }
+
+        // Écouter le scroll
+        window.addEventListener('scroll', handleScroll);
+
+        // Support pour les touches de navigation
+        window.addEventListener('keydown', function (e) {
+            if (!hasScrolled && (e.key === 'ArrowDown' || e.key === 'PageDown' || e.key === ' ')) {
+                e.preventDefault();
+                window.scrollTo({ top: 100, behavior: 'smooth' });
+            }
+        });
+
+        // Support pour la molette de souris
+        window.addEventListener('wheel', function (e) {
+            if (!hasScrolled && e.deltaY > 0) {
+                e.preventDefault();
+                window.scrollTo({ top: 100, behavior: 'smooth' });
+            }
+        }, { passive: false });
+
+        // Scroll animations
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('animate-in');
+                }
+            });
+        }, observerOptions);
+
+        // Observe all sections
+        document.querySelectorAll('.section').forEach(section => {
+            observer.observe(section);
+        });
+
+        // Scroll to top functionality
+        const scrollToTopBtn = document.getElementById('scrollToTop');
+
+        window.addEventListener('scroll', () => {
+            if (window.pageYOffset > 300) {
+                scrollToTopBtn.classList.add('visible');
+            } else {
+                scrollToTopBtn.classList.remove('visible');
+            }
+        });
+
+        scrollToTopBtn.addEventListener('click', () => {
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        });
+
+        // Smooth scrolling for internal links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // Card hover effects
+        document.querySelectorAll('.stat-card, .module-card').forEach(card => {
+            card.addEventListener('mouseenter', function () {
+                this.style.transform = 'translateY(-8px) scale(1.02)';
+            });
+
+            card.addEventListener('mouseleave', function () {
+                this.style.transform = 'translateY(0) scale(1)';
+            });
+        });
+
+        // Add loading state for transitions
+        function showLoading() {
+            document.getElementById('loadingOverlay').style.display = 'flex';
+        }
+
+        function hideLoading() {
+            document.getElementById('loadingOverlay').style.display = 'none';
+        }
+
+        // Performance optimization
+        let ticking = false;
+
+        function updateAnimations() {
+            // Update any scroll-based animations here
+            ticking = false;
+        }
+
+        window.addEventListener('scroll', () => {
+            if (!ticking) {
+                requestAnimationFrame(updateAnimations);
+                ticking = true;
+            }
+        });
+    </script>
+</body>
+
+</html>

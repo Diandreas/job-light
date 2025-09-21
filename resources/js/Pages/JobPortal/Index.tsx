@@ -540,7 +540,6 @@ export default function JobPortalIndex({ auth, jobs = { data: [], links: [], met
                                                             </Badge>
                                                         )}
                                                     </div>
-                                                </div>
 
                                                     {/* Stats et actions compactes */}
                                                     <div className="flex items-center justify-between order-2 sm:order-1">

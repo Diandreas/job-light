@@ -22,4 +22,8 @@ class Language extends Model
         return $this->belongsToMany(User::class, 'user_languages', 'language_id', 'user_id');
     }
 
+
+    
 }
+
+

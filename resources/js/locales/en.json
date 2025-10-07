@@ -3,7 +3,9 @@
         "save": "Save",
         "saving": "Saving...",
         "cancel": "Cancel",
-        "error": "Error"
+        "error": "Error",
+        "add": "Add",
+        "update": "Update"
     },
     "cv_color": {
         "customize_color": "Customize color",
@@ -371,10 +373,6 @@
             "price_desc": "Price ↓",
             "name_asc": "Name A-Z",
             "name_desc": "Name Z-A"
-        },
-        "view": {
-            "grid": "Grid view",
-            "list": "List view"
         }
     },
     "auth": {
@@ -899,18 +897,31 @@
                 "institution": "Company/Institution",
                 "ongoing": "Ongoing",
                 "searchExperience": "Search by name, institution or description...",
-                "optionalDescription": "Description (optional)"
+                "optionalDescription": "Description (optional)",
+                "description": "Describe your responsibilities and achievements...",
+                "outputs": "Ex: Increased traffic by 30%, Reduced costs by 20%...",
+                "comments": "Personal notes (not shown on CV)...",
+                "referenceName": "Full name",
+                "referenceFunction": "Position/Function",
+                "referenceEmail": "Email",
+                "referencePhone": "Phone"
             },
             "buttons": {
                 "addEducation": "Add education",
                 "addEducationShort": "Education",
                 "addProfessional": "Add professional experience",
-                "addProfessionalShort": "Pro experience",
+                "addProfessionalShort": "Pro Exp",
                 "addExperience": "Add experience",
                 "cancel": "Cancel",
                 "save": "Save",
                 "saving": "Saving...",
-                "adding": "Adding..."
+                "adding": "Adding...",
+                "showMore": "Show more",
+                "showLess": "Hide",
+                "moreInfo": "More info",
+                "uploadFile": "Upload file",
+                "uploading": "Uploading...",
+                "addReference": "Add reference"
             },
             "messages": {
                 "noExperienceFound": "No experience found",
@@ -966,7 +977,30 @@
                     "insaLyon": "INSA Lyon"
                 }
             },
-            "ongoing": "Ongoing"
+            "ongoing": "Ongoing",
+            "confirmDelete": "Are you sure you want to delete this experience?",
+            "editExperience": "Edit experience",
+            "labels": {
+                "title": "Title",
+                "type": "Type",
+                "institution": "Institution",
+                "startDate": "Start date",
+                "endDate": "End date",
+                "description": "Description",
+                "outputs": "Results/Achievements",
+                "comments": "Comments",
+                "attachment": "Attachment",
+                "references": "References",
+                "more": "more"
+            }
+        },
+        "success": {
+            "attachmentUploaded": "Attachment uploaded successfully",
+            "attachmentUploadedDescription": "The file has been added to the experience"
+        },
+        "errors": {
+            "attachmentUpload": "Upload error",
+            "attachmentUploadDescription": "Unable to upload the file. Please try again."
         }
     },
     "cvInterface": {
@@ -1117,7 +1151,7 @@
             "step2": "Step 2: Professional Summary",
             "step3": "Step 3: Professional Experience",
             "step4": "Step 4: CV Title",
-            "step5": "Step 5: Skills & Others"
+            "step5": "Step 4: Skills & Others"
         }
     },
     "summaries": {

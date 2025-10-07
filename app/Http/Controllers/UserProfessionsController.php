@@ -85,6 +85,9 @@ class UserProfessionsController extends Controller
             'full_profession' => null
         ]);
 
-        return redirect()->back();
+        return response()->json([
+            'success' => true,
+            'message' => 'Profession supprimée avec succès!'
+        ]);
     }
 }

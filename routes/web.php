@@ -338,7 +338,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/user-professions', [UserProfessionsController::class, 'index'])->name('user-professions.index');
     Route::get('/user-professions/create', [UserProfessionsController::class, 'create'])->name('user-professions.create');
     Route::post('/user-professions', [UserProfessionsController::class, 'store'])->name('user-professions.store');
-    Route::delete('/user-professions/{user}/{profession}', [UserProfessionsController::class, 'destroy'])->name('user-professions.destroy');
+    Route::delete('/user-professions/{user}', [UserProfessionsController::class, 'destroy'])->name('user-professions.destroy');
 
     // CV Models
     Route::post('/user-cv-models/select-active', [CvModelController::class, 'selectActiveModel']);

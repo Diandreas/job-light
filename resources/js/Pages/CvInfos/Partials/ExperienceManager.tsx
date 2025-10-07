@@ -1,41 +1,32 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import { useForm } from '@inertiajs/react';
+import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button } from '@/Components/ui/button';
-import { Card, CardContent } from '@/Components/ui/card';
 import { Input } from '@/Components/ui/input';
 import { Textarea } from "@/Components/ui/textarea";
-import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue
-} from "@/Components/ui/select";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/Components/ui/select";
 import { useToast } from '@/Components/ui/use-toast';
-import { ScrollArea } from "@/Components/ui/scroll-area";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/Components/ui/dialog";
 import {
-    Briefcase,
-    GraduationCap,
-    Building2,
-    Search,
-    Plus,
-    Edit,
-    Trash2,
-    Calendar,
-    X,
-    Check
+    Briefcase, GraduationCap, Building2, Search, Plus, Edit, Trash2, X, Check,
+    Upload, FileText, Users, Trophy, MessageSquare, Paperclip, Download, Calendar
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import axios from "axios";
 
-// Interfaces
 interface Reference {
     id?: number;
     name: string;
     function: string;
     email: string;
     telephone: string;
+}
+
+interface Attachment {
+    id?: number;
+    name: string;
+    path: string;
+    format: string;
+    size: number;
 }
 
 interface Experience {
@@ -48,8 +39,8 @@ interface Experience {
     experience_categories_id: string;
     comment: string;
     InstitutionName: string;
-    attachment_path?: string;
-    attachment_size?: number;
+    attachment_id?: number;
+    attachment?: Attachment;
     references?: Reference[];
 }
 
@@ -67,79 +58,46 @@ interface Props {
 
 const ExperienceManager: React.FC<Props> = ({ auth, experiences: initialExperiences, categories, onUpdate }) => {
     const { t } = useTranslation();
-
-    // States ultra-compacts
-    const [experiences, setExperiences] = useState<Experience[]>(initialExperiences);
-    const [isAddingAcademic, setIsAddingAcademic] = useState(false);
-    const [isAddingProfessional, setIsAddingProfessional] = useState(false);
-    const [editingId, setEditingId] = useState<number | null>(null);
-    const [isLoading, setIsLoading] = useState(false);
-    const [searchTerm, setSearchTerm] = useState('');
-
     const { toast } = useToast();
 
-    // Données pour auto-complétion
-    const jobTitles = [
-        t('experiences.manager.examples.jobTitles.fullStack'),
-        t('experiences.manager.examples.jobTitles.frontend'),
-        t('experiences.manager.examples.jobTitles.backend'),
-        t('experiences.manager.examples.jobTitles.projectManager'),
-        t('experiences.manager.examples.jobTitles.productManager'),
-        t('experiences.manager.examples.jobTitles.uxDesigner'),
-        t('experiences.manager.examples.jobTitles.dataAnalyst'),
-        t('experiences.manager.examples.jobTitles.devOps'),
-        t('experiences.manager.examples.jobTitles.scrumMaster'),
-        t('experiences.manager.examples.jobTitles.businessAnalyst')
-    ];
+    const [experiences, setExperiences] = useState<Experience[]>(initialExperiences);
+    const [searchTerm, setSearchTerm] = useState('');
+    const [editingExp, setEditingExp] = useState<Experience | null>(null);
+    const [isDialogOpen, setIsDialogOpen] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
 
-    const companies = [
-        t('experiences.manager.examples.companies.google'),
-        t('experiences.manager.examples.companies.microsoft'),
-        t('experiences.manager.examples.companies.apple'),
-        t('experiences.manager.examples.companies.amazon'),
-        t('experiences.manager.examples.companies.meta'),
-        t('experiences.manager.examples.companies.netflix'),
-        t('experiences.manager.examples.companies.spotify'),
-        t('experiences.manager.examples.companies.airbnb'),
-        t('experiences.manager.examples.companies.uber'),
-        t('experiences.manager.examples.companies.tesla'),
-        t('experiences.manager.examples.companies.openai'),
-        t('experiences.manager.examples.companies.github'),
-        t('experiences.manager.examples.companies.stripe'),
-        t('experiences.manager.examples.companies.shopify')
-    ];
-
-    // Filtrer les expériences selon le terme de recherche
-    const filteredExperiences = experiences.filter(exp => {
-        if (!searchTerm) return true;
-        const searchLower = searchTerm.toLowerCase();
-        return exp.name?.toLowerCase().includes(searchLower) ||
-            exp.description?.toLowerCase().includes(searchLower) ||
-            exp.InstitutionName?.toLowerCase().includes(searchLower);
-    });
-
-    // Séparer les expériences par type pour l'affichage
-    const academicExperiences = filteredExperiences.filter(exp => exp.experience_categories_id === '2');
-    const professionalExperiences = filteredExperiences.filter(exp => exp.experience_categories_id !== '2');
-
-    // Effects
     useEffect(() => {
         setExperiences(initialExperiences);
     }, [initialExperiences]);
 
-    // Handlers ultra-compacts
-    const handleSave = async (experienceData: Partial<Experience>) => {
+    const filteredExperiences = experiences.filter(exp => {
+        if (!searchTerm) return true;
+        const s = searchTerm.toLowerCase();
+        return exp.name?.toLowerCase().includes(s) ||
+            exp.description?.toLowerCase().includes(s) ||
+            exp.InstitutionName?.toLowerCase().includes(s);
+    });
+
+    const academicExps = filteredExperiences.filter(e => e.experience_categories_id === '2');
+    const professionalExps = filteredExperiences.filter(e => e.experience_categories_id !== '2');
+
+    const handleSave = async (expData: Partial<Experience>) => {
         setIsLoading(true);
         try {
             const formData = new FormData();
-            Object.entries(experienceData).forEach(([key, value]) => {
-                if (value !== null && value !== undefined) {
-                    formData.append(key, String(value));
+            Object.entries(expData).forEach(([key, value]) => {
+                if (value !== null && value !== undefined && value !== '') {
+                    if (key === 'references') {
+                        formData.append('references', JSON.stringify(value));
+                    } else if (key !== 'attachment') {
+                        formData.append(key, String(value));
+                    }
                 }
             });
+            formData.append('user_id', String(auth.user.id));
 
-            const response = experienceData.id
-                ? await axios.post(`/experiences/${experienceData.id}`, formData, {
+            const response = expData.id
+                ? await axios.post(`/experiences/${expData.id}`, formData, {
                     headers: { 'Content-Type': 'multipart/form-data' },
                     params: { _method: 'PUT' }
                 })
@@ -147,22 +105,18 @@ const ExperienceManager: React.FC<Props> = ({ auth, experiences: initialExperien
                     headers: { 'Content-Type': 'multipart/form-data' }
                 });
 
-            const updatedExperience = response.data.experience;
-            const updatedExperiences = experienceData.id
-                ? experiences.map(exp => exp.id === updatedExperience.id ? updatedExperience : exp)
-                : [...experiences, updatedExperience];
+            const updated = response.data.experience;
+            const newExps = expData.id
+                ? experiences.map(e => e.id === updated.id ? updated : e)
+                : [...experiences, updated];
 
-            setExperiences(updatedExperiences);
-            onUpdate(updatedExperiences);
-
+            setExperiences(newExps);
+            onUpdate(newExps);
             toast({
-                title: experienceData.id ? t('experiences.success.updated') : t('experiences.success.created'),
-                description: t('experiences.success.formDescription'),
+                title: expData.id ? t('experiences.success.updated') : t('experiences.success.created'),
             });
-
-            setIsAddingAcademic(false);
-            setIsAddingProfessional(false);
-            setEditingId(null);
+            setIsDialogOpen(false);
+            setEditingExp(null);
         } catch (error: any) {
             toast({
                 title: t('experiences.errors.title'),
@@ -174,602 +128,680 @@ const ExperienceManager: React.FC<Props> = ({ auth, experiences: initialExperien
         }
     };
 
-    const handleDelete = async (experienceId: number) => {
+    const handleDelete = async (id: number) => {
+        if (!confirm(t('experiences.manager.confirmDelete'))) return;
         try {
-            await axios.delete(`/experiences/${experienceId}`);
-            const updatedExperiences = experiences.filter(exp => exp.id !== experienceId);
-            setExperiences(updatedExperiences);
-            onUpdate(updatedExperiences);
-
-            toast({
-                title: t('experiences.success.deleted'),
-                description: t('experiences.success.deletedDescription'),
-            });
+            await axios.delete(`/experiences/${id}`);
+            const newExps = experiences.filter(e => e.id !== id);
+            setExperiences(newExps);
+            onUpdate(newExps);
+            toast({ title: t('experiences.success.deleted') });
         } catch (error) {
             toast({
                 title: t('experiences.errors.delete'),
-                description: t('experiences.errors.generic'),
                 variant: "destructive",
             });
         }
     };
 
-    // Composant SmartInput avec auto-complétion
-    const SmartInput: React.FC<{
-        value: string;
-        onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-        placeholder: string;
-        suggestions: string[];
-    }> = ({ value, onChange, placeholder, suggestions }) => {
-        const [showSuggestions, setShowSuggestions] = useState(false);
-        const [filteredSuggestions, setFilteredSuggestions] = useState<string[]>([]);
-
-        useEffect(() => {
-            if (value.length > 1) {
-                const filtered = suggestions.filter(s =>
-                    s.toLowerCase().includes(value.toLowerCase())
-                );
-                setFilteredSuggestions(filtered.slice(0, 5));
-                setShowSuggestions(filtered.length > 0);
-            } else {
-                setShowSuggestions(false);
-            }
-        }, [value, suggestions]);
-
-        return (
-            <div className="relative">
-                <Input
-                    value={value}
-                    onChange={onChange}
-                    placeholder={placeholder}
-                    onFocus={() => setShowSuggestions(true)}
-                    onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
-                />
-
-                {showSuggestions && filteredSuggestions.length > 0 && (
-                    <motion.div
-                        initial={{ opacity: 0, y: -10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        className="absolute top-full left-0 right-0 mt-1 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg z-10"
-                    >
-                        {filteredSuggestions.map((suggestion, index) => (
-                            <button
-                                key={index}
-                                onClick={() => {
-                                    onChange({ target: { value: suggestion } } as React.ChangeEvent<HTMLInputElement>);
-                                    setShowSuggestions(false);
-                                }}
-                                className="w-full px-3 py-2 text-left hover:bg-gray-50 dark:hover:bg-gray-700 text-sm"
-                            >
-                                {suggestion}
-                            </button>
-                        ))}
-                    </motion.div>
-                )}
-            </div>
-        );
+    const openDialog = (type: '1' | '2', exp?: Experience) => {
+        setEditingExp(exp || {
+            id: 0,
+            name: '',
+            InstitutionName: '',
+            date_start: '',
+            date_end: '',
+            description: '',
+            output: '',
+            comment: '',
+            experience_categories_id: type,
+            references: []
+        } as Experience);
+        setIsDialogOpen(true);
     };
 
-    // Composant de carte d'expérience ultra-compacte
-    const ExperienceCard: React.FC<{
-        experience: Experience;
-        isEditing: boolean;
-        onEdit: () => void;
-        onSave: (data: Partial<Experience>) => void;
-        onCancel: () => void;
-        onDelete: (id: number) => void;
-    }> = ({ experience: exp, isEditing, onEdit, onSave, onCancel, onDelete }) => {
-        const [formData, setFormData] = useState(exp);
-        const isAcademic = exp.experience_categories_id === '2';
+    return (
+        <div className="space-y-3 sm:space-y-4">
+            {/* Header compact */}
+            <div className="bg-white dark:bg-gray-800 p-3 sm:p-4 rounded-lg border space-y-3">
+                <div className="flex items-center justify-between gap-2">
+                    <h2 className="text-base sm:text-lg font-semibold text-gray-900 dark:text-white truncate">
+                        {t('cvInterface.experience.title')}
+                    </h2>
+                    <div className="flex gap-1 sm:gap-2 flex-shrink-0">
+                        <div className="flex items-center gap-1 px-2 py-0.5 sm:py-1 bg-amber-100 dark:bg-amber-900 rounded-full">
+                            <GraduationCap className="w-3 h-3 text-amber-600" />
+                            <span className="text-[10px] sm:text-xs font-medium text-amber-800 dark:text-amber-200">
+                                {academicExps.length}
+                            </span>
+                        </div>
+                        <div className="flex items-center gap-1 px-2 py-0.5 sm:py-1 bg-purple-100 dark:bg-purple-900 rounded-full">
+                            <Briefcase className="w-3 h-3 text-purple-600" />
+                            <span className="text-[10px] sm:text-xs font-medium text-purple-800 dark:text-purple-200">
+                                {professionalExps.length}
+                            </span>
+                        </div>
+                    </div>
+                </div>
 
-        if (isEditing) {
-            return (
-                <motion.div
-                    initial={{ opacity: 0, height: 0 }}
-                    animate={{ opacity: 1, height: 'auto' }}
-                    exit={{ opacity: 0, height: 0 }}
-                    className="bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-4"
-                >
-                    <div className="space-y-3">
-                        {/* Ligne 1: Titre et Type */}
-                        <div className="flex gap-2">
-                            <SmartInput
-                                value={formData.name}
-                                onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
-                                placeholder={t('experiences.manager.placeholders.jobTitle')}
-                                suggestions={jobTitles}
-                            />
+                {/* Boutons d'ajout compacts */}
+                <div className="grid grid-cols-2 gap-2">
+                    <Button
+                        onClick={() => openDialog('2')}
+                        size="sm"
+                        className="bg-gradient-to-r from-amber-500 to-yellow-500 hover:from-amber-600 hover:to-yellow-600 h-8 sm:h-9 text-xs sm:text-sm"
+                    >
+                        <GraduationCap className="w-3 h-3 sm:w-4 sm:h-4 mr-1" />
+                        <span className="hidden sm:inline">{t('experiences.manager.buttons.addEducation')}</span>
+                        <span className="sm:hidden">{t('experiences.manager.buttons.addEducationShort')}</span>
+                    </Button>
+                    <Button
+                        onClick={() => openDialog('1')}
+                        size="sm"
+                        className="bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 h-8 sm:h-9 text-xs sm:text-sm"
+                    >
+                        <Briefcase className="w-3 h-3 sm:w-4 sm:h-4 mr-1" />
+                        <span className="hidden sm:inline">{t('experiences.manager.buttons.addProfessional')}</span>
+                        <span className="sm:hidden">{t('experiences.manager.buttons.addProfessionalShort')}</span>
+                    </Button>
+                </div>
+
+                {/* Recherche */}
+                <div className="relative">
+                    <Search className="absolute left-2 sm:left-3 top-1/2 -translate-y-1/2 h-3 w-3 sm:h-4 sm:w-4 text-gray-400" />
+                    <Input
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                        placeholder={t('experiences.manager.placeholders.searchExperience')}
+                        className="pl-7 sm:pl-10 h-8 sm:h-9 text-xs sm:text-sm"
+                    />
+                    {searchTerm && (
+                        <X
+                            onClick={() => setSearchTerm('')}
+                            className="absolute right-2 top-1/2 -translate-y-1/2 h-3 w-3 sm:h-4 sm:w-4 cursor-pointer text-gray-400 hover:text-gray-600"
+                        />
+                    )}
+                </div>
+            </div>
+
+            {/* Liste des expériences */}
+            <div className="space-y-3 max-h-[600px] overflow-y-auto">
+                {/* Formations */}
+                {academicExps.length > 0 && (
+                    <div className="space-y-2">
+                        <div className="flex items-center gap-2 px-2">
+                            <GraduationCap className="w-3 h-3 sm:w-4 sm:h-4 text-amber-500" />
+                            <span className="text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300">
+                                {t('experiences.manager.types.academic')}
+                            </span>
+                        </div>
+                        <AnimatePresence>
+                            {academicExps.map(exp => (
+                                <ExperienceCard
+                                    key={exp.id}
+                                    exp={exp}
+                                    onEdit={() => openDialog('2', exp)}
+                                    onDelete={() => handleDelete(exp.id)}
+                                />
+                            ))}
+                        </AnimatePresence>
+                    </div>
+                )}
+
+                {/* Expériences professionnelles */}
+                {professionalExps.length > 0 && (
+                    <div className="space-y-2">
+                        <div className="flex items-center gap-2 px-2">
+                            <Briefcase className="w-3 h-3 sm:w-4 sm:h-4 text-purple-500" />
+                            <span className="text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300">
+                                {t('cvInterface.experience.professional')}
+                            </span>
+                        </div>
+                        <AnimatePresence>
+                            {professionalExps.map(exp => (
+                                <ExperienceCard
+                                    key={exp.id}
+                                    exp={exp}
+                                    onEdit={() => openDialog('1', exp)}
+                                    onDelete={() => handleDelete(exp.id)}
+                                />
+                            ))}
+                        </AnimatePresence>
+                    </div>
+                )}
+
+                {/* État vide */}
+                {filteredExperiences.length === 0 && (
+                    <div className="text-center py-8 sm:py-12 bg-gray-50 dark:bg-gray-800 rounded-lg">
+                        <Briefcase className="w-12 h-12 sm:w-16 sm:h-16 mx-auto mb-3 text-gray-300" />
+                        <p className="text-xs sm:text-sm text-gray-500">
+                            {searchTerm ? t('experiences.manager.messages.noExperienceFound') : t('experiences.manager.messages.noExperienceAdded')}
+                        </p>
+                    </div>
+                )}
+            </div>
+
+            {/* Dialog d'édition */}
+            <ExperienceDialog
+                isOpen={isDialogOpen}
+                onClose={() => { setIsDialogOpen(false); setEditingExp(null); }}
+                experience={editingExp}
+                onSave={handleSave}
+                isLoading={isLoading}
+            />
+        </div>
+    );
+};
+
+// Carte d'expérience compacte
+const ExperienceCard: React.FC<{
+    exp: Experience;
+    onEdit: () => void;
+    onDelete: () => void;
+}> = ({ exp, onEdit, onDelete }) => {
+    const { t } = useTranslation();
+    const [expanded, setExpanded] = useState(false);
+    const isAcademic = exp.experience_categories_id === '2';
+
+    const formatDate = (date: string) => {
+        const d = new Date(date);
+        return d.toLocaleDateString('fr-FR', { month: 'short', year: 'numeric' });
+    };
+
+    const hasExtras = exp.output || exp.comment || exp.attachment || (exp.references && exp.references.length > 0);
+
+    return (
+        <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            className="group bg-white dark:bg-gray-800 border rounded-lg p-2 sm:p-3 hover:shadow-md transition-all"
+        >
+            <div className="flex items-start gap-2">
+                <div className={`w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full mt-1.5 sm:mt-2 flex-shrink-0 ${isAcademic ? 'bg-amber-400' : 'bg-purple-400'}`} />
+                <div className="flex-1 min-w-0">
+                    {/* Titre */}
+                    <div className="flex items-start justify-between gap-2 mb-1">
+                        <h3 className="font-semibold text-xs sm:text-sm text-gray-900 dark:text-white line-clamp-1">
+                            {exp.name}
+                        </h3>
+                        <div className="flex gap-0.5 sm:gap-1 opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0">
+                            <Button size="sm" variant="ghost" onClick={onEdit} className="h-6 w-6 sm:h-7 sm:w-7 p-0">
+                                <Edit className="w-2.5 h-2.5 sm:w-3 sm:h-3" />
+                            </Button>
+                            <Button size="sm" variant="ghost" onClick={onDelete} className="h-6 w-6 sm:h-7 sm:w-7 p-0 text-red-500">
+                                <Trash2 className="w-2.5 h-2.5 sm:w-3 sm:h-3" />
+                            </Button>
+                        </div>
+                    </div>
+
+                    {/* Institution et dates */}
+                    <div className="flex flex-wrap items-center gap-1 sm:gap-2 text-[10px] sm:text-xs text-gray-600 dark:text-gray-400 mb-1">
+                        <div className="flex items-center gap-1 truncate">
+                            <Building2 className="w-2.5 h-2.5 sm:w-3 sm:h-3 flex-shrink-0" />
+                            <span className="truncate">{exp.InstitutionName}</span>
+                        </div>
+                        <span className="text-gray-400">•</span>
+                        <div className="flex items-center gap-1 flex-shrink-0">
+                            <Calendar className="w-2.5 h-2.5 sm:w-3 sm:h-3" />
+                            <span className="whitespace-nowrap">
+                                {formatDate(exp.date_start)} - {exp.date_end ? formatDate(exp.date_end) : t('cvInterface.experience.ongoing')}
+                            </span>
+                        </div>
+                    </div>
+
+                    {/* Description */}
+                    {exp.description && (
+                        <p className="text-[10px] sm:text-xs text-gray-500 dark:text-gray-400 line-clamp-2 mb-1">
+                            {exp.description}
+                        </p>
+                    )}
+
+                    {/* Extras toggleables */}
+                    {hasExtras && (
+                        <>
+                            <button
+                                onClick={() => setExpanded(!expanded)}
+                                className="text-[10px] sm:text-xs text-blue-600 dark:text-blue-400 hover:underline mt-1"
+                            >
+                                {expanded ? `▲ ${t('experiences.manager.buttons.showLess')}` : `▼ ${t('experiences.manager.buttons.moreInfo')}`}
+                            </button>
+
+                            {expanded && (
+                                <motion.div
+                                    initial={{ height: 0, opacity: 0 }}
+                                    animate={{ height: 'auto', opacity: 1 }}
+                                    exit={{ height: 0, opacity: 0 }}
+                                    className="mt-2 pt-2 border-t space-y-1.5"
+                                >
+                                    {exp.output && (
+                                        <div className="flex gap-1.5">
+                                            <Trophy className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-amber-500 mt-0.5 flex-shrink-0" />
+                                            <div className="min-w-0">
+                                                <p className="text-[10px] sm:text-xs font-medium text-gray-600 dark:text-gray-400">
+                                                    {t('experiences.manager.labels.outputs')}
+                                                </p>
+                                                <p className="text-[10px] sm:text-xs text-gray-500 dark:text-gray-400">
+                                                    {exp.output}
+                                                </p>
+                                            </div>
+                                        </div>
+                                    )}
+                                    {exp.comment && (
+                                        <div className="flex gap-1.5">
+                                            <MessageSquare className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-blue-500 mt-0.5 flex-shrink-0" />
+                                            <div className="min-w-0">
+                                                <p className="text-[10px] sm:text-xs font-medium text-gray-600 dark:text-gray-400">
+                                                    {t('experiences.manager.labels.comments')}
+                                                </p>
+                                                <p className="text-[10px] sm:text-xs text-gray-500 dark:text-gray-400">
+                                                    {exp.comment}
+                                                </p>
+                                            </div>
+                                        </div>
+                                    )}
+                                    {exp.attachment && (
+                                        <div className="flex items-center gap-1.5">
+                                            <Paperclip className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-purple-500" />
+                                            <a
+                                                href={exp.attachment.path}
+                                                target="_blank"
+                                                className="text-[10px] sm:text-xs text-purple-600 dark:text-purple-400 hover:underline flex items-center gap-1"
+                                            >
+                                                <FileText className="w-2.5 h-2.5 sm:w-3 sm:h-3" />
+                                                {exp.attachment.name}
+                                            </a>
+                                        </div>
+                                    )}
+                                    {exp.references && exp.references.length > 0 && (
+                                        <div className="flex gap-1.5">
+                                            <Users className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-green-500 mt-0.5 flex-shrink-0" />
+                                            <div className="min-w-0">
+                                                <p className="text-[10px] sm:text-xs font-medium text-gray-600 dark:text-gray-400">
+                                                    {t('experiences.manager.labels.references')} ({exp.references.length})
+                                                </p>
+                                                {exp.references.slice(0, 2).map((ref, i) => (
+                                                    <p key={i} className="text-[10px] sm:text-xs text-gray-500 dark:text-gray-400">
+                                                        {ref.name} - {ref.function}
+                                                    </p>
+                                                ))}
+                                            </div>
+                                        </div>
+                                    )}
+                                </motion.div>
+                            )}
+                        </>
+                    )}
+                </div>
+            </div>
+        </motion.div>
+    );
+};
+
+// Dialog d'édition compact
+const ExperienceDialog: React.FC<{
+    isOpen: boolean;
+    onClose: () => void;
+    experience: Experience | null;
+    onSave: (data: Partial<Experience>) => void;
+    isLoading: boolean;
+}> = ({ isOpen, onClose, experience, onSave, isLoading }) => {
+    const { t } = useTranslation();
+    const { toast } = useToast();
+    const [formData, setFormData] = useState<Partial<Experience>>(experience || {});
+    const [showExtras, setShowExtras] = useState(false);
+    const [references, setReferences] = useState<Reference[]>(experience?.references || []);
+    const [uploadingFile, setUploadingFile] = useState(false);
+
+    useEffect(() => {
+        if (experience) {
+            setFormData(experience);
+            setReferences(experience.references || []);
+        }
+    }, [experience]);
+
+    const handleFileUpload = async (file: File) => {
+        setUploadingFile(true);
+        try {
+            const fd = new FormData();
+            fd.append('attachment', file);
+            const response = await axios.post('/api/attachments', fd);
+            setFormData(prev => ({
+                ...prev,
+                attachment_id: response.data.attachment.id,
+                attachment: response.data.attachment
+            }));
+            toast({ title: t('experiences.success.attachmentUploaded') });
+        } catch (error) {
+            toast({
+                title: t('experiences.errors.attachmentUpload'),
+                variant: "destructive",
+            });
+        } finally {
+            setUploadingFile(false);
+        }
+    };
+
+    const isAcademic = formData.experience_categories_id === '2';
+
+    return (
+        <Dialog open={isOpen} onOpenChange={onClose}>
+            <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto p-3 sm:p-6">
+                <DialogHeader>
+                    <DialogTitle className="flex items-center gap-2 text-sm sm:text-base">
+                        {isAcademic ? <GraduationCap className="w-4 h-4" /> : <Briefcase className="w-4 h-4" />}
+                        {formData.id ? t('experiences.manager.editExperience') : (isAcademic ? t('experiences.manager.buttons.addEducation') : t('experiences.manager.buttons.addProfessional'))}
+                    </DialogTitle>
+                </DialogHeader>
+
+                <div className="space-y-3">
+                    {/* Titre */}
+                    <div>
+                        <label className="text-xs sm:text-sm font-medium mb-1 block">{t('experiences.manager.labels.title')}</label>
+                        <Input
+                            value={formData.name || ''}
+                            onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
+                            placeholder={t('experiences.manager.placeholders.jobTitle')}
+                            className="text-xs sm:text-sm h-8 sm:h-9"
+                        />
+                    </div>
+
+                    {/* Type (si pro) */}
+                    {!isAcademic && (
+                        <div>
+                            <label className="text-xs sm:text-sm font-medium mb-1 block">{t('experiences.manager.labels.type')}</label>
                             <Select
-                                value={formData.experience_categories_id}
+                                value={formData.experience_categories_id || '1'}
                                 onValueChange={(value) => setFormData(prev => ({ ...prev, experience_categories_id: value }))}
                             >
-                                <SelectTrigger className="w-32">
+                                <SelectTrigger className="text-xs sm:text-sm h-8 sm:h-9">
                                     <SelectValue />
                                 </SelectTrigger>
                                 <SelectContent>
-                                    <SelectItem value="1">{t('experiences.manager.types.professional')}</SelectItem>
-                                    <SelectItem value="2">{t('experiences.manager.types.academic')}</SelectItem>
+                                    <SelectItem value="1">{t('experiences.manager.types.employment')}</SelectItem>
                                     <SelectItem value="3">{t('experiences.manager.types.internship')}</SelectItem>
+                                    <SelectItem value="4">{t('experiences.manager.types.freelance')}</SelectItem>
                                 </SelectContent>
                             </Select>
                         </div>
+                    )}
 
-                        {/* Ligne 2: Institution et Dates */}
-                        <div className="flex gap-2">
-                            <SmartInput
-                                value={formData.InstitutionName}
-                                onChange={(e) => setFormData(prev => ({ ...prev, InstitutionName: e.target.value }))}
-                                placeholder={t('experiences.manager.placeholders.institution')}
-                                suggestions={companies}
-                            />
+                    {/* Institution */}
+                    <div>
+                        <label className="text-xs sm:text-sm font-medium mb-1 block">{t('experiences.manager.labels.institution')}</label>
+                        <Input
+                            value={formData.InstitutionName || ''}
+                            onChange={(e) => setFormData(prev => ({ ...prev, InstitutionName: e.target.value }))}
+                            placeholder={t('experiences.manager.placeholders.institution')}
+                            className="text-xs sm:text-sm h-8 sm:h-9"
+                        />
+                    </div>
+
+                    {/* Dates */}
+                    <div className="grid grid-cols-2 gap-2">
+                        <div>
+                            <label className="text-xs sm:text-sm font-medium mb-1 block">{t('experiences.manager.labels.startDate')}</label>
                             <Input
                                 type="date"
-                                value={formData.date_start}
+                                value={formData.date_start || ''}
                                 onChange={(e) => setFormData(prev => ({ ...prev, date_start: e.target.value }))}
-                                className="w-32"
+                                className="text-xs sm:text-sm h-8 sm:h-9"
                             />
+                        </div>
+                        <div>
+                            <label className="text-xs sm:text-sm font-medium mb-1 block">{t('experiences.manager.labels.endDate')}</label>
                             <Input
                                 type="date"
                                 value={formData.date_end || ''}
                                 onChange={(e) => setFormData(prev => ({ ...prev, date_end: e.target.value }))}
                                 placeholder={t('experiences.manager.placeholders.ongoing')}
-                                className="w-32"
+                                className="text-xs sm:text-sm h-8 sm:h-9"
                             />
                         </div>
+                    </div>
 
-                        {/* Ligne 3: Description (optionnelle) */}
+                    {/* Description */}
+                    <div>
+                        <label className="text-xs sm:text-sm font-medium mb-1 block">{t('experiences.manager.labels.description')}</label>
                         <Textarea
-                            value={formData.description}
+                            value={formData.description || ''}
                             onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
-                            placeholder={t('experiences.manager.placeholders.optionalDescription')}
+                            placeholder={t('experiences.manager.placeholders.description')}
                             rows={2}
-                        />
-
-                        {/* Actions */}
-                        <div className="flex gap-2 justify-end">
-                            <Button size="sm" variant="outline" onClick={onCancel}>
-                                <X className="w-3 h-3 mr-1" />
-                                {t('experiences.manager.buttons.cancel')}
-                            </Button>
-                            <Button size="sm" onClick={() => onSave(formData)} disabled={isLoading}>
-                                <Check className="w-3 h-3 mr-1" />
-                                {isLoading ? t('experiences.manager.buttons.saving') : t('experiences.manager.buttons.save')}
-                            </Button>
-                        </div>
-                    </div>
-                </motion.div>
-            );
-        }
-
-        return (
-            <motion.div
-                whileHover={{ scale: 1.02 }}
-                className="group bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-4 hover:shadow-md transition-all"
-            >
-                <div className="flex items-start justify-between">
-                    <div className="flex-1 min-w-0">
-                        {/* Header compact */}
-                        <div className="flex items-center gap-2 mb-1">
-                            <div className={`w-2 h-2 rounded-full flex-shrink-0 ${isAcademic ? 'bg-amber-400' : 'bg-purple-400'}`} />
-                            <h3 className="font-semibold text-gray-900 dark:text-white truncate flex-1 min-w-0">
-                                {exp.name}
-                            </h3>
-                        </div>
-
-                        {/* Institution et dates sur une ligne */}
-                        <div className="flex items-center gap-3 text-sm text-gray-600 dark:text-gray-300 mb-2">
-                            <span className="truncate flex-1 min-w-0">{exp.InstitutionName}</span>
-                            <span className="text-gray-400 flex-shrink-0">•</span>
-                            <span className="whitespace-nowrap flex-shrink-0">
-                                {new Date(exp.date_start).toLocaleDateString('fr-FR', { month: '2-digit', year: '2-digit' })}
-                                {' - '}
-                                {exp.date_end
-                                    ? new Date(exp.date_end).toLocaleDateString('fr-FR', { month: '2-digit', year: '2-digit' })
-                                    : t('cvInterface.experience.ongoing')
-                                }
-                            </span>
-                        </div>
-
-                        {/* Description tronquée */}
-                        {exp.description && (
-                            <p className="text-sm text-gray-500 dark:text-gray-400 line-clamp-2">
-                                {exp.description}
-                            </p>
-                        )}
-                    </div>
-
-                    {/* Actions au hover */}
-                    <div className="opacity-0 group-hover:opacity-100 transition-opacity flex gap-1 ml-2">
-                        <Button size="sm" variant="ghost" onClick={onEdit} className="h-8 w-8 p-0">
-                            <Edit className="w-3 h-3" />
-                        </Button>
-                        <Button size="sm" variant="ghost" onClick={() => onDelete(exp.id)} className="h-8 w-8 p-0 text-red-500 hover:text-red-700">
-                            <Trash2 className="w-3 h-3" />
-                        </Button>
-                    </div>
-                </div>
-            </motion.div>
-        );
-    };
-
-    // Formulaire d'ajout formation
-    const AcademicForm: React.FC<{
-        onSave: (data: Partial<Experience>) => void;
-        onCancel: () => void;
-    }> = ({ onSave, onCancel }) => {
-        const [formData, setFormData] = useState<Partial<Experience>>({
-            name: '',
-            InstitutionName: '',
-            date_start: '',
-            date_end: '',
-            description: '',
-            experience_categories_id: '2' // Formation
-        });
-
-        return (
-            <motion.div
-                initial={{ opacity: 0, height: 0 }}
-                animate={{ opacity: 1, height: 'auto' }}
-                exit={{ opacity: 0, height: 0 }}
-                className="bg-gradient-to-r from-amber-50 to-orange-50 dark:from-amber-900/20 dark:to-orange-900/20 border border-amber-200 dark:border-amber-700 rounded-lg p-4"
-            >
-                <div className="space-y-3">
-                    <div className="flex items-center gap-2 mb-3">
-                        <GraduationCap className="w-4 h-4 text-amber-600" />
-                        <h3 className="font-semibold text-amber-800 dark:text-amber-200">{t('experiences.manager.buttons.addEducation')}</h3>
-                    </div>
-
-                    {/* Ligne 1: Titre (fixé sur Formation) */}
-                    <div className="flex gap-2">
-                        <SmartInput
-                            value={formData.name || ''}
-                            onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
-                            placeholder={t('experiences.manager.examples.educationTitles.masterIT')}
-                            suggestions={[
-                                t('experiences.manager.examples.educationTitles.masterIT'),
-                                t('experiences.manager.examples.educationTitles.licenceMath'),
-                                t('experiences.manager.examples.educationTitles.phdPhysics'),
-                                t('experiences.manager.examples.educationTitles.btsIT'),
-                                t('experiences.manager.examples.educationTitles.dutCivil')
-                            ]}
-                        />
-                        <div className="w-28 flex items-center justify-center px-3 py-2 bg-amber-100 dark:bg-amber-900 rounded-md flex-shrink-0">
-                            <span className="text-xs font-medium text-amber-800 dark:text-amber-200 truncate">{t('experiences.manager.types.academic')}</span>
-                        </div>
-                    </div>
-
-                    {/* Ligne 2: Institution et Dates */}
-                    <div className="flex gap-2">
-                        <SmartInput
-                            value={formData.InstitutionName || ''}
-                            onChange={(e) => setFormData(prev => ({ ...prev, InstitutionName: e.target.value }))}
-                            placeholder={t('experiences.manager.examples.institutions.uniParis')}
-                            suggestions={[
-                                t('experiences.manager.examples.institutions.uniParis'),
-                                t('experiences.manager.examples.institutions.polytechnique'),
-                                t('experiences.manager.examples.institutions.hec'),
-                                t('experiences.manager.examples.institutions.sorbonne'),
-                                t('experiences.manager.examples.institutions.insaLyon')
-                            ]}
-                        />
-                        <Input
-                            type="date"
-                            value={formData.date_start || ''}
-                            onChange={(e) => setFormData(prev => ({ ...prev, date_start: e.target.value }))}
-                            className="w-32"
-                        />
-                        <Input
-                            type="date"
-                            value={formData.date_end || ''}
-                            onChange={(e) => setFormData(prev => ({ ...prev, date_end: e.target.value }))}
-                            placeholder={t('experiences.manager.placeholders.ongoing')}
-                            className="w-32"
+                            className="text-xs sm:text-sm"
                         />
                     </div>
 
-                    {/* Ligne 3: Description (optionnelle) */}
-                    <Textarea
-                        value={formData.description || ''}
-                        onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
-                        placeholder={t('experiences.manager.placeholders.optionalDescription')}
-                        rows={2}
-                    />
-
-                    {/* Actions */}
-                    <div className="flex gap-2 justify-end">
-                        <Button variant="outline" onClick={onCancel} className="flex-1">
-                            <X className="w-3 h-3 mr-1" />
-                            {t('experiences.manager.buttons.cancel')}
-                        </Button>
-                        <Button
-                            onClick={() => onSave(formData)}
-                            disabled={isLoading || !formData.name || !formData.InstitutionName || !formData.date_start}
-                            className="flex-1 bg-gradient-to-r from-amber-500 to-yellow-500 hover:from-amber-600 hover:to-yellow-600"
-                        >
-                            <Check className="w-3 h-3 mr-1" />
-                            {isLoading ? t('experiences.manager.buttons.adding') : t('common.add')}
-                        </Button>
-                    </div>
-                </div>
-            </motion.div>
-        );
-    };
-
-    // Formulaire d'ajout professionnel
-    const ProfessionalForm: React.FC<{
-        onSave: (data: Partial<Experience>) => void;
-        onCancel: () => void;
-    }> = ({ onSave, onCancel }) => {
-        const [formData, setFormData] = useState<Partial<Experience>>({
-            name: '',
-            InstitutionName: '',
-            date_start: '',
-            date_end: '',
-            description: '',
-            experience_categories_id: '1' // Professionnel
-        });
-
-        return (
-            <motion.div
-                initial={{ opacity: 0, height: 0 }}
-                animate={{ opacity: 1, height: 'auto' }}
-                exit={{ opacity: 0, height: 0 }}
-                className="bg-gradient-to-r from-purple-50 to-blue-50 dark:from-purple-900/20 dark:to-blue-900/20 border border-purple-200 dark:border-purple-700 rounded-lg p-4"
-            >
-                <div className="space-y-3">
-                    <div className="flex items-center gap-2 mb-3">
-                        <Briefcase className="w-4 h-4 text-purple-600" />
-                        <h3 className="font-semibold text-purple-800 dark:text-purple-200">{t('experiences.manager.buttons.addProfessional')}</h3>
-                    </div>
-
-                    {/* Ligne 1: Titre et Type */}
-                    <div className="flex gap-2">
-                        <SmartInput
-                            value={formData.name || ''}
-                            onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
-                            placeholder={t('experiences.manager.examples.jobTitles.fullStack')}
-                            suggestions={jobTitles}
-                        />
-                        <Select
-                            value={formData.experience_categories_id || '1'}
-                            onValueChange={(value) => setFormData(prev => ({ ...prev, experience_categories_id: value }))}
-                        >
-                            <SelectTrigger className="w-32">
-                                <SelectValue />
-                            </SelectTrigger>
-                            <SelectContent>
-                                <SelectItem value="1">{t('experiences.manager.types.employment')}</SelectItem>
-                                <SelectItem value="3">{t('experiences.manager.types.internship')}</SelectItem>
-                                <SelectItem value="4">{t('experiences.manager.types.freelance')}</SelectItem>
-                            </SelectContent>
-                        </Select>
-                    </div>
-
-                    {/* Ligne 2: Institution et Dates */}
-                    <div className="flex gap-2">
-                        <SmartInput
-                            value={formData.InstitutionName || ''}
-                            onChange={(e) => setFormData(prev => ({ ...prev, InstitutionName: e.target.value }))}
-                            placeholder={t('experiences.manager.examples.companies.google')}
-                            suggestions={companies}
-                        />
-                        <Input
-                            type="date"
-                            value={formData.date_start || ''}
-                            onChange={(e) => setFormData(prev => ({ ...prev, date_start: e.target.value }))}
-                            className="w-32"
-                        />
-                        <Input
-                            type="date"
-                            value={formData.date_end || ''}
-                            onChange={(e) => setFormData(prev => ({ ...prev, date_end: e.target.value }))}
-                            placeholder={t('experiences.manager.placeholders.ongoing')}
-                            className="w-32"
-                        />
-                    </div>
-
-                    {/* Ligne 3: Description (optionnelle) */}
-                    <Textarea
-                        value={formData.description || ''}
-                        onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
-                        placeholder={t('experiences.manager.placeholders.optionalDescription')}
-                        rows={2}
-                    />
-
-                    {/* Actions */}
-                    <div className="flex gap-2 justify-end">
-                        <Button variant="outline" onClick={onCancel} className="flex-1">
-                            <X className="w-3 h-3 mr-1" />
-                            {t('experiences.manager.buttons.cancel')}
-                        </Button>
-                        <Button
-                            onClick={() => onSave(formData)}
-                            disabled={isLoading || !formData.name || !formData.InstitutionName || !formData.date_start}
-                            className="flex-1 bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600"
-                        >
-                            <Check className="w-3 h-3 mr-1" />
-                            {isLoading ? t('experiences.manager.buttons.adding') : t('common.add')}
-                        </Button>
-                    </div>
-                </div>
-            </motion.div>
-        );
-    };
-
-    // Bouton d'ajout minimaliste
-    const AddExperienceButton: React.FC<{ onClick: () => void }> = ({ onClick }) => (
-        <motion.button
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
-            onClick={onClick}
-            className="w-full p-4 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg hover:border-amber-400 dark:hover:border-amber-500 hover:bg-amber-50 dark:hover:bg-amber-900/20 transition-all group"
-        >
-            <div className="flex items-center justify-center gap-2 text-gray-500 group-hover:text-amber-600 dark:group-hover:text-amber-400">
-                <Plus className="w-4 h-4" />
-                <span className="font-medium">{t('experiences.manager.buttons.addExperience')}</span>
-            </div>
-        </motion.button>
-    );
-
-    return (
-        <div className="max-w-4xl mx-auto p-4 space-y-6">
-            {/* Header avec boutons d'ajout séparés */}
-            <div className="bg-white dark:bg-gray-800 p-4 rounded-lg border">
-                <div className="flex items-center justify-between mb-4">
-                    <div className="flex items-center gap-4 flex-1 min-w-0">
-                        <h1 className="text-xl font-semibold text-gray-900 dark:text-white truncate">
-                            {t('cvInterface.experience.title')}
-                        </h1>
-                        <div className="flex gap-2 flex-shrink-0">
-                            <div className="flex items-center gap-1 px-2 py-1 bg-amber-100 dark:bg-amber-900 rounded-full">
-                                <GraduationCap className="w-3 h-3 text-amber-600 flex-shrink-0" />
-                                <span className="text-xs font-medium text-amber-800 dark:text-amber-200 truncate">
-                                    {t('experiences.manager.counts.education')} ({academicExperiences.length})
-                                </span>
-                            </div>
-                            <div className="flex items-center gap-1 px-2 py-1 bg-purple-100 dark:bg-purple-900 rounded-full">
-                                <Briefcase className="w-3 h-3 text-purple-600 flex-shrink-0" />
-                                <span className="text-xs font-medium text-purple-800 dark:text-purple-200 truncate">
-                                    {t('experiences.manager.counts.professional')} ({professionalExperiences.length})
-                                </span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                {/* Boutons d'ajout séparés */}
-                <div className="flex gap-3">
+                    {/* Toggle extras */}
                     <Button
-                        onClick={() => setIsAddingAcademic(true)}
-                        className="flex-1 bg-gradient-to-r from-amber-500 to-yellow-500 hover:from-amber-600 hover:to-yellow-600"
-                        disabled={isAddingAcademic || isAddingProfessional}
-                    >
-                        <GraduationCap className="w-4 h-4 mr-2" />
-                        {t('experiences.manager.buttons.addEducation')}
-                    </Button>
-                    <Button
-                        onClick={() => setIsAddingProfessional(true)}
-                        className="flex-1 bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600"
-                        disabled={isAddingAcademic || isAddingProfessional}
-                    >
-                        <Briefcase className="w-4 h-4 mr-2" />
-                        <span className="hidden sm:inline">{t('experiences.manager.buttons.addProfessional')}</span>
-                        <span className="sm:hidden">{t('experiences.manager.buttons.addProfessionalShort')}</span>
-                    </Button>
-                </div>
-            </div>
-
-            {/* Barre de recherche améliorée */}
-            <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    <Search className="h-4 w-4 text-gray-400" />
-                </div>
-                <Input
-                    type="text"
-                    placeholder={t('experiences.manager.placeholders.searchExperience')}
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                    className="pl-10 pr-4 py-3 border-0 bg-gray-50 dark:bg-gray-800 focus:bg-white dark:focus:bg-gray-700 rounded-xl shadow-sm focus:shadow-md transition-all"
-                />
-                {searchTerm && (
-                    <Button
+                        type="button"
                         variant="ghost"
                         size="sm"
-                        onClick={() => setSearchTerm('')}
-                        className="absolute right-2 top-1/2 transform -translate-y-1/2 h-6 w-6 p-0"
+                        onClick={() => setShowExtras(!showExtras)}
+                        className="text-xs w-full"
                     >
-                        <X className="h-3 w-3" />
+                        {showExtras ? '▲' : '▼'} {t('experiences.manager.buttons.showMore')}
+                    </Button>
+
+                    {/* Extras */}
+                    {showExtras && (
+                        <motion.div
+                            initial={{ height: 0, opacity: 0 }}
+                            animate={{ height: 'auto', opacity: 1 }}
+                            className="space-y-3 pt-3 border-t"
+                        >
+                            {/* Résultats */}
+                            <div>
+                                <label className="flex items-center gap-1.5 text-xs sm:text-sm font-medium mb-1">
+                                    <Trophy className="w-3 h-3 sm:w-4 sm:h-4 text-amber-500" />
+                                    {t('experiences.manager.labels.outputs')}
+                                </label>
+                                <Textarea
+                                    value={formData.output || ''}
+                                    onChange={(e) => setFormData(prev => ({ ...prev, output: e.target.value }))}
+                                    placeholder={t('experiences.manager.placeholders.outputs')}
+                                    rows={2}
+                                    className="text-xs sm:text-sm"
+                                />
+                            </div>
+
+                            {/* Commentaires */}
+                            <div>
+                                <label className="flex items-center gap-1.5 text-xs sm:text-sm font-medium mb-1">
+                                    <MessageSquare className="w-3 h-3 sm:w-4 sm:h-4 text-blue-500" />
+                                    {t('experiences.manager.labels.comments')}
+                                </label>
+                                <Textarea
+                                    value={formData.comment || ''}
+                                    onChange={(e) => setFormData(prev => ({ ...prev, comment: e.target.value }))}
+                                    placeholder={t('experiences.manager.placeholders.comments')}
+                                    rows={2}
+                                    className="text-xs sm:text-sm"
+                                />
+                            </div>
+
+                            {/* Pièce jointe */}
+                            <div>
+                                <label className="flex items-center gap-1.5 text-xs sm:text-sm font-medium mb-1">
+                                    <Paperclip className="w-3 h-3 sm:w-4 sm:h-4 text-purple-500" />
+                                    {t('experiences.manager.labels.attachment')}
+                                </label>
+                                {formData.attachment ? (
+                                    <div className="flex items-center justify-between p-2 bg-gray-100 dark:bg-gray-700 rounded">
+                                        <div className="flex items-center gap-1.5 min-w-0">
+                                            <FileText className="w-3 h-3 sm:w-4 sm:h-4 flex-shrink-0" />
+                                            <span className="text-xs truncate">{formData.attachment.name}</span>
+                                        </div>
+                                        <div className="flex gap-1">
+                                            <Button size="sm" variant="ghost" onClick={() => window.open(formData.attachment?.path)} className="h-6 w-6 p-0">
+                                                <Download className="w-3 h-3" />
+                                            </Button>
+                                            <Button size="sm" variant="ghost" onClick={() => setFormData(prev => ({ ...prev, attachment_id: undefined, attachment: undefined }))} className="h-6 w-6 p-0 text-red-500">
+                                                <X className="w-3 h-3" />
+                                            </Button>
+                                        </div>
+                                    </div>
+                                ) : (
+                                    <div className="border-2 border-dashed rounded p-3 text-center">
+                                        <input
+                                            type="file"
+                                            id="file-upload"
+                                            className="hidden"
+                                            onChange={(e) => e.target.files?.[0] && handleFileUpload(e.target.files[0])}
+                                            disabled={uploadingFile}
+                                        />
+                                        <label htmlFor="file-upload" className="cursor-pointer">
+                                            {uploadingFile ? (
+                                                <div className="w-5 h-5 border-2 border-purple-500 border-t-transparent rounded-full animate-spin mx-auto" />
+                                            ) : (
+                                                <>
+                                                    <Upload className="w-5 h-5 mx-auto mb-1 text-gray-400" />
+                                                    <span className="text-xs text-gray-500">{t('experiences.manager.buttons.uploadFile')}</span>
+                                                </>
+                                            )}
+                                        </label>
+                                    </div>
+                                )}
+                            </div>
+
+                            {/* Références */}
+                            <ReferenceManager
+                                references={references}
+                                onChange={(refs) => {
+                                    setReferences(refs);
+                                    setFormData(prev => ({ ...prev, references: refs }));
+                                }}
+                            />
+                        </motion.div>
+                    )}
+
+                    {/* Actions */}
+                    <div className="flex gap-2 pt-3 border-t">
+                        <Button variant="outline" onClick={onClose} className="flex-1 h-8 sm:h-9 text-xs sm:text-sm">
+                            <X className="w-3 h-3 mr-1" />
+                            {t('common.cancel')}
+                        </Button>
+                        <Button
+                            onClick={() => onSave(formData)}
+                            disabled={isLoading || !formData.name || !formData.InstitutionName || !formData.date_start}
+                            className="flex-1 h-8 sm:h-9 text-xs sm:text-sm"
+                        >
+                            <Check className="w-3 h-3 mr-1" />
+                            {isLoading ? t('experiences.manager.buttons.saving') : t('common.save')}
+                        </Button>
+                    </div>
+                </div>
+            </DialogContent>
+        </Dialog>
+    );
+};
+
+// Gestionnaire de références
+const ReferenceManager: React.FC<{
+    references: Reference[];
+    onChange: (refs: Reference[]) => void;
+}> = ({ references, onChange }) => {
+    const { t } = useTranslation();
+    const [adding, setAdding] = useState(false);
+    const [editIdx, setEditIdx] = useState<number | null>(null);
+    const [form, setForm] = useState<Reference>({ name: '', function: '', email: '', telephone: '' });
+
+    const handleSave = () => {
+        if (editIdx !== null) {
+            const updated = [...references];
+            updated[editIdx] = form;
+            onChange(updated);
+            setEditIdx(null);
+        } else {
+            onChange([...references, form]);
+        }
+        setForm({ name: '', function: '', email: '', telephone: '' });
+        setAdding(false);
+    };
+
+    const handleDelete = (idx: number) => {
+        onChange(references.filter((_, i) => i !== idx));
+    };
+
+    return (
+        <div className="space-y-2">
+            <div className="flex items-center justify-between">
+                <label className="flex items-center gap-1.5 text-xs sm:text-sm font-medium">
+                    <Users className="w-3 h-3 sm:w-4 sm:h-4 text-green-500" />
+                    {t('experiences.manager.labels.references')}
+                </label>
+                {!adding && (
+                    <Button size="sm" variant="ghost" onClick={() => setAdding(true)} className="h-6 text-xs">
+                        <Plus className="w-3 h-3 mr-1" />
+                        {t('common.add')}
                     </Button>
                 )}
             </div>
 
-            {/* Formulaires d'ajout */}
-            {isAddingAcademic && (
-                <AcademicForm
-                    onSave={(data) => handleSave(data)}
-                    onCancel={() => setIsAddingAcademic(false)}
-                />
-            )}
-
-            {isAddingProfessional && (
-                <ProfessionalForm
-                    onSave={(data) => handleSave(data)}
-                    onCancel={() => setIsAddingProfessional(false)}
-                />
-            )}
-
-            {/* Liste des expériences avec ScrollArea */}
-            <ScrollArea className="h-[600px] w-full border border-gray-200 dark:border-gray-700 rounded-lg">
-                <div className="p-4 space-y-6">
-                    {/* Section Formation */}
-                    {academicExperiences.length > 0 && (
-                        <div className="space-y-3">
-                            <div className="flex items-center gap-2">
-                                <GraduationCap className="w-4 h-4 text-amber-500 flex-shrink-0" />
-                                <h2 className="font-semibold text-gray-900 dark:text-white truncate">{t('experiences.manager.types.academic')}</h2>
-                            </div>
-                            <div className="space-y-3">
-                                <AnimatePresence>
-                                    {academicExperiences.map((exp) => (
-                                        <ExperienceCard
-                                            key={exp.id}
-                                            experience={exp}
-                                            isEditing={editingId === exp.id}
-                                            onEdit={() => setEditingId(exp.id)}
-                                            onSave={(data) => handleSave({ ...data, id: exp.id })}
-                                            onCancel={() => setEditingId(null)}
-                                            onDelete={handleDelete}
-                                        />
-                                    ))}
-                                </AnimatePresence>
-                            </div>
-                        </div>
-                    )}
-
-                    {/* Section Professionnel */}
-                    {professionalExperiences.length > 0 && (
-                        <div className="space-y-3">
-                            <div className="flex items-center gap-2">
-                                <Briefcase className="w-4 h-4 text-purple-500 flex-shrink-0" />
-                                <h2 className="font-semibold text-gray-900 dark:text-white truncate">{t('cvInterface.experience.professional')}</h2>
-                            </div>
-                            <div className="space-y-3">
-                                <AnimatePresence>
-                                    {professionalExperiences.map((exp) => (
-                                        <ExperienceCard
-                                            key={exp.id}
-                                            experience={exp}
-                                            isEditing={editingId === exp.id}
-                                            onEdit={() => setEditingId(exp.id)}
-                                            onSave={(data) => handleSave({ ...data, id: exp.id })}
-                                            onCancel={() => setEditingId(null)}
-                                            onDelete={handleDelete}
-                                        />
-                                    ))}
-                                </AnimatePresence>
-                            </div>
-                        </div>
-                    )}
-
-                    {/* État vide */}
-                    {filteredExperiences.length === 0 && !isAddingAcademic && !isAddingProfessional && (
-                        <div className="text-center py-12">
-                            <div className="w-24 h-24 mx-auto mb-4 text-gray-300">
-                                <Briefcase className="w-full h-full" />
-                            </div>
-                            <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2 break-words">
-                                {searchTerm ? t('experiences.manager.messages.noExperienceFound') : t('experiences.manager.messages.noExperienceAdded')}
-                            </h3>
-                            <p className="text-gray-500 mb-4 break-words">
-                                {searchTerm
-                                    ? t('experiences.manager.messages.tryOtherKeywords')
-                                    : t('experiences.manager.messages.useButtonsAbove')
-                                }
-                            </p>
-                        </div>
-                    )}
+            {references.map((ref, idx) => (
+                <div key={idx} className="flex items-center justify-between p-2 bg-gray-50 dark:bg-gray-700 rounded text-xs">
+                    <div className="min-w-0 flex-1">
+                        <p className="font-medium truncate">{ref.name} - {ref.function}</p>
+                        {ref.email && <p className="text-gray-500 truncate">{ref.email}</p>}
+                    </div>
+                    <div className="flex gap-1">
+                        <Button size="sm" variant="ghost" onClick={() => { setForm(ref); setEditIdx(idx); setAdding(true); }} className="h-5 w-5 p-0">
+                            <Edit className="w-2.5 h-2.5" />
+                        </Button>
+                        <Button size="sm" variant="ghost" onClick={() => handleDelete(idx)} className="h-5 w-5 p-0 text-red-500">
+                            <Trash2 className="w-2.5 h-2.5" />
+                        </Button>
+                    </div>
                 </div>
-            </ScrollArea>
+            ))}
+
+            {adding && (
+                <motion.div
+                    initial={{ height: 0, opacity: 0 }}
+                    animate={{ height: 'auto', opacity: 1 }}
+                    className="space-y-2 p-2 bg-gray-50 dark:bg-gray-700 rounded"
+                >
+                    <div className="grid grid-cols-2 gap-2">
+                        <Input
+                            value={form.name}
+                            onChange={(e) => setForm(prev => ({ ...prev, name: e.target.value }))}
+                            placeholder={t('experiences.manager.placeholders.referenceName')}
+                            className="text-xs h-7"
+                        />
+                        <Input
+                            value={form.function}
+                            onChange={(e) => setForm(prev => ({ ...prev, function: e.target.value }))}
+                            placeholder={t('experiences.manager.placeholders.referenceFunction')}
+                            className="text-xs h-7"
+                        />
+                    </div>
+                    <div className="grid grid-cols-2 gap-2">
+                        <Input
+                            type="email"
+                            value={form.email}
+                            onChange={(e) => setForm(prev => ({ ...prev, email: e.target.value }))}
+                            placeholder={t('experiences.manager.placeholders.referenceEmail')}
+                            className="text-xs h-7"
+                        />
+                        <Input
+                            value={form.telephone}
+                            onChange={(e) => setForm(prev => ({ ...prev, telephone: e.target.value }))}
+                            placeholder={t('experiences.manager.placeholders.referencePhone')}
+                            className="text-xs h-7"
+                        />
+                    </div>
+                    <div className="flex gap-2">
+                        <Button size="sm" variant="outline" onClick={() => { setAdding(false); setEditIdx(null); setForm({ name: '', function: '', email: '', telephone: '' }); }} className="flex-1 h-7 text-xs">
+                            <X className="w-3 h-3 mr-1" />
+                            {t('common.cancel')}
+                        </Button>
+                        <Button size="sm" onClick={handleSave} disabled={!form.name || !form.function} className="flex-1 h-7 text-xs">
+                            <Check className="w-3 h-3 mr-1" />
+                            {t('common.save')}
+                        </Button>
+                    </div>
+                </motion.div>
+            )}
         </div>
     );
 };

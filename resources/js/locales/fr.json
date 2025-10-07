@@ -3,7 +3,9 @@
         "save": "Enregistrer",
         "saving": "Enregistrement...",
         "cancel": "Annuler",
-        "error": "Erreur"
+        "error": "Erreur",
+        "add": "Ajouter",
+        "update": "Mettre à jour"
     },
     "cv_color": {
         "customize_color": "Personnaliser la couleur",
@@ -371,10 +373,6 @@
             "price_desc": "Prix ↓",
             "name_asc": "Nom A-Z",
             "name_desc": "Nom Z-A"
-        },
-        "view": {
-            "grid": "Vue grille",
-            "list": "Vue liste"
         }
     },
     "auth": {
@@ -899,18 +897,31 @@
                 "institution": "Entreprise/Institution",
                 "ongoing": "En cours",
                 "searchExperience": "Rechercher par nom, institution ou description...",
-                "optionalDescription": "Description (optionnelle)"
+                "optionalDescription": "Description (optionnelle)",
+                "description": "Décrivez vos responsabilités et réalisations...",
+                "outputs": "Ex : Augmentation du trafic de 30%, Réduction des coûts de 20%...",
+                "comments": "Notes personnelles (non affichées sur le CV)...",
+                "referenceName": "Nom complet",
+                "referenceFunction": "Poste/Fonction",
+                "referenceEmail": "Email",
+                "referencePhone": "Téléphone"
             },
             "buttons": {
                 "addEducation": "Ajouter une formation",
                 "addEducationShort": "Formation",
                 "addProfessional": "Ajouter une expérience professionnelle",
-                "addProfessionalShort": "Expérience pro",
+                "addProfessionalShort": "Exp Pro",
                 "addExperience": "Ajouter une expérience",
                 "cancel": "Annuler",
                 "save": "Sauvegarder",
                 "saving": "Sauvegarde...",
-                "adding": "Ajout..."
+                "adding": "Ajout...",
+                "showMore": "Afficher plus",
+                "showLess": "Masquer",
+                "moreInfo": "Plus d'infos",
+                "uploadFile": "Télécharger un fichier",
+                "uploading": "Téléchargement...",
+                "addReference": "Ajouter une référence"
             },
             "messages": {
                 "noExperienceFound": "Aucune expérience trouvée",
@@ -966,7 +977,30 @@
                     "insaLyon": "INSA Lyon"
                 }
             },
-            "ongoing": "En cours"
+            "ongoing": "En cours",
+            "confirmDelete": "Êtes-vous sûr de vouloir supprimer cette expérience ?",
+            "editExperience": "Modifier l'expérience",
+            "labels": {
+                "title": "Titre",
+                "type": "Type",
+                "institution": "Institution",
+                "startDate": "Date de début",
+                "endDate": "Date de fin",
+                "description": "Description",
+                "outputs": "Résultats/Accomplissements",
+                "comments": "Commentaires",
+                "attachment": "Pièce jointe",
+                "references": "Références",
+                "more": "de plus"
+            }
+        },
+        "success": {
+            "attachmentUploaded": "Pièce jointe téléchargée avec succès",
+            "attachmentUploadedDescription": "Le fichier a été ajouté à l'expérience"
+        },
+        "errors": {
+            "attachmentUpload": "Erreur lors du téléchargement",
+            "attachmentUploadDescription": "Impossible de télécharger le fichier. Réessayez."
         }
     },
     "cvInterface": {
@@ -1117,7 +1151,7 @@
             "step2": "Étape 2 : Résumé professionnel",
             "step3": "Étape 3 : Expériences professionnelles",
             "step4": "Étape 4 : Titre du CV",
-            "step5": "Étape 5 : Compétences & Autres"
+            "step5": "Étape 4 : Compétences & Autres"
         }
     },
     "summaries": {

@@ -185,8 +185,6 @@ const ProfessionSummaryManager: React.FC<Props> = ({
                     onProfessionUpdate(null, professionsData.full_profession);
                 }
 
-                // Mettre à jour automatiquement le titre du CV
-                await axios.put('/user/cv-title', { cv_title: newTitle });
                 showToast("Succès", `Titre CV mis à jour : "${newTitle}"`);
             }
         } catch (error: any) {

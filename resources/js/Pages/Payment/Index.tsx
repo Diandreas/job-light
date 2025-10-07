@@ -430,16 +430,10 @@ export default function Index({ auth, paypalConfig }) {
                                         {t('payment.features.bonus')}
                                     </span>
                                 </div>
-                                <div className="flex items-center gap-2 px-4 py-2 bg-purple-100 dark:bg-purple-900/50 rounded-full">
-                                    <Smartphone className="w-5 h-5 text-purple-500" />
-                                    <span className="text-purple-700 dark:text-purple-300">
-                                        {t('payment.features.mobile')}
-                                    </span>
-                                </div>
                                 <div className="flex items-center gap-2 px-4 py-2 bg-blue-100 dark:bg-blue-900/50 rounded-full">
                                     <CreditCard className="w-5 h-5 text-blue-500" />
                                     <span className="text-blue-700 dark:text-blue-300">
-                                        {t('payment.features.card')}
+                                        PayPal
                                     </span>
                                 </div>
                             </div>
@@ -498,11 +492,12 @@ export default function Index({ auth, paypalConfig }) {
                                                 </div> */}
 
                                                 <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
-                                                    <PaymentTabs
-                                                        pack={pack}
-                                                        onSuccess={handlePaymentSuccess}
-                                                        user={auth.user}
-                                                    />
+                                                    <div className="space-y-4">
+                                                        <div className="text-2xl font-bold text-center">
+                                                            {pack.priceEuros}€
+                                                        </div>
+                                                        <PayPalPackButton pack={pack} onSuccess={handlePaymentSuccess} />
+                                                    </div>
                                                 </div>
                                             </div>
                                         </CardContent>
@@ -514,23 +509,13 @@ export default function Index({ auth, paypalConfig }) {
                         <div className="mt-12 space-y-4">
                             <div className="bg-white dark:bg-gray-800 rounded-lg p-6 max-w-3xl mx-auto">
                                 <h2 className="text-lg font-semibold mb-4">{t('payment.importantInfo.title')}</h2>
-                                <div className="grid gap-4 md:grid-cols-2">
-                                    <div className="space-y-2">
-                                        <h3 className="font-medium">{t('payment.importantInfo.mobileMoney.title')}</h3>
-                                        <ul className="text-sm text-gray-600 dark:text-gray-300 space-y-1">
-                                            <li>• {t('payment.importantInfo.mobileMoney.instant')}</li>
-                                            <li>• {t('payment.importantInfo.mobileMoney.accepted')}</li>
-                                            <li>• {t('payment.importantInfo.mobileMoney.pricing')}</li>
-                                        </ul>
-                                    </div>
-                                    <div className="space-y-2">
-                                        <h3 className="font-medium">{t('payment.importantInfo.bankCard.title')}</h3>
-                                        <ul className="text-sm text-gray-600 dark:text-gray-300 space-y-1">
-                                            <li>• {t('payment.importantInfo.bankCard.secure')}</li>
-                                            <li>• {t('payment.importantInfo.bankCard.accepted')}</li>
-                                            <li>• {t('payment.importantInfo.bankCard.pricing')}</li>
-                                        </ul>
-                                    </div>
+                                <div className="space-y-2">
+                                    <h3 className="font-medium">PayPal</h3>
+                                    <ul className="text-sm text-gray-600 dark:text-gray-300 space-y-1">
+                                        <li>• {t('payment.importantInfo.bankCard.secure')}</li>
+                                        <li>• Paiement en euros (€)</li>
+                                        <li>• Accepte les cartes bancaires et comptes PayPal</li>
+                                    </ul>
                                 </div>
                             </div>
 

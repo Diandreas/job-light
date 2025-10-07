@@ -74,6 +74,7 @@ const ProfessionSummaryManager: React.FC<Props> = ({
         "Candidat en reconversion professionnelle apportant une perspective unique et une motivation exceptionnelle."
     ];
 
+    // Synchroniser le résumé avec les props
     useEffect(() => {
         setSelectedSummary(initialSelectedSummary);
         if (initialSelectedSummary[0]) {
@@ -81,6 +82,29 @@ const ProfessionSummaryManager: React.FC<Props> = ({
             setSummaryData('description', initialSelectedSummary[0].description);
         }
     }, [initialSelectedSummary]);
+
+    // Synchroniser la profession avec les props (important pour le rechargement de page)
+    useEffect(() => {
+        if (initialUserProfession) {
+            setCurrentProfession({
+                type: 'standard',
+                data: initialUserProfession,
+                manualText: ''
+            });
+        } else if (auth.user.full_profession) {
+            setCurrentProfession({
+                type: 'manual',
+                data: null,
+                manualText: auth.user.full_profession
+            });
+        } else {
+            setCurrentProfession({
+                type: null,
+                data: null,
+                manualText: ''
+            });
+        }
+    }, [initialUserProfession, auth.user.full_profession]);
 
     // Filtrer les suggestions de profession
     useEffect(() => {

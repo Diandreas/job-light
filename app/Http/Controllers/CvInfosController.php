@@ -452,12 +452,21 @@ class CvInfosController extends Controller
         $user = auth()->user();
 
         $cvInformation = $this->getCommonCvInformation($user);
+
+        // Récupérer la profession de l'utilisateur (soit depuis la BD, soit manuelle)
+        $userProfession = null;
+        if ($user->profession_id) {
+            $userProfession = Profession::select(['id', 'name', 'name_en', 'description', 'category_id'])
+                ->find($user->profession_id);
+        }
+
         $cvInformation = array_merge($cvInformation, [
             'availableCompetences' => Competence::select(['id', 'name', 'name_en', 'description'])->get()->toArray(),
             'availableHobbies' => Hobby::select(['id', 'name', 'name_en'])->get()->toArray(),
             'availableProfessions' => Profession::select(['id', 'name', 'name_en', 'description', 'category_id'])->get()->toArray(),
             'availableSummaries' => $user->summary()->get()->toArray(),
             'myProfession' => $user->profession?->toArray(),
+            'userProfession' => $userProfession?->toArray(),
             'experienceCategories' => ExperienceCategory::all()->toArray(),
             'allsummaries' => $user->summaries()->get()->toArray(),
             'availableLanguages' => Language::select(['id', 'name', 'name_en'])->get()->toArray(),

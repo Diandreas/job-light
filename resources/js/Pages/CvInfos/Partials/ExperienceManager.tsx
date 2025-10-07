@@ -67,7 +67,12 @@ const ExperienceManager: React.FC<Props> = ({ auth, experiences: initialExperien
     const [isLoading, setIsLoading] = useState(false);
 
     useEffect(() => {
-        setExperiences(initialExperiences);
+        // Normaliser les experience_categories_id en string pour cohérence
+        const normalizedExperiences = initialExperiences.map(exp => ({
+            ...exp,
+            experience_categories_id: String(exp.experience_categories_id)
+        }));
+        setExperiences(normalizedExperiences);
     }, [initialExperiences]);
 
     const filteredExperiences = experiences.filter(exp => {
@@ -105,7 +110,10 @@ const ExperienceManager: React.FC<Props> = ({ auth, experiences: initialExperien
                     headers: { 'Content-Type': 'multipart/form-data' }
                 });
 
-            const updated = response.data.experience;
+            const updated = {
+                ...response.data.experience,
+                experience_categories_id: String(response.data.experience.experience_categories_id)
+            };
             const newExps = expData.id
                 ? experiences.map(e => e.id === updated.id ? updated : e)
                 : [...experiences, updated];

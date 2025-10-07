@@ -281,8 +281,7 @@ const LiveStats = () => {
         <TechCard className="p-6" glowColor="#06b6d4">
             <div className="flex items-center gap-3 mb-4">
                 <div className="w-3 h-3 bg-green-400 rounded-full animate-pulse"></div>
-                {/* @ts-ignore */}
-                <h3 className="text-lg font-bold font-mono">{t('portfolio.designs.tech.systemStatus')}</h3>
+                <h3 className="text-lg font-bold font-mono">SYSTEM_STATUS</h3>
             </div>
             <div className="space-y-4">
                 <TechProgressBar value={stats.cpu} label="CPU_USAGE" color="#22c55e" />
@@ -561,7 +560,7 @@ export default function DynamicTechDesign({
                                 <TechCard className="p-6" glowColor="#8b5cf6">
                                     <div className="flex items-center gap-3 mb-4">
                                         <BarChart3 className="w-6 h-6 text-purple-400" />
-                                        <h3 className="text-lg font-bold font-mono">{t('portfolio.designs.tech.performanceMetrics')}</h3>
+                                        <h3 className="text-lg font-bold font-mono">PERFORMANCE_METRICS</h3>
                                     </div>
                                     <div className="grid grid-cols-3 gap-4 text-center">
                                         <div>
@@ -572,7 +571,7 @@ export default function DynamicTechDesign({
                                         </div>
                                         <div>
                                             <div className="text-2xl font-bold text-blue-400 font-mono">
-                                                {cvData?.skills?.length || 0}+
+                                                {cvData?.competences?.length || 0}+
                                             </div>
                                             <div className="text-xs text-gray-400 font-mono">SKILLS</div>
                                         </div>
@@ -589,7 +588,7 @@ export default function DynamicTechDesign({
                                 <TechCard className="p-6" glowColor="#f59e0b">
                                     <div className="flex items-center gap-3 mb-4">
                                         <Wifi className="w-6 h-6 text-orange-400" />
-                                        <h3 className="text-lg font-bold font-mono">{t('portfolio.designs.tech.networkStatus')}</h3>
+                                        <h3 className="text-lg font-bold font-mono">NETWORK_STATUS</h3>
                                     </div>
                                     <div className="space-y-3">
                                         <div className="flex items-center justify-between">
@@ -657,7 +656,7 @@ export default function DynamicTechDesign({
                                 viewport={{ once: true }}
                             >
                                 <Activity className="w-10 h-10 text-green-400" />
-                                {t('portfolio.designs.tech.experienceLog')}
+                                EXPERIENCE_LOG.DB
                             </motion.h2>
 
                             <div className="space-y-8">
@@ -756,7 +755,7 @@ export default function DynamicTechDesign({
                                 viewport={{ once: true }}
                             >
                                 <Layers className="w-10 h-10 text-blue-400" />
-                                {t('portfolio.designs.tech.skillMatrix')}
+                                SKILL_MATRIX.SYS
                             </motion.h2>
 
                             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -819,7 +818,7 @@ export default function DynamicTechDesign({
                                 viewport={{ once: true }}
                             >
                                 <Box className="w-10 h-10 text-purple-400" />
-                                {t('portfolio.designs.tech.interestCloud')}
+                                INTEREST_CLOUD.DAT
                             </motion.h2>
 
                             <div className="flex flex-wrap justify-center gap-4">
@@ -866,7 +865,7 @@ export default function DynamicTechDesign({
                                 <TechCard className="p-8" glowColor="#22c55e">
                                     <div className="flex items-center gap-3 mb-6">
                                         <Contact className="w-8 h-8 text-green-400" />
-                                        <h2 className="text-3xl font-bold font-mono">{t('portfolio.designs.tech.contactInterface')}</h2>
+                                        <h2 className="text-3xl font-bold font-mono">CONTACT_INTERFACE</h2>
                                     </div>
 
                                     <div className="bg-black rounded-lg p-6 font-mono mb-6">

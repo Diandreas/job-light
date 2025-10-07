@@ -77,8 +77,8 @@ const BrushStroke = ({
                 }}
                 transition={{
                     delay,
-                    duration,
-                    ease: "easeInOut"
+                    duration: duration * 0.7,
+                    ease: [0.43, 0.13, 0.23, 0.96]
                 }}
                 opacity={0.6}
             />
@@ -405,7 +405,13 @@ export default function ArtisticShowcaseDesign({
                                     className="relative mb-6"
                                     initial={{ opacity: 0, y: 50 }}
                                     animate={{ opacity: 1, y: 0 }}
-                                    transition={{ delay: 0.3, duration: 0.8 }}
+                                    transition={{
+                                        delay: 0.2,
+                                        duration: 0.6,
+                                        type: "spring",
+                                        stiffness: 80,
+                                        damping: 15
+                                    }}
                                 >
                                     <h1 className="text-2xl md:text-4xl lg:text-6xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-orange-600 via-pink-600 to-purple-600 relative">
                                         {user.name}
@@ -417,7 +423,13 @@ export default function ArtisticShowcaseDesign({
                                     className="text-base md:text-lg lg:text-xl text-gray-700 mb-3 md:mb-6 font-light relative"
                                     initial={{ opacity: 0, y: 30 }}
                                     animate={{ opacity: 1, y: 0 }}
-                                    transition={{ delay: 0.5, duration: 0.8 }}
+                                    transition={{
+                                        delay: 0.3,
+                                        duration: 0.5,
+                                        type: "spring",
+                                        stiffness: 100,
+                                        damping: 15
+                                    }}
                                 >
                                     {cvData?.professional_title || user.full_profession || t('portfolio.designs.artistic.subtitle')}
                                     <span className="absolute -bottom-1 left-0 w-full h-0.5 bg-gradient-to-r from-orange-400 to-pink-400 rounded-full"></span>
@@ -429,7 +441,13 @@ export default function ArtisticShowcaseDesign({
                                         className="text-sm md:text-base text-gray-600 mb-3 md:mb-6 max-w-lg mx-auto lg:mx-0 italic"
                                         initial={{ opacity: 0, y: 30 }}
                                         animate={{ opacity: 1, y: 0 }}
-                                        transition={{ delay: 0.7, duration: 0.8 }}
+                                        transition={{
+                                            delay: 0.4,
+                                            duration: 0.5,
+                                            type: "spring",
+                                            stiffness: 100,
+                                            damping: 15
+                                        }}
                                     >
                                         "{settings.tagline}"
                                     </motion.p>
@@ -440,7 +458,13 @@ export default function ArtisticShowcaseDesign({
                                     className="flex justify-center lg:justify-start gap-2 md:gap-3 mb-3 md:mb-6"
                                     initial={{ opacity: 0, y: 30 }}
                                     animate={{ opacity: 1, y: 0 }}
-                                    transition={{ delay: 0.9, duration: 0.8 }}
+                                    transition={{
+                                        delay: 0.5,
+                                        duration: 0.4,
+                                        type: "spring",
+                                        stiffness: 120,
+                                        damping: 15
+                                    }}
                                 >
                                     {[
                                         { icon: Mail, href: `mailto:${user.email}`, color: '#f56565', label: 'Email' },

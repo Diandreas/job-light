@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { motion, useScroll, useTransform, AnimatePresence } from 'framer-motion';
-import { Mail, Phone, MapPin, Calendar, Zap, Maximize2, Minimize2 } from 'lucide-react';
+import { Mail, Phone, MapPin, Calendar, Zap, Maximize2, Minimize2, FileText, ExternalLink } from 'lucide-react';
 import { DesignProps } from './index';
 
 const MorphingDesign: React.FC<DesignProps> = ({ user, cvData, settings, isPreview = false }) => {
@@ -167,7 +167,7 @@ const MorphingDesign: React.FC<DesignProps> = ({ user, cvData, settings, isPrevi
     );
 
     const experiences = cvData?.experiences || [];
-    const skills = cvData?.skills || [];
+    const skills = cvData?.competences || [];
     const hobbies = cvData?.hobbies || [];
 
     return (
@@ -489,14 +489,28 @@ const MorphingDesign: React.FC<DesignProps> = ({ user, cvData, settings, isPrevi
                                         />
 
                                         <div className="ml-8">
-                                            <h3 className="text-2xl font-semibold text-white mb-2">{exp.position}</h3>
-                                            <p className="text-blue-300 mb-2 text-lg">{exp.company}</p>
+                                            <h3 className="text-2xl font-semibold text-white mb-2">{exp.name}</h3>
+                                            <p className="text-blue-300 mb-2 text-lg">{exp.InstitutionName}</p>
                                             <p className="text-gray-300 mb-4 flex items-center">
                                                 <Calendar className="w-5 h-5 mr-2" />
-                                                {exp.start_date} - {exp.end_date || 'Présent'}
+                                                {exp.date_start} - {exp.date_end || 'Présent'}
                                             </p>
                                             {exp.description && (
                                                 <p className="text-gray-200 leading-relaxed text-lg">{exp.description}</p>
+                                            )}
+                                            {exp.attachment_path && (
+                                                <div className="mt-4">
+                                                    <a
+                                                        href={exp.attachment_path}
+                                                        target="_blank"
+                                                        rel="noopener noreferrer"
+                                                        className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-500/20 to-purple-500/20 hover:from-blue-500/30 hover:to-purple-500/30 border border-blue-400/50 rounded-xl text-sm text-blue-300 transition-all duration-300"
+                                                    >
+                                                        <FileText className="w-4 h-4" />
+                                                        {exp.attachment_name || 'Voir le document'}
+                                                        <ExternalLink className="w-3 h-3" />
+                                                    </a>
+                                                </div>
                                             )}
                                         </div>
                                     </motion.div>

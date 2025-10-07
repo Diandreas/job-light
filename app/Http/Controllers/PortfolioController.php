@@ -335,8 +335,26 @@ class PortfolioController extends Controller
                     return $experienceArray;
                 })
                 ->toArray() : [],
-            'competences' => $settings->show_competences ? $user->competences()->get()->toArray() : [],
-            'hobbies' => $settings->show_hobbies ? $user->hobbies()->get()->toArray() : [],
+            'competences' => $settings->show_competences ? array_merge(
+                $user->competences()->get()->toArray(),
+                collect($user->manual_competences ?? [])->filter()->map(function($name) {
+                    return [
+                        'id' => 'manual_' . md5(is_string($name) ? $name : json_encode($name)),
+                        'name' => is_string($name) ? $name : (is_array($name) ? ($name['name'] ?? '') : ''),
+                        'is_manual' => true
+                    ];
+                })->toArray()
+            ) : [],
+            'hobbies' => $settings->show_hobbies ? array_merge(
+                $user->hobbies()->get()->toArray(),
+                collect($user->manual_hobbies ?? [])->filter()->map(function($name) {
+                    return [
+                        'id' => 'manual_' . md5(is_string($name) ? $name : json_encode($name)),
+                        'name' => is_string($name) ? $name : (is_array($name) ? ($name['name'] ?? '') : ''),
+                        'is_manual' => true
+                    ];
+                })->toArray()
+            ) : [],
             'summary' => $settings->show_summary ? ($user->selected_summary ? $user->selected_summary->toArray() : null) : null,
             'customSections' => $user->portfolioSections()->activeOrdered()->get()->toArray(),
             'professions' => $user->profession()->take(2)->get()->toArray(),

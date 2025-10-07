@@ -904,7 +904,8 @@
                 "referenceName": "Nom complet",
                 "referenceFunction": "Poste/Fonction",
                 "referenceEmail": "Email",
-                "referencePhone": "Téléphone"
+                "referencePhone": "Téléphone",
+                "selectType": "Sélectionner le type"
             },
             "buttons": {
                 "addEducation": "Ajouter une formation",
@@ -2327,6 +2328,7 @@
             }
         },
         "edit": {
+            "default": "Par défaut",
             "portfolio_express": "Portfolio Express",
             "portfolioConfig": "Configuration Portfolio",
             "quickConfig": "Configuration rapide",

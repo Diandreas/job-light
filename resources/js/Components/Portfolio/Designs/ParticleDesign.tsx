@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { motion, useScroll, useTransform } from 'framer-motion';
-import { Mail, Phone, MapPin, Calendar, Sparkles, Star, Circle } from 'lucide-react';
+import { Mail, Phone, MapPin, Calendar, Sparkles, Star, Circle, FileText, ExternalLink } from 'lucide-react';
 import { DesignProps } from './index';
 
 const ParticleDesign: React.FC<DesignProps> = ({ user, cvData, settings, isPreview = false }) => {
@@ -139,7 +139,7 @@ const ParticleDesign: React.FC<DesignProps> = ({ user, cvData, settings, isPrevi
     );
 
     const experiences = cvData?.experiences || [];
-    const skills = cvData?.skills || [];
+    const skills = cvData?.competences || [];
     const hobbies = cvData?.hobbies || [];
 
     return (
@@ -359,14 +359,28 @@ const ParticleDesign: React.FC<DesignProps> = ({ user, cvData, settings, isPrevi
                                         />
 
                                         <div className="ml-8">
-                                            <h3 className="text-xl font-semibold text-white mb-2">{exp.position}</h3>
-                                            <p className="text-purple-300 mb-2">{exp.company}</p>
+                                            <h3 className="text-xl font-semibold text-white mb-2">{exp.name}</h3>
+                                            <p className="text-purple-300 mb-2">{exp.InstitutionName}</p>
                                             <p className="text-gray-400 mb-4 flex items-center">
                                                 <Calendar className="w-4 h-4 mr-2" />
-                                                {exp.start_date} - {exp.end_date || 'Présent'}
+                                                {exp.date_start} - {exp.date_end || 'Présent'}
                                             </p>
                                             {exp.description && (
                                                 <p className="text-gray-300 leading-relaxed">{exp.description}</p>
+                                            )}
+                                            {exp.attachment_path && (
+                                                <div className="mt-4">
+                                                    <a
+                                                        href={exp.attachment_path}
+                                                        target="_blank"
+                                                        rel="noopener noreferrer"
+                                                        className="inline-flex items-center gap-2 px-4 py-2 bg-purple-500/20 hover:bg-purple-500/30 border border-purple-400/50 rounded-lg text-sm text-purple-300 transition-all duration-300"
+                                                    >
+                                                        <FileText className="w-4 h-4" />
+                                                        {exp.attachment_name || 'Voir le document'}
+                                                        <ExternalLink className="w-3 h-3" />
+                                                    </a>
+                                                </div>
                                             )}
                                         </div>
                                     </motion.div>

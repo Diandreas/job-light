@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { motion, useScroll, useTransform, AnimatePresence } from 'framer-motion';
-import { Mail, Phone, MapPin, Calendar, Code, Zap, Terminal, ChevronRight } from 'lucide-react';
+import { Mail, Phone, MapPin, Calendar, Code, Zap, Terminal, ChevronRight, FileText, ExternalLink } from 'lucide-react';
 import { DesignProps } from './index';
 
 const NeonDesign: React.FC<DesignProps> = ({ user, cvData, settings, isPreview = false }) => {
@@ -115,7 +115,7 @@ const NeonDesign: React.FC<DesignProps> = ({ user, cvData, settings, isPreview =
     );
 
     const experiences = cvData?.experiences || [];
-    const skills = cvData?.skills || [];
+    const skills = cvData?.competences || [];
     const hobbies = cvData?.hobbies || [];
 
     return (
@@ -314,20 +314,34 @@ const NeonDesign: React.FC<DesignProps> = ({ user, cvData, settings, isPreview =
                                             <ChevronRight className="w-6 h-6 text-green-400 mt-1 flex-shrink-0" />
                                             <div className="flex-1">
                                                 <h3 className="text-xl font-semibold mb-2">
-                                                    <NeonText color="cyan">{exp.position}</NeonText>
+                                                    <NeonText color="cyan">{exp.name}</NeonText>
                                                 </h3>
                                                 <p className="text-pink-400 mb-2">
-                                                    @ {exp.company}
+                                                    @ {exp.InstitutionName}
                                                 </p>
                                                 <p className="text-yellow-400 mb-4 flex items-center">
                                                     <Calendar className="w-4 h-4 mr-2" />
-                                                    {exp.start_date} - {exp.end_date || 'CURRENT'}
+                                                    {exp.date_start} - {exp.date_end || 'CURRENT'}
                                                 </p>
                                                 {exp.description && (
                                                     <p className="text-gray-300 leading-relaxed">
                                                         <span className="text-gray-500">// </span>
                                                         {exp.description}
                                                     </p>
+                                                )}
+                                                {exp.attachment_path && (
+                                                    <div className="mt-4">
+                                                        <a
+                                                            href={exp.attachment_path}
+                                                            target="_blank"
+                                                            rel="noopener noreferrer"
+                                                            className="inline-flex items-center gap-2 px-4 py-2 bg-black/80 hover:bg-green-400/10 border-2 border-green-400 rounded text-sm text-green-400 transition-all duration-300 hover:shadow-[0_0_20px_rgba(34,197,94,0.5)]"
+                                                        >
+                                                            <FileText className="w-4 h-4" />
+                                                            {exp.attachment_name || 'view_document.exe'}
+                                                            <ExternalLink className="w-3 h-3" />
+                                                        </a>
+                                                    </div>
                                                 )}
                                             </div>
                                         </div>

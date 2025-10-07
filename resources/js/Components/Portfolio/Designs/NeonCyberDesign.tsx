@@ -423,7 +423,7 @@ export default function NeonCyberDesign({
                                         </div>
                                         <div>
                                             <h3 className="text-xl font-bold text-pink-400 font-mono">SKILLS.SYS</h3>
-                                            <p className="text-gray-400 font-mono text-sm">{cvData?.skills?.length || 0} processes running</p>
+                                            <p className="text-gray-400 font-mono text-sm">{cvData?.competences?.length || 0} processes running</p>
                                         </div>
                                     </div>
                                     <div className="w-full bg-gray-800 rounded-full h-2">
@@ -741,7 +741,7 @@ export default function NeonCyberDesign({
                                 <NeonCard glow="green" className="p-8 text-center">
                                     <h2 className="text-3xl font-bold text-green-400 mb-6 flex items-center justify-center gap-3 font-mono">
                                         <Contact className="w-8 h-8" />
-                                        <GlitchText>{t('portfolio.designs.neon.contact')}</GlitchText>
+                                        <GlitchText>CONTACT_MODULE</GlitchText>
                                     </h2>
                                     <div className="font-mono text-gray-300 mb-8">
                                         <div className="text-cyan-400">$ ./initiate_contact.sh</div>

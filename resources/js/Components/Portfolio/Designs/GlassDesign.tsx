@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { motion, useScroll, useTransform, AnimatePresence } from 'framer-motion';
-import { Mail, Phone, MapPin, Calendar, Globe, ChevronDown, Star } from 'lucide-react';
+import { Mail, Phone, MapPin, Calendar, Globe, ChevronDown, Star, FileText, ExternalLink } from 'lucide-react';
 import { DesignProps } from './index';
 
 const GlassDesign: React.FC<DesignProps> = ({ user, cvData, settings, isPreview = false }) => {
@@ -73,7 +73,7 @@ const GlassDesign: React.FC<DesignProps> = ({ user, cvData, settings, isPreview 
     );
 
     const experiences = cvData?.experiences || [];
-    const skills = cvData?.skills || [];
+    const skills = cvData?.competences || [];
     const hobbies = cvData?.hobbies || [];
 
     return (
@@ -223,17 +223,31 @@ const GlassDesign: React.FC<DesignProps> = ({ user, cvData, settings, isPreview 
                                     >
                                         <div className="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-cyan-400 via-purple-500 to-pink-500 rounded-full" />
                                         <div className="ml-6">
-                                            <h3 className="text-xl font-semibold text-white mb-2">{exp.position}</h3>
+                                            <h3 className="text-xl font-semibold text-white mb-2">{exp.name}</h3>
                                             <p className="text-cyan-300 mb-2 flex items-center">
                                                 <Globe className="w-4 h-4 mr-2" />
-                                                {exp.company}
+                                                {exp.InstitutionName}
                                             </p>
                                             <p className="text-white/60 mb-4 flex items-center">
                                                 <Calendar className="w-4 h-4 mr-2" />
-                                                {exp.start_date} - {exp.end_date || 'Présent'}
+                                                {exp.date_start} - {exp.date_end || 'Présent'}
                                             </p>
                                             {exp.description && (
                                                 <p className="text-white/80 leading-relaxed">{exp.description}</p>
+                                            )}
+                                            {exp.attachment_path && (
+                                                <div className="mt-4">
+                                                    <a
+                                                        href={exp.attachment_path}
+                                                        target="_blank"
+                                                        rel="noopener noreferrer"
+                                                        className="inline-flex items-center gap-2 px-4 py-2 bg-white/10 hover:bg-white/20 border border-white/20 rounded-xl text-sm text-cyan-300 transition-all duration-300"
+                                                    >
+                                                        <FileText className="w-4 h-4" />
+                                                        {exp.attachment_name || 'Voir le document'}
+                                                        <ExternalLink className="w-3 h-3" />
+                                                    </a>
+                                                </div>
                                             )}
                                         </div>
                                     </motion.div>

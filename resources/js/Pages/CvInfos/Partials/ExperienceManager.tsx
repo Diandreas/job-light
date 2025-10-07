@@ -78,8 +78,8 @@ const ExperienceManager: React.FC<Props> = ({ auth, experiences: initialExperien
             exp.InstitutionName?.toLowerCase().includes(s);
     });
 
-    const academicExps = filteredExperiences.filter(e => e.experience_categories_id === '2');
-    const professionalExps = filteredExperiences.filter(e => e.experience_categories_id !== '2');
+    const academicExps = filteredExperiences.filter(e => String(e.experience_categories_id) === '2');
+    const professionalExps = filteredExperiences.filter(e => String(e.experience_categories_id) !== '2');
 
     const handleSave = async (expData: Partial<Experience>) => {
         setIsLoading(true);
@@ -301,7 +301,7 @@ const ExperienceCard: React.FC<{
 }> = ({ exp, onEdit, onDelete }) => {
     const { t } = useTranslation();
     const [expanded, setExpanded] = useState(false);
-    const isAcademic = exp.experience_categories_id === '2';
+    const isAcademic = String(exp.experience_categories_id) === '2';
 
     const formatDate = (date: string) => {
         const d = new Date(date);
@@ -482,7 +482,7 @@ const ExperienceDialog: React.FC<{
         }
     };
 
-    const isAcademic = formData.experience_categories_id === '2';
+    const isAcademic = String(formData.experience_categories_id) === '2';
 
     return (
         <Dialog open={isOpen} onOpenChange={onClose}>
@@ -511,11 +511,11 @@ const ExperienceDialog: React.FC<{
                         <div>
                             <label className="text-xs sm:text-sm font-medium mb-1 block">{t('experiences.manager.labels.type')}</label>
                             <Select
-                                value={formData.experience_categories_id || '1'}
+                                value={String(formData.experience_categories_id || '1')}
                                 onValueChange={(value) => setFormData(prev => ({ ...prev, experience_categories_id: value }))}
                             >
                                 <SelectTrigger className="text-xs sm:text-sm h-8 sm:h-9">
-                                    <SelectValue />
+                                    <SelectValue placeholder={t('experiences.manager.placeholders.selectType')} />
                                 </SelectTrigger>
                                 <SelectContent>
                                     <SelectItem value="1">{t('experiences.manager.types.employment')}</SelectItem>

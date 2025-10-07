@@ -6,10 +6,10 @@ import { useToast } from '@/Components/ui/use-toast';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const LANGUAGE_LEVELS = [
-    { id: 'cvInterface.languages.levels.beginner', name: 'beginner' },
-    { id: 'cvInterface.languages.levels.intermediate', name: 'intermediate' },
-    { id: 'cvInterface.languages.levels.advanced', name: 'advanced' },
-    { id: 'cvInterface.languages.levels.native', name: 'native' }
+    { id: 'beginner', translationKey: 'cvInterface.languages.levels.beginner' },
+    { id: 'intermediate', translationKey: 'cvInterface.languages.levels.intermediate' },
+    { id: 'advanced', translationKey: 'cvInterface.languages.levels.advanced' },
+    { id: 'native', translationKey: 'cvInterface.languages.levels.native' }
 ];
 
 const getLocalizedName = (language, currentLanguage) => {
@@ -22,7 +22,7 @@ const getLocalizedName = (language, currentLanguage) => {
 export default function LanguageInput({ auth, initialLanguages, availableLanguages, onUpdate }) {
     const [languages, setLanguages] = useState(initialLanguages || []);
     const [inputValue, setInputValue] = useState('');
-    const [selectedLevel, setSelectedLevel] = useState('Les bases');
+    const [selectedLevel, setSelectedLevel] = useState('beginner');
     const [suggestions, setSuggestions] = useState([]);
     const [loading, setLoading] = useState(false);
     const { toast } = useToast();
@@ -50,26 +50,37 @@ export default function LanguageInput({ auth, initialLanguages, availableLanguag
     }, [inputValue, availableLanguages, languages, i18n.language]);
 
     const addLanguage = async (language = null) => {
-        const languageToAdd = language || {
-            id: `manual-${Date.now()}`,
-            name: inputValue.trim(),
-            name_en: inputValue.trim(),
-            is_manual: true
-        };
+        if (!language && !inputValue.trim()) return;
 
-        if (!languageToAdd.name.trim()) return;
+        // Si aucune langue n'est sélectionnée dans les suggestions, ne rien faire
+        if (!language) {
+            toast({
+                title: t('cvInterface.languages.error'),
+                description: t('cvInterface.languages.selectFromList'),
+                variant: 'destructive'
+            });
+            return;
+        }
 
         setLoading(true);
         try {
-            const newLanguage = {
-                ...languageToAdd,
+            const response = await axios.post('/user-languages', {
+                language_id: language.id,
+                language_level: selectedLevel
+            });
+
+            // Récupérer la langue ajoutée avec les données complètes
+            const addedLanguage = {
+                ...language,
                 level: selectedLevel,
-                user_id: auth.user.id
+                pivot: {
+                    user_id: auth.user.id,
+                    language_id: language.id,
+                    language_level: selectedLevel
+                }
             };
 
-            await axios.post('/user-languages', newLanguage);
-
-            const updatedLanguages = [...languages, newLanguage];
+            const updatedLanguages = [...languages, addedLanguage];
             setLanguages(updatedLanguages);
             onUpdate(updatedLanguages);
 
@@ -78,14 +89,18 @@ export default function LanguageInput({ auth, initialLanguages, availableLanguag
 
             toast({
                 title: t('cvInterface.languages.added'),
-                description: t('cvInterface.languages.addedDescription', { language: languageToAdd.name, level: selectedLevel }),
+                description: t('cvInterface.languages.addedDescription', {
+                    language: getLocalizedName(language, i18n.language),
+                    level: t(`cvInterface.languages.levels.${selectedLevel}`)
+                }),
                 variant: 'default'
             });
         } catch (error) {
             console.error('Error adding language:', error);
+            const errorMessage = error.response?.data?.message || t('cvInterface.languages.addError');
             toast({
                 title: t('cvInterface.languages.error'),
-                description: t('cvInterface.languages.addError'),
+                description: errorMessage,
                 variant: 'destructive'
             });
         } finally {
@@ -140,7 +155,13 @@ export default function LanguageInput({ auth, initialLanguages, availableLanguag
                                 exit={{ opacity: 0, scale: 0.8 }}
                                 className="bg-amber-500 text-white px-2.5 py-1 rounded-full text-xs flex items-center gap-1.5 hover:bg-amber-600 transition-colors"
                             >
-                                <span>{getLocalizedName(language, i18n.language)} | {t(language.level)}</span>
+                                <span>
+                                    {getLocalizedName(language, i18n.language)} | {
+                                        language.level?.startsWith('cvInterface.')
+                                            ? t(language.level)
+                                            : t(`cvInterface.languages.levels.${language.level || language.pivot?.language_level || 'beginner'}`)
+                                    }
+                                </span>
                                 <button
                                     onClick={() => removeLanguage(language.id)}
                                     className="hover:bg-teal-600 rounded-full p-0.5 transition-colors"
@@ -162,7 +183,11 @@ export default function LanguageInput({ auth, initialLanguages, availableLanguag
                             placeholder={t('cvInterface.languages.placeholder')}
                             value={inputValue}
                             onChange={(e) => setInputValue(e.target.value)}
-                            onKeyDown={(e) => e.key === 'Enter' && addLanguage()}
+                            onKeyDown={(e) => {
+                                if (e.key === 'Enter' && suggestions.length > 0) {
+                                    addLanguage(suggestions[0]);
+                                }
+                            }}
                             disabled={loading}
                         />
 
@@ -188,15 +213,20 @@ export default function LanguageInput({ auth, initialLanguages, availableLanguag
                     >
                         {LANGUAGE_LEVELS.map(level => (
                             <option key={level.id} value={level.id}>
-                                {t(level.id)}
+                                {t(level.translationKey)}
                             </option>
                         ))}
                     </select>
 
                     <button
-                        onClick={() => addLanguage()}
-                        disabled={!inputValue.trim() || loading || languages.length >= 5}
+                        onClick={() => {
+                            if (suggestions.length > 0) {
+                                addLanguage(suggestions[0]);
+                            }
+                        }}
+                        disabled={suggestions.length === 0 || loading || languages.length >= 5}
                         className="bg-amber-500 hover:bg-amber-600 text-white px-3 py-2 rounded-md text-sm disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1.5"
+                        title={suggestions.length === 0 ? t('cvInterface.languages.selectFromList') : ''}
                     >
                         {loading ? (
                             <svg className="animate-spin h-3 w-3" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">

@@ -1016,7 +1016,10 @@
             "phone": "Téléphone",
             "address": "Adresse",
             "linkedin": "LinkedIn",
-            "github": "GitHub"
+            "github": "GitHub",
+            "photo": {
+                "title": "Photo de profil"
+            }
         },
         "previewError": {
             "title": "Erreur d'aperçu",
@@ -1096,14 +1099,15 @@
         },
         "languages": {
             "title": "Langues",
-            "placeholder": "Ajouter langue...",
+            "placeholder": "Rechercher une langue...",
             "added": "Langue ajoutée",
-            "addedDescription": "{{language}} ({{level}}) a été ajouté",
+            "addedDescription": "{{language}} ({{level}}) a été ajoutée avec succès",
             "removed": "Langue supprimée",
             "removedDescription": "La langue a été supprimée avec succès",
             "error": "Erreur",
             "addError": "Impossible d'ajouter la langue",
             "removeError": "Impossible de supprimer la langue",
+            "selectFromList": "Veuillez sélectionner une langue dans la liste",
             "levels": {
                 "beginner": "Les bases",
                 "intermediate": "Intermédiaire",
@@ -1225,6 +1229,7 @@
     },
     "personalInfos": {
         "editTitle": "Modifier les informations personnelles",
+        "clickToEdit": "Cliquez sur un champ pour l'éditer",
         "form": {
             "name": "Nom",
             "email": "Email",
@@ -1233,6 +1238,14 @@
             "address": "Adresse",
             "phoneNumber": "Numéro de téléphone"
         },
+        "placeholders": {
+            "name": "Votre nom complet",
+            "email": "exemple@email.com",
+            "phone": "+33 6 12 34 56 78",
+            "address": "Ville, Pays",
+            "linkedin": "linkedin.com/in/votreprofil",
+            "github": "github.com/votreprofil"
+        },
         "actions": {
             "save": "Enregistrer les modifications",
             "cancel": "Annuler"
@@ -1240,13 +1253,20 @@
         "toast": {
             "success": {
                 "title": "Succès",
-                "updated": "Informations personnelles mises à jour"
+                "updated": "Informations personnelles mises à jour",
+                "fieldUpdated": "Champ mis à jour avec succès"
             },
             "error": {
                 "title": "Erreur",
                 "userDataNotFound": "Données utilisateur non trouvées",
                 "updateFailed": "Échec de la mise à jour"
             }
+        },
+        "tips": {
+            "title": "Astuce",
+            "keyboardShortcuts": "Utilisez",
+            "toSave": "pour sauvegarder,",
+            "toCancel": "pour annuler"
         }
     },
     "services": {

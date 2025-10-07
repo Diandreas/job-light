@@ -1096,14 +1096,15 @@
         },
         "languages": {
             "title": "Languages",
-            "placeholder": "Add language...",
+            "placeholder": "Search for a language...",
             "added": "Language added",
-            "addedDescription": "{{language}} ({{level}}) has been added",
+            "addedDescription": "{{language}} ({{level}}) has been added successfully",
             "removed": "Language removed",
             "removedDescription": "The language has been successfully removed",
             "error": "Error",
             "addError": "Unable to add language",
             "removeError": "Unable to remove language",
+            "selectFromList": "Please select a language from the list",
             "levels": {
                 "beginner": "Beginner",
                 "intermediate": "Intermediate",
@@ -1225,6 +1226,7 @@
     },
     "personalInfos": {
         "editTitle": "Edit personal information",
+        "clickToEdit": "Click on a field to edit",
         "form": {
             "name": "Name",
             "email": "Email",
@@ -1233,6 +1235,14 @@
             "address": "Address",
             "phoneNumber": "Phone number"
         },
+        "placeholders": {
+            "name": "Your full name",
+            "email": "example@email.com",
+            "phone": "+1 234 567 8900",
+            "address": "City, Country",
+            "linkedin": "linkedin.com/in/yourprofile",
+            "github": "github.com/yourprofile"
+        },
         "actions": {
             "save": "Save changes",
             "cancel": "Cancel"
@@ -1240,13 +1250,20 @@
         "toast": {
             "success": {
                 "title": "Success",
-                "updated": "Personal information updated"
+                "updated": "Personal information updated",
+                "fieldUpdated": "Field updated successfully"
             },
             "error": {
                 "title": "Error",
                 "userDataNotFound": "User data not found",
                 "updateFailed": "Update failed"
             }
+        },
+        "tips": {
+            "title": "Tip",
+            "keyboardShortcuts": "Use",
+            "toSave": "to save,",
+            "toCancel": "to cancel"
         }
     },
     "services": {

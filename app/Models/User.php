@@ -547,5 +547,10 @@ class User extends Authenticatable
         $preferences = $this->getNotificationPreferences();
         return $preferences->shouldReceiveApplicationUpdates($type);
     }
+    
+    public function certifications()
+    {
+        return $this->hasMany(Certification::class);
+    }
 
 }

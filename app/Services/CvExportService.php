@@ -2,7 +2,7 @@
 
 namespace App\Services;
 
-use Barryvdh\DomPDF\Facade\Pdf;
+use App\Services\WeasyPrintService;
 use Illuminate\Support\Facades\View;
 use App\Models\User;
 
@@ -10,20 +10,21 @@ class CvExportService
 {
     protected $user;
     protected $options;
+    protected $weasyPrint;
 
-    public function __construct(User $user)
+    public function __construct(User $user, WeasyPrintService $weasyPrint)
     {
         $this->user = $user;
+        $this->weasyPrint = $weasyPrint;
         $this->options = [
-            'paper' => 'a4',
+            'page_size' => 'A4',
             'orientation' => 'portrait',
-            'margin_left' => 0,
-            'margin_right' => 0,
-            'margin_top' => 0,
-            'margin_bottom' => 0,
-            'enable_php' => true,
-            'enable_javascript' => true,
-            'enable_remote' => true,
+            'margin' => [
+                'top' => '0cm',
+                'right' => '0cm',
+                'bottom' => '0cm',
+                'left' => '0cm',
+            ],
         ];
     }
 
@@ -36,19 +37,15 @@ class CvExportService
 
         $data = $this->prepareCvData();
 
-        // Generate PDF
-        $pdf = PDF::loadView($cvModel->viewPath, $data)
-            ->setOptions($this->options);
+        // Generate PDF using WeasyPrint API
+        $pdfContent = $this->weasyPrint->generateFromView($cvModel->viewPath, $data, $this->options);
 
-        // Add metadata
-        $pdf->getDomPDF()->add_info('Title', 'CV - ' . $this->user->name);
-        $pdf->getDomPDF()->add_info('Author', $this->user->name);
-        $pdf->getDomPDF()->add_info('Creator', 'Your CV Platform');
+        $filename = 'cv-' . $this->user->name . '.pdf';
+        $disposition = $format === 'download' ? 'attachment' : 'inline';
 
-        // Return based on format
-        return $format === 'download'
-            ? $pdf->download('cv-' . $this->user->name . '.pdf')
-            : $pdf->stream('cv-' . $this->user->name . '.pdf');
+        return response($pdfContent)
+            ->header('Content-Type', 'application/pdf')
+            ->header('Content-Disposition', $disposition . '; filename="' . $filename . '"');
     }
 
     protected function prepareCvData()

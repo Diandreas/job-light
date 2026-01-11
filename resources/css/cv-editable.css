@@ -1,0 +1,54 @@
+/* Editable CV Fields Styling */
+.editable-field {
+    position: relative;
+    transition: all 0.2s ease;
+    border-radius: 2px;
+}
+
+.editable-field:hover {
+    background-color: rgba(251, 191, 36, 0.1);
+    outline: 1px dashed rgba(251, 191, 36, 0.5);
+    outline-offset: 2px;
+    cursor: text;
+}
+
+.editable-field:focus {
+    background-color: rgba(251, 191, 36, 0.15);
+    outline: 2px solid rgba(251, 191, 36, 0.8);
+    outline-offset: 2px;
+    cursor: text;
+}
+
+.cv-preview-container {
+    font-family: inherit;
+}
+
+.cv-preview-container * {
+    box-sizing: border-box;
+}
+
+/* Smooth transitions for content updates */
+.cv-preview-container [data-editable] {
+    transition: background-color 0.2s ease, outline 0.2s ease;
+}
+
+/* Field update animation */
+.field-updated {
+    animation: pulse-update 0.5s ease-in-out;
+    background-color: rgba(34, 197, 94, 0.15) !important;
+}
+
+@keyframes pulse-update {
+    0% {
+        background-color: rgba(34, 197, 94, 0.3);
+        transform: scale(1);
+    }
+    50% {
+        background-color: rgba(34, 197, 94, 0.2);
+        transform: scale(1.02);
+    }
+    100% {
+        background-color: rgba(34, 197, 94, 0.15);
+        transform: scale(1);
+    }
+}

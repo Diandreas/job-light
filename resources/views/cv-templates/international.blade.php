@@ -406,7 +406,8 @@
                 break-inside: avoid;
             }
         }
-    </style>
+        
+    <x-cv-editable-css />
 </head>
 <body>
 <div class="cv-container">
@@ -414,7 +415,7 @@
     <header class="header">
         <div class="header-left">
             <div class="name-profession">
-                <h1 class="name">{{ $cvInformation['personalInformation']['firstName'] }}</h1>
+                <h1 class="name" @if(isset($editable) && $editable) contenteditable="true" data-editable data-field="personalInformation.firstName" @endif>{{ $cvInformation['personalInformation']['firstName'] }}</h1>
                 <div class="profession">
                     {{ $currentLocale === 'fr' ? $cvInformation['professions'][0]['name'] : $cvInformation['professions'][0]['name_en'] }}
                     @if($currentLocale === 'fr' && !empty($cvInformation['professions'][0]['name_en']))
@@ -537,6 +538,24 @@
                 @endif
             @endforeach
 
+            <!-- Certifications Section -->
+            @if(isset($cvInformation['certifications']) && count($cvInformation['certifications']) > 0)
+                <div class="section">
+                    <h2 class="section-title">{{ $currentLocale === 'fr' ? 'CERTIFICATIONS' : 'CERTIFICATIONS' }}</h2>
+                    <div class="education-container">
+                        @foreach($cvInformation['certifications'] as $cert)
+                            <div class="education-item">
+                                <div class="education-date">
+                                    {{ $cert['date_obtained'] ? \Carbon\Carbon::parse($cert['date_obtained'])->isoFormat('YYYY') : '' }}
+                                </div>
+                                <div class="education-degree" @if(isset($editable) && $editable) contenteditable="true" data-editable data-model="certification" data-id="{{ $cert['id'] }}" data-field="name" @endif>{{ $cert['name'] }}</div>
+                                <div class="education-institution" @if(isset($editable) && $editable) contenteditable="true" data-editable data-model="certification" data-id="{{ $cert['id'] }}" data-field="institution" @endif>{{ $cert['institution'] }}</div>
+                            </div>
+                        @endforeach
+                    </div>
+                </div>
+            @endif
+
             <!-- Hobbies Section -->
             @if(!empty($cvInformation['hobbies']))
                 <div class="section">
@@ -620,9 +639,9 @@
                                     </div>
 
                                     <div class="experience-content">
-                                        <div class="experience-title">{{ $experience['name'] }}</div>
-                                        <div class="experience-company">{{ $experience['InstitutionName'] }}</div>
-                                        <div class="experience-description">
+                                        <div class="experience-title" @if(isset($editable) && $editable) contenteditable="true" data-editable data-model="experience" data-id="{{ $experience['id'] }}" data-field="name" @endif>{{ $experience['name'] }}</div>
+                                        <div class="experience-company" @if(isset($editable) && $editable) contenteditable="true" data-editable data-model="experience" data-id="{{ $experience['id'] }}" data-field="InstitutionName" @endif>{{ $experience['InstitutionName'] }}</div>
+                                        <div class="experience-description" @if(isset($editable) && $editable) contenteditable="true" data-editable data-model="experience" data-id="{{ $experience['id'] }}" data-field="description" data-multiline="true" @endif>
                                             {{ $experience['description'] }}
                                             @if(!empty($experience['output']))
                                                 <br>{{ $experience['output'] }}
@@ -647,5 +666,6 @@
     </div>
 </div>
 </body>
+<x-cv-editable-scripts />
 </html>
 @endsection

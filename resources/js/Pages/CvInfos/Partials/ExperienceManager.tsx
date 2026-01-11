@@ -12,6 +12,7 @@ import {
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import axios from "axios";
+import AIRephraseButton from '@/Components/AIRephraseButton';
 
 interface Reference {
     id?: number;
@@ -576,8 +577,13 @@ const ExperienceDialog: React.FC<{
                             onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
                             placeholder={t('experiences.manager.placeholders.description')}
                             rows={2}
-                            className="text-xs sm:text-sm"
                         />
+                        <div className="flex justify-end mt-1">
+                            <AIRephraseButton
+                                text={formData.description || ''}
+                                onRephrased={(newText) => setFormData(prev => ({ ...prev, description: newText }))}
+                            />
+                        </div>
                     </div>
 
                     {/* Toggle extras */}

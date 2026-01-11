@@ -260,7 +260,12 @@ Route::middleware(['auth'])->group(function () {
 
     // Route pour récupérer la couleur actuelle
     Route::get('/api/cv-color/current', [CvColorController::class, 'getCurrentColor'])
-        ->name('cv-color.current');    Route::post('/career-advisor/export', [CareerAdvisorController::class, 'export'])
+        ->name('cv-color.current');
+
+    Route::post('/api/cv/update-field', [CvInfosController::class, 'updateField'])->name('cv.updateField');
+    Route::post('/api/cv/rephrase', [CvInfosController::class, 'rephraseContent'])->name('cv.rephrase');
+
+    Route::post('/career-advisor/export', [CareerAdvisorController::class, 'export'])
         ->name('career-advisor.export');
     Route::post('/api/process-question-cost', [PaymentController::class, 'processQuestionCost']);
     Route::get('/api/check-download-status/{modelId}', [PaymentController::class, 'checkDownloadStatus']);
@@ -307,6 +312,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/cv-preview/{id}', [CvInfosController::class, 'previewCv'])
         ->name('cv.preview')
         ->middleware(['auth', 'check.print']);
+    Route::get('/cv-preview-html/{id}', [CvInfosController::class, 'previewCvHtml'])
+        ->name('cv.preview.html')
+        ->middleware(['auth']);
 //    Route::get('/cv-download/{id}', [CvInfosController::class, 'downloadPdf'])->name('cv.download');
     Route::put('/cv-infos', [PersonalInformationController::class, 'update'])->name('personal-information.update');
 

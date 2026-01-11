@@ -140,3 +140,6 @@
 [data-sonner-toast] [data-close-button] {
   transform: scale(0.8);
 }
+
+/* Import editable CV styles */
+@import './cv-editable.css';

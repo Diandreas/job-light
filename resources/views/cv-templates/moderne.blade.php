@@ -262,6 +262,7 @@
             font-weight: 600;
         }
     </style>
+    <x-cv-editable-css />
 </head>
 <body>
 <div class="cv-container">
@@ -269,8 +270,8 @@
     <table class="header-table">
         <tr>
             <td class="profile-td">
-                <div class="name">{{ $cvInformation['personalInformation']['firstName'] }}</div>
-                <div class="profession">
+                <div class="name" @if(isset($editable) && $editable) contenteditable="true" data-editable data-model="personalInformation" data-id="{{ $cvInformation['personalInformation']['id'] }}" data-field="firstName" @endif>{{ $cvInformation['personalInformation']['firstName'] }}</div>
+                <div class="profession" @if(isset($editable) && $editable) contenteditable="true" data-editable data-model="personalInformation" data-id="{{ $cvInformation['personalInformation']['id'] }}" data-field="profession" @endif>
                     {{ $currentLocale === 'fr' ? $cvInformation['professions'][0]['name'] : $cvInformation['professions'][0]['name_en'] }}
                 </div>
             </td>
@@ -324,7 +325,7 @@
     <!-- Summary Section -->
     @if(!empty($cvInformation['summaries']))
         <div class="section">
-            <div class="summary">
+            <div class="summary" @if(isset($editable) && $editable) contenteditable="true" data-editable data-model="summary" data-id="{{ $cvInformation['summaries'][0]['id'] ?? 0 }}" data-field="description" @endif>
                 {{ $cvInformation['summaries'][0]['description'] ?? '' }}
             </div>
         </div>
@@ -356,11 +357,11 @@
                             </div>
                         </td>
                         <td class="company-td">
-                            <div class="company-name">{{ $experience['InstitutionName'] }}</div>
+                            <div class="company-name" @if(isset($editable) && $editable) contenteditable="true" data-editable data-model="experience" data-id="{{ $experience['id'] }}" data-field="InstitutionName" @endif>{{ $experience['InstitutionName'] }}</div>
                         </td>
                         <td class="content-td">
-                            <div class="experience-title">{{ $experience['name'] }}</div>
-                            <div class="experience-description">
+                            <div class="experience-title" @if(isset($editable) && $editable) contenteditable="true" data-editable data-model="experience" data-id="{{ $experience['id'] }}" data-field="name" @endif>{{ $experience['name'] }}</div>
+                            <div class="experience-description" @if(isset($editable) && $editable) contenteditable="true" data-editable data-model="experience" data-id="{{ $experience['id'] }}" data-field="description" @endif>
                                 {{ $experience['description'] }}
                                 @if($experience['output'])
                                     <br>{{ $experience['output'] }}
@@ -397,5 +398,6 @@
     </table>
 </div>
 </body>
+<x-cv-editable-scripts />
 </html>
 @endsection

@@ -1,0 +1,23 @@
+{
+    "cv": {
+        "education": "Education",
+        "experience": "Professional Experience",
+        "skills": "Skills",
+        "languages": "Languages",
+        "hobbies": "Interests",
+        "profile": "Profile",
+        "contact": "Contact",
+        "present": "Present",
+        "download": "Download PDF",
+        "preview": "Preview",
+        "projects": "Projects",
+        "certifications": "Certifications",
+        "references": "References"
+    },
+    "editor": {
+        "save": "Save Changes",
+        "saving": "Saving...",
+        "saved": "Saved",
+        "error": "Error"
+    }
+}

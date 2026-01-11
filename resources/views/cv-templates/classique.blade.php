@@ -264,6 +264,7 @@
         }
     </style>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <x-cv-editable-css />
 </head>
 <body>
 <div class="cv-container">
@@ -275,8 +276,8 @@
             </div>
         @endif
         <div class="header-text">
-            <h1>{{ $cvInformation['personalInformation']['firstName'] }}</h1>
-            <h2 class="profession">
+            <h1 @if(isset($editable) && $editable) contenteditable="true" data-editable data-model="personalInformation" data-id="{{ $cvInformation['personalInformation']['id'] }}" data-field="firstName" @endif>{{ $cvInformation['personalInformation']['firstName'] }}</h1>
+            <h2 class="profession" @if(isset($editable) && $editable) contenteditable="true" data-editable data-model="personalInformation" data-id="{{ $cvInformation['personalInformation']['id'] }}" data-field="profession" @endif>
                 {{ $currentLocale === 'fr' ? $cvInformation['professions'][0]['name'] : $cvInformation['professions'][0]['name_en'] }}
             </h2>
             <div class="contact-info">
@@ -299,7 +300,7 @@
     @if(!empty($cvInformation['summaries']))
         <section class="professional-summary">
             <h2>{{ $currentLocale === 'fr' ? 'Résumé Professionnel' : 'Professional Summary' }}</h2>
-            <p class="description">{{ $cvInformation['summaries'][0]['description'] ?? '' }}</p>
+            <p class="description" @if(isset($editable) && $editable) contenteditable="true" data-editable data-model="summary" data-id="{{ $cvInformation['summaries'][0]['id'] ?? 0 }}" data-field="description" @endif>{{ $cvInformation['summaries'][0]['description'] ?? '' }}</p>
         </section>
     @endif
 
@@ -318,8 +319,8 @@
                         <table>
                             <tr>
                                 <td class="title-company">
-                                    <h3>{{ $experience['name'] }}</h3>
-                                    <div class="company">{{ $experience['InstitutionName'] }}</div>
+                                    <h3 @if(isset($editable) && $editable) contenteditable="true" data-editable data-model="experience" data-id="{{ $experience['id'] }}" data-field="name" @endif>{{ $experience['name'] }}</h3>
+                                    <div class="company" @if(isset($editable) && $editable) contenteditable="true" data-editable data-model="experience" data-id="{{ $experience['id'] }}" data-field="InstitutionName" @endif>{{ $experience['InstitutionName'] }}</div>
                                 </td>
                                 <td class="date">
                                     {{ \Carbon\Carbon::parse($experience['date_start'])->locale($currentLocale)->isoFormat('MMM YYYY') }} -
@@ -332,7 +333,7 @@
                             </tr>
                         </table>
                     </div>
-                    <p class="description">{{ $experience['description'] }}</p>
+                    <p class="description" @if(isset($editable) && $editable) contenteditable="true" data-editable data-model="experience" data-id="{{ $experience['id'] }}" data-field="description" @endif>{{ $experience['description'] }}</p>
                     @if($experience['output'])
                         <p class="description">{{ $experience['output'] }}</p>
                     @endif
@@ -384,5 +385,6 @@
     @endif
 </div>
 </body>
+<x-cv-editable-scripts />
 </html>
 @endsection

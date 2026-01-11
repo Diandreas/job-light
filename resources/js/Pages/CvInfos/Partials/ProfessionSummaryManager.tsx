@@ -11,6 +11,7 @@ import {
 } from 'lucide-react';
 import axios from "axios";
 import { motion, AnimatePresence } from 'framer-motion';
+import AIRephraseButton from '@/Components/AIRephraseButton';
 
 interface Summary {
     id: number;
@@ -395,6 +396,12 @@ const ProfessionSummaryManager: React.FC<Props> = ({
                                 rows={4}
                                 className="text-sm"
                             />
+                            <div className="flex justify-end">
+                                <AIRephraseButton
+                                    text={summaryText}
+                                    onRephrased={setSummaryText}
+                                />
+                            </div>
 
                             {/* Templates rapides */}
                             <div className="space-y-2">

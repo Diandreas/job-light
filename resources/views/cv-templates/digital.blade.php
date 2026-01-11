@@ -263,6 +263,7 @@
             padding-top: 15mm;
         }
     </style>
+    <x-cv-editable-css />
 </head>
 <body>
 <div class="cv-container">
@@ -277,14 +278,14 @@
                 </div>
             @endif
             <div class="name-title-band">
-                <div class="name">{{ $cvInformation['personalInformation']['firstName'] }}</div>
-                <div class="profession">
-                    @if(!empty($cvInformation['professions']))
-                        {{ $currentLocale === 'fr' ? $cvInformation['professions'][0]['name'] : $cvInformation['professions'][0]['name_en'] }}
-                    @else
-                        {{ $cvInformation['personalInformation']['profession'] ?? $cvInformation['personalInformation']['full_profession'] ?? '' }}
-                    @endif
-                </div>
+                <div class="name" @if(isset($editable) && $editable) contenteditable="true" data-editable data-model="personalInformation" data-id="{{ $cvInformation['personalInformation']['id'] }}" data-field="firstName" @endif>{{ $cvInformation['personalInformation']['firstName'] }}</div>
+                    <div class="profession" @if(isset($editable) && $editable) contenteditable="true" data-editable data-model="personalInformation" data-id="{{ $cvInformation['personalInformation']['id'] }}" data-field="profession" @endif>
+                        @if(!empty($cvInformation['professions']))
+                            {{ $currentLocale === 'fr' ? $cvInformation['professions'][0]['name'] : $cvInformation['professions'][0]['name_en'] }}
+                        @else
+                            {{ $cvInformation['personalInformation']['profession'] ?? $cvInformation['personalInformation']['full_profession'] ?? '' }}
+                        @endif
+                    </div>
             </div>
         </div>
 
@@ -313,9 +314,9 @@
                                     {{ $currentLocale === 'fr' ? 'Présent' : 'Present' }}
                                 @endif
                             </div>
-                            <div class="timeline-title">{{ $experience['name'] }}</div>
-                            <div class="timeline-place">{{ $experience['InstitutionName'] }}</div>
-                            <div class="timeline-description">
+                            <div class="timeline-title" @if(isset($editable) && $editable) contenteditable="true" data-editable data-model="experience" data-id="{{ $experience['id'] }}" data-field="name" @endif>{{ $experience['name'] }}</div>
+                            <div class="timeline-place" @if(isset($editable) && $editable) contenteditable="true" data-editable data-model="experience" data-id="{{ $experience['id'] }}" data-field="InstitutionName" @endif>{{ $experience['InstitutionName'] }}</div>
+                            <div class="timeline-description" @if(isset($editable) && $editable) contenteditable="true" data-editable data-model="experience" data-id="{{ $experience['id'] }}" data-field="description" @endif>
                                 {{ $experience['description'] }}
                                 @if($experience['output'])
                                     <br>{{ $experience['output'] }}
@@ -378,7 +379,7 @@
             <!-- Résumé / Profil -->
             @if(!empty($cvInformation['summaries']) && isset($cvInformation['summaries'][0]))
                 <div class="contact-item" style="margin-top: 10mm;">
-                    <div class="contact-text" style="text-align: justify; line-height: 1.3;">
+                    <div class="contact-text" style="text-align: justify; line-height: 1.3;" @if(isset($editable) && $editable) contenteditable="true" data-editable data-model="summary" data-id="{{ $cvInformation['summaries'][0]['id'] ?? 0 }}" data-field="description" @endif>
                         {{ $cvInformation['summaries'][0]['description'] ?? '' }}
                     </div>
                 </div>
@@ -444,5 +445,6 @@
     </div>
 </div>
 </body>
+<x-cv-editable-scripts />
 </html>
 @endsection

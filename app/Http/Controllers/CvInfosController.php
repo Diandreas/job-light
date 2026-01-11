@@ -12,7 +12,7 @@ use App\Models\Hobby;
 use App\Models\Language;
 use App\Models\Summary;
 use App\Services\ColorContrastService;
-use Barryvdh\DomPDF\Facade\Pdf;
+use App\Services\WeasyPrintService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
@@ -34,8 +34,8 @@ class CvInfosController extends Controller
         $groupedData = $this->groupExperiencesByCategory($cvInformation['experiences']);
         $locale = request()->get('locale', app()->getLocale());
 
-        // Configurer DomPDF
-        $pdf = PDF::loadView("cv-templates." . $cvModel->viewPath, [
+        // Générer le PDF avec WeasyPrint
+        $view = view("cv-templates." . $cvModel->viewPath, [
             'cvInformation' => $cvInformation,
             'experiencesByCategory' => $groupedData['experiences'],
             'categoryTranslations' => $groupedData['translations'],
@@ -43,16 +43,9 @@ class CvInfosController extends Controller
             'cvModel' => $cvModel,
             'currentLocale' => $locale
         ]);
-
-        $pdf->setOption([
-            'defaultFont' => 'dejavu sans',
-            'dpi' => 296,
-            'defaultMediaType' => 'print',
-            'enableCss' => true,
-        ]);
-
-        $filename = Str::slug($user->name) . '-cv.pdf';
-        $content = $pdf->output();
+        
+        $weasyPrint = new WeasyPrintService();
+        $content = $weasyPrint->generateFromHtml($view);
 
         // Pour Median, retourner avec les bons headers
         if (request()->get('direct')) {
@@ -141,7 +134,8 @@ class CvInfosController extends Controller
             'categoryTranslations' => $groupedData['translations'],
             'showPrintButton' => request()->has('print'),
             'cvModel' => $cvModel,
-            'currentLocale' => $locale
+            'currentLocale' => $locale,
+            'editable' => request()->has('editable')
         ]);
 
         // Si le paramètre 'auto_print' est présent, ajouter du JavaScript pour déclencher l'impression automatiquement
@@ -153,6 +147,146 @@ class CvInfosController extends Controller
         }
 
         return $view;
+    }
+
+    /**
+     * Get CV HTML for direct rendering (no iframe)
+     */
+    public function previewCvHtml($id)
+    {
+        $user = Auth::user();
+        if (!$user) abort(403, 'Unauthorized');
+
+        $locale = request()->get('locale', app()->getLocale());
+        app()->setLocale($locale);
+
+        $cvModel = CvModel::findOrFail($id);
+        $cvInformation = $this->getCommonCvInformation($user);
+        $groupedData = $this->groupExperiencesByCategory($cvInformation['experiences']);
+
+        if (!isset($cvInformation['languages'])) {
+            $cvInformation['languages'] = [];
+        }
+
+        $html = view("cv-templates." . $cvModel->viewPath, [
+            'cvInformation' => $cvInformation,
+            'experiencesByCategory' => $groupedData['experiences'],
+            'categoryTranslations' => $groupedData['translations'],
+            'showPrintButton' => false,
+            'cvModel' => $cvModel,
+            'currentLocale' => $locale,
+            'editable' => request()->has('editable'),
+            'directRender' => true // Flag pour templates
+        ])->render();
+
+        return response($html)->header('Content-Type', 'text/html');
+    }
+
+    public function updateField(Request $request)
+    {
+        $request->validate([
+            'field' => 'required|string',
+            'value' => 'nullable|string',
+            'id' => 'nullable',
+            'model' => 'nullable|string'
+        ]);
+        
+        $user = Auth::user();
+        $field = $request->input('field');
+        $value = $request->input('value');
+        $id = $request->input('id');
+        $model = $request->input('model');
+        
+        Log::info('UpdateField', ['field' => $field, 'value' => $value, 'id' => $id, 'model' => $model]);
+
+        try {
+            if ($model === 'experience' && $id) {
+                // Determine field name in DB
+                $dbField = $field; 
+                
+                $experience = \App\Models\Experience::where('id', $id)->where('user_id', $user->id)->firstOrFail();
+                $experience->$dbField = $value;
+                $experience->save();
+                
+            } elseif ($model === 'certification' && $id) {
+                // Handle certification update
+                $certification = \App\Models\Certification::where('id', $id)->where('user_id', $user->id)->firstOrFail();
+                $certification->$field = $value;
+                $certification->save();
+
+            } elseif ($model === 'summary' && $id) {
+                // Handle summary update
+                $summary = \App\Models\Summary::where('id', $id)->where('user_id', $user->id)->firstOrFail();
+                $summary->$field = $value;
+                $summary->save();
+
+            } elseif ($model === 'personalInformation') {
+                // Handle personal information update
+                $mapping = [
+                    'firstName' => 'name',
+                    'email' => 'email',
+                    'phone' => 'phone_number',
+                    'address' => 'address',
+                    'linkedin' => 'linkedin',
+                    'profession' => 'full_profession',
+                ];
+                
+                if (isset($mapping[$field])) {
+                    $column = $mapping[$field];
+                    $user->$column = $value;
+                    $user->save();
+                }
+            } elseif (str_starts_with($field, 'personalInformation.')) {
+                $userField = str_replace('personalInformation.', '', $field);
+                
+                // Map frontend fields to User model columns
+                $mapping = [
+                    'firstName' => 'name',
+                    'email' => 'email',
+                    'phone' => 'phone_number',
+                    'address' => 'address',
+                    'linkedin' => 'linkedin',
+                ];
+                
+                if (isset($mapping[$userField])) {
+                    $column = $mapping[$userField];
+                    $user->$column = $value;
+                    $user->save();
+                }
+            } else {
+                Log::warning('UpdateField: Unhandled model type', ['model' => $model, 'field' => $field]);
+            }
+
+            return response()->json(['success' => true]);
+        } catch (\Exception $e) {
+            Log::error('UpdateField Error', ['error' => $e->getMessage()]);
+            return response()->json(['success' => false, 'message' => $e->getMessage()], 500);
+        }
+    }
+
+    public function rephraseContent(Request $request)
+    {
+        $request->validate([
+            'text' => 'required|string',
+            'tone' => 'nullable|string|in:professional,creative,concise'
+        ]);
+
+        try {
+            $service = new \App\Services\AI\RephraserService();
+            Log::info('Rephrasing request:', ['text' => $request->text, 'tone' => $request->input('tone', 'professional')]);
+            $rephrased = $service->rephrase($request->text, $request->input('tone', 'professional'));
+            Log::info('Rephrased result:', ['rephrased' => $rephrased]);
+            
+            return response()->json([
+                'success' => true,
+                'rephrased' => $rephrased
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage()
+            ], 500);
+        }
     }
 
     public function updatePhoto(Request $request)
@@ -220,8 +354,8 @@ class CvInfosController extends Controller
         $groupedData = $this->groupExperiencesByCategory($cvInformation['experiences']);
         $locale = request()->get('locale', app()->getLocale());
 
-        // Configurer DomPDF
-        $pdf = PDF::loadView("cv-templates." . $cvModel->viewPath, [
+        // Générer le PDF avec WeasyPrint
+        $view = view("cv-templates." . $cvModel->viewPath, [
             'cvInformation' => $cvInformation,
             'experiencesByCategory' => $groupedData['experiences'],
             'categoryTranslations' => $groupedData['translations'],
@@ -229,17 +363,9 @@ class CvInfosController extends Controller
             'cvModel' => $cvModel,
             'currentLocale' => $locale
         ]);
-
-        // Définir les options spécifiques
-        $pdf->setOption([
-            'defaultFont' => 'dejavu sans',
-            'dpi' => 296,
-            'defaultMediaType' => 'print',
-            'enableCss' => true,
-        ]);
-
-        $filename = Str::slug($user->name) . '-cv.pdf';
-        return $pdf->download($filename);
+        
+        $weasyPrint = new WeasyPrintService();
+        return $weasyPrint->download($view, Str::slug($user->name) . '-cv.pdf');
     }
 
     private function getCommonCvInformation($user)
@@ -259,6 +385,7 @@ class CvInfosController extends Controller
                 DB::raw('COALESCE(attachments.size, NULL) as attachment_size')
             ])
             ->orderBy('experience_categories.ranking', 'asc')
+            ->orderBy('experiences.date_start', 'desc')
             ->get();
 
         // Transformer les expériences pour inclure les références
@@ -368,6 +495,15 @@ class CvInfosController extends Controller
             ),
 
             'languages' => $languages,
+            'certifications' => $user->certifications->map(function($cert) {
+                return [
+                    'id' => $cert->id,
+                    'name' => $cert->name,
+                    'institution' => $cert->institution,
+                    'date_obtained' => $cert->date_obtained ? $cert->date_obtained->format('Y-m-d') : null,
+                    'description' => $cert->description
+                ];
+            })->toArray(),
             'experiences' => $experiencesWithReferences,
             'professions' => $professions,
             'summaries' => $user->selected_summary ? [$user->selected_summary->toArray()] : [],

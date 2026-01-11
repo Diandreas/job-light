@@ -321,6 +321,7 @@
             border-radius: 1mm;
         }
     </style>
+    <x-cv-editable-css />
 </head>
 <body>
     <div class="cv-container">
@@ -328,11 +329,11 @@
         <div class="header">
             <div class="header-content">
                 <div class="header-left">
-                    <div class="name">
+                    <div class="name" @if(isset($editable) && $editable) contenteditable="true" data-editable data-model="personalInformation" data-id="{{ $cvInformation['personalInformation']['id'] }}" data-field="firstName" @endif>
                         {{ $cvInformation['personalInformation']['firstName'] ?? '' }} 
                         {{ $cvInformation['personalInformation']['lastName'] ?? '' }}
                     </div>
-                    <div class="profession">
+                    <div class="profession" @if(isset($editable) && $editable) contenteditable="true" data-editable data-model="personalInformation" data-id="{{ $cvInformation['personalInformation']['id'] }}" data-field="profession" @endif>
                         {{ $cvInformation['personalInformation']['profession'] ?? 'Professionnel des Archives' }}
                     </div>
                     <div class="contact-info">
@@ -370,7 +371,7 @@
         @if(!empty($cvInformation['summary']))
             <div class="section">
                 <div class="section-title">Profil Professionnel</div>
-                <div class="profile-summary">
+                <div class="profile-summary" @if(isset($editable) && $editable) contenteditable="true" data-editable data-model="summary" data-id="{{ $cvInformation['summaries'][0]['id'] ?? 0 }}" data-field="description" @endif>
                     {{ $cvInformation['summary'] }}
                 </div>
             </div>
@@ -384,8 +385,8 @@
                     <div class="experience-item {{ in_array(strtolower($experience['name'] ?? ''), ['archiviste', 'documentaliste', 'conservateur', 'bibliothécaire']) ? 'archives-highlight' : '' }}">
                         <div class="experience-header">
                             <div>
-                                <div class="experience-title">{{ $experience['name'] ?? '' }}</div>
-                                <div class="experience-company">{{ $experience['InstitutionName'] ?? '' }}</div>
+                                <div class="experience-title" @if(isset($editable) && $editable) contenteditable="true" data-editable data-model="experience" data-id="{{ $experience['id'] }}" data-field="name" @endif>{{ $experience['name'] ?? '' }}</div>
+                                <div class="experience-company" @if(isset($editable) && $editable) contenteditable="true" data-editable data-model="experience" data-id="{{ $experience['id'] }}" data-field="InstitutionName" @endif>{{ $experience['InstitutionName'] ?? '' }}</div>
                             </div>
                             <div class="experience-date">
                                 {{ $experience['date_start'] ?? '' }}
@@ -397,7 +398,7 @@
                             </div>
                         </div>
                         @if(!empty($experience['description']))
-                            <div class="experience-description">{{ $experience['description'] }}</div>
+                            <div class="experience-description" @if(isset($editable) && $editable) contenteditable="true" data-editable data-model="experience" data-id="{{ $experience['id'] }}" data-field="description" @endif>{{ $experience['description'] }}</div>
                         @endif
                         @if(!empty($experience['output']))
                             <div class="experience-description" style="margin-top: 1mm; font-weight: 500;">
@@ -495,5 +496,6 @@
         </div>
     </div>
 </body>
+<x-cv-editable-scripts />
 </html>
 @endsection

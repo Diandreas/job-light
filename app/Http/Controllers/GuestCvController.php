@@ -148,21 +148,16 @@ class GuestCvController extends Controller
             $locale = $request->get('locale', 'fr');
 
             // Générer le PDF
-            $pdf = PDF::loadView("cv-templates." . $cvModel->viewPath, [
+            // Générer le PDF avec WeasyPrint
+            $pdfContent = \App\Services\WeasyPrintService::view("cv-templates." . $cvModel->viewPath, [
                 'cvInformation' => $cvInformation,
                 'experiencesByCategory' => $groupedData['experiences'],
                 'categoryTranslations' => $groupedData['translations'],
                 'showPrintButton' => false,
                 'cvModel' => $cvModel,
                 'currentLocale' => $locale
-            ]);
+            ])->render();
 
-            $pdf->setOption([
-                'defaultFont' => 'dejavu sans',
-                'dpi' => 296,
-                'defaultMediaType' => 'print',
-                'enableCss' => true,
-            ]);
 
             $filename = Str::slug($cvData['personalInformation']['firstName'] ?? 'cv-guest') . '-cv.pdf';
             
@@ -176,7 +171,10 @@ class GuestCvController extends Controller
                 'filename' => $filename
             ]);
 
-            return $pdf->download($filename);
+            return response($pdfContent)
+                ->header('Content-Type', 'application/pdf')
+                ->header('Content-Disposition', 'attachment; filename="'.$filename.'"');
+
 
         } catch (\Exception $e) {
             Log::error('Guest CV generation error: ' . $e->getMessage());
@@ -428,21 +426,16 @@ class GuestCvController extends Controller
             $locale = $request->get('locale', 'fr');
 
             // Générer le PDF
-            $pdf = PDF::loadView("cv-templates." . $cvModel->viewPath, [
+            // Générer le PDF avec WeasyPrint
+            $pdfContent = \App\Services\WeasyPrintService::view("cv-templates." . $cvModel->viewPath, [
                 'cvInformation' => $cvInformation,
                 'experiencesByCategory' => $groupedData['experiences'],
                 'categoryTranslations' => $groupedData['translations'],
                 'showPrintButton' => false,
                 'cvModel' => $cvModel,
                 'currentLocale' => $locale
-            ]);
+            ])->render();
 
-            $pdf->setOption([
-                'defaultFont' => 'dejavu sans',
-                'dpi' => 296,
-                'defaultMediaType' => 'print',
-                'enableCss' => true,
-            ]);
 
             $filename = Str::slug($cvData['personalInformation']['firstName'] ?? 'cv-guest') . '-cv.pdf';
             
@@ -453,7 +446,10 @@ class GuestCvController extends Controller
                 'filename' => $filename
             ]);
 
-            return $pdf->download($filename);
+            return response($pdfContent)
+                ->header('Content-Type', 'application/pdf')
+                ->header('Content-Disposition', 'attachment; filename="'.$filename.'"');
+
 
         } catch (\Exception $e) {
             Log::error('Free Guest CV generation error: ' . $e->getMessage());

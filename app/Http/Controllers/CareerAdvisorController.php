@@ -102,14 +102,16 @@ class CareerAdvisorController extends Controller
             $title = $this->getExportTitle($chatHistory->service_id);
 
             if ($validated['format'] === 'pdf') {
-                $pdf = Pdf::loadView('exports.chat', [
+                $pdfContent = \App\Services\WeasyPrintService::view('exports.chat', [
                     'title' => $title,
                     'content' => $messages,
                     'date' => $chatHistory->created_at->format('d/m/Y H:i'),
                     'service' => $this->getServiceName($chatHistory->service_id)
-                ]);
+                ])->render();
 
-                return $pdf->download("conversation-{$chatHistory->context_id}.pdf");
+                return response($pdfContent)
+                    ->header('Content-Type', 'application/pdf')
+                    ->header('Content-Disposition', 'attachment; filename="conversation-'.$chatHistory->context_id.'.pdf"');
             }
 
             $phpWord = new PhpWord();

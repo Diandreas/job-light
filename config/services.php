@@ -88,4 +88,9 @@ return [
         'server_key' => env('FCM_SERVER_KEY'),
         'sender_id' => env('FCM_SENDER_ID'),
     ],
+
+    'weasyprint' => [
+        'url' => env('WEASYPRINT_URL', 'http://127.0.0.1:8001'),
+        'api_key' => env('WEASYPRINT_API_KEY'),
+    ],
 ];

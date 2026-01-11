@@ -33,6 +33,7 @@ import {
     DropdownMenuItem,
     DropdownMenuTrigger,
 } from "@/Components/ui/dropdown-menu";
+import { Stepper } from "@/Components/ui/stepper";
 
 import PersonalInformationEdit from '@/Pages/CvInfos/Partials/PersonnalInfosEdit';
 import CompetenceManager from '@/Pages/CvInfos/Partials/CompetenceManager';
@@ -1995,66 +1996,52 @@ export default function CvInterface({ auth, cvInformation: initialCvInformation 
                     <WelcomeCard onStartTutorial={handleStartTutorial} />
 
                     <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border-0 overflow-hidden">
-                        <div className="flex flex-row min-h-[500px] sm:min-h-[600px]">
-                            {/* Sidebar mobile optimisée (icônes uniquement) */}
-                            <div className="w-11 sm:w-14 md:w-16 flex-shrink-0 bg-gray-50/50 dark:bg-gray-800/50 md:hidden" data-tutorial="sidebar">
-                                <ScrollArea className="h-full py-1.5 sm:py-2">
-                                    <nav className="sticky top-0 p-1 sm:p-1.5 space-y-1.5 sm:space-y-2">
-                                        {SIDEBAR_ITEMS.map(item => (
-                                            <SidebarButton
-                                                key={item.id}
-                                                item={item}
-                                                isActive={activeSection === item.id}
-                                                isComplete={completionStatus[item.id]}
-                                                onClick={() => setActiveSection(item.id)}
-                                                isMobile={true}
-                                            />
-                                        ))}
-                                    </nav>
-                                </ScrollArea>
-                            </div>
+                        {/* Stepper horizontal en haut */}
+                        <div className="p-4 sm:p-6 border-b border-gray-200 dark:border-gray-700" data-tutorial="stepper">
+                            <Stepper
+                                steps={SIDEBAR_ITEMS.map(item => ({
+                                    id: item.id,
+                                    label: item.label,
+                                    icon: item.icon
+                                }))}
+                                currentStep={SIDEBAR_ITEMS.findIndex(item => item.id === activeSection)}
+                                completedSteps={new Set(
+                                    Object.entries(completionStatus)
+                                        .filter(([_, isComplete]) => isComplete)
+                                        .map(([sectionId]) => SIDEBAR_ITEMS.findIndex(item => item.id === sectionId))
+                                        .filter(index => index !== -1)
+                                )}
+                                onStepClick={(stepIndex) => {
+                                    const section = SIDEBAR_ITEMS[stepIndex];
+                                    if (section) {
+                                        setActiveSection(section.id);
+                                    }
+                                }}
+                            />
+                        </div>
 
-                            {/* Sidebar desktop (texte + icônes) */}
-                            <div className="hidden md:block w-48 lg:w-64 flex-shrink-0 bg-gray-50/30 dark:bg-gray-800/30" data-tutorial="sidebar">
-                                <ScrollArea className="h-full py-2 sm:py-3">
-                                    <nav className="sticky top-0 p-1.5 sm:p-3 space-y-1.5 sm:space-y-2">
-                                        {SIDEBAR_ITEMS.map(item => (
-                                            <SidebarButton
-                                                key={item.id}
-                                                item={item}
-                                                isActive={activeSection === item.id}
-                                                isComplete={completionStatus[item.id]}
-                                                onClick={() => setActiveSection(item.id)}
-                                                isMobile={false}
-                                            />
-                                        ))}
-                                    </nav>
-                                </ScrollArea>
-                            </div>
+                        {/* Contenu principal - Full width */}
+                        <div className="p-4 sm:p-6 lg:p-8 min-h-[500px] sm:min-h-[600px]" data-tutorial="content">
+                            <AnimatePresence mode="wait">
+                                <motion.div
+                                    key={activeSection}
+                                    initial={{ opacity: 0, y: 20 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    exit={{ opacity: 0, y: -20 }}
+                                    transition={{ duration: 0.3 }}
+                                    className="space-y-4 sm:space-y-6 max-w-5xl mx-auto"
+                                >
+                                    {getSectionComponent(activeSection)}
 
-                            {/* Contenu principal */}
-                            <div className="flex-grow p-3 sm:p-5 overflow-x-hidden bg-white dark:bg-gray-900" data-tutorial="content">
-                                <AnimatePresence mode="wait">
-                                    <motion.div
-                                        key={activeSection}
-                                        initial={{ opacity: 0, x: 20 }}
-                                        animate={{ opacity: 1, x: 0 }}
-                                        exit={{ opacity: 0, x: -20 }}
-                                        transition={{ duration: 0.3 }}
-                                        className="space-y-3 sm:space-y-4"
-                                    >
-                                        {getSectionComponent(activeSection)}
-
-                                        <SectionNavigation
-                                            currentSection={activeSection}
-                                            nextSection={nextSection}
-                                            prevSection={prevSection}
-                                            canProgress={completionStatus[activeSection]}
-                                            onNavigate={setActiveSection}
-                                        />
-                                    </motion.div>
-                                </AnimatePresence>
-                            </div>
+                                    <SectionNavigation
+                                        currentSection={activeSection}
+                                        nextSection={nextSection}
+                                        prevSection={prevSection}
+                                        canProgress={completionStatus[activeSection]}
+                                        onNavigate={setActiveSection}
+                                    />
+                                </motion.div>
+                            </AnimatePresence>
                         </div>
                     </div>
                 </div>

@@ -462,6 +462,56 @@ class PaymentController extends Controller
         $user->wallet_balance -= $request->price;
         $user->save();
 
+        // Track the download
+        DB::table('cv_downloads')->updateOrInsert(
+            [
+                'user_id' => $user->id,
+                'cv_model_id' => $request->model_id
+            ],
+            [
+                'downloaded_at' => now(),
+                'updated_at' => now()
+            ]
+        );
+
         return response()->json(['success' => true, 'balance' => $user->wallet_balance]);
+    }
+
+    /**
+     * Check if user has already downloaded a CV model
+     */
+    public function checkDownloadStatus($modelId)
+    {
+        $user = auth()->user();
+
+        if (!$user) {
+            return response()->json(['error' => 'Unauthorized'], 401);
+        }
+
+        // Check if user has already downloaded this model
+        $hasDownloaded = DB::table('cv_downloads')
+            ->where('user_id', $user->id)
+            ->where('cv_model_id', $modelId)
+            ->exists();
+
+        return response()->json([
+            'hasDownloaded' => $hasDownloaded
+        ]);
+    }
+
+    /**
+     * Get wallet balance
+     */
+    public function getBalance()
+    {
+        $user = auth()->user();
+
+        if (!$user) {
+            return response()->json(['error' => 'Unauthorized'], 401);
+        }
+
+        return response()->json([
+            'balance' => $user->wallet_balance
+        ]);
     }
 }

@@ -1,12 +1,4 @@
 {
-    "common": {
-        "save": "Enregistrer",
-        "saving": "Enregistrement...",
-        "cancel": "Annuler",
-        "error": "Erreur",
-        "add": "Ajouter",
-        "update": "Mettre à jour"
-    },
     "cv_color": {
         "customize_color": "Personnaliser la couleur",
         "choose_color": "Choisissez une couleur",
@@ -96,7 +88,34 @@
         "interview_coach": {
             "title": "Coach d'Entretien",
             "description": "Préparez vos entretiens avec notre simulation interactive intelligente.",
-            "action": "Préparer mon entretien"
+            "action": "Prepare my interview"
+        },
+        "additional": {
+            "portfolio": {
+                "title": "Créateur de Portfolio",
+                "description": "Présentez vos travaux avec une page portfolio personnelle époustouflante."
+            },
+            "job_portal": {
+                "title": "Portail Emploi",
+                "description": "Accédez à des opportunités exclusives des meilleures entreprises.",
+                "coming_soon": "Bientôt disponible"
+            },
+            "skill_assessment": {
+                "title": "Évaluation de Compétences",
+                "description": "Validez vos compétences avec notre système de test intégré."
+            },
+            "ats_optimization": {
+                "title": "Optimisation ATS",
+                "description": "Assurez-vous que votre CV passe les systèmes de suivi des candidats."
+            },
+            "referral": {
+                "title": "Système de Parrainage",
+                "description": "Gagnez des récompenses en invitant des amis à rejoindre Guidy."
+            },
+            "multilanguage": {
+                "title": "Support Multilingue",
+                "description": "Créez des CV dans plusieurs langues sans effort."
+            }
         }
     },
     "stats": {
@@ -113,7 +132,113 @@
     },
     "cta": {
         "badge": "L'assistant qui vous guide vers le succès",
-        "button": "Débloquez votre potentiel"
+        "button": "Débloquez votre potentiel",
+        "try_guest": "Essayer sans inscription"
+    },
+    "sections": {
+        "core_features": "Fonctionnalités Principales",
+        "advanced_tools": "Outils Avancés"
+    },
+    "guest_cv": {
+        "steps": {
+            "personal": "Informations Personnelles",
+            "summary": "Résumé Professionnel",
+            "experience": "Expériences",
+            "skills": "Compétences & Langues",
+            "models": "Choix du Modèle",
+            "preview": "Aperçu & Téléchargement"
+        },
+        "personal": {
+            "title": "Informations Personnelles",
+            "subtitle": "Commencez par vos informations de base",
+            "labels": {
+                "name": "Prénom et Nom",
+                "email": "Email",
+                "phone": "Téléphone",
+                "address": "Adresse",
+                "linkedin": "LinkedIn (optionnel)",
+                "github": "GitHub (optionnel)",
+                "profession": "Profession"
+            },
+            "placeholders": {
+                "name": "Ex: Jean Dupont",
+                "email": "Ex: jean.dupont@email.com",
+                "phone": "Ex: +33 6 12 34 56 78",
+                "address": "Ex: Paris, France",
+                "linkedin": "Ex: linkedin.com/in/jeandupont",
+                "github": "Ex: github.com/jeandupont",
+                "profession": "Sélectionnez une profession"
+            }
+        },
+        "summary": {
+            "title": "Résumé Professionnel",
+            "subtitle": "Décrivez brièvement votre profil et vos objectifs",
+            "label": "Résumé professionnel",
+            "placeholder": "Ex: Développeur passionné avec 5 ans d'expérience en développement web...",
+            "hint": "Décrivez votre expérience, vos compétences clés et vos objectifs professionnels (2-3 phrases)"
+        },
+        "experience": {
+            "title": "Expériences Professionnelles",
+            "subtitle": "Ajoutez vos expériences professionnelles",
+            "item_title": "Expérience #{{index}}",
+            "delete": "Supprimer",
+            "add": "+ Ajouter une expérience",
+            "labels": {
+                "job_title": "Titre du poste",
+                "company": "Entreprise",
+                "start_date": "Date de début",
+                "end_date": "Date de fin",
+                "description": "Description"
+            },
+            "placeholders": {
+                "job_title": "Ex: Développeur Full-Stack",
+                "company": "Ex: Tech Corp",
+                "start_date": "Ex: Jan 2020",
+                "end_date": "Ex: Présent",
+                "description": "Décrivez vos responsabilités et réalisations..."
+            }
+        },
+        "models": {
+            "title": "Choisissez votre modèle",
+            "subtitle": "Sélectionnez le design qui vous convient le mieux",
+            "selected": "Sélectionné",
+            "free": "Gratuit",
+            "alert": "Veuillez sélectionner un modèle pour continuer."
+        },
+        "preview": {
+            "title": "Votre CV est prêt !",
+            "subtitle": "Prévisualisez votre CV et téléchargez-le en PDF",
+            "progress": "Progression",
+            "model": "Modèle",
+            "none": "Aucun",
+            "generate_button": "Générer l'aperçu",
+            "generating": "Génération..."
+        },
+        "header": {
+            "title": "Créateur de CV",
+            "subtitle": "Gratuit et sans inscription"
+        },
+        "sidebar": {
+            "why_choose": "Pourquoi nous choisir ?",
+            "free_models": "Modèles professionnels gratuits",
+            "no_registration": "Aucune inscription requise",
+            "real_time": "Aperçu en temps réel",
+            "pdf_download": "Téléchargement PDF haute qualité",
+            "create_account": "Créez un compte",
+            "save_data": "pour sauvegarder vos CV et y accéder partout.",
+            "register_button": "S'inscrire gratuitement",
+            "free_guarantee": "100% Gratuit ! Créez et téléchargez votre CV sans inscription."
+        },
+        "dialog": {
+            "title": "Télécharger votre CV",
+            "description": "Pour télécharger votre CV, veuillez vous connecter ou créer un compte gratuit.",
+            "data_saved": "Vos données sont sauvegardées",
+            "data_saved_desc": "Vos informations sont stockées localement et seront automatiquement transférées après connexion.",
+            "login": "Se connecter",
+            "register": "S'inscrire",
+            "google": "Continuer avec Google",
+            "google_soon": "La connexion Google sera disponible prochainement"
+        }
     },
     "footer": {
         "services": {
@@ -150,19 +275,6 @@
         "template": "Modèles",
         "save": "Enregistrer",
         "continue": "Continuer",
-        "sidebar": {
-            "personalInfo": "Informations personnelles",
-            "summary": "Résumé",
-            "experience": "Expériences",
-            "profession": "Formation"
-        },
-        "personal": {
-            "email": "E-mail",
-            "phone": "Téléphone",
-            "address": "Adresse",
-            "linkedin": "LinkedIn",
-            "github": "GitHub"
-        },
         "languages": {
             "title": "Langues",
             "description": "Ajoutez les langues que vous parlez",
@@ -300,6 +412,7 @@
         "fr": "Français"
     },
     "common": {
+        "saving": "Enregistrement...",
         "search": "Rechercher",
         "loading": "Chargement...",
         "error": "Erreur",
@@ -794,7 +907,7 @@
                 "volunteer": "Bénévolat",
                 "auto": "Auto-générer",
                 "defaultComment": "Commentaire par défaut",
-                "academic": {
+                "academic_data": {
                     "defaultOutput": "Réussite académique"
                 }
             },
@@ -995,11 +1108,11 @@
                 "more": "de plus"
             }
         },
-        "success": {
+        "success_attachments": {
             "attachmentUploaded": "Pièce jointe téléchargée avec succès",
             "attachmentUploadedDescription": "Le fichier a été ajouté à l'expérience"
         },
-        "errors": {
+        "errors_attachments": {
             "attachmentUpload": "Erreur lors du téléchargement",
             "attachmentUploadDescription": "Impossible de télécharger le fichier. Réessayez."
         }
@@ -1325,7 +1438,7 @@
         "unique_experience": "Chaque service offre une expérience unique et personnalisée",
         "test_artifacts": "Tester les widgets",
         "why_unique": "Pourquoi nos services IA sont uniques ?",
-        "career_advice": {
+        "career_advice_details": {
             "enhanced_title": "Conseil de Carrière Personnalisé",
             "enhanced_description": "Assistant intelligent qui analyse votre profil et vos objectifs pour créer un plan de carrière sur mesure",
             "features": {
@@ -1335,7 +1448,7 @@
                 "goal_tracking": "Suivi objectifs"
             }
         },
-        "cover_letter": {
+        "cover_letter_details": {
             "enhanced_title": "Générateur de Lettre de Motivation",
             "enhanced_description": "Créez des lettres personnalisées et optimisées ATS en analysant automatiquement les offres d'emploi",
             "features": {
@@ -1345,7 +1458,7 @@
                 "multiple_versions": "Multiple versions"
             }
         },
-        "resume_review": {
+        "resume_review_details": {
             "enhanced_title": "Analyseur de CV Avancé",
             "enhanced_description": "Audit complet avec scoring détaillé, recommandations visuelles et comparaison sectorielle",
             "features": {
@@ -1355,7 +1468,7 @@
                 "recommendations": "Recommandations"
             }
         },
-        "interview_prep": {
+        "interview_prep_details": {
             "enhanced_title": "Simulateur d'Entretien Immersif",
             "enhanced_description": "Simulations réalistes avec questions adaptées au secteur et feedback détaillé de performance",
             "features": {
@@ -1365,7 +1478,7 @@
                 "detailed_feedback": "Feedback détaillé"
             }
         },
-        "presentation_ppt": {
+        "presentation_ppt_details": {
             "enhanced_title": "Créateur de Portfolio Présentation",
             "enhanced_description": "Transformez vos projets en présentations professionnelles pour impressionner les recruteurs",
             "features": {
@@ -2814,6 +2927,34 @@
             "notSpecified": "Non spécifié",
             "from": "À partir de",
             "upTo": "Jusqu'à"
+        },
+        "certifications": {
+            "title": "Certifications",
+            "add": "Ajouter",
+            "edit": "Modifier",
+            "name": "Nom de la certification",
+            "institution": "Organisation émettrice",
+            "date": "Date d'obtention",
+            "description": "Description",
+            "link": "Lien / URL",
+            "empty": "Aucune certification ajoutée pour le moment."
+        },
+        "cvInterface": {
+            "steps": {
+                "step1": "Informations Personnelles",
+                "step2": "Résumé Professionnel",
+                "step3": "Expériences",
+                "step5": "Compétences",
+                "step6": "Certifications"
+            },
+            "personalInfo": {
+                "title": "Informations Personnelles",
+                "email": "Adresse Email",
+                "phone": "Téléphone",
+                "address": "Adresse",
+                "linkedin": "Profil LinkedIn",
+                "github": "Profil GitHub"
+            }
         }
     }
 }

@@ -309,6 +309,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     // CV Information
     Route::resource('cv-infos', CvInfosController::class);
+    Route::resource('certifications', \App\Http\Controllers\CertificationController::class);
     Route::get('/cv-preview/{id}', [CvInfosController::class, 'previewCv'])
         ->name('cv.preview')
         ->middleware(['auth', 'check.print']);
@@ -460,20 +461,23 @@ Route::get('/test-db-schema', [App\Http\Controllers\TestDbController::class, 'te
 Route::prefix('guest-cv')->name('guest-cv.')->group(function () {
     // Page principale de création CV guest
     Route::get('/', [App\Http\Controllers\GuestCvController::class, 'index'])->name('index');
-    
+
     // Prévisualisation CV (public)
     Route::post('/preview', [App\Http\Controllers\GuestCvController::class, 'preview'])->name('preview');
-    
+
+    // Preview HTML for direct rendering (for CVPreview component)
+    Route::get('/preview-html/{id}', [App\Http\Controllers\GuestCvController::class, 'previewHtml'])->name('preview.html');
+
     // Initier paiement pour téléchargement
     Route::post('/payment/initiate', [App\Http\Controllers\GuestCvController::class, 'initiatePayment'])->name('payment.initiate');
-    
+
     // Confirmer paiement
     Route::post('/payment/confirm', [App\Http\Controllers\GuestCvController::class, 'confirmPayment'])->name('payment.confirm');
-    
+
     // Télécharger PDF (après paiement)
     Route::post('/generate-pdf', [App\Http\Controllers\GuestCvController::class, 'generatePdf'])->name('generate-pdf');
     Route::post('/download', [App\Http\Controllers\GuestCvController::class, 'generatePdf'])->name('download');
-    
+
     // Migration des données vers compte utilisateur (après inscription)
     Route::middleware(['auth'])->group(function () {
         Route::post('/migrate', [App\Http\Controllers\GuestCvController::class, 'migrateGuestData'])->name('migrate');

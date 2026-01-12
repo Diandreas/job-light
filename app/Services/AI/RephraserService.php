@@ -7,12 +7,11 @@ use Illuminate\Support\Facades\Log;
 
 class RephraserService
 {
-    protected $geminiKey;
-    protected $baseUrl = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent';
+    protected $mistral;
 
     public function __construct()
     {
-        $this->geminiKey = config('services.gemini.key');
+        $this->mistral = new \HelgeSverre\Mistral\Mistral(apiKey: config('mistral.api_key'));
     }
 
     public function rephrase($text, $tone = 'professional')
@@ -22,27 +21,39 @@ class RephraserService
         }
 
         try {
-            $response = Http::post("{$this->baseUrl}?key={$this->geminiKey}", [
-                'contents' => [
+            $prompt = $this->buildPrompt($text, $tone);
+
+            $response = $this->mistral->chat()->create(
+                messages: [
                     [
-                        'parts' => [
-                            ['text' => "Rephrase the following CV content to be more {$tone} and impactful:\n\n{$text}"]
-                        ]
+                        'role' => 'user', // Using string directly or Enum if imported
+                        'content' => $prompt
                     ]
-                ]
-            ]);
+                ],
+                model: 'mistral-large-latest',
+                temperature: 0.7,
+                maxTokens: 1000,
+                safeMode: true
+            );
 
-            if ($response->successful()) {
-                $data = $response->json();
-                return $data['candidates'][0]['content']['parts'][0]['text'] ?? $text;
-            }
-
-            Log::error('Gemini API Error: ' . $response->body());
-            return $text; // Fallback to original text
+            $dto = $response->dto();
+            return $dto->choices[0]->message->content ?? $text;
 
         } catch (\Exception $e) {
             Log::error('Rephraser Exception: ' . $e->getMessage());
             return $text;
         }
+    }
+
+    private function buildPrompt($text, $tone)
+    {
+        $instructions = match($tone) {
+            'professional' => "Reformule ce texte pour un CV professionnel. Sois précis, utilise des verbes d'action et un langage soutenu. Garde le même sens mais améliore l'impact.",
+            'creative' => "Reformule ce texte pour un CV créatif. Sois original, engageant et dynamique. Mets en valeur la personnalité tout en restant professionnel.",
+            'concise' => "Reformule ce texte pour le rendre plus concis et direct. Élimine le superflu, va droit au but, utilise des phrases courtes et percutantes.",
+            default => "Améliore ce texte pour un CV professionnel."
+        };
+
+        return "{$instructions}\n\nTexte à reformuler : \"{$text}\"\n\nRéponds UNIQUEMENT par le texte reformulé, sans guillemets ni introduction.";
     }
 }

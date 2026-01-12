@@ -38,7 +38,7 @@
 
         .sidebar {
             width: 55mm;
-            background-color: #3D5A80;
+            background-color: {{ $cvInformation['primary_color'] ?? '#3D5A80' }};
             color: #fff;
             padding: 5mm;
         }
@@ -147,7 +147,7 @@
         .name-main {
             font-size: 18pt;
             font-weight: bold;
-            color: #3D5A80;
+            color: {{ $cvInformation['primary_color'] ?? '#3D5A80' }};
             margin-bottom: 1mm;
         }
 
@@ -160,7 +160,7 @@
         .summary {
             padding: 3mm;
             background-color: #F7F9FB;
-            border-left: 1.2mm solid #3D5A80;
+            border-left: 1.2mm solid {{ $cvInformation['primary_color'] ?? '#3D5A80' }};
             margin-bottom: 6mm;
             text-align: justify;
             font-size: 9.5pt;
@@ -174,10 +174,10 @@
         .main-section-title {
             font-size: 14pt;
             font-weight: bold;
-            color: #3D5A80;
+            color: {{ $cvInformation['primary_color'] ?? '#3D5A80' }};
             margin-bottom: 4mm;
             padding-bottom: 1mm;
-            border-bottom: 0.3mm solid #3D5A80;
+            border-bottom: 0.3mm solid {{ $cvInformation['primary_color'] ?? '#3D5A80' }};
         }
 
         .experience-item {
@@ -199,13 +199,13 @@
 
         .experience-date {
             font-size: 9pt;
-            color: #3D5A80;
+            color: {{ $cvInformation['primary_color'] ?? '#3D5A80' }};
             font-weight: 600;
         }
 
         .company {
             font-style: italic;
-            color: #3D5A80;
+            color: {{ $cvInformation['primary_color'] ?? '#3D5A80' }};
             margin-bottom: 1.5mm;
             font-size: 10pt;
         }

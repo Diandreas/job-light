@@ -129,24 +129,34 @@ const FeatureCard = ({ icon: Icon, title, description, action, link, color, bgCo
     </motion.div>
 );
 
-const AdditionalFeatureCard = ({ icon: Icon, title, description, color, bgColor }) => (
-    <motion.div
-        whileHover={{ y: -5, scale: 1.02 }}
-        whileTap={{ scale: 0.98 }}
-        className={`relative bg-white dark:bg-gray-800 rounded-xl p-4 shadow-md border border-gray-100 dark:border-gray-700 overflow-hidden group transition-all duration-300 hover:shadow-lg ${bgColor ? `hover:bg-gradient-to-br hover:${bgColor}` : ''}`}
-    >
-        <div className={`absolute inset-0 bg-gradient-to-r ${color}/10 dark:opacity-50 opacity-0 group-hover:opacity-100 transition-opacity duration-300`} />
-        <div className="relative z-10 flex items-start space-x-3">
-            <div className={`p-2 rounded-lg bg-gradient-to-r ${color} transform group-hover:scale-110 transition-transform duration-300 shadow-sm flex-shrink-0`}>
-                <Icon className="w-4 h-4 text-white" />
+const AdditionalFeatureCard = ({ icon: Icon, title, description, color, bgColor, comingSoon }) => {
+    const { t } = useTranslation();
+    return (
+        <motion.div
+            whileHover={comingSoon ? {} : { y: -5, scale: 1.02 }}
+            whileTap={comingSoon ? {} : { scale: 0.98 }}
+            className={`relative bg-white dark:bg-gray-800 rounded-xl p-4 shadow-md border border-gray-100 dark:border-gray-700 overflow-hidden group transition-all duration-300 hover:shadow-lg ${bgColor && !comingSoon ? `hover:bg-gradient-to-br hover:${bgColor}` : ''} ${comingSoon ? 'opacity-75 cursor-not-allowed' : ''}`}
+        >
+            <div className={`absolute inset-0 bg-gradient-to-r ${color}/10 dark:opacity-50 opacity-0 group-hover:opacity-100 transition-opacity duration-300`} />
+            <div className="relative z-10 flex items-start space-x-3">
+                <div className={`p-2 rounded-lg bg-gradient-to-r ${color} transform ${!comingSoon && 'group-hover:scale-110'} transition-transform duration-300 shadow-sm flex-shrink-0`}>
+                    <Icon className="w-4 h-4 text-white" />
+                </div>
+                <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2 mb-1 flex-wrap">
+                        <h4 className="text-sm font-semibold group-hover:text-amber-600 dark:group-hover:text-amber-400 transition-colors dark:text-white leading-tight">{title}</h4>
+                        {comingSoon && (
+                            <span className="text-[10px] uppercase tracking-wider font-bold px-2 py-0.5 rounded-full bg-amber-100 text-amber-700 border border-amber-200 dark:bg-amber-900/30 dark:text-amber-300 dark:border-amber-700/50">
+                                {t('common.comingSoon')}
+                            </span>
+                        )}
+                    </div>
+                    <p className="text-xs text-gray-600 dark:text-gray-300 leading-relaxed">{description}</p>
+                </div>
             </div>
-            <div className="flex-1 min-w-0">
-                <h4 className="text-sm font-semibold mb-1 group-hover:text-amber-600 dark:group-hover:text-amber-400 transition-colors dark:text-white leading-tight">{title}</h4>
-                <p className="text-xs text-gray-600 dark:text-gray-300 leading-relaxed">{description}</p>
-            </div>
-        </div>
-    </motion.div>
-);
+        </motion.div>
+    );
+};
 
 const StatisticCard = ({ icon: Icon, value, label }) => (
     <motion.div
@@ -437,43 +447,44 @@ export default function Welcome() {
     const additionalFeatures = [
         {
             icon: Globe,
-            title: "Portfolio Builder",
-            description: "Create stunning online portfolios to showcase your work and skills professionally.",
+            title: t('features.additional.portfolio.title'),
+            description: t('features.additional.portfolio.description'),
             color: 'from-teal-500 to-blue-500',
             bgColor: 'from-teal-50 to-blue-50 dark:from-teal-950/50 dark:to-blue-950/50'
         },
         {
             icon: Users,
-            title: "Company Portal",
-            description: "Access exclusive company profiles and connect with potential employers.",
+            title: t('features.additional.job_portal.title'),
+            description: t('features.additional.job_portal.description'),
             color: 'from-indigo-500 to-purple-500',
-            bgColor: 'from-indigo-50 to-purple-50 dark:from-indigo-950/50 dark:to-purple-950/50'
+            bgColor: 'from-indigo-50 to-purple-50 dark:from-indigo-950/50 dark:to-purple-950/50',
+            comingSoon: true
         },
         {
             icon: Award,
-            title: "Skill Assessment",
-            description: "Validate your competencies with AI-powered skill assessments and certifications.",
+            title: t('features.additional.skill_assessment.title'),
+            description: t('features.additional.skill_assessment.description'),
             color: 'from-yellow-500 to-orange-500',
             bgColor: 'from-yellow-50 to-orange-50 dark:from-yellow-950/50 dark:to-orange-950/50'
         },
         {
             icon: Terminal,
-            title: "ATS Optimization",
-            description: "Ensure your CV passes Applicant Tracking Systems with our optimization tools.",
+            title: t('features.additional.ats_optimization.title'),
+            description: t('features.additional.ats_optimization.description'),
             color: 'from-gray-500 to-slate-500',
             bgColor: 'from-gray-50 to-slate-50 dark:from-gray-950/50 dark:to-slate-950/50'
         },
         {
             icon: Star,
-            title: "Referral System",
-            description: "Earn rewards by referring friends and build your professional network.",
+            title: t('features.additional.referral.title'),
+            description: t('features.additional.referral.description'),
             color: 'from-pink-500 to-rose-500',
             bgColor: 'from-pink-50 to-rose-50 dark:from-pink-950/50 dark:to-rose-950/50'
         },
         {
             icon: Globe,
-            title: "Multi-language Support",
-            description: "Create CVs in multiple languages with region-specific formatting and standards.",
+            title: t('features.additional.multilanguage.title'),
+            description: t('features.additional.multilanguage.description'),
             color: 'from-cyan-500 to-teal-500',
             bgColor: 'from-cyan-50 to-teal-50 dark:from-cyan-950/50 dark:to-teal-950/50'
         }
@@ -919,15 +930,15 @@ export default function Welcome() {
                             className="mb-16 md:mb-24"
                         >
                             <div className="text-center mb-12">
-                                <motion.h2 
+                                <motion.h2
                                     className="text-2xl md:text-4xl font-bold mb-4 bg-gradient-to-r from-amber-600 via-purple-600 to-amber-600 bg-clip-text text-transparent"
                                     initial={{ opacity: 0, y: 20 }}
                                     whileInView={{ opacity: 1, y: 0 }}
                                     viewport={{ once: true }}
                                 >
-                                    🚀 Core Features
+                                    {t('sections.core_features')}
                                 </motion.h2>
-                                <motion.p 
+                                <motion.p
                                     className="text-gray-600 dark:text-gray-300 max-w-2xl mx-auto"
                                     initial={{ opacity: 0, y: 20 }}
                                     whileInView={{ opacity: 1, y: 0 }}
@@ -937,7 +948,7 @@ export default function Welcome() {
                                     Everything you need to accelerate your career with AI-powered tools
                                 </motion.p>
                             </div>
-                            
+
                             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
                                 {features.map((feature, index) => (
                                     <motion.div
@@ -971,15 +982,15 @@ export default function Welcome() {
                             className="mb-16 md:mb-24"
                         >
                             <div className="text-center mb-12">
-                                <motion.h2 
+                                <motion.h2
                                     className="text-2xl md:text-4xl font-bold mb-4 bg-gradient-to-r from-purple-600 via-amber-600 to-purple-600 bg-clip-text text-transparent"
                                     initial={{ opacity: 0, y: 20 }}
                                     whileInView={{ opacity: 1, y: 0 }}
                                     viewport={{ once: true }}
                                 >
-                                    ✨ Advanced Tools
+                                    {t('sections.advanced_tools')}
                                 </motion.h2>
-                                <motion.p 
+                                <motion.p
                                     className="text-gray-600 dark:text-gray-300 max-w-2xl mx-auto"
                                     initial={{ opacity: 0, y: 20 }}
                                     whileInView={{ opacity: 1, y: 0 }}
@@ -989,7 +1000,7 @@ export default function Welcome() {
                                     Professional tools to give you the competitive edge in today's job market
                                 </motion.p>
                             </div>
-                            
+
                             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
                                 {additionalFeatures.map((feature, index) => (
                                     <motion.div
@@ -1005,6 +1016,7 @@ export default function Welcome() {
                                             description={feature.description}
                                             color={feature.color}
                                             bgColor={feature.bgColor}
+                                            comingSoon={feature.comingSoon}
                                         />
                                     </motion.div>
                                 ))}
@@ -1068,7 +1080,7 @@ export default function Welcome() {
                                     className="inline-flex items-center bg-white text-amber-600 border-2 border-amber-500 px-6 md:px-8 py-3 md:py-4 rounded-2xl text-base md:text-lg font-bold hover:bg-amber-50 shadow-xl hover:shadow-2xl transition-all transform hover:scale-105 active:scale-95 group"
                                 >
                                     <FileText className="w-4 h-4 md:w-5 md:h-5 mr-2 md:mr-3" />
-                                    Essayer sans inscription
+                                    {t('cta.try_guest')}
                                     <ArrowRight className="w-4 h-4 md:w-5 md:h-5 ml-2 md:ml-3 group-hover:translate-x-1 transition-transform" />
                                 </a>
                                 <Link

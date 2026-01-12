@@ -101,7 +101,7 @@
         .section-title {
             font-size: 14pt;
             font-weight: 600;
-            color: #2E2E2E;
+            color: {{ $cvInformation['primary_color'] ?? '#2E2E2E' }};
             margin-bottom: 3mm;
             letter-spacing: 0.5pt;
             text-transform: uppercase;

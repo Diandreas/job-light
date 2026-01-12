@@ -13,6 +13,7 @@ import NeonDesign from './NeonDesign';
 import ParticleDesign from './ParticleDesign';
 import WaveDesign from './WaveDesign';
 import MorphingDesign from './MorphingDesign';
+import NeumorphismDesign from './NeumorphismDesign';
 
 // Export all designs
 export {
@@ -27,9 +28,9 @@ export {
     DynamicTechDesign,
     GlassDesign,
     NeonDesign,
-    ParticleDesign,
     WaveDesign,
-    MorphingDesign
+    MorphingDesign,
+    NeumorphismDesign
 };
 
 // Design mapping for dynamic imports
@@ -47,7 +48,8 @@ export const PORTFOLIO_DESIGNS = {
     neon: NeonDesign,
     particle: ParticleDesign,
     wave: WaveDesign,
-    morphing: MorphingDesign
+    morphing: MorphingDesign,
+    neumorphism: NeumorphismDesign
 } as const;
 
 // Design metadata
@@ -163,6 +165,14 @@ export const DESIGN_METADATA = {
         features: ['Formes morphing', 'Background fluide', 'Transitions liquides', 'Géométrie évolutive'],
         colors: ['#ff006e', '#3a86ff', '#06ffa5'],
         icon: '🔮'
+    },
+    neumorphism: {
+        name: 'Neumorphism',
+        description: 'Design doux avec ombres réalistes et effets de profondeur',
+        preview: '/images/designs/neumorphism-preview.png',
+        features: ['Ombres douces', 'Cartes en relief', 'Design épuré', 'Look tactile'],
+        colors: ['#e0e5ec', '#4a5568', '#a3b1c6'],
+        icon: '☁️'
     },
 };
 

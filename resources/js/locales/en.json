@@ -1,12 +1,4 @@
 {
-    "common": {
-        "save": "Save",
-        "saving": "Saving...",
-        "cancel": "Cancel",
-        "error": "Error",
-        "add": "Add",
-        "update": "Update"
-    },
     "cv_color": {
         "customize_color": "Customize color",
         "choose_color": "Choose a color",
@@ -150,19 +142,6 @@
         "template": "Templates",
         "save": "Save",
         "continue": "Continue",
-        "sidebar": {
-            "personalInfo": "Personal Information",
-            "summary": "Summary",
-            "experience": "Experience",
-            "profession": "Education"
-        },
-        "personal": {
-            "email": "Email",
-            "phone": "Phone",
-            "address": "Address",
-            "linkedin": "LinkedIn",
-            "github": "GitHub"
-        },
         "languages": {
             "title": "Languages",
             "description": "Add languages you speak",
@@ -300,6 +279,7 @@
         "fr": "French"
     },
     "common": {
+        "saving": "Saving...",
         "search": "Search",
         "loading": "Loading...",
         "error": "Error",
@@ -432,13 +412,41 @@
             "processing": "Sending...",
             "backToLogin": "Back to login"
         },
-        "resetPassword": {
-            "title": "Reset Password",
-            "subtitle": "Enter your new password",
-            "password": "New password",
-            "confirm": "Confirm password",
-            "button": "Reset Password",
-            "processing": "Resetting..."
+        "guest_cv": {
+            "preview": {
+                "title": "Your CV is ready!",
+                "subtitle": "Preview your CV and download it as PDF",
+                "progress": "Progress",
+                "model": "Model",
+                "none": "None",
+                "generate_button": "Generate Preview",
+                "generating": "Generating..."
+            },
+            "header": {
+                "title": "Resume Builder",
+                "subtitle": "Free and no registration required"
+            },
+            "sidebar": {
+                "why_choose": "Why choose us?",
+                "free_models": "Free professional templates",
+                "no_registration": "No registration required",
+                "real_time": "Real-time preview",
+                "pdf_download": "High quality PDF download",
+                "create_account": "Create an account",
+                "save_data": "to save your CVs and access them anywhere.",
+                "register_button": "Register for free",
+                "free_guarantee": "100% Free! Create and download your CV without registration."
+            },
+            "dialog": {
+                "title": "Download your CV",
+                "description": "To download your CV, please login or create a free account.",
+                "data_saved": "Your data is saved",
+                "data_saved_desc": "Your information is stored locally and will be automatically transferred after login.",
+                "login": "Login",
+                "register": "Register",
+                "google": "Continue with Google",
+                "google_soon": "Google login coming soon"
+            }
         },
         "verifyEmail": {
             "title": "Verify Email",
@@ -794,7 +802,7 @@
                 "volunteer": "Volunteer",
                 "auto": "Auto-generate",
                 "defaultComment": "Default comment",
-                "academic": {
+                "academic_data": {
                     "defaultOutput": "Academic achievement"
                 }
             },
@@ -995,11 +1003,11 @@
                 "more": "more"
             }
         },
-        "success": {
+        "success_attachments": {
             "attachmentUploaded": "Attachment uploaded successfully",
             "attachmentUploadedDescription": "The file has been added to the experience"
         },
-        "errors": {
+        "errors_attachments": {
             "attachmentUpload": "Upload error",
             "attachmentUploadDescription": "Unable to upload the file. Please try again."
         }
@@ -1322,7 +1330,7 @@
         "unique_experience": "Each service offers a unique and personalized experience",
         "test_artifacts": "Test artifacts",
         "why_unique": "Why are our AI services unique?",
-        "career_advice": {
+        "career_advice_details": {
             "enhanced_title": "Personalized Career Advice",
             "enhanced_description": "Intelligent assistant that analyzes your profile and goals to create a tailor-made career plan",
             "features": {
@@ -1332,7 +1340,7 @@
                 "goal_tracking": "Goal tracking"
             }
         },
-        "cover_letter": {
+        "cover_letter_details": {
             "enhanced_title": "Cover Letter Generator",
             "enhanced_description": "Create personalized and ATS-optimized letters by automatically analyzing job offers",
             "features": {
@@ -1342,7 +1350,7 @@
                 "multiple_versions": "Multiple versions"
             }
         },
-        "resume_review": {
+        "resume_review_details": {
             "enhanced_title": "Advanced Resume Analyzer",
             "enhanced_description": "Complete audit with detailed scoring, visual recommendations and sector comparison",
             "features": {
@@ -1352,7 +1360,7 @@
                 "recommendations": "Recommendations"
             }
         },
-        "interview_prep": {
+        "interview_prep_details": {
             "enhanced_title": "Immersive Interview Simulator",
             "enhanced_description": "Realistic simulations with sector-specific questions and detailed performance feedback",
             "features": {
@@ -1362,7 +1370,7 @@
                 "detailed_feedback": "Detailed feedback"
             }
         },
-        "presentation_ppt": {
+        "presentation_ppt_details": {
             "enhanced_title": "Portfolio Presentation Creator",
             "enhanced_description": "Transform your projects into professional presentations to impress recruiters",
             "features": {
@@ -2811,6 +2819,34 @@
             "notSpecified": "Not specified",
             "from": "From",
             "upTo": "Up to"
+        },
+        "certifications": {
+            "title": "Certifications",
+            "add": "Add",
+            "edit": "Edit",
+            "name": "Certification Name",
+            "institution": "Issuing Organization",
+            "date": "Date Obtained",
+            "description": "Description",
+            "link": "Link / URL",
+            "empty": "No certifications added yet."
+        },
+        "cvInterface": {
+            "steps": {
+                "step1": "Personal Information",
+                "step2": "Professional Summary",
+                "step3": "Experiences",
+                "step5": "Skills",
+                "step6": "Certifications"
+            },
+            "personalInfo": {
+                "title": "Personal Information",
+                "email": "Email Address",
+                "phone": "Phone Number",
+                "address": "Address",
+                "linkedin": "LinkedIn Profile",
+                "github": "GitHub Profile"
+            }
         }
     }
 }

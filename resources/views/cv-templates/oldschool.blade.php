@@ -9,8 +9,8 @@
     <title>{{ $cvInformation['personalInformation']['firstName'] ?? 'CV' }} - CV</title>
     <style>
         :root {
-            --presidential-blue: #002D72;
-            --presidential-light: #004FBF;
+            --presidential-blue: {{ $cvInformation['primary_color'] ?? '#002D72' }};
+            --presidential-light: {{ $cvInformation['primary_color'] ?? '#004FBF' }};
             --presidential-pale: #E6EEF8;
             --text-dark: #1A1A1A;
             --text-light: #4A4A4A;

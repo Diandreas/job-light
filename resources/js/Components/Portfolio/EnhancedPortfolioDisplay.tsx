@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Head } from '@inertiajs/react';
-import { 
-    User, GraduationCap, Briefcase, Heart, Mail, Phone, MapPin, 
+import {
+    User, GraduationCap, Briefcase, Heart, Mail, Phone, MapPin,
     Github, Linkedin, FileText, Eye, ExternalLink, Award, Globe,
     Star, MessageSquare, FolderOpen, Edit
 } from 'lucide-react';
@@ -38,7 +38,15 @@ const EnhancedPortfolioLayout = ({ children, settings }: PortfolioLayoutProps) =
                 minHeight: '100vh'
             };
         }
-        
+
+        if (settings.design === 'neumorphism') {
+            return {
+                backgroundColor: '#e0e5ec',
+                color: '#4a5568',
+                minHeight: '100vh'
+            };
+        }
+
         return {
             backgroundColor: settings.background_color || '#ffffff',
             color: settings.text_color || '#1f2937',
@@ -67,7 +75,7 @@ const EnhancedPortfolioLayout = ({ children, settings }: PortfolioLayoutProps) =
     };
 
     return (
-        <div 
+        <div
             className={cn(getFontFamily(), "transition-all duration-300")}
             style={getBackgroundStyle()}
         >
@@ -88,20 +96,21 @@ interface SectionProps {
 
 const EnhancedSection = ({ title, icon, children, settings, sectionSettings }: SectionProps) => {
     const IconComponent = availableIcons[icon] || User;
-    
+
     const getSectionStyle = () => {
         const baseStyles = "mb-6 transition-all duration-300";
-        
+
         // Styles basés sur le design choisi
         const designStyles = {
             intuitive: "bg-white shadow-lg rounded-lg p-6 hover:shadow-xl hover:scale-105 transform",
             professional: "bg-white shadow rounded-lg p-6",
             "user-friendly": "bg-white shadow-md rounded-2xl p-6 border-2 hover:border-opacity-100 transition-colors",
-            modern: "bg-white/90 backdrop-blur-sm rounded-xl p-6 shadow-lg hover:shadow-xl border border-white/20"
+            modern: "bg-white/90 backdrop-blur-sm rounded-xl p-6 shadow-lg hover:shadow-xl border border-white/20",
+            neumorphism: "neu-card text-gray-700"
         };
 
         const borderRadius = settings.border_radius ? `${settings.border_radius}px` : '0.5rem';
-        
+
         return {
             className: cn(baseStyles, designStyles[settings.design] || designStyles.professional),
             style: {
@@ -126,7 +135,7 @@ const EnhancedSection = ({ title, icon, children, settings, sectionSettings }: S
         >
             <CardHeader className="pb-4">
                 <CardTitle className="flex items-center text-2xl font-semibold mb-4">
-                    <div 
+                    <div
                         className="mr-3 p-2 rounded-lg"
                         style={{
                             backgroundColor: `${settings.primary_color}20` || '#f59e0b20',
@@ -162,9 +171,9 @@ const PDFPreviewModal = ({ isOpen, onClose, pdfPath }: PDFPreviewModalProps) => 
                 <DialogHeader>
                     <DialogTitle>Prévisualisation du document</DialogTitle>
                     <DialogDescription>
-                        Si le document ne s'affiche pas, 
-                        <a href={pdfPath} target="_blank" rel="noopener noreferrer" 
-                           className="text-blue-500 hover:underline ml-1">
+                        Si le document ne s'affiche pas,
+                        <a href={pdfPath} target="_blank" rel="noopener noreferrer"
+                            className="text-blue-500 hover:underline ml-1">
                             cliquez ici pour l'ouvrir dans un nouvel onglet
                         </a>.
                     </DialogDescription>
@@ -216,7 +225,7 @@ const EnhancedHeader = ({ personalInfo, settings, identifier, showContactInfo }:
         >
             {/* Effet de fond pour le style moderne */}
             {settings.header_style === 'modern' && (
-                <div 
+                <div
                     className="absolute inset-0 opacity-20"
                     style={{
                         background: `radial-gradient(circle at center, ${settings.primary_color} 0%, transparent 70%)`
@@ -242,31 +251,31 @@ const EnhancedHeader = ({ personalInfo, settings, identifier, showContactInfo }:
                         }}
                     />
                 )}
-                
+
                 <motion.div
                     initial={settings.show_animations ? { opacity: 0, y: 20 } : {}}
                     animate={settings.show_animations ? { opacity: 1, y: 0 } : {}}
                     transition={{ duration: 0.6, delay: 0.4 }}
                 >
-                    <h1 
+                    <h1
                         className="text-4xl md:text-5xl font-bold mb-4"
                         style={{ color: settings.text_color }}
                     >
                         {personalInfo.name}
                     </h1>
-                    <p 
+                    <p
                         className="text-xl md:text-2xl mb-6"
                         style={{ color: settings.primary_color }}
                     >
                         {personalInfo.title}
                     </p>
-                    
+
                     {showContactInfo && settings.show_social_links && (
                         <div className="flex flex-wrap justify-center gap-4 mt-6">
                             {personalInfo.email && (
                                 <Button variant="outline" size="sm" asChild>
-                                    <a href={`mailto:${personalInfo.email}`} 
-                                       className="flex items-center space-x-2">
+                                    <a href={`mailto:${personalInfo.email}`}
+                                        className="flex items-center space-x-2">
                                         <Mail className="h-4 w-4" />
                                         <span>Email</span>
                                     </a>
@@ -275,7 +284,7 @@ const EnhancedHeader = ({ personalInfo, settings, identifier, showContactInfo }:
                             {personalInfo.phone && (
                                 <Button variant="outline" size="sm" asChild>
                                     <a href={`tel:${personalInfo.phone}`}
-                                       className="flex items-center space-x-2">
+                                        className="flex items-center space-x-2">
                                         <Phone className="h-4 w-4" />
                                         <span>Téléphone</span>
                                     </a>
@@ -284,7 +293,7 @@ const EnhancedHeader = ({ personalInfo, settings, identifier, showContactInfo }:
                             {personalInfo.linkedin && (
                                 <Button variant="outline" size="sm" asChild>
                                     <a href={personalInfo.linkedin} target="_blank" rel="noopener noreferrer"
-                                       className="flex items-center space-x-2">
+                                        className="flex items-center space-x-2">
                                         <Linkedin className="h-4 w-4" />
                                         <span>LinkedIn</span>
                                     </a>
@@ -293,7 +302,7 @@ const EnhancedHeader = ({ personalInfo, settings, identifier, showContactInfo }:
                             {personalInfo.github && (
                                 <Button variant="outline" size="sm" asChild>
                                     <a href={personalInfo.github} target="_blank" rel="noopener noreferrer"
-                                       className="flex items-center space-x-2">
+                                        className="flex items-center space-x-2">
                                         <Github className="h-4 w-4" />
                                         <span>GitHub</span>
                                     </a>
@@ -318,24 +327,25 @@ const EnhancedExperienceCard = ({ experience, onPreviewPDF, settings }: Experien
         <motion.div
             className={cn(
                 "mb-6 p-6 rounded-lg border transition-all duration-200",
-                settings.show_animations && "hover:shadow-md"
+                settings.show_animations && "hover:shadow-md",
+                settings.design === 'neumorphism' ? "neu-flat border-none" : ""
             )}
             style={{
                 borderRadius: `${settings.border_radius}px`,
-                borderColor: `${settings.primary_color}30`,
-                backgroundColor: `${settings.primary_color}05`
+                borderColor: settings.design === 'neumorphism' ? 'transparent' : `${settings.primary_color}30`,
+                backgroundColor: settings.design === 'neumorphism' ? '#e0e5ec' : `${settings.primary_color}05`
             }}
             whileHover={settings.show_animations ? { scale: 1.02, y: -2 } : {}}
         >
             <div className="flex justify-between items-start mb-3">
                 <div className="flex-1">
-                    <h3 
+                    <h3
                         className="text-xl font-semibold mb-1"
                         style={{ color: settings.text_color }}
                     >
                         {experience.title}
                     </h3>
-                    <p 
+                    <p
                         className="font-medium mb-1"
                         style={{ color: settings.primary_color }}
                     >
@@ -345,7 +355,7 @@ const EnhancedExperienceCard = ({ experience, onPreviewPDF, settings }: Experien
                         {experience.date_start} - {experience.date_end || 'Présent'}
                     </p>
                 </div>
-                
+
                 {experience.attachment_id && (
                     <Button
                         variant="outline"
@@ -358,7 +368,7 @@ const EnhancedExperienceCard = ({ experience, onPreviewPDF, settings }: Experien
                     </Button>
                 )}
             </div>
-            
+
             <p className="text-gray-700 leading-relaxed">
                 {experience.description}
             </p>
@@ -399,10 +409,10 @@ export default function EnhancedPortfolioDisplay({ portfolio, identifier }) {
             {/* Sections personnalisées */}
             <AnimatePresence>
                 {customSections.filter(section => section.is_active).map((section, index) => (
-                    <EnhancedSection 
+                    <EnhancedSection
                         key={section.id}
-                        title={section.title} 
-                        icon={section.icon || "Edit"} 
+                        title={section.title}
+                        icon={section.icon || "Edit"}
                         settings={settings}
                         sectionSettings={section}
                     >
@@ -441,7 +451,7 @@ export default function EnhancedPortfolioDisplay({ portfolio, identifier }) {
                                 transition={{ delay: index * 0.1 }}
                                 whileHover={settings.show_animations ? { scale: 1.05 } : {}}
                             >
-                                <Badge 
+                                <Badge
                                     variant="secondary"
                                     className="px-4 py-2 text-sm font-medium"
                                     style={{
@@ -470,7 +480,7 @@ export default function EnhancedPortfolioDisplay({ portfolio, identifier }) {
                                 transition={{ delay: index * 0.1 }}
                                 whileHover={settings.show_animations ? { scale: 1.05 } : {}}
                             >
-                                <Badge 
+                                <Badge
                                     variant="outline"
                                     className="px-4 py-2 text-sm font-medium"
                                     style={{

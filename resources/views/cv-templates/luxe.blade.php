@@ -43,7 +43,7 @@
 
         /* Borders */
         .border-container {
-            border: 0.5mm solid #D4AF37 !important;
+            border: 0.5mm solid {{ $cvInformation['primary_color'] ?? '#D4AF37' }} !important;
             margin: 4mm;
             padding: 4mm;
             -webkit-print-color-adjust: exact !important;
@@ -51,7 +51,7 @@
         }
 
         .inner-container {
-            border: 0.2mm solid #D4AF37 !important;
+            border: 0.2mm solid {{ $cvInformation['primary_color'] ?? '#D4AF37' }} !important;
             margin: 2mm;
             padding: 6mm;
             -webkit-print-color-adjust: exact !important;
@@ -75,8 +75,8 @@
             font-size: 20pt;
             font-weight: bold;
             margin-bottom: 2mm;
-            color: #D4AF37 !important;
-            border: 1.5mm solid #D4AF37 !important;
+            color: {{ $cvInformation['primary_color'] ?? '#D4AF37' }} !important;
+            border: 1.5mm solid {{ $cvInformation['primary_color'] ?? '#D4AF37' }} !important;
             border-radius: 50%;
             width: 15mm;
             height: 15mm;
@@ -107,7 +107,7 @@
 
         .profession {
             font-size: 9pt;
-            color: #D4AF37 !important;
+            color: {{ $cvInformation['primary_color'] ?? '#D4AF37' }} !important;
             text-transform: uppercase;
             letter-spacing: 1pt;
             -webkit-print-color-adjust: exact !important;
@@ -119,7 +119,7 @@
             width: 20mm;
             height: 20mm;
             overflow: hidden;
-            border: 0.5mm solid #D4AF37 !important;
+            border: 0.5mm solid {{ $cvInformation['primary_color'] ?? '#D4AF37' }} !important;
             margin: 0 auto;
             -webkit-print-color-adjust: exact !important;
             print-color-adjust: exact !important;
@@ -133,7 +133,7 @@
 
         /* Divider */
         .divider {
-            border-top: 0.2mm solid #D4AF37 !important;
+            border-top: 0.2mm solid {{ $cvInformation['primary_color'] ?? '#D4AF37' }} !important;
             margin: 3mm 0;
             -webkit-print-color-adjust: exact !important;
             print-color-adjust: exact !important;
@@ -167,7 +167,7 @@
         .section-title {
             font-size: 12pt;
             font-weight: normal;
-            color: #D4AF37 !important;
+            color: {{ $cvInformation['primary_color'] ?? '#D4AF37' }} !important;
             margin-bottom: 2mm;
             text-transform: uppercase;
             letter-spacing: 1.5pt;
@@ -196,7 +196,7 @@
             width: 28%;
             padding-right: 2%;
             text-align: right;
-            border-right: 0.2mm solid #D4AF37 !important;
+            border-right: 0.2mm solid {{ $cvInformation['primary_color'] ?? '#D4AF37' }} !important;
             -webkit-print-color-adjust: exact !important;
             print-color-adjust: exact !important;
         }
@@ -242,7 +242,7 @@
         .column-left-cell {
             width: 48%;
             padding-right: 2%;
-            border-right: 0.2mm solid #D4AF37 !important;
+            border-right: 0.2mm solid {{ $cvInformation['primary_color'] ?? '#D4AF37' }} !important;
             -webkit-print-color-adjust: exact !important;
             print-color-adjust: exact !important;
         }

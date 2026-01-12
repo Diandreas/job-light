@@ -51,7 +51,7 @@
             width: 40mm;
             height: 40mm;
             border-radius: 50%;
-            background: #3498db;
+            background: {{ $cvInformation['primary_color'] ?? '#3498db' }};
             top: 10mm;
             right: -10mm;
         }
@@ -71,7 +71,7 @@
             padding: 4mm 3mm;
             margin-bottom: 5mm;
             z-index: 1;
-            border-bottom: 0.5mm solid #3498db;
+            border-bottom: 0.5mm solid {{ $cvInformation['primary_color'] ?? '#3498db' }};
             background: linear-gradient(to right, #f8f9fa, #e9f7fe);
             border-radius: 2mm 2mm 0 0;
             display: flex;
@@ -93,7 +93,7 @@
             height: 25mm;
             overflow: hidden;
             border-radius: 50%;
-            border: 0.5mm solid #3498db;
+            border: 0.5mm solid {{ $cvInformation['primary_color'] ?? '#3498db' }};
             background-color: #ffffff;
             box-shadow: 0 1mm 2mm rgba(52, 152, 219, 0.2);
         }
@@ -114,7 +114,7 @@
 
         .profession {
             font-size: 12pt;
-            color: #3498db;
+            color: {{ $cvInformation['primary_color'] ?? '#3498db' }};
             margin-bottom: 3mm;
             font-weight: 400;
         }
@@ -143,7 +143,7 @@
             width: 2.5mm;
             height: 2.5mm;
             border-radius: 0.5mm;
-            background: #3498db;
+            background: {{ $cvInformation['primary_color'] ?? '#3498db' }};
         }
 
         /* Main Content */
@@ -164,13 +164,13 @@
             background: #ffffff;
             border-radius: 2mm;
             box-shadow: 0 0.5mm 2mm rgba(0, 0, 0, 0.05);
-            border-left: 1mm solid #3498db;
+            border-left: 1mm solid {{ $cvInformation['primary_color'] ?? '#3498db' }};
         }
 
         .section-title {
             font-size: 12pt;
             font-weight: 600;
-            color: #3498db;
+            color: {{ $cvInformation['primary_color'] ?? '#3498db' }};
             margin-bottom: 3mm;
             letter-spacing: 0.2mm;
             position: relative;
@@ -230,7 +230,7 @@
             font-size: 8pt;
             color: #ffffff;
             padding: 1mm 2mm;
-            background: #3498db;
+            background: {{ $cvInformation['primary_color'] ?? '#3498db' }};
             border-radius: 3mm;
             min-width: 18%;
             text-align: center;
@@ -259,7 +259,7 @@
             background: #ecf0f1;
             border-radius: 1mm;
             text-align: center;
-            border-bottom: 0.3mm solid #3498db;
+            border-bottom: 0.3mm solid {{ $cvInformation['primary_color'] ?? '#3498db' }};
         }
 
         /* Languages Section */
@@ -287,7 +287,7 @@
         .language-level {
             font-size: 8pt;
             padding: 0.5mm 1.5mm;
-            background: #3498db;
+            background: {{ $cvInformation['primary_color'] ?? '#3498db' }};
             color: white;
             border-radius: 2mm;
         }

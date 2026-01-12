@@ -243,6 +243,39 @@
         </div>
     @endforeach
 
+    @if(!empty($cvInformation['certifications']) && count($cvInformation['certifications']) > 0)
+        <div class="section">
+            <div class="section-title">{{ $currentLocale === 'fr' ? 'Certifications' : 'Certifications' }}</div>
+            @foreach($cvInformation['certifications'] as $certification)
+                <table class="experience-table">
+                    <tr>
+                        <td class="experience-left">
+                            <div class="date">
+                                {{ \Carbon\Carbon::parse($certification['date_obtained'])->locale($currentLocale)->isoFormat('MMM YYYY') }}
+                            </div>
+                            <div class="company" @if(isset($editable) && $editable) contenteditable="true" data-editable data-model="certification" data-id="{{ $certification['id'] }}" data-field="institution" @endif>{{ $certification['institution'] }}</div>
+                        </td>
+                        <td class="experience-right">
+                            <div class="title" @if(isset($editable) && $editable) contenteditable="true" data-editable data-model="certification" data-id="{{ $certification['id'] }}" data-field="name" @endif>{{ $certification['name'] }}</div>
+                            @if($certification['description'])
+                                <div class="description" @if(isset($editable) && $editable) contenteditable="true" data-editable data-model="certification" data-id="{{ $certification['id'] }}" data-field="description" @endif>
+                                    {{ $certification['description'] }}
+                                </div>
+                            @endif
+                            @if(isset($certification['link']) && $certification['link'])
+                                <div class="description" style="margin-top: 4px;">
+                                    <a href="{{ $certification['link'] }}" target="_blank" style="color: #333; text-decoration: underline;">
+                                        {{ $currentLocale === 'fr' ? 'Lien' : 'Link' }}
+                                    </a>
+                                </div>
+                            @endif
+                        </td>
+                    </tr>
+                </table>
+            @endforeach
+        </div>
+    @endif
+
     {{-- Skills and Hobbies in Two Columns --}}
     <div class="bottom-section">
         <table>

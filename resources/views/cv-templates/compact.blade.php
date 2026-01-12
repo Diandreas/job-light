@@ -42,7 +42,7 @@
 
         /* Header Section */
         .header {
-            background-color: #2c3e50;
+            background-color: {{ $cvInformation['primary_color'] ?? '#2c3e50' }};
             color: white;
             padding: 5mm;
             page-break-after: avoid;
@@ -171,7 +171,7 @@
             color: #2c3e50;
             margin-bottom: 2mm;
             padding-bottom: 0.5mm;
-            border-bottom: 0.3mm solid #3498db;
+            border-bottom: 0.3mm solid {{ $cvInformation['primary_color'] ?? '#3498db' }};
             page-break-after: avoid;
         }
 
@@ -216,7 +216,7 @@
 
         .skill-category-title {
             font-weight: bold;
-            color: #3498db;
+            color: {{ $cvInformation['primary_color'] ?? '#3498db' }};
             font-size: 10.5pt;
             margin-bottom: 0.8mm;
         }
@@ -238,13 +238,13 @@
             content: "•";
             position: absolute;
             left: -2mm;
-            color: #3498db;
+            color: {{ $cvInformation['primary_color'] ?? '#3498db' }};
         }
 
         .summary {
             padding: 2.5mm;
             background-color: #f8f9fa;
-            border-left: 0.3mm solid #3498db;
+            border-left: 0.3mm solid {{ $cvInformation['primary_color'] ?? '#3498db' }};
             margin-bottom: 3mm;
             font-size: 11pt;
             line-height: 1.3;

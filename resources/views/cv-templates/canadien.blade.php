@@ -77,11 +77,11 @@
             padding: 3mm;
             background-color: rgba(236, 240, 241, 0.4);
             border-radius: 1mm;
-            border-left: 1.5mm solid #3498db;
+            border-left: 1.5mm solid {{ $cvInformation['primary_color'] ?? '#3498db' }};
         }
 
         .language-title {
-            color: #2980b9;
+            color: {{ $cvInformation['primary_color'] ?? '#2980b9' }};
             font-size: 10pt;
             font-weight: bold;
             margin-bottom: 2mm;

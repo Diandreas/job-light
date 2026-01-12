@@ -14,6 +14,7 @@ class Certification extends Model
         'institution',
         'date_obtained',
         'description',
+        'link',
         'user_id'
     ];
     

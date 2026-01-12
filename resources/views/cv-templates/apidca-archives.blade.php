@@ -10,7 +10,7 @@
     <style>
         @php
             // Couleurs APIDCA - Bleu institutionnel et doré
-            $primaryColor = '#1e40af'; // Bleu professionnel
+            $primaryColor = $cvInformation['primary_color'] ?? '#1e40af'; // Bleu professionnel
             $accentColor = '#f59e0b'; // Doré APIDCA
             $lightBlue = '#dbeafe';
             $darkBlue = '#1e3a8a';

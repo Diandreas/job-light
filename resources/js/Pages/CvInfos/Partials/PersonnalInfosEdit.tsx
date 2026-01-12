@@ -27,6 +27,10 @@ const PersonalInformationEdit: React.FC<Props> = ({ user, onUpdate, onCancel }) 
     const { t } = useTranslation();
     const { theme } = useTheme();
     const { toast } = useToast();
+    const [isDirty, setIsDirty] = React.useState(false);
+
+    // Timer for auto-save
+    const autoSaveTimerRef = React.useRef<NodeJS.Timeout | null>(null);
 
     const { data, setData, put, processing, errors, reset } = useForm({
         name: user.firstName,
@@ -45,30 +49,23 @@ const PersonalInformationEdit: React.FC<Props> = ({ user, onUpdate, onCancel }) 
         });
     };
 
-    const handleSubmit = (e: React.FormEvent) => {
-        e.preventDefault();
+    const submitData = React.useCallback(() => {
         put(route('personal-information.update'), {
             preserveState: true,
             preserveScroll: true,
             onSuccess: (response) => {
                 // @ts-ignore
                 if (response.props.cvInformation?.personalInformation) {
-                    reset('name', 'email', 'github', 'linkedin', 'address', 'phone_number');
+                    // Don't reset data, just the dirty state
+                    setIsDirty(false);
                     // @ts-ignore
                     onUpdate(response.props.cvInformation.personalInformation);
-                    showToast(
-                        t('personalInfos.toast.success.title'),
-                        t('personalInfos.toast.success.updated')
-                    );
-                } else {
-                    showToast(
-                        t('personalInfos.toast.error.title'),
-                        t('personalInfos.toast.error.userDataNotFound'),
-                        "destructive"
-                    );
+                    // Optional: Show discrete success indicator instead of toast for auto-save?
+                    // For now, keep toast but maybe less intrusive "Saved" label in UI.
                 }
             },
             onError: (errors) => {
+                // Keep error toast
                 showToast(
                     t('personalInfos.toast.error.title'),
                     t('personalInfos.toast.error.updateFailed'),
@@ -76,7 +73,35 @@ const PersonalInformationEdit: React.FC<Props> = ({ user, onUpdate, onCancel }) 
                 );
             }
         });
+    }, [put, onUpdate, t]);
+
+    const handleChange = (id: string, value: string) => {
+        setData(id as any, value);
+        setIsDirty(true);
+
+        // Clear existing timer
+        if (autoSaveTimerRef.current) {
+            clearTimeout(autoSaveTimerRef.current);
+        }
+
+        // Set new timer for auto-save (2 seconds)
+        autoSaveTimerRef.current = setTimeout(() => {
+            submitData();
+        }, 2000);
     };
+
+    const handleSubmit = (e: React.FormEvent) => {
+        e.preventDefault();
+        if (autoSaveTimerRef.current) clearTimeout(autoSaveTimerRef.current);
+        submitData();
+    };
+
+    // Cleanup on unmount
+    React.useEffect(() => {
+        return () => {
+            if (autoSaveTimerRef.current) clearTimeout(autoSaveTimerRef.current);
+        };
+    }, []);
 
     const formFields = [
         { id: 'name', type: 'text', label: t('personalInfos.form.name'), value: data.name },
@@ -89,10 +114,13 @@ const PersonalInformationEdit: React.FC<Props> = ({ user, onUpdate, onCancel }) 
 
     return (
         <Card className="w-full max-w-md mx-auto border-amber-100 dark:border-amber-800 dark:bg-gray-800 transition-colors p-2">
-            <CardHeader className="p-3">
+            <CardHeader className="p-3 flex flex-row items-center justify-between">
                 <CardTitle className="text-lg font-medium text-gray-800 dark:text-white transition-colors">
                     {t('personalInfos.editTitle')}
                 </CardTitle>
+                <div className="text-xs text-gray-400">
+                    {processing ? t('common.saving') : (isDirty ? t('common.unsaved') : t('common.saved'))}
+                </div>
             </CardHeader>
             <CardContent className="p-3">
                 <form onSubmit={handleSubmit} className="space-y-3">
@@ -108,15 +136,14 @@ const PersonalInformationEdit: React.FC<Props> = ({ user, onUpdate, onCancel }) 
                                 id={field.id}
                                 type={field.type}
                                 value={field.value}
-                                // @ts-ignore
-                                onChange={(e) => setData(field.id, e.target.value)}
+                                onChange={(e) => handleChange(field.id, e.target.value)}
                                 className="h-8 text-sm border-amber-200 focus:ring-1 focus:ring-amber-500
                                          dark:border-amber-800 dark:bg-gray-700 dark:text-white
                                          transition-colors"
                             />
-                            {errors[field.id] && (
+                            {errors[field.id as keyof typeof errors] && (
                                 <p className="text-xs text-red-600 dark:text-red-400 transition-colors">
-                                    {errors[field.id]}
+                                    {errors[field.id as keyof typeof errors]}
                                 </p>
                             )}
                         </div>
@@ -125,11 +152,11 @@ const PersonalInformationEdit: React.FC<Props> = ({ user, onUpdate, onCancel }) 
                     <div className="flex items-center gap-2 pt-3">
                         <Button
                             type="submit"
-                            disabled={processing}
-                            className="h-8 text-sm px-3 bg-gradient-to-r from-amber-500 to-purple-500
-                                     hover:from-amber-600 hover:to-purple-600 text-white
-                                     dark:from-amber-600 dark:to-purple-600
-                                     transition-all duration-200"
+                            disabled={processing || !isDirty}
+                            className={`h-8 text-sm px-3 text-white transition-all duration-200 
+                                ${isDirty
+                                    ? "bg-gradient-to-r from-amber-500 to-purple-500 hover:from-amber-600 hover:to-purple-600 dark:from-amber-600 dark:to-purple-600"
+                                    : "bg-gray-300 dark:bg-gray-700 cursor-not-allowed"}`}
                         >
                             {t('personalInfos.actions.save')}
                         </Button>

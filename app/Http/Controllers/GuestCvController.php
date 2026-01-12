@@ -35,7 +35,43 @@ class GuestCvController extends Controller
             'isGuest' => true
         ];
 
-        return Inertia::render('GuestCv/Builder', $data);
+        return Inertia::render('GuestCv/Index', $data);
+    }
+
+    /**
+     * Get CV HTML for direct rendering (no iframe) - Guest version
+     */
+    public function previewHtml($id)
+    {
+        $locale = request()->get('locale', app()->getLocale());
+        app()->setLocale($locale);
+
+        $cvModel = CvModel::findOrFail($id);
+
+        // Get guest data from request or use empty template
+        $guestData = request()->get('guestData', []);
+
+        // If no guest data provided, try to load from localStorage (frontend will handle this)
+        $cvInformation = $this->transformGuestDataToCvFormat($guestData);
+        $groupedData = $this->groupExperiencesByCategory($cvInformation['experiences']);
+
+        if (!isset($cvInformation['languages'])) {
+            $cvInformation['languages'] = [];
+        }
+
+        $html = view("cv-templates." . $cvModel->viewPath, [
+            'cvInformation' => $cvInformation,
+            'experiencesByCategory' => $groupedData['experiences'],
+            'categoryTranslations' => $groupedData['translations'],
+            'showPrintButton' => false,
+            'cvModel' => $cvModel,
+            'currentLocale' => $locale,
+            'editable' => false,
+            'directRender' => true,
+            'isGuestPreview' => true
+        ])->render();
+
+        return response($html)->header('Content-Type', 'text/html');
     }
 
     /**

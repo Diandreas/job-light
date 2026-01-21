@@ -78,7 +78,7 @@ export default function Register({ referralCode }) {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5 }}
             >
-                <Card className="border-amber-100 dark:border-gray-700 dark:bg-gray-800">
+                <Card className="min-h-[calc(100vh-4rem)] flex flex-col sm:justify-center items-center px-4 mobile-safe-area border-amber-100 dark:border-gray-700 dark:bg-gray-800">
                     <CardHeader className="text-center pb-6">
                         <motion.div
                             initial={{ scale: 0 }}

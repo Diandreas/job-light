@@ -371,23 +371,11 @@ const Tutorial = ({ isVisible, onComplete, currentSection, onNavigateToSection }
             action: () => onNavigateToSection('personalInfo')
         },
         {
-            id: 'navigation',
-            title: t('tutorial.navigation.title'),
-            description: t('tutorial.navigation.description'),
-            target: '[data-tutorial="navigation"]',
-            action: () => {
-                // Seulement naviguer si on n'est pas déjà sur personalInfo
-                if (currentSection !== 'personalInfo') {
-                    onNavigateToSection('personalInfo');
-                    return new Promise(resolve => {
-                        setTimeout(resolve, 1200); // Temps d'attente pour le changement de section
-                    });
-                }
-                // Si on est déjà sur la bonne section, attendre juste un peu pour la stabilité
-                return new Promise(resolve => {
-                    setTimeout(resolve, 300);
-                });
-            }
+            id: 'stepper',
+            title: t('tutorial.stepper.title'),
+            description: t('tutorial.stepper.description'),
+            target: '[data-tutorial="stepper"]',
+            action: null
         },
         {
             id: 'tabbar',

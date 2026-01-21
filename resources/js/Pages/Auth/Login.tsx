@@ -36,7 +36,7 @@ export default function Login({ status, canResetPassword }: { status?: string, c
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5 }}
-                className="space-y-6"
+                className="space-y-6 min-h-[calc(100vh-4rem)] flex flex-col sm:justify-center items-center px-4 mobile-safe-area"
             >
                 {/* Header */}
                 <div className="text-center space-y-2">

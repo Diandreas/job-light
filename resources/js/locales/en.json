@@ -109,6 +109,32 @@
         "button": "Create my free account",
         "try_free": "Try without signing up"
     },
+    "cv_module": {
+        "badge": "CV Builder",
+        "title": "Create a professional resume that stands out",
+        "description": "Our CV builder guides you step by step to create an impactful resume. Modern templates, ATS optimization and high-quality PDF export.",
+        "feature1": "Modern premium templates",
+        "feature2": "ATS optimized",
+        "feature3": "High-quality PDF export",
+        "feature4": "100% free",
+        "cta_try": "Create my free CV",
+        "cta_register": "Create an account"
+    },
+    "ai_module": {
+        "badge": "Artificial Intelligence",
+        "title": "An AI assistant to boost your career",
+        "description": "Guidy AI supports you at every step of your job search with personalized advice and intelligent tools.",
+        "service1_title": "Career Advisor",
+        "service1_desc": "Personalized advice for your growth",
+        "service2_title": "Cover Letters",
+        "service2_desc": "Custom letter generation",
+        "service3_title": "Interview Coach",
+        "service3_desc": "Interview simulation and preparation",
+        "service4_title": "CV Analysis",
+        "service4_desc": "Optimization and improvement of your CV",
+        "cta_start": "Access the assistant",
+        "pro_label": "Premium Feature"
+    },
     "features": {
         "learn_more": "Learn more",
         "cv_designer": {

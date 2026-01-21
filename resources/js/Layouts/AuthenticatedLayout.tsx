@@ -44,68 +44,66 @@ const LanguageSelector = () => {
     const [isOpen, setIsOpen] = useState(false);
 
     const languages = [
-        { code: "fr", label: "Français" },
-        { code: "en", label: "English" }
+        { code: "fr", label: "Français", flag: "🇫🇷" },
+        { code: "en", label: "English", flag: "🇬🇧" }
     ];
 
-    const handleLanguageChange = (langCode) => {
+    const handleLanguageChange = (langCode: string) => {
         i18n.changeLanguage(langCode);
         setIsOpen(false);
     };
 
     const currentLanguage = i18n.language;
+    const currentLang = languages.find(l => l.code === currentLanguage) || languages[0];
 
     return (
         <div className="relative">
-            <Button
-                variant="ghost"
-                size="sm"
+            <button
                 onClick={() => setIsOpen(!isOpen)}
-                className="flex items-center gap-1 sm:gap-2 hover:bg-amber-50 dark:hover:bg-amber-500/20 h-7 sm:h-8 px-2 sm:px-3"
+                className="flex items-center gap-2 px-3 py-2 rounded-xl bg-gray-100/80 dark:bg-gray-800/60 hover:bg-gray-200/80 dark:hover:bg-gray-700/60 border border-gray-200/60 dark:border-gray-700/60 transition-all duration-200"
                 aria-label={t('common.changeLanguage')}
             >
-                <Globe className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-amber-500 dark:text-amber-400" />
-                <span className="font-medium text-xs sm:text-sm">
+                <span className="text-sm">{currentLang.flag}</span>
+                <span className="font-medium text-xs sm:text-sm text-gray-700 dark:text-gray-200">
                     {currentLanguage.toUpperCase()}
                 </span>
-                <ChevronDown className={cn("h-3 w-3 transition-transform duration-200", isOpen && "rotate-180")} />
-            </Button>
+                <ChevronDown className={cn("h-3 w-3 text-gray-500 transition-transform duration-200", isOpen && "rotate-180")} />
+            </button>
 
             <AnimatePresence>
                 {isOpen && (
-                    <motion.div
-                        initial={{ opacity: 0, scale: 0.95, y: -5 }}
-                        animate={{ opacity: 1, scale: 1, y: 0 }}
-                        exit={{ opacity: 0, scale: 0.95, y: -5 }}
-                        transition={{ duration: 0.15 }}
-                        className="absolute top-full right-0 mt-1 bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700 shadow-lg py-1 z-50"
-                        role="menu"
-                    >
-                        {languages.map((lang) => (
-                            <button
-                                key={lang.code}
-                                onClick={() => handleLanguageChange(lang.code)}
-                                className={cn(
-                                    "w-full flex items-center gap-2 px-3 py-2 text-sm rounded-md transition-colors",
-                                    currentLanguage === lang.code
-                                        ? "bg-gradient-to-r from-amber-500 to-purple-500 text-white"
-                                        : "text-gray-700 dark:text-gray-100 hover:bg-amber-50 dark:hover:bg-amber-500/20"
-                                )}
-                                role="menuitem"
-                                aria-selected={currentLanguage === lang.code}
-                            >
-                                <Globe className="h-3.5 w-3.5" />
-                                <span className="font-medium">{lang.label}</span>
-                                {currentLanguage === lang.code && (
-                                    <motion.div
-                                        layoutId="activeLang"
-                                        className="ml-auto w-1.5 h-1.5 rounded-full bg-white"
-                                        aria-hidden="true"
-                                    />
-                                )}
-                            </button>
-                        ))}
-                    </motion.div>
+                    <>
+                        <div className="fixed inset-0 z-40" onClick={() => setIsOpen(false)} />
+                        <motion.div
+                            initial={{ opacity: 0, scale: 0.95, y: -5 }}
+                            animate={{ opacity: 1, scale: 1, y: 0 }}
+                            exit={{ opacity: 0, scale: 0.95, y: -5 }}
+                            transition={{ duration: 0.15 }}
+                            className="absolute top-full right-0 mt-2 bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-700 shadow-xl py-1.5 z-50 min-w-[140px] overflow-hidden"
+                            role="menu"
+                        >
+                            {languages.map((lang) => (
+                                <button
+                                    key={lang.code}
+                                    onClick={() => handleLanguageChange(lang.code)}
+                                    className={cn(
+                                        "w-full flex items-center gap-2.5 px-3 py-2.5 text-sm transition-all duration-150",
+                                        currentLanguage === lang.code
+                                            ? "bg-amber-500 text-white"
+                                            : "text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800"
+                                    )}
+                                    role="menuitem"
+                                    aria-selected={currentLanguage === lang.code}
+                                >
+                                    <span>{lang.flag}</span>
+                                    <span className="font-medium">{lang.label}</span>
+                                    {currentLanguage === lang.code && (
+                                        <CheckCircle className="ml-auto h-4 w-4" />
+                                    )}
+                                </button>
+                            ))}
+                        </motion.div>
+                    </>
                 )}
             </AnimatePresence>
         </div>
@@ -189,48 +187,32 @@ export default function Authenticated({ user, header, children, hideHeaderOnMobi
         return (
             <Link
                 href={route('payment.index')}
-                className="flex items-center gap-1 sm:gap-2 px-2 sm:px-4 py-1 sm:py-2 rounded-full bg-gradient-to-r from-amber-500 to-purple-500 text-white hover:from-amber-600 hover:to-purple-600 transition-all shadow-sm sm:shadow-md group"
+                className="group flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-1.5 sm:py-2 rounded-xl bg-amber-500 hover:bg-amber-600 text-white transition-all duration-200 shadow-sm hover:shadow-md"
             >
-                <Coins className="h-3 w-3 sm:h-4 sm:w-4 group-hover:animate-bounce" />
-                <span className="font-medium text-xs sm:text-sm">{tokenBalance}</span>
+                <Coins className="h-3.5 w-3.5 sm:h-4 sm:w-4 group-hover:rotate-12 transition-transform" />
+                <span className="font-semibold text-xs sm:text-sm">{tokenBalance}</span>
             </Link>
         );
     };
 
     const NavButton = ({ item, compact = false }: { item: MenuItem, compact?: boolean }) => (
-        <motion.div
-            whileHover={{ scale: 1.01 }}
-            whileTap={{ scale: 0.99 }}
-            className="relative"
+        <Link
+            href={item.href}
+            onClick={item.onClick}
+            className={cn(
+                "relative flex items-center gap-2 px-3 sm:px-4 py-2 rounded-xl transition-all duration-200",
+                compact ? "text-xs sm:text-sm" : "text-sm",
+                item.active
+                    ? "bg-amber-500 text-white shadow-sm"
+                    : "text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-gray-900 dark:hover:text-white"
+            )}
         >
-            <Link
-                href={item.href}
-                onClick={item.onClick}
-                className={cn(
-                    "flex items-center gap-2 sm:gap-3 px-3 sm:px-4 py-2 sm:py-3 rounded-lg transition-all duration-200",
-                    compact ? "text-xs sm:text-sm" : "text-xs sm:text-base",
-                    item.active
-                        ? "bg-gradient-to-r from-amber-500 to-purple-500 dark:from-amber-400 dark:to-purple-400 text-white shadow-sm sm:shadow-md"
-                        : "text-gray-700 dark:text-gray-100 hover:bg-amber-50 dark:hover:bg-amber-500/20"
-                )}
-            >
-                <item.icon className={cn(
-                    compact ? "h-3.5 w-3.5 sm:h-4 sm:w-4" : "h-4 w-4 sm:h-5 sm:w-5",
-                    item.active ? "text-white" : "text-amber-500 dark:text-amber-400"
-                )} />
-                <span className="font-medium truncate">{item.name}</span>
-                {item.active && (
-                    <motion.div
-                        layoutId="activeIndicator"
-                        className={cn(
-                            "absolute right-2 rounded-full bg-white",
-                            compact ? "w-1.5 h-1.5 sm:w-2 sm:h-2" : "w-1.5 h-1.5 sm:w-2 sm:h-2"
-                        )}
-                        transition={{ type: "spring", stiffness: 300, damping: 30 }}
-                    />
-                )}
-            </Link>
-        </motion.div>
+            <item.icon className={cn(
+                "h-4 w-4",
+                item.active ? "text-white" : "text-amber-500 dark:text-amber-400"
+            )} />
+            <span className="font-medium">{item.name}</span>
+        </Link>
     );
 
     const MobileNav = () => {
@@ -633,69 +615,92 @@ export default function Authenticated({ user, header, children, hideHeaderOnMobi
             <div className="min-h-screen flex flex-col bg-gradient-to-br from-gray-50 to-amber-50 dark:from-gray-950 dark:to-gray-900 transition-colors">
                 <Toaster />
 
-                {/* Header principal - Conditionnel sur mobile */}
+                {/* Header principal - Premium Design */}
                 <nav className={cn(
-                    "sticky top-0 z-50 bg-white/80 dark:bg-gray-900/90 backdrop-blur-md shadow-sm border-b border-amber-100 dark:border-gray-700",
-                    shouldHideHeaderOnMobile && "hidden md:block" // Masquer sur mobile si nécessaire
+                    "sticky top-0 z-50 bg-white/95 dark:bg-gray-950/95 backdrop-blur-xl border-b border-gray-200/80 dark:border-gray-800/80",
+                    shouldHideHeaderOnMobile && "hidden md:block"
                 )}>
-                    <div className="mx-auto px-3 sm:px-6">
-                        <div className="flex h-12 sm:h-16 items-center justify-between">
-                            <div className="flex items-center gap-2 sm:gap-4">
-                                <Link href="/" className="flex items-center gap-1.5 sm:gap-2">
-                                    <Sparkles className="h-4 w-4 sm:h-6 sm:w-6 text-amber-500 dark:text-amber-400" />
-                                    <span className="font-bold text-base sm:text-2xl bg-gradient-to-r from-amber-500 to-purple-500 dark:from-amber-400 dark:to-purple-400 text-transparent bg-clip-text">
+                    <div className="mx-auto px-4 sm:px-6 lg:px-8">
+                        <div className="flex h-14 sm:h-16 items-center justify-between">
+                            {/* Logo */}
+                            <div className="flex items-center gap-3 sm:gap-4">
+                                <Link href="/" className="flex items-center gap-2 sm:gap-2.5 group">
+                                    <div className="p-1.5 sm:p-2 rounded-xl bg-amber-500 shadow-sm group-hover:shadow-md group-hover:scale-105 transition-all duration-200">
+                                        <Sparkles className="h-4 w-4 sm:h-5 sm:w-5 text-white" />
+                                    </div>
+                                    <span className="font-bold text-lg sm:text-xl text-gray-900 dark:text-white">
                                         {isCareerAdvisorPage ? 'Guidy AI' : t('brand')}
                                     </span>
                                     {isCareerAdvisorPage && (
-                                        <Badge variant="secondary" className="text-xs px-1.5 py-0 h-4 bg-amber-50 text-amber-600 dark:bg-amber-900/30 dark:text-amber-300">
-                                            <Sparkles className="w-2.5 h-2.5 mr-0.5" />
-                                            {t('components.sidebar.pro_badge')}
+                                        <Badge variant="secondary" className="text-[10px] sm:text-xs px-1.5 py-0.5 bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300 border-0">
+                                            PRO
                                         </Badge>
                                     )}
                                 </Link>
                             </div>
 
-                            <div className="hidden md:flex md:items-center md:gap-3 lg:gap-6">
-                                <TokenDisplay />
+                            {/* Desktop Navigation */}
+                            <div className="hidden md:flex md:items-center md:gap-1 lg:gap-2">
                                 {mainMenuItems.map((item, index) => (
                                     //@ts-ignore
                                     (!item.adminOnly || user.UserType === 1) && (
                                         <NavButton key={index} item={item} />
                                     )
                                 ))}
-                                <LanguageSelector />
                             </div>
 
-                            <div className="flex items-center gap-2 sm:gap-4">
+                            {/* Right Section */}
+                            <div className="flex items-center gap-2 sm:gap-3">
+                                <div className="hidden sm:block">
+                                    <TokenDisplay />
+                                </div>
                                 <div className="md:hidden">
                                     <TokenDisplay />
+                                </div>
+
+                                <div className="hidden sm:block h-6 w-px bg-gray-200 dark:bg-gray-700" />
+
+                                <div className="hidden md:block">
+                                    <LanguageSelector />
                                 </div>
                                 <ThemeToggle />
                                 <div className="md:hidden">
                                     <LanguageSelector />
                                 </div>
 
+                                <div className="hidden sm:block h-6 w-px bg-gray-200 dark:bg-gray-700" />
+
+                                {/* User Menu */}
                                 <Dropdown>
                                     <Dropdown.Trigger>
-                                        <Button variant="ghost" className="p-0 h-7 w-7 sm:h-8 sm:w-auto sm:p-2">
-                                            <div className="flex items-center gap-1.5 sm:gap-2">
-                                                <div className="h-6 w-6 sm:h-8 sm:w-8 rounded-full bg-gradient-to-r from-amber-500 to-purple-500 dark:from-amber-400 dark:to-purple-400 flex items-center justify-center">
-                                                    <span className="text-white font-medium text-xs sm:text-sm">
-                                                        {user.name.charAt(0).toUpperCase()}
-                                                    </span>
-                                                </div>
-                                                <span className="hidden sm:block text-gray-700 dark:text-gray-100 text-xs sm:text-sm">{user.name}</span>
+                                        <button className="flex items-center gap-2 p-1 sm:p-1.5 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
+                                            <div className="h-8 w-8 sm:h-9 sm:w-9 rounded-xl bg-amber-500 flex items-center justify-center shadow-sm">
+                                                <span className="text-white font-semibold text-sm">
+                                                    {user.name.charAt(0).toUpperCase()}
+                                                </span>
                                             </div>
-                                        </Button>
+                                            <div className="hidden lg:flex flex-col items-start">
+                                                <span className="text-sm font-medium text-gray-900 dark:text-white">{user.name}</span>
+                                                <span className="text-xs text-gray-500 dark:text-gray-400">{user.email?.split('@')[0]}</span>
+                                            </div>
+                                            <ChevronDown className="hidden lg:block h-4 w-4 text-gray-400" />
+                                        </button>
                                     </Dropdown.Trigger>
-                                    {/*@ts-ignore*/}
-                                    <Dropdown.Content className="bg-white dark:bg-gray-900 dark:border-gray-700">
-                                        <Dropdown.Link href={route('profile.edit')} className="text-gray-700 dark:text-gray-900 hover:bg-amber-50 dark:hover:bg-amber-500/20 text-xs sm:text-sm py-1.5 sm:py-2 px-2 sm:px-3">
-                                            {t('profile.edit')}
-                                        </Dropdown.Link>
-                                        <Dropdown.Link href={route('logout')} method="post" as="button" className="text-gray-700 dark:text-gray-900 hover:bg-amber-50 dark:hover:bg-amber-500/20 text-xs sm:text-sm py-1.5 sm:py-2 px-2 sm:px-3">
-                                            {t('auth.logout')}
-                                        </Dropdown.Link>
+                                    <Dropdown.Content className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl shadow-xl min-w-[180px]">
+                                        <div className="px-3 py-2 border-b border-gray-100 dark:border-gray-800">
+                                            <p className="text-sm font-medium text-gray-900 dark:text-white">{user.name}</p>
+                                            <p className="text-xs text-gray-500 dark:text-gray-400 truncate">{user.email}</p>
+                                        </div>
+                                        <div className="py-1">
+                                            <Dropdown.Link href={route('profile.edit')} className="flex items-center gap-2 text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 text-sm py-2 px-3">
+                                                <User className="h-4 w-4" />
+                                                {t('profile.edit')}
+                                            </Dropdown.Link>
+                                            <Dropdown.Link href={route('logout')} method="post" as="button" className="flex items-center gap-2 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 text-sm py-2 px-3 w-full">
+                                                <ChevronRight className="h-4 w-4" />
+                                                {t('auth.logout')}
+                                            </Dropdown.Link>
+                                        </div>
                                     </Dropdown.Content>
                                 </Dropdown>
                             </div>

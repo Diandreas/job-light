@@ -20,9 +20,10 @@ export default function ForgotPassword({ status }: { status?: string }) {
         <GuestLayout>
             <Head title="Forgot Password" />
 
-            <div className="mb-4 text-sm text-gray-600">
-                Forgot your password? No problem. Just let us know your email address and we will email you a password reset link that will allow you to choose a new one.
-            </div>
+            <div className="min-h-[calc(100vh-4rem)] flex flex-col sm:justify-center items-center px-4 mobile-safe-area">
+                <div className="mb-4 text-sm text-gray-600">
+                    Forgot your password? No problem. Just let us know your email address and we will email you a password reset link that will allow you to choose a new one.
+                </div>
 
             {status && (
                 <div className="mb-4 font-medium text-sm text-green-600">
@@ -76,6 +77,7 @@ export default function ForgotPassword({ status }: { status?: string }) {
                         Email: guidy.makeitreall@gmail.com
                     </a>
                 </div>
+            </div>
             </div>
         </GuestLayout>
     );

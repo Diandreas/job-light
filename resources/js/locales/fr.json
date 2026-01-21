@@ -109,6 +109,32 @@
         "button": "Créer mon compte gratuit",
         "try_free": "Essayer sans inscription"
     },
+    "cv_module": {
+        "badge": "Création de CV",
+        "title": "Créez un CV professionnel qui se démarque",
+        "description": "Notre outil de création de CV vous guide étape par étape pour construire un CV percutant. Templates modernes, optimisation ATS et export PDF en haute qualité.",
+        "feature1": "Templates premium modernes",
+        "feature2": "Optimisé pour les ATS",
+        "feature3": "Export PDF haute qualité",
+        "feature4": "100% gratuit",
+        "cta_try": "Créer mon CV gratuit",
+        "cta_register": "Créer un compte"
+    },
+    "ai_module": {
+        "badge": "Intelligence Artificielle",
+        "title": "Un assistant IA pour booster votre carrière",
+        "description": "Guidy AI vous accompagne dans toutes les étapes de votre recherche d'emploi avec des conseils personnalisés et des outils intelligents.",
+        "service1_title": "Conseiller Carrière",
+        "service1_desc": "Conseils personnalisés pour votre évolution",
+        "service2_title": "Lettres de Motivation",
+        "service2_desc": "Génération de lettres sur mesure",
+        "service3_title": "Coach Entretien",
+        "service3_desc": "Simulation et préparation aux entretiens",
+        "service4_title": "Analyse CV",
+        "service4_desc": "Optimisation et amélioration de votre CV",
+        "cta_start": "Accéder à l'assistant",
+        "pro_label": "Fonctionnalité Premium"
+    },
     "features": {
         "learn_more": "En savoir plus",
         "cv_designer": {

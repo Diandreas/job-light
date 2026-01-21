@@ -91,18 +91,15 @@ export default function Guest({ children }: PropsWithChildren) {
 
                             {/* Desktop Navigation */}
                             <div className="hidden sm:flex sm:items-center sm:gap-6">
-                                <Link
+                                {/* <a
                                     href={route('blog.index')}
-                                    className={cn(
-                                        "text-sm font-medium transition-all px-4 py-2 rounded-full flex items-center gap-2",
-                                        route().current('blog.index')
-                                            ? "bg-gradient-to-r from-amber-500 to-purple-500 text-white shadow-md"
-                                            : "hover:bg-amber-50 dark:hover:bg-amber-500/20"
-                                    )}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="text-sm font-medium transition-all px-4 py-2 rounded-full flex items-center gap-2 hover:bg-amber-50 dark:hover:bg-amber-500/20"
                                 >
                                     <BookCopy className="h-4 w-4" />
                                     {t('menu.blog')}
-                                </Link>
+                                </a> */}
                                 <LanguageSelector />
                                 <ThemeToggle />
                                 <Link
@@ -160,18 +157,15 @@ export default function Guest({ children }: PropsWithChildren) {
                                     <div className="px-4 py-2">
                                         <LanguageSelector />
                                     </div>
-                                    <Link
+                                    {/* <a
                                         href={route('blog.index')}
-                                        className={cn(
-                                            "flex items-center gap-3 px-4 py-3 rounded-lg transition-all",
-                                            route().current('blog.index')
-                                                ? "bg-gradient-to-r from-amber-500 to-purple-500 text-white shadow-md"
-                                                : "text-gray-700 dark:text-gray-100 hover:bg-amber-50 dark:hover:bg-amber-500/20"
-                                        )}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="flex items-center gap-3 px-4 py-3 rounded-lg transition-all text-gray-700 dark:text-gray-100 hover:bg-amber-50 dark:hover:bg-amber-500/20"
                                     >
                                         <BookCopy className="h-5 w-5 text-amber-500 dark:text-amber-400" />
                                         {t('menu.blog')}
-                                    </Link>
+                                    </a> */}
                                     <Link
                                         href={route('login')}
                                         className={cn(
@@ -220,7 +214,7 @@ export default function Guest({ children }: PropsWithChildren) {
                                 className="flex items-center gap-1 text-gray-500 hover:text-amber-500 transition-colors"
                             >
                                 <MessageSquare className="h-3 w-3 sm:h-4 sm:w-4" />
-                                <span>Support</span>
+                                <span>{t('footer.support')}</span>
                             </Link>
 
                             <a
@@ -228,7 +222,7 @@ export default function Guest({ children }: PropsWithChildren) {
                                 className="flex items-center gap-1 text-gray-500 hover:text-amber-500 transition-colors"
                             >
                                 <Mail className="h-3 w-3 sm:h-4 sm:w-4" />
-                                <span className="hidden sm:inline">Contact</span>
+                                <span className="hidden sm:inline">{t('footer.contact')}</span>
                             </a>
                         </div>
                     </div>

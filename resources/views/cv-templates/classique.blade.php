@@ -342,39 +342,6 @@
         </section>
     @endforeach
 
-    @if(!empty($cvInformation['certifications']) && count($cvInformation['certifications']) > 0)
-        <section class="experience-section">
-            <h2>{{ $currentLocale === 'fr' ? 'Certifications' : 'Certifications' }}</h2>
-            @foreach($cvInformation['certifications'] as $certification)
-                <div class="experience-item">
-                    <div class="experience-header">
-                        <table>
-                            <tr>
-                                <td class="title-company">
-                                    <h3 @if(isset($editable) && $editable) contenteditable="true" data-editable data-model="certification" data-id="{{ $certification['id'] }}" data-field="name" @endif>{{ $certification['name'] }}</h3>
-                                    <div class="company" @if(isset($editable) && $editable) contenteditable="true" data-editable data-model="certification" data-id="{{ $certification['id'] }}" data-field="institution" @endif>{{ $certification['institution'] }}</div>
-                                </td>
-                                <td class="date">
-                                    {{ \Carbon\Carbon::parse($certification['date_obtained'])->locale($currentLocale)->isoFormat('MMM YYYY') }}
-                                </td>
-                            </tr>
-                        </table>
-                    </div>
-                     @if($certification['description'])
-                        <p class="description" @if(isset($editable) && $editable) contenteditable="true" data-editable data-model="certification" data-id="{{ $certification['id'] }}" data-field="description" @endif>{{ $certification['description'] }}</p>
-                    @endif
-                    @if(isset($certification['link']) && $certification['link'])
-                        <p class="description" style="margin-top: 4px;">
-                            <a href="{{ $certification['link'] }}" target="_blank" style="color: {{ $cvInformation['primary_color'] ?? '#2c3e50' }}; text-decoration: underline;">
-                                {{ $currentLocale === 'fr' ? 'Lien vers le certificat' : 'Link to certificate' }}
-                            </a>
-                        </p>
-                    @endif
-                </div>
-            @endforeach
-        </section>
-    @endif
-
     @if(!empty($cvInformation['competences']))
         <section class="skills-section">
             <h2>{{ $currentLocale === 'fr' ? 'Compétences' : 'Skills' }}</h2>

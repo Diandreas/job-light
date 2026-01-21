@@ -495,15 +495,6 @@ class CvInfosController extends Controller
             ),
 
             'languages' => $languages,
-            'certifications' => $user->certifications->map(function($cert) {
-                return [
-                    'id' => $cert->id,
-                    'name' => $cert->name,
-                    'institution' => $cert->institution,
-                    'date_obtained' => $cert->date_obtained ? $cert->date_obtained->format('Y-m-d') : null,
-                    'description' => $cert->description
-                ];
-            })->toArray(),
             'experiences' => $experiencesWithReferences,
             'professions' => $professions,
             'summaries' => $user->selected_summary ? [$user->selected_summary->toArray()] : [],

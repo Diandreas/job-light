@@ -35,7 +35,7 @@ const AIRephraseButton: React.FC<Props> = ({ text, onRephrased, className }) => 
 
         setIsLoading(true);
         try {
-            const response = await axios.post('/api/cv/rephrase', {
+            const response = await axios.post(route('cv.rephrase'), {
                 text,
                 tone
             });

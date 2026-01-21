@@ -32,7 +32,6 @@ import ExperienceManager from '@/Pages/CvInfos/Partials/ExperienceManager';
 import CompetenceManager from '@/Pages/CvInfos/Partials/CompetenceManager';
 import LanguageManager from '@/Pages/CvInfos/Partials/LanguageManager';
 import HobbyManager from '@/Pages/CvInfos/Partials/HobbyManager';
-import CertificationManager from '@/Pages/CvInfos/Partials/CertificationManager';
 
 interface GuestCvIndexProps {
     availableCompetences: Array<{ id: number; name: string; name_en: string; description: string }>;
@@ -54,7 +53,6 @@ const STEPS = [
     { id: 'summary', label: 'guest_cv.steps.summary', icon: FileText },
     { id: 'experience', label: 'guest_cv.steps.experience', icon: Briefcase },
     { id: 'skills', label: 'guest_cv.steps.skills', icon: Code },
-    { id: 'certifications', label: 'certifications.title', icon: Award },
     { id: 'models', label: 'guest_cv.steps.models', icon: Star },
     { id: 'preview', label: 'guest_cv.steps.preview', icon: Eye }
 ];
@@ -100,7 +98,6 @@ export default function GuestCvIndex({
             competences: [],
             languages: [],
             hobbies: [],
-            certifications: [],
             primary_color: '#3498db'
         };
     });
@@ -116,13 +113,12 @@ export default function GuestCvIndex({
     // Calculate completion percentage
     const getCompletionPercentage = () => {
         let completed = 0;
-        const total = 6; // Excluding preview step
+        const total = 5; // Excluding preview step
 
         if (guestData.personalInformation.firstName && guestData.personalInformation.email) completed++;
         if (guestData.summaries && guestData.summaries.length > 0) completed++;
         if (guestData.experiences && guestData.experiences.length > 0) completed++;
         if ((guestData.competences && guestData.competences.length > 0) || (guestData.languages && guestData.languages.length > 0)) completed++;
-        if (guestData.certifications && guestData.certifications.length > 0) completed++;
         if (selectedModelId) completed++;
 
         return Math.round((completed / total) * 100);
@@ -498,24 +494,7 @@ export default function GuestCvIndex({
                     </div>
                 );
 
-            case 4: // Certifications
-                return (
-                    <div className="space-y-6">
-                        <div className="text-center mb-6">
-                            <Award className="w-12 h-12 mx-auto mb-3 text-amber-500" />
-                            <h3 className="text-xl font-bold mb-2">{t('certifications.title')}</h3>
-                            <p className="text-gray-600">{t('certifications.description')}</p>
-                        </div>
-                        <CertificationManager
-                            certifications={guestData.certifications || []}
-                            onUpdate={(certifications) => {
-                                setGuestData(prev => ({ ...prev, certifications }));
-                            }}
-                        />
-                    </div>
-                );
-
-            case 5: // Model Selection
+            case 4: // Model Selection
                 return (
                     <div className="space-y-4">
                         <div className="text-center mb-6">
@@ -586,7 +565,7 @@ export default function GuestCvIndex({
                     </div>
                 );
 
-            case 6: // Preview & Download
+            case 5: // Preview & Download
                 return (
                     <div className="space-y-4">
                         <div className="text-center">

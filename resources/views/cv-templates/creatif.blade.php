@@ -313,37 +313,6 @@
                     </table>
                 @endforeach
             @endforeach
-
-            @if(!empty($cvInformation['certifications']) && count($cvInformation['certifications']) > 0)
-                <div class="main-section-title">{{ $currentLocale === 'fr' ? 'Certifications' : 'Certifications' }}</div>
-                @foreach($cvInformation['certifications'] as $certification)
-                     <table class="experience-table">
-                        <tr>
-                            <td style="padding: 0;">
-                                <div class="experience-title" @if(isset($editable) && $editable) contenteditable="true" data-editable data-model="certification" data-id="{{ $certification['id'] }}" data-field="name" @endif>{{ $certification['name'] }}</div>
-                                <div class="experience-company" @if(isset($editable) && $editable) contenteditable="true" data-editable data-model="certification" data-id="{{ $certification['id'] }}" data-field="institution" @endif>{{ $certification['institution'] }}</div>
-                                <div class="experience-date">
-                                    {{ \Carbon\Carbon::parse($certification['date_obtained'])->locale($currentLocale)->isoFormat('MMM YYYY') }}
-                                </div>
-                                @if($certification['description'])
-                                    <div class="separator"></div>
-                                    <div class="experience-description" @if(isset($editable) && $editable) contenteditable="true" data-editable data-model="certification" data-id="{{ $certification['id'] }}" data-field="description" @endif>
-                                        {{ $certification['description'] }}
-                                    </div>
-                                @endif
-                                @if(isset($certification['link']) && $certification['link'])
-                                    @if(!$certification['description']) <div class="separator"></div> @endif
-                                    <div class="experience-description" style="margin-top: 4px;">
-                                        <a href="{{ $certification['link'] }}" target="_blank" style="color: {{ $cvInformation['primary_color'] ?? '#e74c3c' }}; text-decoration: underline;">
-                                            {{ $currentLocale === 'fr' ? 'Voir le certificat' : 'View Certificate' }}
-                                        </a>
-                                    </div>
-                                @endif
-                            </td>
-                        </tr>
-                    </table>
-                @endforeach
-            @endif
         </td>
     </tr>
 </table>

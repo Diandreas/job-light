@@ -309,7 +309,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     // CV Information
     Route::resource('cv-infos', CvInfosController::class);
-    Route::resource('certifications', \App\Http\Controllers\CertificationController::class);
     Route::get('/cv-preview/{id}', [CvInfosController::class, 'previewCv'])
         ->name('cv.preview')
         ->middleware(['auth', 'check.print']);

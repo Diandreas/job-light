@@ -26,7 +26,7 @@ export const MobileTabBar: React.FC<MobileTabBarProps> = ({ onRenewCodeClick, is
 
     if (!isMobile) return null;
 
-    // Onglets pour les utilisateurs authentifiés
+    // Onglets pour les utilisateurs authentifiés - Assistant au milieu
     const authTabs: TabItem[] = [
         {
             name: t('menu.createCV'),
@@ -35,30 +35,17 @@ export const MobileTabBar: React.FC<MobileTabBarProps> = ({ onRenewCodeClick, is
             active: url.includes('/cv-infos')
         },
         {
-            name: 'Portfolio',
-            href: route('portfolio.index'),
-            icon: User,
-            active: url.includes('/portfolio')
-        },
-        {
             name: t('menu.assistant'),
             href: route('career-advisor.index'),
             icon: Brain,
             active: url.includes('/career-advisor')
         },
         {
-            name: 'Jobs',
-            href: route('job-portal.index'),
-            icon: Briefcase,
-            active: url.includes('/jobs')
-        },
-        // {
-        //     name: t('sponsorship.code.renewal.renewCode', 'New Code'),
-        //     href: '#',
-        //     icon: RefreshCw,
-        //     active: false,
-        //     onClick: onRenewCodeClick
-        // }
+            name: 'Portfolio',
+            href: route('portfolio.index'),
+            icon: User,
+            active: url.includes('/portfolio')
+        }
     ];
 
     // Onglets pour les invités
@@ -82,29 +69,43 @@ export const MobileTabBar: React.FC<MobileTabBarProps> = ({ onRenewCodeClick, is
 
     return (
         <div className="mobile-tab-bar">
-            {tabs.map((tab) => (
-                tab.onClick ? (
+            {tabs.map((tab, index) => {
+                const isMiddle = index === Math.floor(tabs.length / 2);
+
+                return tab.onClick ? (
                     <button
                         key={tab.name}
                         onClick={tab.onClick}
                         className={cn(
                             "mobile-tab-item",
-                            tab.active && "active"
+                            tab.active && "active",
+                            isMiddle && "mobile-tab-item-middle"
                         )}
                     >
-                        <tab.icon className="mobile-tab-item-icon h-5 w-5" />
-                        <span className="mobile-tab-item-label">{tab.name}</span>
-                        {tab.active && (
-                            <motion.div
-                                layoutId="activeTab"
-                                className="absolute -top-1 w-1 h-1 rounded-full bg-amber-500"
-                                transition={{
-                                    type: 'spring',
-                                    stiffness: 400,
-                                    damping: 30
-                                }}
-                            />
-                        )}
+                        <div className={cn(
+                            "mobile-tab-item-content",
+                            isMiddle && "mobile-tab-item-content-middle"
+                        )}>
+                            <tab.icon className={cn(
+                                "mobile-tab-item-icon",
+                                isMiddle ? "h-6 w-6" : "h-5 w-5"
+                            )} />
+                            {tab.active && (
+                                <motion.div
+                                    layoutId="activeTab"
+                                    className="mobile-tab-active-indicator"
+                                    transition={{
+                                        type: 'spring',
+                                        stiffness: 400,
+                                        damping: 30
+                                    }}
+                                />
+                            )}
+                        </div>
+                        <span className={cn(
+                            "mobile-tab-item-label",
+                            isMiddle && "mobile-tab-item-label-middle"
+                        )}>{tab.name}</span>
                     </button>
                 ) : (
                     <Link
@@ -112,25 +113,37 @@ export const MobileTabBar: React.FC<MobileTabBarProps> = ({ onRenewCodeClick, is
                         href={tab.href}
                         className={cn(
                             "mobile-tab-item",
-                            tab.active && "active"
+                            tab.active && "active",
+                            isMiddle && "mobile-tab-item-middle"
                         )}
                     >
-                        <tab.icon className="mobile-tab-item-icon h-5 w-5" />
-                        <span className="mobile-tab-item-label">{tab.name}</span>
-                        {tab.active && (
-                            <motion.div
-                                layoutId="activeTab"
-                                className="absolute -top-1 w-1 h-1 rounded-full bg-amber-500"
-                                transition={{
-                                    type: 'spring',
-                                    stiffness: 400,
-                                    damping: 30
-                                }}
-                            />
-                        )}
+                        <div className={cn(
+                            "mobile-tab-item-content",
+                            isMiddle && "mobile-tab-item-content-middle"
+                        )}>
+                            <tab.icon className={cn(
+                                "mobile-tab-item-icon",
+                                isMiddle ? "h-6 w-6" : "h-5 w-5"
+                            )} />
+                            {tab.active && (
+                                <motion.div
+                                    layoutId="activeTab"
+                                    className="mobile-tab-active-indicator"
+                                    transition={{
+                                        type: 'spring',
+                                        stiffness: 400,
+                                        damping: 30
+                                    }}
+                                />
+                            )}
+                        </div>
+                        <span className={cn(
+                            "mobile-tab-item-label",
+                            isMiddle && "mobile-tab-item-label-middle"
+                        )}>{tab.name}</span>
                     </Link>
-                )
-            ))}
+                );
+            })}
         </div>
     );
 };

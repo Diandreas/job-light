@@ -146,7 +146,6 @@ export default function Authenticated({ user, header, children, hideHeaderOnMobi
     const { url } = usePage();
     const [isNavOpen, setIsNavOpen] = useState(false);
     const [isReferralDialogOpen, setIsReferralDialogOpen] = useState(false);
-    const [isJobPortalDialogOpen, setIsJobPortalDialogOpen] = useState(false);
     const showNav = [].includes(route().current()); // Suppression complète de la navigation CV
     const cvSideMenuItems = getCvSideMenuItems(t);
 
@@ -155,11 +154,6 @@ export default function Authenticated({ user, header, children, hideHeaderOnMobi
 
     // Décider si on doit masquer le header sur mobile
     const shouldHideHeaderOnMobile = hideHeaderOnMobile;
-
-    const handleJobPortalClick = (e: React.MouseEvent) => {
-        e.preventDefault();
-        setIsJobPortalDialogOpen(true);
-    };
 
     const mainMenuItems: MenuItem[] = [
         {
@@ -186,19 +180,6 @@ export default function Authenticated({ user, header, children, hideHeaderOnMobi
             href: route('career-advisor.index'),
             icon: Brain,
             active: route().current('career-advisor.index')
-        },
-        {
-            name: (
-                <div className="flex items-center gap-1.5">
-                    {t('menu.jobPortal')}
-                    <Badge variant="outline" className="bg-green-500/20 text-green-600 dark:bg-green-500/10 dark:text-green-400 text-[9px] px-1 py-0 h-3.5">
-                        NOUVEAU
-                    </Badge>
-                </div>
-            ),
-            href: route('job-portal.index'),
-            icon: Award,
-            active: route().current('job-portal.*')
         }
     ];
 
@@ -644,32 +625,6 @@ export default function Authenticated({ user, header, children, hideHeaderOnMobi
         );
     };
 
-    const JobPortalComingSoonDialog = () => {
-        return (
-            <Dialog open={isJobPortalDialogOpen} onOpenChange={setIsJobPortalDialogOpen}>
-                <DialogContent className="sm:max-w-md">
-                    <DialogHeader>
-                        <DialogTitle className="text-center flex items-center justify-center gap-2">
-                            <Award className="h-5 w-5 text-amber-500" />
-                            {t('jobPortal.comingSoon.title')}
-                        </DialogTitle>
-                        <DialogDescription className="text-center pt-2">
-                            {t('jobPortal.comingSoon.description')}
-                        </DialogDescription>
-                    </DialogHeader>
-                    <div className="flex justify-center mt-4">
-                        <Button
-                            onClick={() => setIsJobPortalDialogOpen(false)}
-                            className="bg-gradient-to-r from-amber-500 to-purple-500 text-white"
-                        >
-                            {t('common.close')}
-                        </Button>
-                    </div>
-                </DialogContent>
-            </Dialog>
-        );
-    };
-
     return (
         <>
             <Head>
@@ -816,7 +771,7 @@ export default function Authenticated({ user, header, children, hideHeaderOnMobi
                                         className="flex items-center gap-1 text-gray-500 hover:text-amber-500 transition-colors"
                                     >
                                         <MessageSquare className="h-3 w-3 sm:h-4 sm:w-4" />
-                                        <span>Support</span>
+                                        <span>{t('footer.support')}</span>
                                     </Link>
 
                                     <button
@@ -832,7 +787,7 @@ export default function Authenticated({ user, header, children, hideHeaderOnMobi
                                         className="flex items-center gap-1 text-gray-500 hover:text-amber-500 transition-colors"
                                     >
                                         <Mail className="h-3 w-3 sm:h-4 sm:w-4" />
-                                        <span className="hidden sm:inline">Contact</span>
+                                        <span className="hidden sm:inline">{t('footer.contact')}</span>
                                     </a>
                                 </div>
                             </div>
@@ -841,7 +796,6 @@ export default function Authenticated({ user, header, children, hideHeaderOnMobi
                 )}
 
                 <ReferralCodeRenewal />
-                <JobPortalComingSoonDialog />
 
                 {/* Mobile Tab Bar - toujours visible sur mobile */}
                 <div className="md:hidden">

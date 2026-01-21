@@ -64,40 +64,114 @@ a.button:active {
     display: flex;
     justify-content: space-around;
     align-items: center;
-    padding: 8px 0;
-    background-color: rgba(255, 255, 255, 0.95);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    box-shadow: 0 -1px 5px rgba(0, 0, 0, 0.1);
+    padding: 4px 0;
+    background: linear-gradient(to top, rgba(255, 255, 255, 0.98), rgba(255, 255, 255, 0.95));
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    box-shadow: 0 -2px 12px rgba(0, 0, 0, 0.08);
     z-index: 999;
-    padding-bottom: env(safe-area-inset-bottom);
-    /* Extra padding for notched devices */
+    padding-bottom: calc(4px + env(safe-area-inset-bottom));
+    border-top: 1px solid rgba(0, 0, 0, 0.06);
 }
 
 .dark .mobile-tab-bar {
-    background-color: rgba(17, 24, 39, 0.95);
+    background: linear-gradient(to top, rgba(17, 24, 39, 0.98), rgba(17, 24, 39, 0.95));
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
 }
 
 .mobile-tab-item {
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding: 4px 0;
-    color: #6B7280;
-    transition: all 0.2s ease-in-out;
+    justify-content: center;
+    padding: 4px 8px;
+    color: #9CA3AF;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    border-radius: 12px;
+    position: relative;
+    flex: 1;
+    max-width: 85px;
+}
+
+.mobile-tab-item:active {
+    transform: scale(0.95);
 }
 
 .mobile-tab-item.active {
     color: #F59E0B;
 }
 
+/* Style spécial pour l'onglet du milieu (Assistant) */
+.mobile-tab-item-middle {
+    max-width: 85px;
+}
+
+.mobile-tab-item-content {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 2px;
+}
+
+/* Contenu du bouton du milieu avec effet de mise en valeur */
+.mobile-tab-item-content-middle {
+    background: linear-gradient(135deg, #F59E0B 0%, #F97316 100%);
+    padding: 8px;
+    border-radius: 50%;
+    box-shadow: 0 2px 8px rgba(245, 158, 11, 0.4);
+}
+
+.dark .mobile-tab-item-content-middle {
+    box-shadow: 0 2px 10px rgba(245, 158, 11, 0.5);
+}
+
+.mobile-tab-item-middle .mobile-tab-item-icon {
+    color: white !important;
+}
+
 .mobile-tab-item-icon {
-    margin-bottom: 4px;
+    margin-bottom: 0;
+    transition: transform 0.2s ease-in-out;
+}
+
+.mobile-tab-item:active .mobile-tab-item-icon {
+    transform: scale(0.9);
 }
 
 .mobile-tab-item-label {
     font-size: 10px;
-    font-weight: 500;
+    font-weight: 600;
+    text-align: center;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
+}
+
+.mobile-tab-item-label-middle {
+    font-weight: 700;
+    font-size: 10px;
+    color: #F59E0B;
+}
+
+/* Indicateur actif moderne */
+.mobile-tab-active-indicator {
+    position: absolute;
+    bottom: -4px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background-color: #F59E0B;
+}
+
+.mobile-tab-item-middle .mobile-tab-active-indicator {
+    background-color: white;
+    width: 4px;
+    height: 4px;
+    bottom: -4px;
 }
 
 /* Better form field handling */

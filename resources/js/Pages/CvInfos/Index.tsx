@@ -41,7 +41,6 @@ import HobbyManager from '@/Pages/CvInfos/Partials/HobbyManager';
 import ExperienceManager from "@/Pages/CvInfos/Partials/ExperienceManager";
 import ProfessionSummaryManager from '@/Pages/CvInfos/Partials/ProfessionSummaryManager';
 import LanguageManager from '@/Pages/CvInfos/Partials/LanguageManager';
-import CertificationManager from '@/Pages/CvInfos/Partials/CertificationManager';
 import LivePreview from '@/Components/cv/LivePreview';
 import ReactCrop, { centerCrop, makeAspectCrop } from 'react-image-crop';
 import 'react-image-crop/dist/ReactCrop.css';
@@ -52,8 +51,7 @@ const getSidebarItems = (t: any) => [
     { id: 'personalInfo', label: t('cvInterface.steps.step1'), icon: User, color: 'text-amber-500' },
     { id: 'professionSummary', label: t('cvInterface.steps.step2'), icon: FileText, color: 'text-blue-500' },
     { id: 'experience', label: t('cvInterface.steps.step3'), icon: Briefcase, color: 'text-amber-600' },
-    { id: 'skills', label: t('cvInterface.steps.step5'), icon: Code, color: 'text-purple-600' },
-    { id: 'certifications', label: t('certifications.title') || 'Certifications', icon: Award, color: 'text-amber-500' }
+    { id: 'skills', label: t('cvInterface.steps.step5'), icon: Code, color: 'text-purple-600' }
 ];
 
 const getPersonalInfoFields = (t: any) => [
@@ -1741,13 +1739,6 @@ export default function CvInterface({ auth, cvInformation: initialCvInformation 
                         experiences={cvInformation.experiences}
                         categories={cvInformation.experienceCategories}
                         onUpdate={(experiences) => updateCvInformation('experiences', experiences)}
-                    />
-                );
-            case 'certifications':
-                return (
-                    <CertificationManager
-                        certifications={cvInformation.certifications || []}
-                        onUpdate={(certs) => updateCvInformation('certifications', certs)}
                     />
                 );
             default:

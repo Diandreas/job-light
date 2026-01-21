@@ -67,13 +67,54 @@
     "hero": {
         "badge": "🚀 Boostez votre carrière avec l'IA",
         "title": "Votre guide professionnel intelligent",
-        "description": "Créez des CV percutants, obtenez des conseils de carrière personnalisés et préparez-vous aux entretiens avec notre assistant IA de pointe"
+        "title_start": "Créez un CV",
+        "title_highlight": "qui décroche",
+        "description": "Créez des CV percutants, obtenez des conseils de carrière personnalisés et préparez-vous aux entretiens avec notre assistant IA de pointe",
+        "scroll": "Découvrir",
+        "words": {
+            "professional": "Professionnel",
+            "impressive": "Impressionnant",
+            "optimized": "Optimisé ATS"
+        }
+    },
+    "trust": {
+        "free": "100% Gratuit",
+        "no_card": "Sans carte bancaire",
+        "ats": "Optimisé ATS"
+    },
+    "meta": {
+        "title": "Créez un CV Professionnel en 5 Minutes avec l'IA",
+        "description": "Créez gratuitement un CV optimisé ATS avec notre IA. Templates internationaux, conseils de carrière personnalisés."
+    },
+    "how_it_works": {
+        "badge": "Simple et rapide",
+        "title": "Comment ça marche ?",
+        "description": "Créez votre CV professionnel en seulement 3 étapes simples",
+        "step1": {
+            "title": "Entrez vos infos",
+            "description": "Remplissez vos informations personnelles, expériences et compétences"
+        },
+        "step2": {
+            "title": "L'IA optimise",
+            "description": "Notre IA analyse et optimise votre contenu pour les recruteurs"
+        },
+        "step3": {
+            "title": "Téléchargez",
+            "description": "Choisissez un template et téléchargez votre CV en PDF"
+        }
+    },
+    "final_cta": {
+        "title": "Prêt à décrocher votre job de rêve ?",
+        "description": "Rejoignez des milliers de professionnels qui ont déjà boosté leur carrière avec Guidy",
+        "button": "Créer mon compte gratuit",
+        "try_free": "Essayer sans inscription"
     },
     "features": {
+        "learn_more": "En savoir plus",
         "cv_designer": {
             "title": "CV Designer Pro",
             "description": "Créez des CV professionnels avec nos modèles premium et exportez en PDF haute qualité.",
-            "action": "Créer mon CV"
+            "action": "Essayer maintenant"
         },
         "career_advisor": {
             "title": "Conseiller de Carrière IA",
@@ -136,8 +177,11 @@
         "try_guest": "Essayer sans inscription"
     },
     "sections": {
-        "core_features": "Fonctionnalités Principales",
-        "advanced_tools": "Outils Avancés"
+        "features_badge": "Fonctionnalités",
+        "core_features": "Tout pour réussir",
+        "core_features_desc": "Des outils puissants alimentés par l'IA pour accélérer votre carrière",
+        "advanced_tools": "Outils Avancés",
+        "advanced_tools_desc": "Des outils professionnels pour vous donner l'avantage concurrentiel sur le marché du travail actuel"
     },
     "guest_cv": {
         "steps": {
@@ -241,6 +285,7 @@
         }
     },
     "footer": {
+        "tagline": "Votre assistant IA pour une carrière réussie",
         "services": {
             "title": "Services",
             "resume": "Création de CV",
@@ -249,12 +294,20 @@
         },
         "legal": {
             "title": "Légal",
-            "privacy": "Politique de Confidentialité",
-            "terms": "Conditions d'Utilisation",
-            "cookies": "Politique de Cookies",
+            "privacy": "Confidentialité",
+            "terms": "Conditions",
+            "cookies": "Cookies",
             "mentions": "Mentions Légales"
         },
-        "copyright": "Tous droits réservés"
+        "support": {
+            "title": "Support",
+            "help": "Centre d'aide",
+            "contact": "Contactez-nous"
+        },
+        "contact": "Contact",
+        "copyright": "Tous droits réservés",
+        "made_with": "Fait avec",
+        "by_team": "par l'équipe Guidy"
     },
     "menu": {
         "title": "Menu Guidy",
@@ -1416,19 +1469,31 @@
         },
         "career_advice": {
             "title": "Conseil de Carrière",
-            "description": "Conseils personnalisés sur le développement de carrière"
+            "description": "Conseils personnalisés sur le développement de carrière",
+            "enhanced_title": "Conseil de Carrière Personnalisé",
+            "enhanced_description": "Assistant intelligent qui analyse votre profil et vos objectifs pour créer un plan de carrière sur mesure"
         },
         "cover_letter": {
             "title": "Lettre de Motivation",
-            "description": "Lettre de motivation personnalisée"
-        },
-        "interview_prep": {
-            "title": "Préparation d'Entretien",
-            "description": "Simulation d'entretien interactive"
+            "description": "Lettre de motivation personnalisée",
+            "enhanced_title": "Générateur de Lettre de Motivation",
+            "enhanced_description": "Créez des lettres personnalisées et optimisées ATS en analysant automatiquement les offres d'emploi"
         },
         "resume_review": {
             "title": "Analyse de CV",
-            "description": "Suggestions d'amélioration du CV"
+            "description": "Suggestions d'amélioration du CV",
+            "enhanced_title": "Analyseur de CV Avancé",
+            "enhanced_description": "Audit complet avec scoring détaillé, recommandations visuelles et comparaison sectorielle"
+        },
+        "interview_prep": {
+            "title": "Préparation d'Entretien",
+            "description": "Simulation d'entretien interactive",
+            "enhanced_title": "Simulateur d'Entretien Immersif",
+            "enhanced_description": "Simulations réalistes avec questions adaptées au secteur et feedback détaillé de performance"
+        },
+        "interview_prep_old": {
+            "title": "Préparation d'Entretien",
+            "description": "Simulation d'entretien interactive"
         },
         "internship_report": {
             "title": "Rapport de Stage & Soutenance",
@@ -2955,6 +3020,24 @@
                 "linkedin": "Profil LinkedIn",
                 "github": "Profil GitHub"
             }
+        }
+    },
+    "ai": {
+        "improve_button": "Améliorer avec IA",
+        "choose_tone": "Choisir le ton :",
+        "tone": {
+            "professional": "👔 Professionnel",
+            "concise": "⚡ Concis",
+            "creative": "✨ Créatif"
+        },
+        "success": {
+            "title": "Reformulation réussie",
+            "desc": "Le texte a été amélioré par l'IA."
+        },
+        "error": {
+            "too_short_title": "Texte trop court",
+            "too_short_desc": "Le texte doit contenir au moins 10 caractères.",
+            "generic": "Impossible de reformuler le texte pour le moment."
         }
     }
 }

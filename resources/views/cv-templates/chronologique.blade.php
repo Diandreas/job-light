@@ -43,8 +43,8 @@
         
         .main { display: table-cell; width: 140mm; background: #fff; padding: 12mm 10mm; vertical-align: top; }
 
-        .name { font-size: 28pt; font-weight: 900; color: {{ $primaryColor }}; text-transform: uppercase; line-height: 1; margin-bottom: 2mm; }
-        .job-title { font-size: 14pt; font-weight: 700; color: {{ $textDark }}; margin-bottom: 8mm; border-left: 5px solid {{ $primaryColor }}; padding-left: 4mm; }
+        .name { font-size: 18pt; font-weight: 900; color: {{ $primaryColor }}; text-transform: uppercase; line-height: 1; margin-bottom: 2mm; }
+        .job-title { font-size: 10pt; font-weight: 700; color: {{ $textDark }}; margin-bottom: 8mm; border-left: 5px solid {{ $primaryColor }}; padding-left: 4mm; }
 
         .section-title { font-size: 12pt; font-weight: 900; color: {{ $primaryColor }}; margin-bottom: 6mm; margin-top: 4mm; text-transform: uppercase; letter-spacing: 1px; }
 

@@ -28,8 +28,8 @@
         .header-left { display: table-cell; vertical-align: middle; }
         .header-right { display: table-cell; vertical-align: middle; width: 40mm; text-align: right; }
 
-        .name { font-size: 26pt; font-weight: 800; color: {{ $primaryColor }}; text-transform: uppercase; line-height: 1; margin-bottom: 2mm; letter-spacing: -0.5px; }
-        .role { font-size: 13pt; font-weight: 600; color: {{ $textMuted }}; text-transform: uppercase; letter-spacing: 1px; }
+        .name { font-size: 18pt; font-weight: 800; color: {{ $primaryColor }}; text-transform: uppercase; line-height: 1; margin-bottom: 2mm; letter-spacing: -0.5px; }
+        .role { font-size: 10pt; font-weight: 600; color: {{ $textMuted }}; text-transform: uppercase; letter-spacing: 0.5px; }
 
         .contact-grid { display: flex; flex-wrap: wrap; gap: 4mm; margin-top: 4mm; font-size: 8.5pt; color: {{ $textMuted }}; }
         .contact-item { display: flex; align-items: center; }

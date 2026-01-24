@@ -28,8 +28,8 @@
         .photo img { width: 100%; height: 100%; object-fit: cover; }
 
         .side-header { margin-bottom: 6mm; text-align: left; }
-        .name { font-size: 22pt; font-weight: 800; color: {{ $primaryColor }}; line-height: 1; margin-bottom: 2mm; text-transform: uppercase; letter-spacing: -0.5px; }
-        .title { font-size: 10pt; font-weight: 600; color: #0f172a; text-transform: uppercase; letter-spacing: 1px; }
+        .name { font-size: 16pt; font-weight: 800; color: {{ $primaryColor }}; line-height: 1; margin-bottom: 2mm; text-transform: uppercase; letter-spacing: -0.5px; }
+        .title { font-size: 9pt; font-weight: 600; color: #0f172a; text-transform: uppercase; letter-spacing: 0.5px; }
 
         .contact-group { margin-bottom: 6mm; }
         .contact-item { display: flex; align-items: center; margin-bottom: 2mm; font-size: 8pt; color: {{ $textMain }}; word-break: break-all; }

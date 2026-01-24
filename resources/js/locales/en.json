@@ -681,6 +681,8 @@
             "change_model": "Change model",
             "edit_cv": "Edit CV"
         },
+        "change_model": "Change model",
+        "download_pdf": "Download PDF",
         "loading": "Loading...",
         "free": "Free",
         "tokens": "tokens",

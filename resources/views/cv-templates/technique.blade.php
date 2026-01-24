@@ -26,8 +26,8 @@
         /* HEADER - SOBER & PROFESSIONAL */
         .header { display: flex; justify-content: space-between; align-items: flex-end; border-bottom: 2px solid {{ $primaryColor }}; padding-bottom: 5mm; margin-bottom: 8mm; }
         .header-info { flex: 1; }
-        .name { font-size: 24pt; font-weight: 700; color: {{ $textDark }}; line-height: 1; margin-bottom: 2mm; text-transform: uppercase; }
-        .role { font-size: 11pt; color: {{ $primaryColor }}; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; }
+        .name { font-size: 16pt; font-weight: 700; color: {{ $textDark }}; line-height: 1; margin-bottom: 2mm; text-transform: uppercase; }
+        .role { font-size: 9pt; color: {{ $primaryColor }}; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
 
         .contact-row { display: flex; flex-wrap: wrap; gap: 4mm; margin-top: 4mm; font-size: 8.5pt; color: #64748b; }
         .contact-item { display: flex; align-items: center; }

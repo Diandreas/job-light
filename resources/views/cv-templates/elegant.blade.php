@@ -22,8 +22,8 @@
         /* ELEGANT HEADER */
         .header { border-bottom: 3px double {{ $primaryColor }}; padding-bottom: 6mm; margin-bottom: 8mm; display: flex; align-items: flex-end; justify-content: space-between; }
         .header-text { flex: 1; padding-right: 5mm; }
-        .name { font-size: 28pt; color: {{ $textDark }}; text-transform: uppercase; letter-spacing: 3px; font-weight: 400; margin-bottom: 2mm; line-height: 1; }
-        .title { font-size: 12pt; color: {{ $primaryColor }}; font-style: italic; font-weight: 600; margin-bottom: 4mm; letter-spacing: 1px; }
+        .name { font-size: 18pt; color: {{ $textDark }}; text-transform: uppercase; letter-spacing: 2px; font-weight: 400; margin-bottom: 2mm; line-height: 1; }
+        .title { font-size: 10pt; color: {{ $primaryColor }}; font-style: italic; font-weight: 600; margin-bottom: 4mm; letter-spacing: 0.5px; }
         
         .photo-frame { width: 32mm; height: 32mm; border: 1px solid #eee; padding: 1mm; background: #fff; border-radius: 2px; }
         .photo-inner { width: 100%; height: 100%; overflow: hidden; }

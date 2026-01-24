@@ -26,7 +26,7 @@
         .photo-frame img { width: 100%; height: 100%; object-fit: cover; }
 
         .header-main { flex: 1; }
-        .name { font-size: 20pt; font-weight: 700; color: {{ $darkColor }}; text-transform: uppercase; margin-bottom: 1mm; }
+        .name { font-size: 18pt; font-weight: 700; color: {{ $darkColor }}; text-transform: uppercase; margin-bottom: 1mm; }
         .job-title { background: {{ $primaryColor }}; color: #fff; display: inline-block; padding: 1mm 3mm; font-size: 10pt; font-weight: 600; border-radius: 2px; margin-bottom: 3mm; }
         
         .contact-bar { display: flex; flex-wrap: wrap; gap: 3mm; font-size: 8pt; }

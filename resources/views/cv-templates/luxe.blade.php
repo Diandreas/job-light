@@ -28,8 +28,8 @@
         
         .monogram { width: 15mm; height: 15mm; border: 1px solid {{ $primaryColor }}; margin: 0 auto 5mm; display: flex; align-items: center; justify-content: center; font-family: 'Playfair Display', serif; font-size: 18pt; color: {{ $primaryColor }}; letter-spacing: 2px; }
 
-        .name { font-family: 'Playfair Display', serif; font-size: 32pt; color: {{ $deepDark }}; text-transform: uppercase; letter-spacing: 5px; line-height: 1.1; margin-bottom: 2mm; }
-        .role { font-family: 'Inter', sans-serif; font-size: 11pt; font-weight: 300; text-transform: uppercase; letter-spacing: 4px; color: {{ $primaryColor }}; margin-bottom: 5mm; }
+        .name { font-family: 'Playfair Display', serif; font-size: 20pt; color: {{ $deepDark }}; text-transform: uppercase; letter-spacing: 3px; line-height: 1.1; margin-bottom: 2mm; }
+        .role { font-family: 'Inter', sans-serif; font-size: 9pt; font-weight: 300; text-transform: uppercase; letter-spacing: 2px; color: {{ $primaryColor }}; margin-bottom: 5mm; }
 
         .contact-bar { display: flex; justify-content: center; gap: 6mm; font-size: 8.5pt; color: #777; border-top: 1px solid #eee; border-bottom: 1px solid #eee; padding: 2mm 0; }
         .contact-item { display: flex; align-items: center; }

@@ -27,8 +27,8 @@
         .photo-box { width: 28mm; height: 28mm; border-radius: 50%; overflow: hidden; border: 1px solid #e5e7eb; padding: 1mm; background: #fff; margin: 0 auto 4mm; }
         .photo-box img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
 
-        .name { font-size: 26pt; font-weight: 800; color: {{ $textDark }}; text-transform: uppercase; letter-spacing: 2px; line-height: 1.1; margin-bottom: 2mm; }
-        .job-title { font-size: 12pt; font-weight: 600; color: {{ $primaryColor }}; text-transform: uppercase; letter-spacing: 3px; display: block; margin-bottom: 4mm; }
+        .name { font-size: 18pt; font-weight: 800; color: {{ $textDark }}; text-transform: uppercase; letter-spacing: 1px; line-height: 1.1; margin-bottom: 2mm; }
+        .job-title { font-size: 10pt; font-weight: 600; color: {{ $primaryColor }}; text-transform: uppercase; letter-spacing: 2px; display: block; margin-bottom: 4mm; }
 
         .contact-row { display: flex; flex-wrap: wrap; justify-content: center; gap: 5mm; font-size: 8.5pt; color: {{ $textMuted }}; }
         .contact-item { display: flex; align-items: center; }

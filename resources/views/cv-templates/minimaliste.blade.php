@@ -23,7 +23,7 @@
 
         /* HEADER - Matches Image */
         .header { text-align: center; margin-bottom: 8mm; }
-        .name { font-size: 24pt; font-weight: bold; margin-bottom: 2mm; color: #000; }
+        .name { font-size: 16pt; font-weight: bold; margin-bottom: 2mm; color: #000; }
         .contact-line { font-size: 9pt; color: #000; display: flex; justify-content: center; gap: 3mm; flex-wrap: wrap; }
         .contact-line span:not(:last-child)::after { content: ' •'; margin-left: 3mm; color: #999; }
 

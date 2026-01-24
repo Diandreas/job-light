@@ -24,8 +24,8 @@
         /* PROFESSIONNAL HEADER */
         .header { background: {{ $bgHeader }}; padding: 10mm 15mm; border-bottom: 1.5mm solid {{ $primaryColor }}; display: flex; align-items: center; justify-content: space-between; }
         .header-content { flex: 1; padding-right: 5mm; }
-        .name { font-size: 26pt; font-weight: 700; color: {{ $primaryColor }}; text-transform: uppercase; margin-bottom: 2mm; line-height: 1; }
-        .role-header { font-size: 13pt; font-weight: 600; color: {{ $accentColor }}; text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 5mm; }
+        .name { font-size: 18pt; font-weight: 700; color: {{ $primaryColor }}; text-transform: uppercase; margin-bottom: 2mm; line-height: 1; }
+        .role-header { font-size: 10pt; font-weight: 600; color: {{ $accentColor }}; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4mm; }
         
         .contact-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 3mm; font-size: 9pt; color: #475569; }
         .contact-item { display: flex; align-items: center; }
@@ -39,7 +39,7 @@
         .col-right { display: table-cell; width: 32%; padding-left: 12mm; vertical-align: top; }
 
         /* SECTIONS */
-        .section-title { font-size: 11.5pt; font-weight: 800; color: {{ $primaryColor }}; border-bottom: 2.5px solid {{ $primaryColor }}; padding-bottom: 1.5mm; margin-bottom: 6mm; text-transform: uppercase; letter-spacing: 1px; display: flex; align-items: center; }
+        .section-title { font-size: 10pt; font-weight: 800; color: {{ $primaryColor }}; border-bottom: 2px solid {{ $primaryColor }}; padding-bottom: 1mm; margin-bottom: 5mm; text-transform: uppercase; letter-spacing: 0.5px; display: flex; align-items: center; }
         .section-title svg { margin-right: 3mm; width: 5mm; height: 5mm; stroke: {{ $primaryColor }}; }
 
         .summary { font-size: 10pt; color: #334155; text-align: justify; line-height: 1.6; margin-bottom: 8mm; background: #fcfcfc; padding: 3mm 4mm; border-left: 3px solid #e2e8f0; }
@@ -51,11 +51,11 @@
         .job-item { margin-bottom: 8mm; page-break-inside: avoid; }
         .job-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 2mm; }
         .job-left { flex: 1; }
-        .job-company { font-size: 12pt; font-weight: 800; color: #0f172a; text-transform: uppercase; margin-bottom: 0.5mm; }
-        .job-role { font-size: 10.5pt; font-weight: 600; color: {{ $primaryColor }}; font-style: italic; }
-        .job-date { font-size: 9.5pt; font-weight: 700; color: {{ $accentColor }}; background: #f8fafc; padding: 1.5mm 3.5mm; border: 1px solid #e2e8f0; border-radius: 4px; white-space: nowrap; margin-left: 4mm; }
+        .job-company { font-size: 10pt; font-weight: 700; color: #0f172a; text-transform: uppercase; margin-bottom: 0.5mm; }
+        .job-role { font-size: 9pt; font-weight: 600; color: {{ $primaryColor }}; font-style: italic; }
+        .job-date { font-size: 8pt; font-weight: 600; color: {{ $accentColor }}; background: #f8fafc; padding: 1mm 3mm; border: 1px solid #e2e8f0; border-radius: 3px; white-space: nowrap; margin-left: 3mm; }
         
-        .rich-text { text-align: justify; color: #334155; font-size: 10pt; line-height: 1.55; }
+        .rich-text { text-align: justify; color: #334155; font-size: 9pt; line-height: 1.5; }
         .rich-text ul { list-style: disc; padding-left: 5mm; margin-top: 2.5mm; }
         .rich-text li { margin-bottom: 1.5mm; }
 

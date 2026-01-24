@@ -17,8 +17,8 @@
         body { font-family: 'Montserrat', sans-serif; font-size: 9.2pt; line-height: 1.4; color: #333; background: #fff; }
 
         .banner { background: {{ $primaryColor }}; width: 100%; padding: 15mm 10mm 15mm 80mm; min-height: 50mm; position: relative; }
-        .name { font-size: 32pt; font-weight: 900; color: #fff; line-height: 1.1; text-transform: uppercase; }
-        .job-title { font-size: 14pt; color: #fff; font-weight: 600; letter-spacing: 1px; opacity: 0.9; margin-top: 2mm; }
+        .name { font-size: 18pt; font-weight: 900; color: #fff; line-height: 1.1; text-transform: uppercase; }
+        .job-title { font-size: 10pt; color: #fff; font-weight: 600; letter-spacing: 0.5px; opacity: 0.9; margin-top: 2mm; }
 
         .cv-grid { display: table; width: 210mm; min-height: 247mm; table-layout: fixed; }
         
@@ -61,7 +61,7 @@
         .exp-box { margin-bottom: 6mm; position: relative; padding-left: 4mm; border-left: 2px solid #f3f4f6; }
         .exp-box::before { content: ''; position: absolute; left: -5px; top: 0; width: 8px; height: 8px; background: {{ $primaryColor }}; border-radius: 50%; }
         
-        .exp-role { font-weight: 800; font-size: 11pt; color: #1e1b4b; margin-bottom: 1mm; }
+        .exp-role { font-weight: 800; font-size: 9.5pt; color: #1e1b4b; margin-bottom: 1mm; }
         .exp-meta { font-weight: 600; color: #666; font-size: 9.5pt; margin-bottom: 2mm; display: flex; justify-content: space-between; align-items: baseline; }
         .exp-inst { color: {{ $primaryColor }}; font-weight: 700; font-style: italic; }
         

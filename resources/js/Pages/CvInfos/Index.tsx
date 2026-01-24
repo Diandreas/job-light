@@ -1871,10 +1871,7 @@ export default function CvInterface({ auth, cvInformation: initialCvInformation 
             )}
 
             <div className="min-h-screen bg-gradient-to-b from-amber-50/30 to-purple-50/30 dark:from-gray-900 dark:to-gray-800">
-                <div className={cn(
-                    "container mx-auto py-3 sm:py-4 px-3 sm:px-4 transition-all duration-300",
-                    isLivePreviewVisible && isDesktop ? "lg:mr-[500px]" : ""
-                )}>
+                <div className="container mx-auto py-3 sm:py-4 px-3 sm:px-4 transition-all duration-300">
                     {/* Header responsive amélioré - avec pourcentage et import intégrés */}
                     <div className="flex justify-between items-center mb-3 sm:mb-4">
                         <div className="hidden sm:flex items-center gap-1.5 sm:gap-2">

@@ -29,8 +29,8 @@
 
         .header-content { flex: 1; z-index: 2; }
         .hello { font-size: 10pt; color: {{ $primaryColor }}; font-weight: 700; margin-bottom: 1mm; text-transform: uppercase; letter-spacing: 1px; }
-        .name { font-size: 22pt; font-weight: 900; color: #1e1b4b; line-height: 1.1; margin-bottom: 2mm; }
-        .role { font-size: 11pt; font-weight: 500; color: #64748b; margin-bottom: 3mm; }
+        .name { font-size: 16pt; font-weight: 900; color: #1e1b4b; line-height: 1.1; margin-bottom: 2mm; }
+        .role { font-size: 9pt; font-weight: 500; color: #64748b; margin-bottom: 3mm; }
 
         .contact-pills { display: flex; gap: 2mm; flex-wrap: wrap; }
         .pill { background: #f8fafc; padding: 1mm 3mm; border-radius: 20px; font-size: 8pt; color: #334155; border: 1px solid #e2e8f0; display: flex; align-items: center; }

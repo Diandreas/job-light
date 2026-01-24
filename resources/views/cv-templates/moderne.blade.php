@@ -25,10 +25,10 @@
         .photo-inner { width: 100%; height: 100%; border-radius: 50%; overflow: hidden; }
         .photo-inner img { width: 100%; height: 100%; object-fit: cover; }
         
-        .initials { font-size: 30pt; font-weight: 700; color: {{ $primaryColor }}; margin-bottom: 2mm; display: inline-block; border-bottom: 2px solid {{ $primaryColor }}; padding-bottom: 1mm; width: 15mm; height: 15mm; line-height: 15mm; text-align: center; }
+        .initials { font-size: 20pt; font-weight: 700; color: {{ $primaryColor }}; margin-bottom: 2mm; display: inline-block; border-bottom: 2px solid {{ $primaryColor }}; padding-bottom: 1mm; width: 12mm; height: 12mm; line-height: 12mm; text-align: center; }
 
-        .name { font-size: 20pt; text-transform: uppercase; letter-spacing: 2mm; margin-bottom: 2mm; font-weight: 400; color: #000; }
-        .job-title { font-size: 11pt; font-style: italic; color: #555; letter-spacing: 1px; margin-bottom: 3mm; }
+        .name { font-size: 16pt; text-transform: uppercase; letter-spacing: 1.5mm; margin-bottom: 2mm; font-weight: 400; color: #000; }
+        .job-title { font-size: 9pt; font-style: italic; color: #555; letter-spacing: 0.5px; margin-bottom: 3mm; }
         
         .contact { display: flex; justify-content: center; gap: 5mm; font-family: 'Segoe UI', sans-serif; font-size: 8.5pt; color: #666; border-top: 1px solid #f0f0f0; border-bottom: 1px solid #f0f0f0; padding: 2mm 0; }
         .contact-item { display: flex; align-items: center; }
@@ -46,9 +46,9 @@
         .cat-label { text-align: center; font-family: 'Segoe UI', sans-serif; font-size: 9pt; font-weight: 800; color: {{ $primaryColor }}; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4mm; opacity: 0.8; }
 
         .exp-head { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 1mm; }
-        .exp-role { font-size: 10.5pt; font-weight: 700; text-transform: uppercase; color: #111; }
-        .exp-date { font-family: 'Segoe UI', sans-serif; font-size: 8.5pt; font-weight: 600; color: {{ $primaryColor }}; }
-        .exp-inst { font-family: 'Segoe UI', sans-serif; font-size: 9.5pt; color: #666; font-style: italic; margin-bottom: 2mm; display: block; }
+        .exp-role { font-size: 9pt; font-weight: 700; text-transform: uppercase; color: #111; }
+        .exp-date { font-family: 'Segoe UI', sans-serif; font-size: 8pt; font-weight: 600; color: {{ $primaryColor }}; }
+        .exp-inst { font-family: 'Segoe UI', sans-serif; font-size: 8.5pt; color: #666; font-style: italic; margin-bottom: 2mm; display: block; }
         
         .rich-text { text-align: justify; color: #333; }
         .rich-text ul { list-style: square; padding-left: 4mm; margin-top: 1.5mm; }

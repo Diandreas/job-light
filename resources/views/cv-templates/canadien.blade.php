@@ -8,91 +8,255 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ $cvInformation['personalInformation']['firstName'] ?? 'CV' }} - CV</title>
     <style>
-        @php
-            $primaryColor = $cvInformation['primary_color'] ?? '#d93025'; /* Canadian Redish? or just standard black */
-        @endphp
-
-        @page { margin: 25.4mm; size: Letter; /* US Letter / Canadian standard */ }
+        @page { margin: 15mm; size: Letter; }
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'Arial', sans-serif; font-size: 11pt; line-height: 1.4; color: #000; }
-
-        .header { margin-bottom: 6mm; border-bottom: 2px solid #000; padding-bottom: 2mm; }
-        .name { font-size: 18pt; font-weight: bold; text-transform: uppercase; }
-        .info { font-size: 10pt; margin-top: 1mm; }
-
-        .section-title { font-size: 11pt; font-weight: bold; text-transform: uppercase; margin-top: 5mm; margin-bottom: 3mm; }
         
-        .exp-item { margin-bottom: 4mm; }
-        .exp-line1 { font-weight: bold; display: flex; justify-content: space-between; }
-        .exp-line2 { font-style: italic; margin-bottom: 1mm; }
+        body { 
+            font-family: 'Arial', 'Helvetica', sans-serif; 
+            font-size: 10pt; 
+            line-height: 1.35; 
+            color: #000; 
+            background: #fff;
+        }
 
-        .content-text ul { padding-left: 5mm; margin: 0; }
-        .content-text li { margin-bottom: 1mm; }
+        /* ATS Friendly Layout */
+        .header { 
+            text-align: center; 
+            border-bottom: 1px solid #000; 
+            padding-bottom: 8px; 
+            margin-bottom: 12px; 
+        }
+        
+        .name { 
+            font-size: 20pt; 
+            font-weight: bold; 
+            text-transform: uppercase; 
+            margin-bottom: 4px;
+            letter-spacing: 0.5px;
+        }
+        
+        .contact-info { 
+            font-size: 9.5pt; 
+            margin-bottom: 2px;
+        }
+
+        .section-title { 
+            font-size: 11pt; 
+            font-weight: bold; 
+            text-transform: uppercase; 
+            border-bottom: 1px solid #000; 
+            margin-top: 15px; 
+            margin-bottom: 8px; 
+            padding-bottom: 2px;
+        }
+        
+        /* Category Sub-Header */
+        .cat-header {
+            font-size: 10pt;
+            font-weight: bold;
+            color: #444;
+            text-transform: uppercase;
+            margin-top: 10px;
+            margin-bottom: 5px;
+            border-bottom: 1px dashed #ccc;
+            padding-bottom: 2px;
+        }
+
+        .entry { margin-bottom: 10px; page-break-inside: avoid; }
+        
+        .entry-header { 
+            margin-bottom: 2px; 
+            position: relative;
+        }
+        
+        .entry-title { 
+            font-weight: bold; 
+            font-size: 10.5pt;
+            display: inline-block;
+        }
+        
+        .entry-subtitle { 
+            font-weight: bold;
+            display: inline-block;
+        }
+        
+        .entry-date { 
+            float: right; 
+            font-weight: bold;
+            font-size: 10pt;
+        }
+        
+        /* Description text */
+        .content-text {
+            text-align: justify;
+            font-size: 9.5pt;
+        }
+
+        .content-text ul { 
+            margin-top: 2px; 
+            margin-bottom: 2px; 
+            padding-left: 18px; 
+            list-style-type: disc;
+        }
+        
+        .content-text li { 
+            margin-bottom: 1px; 
+            padding-left: 2px;
+        }
+        
+        .clearfix::after {
+            content: "";
+            clear: both;
+            display: table;
+        }
+        
+        /* Skill grid */
+        .skills-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0;
+            margin: 0;
+            padding: 0;
+            list-style: none;
+        }
+        
+        .skills-list li {
+            margin-right: 12px;
+            margin-bottom: 3px;
+        }
+
+        /* 2 Column Layout for Bottom Section */
+        .bottom-grid {
+            display: table; /* Using table display for robust PDF rendering */
+            width: 100%;
+            border-collapse: collapse;
+            table-layout: fixed;
+            margin-top: 15px;
+        }
+        
+        .col-left {
+            display: table-cell;
+            width: 55%; /* More space for Education/Certs usually detailed */
+            vertical-align: top;
+            padding-right: 15px;
+            border-right: 1px solid #eee;
+        }
+        
+        .col-right {
+            display: table-cell;
+            width: 45%;
+            vertical-align: top;
+            padding-left: 15px;
+        }
+        
+        /* Reset margins for columns */
+        .col-left .section-title, .col-right .section-title {
+            margin-top: 0;
+        }
+
+        a { text-decoration: none; color: #000; }
     </style>
 </head>
 <body>
     <div class="header">
         <div class="name">{{ $cvInformation['personalInformation']['firstName'] }} {{ $cvInformation['personalInformation']['lastName'] }}</div>
-        <div class="info">
-            {{ $cvInformation['personalInformation']['address'] }} • {{ $cvInformation['personalInformation']['phone'] }} • {{ $cvInformation['personalInformation']['email'] }}
-            @if($cvInformation['personalInformation']['linkedin']) • LinkedIn @endif
+        <div class="contact-info">
+            {{ $cvInformation['personalInformation']['address'] }}
+            @if($cvInformation['personalInformation']['address'] && $cvInformation['personalInformation']['phone']) • @endif
+            {{ $cvInformation['personalInformation']['phone'] }}
+            @if($cvInformation['personalInformation']['phone'] && $cvInformation['personalInformation']['email']) • @endif
+            {{ $cvInformation['personalInformation']['email'] }}
+            @if($cvInformation['personalInformation']['linkedin']) • {{ $cvInformation['personalInformation']['linkedin'] }} @endif
         </div>
     </div>
 
     @if(!empty($cvInformation['summaries']))
-    <div class="section-title">{{ $currentLocale === 'fr' ? 'Sommaire' : 'Summary' }}</div>
+    <div class="section-title">{{ $currentLocale === 'fr' ? 'Sommaire Professionnel' : 'Professional Summary' }}</div>
     <div class="content-text">{!! $cvInformation['summaries'][0]['description'] ?? '' !!}</div>
     @endif
 
-    <div class="section-title">{{ $currentLocale === 'fr' ? 'Expérience Professionnelle' : 'Professional Experience' }}</div>
+    <div class="section-title">{{ $currentLocale === 'fr' ? 'Expérience Professionnelle' : 'Work Experience' }}</div>
     @foreach($experiencesByCategory as $category => $experiences)
+        @php
+            // Traduction simple des catégories si nécessaire (ou afficher tel quel)
+            $displayCategory = ucfirst($category);
+            // Hide "Experience Professionnelle" sub-header if it's the only one or redundant
+            $showCategory = count($experiencesByCategory) > 1;
+        @endphp
+        
+        @if($showCategory)
+        <div class="cat-header">{{ $displayCategory }}</div>
+        @endif
+
         @foreach($experiences as $exp)
-        <div class="exp-item">
-            <div class="exp-line1">
-                <span>{{ $exp['name'] }}</span>
-                <span>{{ \Carbon\Carbon::parse($exp['date_start'])->locale($currentLocale)->isoFormat('MMM YYYY') }} – {{ $exp['date_end'] ? \Carbon\Carbon::parse($exp['date_end'])->locale($currentLocale)->isoFormat('MMM YYYY') : 'Present' }}</span>
+        <div class="entry">
+            <div class="entry-header clearfix">
+                <div style="float: left; width: 75%;">
+                    <span class="entry-title">{{ $exp['name'] }}</span>
+                    @if(!empty($exp['InstitutionName']))
+                     — <span class="entry-subtitle">{{ $exp['InstitutionName'] }}</span>
+                    @endif
+                    @if(!empty($cvInformation['personalInformation']['city']))
+                    , {{ $cvInformation['personalInformation']['city'] }}
+                    @endif
+                </div>
+                <div class="entry-date">{{ \Carbon\Carbon::parse($exp['date_start'])->locale($currentLocale)->isoFormat('MMM YYYY') }} – {{ $exp['date_end'] ? \Carbon\Carbon::parse($exp['date_end'])->locale($currentLocale)->isoFormat('MMM YYYY') : ($currentLocale === 'fr' ? 'Présent' : 'Present') }}</div>
             </div>
-            <div class="exp-line2">{{ $exp['InstitutionName'] }}, {{ $cvInformation['personalInformation']['city'] ?? '' }}</div>
-            <div class="content-text">{!! $exp['description'] !!}</div>
+            
+            <div class="content-text">
+                {!! $exp['description'] !!}
+            </div>
         </div>
         @endforeach
     @endforeach
     
-    @if(!empty($cvInformation['certifications']))
-    <div class="section-title">{{ $currentLocale === 'fr' ? 'Certifications' : 'Certifications' }}</div>
-    <ul style="padding-left: 5mm; margin: 0;">
-        @foreach($cvInformation['certifications'] as $cert)
-        <li style="margin-bottom: 1mm;">
-            <strong>{{ $cert['name'] }}</strong> 
-            @if(!empty($cert['institution'])) - {{ $cert['institution'] }} @endif 
-            @if(!empty($cert['date'])) ({{ $cert['date'] }}) @endif
-        </li>
-        @endforeach
-    </ul>
-    @endif
-
-    <div class="section-title">{{ $currentLocale === 'fr' ? 'Compétences & Langues' : 'Skills & Languages' }}</div>
-    <div class="content-text">
-        <ul style="display: flex; flex-wrap: wrap; list-style: none; padding: 0; gap: 10px;">
-        @foreach($cvInformation['competences'] as $comp)
-            <li>• {{ $currentLocale === 'fr' ? $comp['name'] : $comp['name_en'] }}</li>
-        @endforeach
-        </ul>
-        <div style="margin-top: 2mm;">
-            @if(!empty($cvInformation['languages']))
-            <strong>{{ $currentLocale === 'fr' ? 'Langues' : 'Languages' }}:</strong> 
-            @foreach($cvInformation['languages'] as $lang)
-            {{ $lang['name'] }} ({{ $lang['level'] }})@if(!$loop->last), @endif
+    <!-- Bottom Grid: Education/Certs Left | Skills right -->
+    <div class="bottom-grid">
+        <div class="col-left">
+            @if(!empty($cvInformation['certifications']))
+            <div class="section-title">{{ $currentLocale === 'fr' ? 'Éducation et Certifications' : 'Education & Certifications' }}</div>
+            @foreach($cvInformation['certifications'] as $cert)
+            <div class="entry" style="margin-bottom: 8px;">
+                <div class="clearfix">
+                    <span style="font-weight: bold; display: block;">{{ $cert['name'] }}</span>
+                    @if(!empty($cert['institution'])) 
+                    <span style="display: block; font-size: 9.5pt;">{{ $cert['institution'] }} @if(!empty($cert['date'])) | {{ $cert['date'] }} @endif</span>
+                    @endif
+                </div>
+            </div>
             @endforeach
             @endif
         </div>
-        <div style="margin-top: 2mm;">
-            @if(!empty($cvInformation['hobbies']))
-            <strong>{{ $currentLocale === 'fr' ? 'Intérêts' : 'Interests' }}:</strong> 
-            {{ collect($cvInformation['hobbies'])->map(fn($h) => $currentLocale === 'fr' ? $h['name'] : $h['name_en'])->join(', ') }}
+
+        <div class="col-right">
+            @if(!empty($cvInformation['competences']) || !empty($cvInformation['languages']))
+            <div class="section-title">{{ $currentLocale === 'fr' ? 'Compétences' : 'Skills' }}</div>
+            
+            @if(!empty($cvInformation['competences']))
+            <div style="margin-bottom: 12px;">
+                <div style="font-weight: bold; font-size: 9.5pt; margin-bottom: 4px; text-decoration: underline;">{{ $currentLocale === 'fr' ? 'Techniques' : 'Technical' }}</div>
+                <ul class="skills-list" style="display: block;">
+                @foreach($cvInformation['competences'] as $comp)
+                    <li style="display: inline-block; margin-right: 5px;">• {{ $currentLocale === 'fr' ? $comp['name'] : $comp['name_en'] }}</li>
+                @endforeach
+                </ul>
+            </div>
+            @endif
+
+            @if(!empty($cvInformation['languages']))
+            <div>
+                <div style="font-weight: bold; font-size: 9.5pt; margin-bottom: 4px; text-decoration: underline;">{{ $currentLocale === 'fr' ? 'Langues' : 'Languages' }}</div>
+                <ul class="skills-list" style="display: block;">
+                @foreach($cvInformation['languages'] as $lang)
+                    <li style="margin-bottom: 2px;">• <strong>{{ $lang['name'] }}</strong>: {{ $lang['level'] }}</li>
+                @endforeach
+                </ul>
+            </div>
+            @endif
             @endif
         </div>
     </div>
+
 </body>
 <x-cv-editable-scripts />
 </html>

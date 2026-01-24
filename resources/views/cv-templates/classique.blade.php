@@ -21,7 +21,7 @@
         /* HEADER CENTRÉ CLASSIQUE */
         .header { text-align: center; margin-bottom: 8mm; border-bottom: 1px solid #000; padding-bottom: 5mm; }
         
-        .name { font-size: 20pt; text-transform: uppercase; letter-spacing: 1px; font-weight: 700; margin-bottom: 2mm; }
+        .name { font-size: 18pt; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 700; margin-bottom: 2mm; }
         .title { font-size: 12pt; font-style: italic; margin-bottom: 2mm; }
         
         .contact-info { font-size: 10pt; font-family: 'Arial', sans-serif; }

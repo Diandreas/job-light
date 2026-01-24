@@ -20,7 +20,7 @@
         .cv-container { max-width: 100%; border: 4px double #000; padding: 5mm; min-height: 280mm; }
 
         .header { text-align: center; border-bottom: 2px solid #000; padding-bottom: 4mm; margin-bottom: 6mm; }
-        .name { font-size: 24pt; font-weight: bold; text-transform: uppercase; margin-bottom: 2mm; text-decoration: underline; }
+        .name { font-size: 16pt; font-weight: bold; text-transform: uppercase; margin-bottom: 2mm; text-decoration: underline; }
         
         .info-table { width: 100%; border-collapse: collapse; margin-bottom: 6mm; font-size: 10pt; }
         .info-table td { border: 1px solid #000; padding: 2mm; }

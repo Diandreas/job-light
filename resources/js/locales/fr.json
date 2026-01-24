@@ -689,6 +689,8 @@
             "change_model": "Changer de modèle",
             "edit_cv": "Modifier le CV"
         },
+        "change_model": "Changer de modèle",
+        "download_pdf": "Télécharger PDF",
         "loading": "Chargement...",
         "free": "Gratuit",
         "tokens": "tokens",

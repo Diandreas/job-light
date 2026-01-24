@@ -11,7 +11,7 @@ interface CvModel {
     description: string;
     price: number;
     previewImagePath: string;
-    templatePath: string;
+    viewPath: string;
     created_at: string;
     updated_at: string;
 }
@@ -117,10 +117,10 @@ export default function Show({ cvModel }: Props) {
 
                                 <div>
                                     <label className="text-sm font-medium text-gray-500 dark:text-gray-400">
-                                        Template Path
+                                        View Path (Blade Template)
                                     </label>
                                     <p className="mt-1 text-sm text-gray-600 dark:text-gray-300 font-mono bg-gray-100 dark:bg-gray-800 p-2 rounded">
-                                        {cvModel.templatePath || 'Not specified'}
+                                        {cvModel.viewPath || 'Not specified'}
                                     </p>
                                 </div>
 
@@ -170,10 +170,10 @@ export default function Show({ cvModel }: Props) {
 
                                     <div className="flex items-center justify-between">
                                         <span className="text-sm font-medium text-gray-500 dark:text-gray-400">
-                                            Template File
+                                            Blade Template
                                         </span>
-                                        <Badge variant={cvModel.templatePath ? "default" : "destructive"}>
-                                            {cvModel.templatePath ? "Available" : "Missing"}
+                                        <Badge variant={cvModel.viewPath ? "default" : "destructive"}>
+                                            {cvModel.viewPath ? "Available" : "Missing"}
                                         </Badge>
                                     </div>
                                 </div>

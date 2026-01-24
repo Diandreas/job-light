@@ -31,7 +31,7 @@ interface Props {
     };
 }
 
-export default function Index({ auth, cvModels, filters }: Props) {
+export default function Index({ auth, cvModels, filters = {} }: Props) {
     const [search, setSearch] = useState(filters.search || '');
 
     const handleSearch = () => {
@@ -88,7 +88,7 @@ export default function Index({ auth, cvModels, filters }: Props) {
 
                 {/* CV Models Grid */}
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                    {cvModels.data.map((model) => (
+                    {cvModels?.data?.map((model) => (
                         <Card key={model.id} className="overflow-hidden">
                             <div className="aspect-[3/4] relative">
                                 {model.previewImagePath ? (
@@ -148,7 +148,7 @@ export default function Index({ auth, cvModels, filters }: Props) {
                 </div>
 
                 {/* Empty State */}
-                {cvModels.data.length === 0 && (
+                {cvModels?.data?.length === 0 && (
                     <Card>
                         <CardContent className="py-16">
                             <div className="text-center">
@@ -172,11 +172,10 @@ export default function Index({ auth, cvModels, filters }: Props) {
                     </Card>
                 )}
 
-                {/* Pagination */}
-                {cvModels.links && cvModels.data.length > 0 && (
+                {cvModels?.links && cvModels?.data?.length > 0 && (
                     <div className="flex items-center justify-between">
                         <div className="text-sm text-gray-700 dark:text-gray-300">
-                            Page {cvModels.current_page} of {cvModels.last_page}
+                            Page {cvModels?.current_page} of {cvModels?.last_page}
                         </div>
                         <div className="flex space-x-1">
                             {cvModels.links.map((link, index) => (
@@ -184,8 +183,8 @@ export default function Index({ auth, cvModels, filters }: Props) {
                                     key={index}
                                     href={link.url}
                                     className={`px-3 py-2 text-sm rounded-md ${link.active
-                                            ? 'bg-amber-500 text-white'
-                                            : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700'
+                                        ? 'bg-amber-500 text-white'
+                                        : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700'
                                         }`}
                                     dangerouslySetInnerHTML={{ __html: link.label }}
                                 />

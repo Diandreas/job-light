@@ -13,10 +13,18 @@ use Inertia\Inertia;
 
 class CvModelController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
+        $query = CvModel::query();
+
+        if ($request->has('search')) {
+            $query->where('name', 'like', '%' . $request->search . '%')
+                  ->orWhere('description', 'like', '%' . $request->search . '%');
+        }
+
         return Inertia::render('Admin/CvModels/Index', [
-            'cvModels' => CvModel::all(),
+            'cvModels' => $query->latest()->paginate(12)->withQueryString(),
+            'filters' => $request->only(['search']),
         ]);
     }
     public function userCvModels()

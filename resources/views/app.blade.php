@@ -164,8 +164,8 @@
                 });
             }
         } else {
-            // Version mise à jour du Service Worker (v2)
-            navigator.serviceWorker.register('/sw.js?v=2')
+            // Version mise à jour du Service Worker (v3)
+            navigator.serviceWorker.register('/sw.js?v=3')
                 .then(registration => {
                     console.log('ServiceWorker registration successful with scope: ', registration.scope);
                 })

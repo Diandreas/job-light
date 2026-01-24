@@ -1,4 +1,4 @@
-const CACHE_NAME = 'guidy-v1';
+const CACHE_NAME = 'guidy-v2';
 const urlsToCache = [
     '/',
     '/index.php',
@@ -13,11 +13,14 @@ const urlsToIgnore = [
     '/auth/',
     '/login',
     '/callback',
-    '/api/auth'
+    '/api/auth',
+    '/sanctum',
+    '/csrf-cookie'
 ];
 
 // Installation du service worker
 self.addEventListener('install', event => {
+    self.skipWaiting(); // Force activation immediately
     event.waitUntil(
         caches.open(CACHE_NAME)
             .then(cache => {
@@ -37,6 +40,11 @@ function shouldIgnoreRequest(url) {
 // Récupération des ressources
 self.addEventListener('fetch', event => {
     const url = event.request.url;
+
+    // Ignorer les requêtes avec un schéma non supporté (ex: chrome-extension://)
+    if (!url.startsWith('http')) {
+        return;
+    }
 
     // Ignorer les requêtes liées à l'authentification
     if (shouldIgnoreRequest(url)) {

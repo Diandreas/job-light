@@ -1,9 +1,11 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { motion, useScroll, useTransform, AnimatePresence } from 'framer-motion';
 import { Mail, Phone, MapPin, Calendar, Code, Zap, Terminal, ChevronRight, FileText, ExternalLink } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { DesignProps } from './index';
 
 const NeonDesign: React.FC<DesignProps> = ({ user, cvData, settings, isPreview = false }) => {
+    const { t } = useTranslation();
     const [glitchText, setGlitchText] = useState(user?.name || 'User Name');
     const [scanlinePosition, setScanlinePosition] = useState(0);
     const containerRef = useRef<HTMLDivElement>(null);

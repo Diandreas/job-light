@@ -9,7 +9,7 @@ import {
     Github, PencilIcon, Sparkles, CircleChevronRight, Star,
     Camera, Upload, FileUp, Bot, AlertCircle, X, Plus, Menu, Coins, Trash2, Globe,
     ArrowRight, Play, SkipForward, HelpCircle, Check, Award,
-    Loader2, RefreshCw, RotateCcw, Settings
+    Loader2, RefreshCw, RotateCcw, Settings, Eye
 } from 'lucide-react';
 import axios from 'axios';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';

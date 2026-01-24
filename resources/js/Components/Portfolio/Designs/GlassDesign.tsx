@@ -1,9 +1,11 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { motion, useScroll, useTransform, AnimatePresence } from 'framer-motion';
 import { Mail, Phone, MapPin, Calendar, Globe, ChevronDown, Star, FileText, ExternalLink } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { DesignProps } from './index';
 
 const GlassDesign: React.FC<DesignProps> = ({ user, cvData, settings, isPreview = false }) => {
+    const { t } = useTranslation();
     const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
     const [currentSection, setCurrentSection] = useState(0);
     const containerRef = useRef<HTMLDivElement>(null);

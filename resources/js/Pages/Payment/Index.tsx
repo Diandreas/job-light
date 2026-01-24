@@ -398,7 +398,7 @@ export default function Index({ auth, paypalConfig }) {
     const user = auth?.user;
 
     const initialOptions = {
-        "client-id": paypalConfig?.clientId || "test",
+        clientId: paypalConfig?.clientId || "test",
         currency: "EUR",
         intent: "capture",
     };

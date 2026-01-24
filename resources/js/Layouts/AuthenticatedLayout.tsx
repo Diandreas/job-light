@@ -686,7 +686,7 @@ export default function Authenticated({ user, header, children, hideHeaderOnMobi
                                             <ChevronDown className="hidden lg:block h-4 w-4 text-gray-400" />
                                         </button>
                                     </Dropdown.Trigger>
-                                    <Dropdown.Content className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl shadow-xl min-w-[180px]">
+                                    <Dropdown.Content contentClasses="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl shadow-xl min-w-[180px]">
                                         <div className="px-3 py-2 border-b border-gray-100 dark:border-gray-800">
                                             <p className="text-sm font-medium text-gray-900 dark:text-white">{user.name}</p>
                                             <p className="text-xs text-gray-500 dark:text-gray-400 truncate">{user.email}</p>

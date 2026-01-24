@@ -296,57 +296,77 @@ const NeonDesign: React.FC<DesignProps> = ({ user, cvData, settings, isPreview =
                             <h2 className="text-3xl font-bold mb-12 text-center font-mono">
                                 <NeonText color="green">{'[ WORK_HISTORY ]'}</NeonText>
                             </h2>
-                            <div className="space-y-6">
-                                {experiences.map((exp: any, index: number) => (
-                                    <motion.div
-                                        key={index}
-                                        initial={{ opacity: 0, x: -100 }}
-                                        whileInView={{ opacity: 1, x: 0 }}
-                                        viewport={{ once: true }}
-                                        transition={{ delay: index * 0.2 }}
-                                        className="relative p-6 bg-gray-900/30 border border-green-500/30 rounded font-mono"
-                                        whileHover={{
-                                            borderColor: 'rgba(0, 255, 0, 0.8)',
-                                            boxShadow: '0 0 30px rgba(0, 255, 0, 0.2)'
-                                        }}
-                                    >
-                                        <div className="flex items-start space-x-4">
-                                            <ChevronRight className="w-6 h-6 text-green-400 mt-1 flex-shrink-0" />
-                                            <div className="flex-1">
-                                                <h3 className="text-xl font-semibold mb-2">
-                                                    <NeonText color="cyan">{exp.name}</NeonText>
-                                                </h3>
-                                                <p className="text-pink-400 mb-2">
-                                                    @ {exp.InstitutionName}
-                                                </p>
-                                                <p className="text-yellow-400 mb-4 flex items-center">
-                                                    <Calendar className="w-4 h-4 mr-2" />
-                                                    {exp.date_start} - {exp.date_end || 'CURRENT'}
-                                                </p>
-                                                {exp.description && (
-                                                    <p className="text-gray-300 leading-relaxed">
-                                                        <span className="text-gray-500">// </span>
-                                                        {exp.description}
-                                                    </p>
-                                                )}
-                                                {exp.attachment_path && (
-                                                    <div className="mt-4">
-                                                        <a
-                                                            href={exp.attachment_path}
-                                                            target="_blank"
-                                                            rel="noopener noreferrer"
-                                                            className="inline-flex items-center gap-2 px-4 py-2 bg-black/80 hover:bg-green-400/10 border-2 border-green-400 rounded text-sm text-green-400 transition-all duration-300 hover:shadow-[0_0_20px_rgba(34,197,94,0.5)]"
-                                                        >
-                                                            <FileText className="w-4 h-4" />
-                                                            {exp.attachment_name || 'view_document.exe'}
-                                                            <ExternalLink className="w-3 h-3" />
-                                                        </a>
-                                                    </div>
-                                                )}
+                            <div className="space-y-12">
+                                {(() => {
+                                    const groups = experiences.reduce((acc: any, exp: any) => {
+                                        let cat = exp.category_name || t('portfolio.categories.other');
+                                        if (!acc[cat]) acc[cat] = [];
+                                        acc[cat].push(exp);
+                                        return acc;
+                                    }, {});
+
+                                    return Object.entries(groups).map(([category, catExperiences]: [string, any], groupIndex) => (
+                                        <div key={category} className="space-y-6">
+                                            <h3 className="text-xs font-mono font-black text-green-500/50 uppercase tracking-[0.4em] flex items-center gap-4">
+                                                <span>{category}</span>
+                                                <div className="h-px bg-green-500/10 flex-1" />
+                                            </h3>
+
+                                            <div className="grid gap-6">
+                                                {catExperiences.map((exp: any, index: number) => (
+                                                    <motion.div
+                                                        key={index}
+                                                        initial={{ opacity: 0, x: -50 }}
+                                                        whileInView={{ opacity: 1, x: 0 }}
+                                                        viewport={{ once: true }}
+                                                        transition={{ delay: index * 0.1 }}
+                                                        className="relative p-6 bg-black/40 border border-green-500/20 rounded-lg font-mono group hover:border-green-400/60 transition-all duration-300"
+                                                    >
+                                                        <div className="flex flex-col md:flex-row md:items-start justify-between gap-4">
+                                                            <div className="flex-1 space-y-4">
+                                                                <div className="flex items-center gap-3">
+                                                                    <ChevronRight className="w-5 h-5 text-green-400 group-hover:translate-x-1 transition-transform" />
+                                                                    <div>
+                                                                        <h4 className="text-xl font-bold">
+                                                                            <NeonText color="cyan">{exp.name}</NeonText>
+                                                                        </h4>
+                                                                        <p className="text-pink-400 text-sm">
+                                                                            @ {exp.InstitutionName}
+                                                                        </p>
+                                                                    </div>
+                                                                </div>
+
+                                                                {exp.description && (
+                                                                    <div
+                                                                        className="text-gray-400 text-sm leading-relaxed rich-text-neon"
+                                                                        dangerouslySetInnerHTML={{ __html: exp.description }}
+                                                                    />
+                                                                )}
+
+                                                                <style>{`
+                                                                    .rich-text-neon ul { list-style-type: '>> ' !important; padding-left: 1.5rem !important; margin-top: 1rem !important; color: #4ade80 !important; }
+                                                                    .rich-text-neon li { margin-bottom: 0.5rem !important; }
+                                                                    .rich-text-neon p { margin-bottom: 1rem !important; }
+                                                                `}</style>
+                                                            </div>
+
+                                                            <div className="flex flex-col items-end gap-3 shrink-0 text-xs">
+                                                                <span className="px-3 py-1 bg-green-500/10 border border-green-500/30 text-green-400 font-bold">
+                                                                    {exp.date_start && exp.date_end ?
+                                                                        `${new Date(exp.date_start).getFullYear()} - ${new Date(exp.date_end).getFullYear()}` :
+                                                                        exp.date_start ?
+                                                                            `${new Date(exp.date_start).getFullYear()} - PRESENT` :
+                                                                            'UNKNOWN'
+                                                                    }
+                                                                </span>
+                                                            </div>
+                                                        </div>
+                                                    </motion.div>
+                                                ))}
                                             </div>
                                         </div>
-                                    </motion.div>
-                                ))}
+                                    ));
+                                })()}
                             </div>
                         </NeonCard>
                     </section>

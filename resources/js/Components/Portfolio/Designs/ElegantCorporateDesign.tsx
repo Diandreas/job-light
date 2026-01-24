@@ -144,135 +144,59 @@ const TimelineItem = ({
     index: number;
     isLast: boolean;
 }) => {
+    const { t } = useTranslation();
     return (
         <motion.div
             initial={{ opacity: 0, x: -50 }}
             whileInView={{ opacity: 1, x: 0 }}
-            transition={{ delay: index * 0.2, duration: 0.8 }}
+            transition={{ delay: index * 0.1, duration: 0.8 }}
             viewport={{ once: true }}
-            className="relative flex gap-6 pb-8"
+            className="relative flex gap-8 pb-12"
         >
-            {/* Timeline line */}
             {!isLast && (
-                <div className="absolute left-6 top-12 w-0.5 h-full bg-gradient-to-b from-indigo-400 to-purple-400" />
+                <div className="absolute left-6 top-12 w-0.5 h-full bg-gradient-to-b from-indigo-200 to-transparent" />
             )}
 
-            {/* Timeline dot */}
             <motion.div
                 initial={{ scale: 0 }}
                 whileInView={{ scale: 1 }}
-                transition={{ delay: index * 0.2 + 0.5, duration: 0.5 }}
-                viewport={{ once: true }}
-                className="relative z-10 w-12 h-12 rounded-full bg-gradient-to-r from-indigo-500 to-purple-500 flex items-center justify-center shadow-lg"
+                className="relative z-10 w-12 h-12 rounded-2xl bg-indigo-50 border border-indigo-100 flex items-center justify-center shadow-sm shrink-0"
             >
-                <Building className="w-6 h-6 text-white" />
+                <Building className="w-5 h-5 text-indigo-600" />
             </motion.div>
 
-            {/* Content */}
-            <div className="flex-1 pt-2">
-                <ElegantCard gradient="indigo" delay={index * 0.2 + 0.3} className="p-6">
-                    <div className="flex items-start justify-between mb-4">
-                        <div>
-                            <h3 className="text-xl font-bold text-gray-900 mb-1">
-                                {experience.name}
-                            </h3>
-                            <p className="text-indigo-600 font-semibold">
-                                {experience.InstitutionName}
-                            </p>
+            <div className="flex-1 pt-1">
+                <div className="flex flex-col md:flex-row md:items-baseline md:justify-between gap-4 mb-4">
+                    <div>
+                        <h4 className="text-2xl font-bold text-gray-900 mb-1">
+                            {experience.name}
+                        </h4>
+                        <div className="text-indigo-600 font-bold uppercase tracking-widest text-sm">
+                            {experience.InstitutionName}
                         </div>
-                        <Badge variant="secondary" className="bg-indigo-50 text-indigo-700 border-indigo-200">
-                            <Calendar className="w-3 h-3 mr-1" />
-                            {experience.date_start && experience.date_end ?
-                                `${new Date(experience.date_start).toLocaleDateString('fr-FR', { month: 'short', year: 'numeric' })} - ${new Date(experience.date_end).toLocaleDateString('fr-FR', { month: 'short', year: 'numeric' })}` :
-                                experience.date_start ?
-                                    `${new Date(experience.date_start).toLocaleDateString('fr-FR', { month: 'short', year: 'numeric' })} - Présent` :
-                                    'Période non spécifiée'
-                            }
-                        </Badge>
                     </div>
-                    {experience.description && (
-                        <p className="text-gray-600 leading-relaxed mb-3">
-                            {safeText(experience.description)}
-                        </p>
-                    )}
+                    <span className="px-4 py-1.5 bg-gray-50 border border-gray-100 rounded-full text-gray-600 font-bold text-xs whitespace-nowrap">
+                        {experience.date_start && experience.date_end ?
+                            `${new Date(experience.date_start).getFullYear()} — ${new Date(experience.date_end).getFullYear()}` :
+                            experience.date_start ?
+                                `${new Date(experience.date_start).getFullYear()} — PRESENT` :
+                                'TBD'
+                        }
+                    </span>
+                </div>
 
-                    {/* Informations détaillées */}
-                    <div className="space-y-2 mb-3">
-                        {(experience.date_start || experience.date_end) && (
-                            <div className="flex items-center gap-2 text-xs text-gray-500">
-                                <Calendar className="w-3 h-3" />
-                                <span>
-                                    {experience.date_start && new Date(experience.date_start).toLocaleDateString('fr-FR')}
-                                    {experience.date_start && experience.date_end && ' - '}
-                                    {experience.date_end && new Date(experience.date_end).toLocaleDateString('fr-FR')}
-                                </span>
-                            </div>
-                        )}
+                {experience.description && (
+                    <div
+                        className="prose prose-slate max-w-none text-gray-600 leading-relaxed rich-text-corporate"
+                        dangerouslySetInnerHTML={{ __html: experience.description }}
+                    />
+                )}
 
-                        {experience.output && (
-                            <div className="flex items-center gap-2 text-xs text-gray-500">
-                                <MapPin className="w-3 h-3" />
-                                <span>Résultats: {experience.output}</span>
-                            </div>
-                        )}
-
-                        {experience.category_name && (
-                            <div className="mb-3">
-                                <Badge variant="outline" className="text-xs border-indigo-200 text-indigo-600">
-                                    {experience.category_name}
-                                </Badge>
-                            </div>
-                        )}
-                    </div>
-
-                    {/* Références */}
-                    {experience.references && experience.references.length > 0 && (
-                        <div className="mt-3 p-3 bg-indigo-50 rounded-lg border border-indigo-100">
-                            <h4 className="text-sm font-medium text-indigo-700 mb-2">Références :</h4>
-                            <div className="space-y-2">
-                                {experience.references.map((ref, refIndex) => (
-                                    <div key={refIndex} className="text-xs text-gray-600">
-                                        <div className="font-medium text-indigo-700">{ref.name}</div>
-                                        {ref.function && <div>Fonction: {ref.function}</div>}
-                                        {ref.email && <div>Email: {ref.email}</div>}
-                                        {ref.telephone && <div>Tél: {ref.telephone}</div>}
-                                    </div>
-                                ))}
-                            </div>
-                        </div>
-                    )}
-
-                    {/* Pièces jointes */}
-                    {experience.attachment_path && (
-                        <div className="mt-3">
-                            <a
-                                href={experience.attachment_path}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="inline-flex items-center gap-2 px-3 py-2 bg-indigo-50 hover:bg-indigo-100 border border-indigo-200 rounded-lg text-sm text-indigo-700 transition-all duration-300"
-                            >
-                                <FileText className="w-4 h-4" />
-                                {experience.attachment_name || 'Voir le document'}
-                                <ExternalLink className="w-3 h-3" />
-                            </a>
-                        </div>
-                    )}
-
-                    {/* Skills tags if available */}
-                    {experience.skills && (
-                        <div className="flex flex-wrap gap-2 mt-4">
-                            {experience.skills.slice(0, 3).map((skill: string, skillIndex: number) => (
-                                <Badge
-                                    key={skillIndex}
-                                    variant="outline"
-                                    className="text-xs bg-white/50"
-                                >
-                                    {skill}
-                                </Badge>
-                            ))}
-                        </div>
-                    )}
-                </ElegantCard>
+                <style>{`
+                    .rich-text-corporate ul { list-style-type: disc !important; padding-left: 1.5rem !important; margin-top: 1rem !important; }
+                    .rich-text-corporate li { margin-bottom: 0.5rem !important; }
+                    .rich-text-corporate p { margin-bottom: 1rem !important; }
+                `}</style>
             </div>
         </motion.div>
     );

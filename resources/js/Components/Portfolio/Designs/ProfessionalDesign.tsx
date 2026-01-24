@@ -174,107 +174,80 @@ export default function ProfessionalDesign({
                                             <h2 className="text-2xl font-bold text-slate-800">{t('portfolio.sections.experiences')}</h2>
                                         </div>
 
-                                        <div className="space-y-6">
-                                            {cvData.experiences.map((exp, index) => (
-                                                <motion.div
-                                                    key={index}
-                                                    initial={{ opacity: 0, x: -20 }}
-                                                    animate={{ opacity: 1, x: 0 }}
-                                                    transition={{ delay: 0.8 + index * 0.1 }}
-                                                    className="border-l-2 pl-6 relative"
-                                                    style={{ borderColor: `${primaryColor}30` }}
-                                                >
-                                                    <div
-                                                        className="absolute -left-2 w-4 h-4 rounded-full"
-                                                        style={{ backgroundColor: primaryColor }}
-                                                    />
+                                        <div className="space-y-12">
+                                            {(() => {
+                                                const groups = cvData.experiences.reduce((acc: any, exp: any) => {
+                                                    let cat = exp.category_name || t('portfolio.categories.other');
+                                                    if (!acc[cat]) acc[cat] = [];
+                                                    acc[cat].push(exp);
+                                                    return acc;
+                                                }, {});
 
-                                                    <div className="bg-slate-50 rounded-lg p-4">
-                                                        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-2">
-                                                            <h3 className="text-lg font-semibold text-slate-800">
-                                                                {exp.name}
-                                                            </h3>
-                                                            <Badge variant="secondary" className="w-fit">
-                                                                {exp.date_start && exp.date_end ?
-                                                                    `${new Date(exp.date_start).toLocaleDateString('fr-FR', { month: 'short', year: 'numeric' })} ${t('portfolio.dates.to')} ${new Date(exp.date_end).toLocaleDateString('fr-FR', { month: 'short', year: 'numeric' })}` :
-                                                                    exp.date_start ?
-                                                                        `${new Date(exp.date_start).toLocaleDateString('fr-FR', { month: 'short', year: 'numeric' })} - ${t('portfolio.dates.present')}` :
-                                                                        t('portfolio.dates.periodNotSpecified')
-                                                                }
-                                                            </Badge>
-                                                        </div>
-                                                        <p className="text-slate-600 font-medium mb-2">
-                                                            {exp.InstitutionName}
-                                                        </p>
-                                                        {exp.description && (
-                                                            <p className="text-slate-600 text-sm leading-relaxed mb-3">
-                                                                {safeText(exp.description)}
-                                                            </p>
-                                                        )}
+                                                return Object.entries(groups).map(([category, experiences]: [string, any], groupIndex) => (
+                                                    <div key={category} className="space-y-6">
+                                                        <h3 className="text-sm font-extrabold text-slate-400 uppercase tracking-widest flex items-center gap-4">
+                                                            <span>{category}</span>
+                                                            <div className="h-px bg-slate-100 flex-1" />
+                                                        </h3>
 
-                                                        {/* Dates précises */}
-                                                        {(exp.date_start || exp.date_end) && (
-                                                            <div className="flex items-center gap-2 text-xs text-slate-500 mb-2">
-                                                                <Calendar className="w-3 h-3" />
-                                                                <span>
-                                                                    {exp.date_start && new Date(exp.date_start).toLocaleDateString('fr-FR')}
-                                                                    {exp.date_start && exp.date_end && ' - '}
-                                                                    {exp.date_end && new Date(exp.date_end).toLocaleDateString('fr-FR')}
-                                                                </span>
-                                                            </div>
-                                                        )}
-
-                                                        {/* Institution si différente de l'entreprise */}
-                                                        {exp.output && (
-                                                            <div className="flex items-center gap-2 text-xs text-slate-500 mb-2">
-                                                                <MapPin className="w-3 h-3" />
-                                                                <span>Résultats: {exp.output}</span>
-                                                            </div>
-                                                        )}
-
-                                                        {/* Catégorie */}
-                                                        {exp.category_name && (
-                                                            <div className="mb-3">
-                                                                <Badge variant="outline" className="text-xs">
-                                                                    {exp.category_name}
-                                                                </Badge>
-                                                            </div>
-                                                        )}
-
-                                                        {/* Références */}
-                                                        {exp.references && exp.references.length > 0 && (
-                                                            <div className="mt-3 p-3 bg-slate-50 rounded-lg">
-                                                                <h4 className="text-sm font-medium text-slate-700 mb-2">{t('portfolio.references.title')}</h4>
-                                                                <div className="space-y-2">
-                                                                    {exp.references.map((ref, refIndex) => (
-                                                                        <div key={refIndex} className="text-xs text-slate-600">
-                                                                            <div className="font-medium">{ref.name}</div>
-                                                                            {ref.function && <div>{t('portfolio.references.function')}: {ref.function}</div>}
-                                                                            {ref.email && <div>Email: {ref.email}</div>}
-                                                                            {ref.telephone && <div>{t('portfolio.references.phone')}: {ref.telephone}</div>}
-                                                                        </div>
-                                                                    ))}
-                                                                </div>
-                                                            </div>
-                                                        )}
-
-                                                        {exp.attachment_path && (
-                                                            <div className="mt-3">
-                                                                <a
-                                                                    href={exp.attachment_path}
-                                                                    target="_blank"
-                                                                    rel="noopener noreferrer"
-                                                                    className="inline-flex items-center gap-2 px-3 py-2 bg-slate-100 hover:bg-slate-200 rounded-lg text-sm text-slate-700 transition-colors"
+                                                        <div className="space-y-8">
+                                                            {experiences.map((exp: any, index: number) => (
+                                                                <motion.div
+                                                                    key={index}
+                                                                    initial={{ opacity: 0, x: -10 }}
+                                                                    animate={{ opacity: 1, x: 0 }}
+                                                                    transition={{ delay: 0.1 * index }}
+                                                                    className="group relative pl-8 border-l-2 border-slate-100 hover:border-primary/30 transition-colors"
                                                                 >
-                                                                    <FileText className="w-4 h-4" />
-                                                                    {exp.attachment_name || t('portfolio.attachments.viewDocument')}
-                                                                    <ExternalLink className="w-3 h-3" />
-                                                                </a>
-                                                            </div>
-                                                        )}
+                                                                    <div className="absolute -left-[5px] top-0 w-2 h-2 rounded-full bg-slate-200 group-hover:bg-primary transition-colors" />
+
+                                                                    <div className="flex flex-col md:flex-row md:items-baseline md:justify-between gap-2 mb-2">
+                                                                        <h4 className="text-xl font-bold text-slate-900 leading-tight">
+                                                                            {exp.name}
+                                                                        </h4>
+                                                                        <span className="text-sm font-semibold px-3 py-1 bg-slate-50 text-slate-600 rounded-full border border-slate-100 whitespace-nowrap">
+                                                                            {exp.date_start && exp.date_end ?
+                                                                                `${new Date(exp.date_start).getFullYear()} — ${new Date(exp.date_end).getFullYear()}` :
+                                                                                exp.date_start ?
+                                                                                    `${new Date(exp.date_start).getFullYear()} — ${t('portfolio.dates.present')}` :
+                                                                                    t('portfolio.dates.periodNotSpecified')
+                                                                            }
+                                                                        </span>
+                                                                    </div>
+
+                                                                    <div className="text-primary font-bold text-lg mb-4 opacity-80 uppercase tracking-wide">
+                                                                        {exp.InstitutionName}
+                                                                    </div>
+
+                                                                    {exp.description && (
+                                                                        <div
+                                                                            className=" prose prose-slate max-w-none text-slate-600 leading-relaxed rich-text-content"
+                                                                            dangerouslySetInnerHTML={{ __html: exp.description }}
+                                                                        />
+                                                                    )}
+
+                                                                    <style>{`
+                                                                        .rich-text-content ul { list-style-type: disc !important; padding-left: 1.5rem !important; margin-top: 1rem !important; }
+                                                                        .rich-text-content li { margin-bottom: 0.5rem !important; }
+                                                                        .rich-text-content p { margin-bottom: 1rem !important; }
+                                                                    `}</style>
+
+                                                                    {exp.references && exp.references.length > 0 && (
+                                                                        <div className="mt-6 flex flex-wrap gap-4">
+                                                                            {exp.references.map((ref: any, refIndex: number) => (
+                                                                                <div key={refIndex} className="text-xs bg-slate-50 border border-slate-100 p-2 rounded-md">
+                                                                                    <span className="block font-bold text-slate-700">{ref.name}</span>
+                                                                                    <span className="text-slate-500">{ref.function}</span>
+                                                                                </div>
+                                                                            ))}
+                                                                        </div>
+                                                                    )}
+                                                                </motion.div>
+                                                            ))}
+                                                        </div>
                                                     </div>
-                                                </motion.div>
-                                            ))}
+                                                ));
+                                            })()}
                                         </div>
                                     </CardContent>
                                 </Card>

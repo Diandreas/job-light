@@ -263,122 +263,91 @@ export default function ModernDesign({
                                 <p className="text-xl text-gray-300">{t('portfolio.sections.experiences')}</p>
                             </motion.div>
 
-                            <div className="space-y-8">
-                                {cvData.experiences.map((exp, index) => (
-                                    <motion.div
-                                        key={index}
-                                        initial={{ opacity: 0, y: 50 }}
-                                        whileInView={{ opacity: 1, y: 0 }}
-                                        viewport={{ once: true }}
-                                        transition={{ delay: index * 0.2, duration: 0.8 }}
-                                        whileHover={{ scale: 1.02, transition: { duration: 0.2 } }}
-                                    >
-                                        <Card className="bg-white/5 backdrop-blur-lg border border-white/10 hover:border-white/20 transition-all duration-300 overflow-hidden">
-                                            <CardContent className="p-8">
-                                                <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-6">
-                                                    <div className="flex-1">
-                                                        <div className="flex items-start gap-4 mb-4">
-                                                            <div
-                                                                className="p-3 rounded-lg shrink-0"
-                                                                style={{ backgroundColor: `${primaryColor}20` }}
-                                                            >
-                                                                <Briefcase className="w-6 h-6" style={{ color: primaryColor }} />
-                                                            </div>
-                                                            <div>
-                                                                <h3 className="text-2xl font-bold text-white mb-1">
-                                                                    {exp.name}
-                                                                </h3>
-                                                                <p className="text-xl text-blue-300 font-medium mb-2">
-                                                                    {exp.InstitutionName}
-                                                                </p>
-                                                            </div>
-                                                        </div>
+                            <div className="space-y-16">
+                                {(() => {
+                                    const groups = cvData.experiences.reduce((acc: any, exp: any) => {
+                                        let cat = exp.category_name || t('portfolio.categories.other');
+                                        if (!acc[cat]) acc[cat] = [];
+                                        acc[cat].push(exp);
+                                        return acc;
+                                    }, {});
 
-                                                        {exp.description && (
-                                                            <p className="text-gray-300 leading-relaxed mb-3">
-                                                                {safeText(exp.description)}
-                                                            </p>
-                                                        )}
+                                    return Object.entries(groups).map(([category, experiences]: [string, any], groupIndex) => (
+                                        <div key={category} className="space-y-8">
+                                            <h3 className="text-xs font-black text-blue-400/50 uppercase tracking-[0.3em] flex items-center gap-6">
+                                                <span>{category}</span>
+                                                <div className="h-px bg-white/10 flex-1" />
+                                            </h3>
 
-                                                        {/* Informations détaillées */}
-                                                        <div className="space-y-2 mb-3">
-                                                            {(exp.date_start || exp.date_end) && (
-                                                                <div className="flex items-center gap-2 text-xs text-gray-400">
-                                                                    <Calendar className="w-3 h-3" />
-                                                                    <span>
-                                                                        {exp.date_start && new Date(exp.date_start).toLocaleDateString('fr-FR')}
-                                                                        {exp.date_start && exp.date_end && ' - '}
-                                                                        {exp.date_end && new Date(exp.date_end).toLocaleDateString('fr-FR')}
-                                                                    </span>
-                                                                </div>
-                                                            )}
-
-                                                            {exp.output && (
-                                                                <div className="flex items-center gap-2 text-xs text-gray-400">
-                                                                    <MapPin className="w-3 h-3" />
-                                                                    <span>Institution: {exp.InstitutionName}</span>
-                                                                </div>
-                                                            )}
-
-                                                            {exp.category_name && (
-                                                                <div className="inline-block px-2 py-1 bg-white/10 backdrop-blur-sm border border-white/20 rounded text-xs text-white">
-                                                                    {exp.category_name}
-                                                                </div>
-                                                            )}
-                                                        </div>
-
-                                                        {/* Références */}
-                                                        {exp.references && exp.references.length > 0 && (
-                                                            <div className="mt-3 p-3 bg-white/5 backdrop-blur-sm border border-white/20 rounded-lg">
-                                                                <h4 className="text-sm font-medium text-white mb-2">Références :</h4>
-                                                                <div className="space-y-2">
-                                                                    {exp.references.map((ref, refIndex) => (
-                                                                        <div key={refIndex} className="text-xs text-gray-300">
-                                                                            <div className="font-medium text-white">{ref.name}</div>
-                                                                            {ref.function && <div>Fonction: {ref.function}</div>}
-                                                                            {ref.email && <div>Email: {ref.email}</div>}
-                                                                            {ref.telephone && <div>Tél: {ref.telephone}</div>}
-                                                                        </div>
-                                                                    ))}
-                                                                </div>
-                                                            </div>
-                                                        )}
-
-                                                        {exp.attachment_path && (
-                                                            <div className="mt-3">
-                                                                <a
-                                                                    href={exp.attachment_path}
-                                                                    target="_blank"
-                                                                    rel="noopener noreferrer"
-                                                                    className="inline-flex items-center gap-2 px-4 py-2 bg-white/10 hover:bg-white/20 backdrop-blur-sm border border-white/20 rounded-lg text-sm text-white transition-all duration-300"
-                                                                >
-                                                                    <FileText className="w-4 h-4" />
-                                                                    {exp.attachment_name || 'Voir le document'}
-                                                                    <ExternalLink className="w-3 h-3" />
-                                                                </a>
-                                                            </div>
-                                                        )}
-                                                    </div>
-
-                                                    <Badge
-                                                        className="text-white px-4 py-2 text-sm font-medium shrink-0"
-                                                        style={{
-                                                            background: `linear-gradient(135deg, ${secondaryColor}80, ${primaryColor}80)`,
-                                                            backdropFilter: 'blur(8px)'
-                                                        }}
+                                            <div className="grid gap-8">
+                                                {experiences.map((exp: any, index: number) => (
+                                                    <motion.div
+                                                        key={index}
+                                                        initial={{ opacity: 0, y: 20 }}
+                                                        whileInView={{ opacity: 1, y: 0 }}
+                                                        viewport={{ once: true }}
+                                                        transition={{ delay: index * 0.1 }}
                                                     >
-                                                        {exp.date_start && exp.date_end ?
-                                                            `${new Date(exp.date_start).toLocaleDateString('fr-FR', { month: 'short', year: 'numeric' })} - ${new Date(exp.date_end).toLocaleDateString('fr-FR', { month: 'short', year: 'numeric' })}` :
-                                                            exp.date_start ?
-                                                                `${new Date(exp.date_start).toLocaleDateString('fr-FR', { month: 'short', year: 'numeric' })} - Présent` :
-                                                                'Période non spécifiée'
-                                                        }
-                                                    </Badge>
-                                                </div>
-                                            </CardContent>
-                                        </Card>
-                                    </motion.div>
-                                ))}
+                                                        <Card className="bg-white/5 backdrop-blur-xl border border-white/10 hover:border-blue-500/30 transition-all duration-500 group overflow-hidden">
+                                                            <CardContent className="p-8">
+                                                                <div className="flex flex-col md:flex-row md:items-start justify-between gap-6">
+                                                                    <div className="flex-1 space-y-4">
+                                                                        <div className="flex items-center gap-4">
+                                                                            <div className="p-3 rounded-2xl bg-blue-500/10 border border-blue-500/20 group-hover:scale-110 transition-transform duration-500">
+                                                                                <Briefcase className="w-6 h-6 text-blue-400" />
+                                                                            </div>
+                                                                            <div>
+                                                                                <h4 className="text-2xl font-bold text-white group-hover:text-blue-400 transition-colors">
+                                                                                    {exp.name}
+                                                                                </h4>
+                                                                                <p className="text-blue-300/80 font-medium uppercase tracking-wider text-sm">
+                                                                                    {exp.InstitutionName}
+                                                                                </p>
+                                                                            </div>
+                                                                        </div>
+
+                                                                        {exp.description && (
+                                                                            <div
+                                                                                className="prose prose-invert prose-sm max-w-none text-gray-300/90 leading-relaxed rich-text-modern"
+                                                                                dangerouslySetInnerHTML={{ __html: exp.description }}
+                                                                            />
+                                                                        )}
+
+                                                                        <style>{`
+                                                                            .rich-text-modern ul { list-style-type: circle !important; padding-left: 1.5rem !important; margin-top: 1rem !important; color: #94a3b8 !important; }
+                                                                            .rich-text-modern li { margin-bottom: 0.5rem !important; }
+                                                                            .rich-text-modern p { margin-bottom: 1rem !important; }
+                                                                        `}</style>
+                                                                    </div>
+
+                                                                    <div className="flex flex-col items-end gap-3">
+                                                                        <span className="px-4 py-2 bg-white/5 rounded-xl border border-white/10 text-white font-bold text-sm backdrop-blur-md">
+                                                                            {exp.date_start && exp.date_end ?
+                                                                                `${new Date(exp.date_start).getFullYear()} — ${new Date(exp.date_end).getFullYear()}` :
+                                                                                exp.date_start ?
+                                                                                    `${new Date(exp.date_start).getFullYear()} — NOW` :
+                                                                                    'TBD'
+                                                                            }
+                                                                        </span>
+                                                                        {exp.references && exp.references.length > 0 && (
+                                                                            <div className="flex -space-x-2">
+                                                                                {exp.references.map((_: any, i: number) => (
+                                                                                    <div key={i} className="w-8 h-8 rounded-full border-2 border-slate-900 bg-blue-500/20 flex items-center justify-center">
+                                                                                        <User className="w-4 h-4 text-blue-400" />
+                                                                                    </div>
+                                                                                ))}
+                                                                            </div>
+                                                                        )}
+                                                                    </div>
+                                                                </div>
+                                                            </CardContent>
+                                                        </Card>
+                                                    </motion.div>
+                                                ))}
+                                            </div>
+                                        </div>
+                                    ));
+                                })()}
                             </div>
                         </div>
                     </section>

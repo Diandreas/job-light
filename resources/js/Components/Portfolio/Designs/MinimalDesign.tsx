@@ -155,90 +155,80 @@ export default function MinimalDesign({
                             Expérience
                         </h2>
 
-                        <div className="space-y-8">
-                            {cvData.experiences.map((exp, index) => (
-                                <motion.div
-                                    key={index}
-                                    initial={{ opacity: 0, y: 20 }}
-                                    animate={{ opacity: 1, y: 0 }}
-                                    transition={{ delay: 1.4 + index * 0.1, duration: 0.6 }}
-                                    className="border-l-2 border-gray-100 pl-8 relative"
-                                >
-                                    <div
-                                        className="absolute -left-1.5 w-3 h-3 rounded-full bg-white border-2"
-                                        style={{ borderColor: primaryColor }}
-                                    />
+                        <div className="space-y-12">
+                            {(() => {
+                                const groups = cvData.experiences.reduce((acc: any, exp: any) => {
+                                    let cat = exp.category_name || t('portfolio.categories.other');
+                                    if (!acc[cat]) acc[cat] = [];
+                                    acc[cat].push(exp);
+                                    return acc;
+                                }, {});
 
-                                    <div className="mb-6">
-                                        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-2">
-                                            <h3 className="text-xl font-medium text-gray-900">
-                                                {exp.name}
-                                            </h3>
-                                            <span className="text-sm text-gray-500 mt-1 sm:mt-0">
-                                                {exp.date_start && exp.date_end ?
-                                                    `${new Date(exp.date_start).toLocaleDateString('fr-FR', { month: 'short', year: 'numeric' })} - ${new Date(exp.date_end).toLocaleDateString('fr-FR', { month: 'short', year: 'numeric' })}` :
-                                                    exp.date_start ?
-                                                        `${new Date(exp.date_start).toLocaleDateString('fr-FR', { month: 'short', year: 'numeric' })} - Présent` :
-                                                        'Période non spécifiée'
-                                                }
-                                            </span>
-                                        </div>
-                                        <p className="text-gray-600 font-normal mb-3">
-                                            {exp.InstitutionName}
-                                        </p>
-                                        {exp.description && (
-                                            <p className="text-gray-600 text-sm leading-relaxed mb-3">
-                                                {safeText(exp.description)}
-                                            </p>
-                                        )}
+                                return Object.entries(groups).map(([category, experiences]: [string, any], groupIndex) => (
+                                    <div key={category} className="space-y-6">
+                                        <h3 className="text-[10px] font-extrabold text-gray-400 uppercase tracking-[0.2em] flex items-center gap-4">
+                                            <span>{category}</span>
+                                            <div className="h-px bg-gray-100 flex-1" />
+                                        </h3>
 
-                                        {/* Informations détaillées */}
-                                        <div className="space-y-1 text-xs text-gray-500 mb-3">
-                                            {(exp.date_start || exp.date_end) && (
-                                                <div>📅 {exp.date_start && new Date(exp.date_start).toLocaleDateString('fr-FR')}{exp.date_start && exp.date_end && ' - '}{exp.date_end && new Date(exp.date_end).toLocaleDateString('fr-FR')}</div>
-                                            )}
-                                            {exp.output && (
-                                                <div>📈 Résultats: {exp.output}</div>
-                                            )}
-                                            {exp.category_name && (
-                                                <div>🏷️ Catégorie: {exp.category_name}</div>
-                                            )}
-                                        </div>
-
-                                        {/* Références */}
-                                        {exp.references && exp.references.length > 0 && (
-                                            <div className="mt-3 p-3 bg-gray-50 rounded">
-                                                <div className="text-sm font-medium text-gray-700 mb-2">Références :</div>
-                                                <div className="space-y-1">
-                                                    {exp.references.map((ref, refIndex) => (
-                                                        <div key={refIndex} className="text-xs text-gray-600">
-                                                            <div className="font-medium">{ref.name}</div>
-                                                            {ref.function && <div>Fonction: {ref.function}</div>}
-                                                            {ref.email && <div>Email: {ref.email}</div>}
-                                                            {ref.telephone && <div>Tél: {ref.telephone}</div>}
-                                                        </div>
-                                                    ))}
-                                                </div>
-                                            </div>
-                                        )}
-
-                                        {exp.attachment_path && (
-                                            <div className="mt-3">
-                                                <a
-                                                    href={exp.attachment_path}
-                                                    target="_blank"
-                                                    rel="noopener noreferrer"
-                                                    className="inline-flex items-center gap-2 px-3 py-1.5 border border-gray-300 hover:border-gray-400 rounded text-sm text-gray-700 hover:text-gray-900 transition-colors"
+                                        <div className="space-y-10">
+                                            {experiences.map((exp: any, index: number) => (
+                                                <motion.div
+                                                    key={index}
+                                                    initial={{ opacity: 0, x: -10 }}
+                                                    animate={{ opacity: 1, x: 0 }}
+                                                    transition={{ delay: 0.1 * index }}
+                                                    className="group relative pl-8 border-l border-gray-100 hover:border-gray-900 transition-colors"
                                                 >
-                                                    <FileText className="w-4 h-4" />
-                                                    {exp.attachment_name || 'Voir le document'}
-                                                    <ExternalLink className="w-3 h-3" />
-                                                </a>
-                                            </div>
-                                        )}
+                                                    <div className="absolute -left-[3px] top-0 w-1.5 h-1.5 rounded-full bg-gray-200 group-hover:bg-gray-900 transition-colors" />
+
+                                                    <div className="flex flex-col md:flex-row md:items-baseline md:justify-between gap-2 mb-2">
+                                                        <h4 className="text-xl font-medium text-gray-900">
+                                                            {exp.name}
+                                                        </h4>
+                                                        <span className="text-xs font-mono text-gray-400 uppercase tracking-tighter">
+                                                            {exp.date_start && exp.date_end ?
+                                                                `${new Date(exp.date_start).getFullYear()} / ${new Date(exp.date_end).getFullYear()}` :
+                                                                exp.date_start ?
+                                                                    `${new Date(exp.date_start).getFullYear()} / NOW` :
+                                                                    'TBD'
+                                                            }
+                                                        </span>
+                                                    </div>
+
+                                                    <div className="text-gray-500 font-medium text-sm mb-4">
+                                                        {exp.InstitutionName}
+                                                    </div>
+
+                                                    {exp.description && (
+                                                        <div
+                                                            className="prose prose-sm prose-slate max-w-none text-gray-600 leading-relaxed rich-text-content"
+                                                            dangerouslySetInnerHTML={{ __html: exp.description }}
+                                                        />
+                                                    )}
+
+                                                    <style>{`
+                                                        .rich-text-content ul { list-style-type: square !important; padding-left: 1.25rem !important; margin-top: 0.75rem !important; }
+                                                        .rich-text-content li { margin-bottom: 0.35rem !important; }
+                                                        .rich-text-content p { margin-bottom: 0.75rem !important; }
+                                                    `}</style>
+
+                                                    {exp.references && exp.references.length > 0 && (
+                                                        <div className="mt-4 flex flex-wrap gap-x-6 gap-y-2">
+                                                            {exp.references.map((ref: any, refIndex: number) => (
+                                                                <div key={refIndex} className="text-[10px] text-gray-400">
+                                                                    <span className="font-bold text-gray-600 uppercase mr-2">{ref.name}</span>
+                                                                    <span>{ref.function}</span>
+                                                                </div>
+                                                            ))}
+                                                        </div>
+                                                    )}
+                                                </motion.div>
+                                            ))}
+                                        </div>
                                     </div>
-                                </motion.div>
-                            ))}
+                                ));
+                            })()}
                         </div>
                     </motion.section>
                 )}

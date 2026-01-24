@@ -207,51 +207,76 @@ const GlassDesign: React.FC<DesignProps> = ({ user, cvData, settings, isPreview 
                             <h2 className="text-3xl font-bold text-white mb-12 text-center bg-gradient-to-r from-cyan-300 to-purple-300 bg-clip-text text-transparent">
                                 Expériences Professionnelles
                             </h2>
-                            <div className="space-y-8">
-                                {experiences.map((exp: any, index: number) => (
-                                    <motion.div
-                                        key={index}
-                                        initial={{ opacity: 0, x: -50 }}
-                                        whileInView={{ opacity: 1, x: 0 }}
-                                        viewport={{ once: true }}
-                                        transition={{ delay: index * 0.1 }}
-                                        className="relative p-6 rounded-2xl bg-gradient-to-r from-white/5 to-white/10 border border-white/20"
-                                        whileHover={{
-                                            scale: 1.02,
-                                            boxShadow: "0 25px 50px rgba(0,0,0,0.3)"
-                                        }}
-                                    >
-                                        <div className="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-cyan-400 via-purple-500 to-pink-500 rounded-full" />
-                                        <div className="ml-6">
-                                            <h3 className="text-xl font-semibold text-white mb-2">{exp.name}</h3>
-                                            <p className="text-cyan-300 mb-2 flex items-center">
-                                                <Globe className="w-4 h-4 mr-2" />
-                                                {exp.InstitutionName}
-                                            </p>
-                                            <p className="text-white/60 mb-4 flex items-center">
-                                                <Calendar className="w-4 h-4 mr-2" />
-                                                {exp.date_start} - {exp.date_end || 'Présent'}
-                                            </p>
-                                            {exp.description && (
-                                                <p className="text-white/80 leading-relaxed">{exp.description}</p>
-                                            )}
-                                            {exp.attachment_path && (
-                                                <div className="mt-4">
-                                                    <a
-                                                        href={exp.attachment_path}
-                                                        target="_blank"
-                                                        rel="noopener noreferrer"
-                                                        className="inline-flex items-center gap-2 px-4 py-2 bg-white/10 hover:bg-white/20 border border-white/20 rounded-xl text-sm text-cyan-300 transition-all duration-300"
+                            <div className="space-y-16">
+                                {(() => {
+                                    const groups = experiences.reduce((acc: any, exp: any) => {
+                                        let cat = exp.category_name || t('portfolio.categories.other');
+                                        if (!acc[cat]) acc[cat] = [];
+                                        acc[cat].push(exp);
+                                        return acc;
+                                    }, {});
+
+                                    return Object.entries(groups).map(([category, catExperiences]: [string, any], groupIndex) => (
+                                        <div key={category} className="space-y-8">
+                                            <h3 className="text-xs font-black text-cyan-300 uppercase tracking-[0.3em] flex items-center gap-6">
+                                                <span>{category}</span>
+                                                <div className="h-px bg-white/10 flex-1" />
+                                            </h3>
+
+                                            <div className="grid gap-8">
+                                                {catExperiences.map((exp: any, index: number) => (
+                                                    <motion.div
+                                                        key={index}
+                                                        initial={{ opacity: 0, x: -20 }}
+                                                        whileInView={{ opacity: 1, x: 0 }}
+                                                        viewport={{ once: true }}
+                                                        transition={{ delay: index * 0.1 }}
+                                                        className="relative p-8 rounded-3xl bg-white/5 border border-white/10 hover:border-white/30 transition-all duration-500 group overflow-hidden"
                                                     >
-                                                        <FileText className="w-4 h-4" />
-                                                        {exp.attachment_name || 'Voir le document'}
-                                                        <ExternalLink className="w-3 h-3" />
-                                                    </a>
-                                                </div>
-                                            )}
+                                                        <div className="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-cyan-400 via-purple-500 to-pink-500 opacity-50 group-hover:opacity-100 transition-opacity" />
+
+                                                        <div className="flex flex-col md:flex-row md:items-start justify-between gap-6">
+                                                            <div className="flex-1 space-y-4">
+                                                                <div>
+                                                                    <h4 className="text-2xl font-bold text-white mb-2 group-hover:text-cyan-300 transition-colors">
+                                                                        {exp.name}
+                                                                    </h4>
+                                                                    <p className="text-purple-300 font-medium uppercase tracking-wider text-sm">
+                                                                        {exp.InstitutionName}
+                                                                    </p>
+                                                                </div>
+
+                                                                {exp.description && (
+                                                                    <div
+                                                                        className="prose prose-invert prose-sm max-w-none text-white/70 leading-relaxed rich-text-glass"
+                                                                        dangerouslySetInnerHTML={{ __html: exp.description }}
+                                                                    />
+                                                                )}
+
+                                                                <style>{`
+                                                                    .rich-text-glass ul { list-style-type: disc !important; padding-left: 1.5rem !important; margin-top: 1rem !important; }
+                                                                    .rich-text-glass li { margin-bottom: 0.5rem !important; }
+                                                                    .rich-text-glass p { margin-bottom: 1rem !important; }
+                                                                `}</style>
+                                                            </div>
+
+                                                            <div className="flex flex-col items-end gap-3 shrink-0">
+                                                                <span className="px-4 py-2 bg-white/10 rounded-2xl border border-white/20 text-white font-bold text-xs backdrop-blur-md">
+                                                                    {exp.date_start && exp.date_end ?
+                                                                        `${new Date(exp.date_start).getFullYear()} — ${new Date(exp.date_end).getFullYear()}` :
+                                                                        exp.date_start ?
+                                                                            `${new Date(exp.date_start).getFullYear()} — NOW` :
+                                                                            'TBD'
+                                                                    }
+                                                                </span>
+                                                            </div>
+                                                        </div>
+                                                    </motion.div>
+                                                ))}
+                                            </div>
                                         </div>
-                                    </motion.div>
-                                ))}
+                                    ));
+                                })()}
                             </div>
                         </GlassCard>
                     </section>

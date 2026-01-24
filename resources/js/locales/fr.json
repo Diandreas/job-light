@@ -62,7 +62,8 @@
     "nav": {
         "login": "Connexion",
         "register": "Démarrer gratuitement",
-        "start_free": "Commencer maintenant"
+        "start_free": "Commencer maintenant",
+        "pricing": "Tarifs"
     },
     "hero": {
         "badge": "🚀 Boostez votre carrière avec l'IA",
@@ -315,14 +316,16 @@
         "services": {
             "title": "Services",
             "resume": "Création de CV",
-            "advisor": "Conseiller de Carrière",
+            "pricing": "Tarification",
+            "advisor": "Conseiller Carrière",
             "interview": "Préparation d'Entretien"
         },
         "legal": {
             "title": "Légal",
-            "privacy": "Confidentialité",
-            "terms": "Conditions",
-            "cookies": "Cookies",
+            "privacy": "Politique de Confidentialité",
+            "terms": "Conditions d'Utilisation",
+            "cookies": "Politique de Cookies",
+            "refund": "Politique de Remboursement",
             "mentions": "Mentions Légales"
         },
         "support": {
@@ -330,7 +333,6 @@
             "help": "Centre d'aide",
             "contact": "Contactez-nous"
         },
-        "contact": "Contact",
         "copyright": "Tous droits réservés",
         "made_with": "Fait avec",
         "by_team": "par l'équipe Guidy"
@@ -568,6 +570,7 @@
         }
     },
     "auth": {
+        "login_to_purchase": "Connectez-vous pour acheter",
         "register": {
             "value": "S'inscrire",
             "title": "Créez votre compte",
@@ -1235,10 +1238,10 @@
         },
         "experience": {
             "title": "Expériences",
-            "description": "Gérez vos expériences professionnelles, académiques et bénévoles",
+            "sectionDescription": "Gérez vos expériences professionnelles, académiques et bénévoles",
             "education": "Formation",
             "professional": "Professionnel",
-            "ongoing": "En cours",
+            "statusOngoing": "En cours",
             "searchPlaceholder": "Rechercher une expérience...",
             "noEducationFound": "Aucune formation trouvée",
             "noEducationAdded": "Aucune formation ajoutée",
@@ -1394,8 +1397,7 @@
             "student": "Étudiant",
             "archivist": "Archiviste",
             "beginner": "Débutant"
-        },
-        "subtitle": "Choisissez un modèle pour démarrer rapidement"
+        }
     },
     "actions": {
         "select": "Sélectionner",
@@ -2070,6 +2072,40 @@
                         "languages": "Support disponible en français et en anglais",
                         "support": "Support technique 7 jours sur 7"
                     }
+                }
+            }
+        },
+        "refundPolicy": {
+            "title": "Politique de Remboursement",
+            "subtitle": "Conditions et modalités de remboursement",
+            "metaTitle": "Politique de Remboursement | Guidy",
+            "metaDescription": "Consultez notre politique de remboursement pour comprendre vos droits en tant qu'utilisateur Guidy.",
+            "metaKeywords": "remboursement, politique de remboursement, garantie, satisfaction",
+            "lastUpdate": "Dernière mise à jour :",
+            "sections": {
+                "guarantee": {
+                    "title": "Garantie de Satisfaction",
+                    "description": "Nous nous efforçons de fournir le meilleur service. Si vous n'êtes pas satisfait, nous examinerons votre demande avec attention."
+                },
+                "security": {
+                    "title": "Paiements Sécurisés",
+                    "description": "Tous les remboursements sont effectués via le mode de paiement original pour votre sécurité."
+                },
+                "scope": {
+                    "title": "Champ d'Application",
+                    "description": "Cette politique s'applique à tous les services premium achetés sur notre plateforme."
+                },
+                "eligibility": {
+                    "title": "Éligibilité",
+                    "description": "Les remboursements peuvent être accordés dans les 14 jours suivant l'achat si le service n'a pas été substantiellement utilisé."
+                },
+                "process": {
+                    "title": "Processus de Remboursement",
+                    "description": "Pour demander un remboursement, veuillez contacter notre support avec votre preuve d'achat."
+                },
+                "contact": {
+                    "title": "Contact",
+                    "description": "Notre équipe est à votre disposition pour toute question :"
                 }
             }
         },

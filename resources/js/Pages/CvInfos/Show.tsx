@@ -27,26 +27,39 @@ export default function Show({ auth, cvInformation, selectedCvModel, cvModels })
     const [hasCustomColor, setHasCustomColor] = useState(Boolean(cvInformation?.primary_color));
     const [showControls, setShowControls] = useState(true);
     const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+    const [activeModelId, setActiveModelId] = useState(selectedCvModel?.id);
 
-    const canAccessFeatures = walletBalance >= (selectedCvModel?.price || 0);
+    // Update activeModelId when selectedCvModel prop changes (e.g. from backend)
+    useEffect(() => {
+        if (selectedCvModel?.id) {
+            setActiveModelId(selectedCvModel.id);
+        }
+    }, [selectedCvModel?.id]);
+
+    const activeModel = cvModels?.find(m => m.id === activeModelId) || selectedCvModel;
+
+    const canAccessFeatures = walletBalance >= (activeModel?.price || 0);
 
     // Check download status
     useEffect(() => {
         const checkDownloadStatus = async () => {
-            if (!selectedCvModel?.id) return;
+            if (!activeModelId) return;
             try {
-                const response = await axios.get(`/api/check-download-status/${selectedCvModel.id}`);
+                const response = await axios.get(`/api/check-download-status/${activeModelId}`);
                 setHasDownloaded(response.data.hasDownloaded);
             } catch (error) {
                 console.error('Error checking download status:', error);
             }
         };
         checkDownloadStatus();
-    }, [selectedCvModel?.id]);
+    }, [activeModelId]);
 
     // Handle model change
     const handleModelChange = async (modelId) => {
-        if (modelId === selectedCvModel.id) return;
+        if (modelId === activeModelId) return;
+
+        // Mettre à jour l'ID localement immédiatement pour recharger l'aperçu sans délai
+        setActiveModelId(modelId);
 
         try {
             await axios.post('/user-cv-models/select-active', {
@@ -55,11 +68,12 @@ export default function Show({ auth, cvInformation, selectedCvModel, cvModels })
 
             toast({ title: "Modèle changé", description: "Le nouveau design a été appliqué." });
 
-            // Reload only the necessary data
-            router.reload({ only: ['selectedCvModel'] });
+            // On ne recharge plus la page, tout est géré localement
         } catch (error) {
             console.error('Failed to change model', error);
             toast({ variant: 'destructive', title: 'Erreur', description: 'Impossible de changer de modèle.' });
+            // Revenir à l'ancien modèle en cas d'erreur
+            setActiveModelId(selectedCvModel.id);
         }
     };
 
@@ -100,15 +114,15 @@ export default function Show({ auth, cvInformation, selectedCvModel, cvModels })
             if (!hasDownloaded) {
                 await axios.post('/api/process-download', {
                     user_id: auth.user.id,
-                    model_id: selectedCvModel?.id,
-                    price: selectedCvModel?.price
+                    model_id: activeModelId,
+                    price: activeModel?.price
                 });
-                setWalletBalance(prev => prev - (selectedCvModel?.price || 0));
+                setWalletBalance(prev => prev - (activeModel?.price || 0));
                 setHasDownloaded(true);
             }
 
             // Download PDF via WeasyPrint
-            const response = await axios.get(route('cv.download', selectedCvModel?.id), {
+            const response = await axios.get(route('cv.download', activeModelId), {
                 responseType: 'blob',
                 params: { locale: i18n.language }
             });
@@ -176,7 +190,7 @@ export default function Show({ auth, cvInformation, selectedCvModel, cvModels })
                                 <span className="text-sm font-medium">Retour</span>
                             </Link>
                             <span className="text-gray-300">|</span>
-                            <span className="text-sm font-semibold text-gray-800 dark:text-white">{selectedCvModel.name}</span>
+                            <span className="text-sm font-semibold text-gray-800 dark:text-white">{activeModel?.name}</span>
                         </div>
                         <div className="flex items-center gap-3">
 
@@ -203,7 +217,7 @@ export default function Show({ auth, cvInformation, selectedCvModel, cvModels })
                     <div className="relative w-full h-full max-w-[210mm] bg-white rounded-lg shadow-2xl overflow-auto">
                         <CVPreview
                             ref={cvPreviewRef}
-                            cvModelId={selectedCvModel?.id}
+                            cvModelId={activeModelId}
                             locale={i18n.language}
                             editable={false}
                         />
@@ -300,7 +314,7 @@ export default function Show({ auth, cvInformation, selectedCvModel, cvModels })
                         {isDrawerOpen ? <ChevronDown className="w-5 h-5 text-gray-500" /> : (
                             <div className="flex items-center gap-2 text-sm font-medium text-gray-600 dark:text-gray-300">
                                 <LayoutTemplate className="w-4 h-4" />
-                                <span>Changer de modèle ({selectedCvModel.name})</span>
+                                <span>Changer de modèle ({activeModel?.name})</span>
                                 <ChevronUp className="w-4 h-4 ml-1" />
                             </div>
                         )}
@@ -312,7 +326,7 @@ export default function Show({ auth, cvInformation, selectedCvModel, cvModels })
                                 <div
                                     key={model.id}
                                     onClick={() => handleModelChange(model.id)}
-                                    className={`relative group flex-shrink-0 w-24 cursor-pointer transition-all duration-200 ${model.id === selectedCvModel.id ? 'scale-105 ring-2 ring-amber-500 rounded-lg' : 'hover:scale-105'}`}
+                                    className={`relative group flex-shrink-0 w-24 cursor-pointer transition-all duration-200 ${model.id === activeModelId ? 'scale-105 ring-2 ring-amber-500 rounded-lg' : 'hover:scale-105'}`}
                                 >
                                     <div className="aspect-[210/297] bg-gray-200 rounded-lg overflow-hidden shadow-md">
                                         <img
@@ -326,7 +340,7 @@ export default function Show({ auth, cvInformation, selectedCvModel, cvModels })
                                             {model.name}
                                         </div>
                                     </div>
-                                    {model.id === selectedCvModel.id && (
+                                    {model.id === activeModelId && (
                                         <div className="absolute -top-2 -right-2 bg-amber-500 text-white rounded-full p-1 shadow-sm">
                                             <Check className="w-3 h-3" />
                                         </div>

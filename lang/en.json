@@ -19,5 +19,16 @@
         "saving": "Saving...",
         "saved": "Saved",
         "error": "Error"
+    },
+    "nav": {
+        "pricing": "Pricing"
+    },
+    "auth": {
+        "login_to_purchase": "Login to purchase"
+    },
+    "footer": {
+        "services": {
+            "pricing": "Pricing"
+        }
     }
 }

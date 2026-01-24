@@ -32,7 +32,7 @@ const TermsOfService = () => {
                 <meta property="og:description" content={t('pages.termsOfService.subtitle')} />
                 <meta property="og:image" content="../../public/image.png" />
                 <meta property="og:type" content="website" />
-                <link rel="canonical" href="https://guidy.com/terms" />
+                <link rel="canonical" href="https://guidy.com/terms-and-conditions" />
                 <script type="application/ld+json">
                     {JSON.stringify(structuredData)}
                 </script>

@@ -62,7 +62,8 @@
     "nav": {
         "login": "Login",
         "register": "Start Free",
-        "start_free": "Start now"
+        "start_free": "Start now",
+        "pricing": "Pricing"
     },
     "hero": {
         "badge": "🚀 Boost your career with AI",
@@ -214,6 +215,7 @@
         "services": {
             "title": "Services",
             "resume": "Resume Creation",
+            "pricing": "Pricing",
             "advisor": "Career Advisor",
             "interview": "Interview Preparation"
         },
@@ -227,10 +229,9 @@
             "privacy": "Privacy Policy",
             "terms": "Terms of Use",
             "cookies": "Cookie Policy",
+            "refund": "Refund Policy",
             "mentions": "Legal Notices"
         },
-        "support": "Support",
-        "contact": "Contact",
         "copyright": "All rights reserved",
         "made_with": "Made with",
         "by_team": "by Guidy Team"
@@ -529,7 +530,8 @@
             "subtitle": "Please check your email for verification link",
             "resend": "Resend verification email",
             "processing": "Sending..."
-        }
+        },
+        "login_to_purchase": "Login to purchase"
     },
     "guest_cv": {
         "steps": {
@@ -2057,6 +2059,40 @@
                         "languages": "Support available in French and English",
                         "support": "Technical support 7 days a week"
                     }
+                }
+            }
+        },
+        "refundPolicy": {
+            "title": "Refund Policy",
+            "subtitle": "Terms and conditions for refunds",
+            "metaTitle": "Refund Policy | Guidy",
+            "metaDescription": "Consult our refund policy to understand your rights as a Guidy user.",
+            "metaKeywords": "refund, refund policy, guarantee, satisfaction",
+            "lastUpdate": "Last updated:",
+            "sections": {
+                "guarantee": {
+                    "title": "Satisfaction Guarantee",
+                    "description": "We strive to provide the best service. If you are not satisfied, we will carefully review your request."
+                },
+                "security": {
+                    "title": "Secure Payments",
+                    "description": "All refunds are made via the original payment method for your security."
+                },
+                "scope": {
+                    "title": "Scope of Application",
+                    "description": "This policy applies to all premium services purchased on our platform."
+                },
+                "eligibility": {
+                    "title": "Eligibility",
+                    "description": "Refunds may be granted within 14 days of purchase if the service has not been substantially used."
+                },
+                "process": {
+                    "title": "Refund Process",
+                    "description": "To request a refund, please contact our support with your proof of purchase."
+                },
+                "contact": {
+                    "title": "Contact",
+                    "description": "Our team is at your disposal for any questions:"
                 }
             }
         },

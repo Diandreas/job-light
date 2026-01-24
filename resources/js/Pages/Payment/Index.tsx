@@ -3,6 +3,7 @@ import { Head, usePage } from '@inertiajs/react';
 import { motion } from 'framer-motion';
 import { PayPalScriptProvider, PayPalButtons, usePayPalScriptReducer } from "@paypal/react-paypal-js";
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
+import GuestLayout from '@/Layouts/GuestLayout';
 import { Card, CardContent } from "@/Components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/Components/ui/tabs";
 import { useToast } from "@/Components/ui/use-toast";
@@ -122,7 +123,7 @@ const NotchPayButton = ({ pack, onSuccess, user }) => {
 
     return (
         <button
-            onClick={handlePayment}
+            onClick={user ? handlePayment : () => window.location.href = '/login'}
             disabled={loading}
             className={`w-full py-3 px-4 rounded-lg font-medium text-white bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 transition-all duration-200 flex items-center justify-center gap-2 ${loading ? 'opacity-75 cursor-not-allowed' : ''}`}
         >
@@ -134,7 +135,7 @@ const NotchPayButton = ({ pack, onSuccess, user }) => {
             ) : (
                 <>
                     <Smartphone className="w-5 h-5" />
-                    <span>{t('payment.payWithNotchPay')}</span>
+                    <span>{user ? t('payment.payWithNotchPay') : t('auth.login_to_purchase')}</span>
                 </>
             )}
         </button>
@@ -206,7 +207,7 @@ const CinetPayButton = ({ pack, onSuccess, user }) => {
 
     return (
         <button
-            onClick={handlePayment}
+            onClick={user ? handlePayment : () => window.location.href = '/login'}
             disabled={loading}
             className={`w-full py-3 px-4 rounded-lg font-medium text-white bg-gradient-to-r from-green-600 to-blue-600 hover:from-green-700 hover:to-blue-700 transition-all duration-200 flex items-center justify-center gap-2 ${loading ? 'opacity-75 cursor-not-allowed' : ''}`}
         >
@@ -218,14 +219,14 @@ const CinetPayButton = ({ pack, onSuccess, user }) => {
             ) : (
                 <>
                     <Smartphone className="w-5 h-5" />
-                    <span>{t('payment.payWithCinetPay')}</span>
+                    <span>{user ? t('payment.payWithCinetPay') : t('auth.login_to_purchase')}</span>
                 </>
             )}
         </button>
     );
 };
 
-const PayPalPackButton = ({ pack, onSuccess }) => {
+const PayPalPackButton = ({ pack, onSuccess, user }) => {
     const [{ isPending }] = usePayPalScriptReducer();
     const [error, setError] = useState(null);
     const { t } = useTranslation();
@@ -272,6 +273,18 @@ const PayPalPackButton = ({ pack, onSuccess }) => {
             <div className="flex items-center justify-center h-12">
                 <Loader2 className="w-6 h-6 animate-spin text-blue-500" />
             </div>
+        );
+    }
+
+    if (!user) {
+        return (
+            <button
+                onClick={() => window.location.href = '/login'}
+                className="w-full py-3 px-4 rounded-lg font-medium text-white bg-blue-600 hover:bg-blue-700 transition-all duration-200 flex items-center justify-center gap-2"
+            >
+                <CreditCard className="w-5 h-5" />
+                <span>{t('auth.login_to_purchase')}</span>
+            </button>
         );
     }
 
@@ -334,7 +347,7 @@ const PaymentTabs = ({ pack, onSuccess, user }) => {
                 <div className="text-2xl font-bold text-center">
                     {pack.priceFCFA.toLocaleString()} FCFA
                 </div>
-                
+
                 <CinetPayButton pack={pack} onSuccess={onSuccess} user={user} />
 
                 <div className="flex items-center justify-center gap-4 mt-2">
@@ -356,7 +369,7 @@ const PaymentTabs = ({ pack, onSuccess, user }) => {
                     {/*    ({pack.priceFCFA.toLocaleString()} FCFA)*/}
                     {/*</span>*/}
                 </div>
-                <PayPalPackButton pack={pack} onSuccess={onSuccess} />
+                <PayPalPackButton pack={pack} onSuccess={onSuccess} user={user} />
                 <div className="flex items-center justify-center gap-4 mt-2">
                     {PaymentMethodsInfo.cardLogos.map((logo, index) => (
                         <img
@@ -377,13 +390,15 @@ export default function Index({ auth, paypalConfig }) {
     const [error, setError] = useState(null);
     const { t } = useTranslation();
 
-    if (!auth?.user) {
-        window.location.href = '/login';
-        return null;
-    }
+    // if (!auth?.user) {
+    //     window.location.href = '/login';
+    //     return null;
+    // }
+
+    const user = auth?.user;
 
     const initialOptions = {
-        "client-id": paypalConfig.clientId,
+        "client-id": paypalConfig?.clientId || "test",
         currency: "EUR",
         intent: "capture",
     };
@@ -397,135 +412,150 @@ export default function Index({ auth, paypalConfig }) {
         window.location.reload();
     };
 
+    const Content = () => (
+        <div className="py-12">
+            <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
+                <div className="text-center mb-12">
+                    <motion.div
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        className="mb-8"
+                    >
+                        <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-gradient-to-r from-amber-500 to-purple-500 mb-6">
+                            <Coins className="h-10 w-10 text-white" />
+                        </div>
+                        <h1 className="text-4xl font-bold mb-4">
+                            <span className="bg-gradient-to-r from-amber-500 to-purple-500 text-transparent bg-clip-text">
+                                {t('payment.title')}
+                            </span>
+                        </h1>
+                        <p className="text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
+                            {t('payment.subtitle')}
+                        </p>
+                    </motion.div>
+
+                    <div className="flex flex-wrap justify-center gap-4 mb-8">
+                        <div className="flex items-center gap-2 px-4 py-2 bg-amber-100 dark:bg-amber-900/50 rounded-full">
+                            <Gift className="w-5 h-5 text-amber-500" />
+                            <span className="text-amber-700 dark:text-amber-300">
+                                {t('payment.features.bonus')}
+                            </span>
+                        </div>
+                        <div className="flex items-center gap-2 px-4 py-2 bg-blue-100 dark:bg-blue-900/50 rounded-full">
+                            <CreditCard className="w-5 h-5 text-blue-500" />
+                            <span className="text-blue-700 dark:text-blue-300">
+                                PayPal
+                            </span>
+                        </div>
+                    </div>
+
+                    {error && (
+                        <Alert variant="destructive" className="max-w-2xl mx-auto mb-8">
+                            <AlertCircle className="h-4 w-4" />
+                            <AlertDescription>{error}</AlertDescription>
+                        </Alert>
+                    )}
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                    {TOKEN_PACKS.map((pack, index) => (
+                        <motion.div
+                            key={pack.id}
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ delay: index * 0.1 }}
+                        >
+                            <Card className={cn(
+                                "relative overflow-hidden",
+                                "transition-all duration-300 hover:scale-105 hover:shadow-lg",
+                                pack.mostPopular && "ring-2 ring-amber-500 dark:ring-amber-400"
+                            )}>
+                                {pack.mostPopular && (
+                                    <div className="absolute top-0 right-0">
+                                        <div className="bg-gradient-to-r from-amber-500 to-purple-500 text-white px-4 py-1 rounded-bl-lg text-sm font-medium">
+                                            {t(`payment.popularityText.${pack.popularityText}`)}
+                                        </div>
+                                    </div>
+                                )}
+                                <CardContent className="p-6">
+                                    <div className="mb-6">
+                                        <div className={cn(
+                                            "w-16 h-16 rounded-xl bg-gradient-to-r flex items-center justify-center mb-4",
+                                            pack.color
+                                        )}>
+                                            <Coins className="w-8 h-8 text-white" />
+                                        </div>
+                                        <div className="flex items-center justify-between mb-2">
+                                            <span className="text-xl font-semibold">
+                                                {pack.tokens} {t('payment.tokens')}
+                                            </span>
+                                            {pack.bonusTokens > 0 && (
+                                                <span className="text-green-500 dark:text-green-400 font-medium animate-pulse">
+                                                    +{pack.bonusTokens} {t('payment.bonus')}
+                                                </span>
+                                            )}
+                                        </div>
+                                        <div className="text-sm text-gray-500 dark:text-gray-400">
+                                            {t('payment.total')}: {pack.tokens + pack.bonusTokens} {t('payment.tokens')}
+                                        </div>
+                                        {/* <div className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                                            {t('payment.unitPrice')}: {(pack.priceEuros / (pack.tokens + pack.bonusTokens) * 10).toFixed(2)}€ / 10 {t('payment.tokens')}
+                                        </div> */}
+
+                                        <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
+                                            <div className="space-y-4">
+                                                <div className="text-2xl font-bold text-center">
+                                                    {pack.priceEuros}€
+                                                </div>
+                                                <PayPalPackButton pack={pack} onSuccess={handlePaymentSuccess} user={user} />
+                                            </div>
+                                        </div>
+                                    </div>
+                                </CardContent>
+                            </Card>
+                        </motion.div>
+                    ))}
+                </div>
+
+                <div className="mt-12 space-y-4">
+                    <div className="bg-white dark:bg-gray-800 rounded-lg p-6 max-w-3xl mx-auto">
+                        <h2 className="text-lg font-semibold mb-4">{t('payment.importantInfo.title')}</h2>
+                        <div className="space-y-2">
+                            <h3 className="font-medium">PayPal</h3>
+                            <ul className="text-sm text-gray-600 dark:text-gray-300 space-y-1">
+                                <li>• {t('payment.importantInfo.bankCard.secure')}</li>
+                                <li>• Paiement en euros (€)</li>
+                                <li>• Accepte les cartes bancaires et comptes PayPal</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div className="text-center text-sm text-gray-500 dark:text-gray-400">
+                        <p>{t('payment.footer.immediate')}</p>
+                        <p className="mt-2">{t('payment.footer.secure')}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
+
+    if (!user) {
+        return (
+            <GuestLayout>
+                <Head title={t('payment.pageTitle')} />
+                <PayPalScriptProvider options={initialOptions}>
+                    <Content />
+                </PayPalScriptProvider>
+            </GuestLayout>
+        );
+    }
+
     return (
         <AuthenticatedLayout user={auth.user}>
             <Head title={t('payment.pageTitle')} />
             {/*@ts-ignore*/}
-            <PayPalScriptProvider options={initialOptions}>
-                <div className="py-12">
-                    <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
-                        <div className="text-center mb-12">
-                            <motion.div
-                                initial={{ opacity: 0, y: 20 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                className="mb-8"
-                            >
-                                <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-gradient-to-r from-amber-500 to-purple-500 mb-6">
-                                    <Coins className="h-10 w-10 text-white" />
-                                </div>
-                                <h1 className="text-4xl font-bold mb-4">
-                                    <span className="bg-gradient-to-r from-amber-500 to-purple-500 text-transparent bg-clip-text">
-                                        {t('payment.title')}
-                                    </span>
-                                </h1>
-                                <p className="text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
-                                    {t('payment.subtitle')}
-                                </p>
-                            </motion.div>
-
-                            <div className="flex flex-wrap justify-center gap-4 mb-8">
-                                <div className="flex items-center gap-2 px-4 py-2 bg-amber-100 dark:bg-amber-900/50 rounded-full">
-                                    <Gift className="w-5 h-5 text-amber-500" />
-                                    <span className="text-amber-700 dark:text-amber-300">
-                                        {t('payment.features.bonus')}
-                                    </span>
-                                </div>
-                                <div className="flex items-center gap-2 px-4 py-2 bg-blue-100 dark:bg-blue-900/50 rounded-full">
-                                    <CreditCard className="w-5 h-5 text-blue-500" />
-                                    <span className="text-blue-700 dark:text-blue-300">
-                                        PayPal
-                                    </span>
-                                </div>
-                            </div>
-
-                            {error && (
-                                <Alert variant="destructive" className="max-w-2xl mx-auto mb-8">
-                                    <AlertCircle className="h-4 w-4" />
-                                    <AlertDescription>{error}</AlertDescription>
-                                </Alert>
-                            )}
-                        </div>
-
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                            {TOKEN_PACKS.map((pack, index) => (
-                                <motion.div
-                                    key={pack.id}
-                                    initial={{ opacity: 0, y: 20 }}
-                                    animate={{ opacity: 1, y: 0 }}
-                                    transition={{ delay: index * 0.1 }}
-                                >
-                                    <Card className={cn(
-                                        "relative overflow-hidden",
-                                        "transition-all duration-300 hover:scale-105 hover:shadow-lg",
-                                        pack.mostPopular && "ring-2 ring-amber-500 dark:ring-amber-400"
-                                    )}>
-                                        {pack.mostPopular && (
-                                            <div className="absolute top-0 right-0">
-                                                <div className="bg-gradient-to-r from-amber-500 to-purple-500 text-white px-4 py-1 rounded-bl-lg text-sm font-medium">
-                                                    {t(`payment.popularityText.${pack.popularityText}`)}
-                                                </div>
-                                            </div>
-                                        )}
-                                        <CardContent className="p-6">
-                                            <div className="mb-6">
-                                                <div className={cn(
-                                                    "w-16 h-16 rounded-xl bg-gradient-to-r flex items-center justify-center mb-4",
-                                                    pack.color
-                                                )}>
-                                                    <Coins className="w-8 h-8 text-white" />
-                                                </div>
-                                                <div className="flex items-center justify-between mb-2">
-                                                    <span className="text-xl font-semibold">
-                                                        {pack.tokens} {t('payment.tokens')}
-                                                    </span>
-                                                    {pack.bonusTokens > 0 && (
-                                                        <span className="text-green-500 dark:text-green-400 font-medium animate-pulse">
-                                                            +{pack.bonusTokens} {t('payment.bonus')}
-                                                        </span>
-                                                    )}
-                                                </div>
-                                                <div className="text-sm text-gray-500 dark:text-gray-400">
-                                                    {t('payment.total')}: {pack.tokens + pack.bonusTokens} {t('payment.tokens')}
-                                                </div>
-                                                {/* <div className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-                                                    {t('payment.unitPrice')}: {(pack.priceEuros / (pack.tokens + pack.bonusTokens) * 10).toFixed(2)}€ / 10 {t('payment.tokens')}
-                                                </div> */}
-
-                                                <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
-                                                    <div className="space-y-4">
-                                                        <div className="text-2xl font-bold text-center">
-                                                            {pack.priceEuros}€
-                                                        </div>
-                                                        <PayPalPackButton pack={pack} onSuccess={handlePaymentSuccess} />
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </CardContent>
-                                    </Card>
-                                </motion.div>
-                            ))}
-                        </div>
-
-                        <div className="mt-12 space-y-4">
-                            <div className="bg-white dark:bg-gray-800 rounded-lg p-6 max-w-3xl mx-auto">
-                                <h2 className="text-lg font-semibold mb-4">{t('payment.importantInfo.title')}</h2>
-                                <div className="space-y-2">
-                                    <h3 className="font-medium">PayPal</h3>
-                                    <ul className="text-sm text-gray-600 dark:text-gray-300 space-y-1">
-                                        <li>• {t('payment.importantInfo.bankCard.secure')}</li>
-                                        <li>• Paiement en euros (€)</li>
-                                        <li>• Accepte les cartes bancaires et comptes PayPal</li>
-                                    </ul>
-                                </div>
-                            </div>
-
-                            <div className="text-center text-sm text-gray-500 dark:text-gray-400">
-                                <p>{t('payment.footer.immediate')}</p>
-                                <p className="mt-2">{t('payment.footer.secure')}</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+            <PayPalScriptProvider options={initialOptions as any}>
+                <Content />
             </PayPalScriptProvider>
         </AuthenticatedLayout>
     );

@@ -8,7 +8,7 @@ import {
     ChevronRight, ChevronLeft, Mail, Phone, MapPin, Linkedin,
     Github, PencilIcon, Sparkles, CircleChevronRight, Star,
     Camera, Upload, FileUp, Bot, AlertCircle, X, Plus, Menu, Coins, Trash2, Globe,
-    ArrowRight, Play, SkipForward, HelpCircle, Check, Eye, Award,
+    ArrowRight, Play, SkipForward, HelpCircle, Check, Award,
     Loader2, RefreshCw, RotateCcw, Settings
 } from 'lucide-react';
 import axios from 'axios';
@@ -1502,11 +1502,7 @@ export default function CvInterface({ auth, cvInformation: initialCvInformation 
     const [isPageBlocked, setIsPageBlocked] = useState(false);
     const [showTutorial, setShowTutorial] = useState(false);
 
-    // États pour la prévisualisation live
-    const [isLivePreviewVisible, setIsLivePreviewVisible] = useState(false);
-    const [selectedPreviewModel, setSelectedPreviewModel] = useState<number | null>(
-        auth.user.selected_cv_model_id || null
-    );
+
 
     const { toast } = useToast();
 
@@ -1835,16 +1831,7 @@ export default function CvInterface({ auth, cvInformation: initialCvInformation 
         setActiveSection(sectionId);
     };
 
-    // Handlers pour la prévisualisation live
-    const handleModelSelect = useCallback((modelId: number) => {
-        setSelectedPreviewModel(modelId);
-        // Optionnel : sauvegarder la préférence utilisateur
-        // axios.post('/api/user/preferred-cv-model', { modelId });
-    }, []);
 
-    const toggleLivePreview = useCallback(() => {
-        setIsLivePreviewVisible(!isLivePreviewVisible);
-    }, [isLivePreviewVisible]);
 
     // Détection desktop pour afficher le bouton de prévisualisation
     const [isDesktop, setIsDesktop] = useState(false);
@@ -1921,25 +1908,7 @@ export default function CvInterface({ auth, cvInformation: initialCvInformation 
                                 </Button>
                             </Link>
 
-                            {/* Bouton Live Preview (desktop seulement) */}
-                            {isDesktop && (
-                                <Button
-                                    variant="ghost"
-                                    size="sm"
-                                    onClick={toggleLivePreview}
-                                    className={cn(
-                                        "hidden lg:flex items-center gap-2 transition-all border-0",
-                                        isLivePreviewVisible
-                                            ? "bg-amber-100 text-amber-700 hover:bg-amber-200"
-                                            : "text-amber-600 hover:text-amber-700 hover:bg-amber-50 dark:text-amber-400 dark:hover:bg-amber-900/20"
-                                    )}
-                                >
-                                    <Eye className="w-4 h-4" />
-                                    <span className="hidden xl:inline">
-                                        {isLivePreviewVisible ? 'Masquer aperçu' : 'Aperçu Live'}
-                                    </span>
-                                </Button>
-                            )}
+
 
                             {/* Pourcentage et progression */}
                             <div className="flex items-center gap-2" data-tutorial="progress">
@@ -2001,24 +1970,7 @@ export default function CvInterface({ auth, cvInformation: initialCvInformation 
                 </div>
             </div>
 
-            {/* Composant de prévisualisation live (desktop seulement) */}
-            {isDesktop && (
-                <AnimatePresence>
-                    {isLivePreviewVisible && (
-                        <LivePreview
-                            cvInformation={cvInformation}
-                            selectedCvModel={selectedPreviewModel ?
-                                cvInformation.availableCvModels?.find(m => m.id === selectedPreviewModel) || null
-                                : null
-                            }
-                            availableModels={cvInformation.availableCvModels || []}
-                            onModelSelect={handleModelSelect}
-                            isVisible={isLivePreviewVisible}
-                            onToggleVisibility={toggleLivePreview}
-                        />
-                    )}
-                </AnimatePresence>
-            )}
+
         </AuthenticatedLayout>
     );
 }

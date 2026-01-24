@@ -115,6 +115,19 @@ export default function Guest({ children }: PropsWithChildren) {
                                 <div className="h-6 w-px bg-gray-200 dark:bg-gray-700 mx-1" />
 
                                 <Link
+                                    href={route('pricing')}
+                                    className={cn(
+                                        "flex items-center gap-2 text-sm font-medium px-4 py-2 rounded-xl transition-all duration-200",
+                                        route().current('pricing')
+                                            ? "bg-amber-500 text-white shadow-sm"
+                                            : "text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-gray-900 dark:hover:text-white"
+                                    )}
+                                >
+                                    <Sparkles className="h-4 w-4" />
+                                    {t('nav.pricing')}
+                                </Link>
+
+                                <Link
                                     href={route('login')}
                                     className={cn(
                                         "flex items-center gap-2 text-sm font-medium px-4 py-2 rounded-xl transition-all duration-200",
@@ -173,6 +186,21 @@ export default function Guest({ children }: PropsWithChildren) {
                                     <div className="flex justify-center pb-3 border-b border-gray-100 dark:border-gray-800">
                                         <LanguageSelector />
                                     </div>
+
+                                    {/* Navigation Links */}
+                                    <Link
+                                        href={route('pricing')}
+                                        onClick={() => setShowingNavigationDropdown(false)}
+                                        className={cn(
+                                            "flex items-center justify-center gap-2 w-full px-4 py-3 rounded-xl font-medium transition-all",
+                                            route().current('pricing')
+                                                ? "bg-amber-500 text-white"
+                                                : "bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300"
+                                        )}
+                                    >
+                                        <Sparkles className="h-5 w-5" />
+                                        {t('nav.pricing')}
+                                    </Link>
 
                                     {/* Auth Links */}
                                     <Link

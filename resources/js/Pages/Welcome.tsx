@@ -88,11 +88,10 @@ const HeroSection = () => {
                     <div className="inline-flex p-1.5 rounded-2xl bg-gray-100 dark:bg-gray-800/50 backdrop-blur-sm border border-gray-200 dark:border-gray-700">
                         <button
                             onClick={() => setActiveModule('cv')}
-                            className={`relative px-6 py-3 rounded-xl text-sm font-semibold transition-all duration-300 ${
-                                activeModule === 'cv'
-                                    ? 'text-white'
-                                    : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'
-                            }`}
+                            className={`relative px-6 py-3 rounded-xl text-sm font-semibold transition-all duration-300 ${activeModule === 'cv'
+                                ? 'text-white'
+                                : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'
+                                }`}
                         >
                             {activeModule === 'cv' && (
                                 <motion.div
@@ -107,11 +106,10 @@ const HeroSection = () => {
                         </button>
                         <button
                             onClick={() => setActiveModule('ai')}
-                            className={`relative px-6 py-3 rounded-xl text-sm font-semibold transition-all duration-300 ${
-                                activeModule === 'ai'
-                                    ? 'text-white'
-                                    : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'
-                            }`}
+                            className={`relative px-6 py-3 rounded-xl text-sm font-semibold transition-all duration-300 ${activeModule === 'ai'
+                                ? 'text-white'
+                                : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'
+                                }`}
                         >
                             {activeModule === 'ai' && (
                                 <motion.div
@@ -497,11 +495,10 @@ const AIAssistantVisual = () => {
                                 exit={{ opacity: 0 }}
                                 className={`flex ${msg.type === 'user' ? 'justify-end' : 'justify-start'}`}
                             >
-                                <div className={`max-w-[80%] p-4 rounded-2xl ${
-                                    msg.type === 'user'
-                                        ? 'bg-gray-100 dark:bg-gray-700 rounded-br-md'
-                                        : 'bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-bl-md'
-                                }`}>
+                                <div className={`max-w-[80%] p-4 rounded-2xl ${msg.type === 'user'
+                                    ? 'bg-gray-100 dark:bg-gray-700 rounded-br-md'
+                                    : 'bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-bl-md'
+                                    }`}>
                                     <p className="text-sm">{msg.text}</p>
                                 </div>
                             </motion.div>
@@ -727,8 +724,8 @@ const Footer = () => {
                         <h4 className="font-bold text-gray-900 dark:text-white mb-4">{t('footer.services.title')}</h4>
                         <ul className="space-y-3 text-sm">
                             <li><a href="/guest-cv" className="text-gray-600 dark:text-gray-400 hover:text-amber-600 dark:hover:text-amber-400 transition-colors">{t('footer.services.resume')}</a></li>
+                            <li><Link href={route('pricing')} className="text-gray-600 dark:text-gray-400 hover:text-amber-600 dark:hover:text-amber-400 transition-colors">{t('footer.services.pricing')}</Link></li>
                             <li><Link href={route('register')} className="text-gray-600 dark:text-gray-400 hover:text-amber-600 dark:hover:text-amber-400 transition-colors">{t('footer.services.advisor')}</Link></li>
-                            <li><Link href={route('register')} className="text-gray-600 dark:text-gray-400 hover:text-amber-600 dark:hover:text-amber-400 transition-colors">{t('footer.services.interview')}</Link></li>
                         </ul>
                     </div>
 
@@ -737,8 +734,10 @@ const Footer = () => {
                         <h4 className="font-bold text-gray-900 dark:text-white mb-4">{t('footer.legal.title')}</h4>
                         <ul className="space-y-3 text-sm">
                             <li><Link href="/privacy" className="text-gray-600 dark:text-gray-400 hover:text-amber-600 dark:hover:text-amber-400 transition-colors">{t('footer.legal.privacy')}</Link></li>
-                            <li><Link href="/terms" className="text-gray-600 dark:text-gray-400 hover:text-amber-600 dark:hover:text-amber-400 transition-colors">{t('footer.legal.terms')}</Link></li>
+                            <li><Link href="/terms-and-conditions" className="text-gray-600 dark:text-gray-400 hover:text-amber-600 dark:hover:text-amber-400 transition-colors">{t('footer.legal.terms')}</Link></li>
                             <li><Link href="/cookies" className="text-gray-600 dark:text-gray-400 hover:text-amber-600 dark:hover:text-amber-400 transition-colors">{t('footer.legal.cookies')}</Link></li>
+                            <li><Link href="/refund-policy" className="text-gray-600 dark:text-gray-400 hover:text-amber-600 dark:hover:text-amber-400 transition-colors">{t('footer.legal.refund')}</Link></li>
+                            <li><Link href="/mentions-legales" className="text-gray-600 dark:text-gray-400 hover:text-amber-600 dark:hover:text-amber-400 transition-colors">{t('footer.legal.mentions')}</Link></li>
                         </ul>
                     </div>
 

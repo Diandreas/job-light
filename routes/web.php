@@ -128,13 +128,19 @@ Route::get('/privacy', function () {
     return Inertia::render('PrivacyPolicy');
 })->name('privacy');
 
-Route::get('/terms', function () {
+Route::get('/terms-and-conditions', function () {
     return Inertia::render('TermsOfService');
 })->name('terms');
+
+Route::redirect('/terms', '/terms-and-conditions');
 
 Route::get('/cookies', function () {
     return Inertia::render('CookiePolicy');
 })->name('cookies');
+
+Route::get('/refund-policy', function () {
+    return Inertia::render('RefundPolicy');
+})->name('refund');
 
 Route::get('/mentions-legales', function () {
     return Inertia::render('LegalNotice');
@@ -217,6 +223,7 @@ Route::post('/api/cv/analyze', [CareerAdvisorController::class, 'analyzeCV'])
 Route::delete('personal-information/photo', [PersonalInformationController::class, 'deletePhoto'])
     ->name('personal-information.delete-photo');
 Route::get('/payment', [PaymentController::class, 'index'])->name('payment.index');
+Route::get('/pricing', [PaymentController::class, 'index'])->name('pricing');
 
 Route::post('/api/paypal/capture-payment', [PayPalController::class, 'capturePayment'])->middleware(['auth']);
 Route::prefix('career-advisor')->group(function () {

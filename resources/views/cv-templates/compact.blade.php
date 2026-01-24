@@ -78,7 +78,13 @@
                 @foreach($experiences as $exp)
                 <div class="entry">
                     <div class="entry-title">{{ $exp['name'] }}</div>
-                    <div class="entry-meta">{{ $exp['InstitutionName'] }} | {{ \Carbon\Carbon::parse($exp['date_start'])->locale($currentLocale)->isoFormat('Y') }} - {{ $exp['date_end'] ? \Carbon\Carbon::parse($exp['date_end'])->locale($currentLocale)->isoFormat('Y') : 'Present' }}</div>
+                    <div class="entry-meta">
+                        {{ $exp['InstitutionName'] }} | 
+                        {{ \Carbon\Carbon::parse($exp['date_start'])->locale($currentLocale)->isoFormat('Y') }} - {{ $exp['date_end'] ? \Carbon\Carbon::parse($exp['date_end'])->locale($currentLocale)->isoFormat('Y') : ($currentLocale === 'fr' ? 'Présent' : 'Present') }} 
+                        @if(!empty($exp['category_name']))
+                            <span style="font-weight: 600; color: {{ $primaryColor }}; margin-left: 2mm;">• {{ $currentLocale === 'fr' ? $exp['category_name'] : ($exp['category_name_en'] ?? $exp['category_name']) }}</span>
+                        @endif
+                    </div>
                     <div class="content-text">{!! $exp['description'] !!}</div>
                 </div>
                 @endforeach

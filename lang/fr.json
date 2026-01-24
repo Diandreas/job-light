@@ -19,5 +19,16 @@
         "saving": "Enregistrement...",
         "saved": "Enregistré",
         "error": "Erreur"
+    },
+    "nav": {
+        "pricing": "Tarifs"
+    },
+    "auth": {
+        "login_to_purchase": "Connectez-vous pour acheter"
+    },
+    "footer": {
+        "services": {
+            "pricing": "Tarification"
+        }
     }
 }

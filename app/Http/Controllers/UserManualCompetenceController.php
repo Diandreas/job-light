@@ -21,6 +21,7 @@ class UserManualCompetenceController extends Controller
             'competence.name' => 'required|string|max:255',
             'competence.name_en' => 'nullable|string|max:255',
             'competence.description' => 'nullable|string',
+            'competence.level' => 'nullable|string|max:100',
         ]);
 
         // Vérification que l'utilisateur modifie son propre profil
@@ -37,6 +38,7 @@ class UserManualCompetenceController extends Controller
             'name' => $request->competence['name'],
             'name_en' => $request->competence['name_en'] ?? $request->competence['name'],
             'description' => $request->competence['description'] ?? '',
+            'level' => $request->competence['level'] ?? 'Intermédiaire',
             'is_manual' => true
         ];
         
@@ -73,5 +75,29 @@ class UserManualCompetenceController extends Controller
         $user->save();
         
         return response()->json(['message' => 'Compétence manuelle supprimée avec succès']);
+    }
+
+    /**
+     * Met à jour toutes les compétences manuelles de l'utilisateur
+     */
+    public function updateAll(Request $request)
+    {
+        $request->validate([
+            'user_id' => 'required|integer',
+            'manual_competences' => 'required|array',
+        ]);
+
+        // Vérification que l'utilisateur modifie son propre profil
+        if (Auth::id() != $request->user_id) {
+            return response()->json(['message' => 'Non autorisé'], 403);
+        }
+
+        $user = User::findOrFail($request->user_id);
+        
+        // Mettre à jour les compétences manuelles
+        $user->manual_competences = $request->manual_competences;
+        $user->save();
+        
+        return response()->json(['message' => 'Compétences manuelles mises à jour avec succès']);
     }
 }

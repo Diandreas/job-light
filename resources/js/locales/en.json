@@ -40,9 +40,9 @@
             "title": "Start with your information",
             "description": "First fill in your personal information: name, email, phone, etc. This is the foundation of your CV. You can also add a professional photo."
         },
-        "navigation": {
+        "stepper": {
             "title": "Navigate between sections",
-            "description": "Use these buttons to move from one section to another. The 'Next' button is only enabled when the current section is completed. At the end, you'll be able to choose a design!"
+            "description": "Use this stepper to navigate between different CV sections. Click on a section to access it directly. Completed sections are marked in green. Once all sections are filled, you'll be able to choose a design!"
         },
         "tabbar": {
             "title": "Mobile navigation",

@@ -135,7 +135,7 @@ class CvInfosController extends Controller
             'showPrintButton' => request()->has('print'),
             'cvModel' => $cvModel,
             'currentLocale' => $locale,
-            'editable' => request()->has('editable')
+            'editable' => false // Édition visuelle désactivée temporairement
         ]);
 
         // Si le paramètre 'auto_print' est présent, ajouter du JavaScript pour déclencher l'impression automatiquement
@@ -175,7 +175,7 @@ class CvInfosController extends Controller
             'showPrintButton' => false,
             'cvModel' => $cvModel,
             'currentLocale' => $locale,
-            'editable' => request()->has('editable'),
+            'editable' => false, // Édition visuelle désactivée temporairement
             'directRender' => true // Flag pour templates
         ])->render();
 
@@ -475,12 +475,13 @@ class CvInfosController extends Controller
             'contrast_colors' => ColorContrastService::generateContrastColors($user->primary_color ?? '#3498db'),
 
             'competences' => array_merge(
-                collect($user->competences()->select(['id', 'name', 'name_en', 'description'])->get())->map(function($competence) {
+                collect($user->competences()->select(['competences.id', 'competences.name', 'competences.name_en', 'competences.description'])->withPivot('level')->get())->map(function($competence) {
                     return [
                         'id' => $competence->id,
                         'name' => $competence->name ?? '',
                         'name_en' => $competence->name_en ?? '',
-                        'description' => $competence->description ?? ''
+                        'description' => $competence->description ?? '',
+                        'level' => $competence->pivot->level ?? 'Intermédiaire'
                     ];
                 })->toArray(),
                 is_array($user->manual_competences) ? array_map(function($competence) {
@@ -489,10 +490,22 @@ class CvInfosController extends Controller
                         'name' => $competence['name'] ?? '',
                         'name_en' => $competence['name_en'] ?? $competence['name'] ?? '',
                         'description' => $competence['description'] ?? '',
+                        'level' => $competence['level'] ?? 'Intermédiaire',
                         'is_manual' => true
                     ];
                 }, $user->manual_competences) : []
             ),
+
+            'certifications' => is_array($user->manual_certifications) ? array_map(function($cert) {
+                return [
+                    'id' => $cert['id'] ?? 'manual-' . uniqid(),
+                    'name' => $cert['name'] ?? '',
+                    'institution' => $cert['institution'] ?? '',
+                    'date' => $cert['date'] ?? '',
+                    'description' => $cert['description'] ?? '',
+                    'is_manual' => true
+                ];
+            }, $user->manual_certifications) : [],
 
             'languages' => $languages,
             'experiences' => $experiencesWithReferences,
@@ -501,6 +514,7 @@ class CvInfosController extends Controller
             'personalInformation' => [
                 'id' => $user->id,
                 'firstName' => $user->name ?? '',
+                'lastName' => $user->surname ?? '',
                 'email' => $user->email ?? '',
                 'github' => $user->github ?? '',
                 'linkedin' => $user->linkedin ?? '',
@@ -653,9 +667,14 @@ class CvInfosController extends Controller
         $cvInformation = $this->getCommonCvInformation($user);
         $selectedCvModel = $user->selected_cv_model;
 
+        // Get all available CV models for template switcher
+        $cvModels = \App\Models\CvModel::orderBy('name')
+            ->get(['id', 'name', 'price', 'previewImagePath']);
+
         return Inertia::render('CvInfos/Show', [
             'cvInformation' => $cvInformation,
             'selectedCvModel' => $selectedCvModel,
+            'cvModels' => $cvModels,
         ]);
     }
 

@@ -31,6 +31,7 @@ class UserCompetenceController extends Controller
     {
         $request->validate([
             'competence_id' => 'required|exists:competences,id',
+            'level' => 'nullable|string|max:100',
         ]);
 
         $user = auth()->user();
@@ -38,12 +39,13 @@ class UserCompetenceController extends Controller
         // Vérifier si la compétence n'est pas déjà attachée
         if (!$user->competences()->where('competence_id', $request->competence_id)->exists()) {
             $competence = Competence::findOrFail($request->competence_id);
-            $user->competences()->attach($competence);
+            $user->competences()->attach($competence, ['level' => $request->level ?? 'Intermédiaire']);
 
             if ($request->wantsJson()) {
                 return response()->json([
                     'message' => 'Competence ajoutée avec succès',
-                    'competence' => $competence
+                    'competence' => $competence,
+                    'level' => $request->level ?? 'Intermédiaire'
                 ]);
             }
 
@@ -59,6 +61,28 @@ class UserCompetenceController extends Controller
 
         return redirect()->route('user-competences.index')
             ->with('error', 'Cette compétence est déjà attribuée');
+    }
+
+    public function update(Request $request, $id)
+    {
+        $request->validate([
+            'level' => 'required|string|max:100',
+        ]);
+
+        $user = auth()->user();
+        
+        if ($user->competences()->where('competence_id', $id)->exists()) {
+            $user->competences()->updateExistingPivot($id, ['level' => $request->level]);
+            
+            return response()->json([
+                'message' => 'Niveau mis à jour avec succès',
+                'level' => $request->level
+            ]);
+        }
+
+        return response()->json([
+            'message' => 'Compétence non trouvée'
+        ], 404);
     }
 
     public function destroy($userId, $competenceId)

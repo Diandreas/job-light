@@ -41,6 +41,7 @@ import HobbyManager from '@/Pages/CvInfos/Partials/HobbyManager';
 import ExperienceManager from "@/Pages/CvInfos/Partials/ExperienceManager";
 import ProfessionSummaryManager from '@/Pages/CvInfos/Partials/ProfessionSummaryManager';
 import LanguageManager from '@/Pages/CvInfos/Partials/LanguageManager';
+import CertificationManager from '@/Pages/CvInfos/Partials/CertificationManager';
 import LivePreview from '@/Components/cv/LivePreview';
 import ReactCrop, { centerCrop, makeAspectCrop } from 'react-image-crop';
 import 'react-image-crop/dist/ReactCrop.css';
@@ -1489,50 +1490,6 @@ const SidebarButton = ({ item, isActive, isComplete, onClick, isMobile }) => {
     );
 }
 
-const SectionNavigation = ({ currentSection, nextSection, prevSection, canProgress, onNavigate }) => {
-    const { t } = useTranslation();
-
-    // Vérifier si c'est la dernière section (skills)
-    const isLastSection = currentSection === 'skills';
-
-    return (
-        <div className="mt-4 sm:mt-6 pt-3 sm:pt-4 border-t border-gray-100 dark:border-gray-800" data-tutorial="navigation">
-            <div className="flex justify-between items-center gap-2 sm:gap-4">
-                {prevSection && (
-                    <Button
-                        variant="ghost"
-                        onClick={() => onNavigate(prevSection.id)}
-                        className="h-8 sm:h-10 text-xs sm:text-sm py-0 sm:py-2 flex items-center gap-1 sm:gap-2 text-gray-600 hover:text-gray-800 hover:bg-gray-100 dark:text-gray-400 dark:hover:text-gray-200 dark:hover:bg-gray-800 border-0"
-                    >
-                        <ChevronLeft className="w-3 h-3 sm:w-4 sm:h-4" />
-                        <span className="truncate max-w-[80px] sm:max-w-none">{prevSection.label}</span>
-                    </Button>
-                )}
-
-                {/* Bouton Choisir un design s'affiche uniquement à la dernière étape */}
-                {isLastSection && canProgress ? (
-                    <Link href={route('userCvModels.index')}>
-                        <Button className="h-8 sm:h-10 text-xs sm:text-sm py-0 sm:py-2 bg-gradient-to-r from-amber-500 to-purple-500 hover:from-amber-600 hover:to-purple-600 dark:from-amber-400 dark:to-purple-400 text-white border-0">
-                            <Star className="mr-1 sm:mr-2 h-3 w-3 sm:h-4 sm:w-4" />
-                            {t('cv.interface.chooseDesign')}
-                            <CircleChevronRight className="ml-1 sm:ml-2 h-3 w-3 sm:h-4 sm:w-4" />
-                        </Button>
-                    </Link>
-                ) : nextSection && (
-                    <Button
-                        onClick={() => onNavigate(nextSection.id)}
-                        disabled={!canProgress}
-                        className="h-8 sm:h-10 text-xs sm:text-sm py-0 sm:py-2 flex items-center gap-1 sm:gap-2 bg-gradient-to-r from-amber-500 to-purple-500 hover:from-amber-600 hover:to-purple-600 dark:from-amber-400 dark:to-purple-400 text-white border-0"
-                    >
-                        <span className="truncate max-w-[80px] sm:max-w-none">{nextSection.label}</span>
-                        <ChevronRight className="w-3 h-3 sm:w-4 sm:h-4" />
-                    </Button>
-                )}
-            </div>
-        </div>
-    );
-};
-
 export default function CvInterface({ auth, cvInformation: initialCvInformation }) {
     const { t } = useTranslation();
     const SIDEBAR_ITEMS = getSidebarItems(t);
@@ -1710,14 +1667,35 @@ export default function CvInterface({ auth, cvInformation: initialCvInformation 
 
                             {/* Colonne droite */}
                             <div>
-                                <HobbyManager
+                                <CertificationManager
                                     auth={auth}
-                                    availableHobbies={cvInformation.availableHobbies}
-                                    initialUserHobbies={cvInformation.hobbies}
-                                    onUpdate={(hobbies) => updateCvInformation('hobbies', hobbies)}
+                                    initialCertifications={cvInformation.certifications || []}
+                                    onUpdate={(certifications) => updateCvInformation('certifications', certifications)}
                                 />
+
+                                <div className="mt-6">
+                                    <HobbyManager
+                                        auth={auth}
+                                        availableHobbies={cvInformation.availableHobbies}
+                                        initialUserHobbies={cvInformation.hobbies}
+                                        onUpdate={(hobbies) => updateCvInformation('hobbies', hobbies)}
+                                    />
+                                </div>
                             </div>
                         </div>
+
+                        {/* Bouton Choisir un design si la section skills est complétée */}
+                        {completionStatus.skills && (
+                            <div className="mt-8 pt-6 border-t border-gray-100 dark:border-gray-800 flex justify-center">
+                                <Link href={route('userCvModels.index')}>
+                                    <Button className="h-10 sm:h-12 px-6 sm:px-8 text-sm sm:text-base bg-gradient-to-r from-amber-500 to-purple-500 hover:from-amber-600 hover:to-purple-600 dark:from-amber-400 dark:to-purple-400 text-white border-0 shadow-lg hover:shadow-xl transition-all">
+                                        <Star className="mr-2 h-4 w-4 sm:h-5 sm:w-5" />
+                                        {t('cv.interface.chooseDesign')}
+                                        <CircleChevronRight className="ml-2 h-4 w-4 sm:h-5 sm:w-5" />
+                                    </Button>
+                                </Link>
+                            </div>
+                        )}
                     </div>
                 );
             case 'experience':
@@ -1733,10 +1711,6 @@ export default function CvInterface({ auth, cvInformation: initialCvInformation 
                 return <div>{t('cv.sections.notFound')}</div>;
         }
     };
-
-    const currentSectionIndex = SIDEBAR_ITEMS.findIndex(item => item.id === activeSection);
-    const nextSection = SIDEBAR_ITEMS[currentSectionIndex + 1];
-    const prevSection = SIDEBAR_ITEMS[currentSectionIndex - 1];
 
     const handleImport = async (type) => {
         if (type === 'ai' && auth.user.wallet_balance < 5) {
@@ -2020,14 +1994,6 @@ export default function CvInterface({ auth, cvInformation: initialCvInformation 
                                     className="space-y-4 sm:space-y-6 max-w-5xl mx-auto"
                                 >
                                     {getSectionComponent(activeSection)}
-
-                                    <SectionNavigation
-                                        currentSection={activeSection}
-                                        nextSection={nextSection}
-                                        prevSection={prevSection}
-                                        canProgress={completionStatus[activeSection]}
-                                        onNavigate={setActiveSection}
-                                    />
                                 </motion.div>
                             </AnimatePresence>
                         </div>

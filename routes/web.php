@@ -364,10 +364,15 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // Compétences manuelles
     Route::post('/user-manual-competences', [App\Http\Controllers\UserManualCompetenceController::class, 'store'])->name('user-manual-competences.store');
     Route::delete('/user-manual-competences/{user_id}/{competence_id}', [App\Http\Controllers\UserManualCompetenceController::class, 'destroy'])->name('user-manual-competences.destroy');
+    Route::post('/user-manual-competences/update-all', [App\Http\Controllers\UserManualCompetenceController::class, 'updateAll'])->name('user-manual-competences.update-all');
 
     // Hobbies manuels
     Route::post('/user-manual-hobbies', [App\Http\Controllers\UserManualHobbyController::class, 'store'])->name('user-manual-hobbies.store');
     Route::delete('/user-manual-hobbies/{user_id}/{hobby_id}', [App\Http\Controllers\UserManualHobbyController::class, 'destroy'])->name('user-manual-hobbies.destroy');
+
+    // Certifications manuelles
+    Route::post('/user-manual-certifications', [App\Http\Controllers\UserManualCertificationController::class, 'store'])->name('user-manual-certifications.store');
+    Route::delete('/user-manual-certifications/{user_id}/{certification_id}', [App\Http\Controllers\UserManualCertificationController::class, 'destroy'])->name('user-manual-certifications.destroy');
 
     // Sponsorship
     Route::get('/sponsorship', [SponsorshipController::class, 'index'])->name('sponsorship.index');

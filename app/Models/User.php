@@ -44,6 +44,7 @@ class User extends Authenticatable
         'photo',
         'manual_competences',
         'manual_hobbies',
+        'manual_certifications',
         'wallet_balance',
         'UserType',
         'sponsor_id',
@@ -76,6 +77,7 @@ class User extends Authenticatable
         'password' => 'hashed',
         'manual_competences' => 'array',
         'manual_hobbies' => 'array',
+        'manual_certifications' => 'array',
     ];
 
     public function cvInfos()

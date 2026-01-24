@@ -40,9 +40,9 @@
             "title": "Commencez par vos informations",
             "description": "Remplissez d'abord vos informations personnelles : nom, email, téléphone, etc. C'est la base de votre CV. Vous pouvez aussi ajouter une photo professionnelle."
         },
-        "navigation": {
+        "stepper": {
             "title": "Naviguez entre les sections",
-            "description": "Utilisez ces boutons pour passer d'une section à l'autre. Le bouton 'Suivant' n'est activé que quand la section actuelle est complétée. À la fin, vous pourrez choisir un design !"
+            "description": "Utilisez ce stepper pour naviguer entre les différentes sections de votre CV. Cliquez sur une section pour y accéder directement. Les sections complétées sont marquées en vert. Une fois toutes les sections remplies, vous pourrez choisir un design !"
         },
         "tabbar": {
             "title": "Navigation mobile",

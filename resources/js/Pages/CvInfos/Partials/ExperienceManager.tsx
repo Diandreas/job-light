@@ -13,6 +13,7 @@ import {
 import { motion, AnimatePresence } from 'framer-motion';
 import axios from "axios";
 import AIRephraseButton from '@/Components/AIRephraseButton';
+import RichTextEditor from '@/Components/RichTextEditor';
 
 interface Reference {
     id?: number;
@@ -572,11 +573,10 @@ const ExperienceDialog: React.FC<{
                     {/* Description */}
                     <div>
                         <label className="text-xs sm:text-sm font-medium mb-1 block">{t('experiences.manager.labels.description')}</label>
-                        <Textarea
+                        <RichTextEditor
                             value={formData.description || ''}
-                            onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
+                            onChange={(newText) => setFormData(prev => ({ ...prev, description: newText }))}
                             placeholder={t('experiences.manager.placeholders.description')}
-                            rows={2}
                         />
                         <div className="flex justify-end mt-1">
                             <AIRephraseButton

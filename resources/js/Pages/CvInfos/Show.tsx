@@ -2,11 +2,11 @@ import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
-import { Head, Link } from '@inertiajs/react';
+import { Head, Link, router } from '@inertiajs/react';
 import { Button } from "@/Components/ui/button";
 import {
     ArrowLeft, Download, Coins, AlertCircle, Star,
-    Palette, RotateCcw, Sparkles, Check, Loader2, X, Settings2, ChevronDown
+    Palette, RotateCcw, Sparkles, Check, Loader2, X, Settings2, ChevronDown, ChevronUp, LayoutTemplate
 } from 'lucide-react';
 import AIRephraseButton from '@/Components/AIRephraseButton';
 import { useToast } from "@/Components/ui/use-toast";
@@ -14,7 +14,7 @@ import ColorPicker from '@/Components/ColorPicker';
 import CVPreview, { CVPreviewRef } from '@/Components/CVPreview';
 import axios from 'axios';
 
-export default function Show({ auth, cvInformation, selectedCvModel }) {
+export default function Show({ auth, cvInformation, selectedCvModel, cvModels }) {
     const { t, i18n } = useTranslation();
     const { toast } = useToast();
     const cvPreviewRef = useRef<CVPreviewRef>(null);
@@ -25,10 +25,8 @@ export default function Show({ auth, cvInformation, selectedCvModel }) {
     const [hasDownloaded, setHasDownloaded] = useState(false);
     const [currentColor, setCurrentColor] = useState(cvInformation?.primary_color || '#3498db');
     const [hasCustomColor, setHasCustomColor] = useState(Boolean(cvInformation?.primary_color));
-    const [isEditable, setIsEditable] = useState(false);
-    const [focusedField, setFocusedField] = useState<{ field: string, value: string, id: string, model: string } | null>(null);
-    const [saveStatus, setSaveStatus] = useState<'saved' | 'saving' | 'error'>('saved');
     const [showControls, setShowControls] = useState(true);
+    const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
     const canAccessFeatures = walletBalance >= (selectedCvModel?.price || 0);
 
@@ -46,23 +44,23 @@ export default function Show({ auth, cvInformation, selectedCvModel }) {
         checkDownloadStatus();
     }, [selectedCvModel?.id]);
 
-    // Handle field changes from CV
-    const handleFieldChange = async (field: string, value: string, id: string, model: string) => {
-        setSaveStatus('saving');
-        try {
-            await axios.post('/api/cv/update-field', { field, value, id, model });
-            setSaveStatus('saved');
-            toast({ title: 'Saved', description: 'Your changes have been saved.' });
-        } catch (error) {
-            console.error('Save failed', error);
-            setSaveStatus('error');
-            toast({ variant: 'destructive', title: 'Error', description: 'Failed to save changes.' });
-        }
-    };
+    // Handle model change
+    const handleModelChange = async (modelId) => {
+        if (modelId === selectedCvModel.id) return;
 
-    // Handle field focus from CV
-    const handleFieldFocus = (field: string, value: string, id: string, model: string) => {
-        setFocusedField({ field, value, id, model });
+        try {
+            await axios.post('/user-cv-models/select-active', {
+                cv_model_id: modelId
+            });
+
+            toast({ title: "Modèle changé", description: "Le nouveau design a été appliqué." });
+
+            // Reload only the necessary data
+            router.reload({ only: ['selectedCvModel'] });
+        } catch (error) {
+            console.error('Failed to change model', error);
+            toast({ variant: 'destructive', title: 'Erreur', description: 'Impossible de changer de modèle.' });
+        }
     };
 
     const handleColorSaved = (newColor) => {
@@ -141,30 +139,7 @@ export default function Show({ auth, cvInformation, selectedCvModel }) {
         }
     };
 
-    const handleAiRephrase = async (newText) => {
-        if (!focusedField) return;
-        try {
-            await axios.post('/api/cv/update-field', {
-                field: focusedField.field,
-                value: newText,
-                id: focusedField.id,
-                model: focusedField.model
-            });
 
-            // Update field directly in the preview without reloading
-            cvPreviewRef.current?.updateField(
-                focusedField.field,
-                newText,
-                focusedField.id,
-                focusedField.model
-            );
-
-            setFocusedField(prev => prev ? ({ ...prev, value: newText }) : null);
-            toast({ title: "✨ Updated!", description: "Content rephrased and saved." });
-        } catch (error) {
-            toast({ variant: 'destructive', title: 'Error', description: 'Failed to save rephrased content.' });
-        }
-    };
 
     if (!selectedCvModel) {
         return (
@@ -204,19 +179,7 @@ export default function Show({ auth, cvInformation, selectedCvModel }) {
                             <span className="text-sm font-semibold text-gray-800 dark:text-white">{selectedCvModel.name}</span>
                         </div>
                         <div className="flex items-center gap-3">
-                            {/* Save Status */}
-                            {saveStatus === 'saving' && (
-                                <div className="flex items-center gap-1 text-xs text-blue-600">
-                                    <Loader2 className="w-3 h-3 animate-spin" />
-                                    <span>Saving...</span>
-                                </div>
-                            )}
-                            {saveStatus === 'saved' && isEditable && (
-                                <div className="flex items-center gap-1 text-xs text-emerald-600">
-                                    <Check className="w-3 h-3" />
-                                    <span>Saved</span>
-                                </div>
-                            )}
+
                             {/* Tokens */}
                             <div className="flex items-center gap-1 text-xs">
                                 <Coins className={`w-3 h-3 ${canAccessFeatures ? "text-emerald-500" : "text-red-500"}`} />
@@ -240,12 +203,9 @@ export default function Show({ auth, cvInformation, selectedCvModel }) {
                     <div className="relative w-full h-full max-w-[210mm] bg-white rounded-lg shadow-2xl overflow-auto">
                         <CVPreview
                             ref={cvPreviewRef}
-                            key={`${i18n.language}-${isEditable}`}
                             cvModelId={selectedCvModel?.id}
                             locale={i18n.language}
-                            editable={isEditable}
-                            onFieldChange={handleFieldChange}
-                            onFieldFocus={handleFieldFocus}
+                            editable={false}
                         />
                     </div>
                 </div>
@@ -274,35 +234,9 @@ export default function Show({ auth, cvInformation, selectedCvModel }) {
                                     </div>
                                 </div>
 
-                                {/* Visual Edit Toggle */}
-                                <div className="space-y-2">
-                                    <label className="text-xs font-medium text-gray-500 uppercase tracking-wide">Édition</label>
-                                    <Button
-                                        variant={isEditable ? "default" : "outline"}
-                                        size="sm"
-                                        onClick={() => setIsEditable(!isEditable)}
-                                        className="w-full"
-                                    >
-                                        <Palette className="w-4 h-4 mr-2" />
-                                        {isEditable ? "Désactiver l'édition" : "Édition visuelle"}
-                                    </Button>
-                                </div>
 
-                                {/* AI Assistant (when editing) */}
-                                {isEditable && focusedField && (
-                                    <motion.div
-                                        initial={{ opacity: 0, height: 0 }}
-                                        animate={{ opacity: 1, height: 'auto' }}
-                                        className="p-3 bg-purple-50 dark:bg-purple-900/20 rounded-xl border border-purple-200 dark:border-purple-800"
-                                    >
-                                        <div className="flex items-center gap-2 mb-2">
-                                            <Sparkles className="w-4 h-4 text-purple-600" />
-                                            <span className="text-sm font-medium text-purple-900 dark:text-purple-100">IA</span>
-                                        </div>
-                                        <p className="text-xs text-gray-500 mb-2 truncate">{focusedField.value.substring(0, 40)}...</p>
-                                        <AIRephraseButton text={focusedField.value} onRephrased={handleAiRephrase} className="w-full" />
-                                    </motion.div>
-                                )}
+
+
 
                                 {/* Tokens Warning */}
                                 {!canAccessFeatures && !hasDownloaded && (
@@ -356,6 +290,52 @@ export default function Show({ auth, cvInformation, selectedCvModel }) {
                         </motion.div>
                     )}
                 </AnimatePresence>
+
+                {/* Template Switcher Drawer */}
+                <div className={`fixed bottom-0 left-0 right-0 z-40 bg-white/95 dark:bg-gray-800/95 backdrop-blur-md border-t border-gray-200 dark:border-gray-700 transition-all duration-300 ${isDrawerOpen ? 'h-52' : 'h-10'}`}>
+                    <div
+                        className="h-10 w-full flex items-center justify-center cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700/50"
+                        onClick={() => setIsDrawerOpen(!isDrawerOpen)}
+                    >
+                        {isDrawerOpen ? <ChevronDown className="w-5 h-5 text-gray-500" /> : (
+                            <div className="flex items-center gap-2 text-sm font-medium text-gray-600 dark:text-gray-300">
+                                <LayoutTemplate className="w-4 h-4" />
+                                <span>Changer de modèle ({selectedCvModel.name})</span>
+                                <ChevronUp className="w-4 h-4 ml-1" />
+                            </div>
+                        )}
+                    </div>
+
+                    {isDrawerOpen && (
+                        <div className="h-40 overflow-x-auto p-4 flex gap-4 items-center">
+                            {cvModels?.map((model) => (
+                                <div
+                                    key={model.id}
+                                    onClick={() => handleModelChange(model.id)}
+                                    className={`relative group flex-shrink-0 w-24 cursor-pointer transition-all duration-200 ${model.id === selectedCvModel.id ? 'scale-105 ring-2 ring-amber-500 rounded-lg' : 'hover:scale-105'}`}
+                                >
+                                    <div className="aspect-[210/297] bg-gray-200 rounded-lg overflow-hidden shadow-md">
+                                        <img
+                                            src={model.previewImagePath ? `/storage/${model.previewImagePath}` : '/images/cv-placeholder.jpg'}
+                                            alt={model.name}
+                                            className="w-full h-full object-cover"
+                                            onError={(e) => { e.currentTarget.src = 'https://via.placeholder.com/210x297?text=CV'; }}
+                                        />
+                                        {/* Overlay for premium/price */}
+                                        <div className="absolute bottom-0 left-0 right-0 bg-black/60 text-white text-[10px] py-1 text-center truncate px-1">
+                                            {model.name}
+                                        </div>
+                                    </div>
+                                    {model.id === selectedCvModel.id && (
+                                        <div className="absolute -top-2 -right-2 bg-amber-500 text-white rounded-full p-1 shadow-sm">
+                                            <Check className="w-3 h-3" />
+                                        </div>
+                                    )}
+                                </div>
+                            ))}
+                        </div>
+                    )}
+                </div>
             </div>
         </AuthenticatedLayout>
     );

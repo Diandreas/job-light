@@ -12,13 +12,15 @@
             $primaryColor = $cvInformation['primary_color'] ?? '#002060'; /* Academic Blue */
         @endphp
 
-        @page { margin: 20mm; size: A4; }
+        @page { margin: 10mm; size: A4; }
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: 'Times New Roman', serif; font-size: 11pt; line-height: 1.3; color: #000; }
 
         .header { text-align: center; margin-bottom: 6mm; }
         .name { font-size: 16pt; font-weight: bold; text-transform: uppercase; margin-bottom: 1mm; }
         .info { font-size: 10pt; }
+        .info span { margin: 0 1mm; }
+        .info a { color: inherit; text-decoration: none; }
 
         .section-title { font-size: 12pt; font-weight: bold; text-transform: uppercase; border-bottom: 1px solid #000; margin: 5mm 0 3mm 0; padding-bottom: 1mm; }
 
@@ -36,7 +38,15 @@
     <div class="header">
         <div class="name">{{ $cvInformation['personalInformation']['firstName'] }} {{ $cvInformation['personalInformation']['lastName'] }}</div>
         <div class="info">
-            {{ $cvInformation['personalInformation']['address'] }} | {{ $cvInformation['personalInformation']['phone'] }} | {{ $cvInformation['personalInformation']['email'] }}
+            <span>{{ $cvInformation['personalInformation']['address'] }}</span> | 
+            <span>{{ $cvInformation['personalInformation']['phone'] }}</span> | 
+            <span>{{ $cvInformation['personalInformation']['email'] }}</span>
+            @if(!empty($cvInformation['personalInformation']['linkedin']))
+             | <span><a href="{{ $cvInformation['personalInformation']['linkedin'] }}" target="_blank">{{ $cvInformation['personalInformation']['linkedin'] }}</a></span>
+            @endif
+            @if(!empty($cvInformation['personalInformation']['github']))
+             | <span><a href="{{ $cvInformation['personalInformation']['github'] }}" target="_blank">{{ $cvInformation['personalInformation']['github'] }}</a></span>
+            @endif
         </div>
     </div>
 

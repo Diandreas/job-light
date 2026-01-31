@@ -78,16 +78,6 @@ const PersonalInformationEdit: React.FC<Props> = ({ user, onUpdate, onCancel }) 
     const handleChange = (id: string, value: string) => {
         setData(id as any, value);
         setIsDirty(true);
-
-        // Clear existing timer
-        if (autoSaveTimerRef.current) {
-            clearTimeout(autoSaveTimerRef.current);
-        }
-
-        // Set new timer for auto-save (2 seconds)
-        autoSaveTimerRef.current = setTimeout(() => {
-            submitData();
-        }, 2000);
     };
 
     const handleSubmit = (e: React.FormEvent) => {

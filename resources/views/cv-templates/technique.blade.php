@@ -21,7 +21,7 @@
         
         body { font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; font-size: 9.5pt; line-height: 1.45; color: {{ $textSlate }}; background: #fff; }
 
-        .cv-grid { width: 190mm; margin: 0 auto; }
+        .cv-grid { width: 100%; margin: 0 auto; }
         
         /* HEADER - SOBER & PROFESSIONAL */
         .header { display: flex; justify-content: space-between; align-items: flex-end; border-bottom: 2px solid {{ $primaryColor }}; padding-bottom: 5mm; margin-bottom: 8mm; }
@@ -32,6 +32,7 @@
         .contact-row { display: flex; flex-wrap: wrap; gap: 4mm; margin-top: 4mm; font-size: 8.5pt; color: #64748b; }
         .contact-item { display: flex; align-items: center; }
         .contact-item svg { width: 3.5mm; height: 3.5mm; margin-right: 2mm; stroke: {{ $primaryColor }}; fill: none; stroke-width: 2; }
+        .contact-item a { color: inherit; text-decoration: none; }
 
         .photo-box { width: 32mm; height: 32mm; border: 1px solid #e2e8f0; padding: 1mm; border-radius: 4px; background: #fff; margin-left: 6mm; }
         .photo-box img { width: 100%; height: 100%; object-fit: cover; }
@@ -76,7 +77,7 @@
     <div class="header">
         <div class="header-info">
             <h1 class="name">{{ $cvInformation['personalInformation']['firstName'] ?? '' }} {{ $cvInformation['personalInformation']['lastName'] ?? '' }}</h1>
-            <div class="role">{{ $currentLocale === 'fr' ? ($cvInformation['professions'][0]['name'] ?? '') : ($cvInformation['professions'][0]['name_en'] ?? '') }}</div>
+            <div class="role">{{ $currentLocale === 'en' ? ($cvInformation['professions'][0]['name_en'] ?? $cvInformation['professions'][0]['name']) : $cvInformation['professions'][0]['name'] }}</div>
             
             <div class="contact-row">
                 @if($cvInformation['personalInformation']['email'] ?? null)
@@ -87,6 +88,18 @@
                 @endif
                 @if($cvInformation['personalInformation']['address'] ?? null)
                 <div class="contact-item"><svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>{{ $cvInformation['personalInformation']['address'] }}</div>
+                @endif
+                @if(!empty($cvInformation['personalInformation']['linkedin']))
+                <div class="contact-item">
+                    <svg viewBox="0 0 24 24"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg>
+                    <a href="{{ $cvInformation['personalInformation']['linkedin'] }}" target="_blank">{{ $cvInformation['personalInformation']['linkedin'] }}</a>
+                </div>
+                @endif
+                @if(!empty($cvInformation['personalInformation']['github']))
+                <div class="contact-item">
+                    <svg viewBox="0 0 24 24"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg>
+                    <a href="{{ $cvInformation['personalInformation']['github'] }}" target="_blank">{{ $cvInformation['personalInformation']['github'] }}</a>
+                </div>
                 @endif
             </div>
         </div>
@@ -122,7 +135,7 @@
     @endphp
 
     <div class="section">
-        <div class="sec-title">{{ $currentLocale === 'fr' ? 'Expérience & Recherche' : 'Professional Path' }}</div>
+        <div class="sec-title">{{ __('cv.experience') }}</div>
         
         @foreach($prof_experiences as $category => $experiences)
             @php
@@ -151,7 +164,7 @@
 
     @if(!empty($educations))
     <div class="section">
-        <div class="sec-title">{{ $currentLocale === 'fr' ? 'Formation' : 'Academic Background' }}</div>
+        <div class="sec-title">{{ __('cv.education') }}</div>
         @foreach($educations as $edu)
         <div class="item">
             <div class="item-head">
@@ -169,11 +182,11 @@
 
     <div class="info-grid">
         <div class="info-col">
-            <span class="info-label">{{ $currentLocale === 'fr' ? 'Expertise' : 'Skills' }}</span>
+            <span class="info-label">{{ __('cv.skills') }}</span>
             <div class="skill-list">
                 @foreach($cvInformation['competences'] as $comp)
                 <div class="skill-item">
-                    <span>{{ $currentLocale === 'fr' ? $comp['name'] : $comp['name_en'] }}</span>
+                    <span>{{ $currentLocale === 'en' ? ($comp['name_en'] ?? $comp['name']) : $comp['name'] }}</span>
                     <span class="skill-lvl">({{ $comp['level'] }})</span>
                 </div>
                 @endforeach
@@ -181,12 +194,12 @@
         </div>
 
         <div class="info-col">
-            <span class="info-label">{{ $currentLocale === 'fr' ? 'Divers' : 'Others' }}</span>
+            <span class="info-label">{{ __('cv.languages') }}</span>
             @if(!empty($cvInformation['languages']))
                 @foreach($cvInformation['languages'] as $lang)
                 <div class="skill-item" style="border-bottom: none; margin-bottom: 1mm;">
-                    <strong>{{ $lang['name'] }}</strong>
-                    <span>{{ $lang['level'] }}</span>
+                    <strong>{{ $currentLocale === 'en' ? ($lang['name_en'] ?? $lang['name']) : $lang['name'] }}</strong>
+                    <span>{{ trans()->has("cv.levels." . $lang['level']) ? __("cv.levels." . $lang['level']) : $lang['level'] }}</span>
                 </div>
                 @endforeach
             @endif
@@ -203,8 +216,8 @@
 
     @if(!empty($cvInformation['hobbies']))
     <div style="margin-top: 10mm; color: #94a3b8; font-size: 8.5pt; text-align: center;">
-        {{ $isEnglish ? 'Interests' : 'Centres d’intérêt' }} : 
-        {{ collect($cvInformation['hobbies'])->map(fn($h) => $currentLocale === 'fr' ? $h['name'] : $h['name_en'])->join(' • ') }}
+        {{ __('cv.hobbies') }} : 
+        {{ collect($cvInformation['hobbies'])->map(fn($h) => $currentLocale === 'en' ? ($h['name_en'] ?? $h['name']) : $h['name'])->join(' • ') }}
     </div>
     @endif
 </div>

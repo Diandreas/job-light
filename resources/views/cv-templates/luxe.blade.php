@@ -81,7 +81,7 @@
         <div class="header">
             <div class="monogram">{{ substr($cvInformation['personalInformation']['firstName'] ?? 'X', 0, 1) }}{{ substr($cvInformation['personalInformation']['lastName'] ?? 'X', 0, 1) }}</div>
             <div class="name">{{ $cvInformation['personalInformation']['firstName'] }} {{ $cvInformation['personalInformation']['lastName'] }}</div>
-            <div class="role">{{ $currentLocale === 'fr' ? $cvInformation['professions'][0]['name'] : $cvInformation['professions'][0]['name_en'] }}</div>
+            <div class="role">{{ $currentLocale === 'en' ? ($cvInformation['professions'][0]['name_en'] ?? $cvInformation['professions'][0]['name']) : $cvInformation['professions'][0]['name'] }}</div>
             
             <div class="contact-bar">
                 @if($cvInformation['personalInformation']['email'])
@@ -130,7 +130,7 @@
                 @endif
 
                 @if(!empty($educations))
-                <div class="section-title"><span>{{ $isEnglish ? 'Academics' : 'Formation' }}</span></div>
+                <div class="section-title"><span>{{ __('cv.education') }}</span></div>
                 @foreach($educations as $edu)
                 <div class="cert-item" style="margin-bottom: 5mm;">
                     <div style="font-weight: 700; color: {{ $deepDark }}; font-family: 'Playfair Display', serif;">{{ $edu['name'] }}</div>
@@ -143,11 +143,11 @@
                 @endforeach
                 @endif
 
-                <div class="section-title" style="margin-top: 5mm;"><span>Expertise</span></div>
+                <div class="section-title" style="margin-top: 5mm;"><span>{{ __('cv.skills') }}</span></div>
                 @foreach($cvInformation['competences'] as $comp)
                 @php $lvl = match($comp['level'] ?? 'Intermédiaire') { 'Expert' => 100, 'Avancé' => 85, 'Intermédiaire' => 65, 'Débutant' => 45, default => 65 }; @endphp
                 <div class="skill-item">
-                    <div class="skill-head"><span>{{ $currentLocale === 'fr' ? $comp['name'] : $comp['name_en'] }}</span></div>
+                    <div class="skill-head"><span>{{ $currentLocale === 'en' ? ($comp['name_en'] ?? $comp['name']) : $comp['name'] }}</span></div>
                     <div class="skill-track"><div class="skill-bar" style="width: {{ $lvl }}%"></div></div>
                 </div>
                 @endforeach
@@ -163,15 +163,15 @@
                 @endif
 
                 @if(!empty($cvInformation['languages']))
-                <div class="section-title" style="margin-top: 10mm;"><span>Linguistics</span></div>
+                <div class="section-title" style="margin-top: 10mm;"><span>{{ __('cv.languages') }}</span></div>
                 @foreach($cvInformation['languages'] as $lang)
-                <div class="skill-head" style="margin-bottom: 2mm;"><span>{{ $lang['name'] }}</span> <span style="color: {{ $primaryColor }};">{{ $lang['level'] }}</span></div>
+                <div class="skill-head" style="margin-bottom: 2mm;"><span>{{ $currentLocale === 'en' ? ($lang['name_en'] ?? $lang['name']) : $lang['name'] }}</span> <span style="color: {{ $primaryColor }};">{{ trans()->has("cv.levels." . $lang['level']) ? __("cv.levels." . $lang['level']) : $lang['level'] }}</span></div>
                 @endforeach
                 @endif
             </div>
 
             <div class="content-col">
-                <div class="section-title"><span>Professional Timeline</span></div>
+                <div class="section-title"><span>{{ __('cv.experience') }}</span></div>
                 
                 @foreach($prof_experiences as $category => $experiences)
                     @php
@@ -180,9 +180,11 @@
                         if($isEnglish && $translatedCategory === $category) {
                             $normCat = strtolower($category);
                             if(str_contains($normCat, 'professionnel') || str_contains($normCat, 'professional') || str_contains($normCat, 'travail') || str_contains($normCat, 'work')) {
-                                $translatedCategory = 'Executive Experience';
+                                $translatedCategory = __('cv.experience');
                             } elseif(str_contains($normCat, 'recherche') || str_contains($normCat, 'research')) {
-                                $translatedCategory = 'Research';
+                                $translatedCategory = __('cv.research');
+                            } elseif(str_contains($normCat, 'académique') || str_contains($normCat, 'academic')) {
+                                $translatedCategory = __('cv.academic');
                             }
                         }
                     @endphp

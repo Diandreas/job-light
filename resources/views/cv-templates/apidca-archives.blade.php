@@ -17,7 +17,7 @@
         @endphp
 
         @page {
-            margin: 15mm;
+            margin: 10mm;
             size: A4;
         }
 
@@ -34,7 +34,7 @@
         }
 
         .cv-container {
-            width: 180mm;
+            width: 100%;
             margin: 0 auto;
             background: #ffffff;
             position: relative;
@@ -111,10 +111,18 @@
             font-size: 9pt;
             opacity: 0.9;
             margin-top: 2mm;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 3mm;
         }
 
         .contact-info div {
             margin-bottom: 0.5mm;
+        }
+        
+        .contact-info a {
+            color: inherit;
+            text-decoration: none;
         }
 
         /* Sections */
@@ -329,12 +337,12 @@
         <div class="header">
             <div class="header-content">
                 <div class="header-left">
-                    <div class="name" @if(isset($editable) && $editable) contenteditable="true" data-editable data-model="personalInformation" data-id="{{ $cvInformation['personalInformation']['id'] }}" data-field="firstName" @endif>
+                    <div class="name">
                         {{ $cvInformation['personalInformation']['firstName'] ?? '' }} 
                         {{ $cvInformation['personalInformation']['lastName'] ?? '' }}
                     </div>
-                    <div class="profession" @if(isset($editable) && $editable) contenteditable="true" data-editable data-model="personalInformation" data-id="{{ $cvInformation['personalInformation']['id'] }}" data-field="profession" @endif>
-                        {{ $cvInformation['personalInformation']['profession'] ?? 'Professionnel des Archives' }}
+                    <div class="profession">
+                        {{ $currentLocale === 'en' ? ($cvInformation['professions'][0]['name_en'] ?? $cvInformation['professions'][0]['name']) : $cvInformation['professions'][0]['name'] }}
                     </div>
                     <div class="contact-info">
                         @if(!empty($cvInformation['personalInformation']['email']))
@@ -347,14 +355,17 @@
                             <div>📍 {{ $cvInformation['personalInformation']['address'] }}</div>
                         @endif
                         @if(!empty($cvInformation['personalInformation']['linkedin']))
-                            <div>🔗 {{ $cvInformation['personalInformation']['linkedin'] }}</div>
+                            <div>🔗 <a href="{{ $cvInformation['personalInformation']['linkedin'] }}" target="_blank">{{ $cvInformation['personalInformation']['linkedin'] }}</a></div>
+                        @endif
+                        @if(!empty($cvInformation['personalInformation']['github']))
+                            <div>🐱 <a href="{{ $cvInformation['personalInformation']['github'] }}" target="_blank">{{ $cvInformation['personalInformation']['github'] }}</a></div>
                         @endif
                     </div>
                 </div>
                 <div class="header-right">
                     @if(!empty($cvInformation['personalInformation']['photo']))
-                        <div class="photo-container">
-                            <img src="{{ $cvInformation['personalInformation']['photo'] }}" 
+                        <div class="photo-container" style="width: 30mm; height: 35mm; border: 1px solid white; border-radius: 1mm; overflow: hidden; background: white;">
+                            <img src="data:image/jpeg;base64,{{ base64_encode(file_get_contents(public_path('storage/' . str_replace('/storage/', '', $cvInformation['personalInformation']['photo'])))) }}" 
                                  alt="Photo" style="width: 100%; height: 100%; object-fit: cover;">
                         </div>
                     @endif
@@ -368,42 +379,44 @@
         </div>
 
         <!-- Profil professionnel -->
-        @if(!empty($cvInformation['summary']))
+        @if(!empty($cvInformation['summaries']))
             <div class="section">
-                <div class="section-title">Profil Professionnel</div>
-                <div class="profile-summary" @if(isset($editable) && $editable) contenteditable="true" data-editable data-model="summary" data-id="{{ $cvInformation['summaries'][0]['id'] ?? 0 }}" data-field="description" @endif>
-                    {{ $cvInformation['summary'] }}
+                <div class="section-title">{{ __('cv.profile') }}</div>
+                <div class="profile-summary content-text">
+                    {!! $cvInformation['summaries'][0]['description'] ?? '' !!}
                 </div>
             </div>
         @endif
 
         <!-- Expériences professionnelles -->
-        @if(!empty($cvInformation['experiences']) && count($cvInformation['experiences']) > 0)
+        @php
+            $prof_experiences = [];
+            foreach($experiencesByCategory as $category => $experiences) {
+                $prof_experiences = array_merge($prof_experiences, $experiences);
+            }
+        @endphp
+
+        @if(!empty($prof_experiences))
             <div class="section">
-                <div class="section-title">Expériences Professionnelles</div>
-                @foreach($cvInformation['experiences'] as $experience)
+                <div class="section-title">{{ __('cv.experience') }}</div>
+                @foreach($prof_experiences as $experience)
                     <div class="experience-item {{ in_array(strtolower($experience['name'] ?? ''), ['archiviste', 'documentaliste', 'conservateur', 'bibliothécaire']) ? 'archives-highlight' : '' }}">
                         <div class="experience-header">
                             <div>
-                                <div class="experience-title" @if(isset($editable) && $editable) contenteditable="true" data-editable data-model="experience" data-id="{{ $experience['id'] }}" data-field="name" @endif>{{ $experience['name'] ?? '' }}</div>
-                                <div class="experience-company" @if(isset($editable) && $editable) contenteditable="true" data-editable data-model="experience" data-id="{{ $experience['id'] }}" data-field="InstitutionName" @endif>{{ $experience['InstitutionName'] ?? '' }}</div>
+                                <div class="experience-title">{{ $experience['name'] ?? '' }}</div>
+                                <div class="experience-company">{{ $experience['InstitutionName'] ?? '' }}</div>
                             </div>
                             <div class="experience-date">
-                                {{ $experience['date_start'] ?? '' }}
+                                {{ \Carbon\Carbon::parse($experience['date_start'])->locale($currentLocale)->isoFormat('MMM YYYY') }}
                                 @if(!empty($experience['date_end']))
-                                    - {{ $experience['date_end'] }}
+                                    - {{ \Carbon\Carbon::parse($experience['date_end'])->locale($currentLocale)->isoFormat('MMM YYYY') }}
                                 @else
-                                    - Présent
+                                    - {{ __('cv.present') }}
                                 @endif
                             </div>
                         </div>
                         @if(!empty($experience['description']))
-                            <div class="experience-description" @if(isset($editable) && $editable) contenteditable="true" data-editable data-model="experience" data-id="{{ $experience['id'] }}" data-field="description" @endif>{{ $experience['description'] }}</div>
-                        @endif
-                        @if(!empty($experience['output']))
-                            <div class="experience-description" style="margin-top: 1mm; font-weight: 500;">
-                                <strong>Réalisations :</strong> {{ $experience['output'] }}
-                            </div>
+                            <div class="experience-description content-text">{!! $experience['description'] !!}</div>
                         @endif
                     </div>
                 @endforeach
@@ -413,25 +426,13 @@
         <!-- Compétences spécialisées archives -->
         @if(!empty($cvInformation['competences']) && count($cvInformation['competences']) > 0)
             <div class="section">
-                <div class="section-title">Compétences Professionnelles</div>
+                <div class="section-title">{{ __('cv.skills') }}</div>
                 <div class="competences-grid">
                     <div class="competence-category">
-                        <div class="competence-category-title">Gestion Documentaire</div>
+                        <div class="competence-category-title">{{ __('cv.skills') }}</div>
                         <div class="competence-list">
                             @foreach($cvInformation['competences'] as $competence)
-                                @if(in_array(strtolower($competence['name'] ?? ''), ['archivage', 'catalogage', 'indexation', 'classification', 'gestion documentaire', 'records management']))
-                                    <div class="competence-item">{{ $competence['name'] }}</div>
-                                @endif
-                            @endforeach
-                        </div>
-                    </div>
-                    <div class="competence-category">
-                        <div class="competence-category-title">Technologies & Outils</div>
-                        <div class="competence-list">
-                            @foreach($cvInformation['competences'] as $competence)
-                                @if(!in_array(strtolower($competence['name'] ?? ''), ['archivage', 'catalogage', 'indexation', 'classification', 'gestion documentaire', 'records management']))
-                                    <div class="competence-item">{{ $competence['name'] }}</div>
-                                @endif
+                                <div class="competence-item">{{ $currentLocale === 'en' ? ($competence['name_en'] ?? $competence['name']) : $competence['name'] }}</div>
                             @endforeach
                         </div>
                     </div>
@@ -440,15 +441,29 @@
         @endif
 
         <!-- Formation -->
-        @if(!empty($cvInformation['professions']) && count($cvInformation['professions']) > 0)
+        @php
+            $educations = [];
+            $academic_keywords = ['formation', 'académique', 'education', 'étudiant', 'diplôme', 'scolarité'];
+            foreach($experiencesByCategory as $category => $experiences) {
+                $is_academic = false;
+                foreach($academic_keywords as $kw) {
+                    if(str_contains(strtolower($category), $kw)) {
+                        $is_academic = true; break;
+                    }
+                }
+                if($is_academic) {
+                    $educations = array_merge($educations, $experiences);
+                }
+            }
+        @endphp
+
+        @if(!empty($educations))
             <div class="section">
-                <div class="section-title">Formation</div>
-                @foreach($cvInformation['professions'] as $profession)
+                <div class="section-title">{{ __('cv.education') }}</div>
+                @foreach($educations as $edu)
                     <div class="formation-item">
-                        <div class="formation-title">{{ $profession['name'] ?? '' }}</div>
-                        @if(!empty($profession['description']))
-                            <div class="formation-institution">{{ $profession['description'] }}</div>
-                        @endif
+                        <div class="formation-title">{{ $edu['name'] ?? '' }}</div>
+                        <div class="formation-institution">{{ $edu['InstitutionName'] }} | {{ \Carbon\Carbon::parse($edu['date_start'])->format('Y') }}</div>
                     </div>
                 @endforeach
             </div>
@@ -457,13 +472,13 @@
         <!-- Langues -->
         @if(!empty($cvInformation['languages']) && count($cvInformation['languages']) > 0)
             <div class="section">
-                <div class="section-title">Langues</div>
+                <div class="section-title">{{ __('cv.languages') }}</div>
                 <div class="languages-container">
                     @foreach($cvInformation['languages'] as $language)
                         <div class="language-item">
-                            <span class="language-name">{{ $language['name'] ?? '' }}</span>
+                            <span class="language-name">{{ $currentLocale === 'en' ? ($language['name_en'] ?? $language['name']) : $language['name'] }}</span>
                             @if(!empty($language['level']))
-                                <span class="language-level"> - {{ $language['level'] }}</span>
+                                <span class="language-level"> - {{ trans()->has("cv.levels." . $language['level']) ? __("cv.levels." . $language['level']) : $language['level'] }}</span>
                             @endif
                         </div>
                     @endforeach
@@ -474,11 +489,11 @@
         <!-- Centres d'intérêt -->
         @if(!empty($cvInformation['hobbies']) && count($cvInformation['hobbies']) > 0)
             <div class="section">
-                <div class="section-title">Centres d'Intérêt</div>
+                <div class="section-title">{{ __('cv.hobbies') }}</div>
                 <div style="display: flex; flex-wrap: wrap; gap: 2mm; margin-top: 2mm;">
                     @foreach($cvInformation['hobbies'] as $hobby)
                         <span style="background: {{ $lightBlue }}; padding: 1mm 2mm; border-radius: 1mm; font-size: 9pt; border: 1pt solid {{ $primaryColor }};">
-                            {{ $hobby['name'] ?? '' }}
+                            {{ $currentLocale === 'en' ? ($hobby['name_en'] ?? $hobby['name']) : $hobby['name'] }}
                         </span>
                     @endforeach
                 </div>

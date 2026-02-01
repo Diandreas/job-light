@@ -567,6 +567,22 @@
             "price_desc": "Prix ↓",
             "name_asc": "Nom A-Z",
             "name_desc": "Nom Z-A"
+        },
+        "names": {
+            "Académique": "Académique",
+            "Canadien": "Canadien",
+            "Classique": "Classique",
+            "Compact": "Compact",
+            "Convivial": "Convivial",
+            "Luxe": "Luxe",
+            "Corporatif": "Corporatif",
+            "Technique": "Technique",
+            "Professional": "Professionnel",
+            "Minimaliste": "Minimaliste",
+            "Digital": "Digital",
+            "Creatif": "Créatif",
+            "Chronologique": "Chronologique",
+            "Apidca": "Apidca"
         }
     },
     "auth": {

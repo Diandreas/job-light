@@ -77,9 +77,9 @@
         @endif
         
         <div class="header-content">
-            <div class="hello">{{ $currentLocale === 'fr' ? 'Bonjour, je suis' : 'Hello, I am' }}</div>
+            <div class="hello">{{ __('cv.hello') }}</div>
             <div class="name">{{ $cvInformation['personalInformation']['firstName'] }} {{ $cvInformation['personalInformation']['lastName'] }}</div>
-            <div class="role">{{ $currentLocale === 'fr' ? $cvInformation['professions'][0]['name'] : $cvInformation['professions'][0]['name_en'] }}</div>
+            <div class="role">{{ $currentLocale === 'en' ? ($cvInformation['professions'][0]['name_en'] ?? $cvInformation['professions'][0]['name']) : $cvInformation['professions'][0]['name'] }}</div>
             
             <div class="contact-pills">
                 @if($cvInformation['personalInformation']['email'])
@@ -99,7 +99,7 @@
     <div class="full-width-card">
         <div class="card-header">
             <div class="card-icon" style="border-radius: 50%"><svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>
-            <div class="card-title">{{ $currentLocale === 'fr' ? 'À propos de moi' : 'About Me' }}</div>
+            <div class="card-title">{{ __('cv.profile') }}</div>
         </div>
         <div class="rich-text content-text">{!! $cvInformation['summaries'][0]['description'] ?? '' !!}</div>
     </div>
@@ -129,7 +129,7 @@
             <div class="card">
                 <div class="card-header">
                     <div class="card-icon" style="background: #4cc9f0;"><svg viewBox="0 0 24 24"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></svg></div>
-                    <div class="card-title">{{ $currentLocale === 'fr' ? 'Recherche & Innovation' : 'Research' }}</div>
+                    <div class="card-title">{{ __('cv.research') }}</div>
                 </div>
                 @foreach($research as $exp)
                 <div class="item">
@@ -145,7 +145,7 @@
             <div class="card">
                 <div class="card-header">
                     <div class="card-icon" style="background: #7209b7;"><svg viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg></div>
-                    <div class="card-title">{{ $currentLocale === 'fr' ? 'Expériences Professionnelles' : 'Work Experience' }}</div>
+                    <div class="card-title">{{ __('cv.experience') }}</div>
                 </div>
                 @foreach($professional as $exp)
                 <div class="item">
@@ -162,7 +162,7 @@
             <div class="card">
                 <div class="card-header">
                     <div class="card-icon" style="background: #4895ef;"><svg viewBox="0 0 24 24"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3.33 3 14.67 3 18 0v-5"/></svg></div>
-                    <div class="card-title">{{ $currentLocale === 'fr' ? 'Formation' : 'Formation' }}</div>
+                    <div class="card-title">{{ __('cv.education') }}</div>
                 </div>
                 
                 @foreach($academic as $exp)
@@ -176,12 +176,12 @@
                 @endforeach
 
                 @if(!empty($cvInformation['competences']))
-                <div class="side-sub-title">{{ $currentLocale === 'fr' ? 'Compétences' : 'Skills' }}</div>
+                <div class="side-sub-title">{{ __('cv.skills') }}</div>
                 @foreach($cvInformation['competences'] as $comp)
                 @php $lvl = match($comp['level'] ?? 'Intermédiaire') { 'Expert' => 100, 'Avancé' => 80, 'Intermédiaire' => 60, 'Débutant' => 40, default => 60 }; @endphp
                 <div style="margin-bottom: 3mm;">
                     <div style="display: flex; justify-content: space-between; font-size: 8.5pt; font-weight: 600; margin-bottom: 0.5mm;">
-                        <span>{{ $currentLocale === 'fr' ? $comp['name'] : $comp['name_en'] }}</span>
+                        <span>{{ $currentLocale === 'en' ? ($comp['name_en'] ?? $comp['name']) : $comp['name'] }}</span>
                         <span style="color: {{ $primaryColor }}; font-size: 8pt;">{{ $comp['level'] ?? '' }}</span>
                     </div>
                     <div style="height: 1.5mm; background: #f1f5f9; border-radius: 1mm; overflow: hidden; border: 1px solid #e2e8f0;">
@@ -192,16 +192,16 @@
                 @endif
 
                 @if(!empty($cvInformation['certifications']))
-                <div class="side-sub-title">Certifications</div>
+                <div class="side-sub-title">{{ __('cv.certifications') }}</div>
                 @foreach($cvInformation['certifications'] as $cert)
                 <div style="margin-bottom: 2mm; font-size: 8.5pt;"><strong>{{ $cert['name'] }}</strong><br><small style="color: #666;">{{ $cert['institution'] }}</small></div>
                 @endforeach
                 @endif
 
                 @if(!empty($cvInformation['languages']))
-                <div class="side-sub-title">{{ $currentLocale === 'fr' ? 'Langues' : 'Languages' }}</div>
+                <div class="side-sub-title">{{ __('cv.languages') }}</div>
                 @foreach($cvInformation['languages'] as $lang)
-                <div style="font-size: 8.5pt; margin-bottom: 1mm;"><strong>{{ $lang['name'] }}</strong>: {{ $lang['level'] }}</div>
+                <div style="font-size: 8.5pt; margin-bottom: 1mm;"><strong>{{ $currentLocale === 'en' ? ($lang['name_en'] ?? $lang['name']) : $lang['name'] }}</strong>: {{ trans()->has("cv.levels." . $lang['level']) ? __("cv.levels." . $lang['level']) : $lang['level'] }}</div>
                 @endforeach
                 @endif
             </div>

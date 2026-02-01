@@ -51,11 +51,11 @@
     </div>
 
     @if(!empty($cvInformation['summaries']))
-    <div class="section-title">{{ $currentLocale === 'fr' ? 'OBJECTIF PROFESSIONNEL' : 'PROFESSIONAL OBJECTIVE' }}</div>
+    <div class="section-title">{{ __('cv.profile') }}</div>
     <div class="content-text">{!! $cvInformation['summaries'][0]['description'] ?? '' !!}</div>
     @endif
 
-    <div class="section-title">{{ $currentLocale === 'fr' ? 'FORMATION & EXPÉRIENCE' : 'EDUCATION & EXPERIENCE' }}</div>
+    <div class="section-title">{{ __('cv.education') }} & {{ __('cv.experience') }}</div>
     <!-- Dummy Education loop if available, otherwise just experience structure -->
     <!-- Assuming experiences are academic/research roles for this template logic or just standard exp -->
     @foreach($experiencesByCategory as $category => $experiences)
@@ -73,7 +73,7 @@
     @endforeach
     
     @if(!empty($cvInformation['certifications']))
-    <div class="section-title">{{ $currentLocale === 'fr' ? 'CERTIFICATIONS' : 'CERTIFICATIONS' }}</div>
+    <div class="section-title">{{ __('cv.certifications') }}</div>
     <ul style="list-style-type: disc; margin-left: 5mm;">
         @foreach($cvInformation['certifications'] as $cert)
         <li>
@@ -83,17 +83,17 @@
     </ul>
     @endif
 
-    <div class="section-title">{{ $currentLocale === 'fr' ? 'COMPÉTENCES & AUTRES' : 'SKILLS & OTHER' }}</div>
+    <div class="section-title">{{ __('cv.skills') }} & {{ __('cv.hobbies') }}</div>
     <div class="content-text">
         <ul style="list-style-type: disc;">
             @foreach($cvInformation['competences'] as $comp)
-            <li><strong>{{ $currentLocale === 'fr' ? $comp['name'] : $comp['name_en'] }}</strong>: {{ $comp['level'] ?? 'N/A' }}</li>
+            <li><strong>{{ $currentLocale === 'en' ? ($comp['name_en'] ?? $comp['name']) : $comp['name'] }}</strong>: {{ $comp['level'] ?? 'N/A' }}</li>
             @endforeach
             @foreach($cvInformation['languages'] as $lang)
-            <li><strong>Language: {{ $lang['name'] }}</strong> - {{ $lang['level'] }}</li>
+            <li><strong>{{ __('cv.languages') }}: {{ $currentLocale === 'en' ? ($lang['name_en'] ?? $lang['name']) : $lang['name'] }}</strong> - {{ trans()->has("cv.levels." . $lang['level']) ? __("cv.levels." . $lang['level']) : $lang['level'] }}</li>
             @endforeach
             @if(!empty($cvInformation['hobbies']))
-            <li><strong>{{ $currentLocale === 'fr' ? 'Intérêts' : 'Interests' }}</strong>: {{ collect($cvInformation['hobbies'])->map(fn($h) => $currentLocale === 'fr' ? $h['name'] : $h['name_en'])->join(', ') }}</li>
+            <li><strong>{{ __('cv.hobbies') }}</strong>: {{ collect($cvInformation['hobbies'])->map(fn($h) => $currentLocale === 'en' ? ($h['name_en'] ?? $h['name']) : $h['name'])->join(', ') }}</li>
             @endif
         </ul>
     </div>

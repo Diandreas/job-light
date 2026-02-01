@@ -78,7 +78,7 @@
 
 <div class="banner">
     <div class="name">{{ $cvInformation['personalInformation']['firstName'] }} {{ $cvInformation['personalInformation']['lastName'] }}</div>
-    <div class="job-title">{{ $currentLocale === 'fr' ? $cvInformation['professions'][0]['name'] : $cvInformation['professions'][0]['name_en'] }}</div>
+    <div class="job-title">{{ $currentLocale === 'en' ? ($cvInformation['professions'][0]['name_en'] ?? $cvInformation['professions'][0]['name']) : $cvInformation['professions'][0]['name'] }}</div>
 </div>
 
 <div class="cv-grid">
@@ -127,7 +127,7 @@
         @endphp
 
         @if(!empty($educations))
-        <div class="side-title">{{ $currentLocale === 'fr' ? 'FORMATION' : 'EDUCATION' }}</div>
+        <div class="side-title">{{ __('cv.education') }}</div>
         <div class="side-timeline">
             @foreach($educations as $edu)
             <div class="side-time-box">
@@ -143,11 +143,11 @@
         @endif
 
         @if(!empty($cvInformation['competences']))
-        <div class="side-title">{{ $currentLocale === 'fr' ? 'Compétences' : 'Skills' }}</div>
+        <div class="side-title">{{ __('cv.skills') }}</div>
         @foreach($cvInformation['competences'] as $comp)
         @php $lvl = match($comp['level'] ?? 'Intermédiaire') { 'Expert' => 5, 'Avancé' => 4, 'Intermédiaire' => 3, 'Débutant' => 2, default => 3 }; @endphp
         <div class="skill-item">
-            <span class="skill-name">{{ $currentLocale === 'fr' ? $comp['name'] : $comp['name_en'] }}</span>
+            <span class="skill-name">{{ $currentLocale === 'en' ? ($comp['name_en'] ?? $comp['name']) : $comp['name'] }}</span>
             <div class="skill-dots">
                 @for($i=1; $i<=5; $i++)
                 <div class="dot {{ $i <= $lvl ? 'filled' : '' }}"></div>
@@ -158,7 +158,7 @@
         @endif
 
         @if(!empty($cvInformation['certifications']))
-        <div class="side-title">{{ $currentLocale === 'fr' ? 'Certifications' : 'Certifications' }}</div>
+        <div class="side-title">{{ __('cv.certifications') }}</div>
         @foreach($cvInformation['certifications'] as $cert)
         <div style="margin-bottom: 3mm; font-size: 8.5pt; border-left: 2px solid {{ $primaryColor }}; padding-left: 2.5mm;">
             <div style="font-weight: 700;">{{ $cert['name'] }}</div>
@@ -168,19 +168,19 @@
         @endif
 
         @if(!empty($cvInformation['languages']))
-        <div class="side-title">{{ $currentLocale === 'fr' ? 'Langues' : 'Languages' }}</div>
+        <div class="side-title">{{ __('cv.languages') }}</div>
         @foreach($cvInformation['languages'] as $lang)
         <div class="lang-item">
-            <span style="font-weight: 700;">{{ $lang['name'] }}</span>
-            <span style="color: #666;">{{ $lang['level'] }}</span>
+            <span style="font-weight: 700;">{{ $currentLocale === 'en' ? ($lang['name_en'] ?? $lang['name']) : $lang['name'] }}</span>
+            <span style="color: #666;">{{ trans()->has("cv.levels." . $lang['level']) ? __("cv.levels." . $lang['level']) : $lang['level'] }}</span>
         </div>
         @endforeach
         @endif
 
         @if(!empty($cvInformation['hobbies']))
-        <div class="side-title">{{ $currentLocale === 'fr' ? 'Loisirs' : 'Interests' }}</div>
+        <div class="side-title">{{ __('cv.hobbies') }}</div>
         <div style="font-size: 8.5pt; color: #555; line-height: 1.6;">
-             {{ collect($cvInformation['hobbies'])->map(fn($h) => $currentLocale === 'fr' ? $h['name'] : $h['name_en'])->join(' • ') }}
+             {{ collect($cvInformation['hobbies'])->map(fn($h) => $currentLocale === 'en' ? ($h['name_en'] ?? $h['name']) : $h['name'])->join(' • ') }}
         </div>
         @endif
     </div>
@@ -189,14 +189,14 @@
         @if(!empty($cvInformation['summaries']))
         <div class="section-head">
             <div class="section-num">01</div>
-            <div class="section-text">{{ $currentLocale === 'fr' ? 'À propos' : 'Profile' }}</div>
+            <div class="section-text">{{ __('cv.profile') }}</div>
         </div>
         <div class="rich-text content-text">{!! $cvInformation['summaries'][0]['description'] ?? '' !!}</div>
         @endif
 
         <div class="section-head">
             <div class="section-num">02</div>
-            <div class="section-text">{{ $currentLocale === 'fr' ? 'Expérience' : 'Experience' }}</div>
+            <div class="section-text">{{ __('cv.experience') }}</div>
         </div>
 
         @foreach($prof_experiences as $category => $experiences)

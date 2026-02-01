@@ -15,11 +15,11 @@
             $isEnglish = str_starts_with(strtolower($currentLocale), 'en');
         @endphp
 
-        @page { margin: 0; size: A4; }
+        @page { margin: 10mm; size: A4; }
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: 'Calibri', 'Carlito', sans-serif; font-size: 10pt; line-height: 1.4; color: #1e293b; background: #fff; }
 
-        .cv-container { width: 210mm; min-height: 297mm; position: relative; }
+        .cv-container { width: 100%; min-height: 297mm; position: relative; }
         
         /* PROFESSIONNAL HEADER */
         .header { background: {{ $bgHeader }}; padding: 10mm 15mm; border-bottom: 1.5mm solid {{ $primaryColor }}; display: flex; align-items: center; justify-content: space-between; }
@@ -29,18 +29,36 @@
         
         .contact-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 3mm; font-size: 9pt; color: #475569; }
         .contact-item { display: flex; align-items: center; }
-        .contact-item svg { width: 4mm; height: 4mm; margin-right: 2.5mm; stroke: {{ $primaryColor }}; fill: none; stroke-width: 2; }
+        .contact-item svg { width: 4mm; height: 4mm; margin-right: 2.5mm; stroke: {{ $primaryColor }}; fill: none; stroke-width: 2; flex-shrink: 0; }
+        .contact-item a { color: inherit; text-decoration: none; }
 
         .photo-box { width: 35mm; height: 45mm; border: 1px solid #e2e8f0; background: #fff; padding: 1.5mm; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); }
         .photo-img { width: 100%; height: 100%; object-fit: cover; }
 
-        .main-body { padding: 10mm 15mm; display: table; width: 100%; table-layout: fixed; }
-        .col-left { display: table-cell; width: 68%; padding-right: 12mm; vertical-align: top; border-right: 0.5px solid #e2e8f0; }
-        .col-right { display: table-cell; width: 32%; padding-left: 12mm; vertical-align: top; }
+        .main-body { padding: 8mm 0; }
+        
+        /* FLOAT LAYOUT */
+        .col-right { 
+            float: right; 
+            width: 32%; 
+            padding-left: 6mm; 
+            margin-left: 6mm; 
+            border-left: 0.5px solid #e2e8f0; 
+            margin-bottom: 5mm;
+            min-height: 220mm; /* Page 1 constraint */
+        }
+        
+        .col-left { 
+            width: auto; 
+            /* No float, flows around */
+        }
 
         /* SECTIONS */
         .section-title { font-size: 10pt; font-weight: 800; color: {{ $primaryColor }}; border-bottom: 2px solid {{ $primaryColor }}; padding-bottom: 1mm; margin-bottom: 5mm; text-transform: uppercase; letter-spacing: 0.5px; display: flex; align-items: center; }
         .section-title svg { margin-right: 3mm; width: 5mm; height: 5mm; stroke: {{ $primaryColor }}; }
+        
+        /* For sidebar titles */
+        .side-sec-title { font-size: 9.5pt; font-weight: 800; color: {{ $primaryColor }}; text-transform: uppercase; margin-bottom: 4mm; border-bottom: 1px solid {{ $primaryColor }}; padding-bottom: 1mm; display: block; }
 
         .summary { font-size: 10pt; color: #334155; text-align: justify; line-height: 1.6; margin-bottom: 8mm; background: #fcfcfc; padding: 3mm 4mm; border-left: 3px solid #e2e8f0; }
 
@@ -60,8 +78,6 @@
         .rich-text li { margin-bottom: 1.5mm; }
 
         /* SIDEBAR ITEMS */
-        .side-sec-title { font-size: 9.5pt; font-weight: 800; color: {{ $primaryColor }}; text-transform: uppercase; margin-bottom: 4mm; border-bottom: 1px solid {{ $primaryColor }}; padding-bottom: 1mm; display: block; }
-        
         .skill-group { margin-bottom: 4mm; }
         .skill-name { font-weight: 600; font-size: 9.5pt; margin-bottom: 1.5mm; display: flex; justify-content: space-between; color: #0f172a; }
         .skill-bar { height: 1.8mm; background: #f1f5f9; width: 100%; border-radius: 1mm; overflow: hidden; }
@@ -77,6 +93,8 @@
         .cert-item { font-size: 9.5pt; margin-bottom: 3.5mm; border-left: 2.5px solid {{ $primaryColor }}; padding-left: 3.5mm; }
 
         svg { stroke-linecap: round; stroke-linejoin: round; }
+        
+        .clearfix::after { content: ""; display: table; clear: both; }
     </style>
 </head>
 <body>
@@ -84,7 +102,7 @@
     <div class="header">
         <div class="header-content">
             <h1 class="name">{{ $cvInformation['personalInformation']['firstName'] ?? '' }} {{ $cvInformation['personalInformation']['lastName'] ?? '' }}</h1>
-            <div class="role-header">{{ $currentLocale === 'fr' ? ($cvInformation['professions'][0]['name'] ?? '') : ($cvInformation['professions'][0]['name_en'] ?? '') }}</div>
+            <div class="role-header">{{ $currentLocale === 'en' ? ($cvInformation['professions'][0]['name_en'] ?? $cvInformation['professions'][0]['name'] ?? '') : ($cvInformation['professions'][0]['name'] ?? '') }}</div>
             
             <div class="contact-grid">
                 @if($cvInformation['personalInformation']['email'] ?? null)
@@ -95,6 +113,19 @@
                 @endif
                 @if($cvInformation['personalInformation']['address'] ?? null)
                 <div class="contact-item"><svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg> {{ $cvInformation['personalInformation']['address'] }}</div>
+                @endif
+                
+                @if(!empty($cvInformation['personalInformation']['linkedin']))
+                <div class="contact-item">
+                    <svg viewBox="0 0 24 24"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg>
+                    <a href="{{ $cvInformation['personalInformation']['linkedin'] }}" target="_blank">{{ $cvInformation['personalInformation']['linkedin'] }}</a>
+                </div>
+                @endif
+                @if(!empty($cvInformation['personalInformation']['github']))
+                <div class="contact-item">
+                    <svg viewBox="0 0 24 24"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg>
+                    <a href="{{ $cvInformation['personalInformation']['github'] }}" target="_blank">{{ $cvInformation['personalInformation']['github'] }}</a>
+                </div>
                 @endif
             </div>
         </div>
@@ -126,11 +157,67 @@
             }
         @endphp
 
+        <!-- Sidebar moved FIRST for Float Layout -->
+        <div class="col-right">
+            @if(!empty($cvInformation['competences']))
+            <span class="side-sec-title">{{ __('cv.skills') }}</span>
+            @foreach($cvInformation['competences'] as $comp)
+            @php $lvl = match($comp['level'] ?? 'Intermédiaire') { 'Expert' => 100, 'Avancé' => 85, 'Intermédiaire' => 65, 'Débutant' => 45, default => 65 }; @endphp
+            <div class="skill-group">
+                <div class="skill-name">
+                    <span>{{ $currentLocale === 'en' ? ($comp['name_en'] ?? $comp['name']) : $comp['name'] }}</span>
+                </div>
+                <div class="skill-bar"><div class="skill-fill" style="width: {{ $lvl }}%"></div></div>
+            </div>
+            @endforeach
+            @endif
+            
+            @if(!empty($educations))
+            <span class="side-sec-title" style="margin-top: 8mm;">{{ __('cv.education') }}</span>
+            @foreach($educations as $edu)
+            <div class="edu-item">
+                <div class="edu-name">{{ $edu['name'] }}</div>
+                <div class="edu-meta">{{ $edu['InstitutionName'] }} | {{ \Carbon\Carbon::parse($edu['date_start'])->format('Y') }}</div>
+                @if(!empty($edu['description']))
+                <div class="rich-text content-text" style="font-size: 8.5pt; margin-top: 1.5mm; color: #64748b;">{!! $edu['description'] !!}</div>
+                @endif
+            </div>
+            @endforeach
+            @endif
+
+            @if(!empty($cvInformation['certifications']))
+            <span class="side-sec-title" style="margin-top: 8mm;">Certifications</span>
+            @foreach($cvInformation['certifications'] as $cert)
+            <div class="cert-item">
+                <div style="font-weight: 700; font-size: 9.5pt; color: #1e293b;">{{ $cert['name'] }}</div>
+                @if(!empty($cert['institution'])) <div style="font-style: italic; color: #64748b; font-size: 8.5pt; margin-top: 0.5mm;">{{ $cert['institution'] }}</div> @endif
+            </div>
+            @endforeach
+            @endif
+
+            @if(!empty($cvInformation['languages']))
+            <span class="side-sec-title" style="margin-top: 8mm;">{{ __('cv.languages') }}</span>
+            @foreach($cvInformation['languages'] as $lang)
+            <div class="lang-item">
+                <span style="font-weight: 600;">{{ $currentLocale === 'en' ? ($lang['name_en'] ?? $lang['name']) : $lang['name'] }}</span>
+                <span class="lang-lvl">{{ trans()->has("cv.levels." . $lang['level']) ? __("cv.levels." . $lang['level']) : $lang['level'] }}</span>
+            </div>
+            @endforeach
+            @endif
+            
+            @if(!empty($cvInformation['hobbies']))
+            <span class="side-sec-title" style="margin-top: 8mm;">{{ $currentLocale === 'fr' ? 'Intérêts' : 'Interests' }}</span>
+            <div style="font-size: 9pt; color: #64748b; font-style: italic; line-height: 1.4;">
+                {{ collect($cvInformation['hobbies'])->map(fn($h) => $currentLocale === 'fr' ? $h['name'] : $h['name_en'])->join(' • ') }}
+            </div>
+            @endif
+        </div>
+
         <div class="col-left">
             @if(!empty($cvInformation['summaries']))
             <div class="section-title">
                 <svg viewBox="0 0 24 24" fill="none" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
-                <span>{{ $currentLocale === 'fr' ? 'Profil Professionnel' : 'Professional Profile' }}</span>
+                <span>{{ __('cv.profile') }}</span>
             </div>
             <div class="summary content-text">{!! $cvInformation['summaries'][0]['description'] ?? '' !!}</div>
             @endif
@@ -167,61 +254,8 @@
                 @endforeach
             @endforeach
         </div>
-
-        <div class="col-right">
-            @if(!empty($cvInformation['competences']))
-            <span class="side-sec-title">{{ $currentLocale === 'fr' ? 'Compétences' : 'Key Expertise' }}</span>
-            @foreach($cvInformation['competences'] as $comp)
-            @php $lvl = match($comp['level'] ?? 'Intermédiaire') { 'Expert' => 100, 'Avancé' => 85, 'Intermédiaire' => 65, 'Débutant' => 45, default => 65 }; @endphp
-            <div class="skill-group">
-                <div class="skill-name">
-                    <span>{{ $currentLocale === 'fr' ? $comp['name'] : $comp['name_en'] }}</span>
-                </div>
-                <div class="skill-bar"><div class="skill-fill" style="width: {{ $lvl }}%"></div></div>
-            </div>
-            @endforeach
-            @endif
-            
-            @if(!empty($educations))
-            <span class="side-sec-title" style="margin-top: 8mm;">{{ $currentLocale === 'fr' ? 'Formation' : 'Academic Path' }}</span>
-            @foreach($educations as $edu)
-            <div class="edu-item">
-                <div class="edu-name">{{ $edu['name'] }}</div>
-                <div class="edu-meta">{{ $edu['InstitutionName'] }} | {{ \Carbon\Carbon::parse($edu['date_start'])->format('Y') }}</div>
-                @if(!empty($edu['description']))
-                <div class="rich-text content-text" style="font-size: 8.5pt; margin-top: 1.5mm; color: #64748b;">{!! $edu['description'] !!}</div>
-                @endif
-            </div>
-            @endforeach
-            @endif
-
-            @if(!empty($cvInformation['certifications']))
-            <span class="side-sec-title" style="margin-top: 8mm;">Certifications</span>
-            @foreach($cvInformation['certifications'] as $cert)
-            <div class="cert-item">
-                <div style="font-weight: 700; font-size: 9.5pt; color: #1e293b;">{{ $cert['name'] }}</div>
-                @if(!empty($cert['institution'])) <div style="font-style: italic; color: #64748b; font-size: 8.5pt; margin-top: 0.5mm;">{{ $cert['institution'] }}</div> @endif
-            </div>
-            @endforeach
-            @endif
-
-            @if(!empty($cvInformation['languages']))
-            <span class="side-sec-title" style="margin-top: 8mm;">{{ $currentLocale === 'fr' ? 'Langues' : 'Linguistics' }}</span>
-            @foreach($cvInformation['languages'] as $lang)
-            <div class="lang-item">
-                <span style="font-weight: 600;">{{ $lang['name'] }}</span>
-                <span class="lang-lvl">{{ $lang['level'] }}</span>
-            </div>
-            @endforeach
-            @endif
-            
-            @if(!empty($cvInformation['hobbies']))
-            <span class="side-sec-title" style="margin-top: 8mm;">{{ $currentLocale === 'fr' ? 'Intérêts' : 'Interests' }}</span>
-            <div style="font-size: 9pt; color: #64748b; font-style: italic; line-height: 1.4;">
-                {{ collect($cvInformation['hobbies'])->map(fn($h) => $currentLocale === 'fr' ? $h['name'] : $h['name_en'])->join(' • ') }}
-            </div>
-            @endif
-        </div>
+        
+        <div class="clearfix"></div>
     </div>
 </div>
 </body>

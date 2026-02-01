@@ -20,7 +20,7 @@
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: 'Helvetica', 'Arial', sans-serif; font-size: 9.5pt; line-height: 1.45; color: {{ $textDark }}; background: #fff; }
 
-        .cv-wrapper { width: 190mm; margin: 0 auto; }
+        .cv-wrapper { width: 100%; margin: 0 auto; }
 
         /* INTERNATIONAL TOP BAR */
         .header { display: table; width: 100%; border-bottom: 2px solid {{ $primaryColor }}; padding-bottom: 6mm; margin-bottom: 8mm; table-layout: fixed; }
@@ -34,6 +34,7 @@
         .contact-grid { display: flex; flex-wrap: wrap; gap: 4mm; margin-top: 4mm; font-size: 8.5pt; color: {{ $textMuted }}; }
         .contact-item { display: flex; align-items: center; }
         .contact-item svg { width: 3.5mm; height: 3.5mm; margin-right: 1.5mm; stroke: {{ $primaryColor }}; fill: none; stroke-width: 2; }
+        .contact-item a { color: inherit; text-decoration: none; }
 
         .photo-box { width: 35mm; height: 45mm; border: 1px solid #e2e8f0; background: {{ $bgLight }}; padding: 1mm; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); display: inline-block; }
         .photo-box img { width: 100%; height: 100%; object-fit: cover; }
@@ -70,7 +71,7 @@
 
         .lang-item { font-size: 9pt; margin-bottom: 1.5mm; }
         .cert-item { font-size: 9pt; margin-bottom: 3mm; }
-
+        
         svg { stroke-linecap: round; stroke-linejoin: round; }
     </style>
 </head>
@@ -79,7 +80,7 @@
     <div class="header">
         <div class="header-left">
             <div class="name">{{ $cvInformation['personalInformation']['firstName'] }} {{ $cvInformation['personalInformation']['lastName'] }}</div>
-            <div class="role">{{ $currentLocale === 'fr' ? $cvInformation['professions'][0]['name'] : $cvInformation['professions'][0]['name_en'] }}</div>
+            <div class="role">{{ $currentLocale === 'en' ? ($cvInformation['professions'][0]['name_en'] ?? $cvInformation['professions'][0]['name']) : $cvInformation['professions'][0]['name'] }}</div>
             
             <div class="contact-grid">
                 @if($cvInformation['personalInformation']['email'])
@@ -90,6 +91,18 @@
                 @endif
                 @if($cvInformation['personalInformation']['address'])
                 <div class="contact-item"><svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>{{ $cvInformation['personalInformation']['address'] }}</div>
+                @endif
+                @if(!empty($cvInformation['personalInformation']['linkedin']))
+                <div class="contact-item">
+                    <svg viewBox="0 0 24 24"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg>
+                    <a href="{{ $cvInformation['personalInformation']['linkedin'] }}" target="_blank">{{ $cvInformation['personalInformation']['linkedin'] }}</a>
+                </div>
+                @endif
+                @if(!empty($cvInformation['personalInformation']['github']))
+                <div class="contact-item">
+                    <svg viewBox="0 0 24 24"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg>
+                    <a href="{{ $cvInformation['personalInformation']['github'] }}" target="_blank">{{ $cvInformation['personalInformation']['github'] }}</a>
+                </div>
                 @endif
             </div>
         </div>
@@ -108,7 +121,7 @@
     @endif
 
     <div class="section">
-        <div class="section-title">{{ $isEnglish ? 'Professional Background' : 'Parcours Professionnel' }}</div>
+        <div class="section-title">{{ __('cv.experience') }}</div>
         
         @foreach($experiencesByCategory as $category => $experiences)
             @php
@@ -146,11 +159,11 @@
     <div class="info-grid">
         @if(!empty($cvInformation['competences']))
         <div class="info-col">
-            <div class="info-title">{{ $currentLocale === 'fr' ? 'Compétences' : 'Key Skills' }}</div>
+            <div class="info-title">{{ __('cv.skills') }}</div>
             <div class="skill-list">
                 @foreach($cvInformation['competences'] as $comp)
                 <div class="skill-item">
-                    <span>{{ $currentLocale === 'fr' ? $comp['name'] : $comp['name_en'] }}</span>
+                    <span>{{ $currentLocale === 'en' ? ($comp['name_en'] ?? $comp['name']) : $comp['name'] }}</span>
                     <span class="skill-level">{{ $comp['level'] }}</span>
                 </div>
                 @endforeach
@@ -161,16 +174,16 @@
         @if(!empty($cvInformation['languages']) || !empty($cvInformation['certifications']))
         <div class="info-col">
             @if(!empty($cvInformation['languages']))
-            <div class="info-title">{{ $currentLocale === 'fr' ? 'Langues' : 'Languages' }}</div>
+            <div class="info-title">{{ __('cv.languages') }}</div>
             @foreach($cvInformation['languages'] as $lang)
             <div class="lang-item">
-                <strong>{{ $lang['name'] }}</strong>: <span style="color: {{ $textMuted }};">{{ $lang['level'] }}</span>
+                <strong>{{ $currentLocale === 'en' ? ($lang['name_en'] ?? $lang['name']) : $lang['name'] }}</strong>: <span style="color: {{ $textMuted }};">{{ trans()->has("cv.levels." . $lang['level']) ? __("cv.levels." . $lang['level']) : $lang['level'] }}</span>
             </div>
             @endforeach
             @endif
 
             @if(!empty($cvInformation['certifications']))
-            <div class="info-title" style="margin-top: 5mm;">Certifications</div>
+            <div class="info-title" style="margin-top: 5mm;">{{ __('cv.certifications') }}</div>
             @foreach($cvInformation['certifications'] as $cert)
             <div class="cert-item">
                 <strong style="color: #0f172a;">{{ $cert['name'] }}</strong>

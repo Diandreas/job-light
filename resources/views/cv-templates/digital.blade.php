@@ -88,7 +88,7 @@
 
         <div class="side-header">
             <div class="name">{{ $cvInformation['personalInformation']['firstName'] }}<br>{{ $cvInformation['personalInformation']['lastName'] }}</div>
-            <div class="title">{{ $currentLocale === 'fr' ? $cvInformation['professions'][0]['name'] : $cvInformation['professions'][0]['name_en'] }}</div>
+            <div class="title">{{ $currentLocale === 'en' ? ($cvInformation['professions'][0]['name_en'] ?? $cvInformation['professions'][0]['name']) : $cvInformation['professions'][0]['name'] }}</div>
         </div>
 
         <div class="contact-group">
@@ -114,11 +114,11 @@
 
         @if(!empty($cvInformation['competences']))
         <div class="side-section">
-            <div class="side-title">{{ $currentLocale === 'fr' ? 'COMPÉTENCES' : 'SKILLS' }}</div>
+            <div class="side-title">{{ __('cv.skills') }}</div>
             @foreach($cvInformation['competences'] as $comp)
             @php $level = match($comp['level'] ?? 'Intermédiaire') { 'Expert' => 100, 'Avancé' => 80, 'Intermédiaire' => 60, 'Débutant' => 40, default => 60 }; @endphp
             <div class="skill-item">
-                <div class="skill-header"><span>{{ $currentLocale === 'fr' ? $comp['name'] : $comp['name_en'] }}</span><span>{{ $level }}%</span></div>
+                <div class="skill-header"><span>{{ $currentLocale === 'en' ? ($comp['name_en'] ?? $comp['name']) : $comp['name'] }}</span><span>{{ $level }}%</span></div>
                 <div class="skill-bar-bg"><div class="skill-bar-fill" style="width: {{ $level }}%"></div></div>
             </div>
             @endforeach
@@ -146,7 +146,7 @@
 
         @if(!empty($educations))
         <div class="side-section">
-            <div class="side-title">{{ $currentLocale === 'fr' ? 'FORMATION' : 'EDUCATION' }}</div>
+            <div class="side-title">{{ __('cv.education') }}</div>
             @foreach($educations as $edu)
             <div class="edu-item">
                 <div class="edu-name">{{ $edu['name'] }}</div>
@@ -161,7 +161,7 @@
 
         @if(!empty($cvInformation['certifications']))
         <div class="side-section">
-            <div class="side-title">{{ $currentLocale === 'fr' ? 'CERTIFICATIONS' : 'CERTIFICATIONS' }}</div>
+            <div class="side-title">{{ __('cv.certifications') }}</div>
             @foreach($cvInformation['certifications'] as $cert)
             <div class="cert-item">
                 <div style="font-weight: 600;">{{ $cert['name'] }}</div>
@@ -173,11 +173,11 @@
 
         @if(!empty($cvInformation['languages']))
         <div class="side-section">
-            <div class="side-title">{{ $currentLocale === 'fr' ? 'LANGUES' : 'LANGUAGES' }}</div>
+            <div class="side-title">{{ __('cv.languages') }}</div>
             @foreach($cvInformation['languages'] as $lang)
             <div class="lang-item">
-                <span style="font-weight: 500;">{{ $lang['name'] }}</span>
-                <span style="color: #64748b; font-size: 8pt;">{{ $lang['level'] }}</span>
+                <span style="font-weight: 500;">{{ $currentLocale === 'en' ? ($lang['name_en'] ?? $lang['name']) : $lang['name'] }}</span>
+                <span style="color: #64748b; font-size: 8pt;">{{ trans()->has("cv.levels." . $lang['level']) ? __("cv.levels." . $lang['level']) : $lang['level'] }}</span>
             </div>
             @endforeach
         </div>
@@ -189,7 +189,7 @@
         <div class="section">
             <div class="section-header">
                 <div class="section-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg></div>
-                <div class="section-title">{{ $currentLocale === 'fr' ? 'À PROPOS' : 'ABOUT' }}</div>
+                <div class="section-title">{{ __('cv.profile') }}</div>
             </div>
             <div class="rich-text content-text">{!! $cvInformation['summaries'][0]['description'] ?? '' !!}</div>
         </div>

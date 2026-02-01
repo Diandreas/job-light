@@ -93,11 +93,11 @@
 
         @if(!empty($cvInformation['competences']))
         <div class="side-section">
-            <div class="side-title">{{ $currentLocale === 'fr' ? 'Compétences' : 'Skills' }}</div>
+            <div class="side-title">{{ __('cv.skills') }}</div>
             @foreach($cvInformation['competences'] as $comp)
             @php $lvl = match($comp['level'] ?? 'Intermédiaire') { 'Expert' => 100, 'Avancé' => 80, 'Intermédiaire' => 60, 'Débutant' => 40, default => 60 }; @endphp
             <div class="skill-item">
-                <div class="skill-name">{{ $currentLocale === 'fr' ? $comp['name'] : $comp['name_en'] }}</div>
+                <div class="skill-name">{{ $currentLocale === 'en' ? ($comp['name_en'] ?? $comp['name']) : $comp['name'] }}</div>
                 <div class="skill-bar-bg"><div class="skill-bar-fill" style="width: {{ $lvl }}%"></div></div>
             </div>
             @endforeach
@@ -125,7 +125,7 @@
 
         @if(!empty($educations))
         <div class="side-section">
-            <div class="side-title">{{ $currentLocale === 'fr' ? 'Formation' : 'Education' }}</div>
+            <div class="side-title">{{ __('cv.education') }}</div>
             @foreach($educations as $edu)
             <div class="edu-item">
                 <div class="edu-title">{{ $edu['name'] }}</div>
@@ -152,10 +152,10 @@
 
         @if(!empty($cvInformation['languages']))
         <div class="side-section">
-            <div class="side-title">{{ $currentLocale === 'fr' ? 'Langues' : 'Languages' }}</div>
+            <div class="side-title">{{ __('cv.languages') }}</div>
             @foreach($cvInformation['languages'] as $lang)
             <div style="margin-bottom: 1.5mm; font-size: 8.5pt;">
-                <strong>{{ $lang['name'] }}</strong>: {{ $lang['level'] }}
+                <strong>{{ $currentLocale === 'en' ? ($lang['name_en'] ?? $lang['name']) : $lang['name'] }}</strong>: {{ trans()->has("cv.levels." . $lang['level']) ? __("cv.levels." . $lang['level']) : $lang['level'] }}
             </div>
             @endforeach
         </div>
@@ -164,20 +164,20 @@
 
     <div class="main">
         <div class="name">{{ $cvInformation['personalInformation']['firstName'] }} {{ $cvInformation['personalInformation']['lastName'] }}</div>
-        <div class="job-title">{{ $currentLocale === 'fr' ? $cvInformation['professions'][0]['name'] : $cvInformation['professions'][0]['name_en'] }}</div>
+        <div class="job-title">{{ $currentLocale === 'en' ? ($cvInformation['professions'][0]['name_en'] ?? $cvInformation['professions'][0]['name']) : $cvInformation['professions'][0]['name'] }}</div>
 
         @if(!empty($cvInformation['summaries']))
-        <div class="section-title">{{ $currentLocale === 'fr' ? 'À propos' : 'Profile' }}</div>
+        <div class="section-title">{{ __('cv.profile') }}</div>
         <div class="rich-text content-text" style="margin-bottom: 10mm;">{!! $cvInformation['summaries'][0]['description'] ?? '' !!}</div>
         @endif
 
-        <div class="section-title">{{ $currentLocale === 'fr' ? 'Expériences' : 'Experience' }}</div>
+        <div class="section-title">{{ __('cv.experience') }}</div>
         <div class="timeline">
             @foreach($prof_experiences as $category => $experiences)
                 @foreach($experiences as $exp)
                 <div class="time-box">
                     <div class="time-dot"></div>
-                    <div class="time-range">{{ \Carbon\Carbon::parse($exp['date_start'])->locale($currentLocale)->isoFormat('MMM YYYY') }} - {{ $exp['date_end'] ? \Carbon\Carbon::parse($exp['date_end'])->locale($currentLocale)->isoFormat('MMM YYYY') : 'Present' }}</div>
+                    <div class="time-range">{{ \Carbon\Carbon::parse($exp['date_start'])->locale($currentLocale)->isoFormat('MMM YYYY') }} - {{ $exp['date_end'] ? \Carbon\Carbon::parse($exp['date_end'])->locale($currentLocale)->isoFormat('MMM YYYY') : ($currentLocale === 'en' ? 'Present' : 'Présent') }}</div>
                     <div class="time-role">{{ $exp['name'] }}</div>
                     <div class="time-place">{{ $exp['InstitutionName'] }}</div>
                     <div class="rich-text content-text">{!! $exp['description'] !!}</div>

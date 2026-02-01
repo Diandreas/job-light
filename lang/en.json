@@ -12,7 +12,25 @@
         "preview": "Preview",
         "projects": "Projects",
         "certifications": "Certifications",
-        "references": "References"
+        "references": "References",
+        "levels": {
+            "Langue maternelle": "Native",
+            "Bilingue": "Bilingual",
+            "Intermédiaire": "Intermediate",
+            "Avancé": "Advanced",
+            "Débutant": "Beginner",
+            "Professionnel": "Professional",
+            "Courant": "Fluent",
+            "Les bases": "Basic",
+            "Notions": "Basic Knowledge"
+        },
+        "language_names": {
+            "Anglais": "English",
+            "Français": "French",
+            "Espagnol": "Spanish",
+            "Allemand": "German",
+            "Italien": "Italian"
+        }
     },
     "editor": {
         "save": "Save Changes",

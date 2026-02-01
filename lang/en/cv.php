@@ -1,0 +1,39 @@
+<?php
+
+return [
+    "education" => "Education",
+    "experience" => "Professional Experience",
+    "skills" => "Skills",
+    "languages" => "Languages",
+    "hobbies" => "Interests",
+    "profile" => "Profile",
+    "contact" => "Contact",
+    "present" => "Present",
+    "download" => "Download PDF",
+    "preview" => "Preview",
+    "projects" => "Projects",
+    "certifications" => "Certifications",
+    "references" => "References",
+    "research" => "Research",
+    "academic" => "Academic",
+    "professional" => "Professional",
+    "other" => "Other",
+    "levels" => [
+        "Langue maternelle" => "Native",
+        "Bilingue" => "Bilingual",
+        "Intermédiaire" => "Intermediate",
+        "Avancé" => "Advanced",
+        "Débutant" => "Beginner",
+        "Professionnel" => "Professional",
+        "Courant" => "Fluent",
+        "Les bases" => "Basic",
+        "Notions" => "Basic Knowledge"
+    ],
+    "language_names" => [
+        "Anglais" => "English",
+        "Français" => "French",
+        "Espagnol" => "Spanish",
+        "Allemand" => "German",
+        "Italien" => "Italian"
+    ]
+];

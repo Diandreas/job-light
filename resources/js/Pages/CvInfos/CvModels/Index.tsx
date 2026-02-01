@@ -114,7 +114,7 @@ const ModelCard = ({ model, isActive, onSelect, onAdd, onPreview, loading, inCat
                 <AnimatePresence>
                     <motion.img
                         src={`/storage/${model.previewImagePath}`}
-                        alt={model.name}
+                        alt={t('cv_models.names.' + model.name, { defaultValue: model.name })}
                         className={`w-full h-full object-cover transition-all duration-700 ${imageLoaded ? 'opacity-100 scale-100' : 'opacity-0 scale-110'}`}
                         onLoad={() => setImageLoaded(true)}
                         whileHover={{ scale: 1.1 }}
@@ -152,7 +152,7 @@ const ModelCard = ({ model, isActive, onSelect, onAdd, onPreview, loading, inCat
                 {/* Info en bas pour mode grille */}
                 {viewMode === 'grid' && (
                     <div className="absolute bottom-0 left-0 right-0 p-3 z-20">
-                        <h3 className="font-bold text-sm sm:text-base text-white line-clamp-2">{model.name}</h3>
+                        <h3 className="font-bold text-sm sm:text-base text-white line-clamp-2">{t('cv_models.names.' + model.name, { defaultValue: model.name })}</h3>
                         {model.price > 0 ? (
                             <motion.div
                                 className="flex items-center gap-1.5 mt-0.5"
@@ -213,7 +213,7 @@ const ModelCard = ({ model, isActive, onSelect, onAdd, onPreview, loading, inCat
                 {viewMode === 'list' && (
                     <div className="mb-3">
                         <h3 className="font-bold text-sm sm:text-base text-gray-900 dark:text-white line-clamp-2 mb-1">
-                            {model.name}
+                            {t('cv_models.names.' + model.name, { defaultValue: model.name })}
                         </h3>
                         {model.price > 0 ? (
                             <div className="flex items-center gap-1.5">
@@ -318,7 +318,7 @@ const ModelPreview = ({ model, onClose, onAdd, onSelect, isActive, inCatalog, lo
                             <DialogTitle className="flex items-center gap-2 text-base dark:text-white">
                                 <Star className="h-4 w-4 text-amber-500" />
                                 <span className="bg-gradient-to-r from-amber-500 to-purple-500 text-transparent bg-clip-text line-clamp-1">
-                                    {model?.name}
+                                    {t('cv_models.names.' + model?.name, { defaultValue: model?.name })}
                                 </span>
                                 {isActive && (
                                     <motion.div
@@ -336,7 +336,7 @@ const ModelPreview = ({ model, onClose, onAdd, onSelect, isActive, inCatalog, lo
                         <div className="relative w-full aspect-square sm:aspect-[4/3] bg-gray-50 dark:bg-gray-900">
                             <motion.img
                                 src={`/storage/${model?.previewImagePath}`}
-                                alt={model?.name}
+                                alt={t('cv_models.names.' + model?.name, { defaultValue: model?.name })}
                                 className="w-full h-full object-contain"
                                 initial={{ opacity: 0 }}
                                 animate={{ opacity: 1 }}

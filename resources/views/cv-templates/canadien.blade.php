@@ -6,9 +6,9 @@
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ $cvInformation['personalInformation']['firstName'] ?? 'CV' }} - CV</title>
+    <title>{{ $cvInformation['personalInformation']['firstName'] ?? 'CV' }} - {{ __('cv.profile') }}</title>
     <style>
-        @page { margin: 15mm; size: Letter; }
+        @page { margin: 10mm; size: A4; }
         * { margin: 0; padding: 0; box-sizing: border-box; }
         
         body { 
@@ -38,6 +38,10 @@
         .contact-info { 
             font-size: 9.5pt; 
             margin-bottom: 2px;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 3mm;
         }
 
         .section-title { 
@@ -154,38 +158,53 @@
             margin-top: 0;
         }
 
-        a { text-decoration: none; color: #000; }
+        a { text-decoration: none; color: inherit; }
     </style>
 </head>
 <body>
     <div class="header">
         <div class="name">{{ $cvInformation['personalInformation']['firstName'] }} {{ $cvInformation['personalInformation']['lastName'] }}</div>
         <div class="contact-info">
-            {{ $cvInformation['personalInformation']['address'] }}
-            @if($cvInformation['personalInformation']['address'] && $cvInformation['personalInformation']['phone']) • @endif
-            {{ $cvInformation['personalInformation']['phone'] }}
-            @if($cvInformation['personalInformation']['phone'] && $cvInformation['personalInformation']['email']) • @endif
-            {{ $cvInformation['personalInformation']['email'] }}
-            @if($cvInformation['personalInformation']['linkedin']) • {{ $cvInformation['personalInformation']['linkedin'] }} @endif
+            @if($cvInformation['personalInformation']['address'])
+            <span>{{ $cvInformation['personalInformation']['address'] }}</span>
+            @endif
+            @if($cvInformation['personalInformation']['phone'])
+            <span>• {{ $cvInformation['personalInformation']['phone'] }}</span>
+            @endif
+            @if($cvInformation['personalInformation']['email'])
+            <span>• {{ $cvInformation['personalInformation']['email'] }}</span>
+            @endif
+            @if($cvInformation['personalInformation']['linkedin'])
+            <span>• <a href="{{ $cvInformation['personalInformation']['linkedin'] }}" target="_blank">{{ $cvInformation['personalInformation']['linkedin'] }}</a></span>
+            @endif
+            @if($cvInformation['personalInformation']['github'])
+            <span>• <a href="{{ $cvInformation['personalInformation']['github'] }}" target="_blank">{{ $cvInformation['personalInformation']['github'] }}</a></span>
+            @endif
         </div>
     </div>
 
     @if(!empty($cvInformation['summaries']))
-    <div class="section-title">{{ $currentLocale === 'fr' ? 'Sommaire Professionnel' : 'Professional Summary' }}</div>
+    <div class="section-title">{{ __('cv.profile') }}</div>
     <div class="content-text">{!! $cvInformation['summaries'][0]['description'] ?? '' !!}</div>
     @endif
 
-    <div class="section-title">{{ $currentLocale === 'fr' ? 'Expérience Professionnelle' : 'Work Experience' }}</div>
+    <div class="section-title">{{ __('cv.experience') }}</div>
     @foreach($experiencesByCategory as $category => $experiences)
         @php
-            // Traduction simple des catégories si nécessaire (ou afficher tel quel)
             $displayCategory = ucfirst($category);
-            // Hide "Experience Professionnelle" sub-header if it's the only one or redundant
             $showCategory = count($experiencesByCategory) > 1;
         @endphp
         
         @if($showCategory)
-        <div class="cat-header">{{ $displayCategory }}</div>
+        @if($showCategory)
+        @php
+            $transCat = $category;
+            $catLower = strtolower($category);
+            if(str_contains($catLower, 'recherche')) $transCat = __('cv.research');
+            elseif(str_contains($catLower, 'professionnel')) $transCat = __('cv.professional');
+            elseif(str_contains($catLower, 'académique') || str_contains($catLower, 'academic')) $transCat = __('cv.academic');
+        @endphp
+        <div class="cat-header">{{ $transCat }}</div>
         @endif
 
         @foreach($experiences as $exp)
@@ -214,7 +233,7 @@
     <div class="bottom-grid">
         <div class="col-left">
             @if(!empty($cvInformation['certifications']))
-            <div class="section-title">{{ $currentLocale === 'fr' ? 'Éducation et Certifications' : 'Education & Certifications' }}</div>
+            <div class="section-title">{{ __('cv.education') }} & {{ __('cv.certifications') }}</div>
             @foreach($cvInformation['certifications'] as $cert)
             <div class="entry" style="margin-bottom: 8px;">
                 <div class="clearfix">
@@ -230,14 +249,14 @@
 
         <div class="col-right">
             @if(!empty($cvInformation['competences']) || !empty($cvInformation['languages']))
-            <div class="section-title">{{ $currentLocale === 'fr' ? 'Compétences' : 'Skills' }}</div>
+            <div class="section-title">{{ __('cv.skills') }}</div>
             
             @if(!empty($cvInformation['competences']))
             <div style="margin-bottom: 12px;">
                 <div style="font-weight: bold; font-size: 9.5pt; margin-bottom: 4px; text-decoration: underline;">{{ $currentLocale === 'fr' ? 'Techniques' : 'Technical' }}</div>
                 <ul class="skills-list" style="display: block;">
                 @foreach($cvInformation['competences'] as $comp)
-                    <li style="display: inline-block; margin-right: 5px;">• {{ $currentLocale === 'fr' ? $comp['name'] : $comp['name_en'] }}</li>
+                    <li style="display: inline-block; margin-right: 5px;">• {{ $currentLocale === 'en' ? ($comp['name_en'] ?? $comp['name']) : $comp['name'] }}</li>
                 @endforeach
                 </ul>
             </div>
@@ -245,10 +264,10 @@
 
             @if(!empty($cvInformation['languages']))
             <div>
-                <div style="font-weight: bold; font-size: 9.5pt; margin-bottom: 4px; text-decoration: underline;">{{ $currentLocale === 'fr' ? 'Langues' : 'Languages' }}</div>
+                <div style="font-weight: bold; font-size: 9.5pt; margin-bottom: 4px; text-decoration: underline;">{{ __('cv.languages') }}</div>
                 <ul class="skills-list" style="display: block;">
                 @foreach($cvInformation['languages'] as $lang)
-                    <li style="margin-bottom: 2px;">• <strong>{{ $lang['name'] }}</strong>: {{ $lang['level'] }}</li>
+                    <li style="margin-bottom: 2px;">• <strong>{{ $currentLocale === 'en' ? ($lang['name_en'] ?? $lang['name']) : $lang['name'] }}</strong>: {{ trans()->has("cv.levels." . $lang['level']) ? __("cv.levels." . $lang['level']) : $lang['level'] }}</li>
                 @endforeach
                 </ul>
             </div>

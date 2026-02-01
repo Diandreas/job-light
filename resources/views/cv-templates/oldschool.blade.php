@@ -12,7 +12,7 @@
             $primaryColor = $cvInformation['primary_color'] ?? '#000';
         @endphp
 
-        @page { margin: 15mm; size: A4; }
+        @page { margin: 10mm; size: A4; }
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: 'Times New Roman', Times, serif; font-size: 11pt; line-height: 1.3; color: #000; }
 
@@ -24,6 +24,7 @@
         
         .info-table { width: 100%; border-collapse: collapse; margin-bottom: 6mm; font-size: 10pt; }
         .info-table td { border: 1px solid #000; padding: 2mm; }
+        .info-table a { color: inherit; text-decoration: none; }
         .label { font-weight: bold; background: #eee; width: 30%; }
 
         /* SECTIONS */
@@ -53,30 +54,48 @@
 
     <div class="header">
         <div class="name">{{ $cvInformation['personalInformation']['firstName'] }} {{ $cvInformation['personalInformation']['lastName'] }}</div>
-        <div>{{ strtoupper($currentLocale === 'fr' ? $cvInformation['professions'][0]['name'] : $cvInformation['professions'][0]['name_en']) }}</div>
+        <div>{{ strtoupper($currentLocale === 'en' ? ($cvInformation['professions'][0]['name_en'] ?? $cvInformation['professions'][0]['name']) : $cvInformation['professions'][0]['name']) }}</div>
     </div>
 
     <table class="info-table">
+        @if($cvInformation['personalInformation']['phone'])
         <tr>
             <td class="label">PHONE</td>
             <td>{{ $cvInformation['personalInformation']['phone'] }}</td>
         </tr>
+        @endif
+        @if($cvInformation['personalInformation']['email'])
         <tr>
             <td class="label">EMAIL</td>
             <td>{{ $cvInformation['personalInformation']['email'] }}</td>
         </tr>
+        @endif
+        @if($cvInformation['personalInformation']['address'])
         <tr>
             <td class="label">ADDRESS</td>
             <td>{{ $cvInformation['personalInformation']['address'] }}</td>
         </tr>
+        @endif
+        @if(!empty($cvInformation['personalInformation']['linkedin']))
+        <tr>
+            <td class="label">LINKEDIN</td>
+            <td><a href="{{ $cvInformation['personalInformation']['linkedin'] }}" target="_blank">{{ $cvInformation['personalInformation']['linkedin'] }}</a></td>
+        </tr>
+        @endif
+        @if(!empty($cvInformation['personalInformation']['github']))
+        <tr>
+            <td class="label">GITHUB</td>
+            <td><a href="{{ $cvInformation['personalInformation']['github'] }}" target="_blank">{{ $cvInformation['personalInformation']['github'] }}</a></td>
+        </tr>
+        @endif
     </table>
 
     @if(!empty($cvInformation['summaries']))
-    <div class="section-title">{{ $currentLocale === 'fr' ? 'OBJECTIF' : 'OBJECTIVE' }}</div>
+    <div class="section-title">{{ strtoupper(__('cv.profile')) }}</div>
     <div style="margin-bottom: 6mm; text-align: justify;" class="content-text">{!! $cvInformation['summaries'][0]['description'] ?? '' !!}</div>
     @endif
 
-    <div class="section-title" style="background: {{ $primaryColor }}; border-color: {{ $primaryColor }};">{{ $currentLocale === 'fr' ? 'PARCOURS & EXPÉRIENCES' : 'CAREER & EXPERIENCES' }}</div>
+    <div class="section-title" style="background: {{ $primaryColor }}; border-color: {{ $primaryColor }};">{{ strtoupper(__('cv.experience')) }}</div>
     @foreach($experiencesByCategory as $category => $experiences)
         @php
             $isEnglish = str_starts_with(strtolower($currentLocale), 'en');
@@ -106,7 +125,7 @@
     @endforeach
     
     @if(!empty($cvInformation['certifications']))
-    <div class="section-title" style="background: {{ $primaryColor }}; border-color: {{ $primaryColor }};">{{ $currentLocale === 'fr' ? 'CERTIFICATIONS' : 'CERTIFICATIONS' }}</div>
+    <div class="section-title" style="background: {{ $primaryColor }}; border-color: {{ $primaryColor }};">{{ strtoupper(__('cv.certifications')) }}</div>
     <ul class="content-text rich-text" style="list-style-type: square; margin-bottom: 5mm;">
         @foreach($cvInformation['certifications'] as $cert)
         <li>
@@ -118,31 +137,31 @@
     </ul>
     @endif
 
-    <div class="section-title" style="background: {{ $primaryColor }}; border-color: {{ $primaryColor }};">{{ $currentLocale === 'fr' ? 'COMPÉTENCES & DIVERS' : 'SKILLS & MISC' }}</div>
+    <div class="section-title" style="background: {{ $primaryColor }}; border-color: {{ $primaryColor }};">{{ strtoupper(__('cv.skills')) }} & {{ strtoupper(__('cv.hobbies')) }}</div>
     <table class="info-table">
         @if(!empty($cvInformation['competences']))
         <tr>
-            <td class="label" style="border-color: {{ $primaryColor }};">{{ $currentLocale === 'fr' ? 'COMPÉTENCES' : 'SKILLS' }}</td>
+            <td class="label" style="border-color: {{ $primaryColor }};">{{ strtoupper(__('cv.skills')) }}</td>
             <td style="border-color: {{ $primaryColor }};">
-                {{ collect($cvInformation['competences'])->map(fn($c) => ($currentLocale === 'fr' ? $c['name'] : $c['name_en']) . ($c['level'] ? ' (' . $c['level'] . ')' : ''))->join(', ') }}
+                {{ collect($cvInformation['competences'])->map(fn($c) => ($currentLocale === 'en' ? ($c['name_en'] ?? $c['name']) : $c['name']) . ($c['level'] ? ' (' . $c['level'] . ')' : ''))->join(', ') }}
             </td>
         </tr>
         @endif
         @if(!empty($cvInformation['languages']))
         <tr>
-            <td class="label">{{ $currentLocale === 'fr' ? 'LANGUES' : 'LANGUAGES' }}</td>
+            <td class="label">{{ strtoupper(__('cv.languages')) }}</td>
             <td>
                 @foreach($cvInformation['languages'] as $lang)
-                {{ $lang['name'] }} ({{ $lang['level'] }})@if(!$loop->last), @endif
+                {{ $currentLocale === 'en' ? ($lang['name_en'] ?? $lang['name']) : $lang['name'] }} ({{ trans()->has("cv.levels." . $lang['level']) ? __("cv.levels." . $lang['level']) : $lang['level'] }})@if(!$loop->last), @endif
                 @endforeach
             </td>
         </tr>
         @endif
         @if(!empty($cvInformation['hobbies']))
         <tr>
-            <td class="label">{{ $currentLocale === 'fr' ? 'LOISIRS' : 'HOBBIES' }}</td>
+            <td class="label">{{ strtoupper(__('cv.hobbies')) }}</td>
             <td>
-                {{ collect($cvInformation['hobbies'])->map(fn($h) => $currentLocale === 'fr' ? $h['name'] : $h['name_en'])->join(', ') }}
+                {{ collect($cvInformation['hobbies'])->map(fn($h) => $currentLocale === 'en' ? ($h['name_en'] ?? $h['name']) : $h['name'])->join(', ') }}
             </td>
         </tr>
         @endif

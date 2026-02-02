@@ -1,13 +1,34 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
+import { useForm } from '@inertiajs/react';
 import { useTranslation } from 'react-i18next';
-import { useToast } from '@/Components/ui/use-toast';
-import { useMedian } from '@/hooks/useMedian';
+import { Button } from "@/Components/ui/button";
+import { Textarea } from "@/Components/ui/textarea";
+import { Progress } from "@/Components/ui/progress";
+import { Card, CardHeader, CardTitle, CardContent } from "@/Components/ui/card";
+import { useToast } from "@/Components/ui/use-toast";
+import { useMedian } from '@/Hooks/useMedian';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
+import { ScrollArea } from "@/Components/ui/scroll-area";
 import { AnimatePresence, motion } from 'framer-motion';
-import { Trash2 } from 'lucide-react';
-import { SERVICES } from '@/Components/ai/constants';
-import { Service } from '@/types/career-advisor';
+import {
+    Brain, Wallet, Clock, Loader, Download, Coins, Trash2,
+    MessageSquare, Calendar, Menu, Send, Plus,
+    FileText, Presentation, ChevronDown, FileSpreadsheet,
+    FileInput, MessageCircleQuestion, PenTool, Sparkles, ChevronRight, ChevronLeft,
+    Smartphone, Monitor, Zap, MoreHorizontal, Star,
+    TrendingUp, Target, Users, BookOpen, Award, Briefcase
+} from 'lucide-react';
+import EnhancedMessageBubble from '@/Components/ai/enhanced/EnhancedMessageBubble';
+import { ServiceCard, MobileServiceCard } from '@/Components/ai/ServiceCard';
+import { SERVICES, DEFAULT_PROMPTS } from '@/Components/ai/constants';
+import { PowerPointService } from '@/Components/ai/PresentationService';
+import ServiceSelector from '@/Components/ai/specialized/ServiceSelector';
+import ArtifactSidebar from '@/Components/ai/artifacts/ArtifactSidebar';
+import { ArtifactData } from '@/Components/ai/artifacts/ArtifactDetector';
 import { cn } from '@/lib/utils';
+import { Avatar, AvatarFallback, AvatarImage } from "@/Components/ui/avatar";
+import { Badge } from "@/Components/ui/badge";
+import { Separator } from "@/Components/ui/separator";
 import FluidCursorEffect from '@/Components/ai/FluidCursorEffect';
 import {
     AlertDialog,
@@ -18,338 +39,1112 @@ import {
     AlertDialogFooter,
     AlertDialogHeader,
     AlertDialogTitle,
-} from '@/Components/ui/alert-dialog';
-
-// New decomposed components
-import { CareerAdvisorProvider, useCareerAdvisor } from '@/Components/ai/providers/CareerAdvisorProvider';
-import { ErrorBoundary } from '@/Components/ai/errors/ErrorBoundary';
-import ChatErrorFallback from '@/Components/ai/errors/ChatErrorFallback';
-import ChatLayout from '@/Components/ai/layout/ChatLayout';
-import ChatHeader from '@/Components/ai/layout/ChatHeader';
-import ChatView from '@/Components/ai/chat/ChatView';
-import ChatInput from '@/Components/ai/chat/ChatInput';
-
-// Hooks
-import { useChat } from '@/Components/ai/hooks/useChat';
-import { useStreamingResponse } from '@/Components/ai/hooks/useStreamingResponse';
-import { useWallet } from '@/Components/ai/hooks/useWallet';
-import { useExport } from '@/Components/ai/hooks/useExport';
-import { useChatHistory, ChatHistoryItem } from '@/Components/ai/hooks/useChatHistory';
-
-// Existing components that remain
-import ServiceSelector from '@/Components/ai/specialized/ServiceSelector';
-import ArtifactSidebar from '@/Components/ai/artifacts/ArtifactSidebar';
-import { ArtifactData } from '@/Components/ai/artifacts/ArtifactDetector';
-
+} from "@/Components/ui/alert-dialog";
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuTrigger,
+} from "@/Components/ui/dropdown-menu";
+import {
+    Tooltip,
+    TooltipContent,
+    TooltipProvider,
+    TooltipTrigger,
+} from "@/Components/ui/tooltip";
 import axios from 'axios';
 
+const TOKEN_LIMIT = 2000;
+
+// Hook pour l'input optimisé
+const useSmartInput = () => {
+    const [inputHeight, setInputHeight] = useState(36);
+    const inputRef = useRef(null);
+
+    const adjustHeight = useCallback((element) => {
+        if (!element) return;
+        element.style.height = 'auto';
+        const newHeight = Math.min(Math.max(element.scrollHeight, 36), 72);
+        element.style.height = `${newHeight}px`;
+        setInputHeight(newHeight);
+    }, []);
+
+    const handleInputChange = useCallback((event, setData) => {
+        const textarea = event.target;
+        setData('question', textarea.value);
+        adjustHeight(textarea);
+    }, [adjustHeight]);
+
+    return { inputRef, inputHeight, handleInputChange, adjustHeight };
+};
+
+// Composant d'input ultra-compact
+const CompactChatInput = ({
+    value,
+    onChange,
+    onSubmit,
+    placeholder,
+    disabled,
+    isLoading,
+    cost,
+    onKeyDown
+}) => {
+    const { inputRef, handleInputChange } = useSmartInput();
+    const [isFocused, setIsFocused] = useState(false);
+
+    return (
+        <div className="relative">
+            <form onSubmit={onSubmit}>
+                <div className="relative flex items-end gap-2 p-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl shadow-sm transition-all hover:shadow-md focus-within:shadow-md focus-within:border-amber-400 dark:focus-within:border-amber-500">
+                    <Textarea
+                        ref={inputRef}
+                        value={value}
+                        onChange={(e) => handleInputChange(e, onChange)}
+                        onKeyDown={onKeyDown}
+                        onFocus={() => setIsFocused(true)}
+                        onBlur={() => setIsFocused(false)}
+                        placeholder={placeholder}
+                        className="flex-1 min-h-[36px] max-h-[72px] border-0 p-0 resize-none bg-transparent text-sm placeholder:text-gray-400 dark:placeholder:text-gray-500 focus-visible:ring-0 focus-visible:ring-offset-0"
+                        disabled={disabled}
+                        maxLength={2000}
+                    />
+
+                    <div className="flex items-center gap-2 flex-shrink-0">
+                        {/* Indicateur de coût */}
+                        <div className="flex items-center gap-1 px-2 py-1 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-700 rounded-md">
+                            <Coins className="h-3 w-3 text-amber-600 dark:text-amber-400" />
+                            <span className="text-xs font-medium text-amber-700 dark:text-amber-300">
+                                {cost}
+                            </span>
+                        </div>
+
+                        {/* Bouton d'envoi */}
+                        <Button
+                            type="submit"
+                            size="sm"
+                            disabled={disabled || !value.trim()}
+                            className={cn(
+                                "h-8 w-8 p-0 rounded-lg transition-all duration-200",
+                                disabled || !value.trim()
+                                    ? "opacity-40 cursor-not-allowed bg-gray-400"
+                                    : "bg-gradient-to-r from-amber-500 to-purple-500 hover:from-amber-600 hover:to-purple-600 shadow-md hover:shadow-lg hover:scale-105 active:scale-95"
+                            )}
+                        >
+                            {isLoading ? (
+                                <motion.div
+                                    animate={{ rotate: 360 }}
+                                    transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                                >
+                                    <Loader className="h-4 w-4 text-white" />
+                                </motion.div>
+                            ) : (
+                                <Send className="h-4 w-4 text-white" />
+                            )}
+                        </Button>
+                    </div>
+                </div>
+
+                {/* Barre de progression */}
+                {value.length > 0 && (
+                    <div className="mt-1 px-1">
+                        <div className="flex justify-between items-center text-xs text-gray-500 dark:text-gray-400 mb-1">
+                            {/* @ts-ignore */}
+                            <span>{value.length}/2000 {t('components.career_advisor.interface.progress_characters')}</span>
+                            <div className="flex items-center gap-2">
+                                <kbd className="px-1 py-0.5 text-[10px] bg-gray-100 dark:bg-gray-700 rounded border">
+                                    Enter
+                                </kbd>
+                                {/* @ts-ignore */}
+                                <span>{t('components.career_advisor.interface.send')}</span>
+                            </div>
+                        </div>
+                        <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-0.5">
+                            <motion.div
+                                initial={{ width: 0 }}
+                                animate={{ width: `${(value.length / 2000) * 100}%` }}
+                                className={cn(
+                                    "h-0.5 rounded-full transition-colors",
+                                    value.length > 1800 ? "bg-red-500" :
+                                        value.length > 1500 ? "bg-yellow-500" : "bg-amber-500"
+                                )}
+                            />
+                        </div>
+                    </div>
+                )}
+            </form>
+        </div>
+    );
+};
+
+// Card de chat optimisée
+const CompactChatCard = ({ chat, isActive, onSelect, onDelete }) => {
+    const { t } = useTranslation();
+
+    const truncatedPreview = chat.preview ?
+        (chat.preview.length > 28 ? chat.preview.substring(0, 28) + '...' : chat.preview) :
+        t('components.career_advisor.interface.new_conversation');
+
+    return (
+        <motion.div
+            layout
+            initial={{ opacity: 0, y: 2 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, x: -8 }}
+            whileHover={{ y: -1 }}
+            whileTap={{ scale: 0.98 }}
+            className={cn(
+                "group relative p-2 rounded-lg cursor-pointer transition-all border",
+                isActive
+                    ? "bg-gradient-to-r from-amber-50 to-purple-50 dark:from-amber-900/20 dark:to-purple-900/20 border-amber-300 dark:border-amber-600 shadow-sm"
+                    : "bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-750 border-gray-200 dark:border-gray-700 hover:border-amber-200 dark:hover:border-amber-800"
+            )}
+            onClick={() => onSelect(chat)}
+        >
+            <div className="flex items-start gap-2 pr-6">
+                <div className={cn(
+                    "w-1 h-1 rounded-full mt-2 flex-shrink-0",
+                    isActive ? "bg-amber-500" : "bg-gray-300 dark:bg-gray-600"
+                )} />
+                <div className="min-w-0 flex-1">
+                    <h3 className="text-xs font-medium text-gray-900 dark:text-gray-100 line-clamp-1 mb-1" title={chat.preview}>
+                        {truncatedPreview}
+                    </h3>
+                    <div className="flex items-center gap-3 text-xs text-gray-500 dark:text-gray-400">
+                        <div className="flex items-center gap-1">
+                            <Calendar className="h-2.5 w-2.5" />
+                            <span>
+                                {new Date(chat.created_at).toLocaleDateString('fr-FR', {
+                                    day: 'numeric',
+                                    month: 'short'
+                                })}
+                            </span>
+                        </div>
+                        {chat.messages_count && (
+                            <div className="flex items-center gap-1">
+                                <MessageSquare className="h-2.5 w-2.5" />
+                                <span>{chat.messages_count}</span>
+                            </div>
+                        )}
+                    </div>
+                </div>
+            </div>
+
+            <Button
+                variant="ghost"
+                size="sm"
+                onClick={(e) => {
+                    e.stopPropagation();
+                    onDelete(chat);
+                }}
+                className="absolute right-1 top-1/2 -translate-y-1/2 h-5 w-5 p-0 opacity-0 group-hover:opacity-100 hover:text-red-500 dark:hover:text-red-400 transition-all"
+            >
+                <Trash2 className="h-3 w-3" />
+            </Button>
+        </motion.div>
+    );
+};
+
+// Header compact
+const CompactHeader = ({
+    selectedService,
+    walletBalance,
+    onNewChat,
+    onExport,
+    isExporting,
+    isAndroidApp,
+    isReady,
+    artifactCount,
+    onToggleArtifacts,
+    artifactSidebarOpen
+}) => {
+    const { t } = useTranslation();
+
+    return (
+        <div className="bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 px-3 py-2">
+            <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3 min-w-0">
+                    <div className="flex items-center gap-2">
+                        <div className="w-7 h-7 bg-gradient-to-r from-amber-500 to-purple-500 rounded-lg flex items-center justify-center">
+                            <selectedService.icon className="h-4 w-4 text-white" />
+                        </div>
+                        <div className="min-w-0">
+                            <h3 className="font-semibold text-gray-900 dark:text-gray-100 text-sm truncate">
+                                {t(`services.${selectedService.id}.title`)}
+                            </h3>
+                            <div className="flex items-center gap-2">
+                                <div className="flex items-center gap-1">
+                                    <div className="w-1.5 h-1.5 bg-green-500 rounded-full" />
+                                    <span className="text-xs text-gray-500 dark:text-gray-400">{t('components.sidebar.active')}</span>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div className="flex items-center gap-2">
+                    {/* Nouveau chat */}
+                    <TooltipProvider>
+                        <Tooltip>
+                            <TooltipTrigger asChild>
+                                <Button
+                                    onClick={onNewChat}
+                                    variant="outline"
+                                    size="sm"
+                                    className="h-8 w-8 p-0"
+                                >
+                                    <Plus className="h-4 w-4" />
+                                </Button>
+                            </TooltipTrigger>
+                            <TooltipContent>
+                                <p className="text-xs">{t('components.career_advisor.interface.new_chat')}</p>
+                            </TooltipContent>
+                        </Tooltip>
+                    </TooltipProvider>
+
+                    {/* Artefacts */}
+                    {artifactCount > 0 && (
+                        <Button
+                            onClick={onToggleArtifacts}
+                            variant="outline"
+                            size="sm"
+                            className={cn(
+                                "h-8 px-2 relative",
+                                artifactSidebarOpen ? "bg-amber-100 border-amber-300 text-amber-700" : ""
+                            )}
+                        >
+                            <Sparkles className="h-3.5 w-3.5 mr-1" />
+                            <span className="text-xs">Artefacts</span>
+                            <Badge variant="secondary" className="ml-1 h-4 px-1 text-xs bg-amber-500 text-white">
+                                {artifactCount}
+                            </Badge>
+                        </Button>
+                    )}
+
+                    {/* Export */}
+                    <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                            <Button
+                                variant="outline"
+                                size="sm"
+                                className="h-8 px-2"
+                                disabled={isExporting}
+                            >
+                                {isExporting ? (
+                                    <Loader className="h-3.5 w-3.5 mr-1 animate-spin" />
+                                ) : (
+                                    <Download className="h-3.5 w-3.5 mr-1" />
+                                )}
+                                <span className="text-xs hidden sm:inline">{t('components.career_advisor.interface.export')}</span>
+                                <ChevronDown className="h-3 w-3 ml-1" />
+                                {isAndroidApp && isReady && (
+                                    <Smartphone className="ml-1 h-3 w-3 text-green-500" />
+                                )}
+                            </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end">
+                            <DropdownMenuItem onClick={() => onExport('pdf')} className="text-xs">
+                                <FileText className="h-3.5 w-3.5 mr-2" />
+                                PDF
+                            </DropdownMenuItem>
+                            <DropdownMenuItem onClick={() => onExport('docx')} className="text-xs">
+                                <FileText className="h-3.5 w-3.5 mr-2" />
+                                DOCX
+                            </DropdownMenuItem>
+                            {selectedService.id === 'presentation-ppt' && (
+                                <DropdownMenuItem onClick={() => onExport('pptx')} className="text-xs">
+                                    <Presentation className="h-3.5 w-3.5 mr-2" />
+                                    PPTX
+                                </DropdownMenuItem>
+                            )}
+                        </DropdownMenuContent>
+                    </DropdownMenu>
+                </div>
+            </div>
+        </div>
+    );
+};
+
+// Sidebar ultra-compacte améliorée
+const UltraCompactSidebar = ({
+    isCollapsed,
+    onToggleCollapse,
+    walletBalance,
+    onNewChat,
+    userChats,
+    selectedService,
+    activeChat,
+    onChatSelect,
+    onChatDelete,
+    onServiceSelect,
+    onCloseMobile = null,
+    isMobile = false
+}) => {
+    const { t } = useTranslation();
+    const filteredChats = userChats.filter(chat => chat.service_id === selectedService.id);
+
+    return (
+        <div className={cn(
+            "bg-white dark:bg-gray-900 flex flex-col transition-all duration-300 h-full",
+            isMobile ? "w-full" : (isCollapsed ? "w-12" : "w-64"),
+            !isMobile && "border-r border-gray-200 dark:border-gray-800"
+        )}>
+            {/* Header */}
+            <div className={cn(
+                "border-b border-gray-200 dark:border-gray-800",
+                isMobile ? "p-4" : "p-2"
+            )}>
+                {/* Bouton fermeture mobile */}
+                {isMobile && onCloseMobile && (
+                    <div className="flex justify-end mb-2">
+                        <Button
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                onCloseMobile();
+                            }}
+                            variant="ghost"
+                            size="sm"
+                            className="h-8 w-8 p-0"
+                        >
+                            <ChevronLeft className="h-4 w-4" />
+                        </Button>
+                    </div>
+                )}
+
+                {isCollapsed ? (
+                    <div className="flex flex-col items-center gap-2">
+                        <Avatar className="w-8 h-8">
+                            <AvatarImage src="/mascot/mascot.png" />
+                            <AvatarFallback className="bg-gradient-to-r from-amber-500 to-purple-500 text-white text-xs">
+                                AI
+                            </AvatarFallback>
+                        </Avatar>
+                        <Button
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                onNewChat();
+                            }}
+                            size="sm"
+                            className="w-8 h-8 p-0 bg-gradient-to-r from-amber-500 to-purple-500"
+                        >
+                            <Plus className="h-4 w-4" />
+                        </Button>
+                    </div>
+                ) : (
+                    <div className="space-y-2">
+                        <div className="flex items-center gap-2">
+                            <Avatar className="w-8 h-8">
+                                <AvatarImage src="/mascot/mascot.png" />
+                                <AvatarFallback className="bg-gradient-to-r from-amber-500 to-purple-500 text-white text-xs">
+                                    AI
+                                </AvatarFallback>
+                            </Avatar>
+                            <div className="flex-1 min-w-0">
+                                <div className="flex items-center gap-1.5">
+                                    <h1 className="text-sm font-bold text-gray-900 dark:text-gray-100 truncate">
+                                        {t('components.career_advisor.interface.ai_advisor')}
+                                    </h1>
+                                    <Badge variant="secondary" className="text-xs px-1.5 py-0 h-4 bg-amber-50 text-amber-600">
+                                        <Sparkles className="w-2.5 h-2.5 mr-0.5" />
+                                        {t('components.sidebar.pro_badge')}
+                                    </Badge>
+                                </div>
+                                <p className="text-xs text-gray-600 dark:text-gray-400 truncate">
+                                    {t(`services.${selectedService.id}.title`)}
+                                </p>
+                            </div>
+                        </div>
+
+                        {/* Sélecteur de service */}
+                        <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                                <Button
+                                    variant="outline"
+                                    size="sm"
+                                    className="w-full h-7 text-xs justify-between"
+                                >
+                                    <div className="flex items-center gap-1">
+                                        <selectedService.icon className="h-3 w-3" />
+                                        <span className="truncate">
+                                            {t(`services.${selectedService.id}.title`)}
+                                        </span>
+                                    </div>
+                                    <ChevronDown className="h-3 w-3" />
+                                </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="start" className="w-56">
+                                {SERVICES.map((service) => (
+                                    <DropdownMenuItem
+                                        key={service.id}
+                                        onSelect={(e) => {
+                                            e.stopPropagation();
+                                            onServiceSelect(service);
+                                        }}
+                                        className="text-xs"
+                                    >
+                                        <service.icon className="h-3.5 w-3.5 mr-2" />
+                                        {t(`services.${service.id}.title`)}
+                                    </DropdownMenuItem>
+                                ))}
+                            </DropdownMenuContent>
+                        </DropdownMenu>
+
+
+
+                        <Button
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                onNewChat();
+                            }}
+                            className="w-full h-7 bg-gradient-to-r from-amber-500 to-purple-500 text-white text-xs"
+                        >
+                            <Plus className="h-3.5 w-3.5 mr-1" />
+                            {t('components.career_advisor.interface.new_chat')}
+                        </Button>
+                    </div>
+                )}
+
+                {/* Toggle button - masqué en mode mobile */}
+                {!isMobile && (
+                    <Button
+                        onClick={onToggleCollapse}
+                        variant="ghost"
+                        size="sm"
+                        className={cn(
+                            "mt-2 transition-all",
+                            isCollapsed ? "w-8 h-8 p-0 mx-auto" : "w-full h-6"
+                        )}
+                    >
+                        {isCollapsed ? (
+                            <ChevronRight className="h-3.5 w-3.5" />
+                        ) : (
+                            <div className="flex items-center justify-between w-full">
+                                <span className="text-xs">{t('components.career_advisor.interface.collapse')}</span>
+                                <ChevronLeft className="h-3.5 w-3.5" />
+                            </div>
+                        )}
+                    </Button>
+                )}
+            </div>
+
+            {/* Chat history */}
+            <div className={cn(
+                "flex-1 min-h-0",
+                isMobile ? "p-4" : "p-2"
+            )}>
+                {!isCollapsed && (
+                    <div className="flex items-center justify-between mb-2">
+                        <h3 className="text-xs font-semibold text-gray-700 dark:text-gray-300">
+                            {t('components.career_advisor.interface.history')}
+                        </h3>
+                        <Badge variant="outline" className="text-xs h-4 px-1.5 border-amber-200 text-amber-600">
+                            {filteredChats.length}
+                        </Badge>
+                    </div>
+                )}
+
+                <ScrollArea className="h-full">
+                    <div className={cn(
+                        "space-y-1",
+                        isCollapsed && "flex flex-col items-center"
+                    )}>
+                        <AnimatePresence>
+                            {filteredChats.map(chat => (
+                                isCollapsed ? (
+                                    <TooltipProvider key={chat.context_id}>
+                                        <Tooltip>
+                                            <TooltipTrigger asChild>
+                                                <motion.button
+                                                    layout
+                                                    initial={{ opacity: 0 }}
+                                                    animate={{ opacity: 1 }}
+                                                    exit={{ opacity: 0 }}
+                                                    whileHover={{ scale: 1.05 }}
+                                                    onClick={() => onChatSelect(chat)}
+                                                    className={cn(
+                                                        "w-8 h-8 flex items-center justify-center rounded-lg border transition-all",
+                                                        activeChat?.context_id === chat.context_id
+                                                            ? "bg-amber-100 dark:bg-amber-900/30 text-amber-600 dark:text-amber-300 border-amber-300"
+                                                            : "bg-white dark:bg-gray-800 text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-700 border-gray-200 dark:border-gray-700"
+                                                    )}
+                                                >
+                                                    <MessageSquare className="h-3.5 w-3.5" />
+                                                </motion.button>
+                                            </TooltipTrigger>
+                                            <TooltipContent side="right">
+                                                <p className="text-xs">{chat.preview?.substring(0, 30)}</p>
+                                            </TooltipContent>
+                                        </Tooltip>
+                                    </TooltipProvider>
+                                ) : (
+                                    <CompactChatCard
+                                        key={chat.context_id}
+                                        chat={chat}
+                                        isActive={activeChat?.context_id === chat.context_id}
+                                        onSelect={onChatSelect}
+                                        onDelete={onChatDelete}
+                                    />
+                                )
+                            ))}
+                        </AnimatePresence>
+
+                        {filteredChats.length === 0 && !isCollapsed && (
+                            <div className="text-center py-6">
+                                <MessageSquare className="h-8 w-8 text-gray-300 dark:text-gray-600 mx-auto mb-2" />
+                                <p className="text-xs text-gray-500 dark:text-gray-400">
+                                    {t('components.career_advisor.interface.no_conversations')}
+                                </p>
+                            </div>
+                        )}
+                    </div>
+                </ScrollArea>
+            </div>
+        </div>
+    );
+};
+
+// Messages temporaires de réflexion
 const thinkingMessages = [
-    'career_advisor.chat.thinking.analyzing',
-    'career_advisor.chat.thinking.reflecting',
-    'career_advisor.chat.thinking.generating',
-    'career_advisor.chat.thinking.finalizing',
+    "career_advisor.chat.thinking.analyzing",
+    "career_advisor.chat.thinking.reflecting",
+    "career_advisor.chat.thinking.generating",
+    "career_advisor.chat.thinking.finalizing"
 ];
 
-interface PageProps {
-    auth: { user: { id: number; name: string; email: string; email_verified_at: string; wallet_balance: number } };
-    userInfo: any;
-    chatHistories: ChatHistoryItem[];
-}
+const getMaxHistoryForService = (serviceId) => {
+    return serviceId === 'interview-prep' ? 10 : 3;
+};
 
-function CareerAdvisorInner({ auth, userInfo }: Omit<PageProps, 'chatHistories'>) {
+const countUserQuestions = (messages) => {
+    return messages?.filter(msg => msg.role === 'user').length || 0;
+};
+
+export default function EnhancedCareerAdvisor({ auth, userInfo, chatHistories }) {
     const { t, i18n } = useTranslation();
     const { toast } = useToast();
-    const { isReady, isAndroidApp } = useMedian();
-    const { state, dispatch } = useCareerAdvisor();
+    const { isReady, isAndroidApp, downloadFile, createDirectDownloadUrl, isUrlCompatible } = useMedian();
 
-    // Hooks
-    const wallet = useWallet(state.walletBalance);
-    const chatHistory = useChatHistory(state.userChats, {
-        onError: (msg) => toast({ title: t('career_advisor.messages.error'), description: msg, variant: 'destructive' }),
+    // États principaux
+    const [isLoading, setIsLoading] = useState(false);
+    const [walletBalance, setWalletBalance] = useState(auth.user.wallet_balance);
+    const [selectedService, setSelectedService] = useState(SERVICES[0]);
+    const [language, setLanguage] = useState(i18n.language || 'fr');
+    const [activeChat, setActiveChat] = useState(null);
+    const [userChats, setUserChats] = useState(chatHistories || []);
+    const [tokensUsed, setTokensUsed] = useState(0);
+    const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+    const [chatToDelete, setChatToDelete] = useState(null);
+    const [tempMessage, setTempMessage] = useState(null);
+    const [thinkingIndex, setThinkingIndex] = useState(0);
+    const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
+    const [isSidebarCollapsed, setSidebarCollapsed] = useState(() => {
+        const saved = localStorage.getItem('career_advisor_sidebar_collapsed');
+        return saved ? JSON.parse(saved) : false; // Ouvert par défaut pour la nouvelle interface
     });
-    const { sendMessage } = useChat({
-        onError: (msg) => toast({ title: t('career_advisor.messages.error'), description: msg, variant: 'destructive' }),
-    });
-    const { isStreaming, content: streamingContent, startStream, abort: abortStream } = useStreamingResponse({
-        onDone: (fullContent) => {
-            // Streaming finished - add message to chat
-            const assistantMessage = {
-                role: 'assistant' as const,
-                content: fullContent,
-                timestamp: new Date(),
-                isLatest: true,
-            };
-            const updatedMessages = [...(state.activeChat?.messages || []), assistantMessage];
-            dispatch({ type: 'SET_ACTIVE_CHAT', payload: { ...state.activeChat!, messages: updatedMessages } });
-            dispatch({ type: 'SET_LOADING', payload: false });
-            dispatch({ type: 'SET_STREAMING_CONTENT', payload: '' });
-            chatHistory.loadChats();
-        },
-        onError: () => {
-            dispatch({ type: 'SET_LOADING', payload: false });
-        },
-    });
-    const exportHook = useExport({
-        onSuccess: (format) => toast({
-            title: t('components.career_advisor.interface.export_success'),
-            description: t('components.career_advisor.interface.export_file_downloaded', { format: format.toUpperCase() }),
-        }),
-        onError: (msg) => toast({
-            title: t('components.career_advisor.interface.export_error'),
-            description: msg,
-            variant: 'destructive',
-        }),
-    });
-
-    // Local state for input
-    const [inputValue, setInputValue] = useState('');
-    const [contextId, setContextId] = useState<string>(crypto.randomUUID());
-    const [currentArtifacts, setCurrentArtifacts] = useState<ArtifactData[]>([]);
+    const [isExporting, setIsExporting] = useState(false);
+    const [artifactSidebarOpen, setArtifactSidebarOpen] = useState(false);
+    const [currentArtifacts, setCurrentArtifacts] = useState([]);
     const [currentArtifactContent, setCurrentArtifactContent] = useState('');
     const [showTopMascot, setShowTopMascot] = useState(true);
-    const thinkingIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
-    // Sync wallet balance
+    // Refs
+    const scrollRef = useRef(null);
+    const inputRef = useRef(null);
+    const thinkingIntervalRef = useRef(null);
+
+    // Valeurs calculées
+    const maxHistory = getMaxHistoryForService(selectedService.id);
+    const currentQuestions = countUserQuestions(activeChat?.messages);
+
+    const { data, setData, processing } = useForm({
+        question: '',
+        contextId: activeChat?.context_id || crypto.randomUUID(),
+        language: language
+    });
+
     useEffect(() => {
-        dispatch({ type: 'SET_WALLET_BALANCE', payload: wallet.balance });
-    }, [wallet.balance]);
+        loadUserChats();
 
-    // Sync chat list
-    useEffect(() => {
-        dispatch({ type: 'SET_USER_CHATS', payload: chatHistory.chats });
-    }, [chatHistory.chats]);
-
-    // Load chats on mount
-    useEffect(() => {
-        chatHistory.loadChats();
-
+        // Écouter l'événement personnalisé du bouton menu flottant
         const handleToggleSidebar = () => {
-            dispatch({ type: 'SET_MOBILE_SIDEBAR', payload: !state.isMobileSidebarOpen });
-            if ('vibrate' in navigator) navigator.vibrate(50);
+            setIsMobileSidebarOpen(prev => !prev);
+            // Effet de vibration tactile si disponible
+            if ('vibrate' in navigator) {
+                navigator.vibrate(50);
+            }
         };
+
         window.addEventListener('toggleCareerAdvisorSidebar', handleToggleSidebar);
 
         return () => {
-            if (thinkingIntervalRef.current) clearInterval(thinkingIntervalRef.current);
+            if (thinkingIntervalRef.current) {
+                clearInterval(thinkingIntervalRef.current);
+            }
             window.removeEventListener('toggleCareerAdvisorSidebar', handleToggleSidebar);
         };
     }, []);
 
-    // Reset input on language or service change
     useEffect(() => {
-        setInputValue('');
-    }, [i18n.language, state.selectedService]);
-
-    // === Handlers ===
-
-    const handleServiceSelection = useCallback((service: Service) => {
-        if ((service as any).comingSoon) {
-            toast({ title: t('career_advisor.coming_soon.badge'), description: t('career_advisor.coming_soon.available_from', { date: (service as any).releaseDate }), variant: 'default' });
-            return;
+        if (scrollRef.current) {
+            const scrollElement = scrollRef.current;
+            setTimeout(() => {
+                scrollElement.scrollTo({
+                    top: scrollElement.scrollHeight,
+                    behavior: 'smooth'
+                });
+            }, 100);
         }
-        dispatch({ type: 'SET_SERVICE', payload: service });
-        if (!state.activeChat || (state.activeChat as any).service_id !== service.id) {
-            dispatch({ type: 'SET_ACTIVE_CHAT', payload: null });
-            setInputValue('');
-            setContextId(crypto.randomUUID());
-        }
-        dispatch({ type: 'SET_MOBILE_SIDEBAR', payload: false });
-    }, [state.activeChat, dispatch, toast, t]);
+    }, [activeChat?.messages, tempMessage]);
 
-    const handleChatSelection = useCallback(async (chat: ChatHistoryItem) => {
-        dispatch({ type: 'SET_LOADING', payload: true });
-        const data = await chatHistory.loadChat(chat.context_id);
-        if (data) {
-            const service = SERVICES.find(s => s.id === data.service_id);
-            if (service) dispatch({ type: 'SET_SERVICE', payload: service });
-            const messages = (data.messages || []).map(m => ({
-                ...m,
-                timestamp: m.timestamp ? new Date(m.timestamp) : new Date(),
-            }));
-            dispatch({
-                type: 'SET_ACTIVE_CHAT',
-                payload: { ...data, messages },
+    useEffect(() => {
+        setLanguage(i18n.language);
+        setData('question', '');
+    }, [i18n.language]);
+
+    useEffect(() => {
+        setData('question', '');
+    }, [selectedService]);
+
+    const loadUserChats = async () => {
+        try {
+            const response = await axios.get('/career-advisor/chats');
+            setUserChats(response.data);
+        } catch (error) {
+            console.error('Error loading chats:', error);
+            toast({
+                title: t('career_advisor.messages.error'),
+                description: t('career_advisor.messages.loading_error'),
+                variant: "destructive"
             });
-            setContextId(data.context_id);
         }
-        dispatch({ type: 'SET_LOADING', payload: false });
-        dispatch({ type: 'SET_MOBILE_SIDEBAR', payload: false });
-    }, [chatHistory, dispatch]);
+    };
 
-    const handleDeleteChat = useCallback(async () => {
-        const chat = state.chatToDelete;
-        if (!chat) return;
-
-        const success = await chatHistory.deleteChat(chat.context_id);
-        if (success) {
-            if (state.activeChat?.context_id === chat.context_id) {
-                dispatch({ type: 'SET_ACTIVE_CHAT', payload: null });
-                setContextId(crypto.randomUUID());
-            }
-            toast({ title: t('common.success'), description: t('career_advisor.messages.delete_success') });
-        }
-        dispatch({ type: 'SET_DELETE_DIALOG', payload: { open: false, chat: null } });
-    }, [state.chatToDelete, state.activeChat, chatHistory, dispatch, toast, t]);
-
-    const createNewChat = useCallback(() => {
-        dispatch({ type: 'NEW_CHAT' });
-        setContextId(crypto.randomUUID());
-        setInputValue('');
-        if ('vibrate' in navigator) navigator.vibrate([50, 100, 50]);
-    }, [dispatch]);
-
-    const handleSubmit = useCallback(async (e: React.FormEvent) => {
-        e.preventDefault();
-        if (!inputValue.trim()) return;
-
-        if (!wallet.canAfford(state.selectedService.cost)) {
-            toast({ title: t('career_advisor.messages.insufficient_balance'), description: t('career_advisor.messages.recharge_needed'), variant: 'destructive' });
+    const handleServiceSelection = (service) => {
+        if (service.comingSoon) {
+            toast({
+                title: t('career_advisor.coming_soon.badge'),
+                description: t('career_advisor.coming_soon.available_from', { date: service.releaseDate }),
+                variant: "default"
+            });
             return;
         }
 
-        dispatch({ type: 'SET_LOADING', payload: true });
+        setSelectedService(service);
+        if (!activeChat || activeChat.service_id !== service.id) {
+            setActiveChat(null);
+            setData('question', '');
+            setData('contextId', crypto.randomUUID());
+        }
+        setIsMobileSidebarOpen(false);
+    };
 
-        const userMessage = { role: 'user' as const, content: inputValue, timestamp: new Date() };
-        const updatedMessages = [...(state.activeChat?.messages || []), userMessage];
-        dispatch({
-            type: 'SET_ACTIVE_CHAT',
-            payload: {
-                context_id: contextId,
-                service_id: state.selectedService.id,
-                messages: updatedMessages,
-            },
+    const handleChatSelection = async (chat) => {
+        try {
+            setIsLoading(true);
+            const response = await axios.get(`/career-advisor/chats/${chat.context_id}`);
+            const chatData = response.data;
+
+            const service = SERVICES.find(s => s.id === chatData.service_id);
+            if (service) {
+                setSelectedService(service);
+            }
+
+            setActiveChat({
+                ...chatData,
+                messages: chatData.messages || []
+            });
+            setData('contextId', chatData.context_id);
+            setIsMobileSidebarOpen(false);
+        } catch (error) {
+            console.error('Error loading chat:', error);
+            toast({
+                title: t('career_advisor.messages.error'),
+                description: t('career_advisor.messages.chat_loading_error'),
+                variant: "destructive"
+            });
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    const confirmDeleteChat = (chat) => {
+        setChatToDelete(chat);
+        setDeleteDialogOpen(true);
+    };
+
+    const handleDeleteChat = async () => {
+        if (!chatToDelete) return;
+
+        try {
+            await axios.delete(`/career-advisor/chats/${chatToDelete.context_id}`);
+            setUserChats(prev => prev.filter(chat => chat.context_id !== chatToDelete.context_id));
+
+            if (activeChat?.context_id === chatToDelete.context_id) {
+                setActiveChat(null);
+                setData('contextId', crypto.randomUUID());
+            }
+
+            toast({
+                title: t('common.success'),
+                description: t('career_advisor.messages.delete_success')
+            });
+        } catch (error) {
+            toast({
+                title: t('career_advisor.messages.error'),
+                description: t('career_advisor.messages.delete_error'),
+                variant: "destructive"
+            });
+        } finally {
+            setDeleteDialogOpen(false);
+            setChatToDelete(null);
+        }
+    };
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        if (!data.question.trim()) {
+            toast({
+                title: t('career_advisor.messages.error'),
+                description: t('career_advisor.messages.empty'),
+                variant: "destructive",
+            });
+            return;
+        }
+
+        if (walletBalance < selectedService.cost) {
+            toast({
+                title: t('career_advisor.messages.insufficient_balance'),
+                description: t('career_advisor.messages.recharge_needed'),
+                variant: "destructive",
+            });
+            return;
+        }
+
+        setIsLoading(true);
+
+        const userMessage = {
+            role: 'user',
+            content: data.question,
+            timestamp: new Date()
+        };
+
+        const updatedMessages = [...(activeChat?.messages || []), userMessage];
+        setActiveChat(prev => ({
+            ...prev,
+            messages: updatedMessages
+        }));
+
+        setData('question', '');
+
+        // Messages de réflexion
+        setThinkingIndex(0);
+        setTempMessage({
+            role: 'assistant',
+            content: t(thinkingMessages[0]),
+            timestamp: new Date(),
+            isThinking: true
         });
 
-        const savedInput = inputValue;
-        setInputValue('');
+        if (thinkingIntervalRef.current) {
+            clearInterval(thinkingIntervalRef.current);
+        }
 
-        // Thinking messages
-        let thinkingIdx = 0;
-        dispatch({
-            type: 'SET_TEMP_MESSAGE',
-            payload: { role: 'assistant', content: t(thinkingMessages[0]), timestamp: new Date(), isThinking: true },
-        });
-
-        if (thinkingIntervalRef.current) clearInterval(thinkingIntervalRef.current);
         thinkingIntervalRef.current = setInterval(() => {
-            thinkingIdx = (thinkingIdx + 1) % thinkingMessages.length;
-            dispatch({
-                type: 'SET_TEMP_MESSAGE',
-                payload: { role: 'assistant', content: t(thinkingMessages[thinkingIdx]), timestamp: new Date(), isThinking: true },
+            setThinkingIndex(prev => {
+                const next = (prev + 1) % thinkingMessages.length;
+                setTempMessage({
+                    role: 'assistant',
+                    content: t(thinkingMessages[next]),
+                    timestamp: new Date(),
+                    isThinking: true
+                });
+                return next;
             });
         }, 1500);
 
         try {
-            // Use non-streaming endpoint (streaming can be enabled later)
-            const result = await sendMessage({
-                message: savedInput,
-                contextId,
-                language: i18n.language || 'fr',
-                serviceId: state.selectedService.id,
-                history: state.activeChat?.messages || [],
+            await axios.post('/api/process-question-cost', {
+                user_id: auth.user.id,
+                cost: selectedService.cost,
+                service: selectedService.id
             });
 
-            if (thinkingIntervalRef.current) clearInterval(thinkingIntervalRef.current);
-            dispatch({ type: 'SET_TEMP_MESSAGE', payload: null });
+            setWalletBalance(prev => prev - selectedService.cost);
 
-            const assistantMessage = { role: 'assistant' as const, content: result.message, timestamp: new Date(), isLatest: true };
+            const response = await axios.post('/career-advisor/chat', {
+                message: data.question,
+                contextId: data.contextId,
+                language: language,
+                serviceId: selectedService.id,
+                history: activeChat?.messages || []
+            });
+
+            if (thinkingIntervalRef.current) {
+                clearInterval(thinkingIntervalRef.current);
+            }
+            setTempMessage(null);
+
+            const assistantMessage = {
+                role: 'assistant',
+                content: response.data.message,
+                timestamp: new Date(),
+                isLatest: true
+            };
+
             const finalMessages = [...updatedMessages, assistantMessage];
 
-            dispatch({
-                type: 'SET_ACTIVE_CHAT',
-                payload: {
-                    context_id: contextId,
-                    service_id: state.selectedService.id,
-                    messages: finalMessages,
-                },
-            });
+            const updatedChat = {
+                ...activeChat,
+                context_id: data.contextId,
+                service_id: selectedService.id,
+                messages: finalMessages
+            };
 
-            // Update wallet from server response
-            if (result.balance !== undefined) {
-                wallet.updateBalance(result.balance);
-            } else {
-                wallet.optimisticDebit(state.selectedService.cost);
+            setActiveChat(updatedChat);
+            setTokensUsed(response.data.tokens);
+
+            await loadUserChats();
+
+        } catch (error) {
+            console.error('Error:', error);
+            if (thinkingIntervalRef.current) {
+                clearInterval(thinkingIntervalRef.current);
+            }
+            setTempMessage(null);
+
+            try {
+                await axios.post('/api/update-wallet', {
+                    user_id: auth.user.id,
+                    amount: selectedService.cost
+                });
+                setWalletBalance(prev => prev + selectedService.cost);
+            } catch (refundError) {
+                console.error('Refund failed:', refundError);
             }
 
-            dispatch({ type: 'SET_TOKENS_USED', payload: result.tokens });
-            await chatHistory.loadChats();
-        } catch (error) {
-            if (thinkingIntervalRef.current) clearInterval(thinkingIntervalRef.current);
-            dispatch({ type: 'SET_TEMP_MESSAGE', payload: null });
-            // No refund needed - wallet is debited server-side only on success
+            toast({
+                title: t('career_advisor.messages.error'),
+                description: t('career_advisor.messages.processing_error'),
+                variant: "destructive",
+            });
         } finally {
-            dispatch({ type: 'SET_LOADING', payload: false });
+            setIsLoading(false);
         }
-    }, [inputValue, state.activeChat, state.selectedService, contextId, wallet, dispatch, sendMessage, chatHistory, i18n.language, t, toast]);
+    };
 
-    const handleExport = useCallback((format: 'pdf' | 'docx' | 'pptx') => {
-        if (!state.activeChat?.context_id) return;
-        exportHook.exportChat(state.activeChat.context_id, format);
-    }, [state.activeChat, exportHook]);
+    const handleExport = async (format) => {
+        if (!activeChat) return;
 
-    const handleEnhancedServiceSubmit = useCallback(async (serviceId: string, data: any) => {
+        setIsExporting(true);
+        try {
+            // Logique d'export simplifiée
+            const response = await axios.post('/career-advisor/export', {
+                contextId: activeChat.context_id,
+                format
+            }, { responseType: 'blob' });
+
+            const url = window.URL.createObjectURL(new Blob([response.data]));
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `conversation-${activeChat.context_id}.${format}`;
+            document.body.appendChild(link);
+            link.click();
+            window.URL.revokeObjectURL(url);
+            document.body.removeChild(link);
+
+            toast({
+                title: t('components.career_advisor.interface.export_success'),
+                description: t('components.career_advisor.interface.export_file_downloaded', { format: format.toUpperCase() })
+            });
+        } catch (error) {
+            toast({
+                title: t('components.career_advisor.interface.export_error'),
+                description: t('components.career_advisor.interface.export_failed'),
+                variant: "destructive"
+            });
+        } finally {
+            setIsExporting(false);
+        }
+    };
+
+    const createNewChat = () => {
+        setActiveChat(null);
+        setData('contextId', crypto.randomUUID());
+        setData('question', '');
+        // Effet de vibration pour confirmer l'action
+        if ('vibrate' in navigator) {
+            navigator.vibrate([50, 100, 50]);
+        }
+    };
+
+    const handleKeyDown = (e) => {
+        if (e.key === 'Enter' && !e.shiftKey) {
+            e.preventDefault();
+            if (data.question.trim() && !isLoading) {
+                handleSubmit(e);
+            }
+        }
+    };
+
+    const handleEnhancedServiceSubmit = async (serviceId, data) => {
         const service = SERVICES.find(s => s.id === serviceId);
 
         if (data.isTest && data.mockResponse) {
-            const cId = crypto.randomUUID();
+            const contextId = crypto.randomUUID();
+
             const newChat = {
-                context_id: cId,
+                context_id: contextId,
                 service_id: serviceId,
                 created_at: new Date().toISOString(),
                 messages: [
-                    { role: 'user' as const, content: data.prompt, timestamp: new Date() },
-                    { role: 'assistant' as const, content: data.mockResponse, timestamp: new Date(), isLatest: true },
-                ],
+                    {
+                        role: 'user',
+                        content: data.prompt,
+                        timestamp: new Date().toISOString()
+                    },
+                    {
+                        role: 'assistant',
+                        content: data.mockResponse,
+                        timestamp: new Date().toISOString(),
+                        isLatest: true
+                    }
+                ]
             };
-            dispatch({ type: 'SET_ACTIVE_CHAT', payload: newChat });
+
+            setUserChats(prev => [newChat, ...prev]);
+            setActiveChat(newChat);
+
+            toast({
+                title: t('components.career_advisor.interface.demonstration'),
+                description: t('components.career_advisor.interface.artifact_test', { service: service?.title }),
+            });
             return;
         }
 
-        if (!wallet.canAfford(service?.cost || 0)) {
-            toast({ title: t('components.career_advisor.interface.insufficient_balance'), description: t('components.career_advisor.interface.insufficient_tokens'), variant: 'destructive' });
+        if (walletBalance < service?.cost || 0) {
+            toast({
+                title: t('components.career_advisor.interface.insufficient_balance'),
+                description: t('components.career_advisor.interface.insufficient_tokens'),
+                variant: "destructive"
+            });
             return;
         }
 
-        dispatch({ type: 'SET_LOADING', payload: true });
+        setIsLoading(true);
+
         try {
-            const cId = crypto.randomUUID();
+            const contextId = crypto.randomUUID();
+
             const response = await axios.post('/career-advisor/chat', {
                 message: data.prompt || data.finalPrompt || JSON.stringify(data),
-                contextId: cId,
-                language: i18n.language || 'fr',
-                serviceId,
-                history: [],
+                contextId: contextId,
+                language: language,
+                serviceId: serviceId,
+                history: []
             });
 
             if (response.data.message) {
                 const newChat = {
-                    context_id: cId,
+                    context_id: contextId,
                     service_id: serviceId,
                     created_at: new Date().toISOString(),
                     messages: [
-                        { role: 'user' as const, content: data.prompt || data.finalPrompt || t('components.career_advisor.interface.custom_request'), timestamp: new Date() },
-                        { role: 'assistant' as const, content: response.data.message, timestamp: new Date(), isLatest: true },
-                    ],
+                        {
+                            role: 'user',
+                            content: data.prompt || data.finalPrompt || t('components.career_advisor.interface.custom_request'),
+                            timestamp: new Date().toISOString()
+                        },
+                        {
+                            role: 'assistant',
+                            content: response.data.message,
+                            timestamp: new Date().toISOString(),
+                            isLatest: true
+                        }
+                    ]
                 };
-                dispatch({ type: 'SET_ACTIVE_CHAT', payload: newChat });
 
-                if (response.data.balance !== undefined) {
-                    wallet.updateBalance(response.data.balance);
-                } else {
-                    wallet.optimisticDebit(service?.cost || 0);
-                }
+                setUserChats(prev => [newChat, ...prev]);
+                setActiveChat(newChat);
+
+                setWalletBalance(prev => prev - service.cost);
+                setTokensUsed(prev => prev + (response.data.tokens || 0));
+
+                toast({
+                    title: t('components.career_advisor.interface.analysis_complete'),
+                    description: t('components.career_advisor.interface.analysis_ready', { service: service.title.toLowerCase() }),
+                });
             }
-            await chatHistory.loadChats();
-        } catch (error) {
-            toast({ title: t('components.career_advisor.interface.error'), description: t('components.career_advisor.interface.error_occurred'), variant: 'destructive' });
-        } finally {
-            dispatch({ type: 'SET_LOADING', payload: false });
-        }
-    }, [wallet, dispatch, chatHistory, i18n.language, t, toast]);
 
-    const handleArtifactAction = useCallback(async (action: string, data: any) => {
-        toast({ title: t('components.career_advisor.interface.artifact_action'), description: t('components.career_advisor.interface.artifact_action_executed', { action }) });
-    }, [toast, t]);
+        } catch (error) {
+            console.error('Enhanced service error:', error);
+            toast({
+                title: t('components.career_advisor.interface.error'),
+                description: t('components.career_advisor.interface.error_occurred'),
+                variant: "destructive"
+            });
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    const handleArtifactsDetected = (artifacts, content) => {
+        setCurrentArtifacts(artifacts);
+        setCurrentArtifactContent(content);
+        setArtifactSidebarOpen(true);
+    };
+
+    const handleArtifactAction = async (action, data) => {
+        console.log('Artifact action:', action, data);
+        toast({
+            title: t('components.career_advisor.interface.artifact_action'),
+            description: t('components.career_advisor.interface.artifact_action_executed', { action }),
+        });
+    };
+
+    // Sidebar mobile simple avec Tailwind CSS
+    const MobileSidebarComplete = () => {
+        return (
+            <>
+                {/* Overlay */}
+                {isMobileSidebarOpen && (
+                    <div
+                        className="fixed inset-0 bg-black bg-opacity-50 z-40 md:hidden"
+                        onClick={() => setIsMobileSidebarOpen(false)}
+                    />
+                )}
+
+                {/* Sidebar */}
+                <div className={`
+                    fixed top-0 left-0 h-full w-80 bg-white dark:bg-gray-900 transform transition-transform duration-300 ease-in-out z-50 md:hidden
+                    ${isMobileSidebarOpen ? 'translate-x-0' : '-translate-x-full'}
+                `}>
+                    <UltraCompactSidebar
+                        isCollapsed={false}
+                        onToggleCollapse={() => { }}
+                        walletBalance={walletBalance}
+                        onNewChat={createNewChat}
+                        userChats={userChats}
+                        selectedService={selectedService}
+                        activeChat={activeChat}
+                        onChatSelect={(chat) => {
+                            handleChatSelection(chat);
+                            // Fermeture avec délai pour une meilleure UX
+                            setTimeout(() => {
+                                setIsMobileSidebarOpen(false);
+                            }, 200);
+                        }}
+                        onChatDelete={confirmDeleteChat}
+                        onServiceSelect={(service) => {
+                            handleServiceSelection(service);
+                            // Ne pas fermer automatiquement le sidebar mobile
+                        }}
+                        onCloseMobile={() => setIsMobileSidebarOpen(false)}
+                        isMobile={true}
+                    />
+                </div>
+            </>
+        );
+    };
 
     return (
         <AuthenticatedLayout user={auth.user}>
@@ -357,37 +1152,53 @@ function CareerAdvisorInner({ auth, userInfo }: Omit<PageProps, 'chatHistories'>
                 <FluidCursorEffect zIndex={100} />
             </div>
 
-            <ErrorBoundary fallback={<ChatErrorFallback onRetry={() => window.location.reload()} />}>
-                <ChatLayout
-                    isSidebarCollapsed={state.isSidebarCollapsed}
-                    onToggleSidebar={() => {
-                        dispatch({ type: 'TOGGLE_SIDEBAR' });
-                        localStorage.setItem('career_advisor_sidebar_collapsed', JSON.stringify(!state.isSidebarCollapsed));
-                    }}
-                    isMobileSidebarOpen={state.isMobileSidebarOpen}
-                    onCloseMobileSidebar={() => dispatch({ type: 'SET_MOBILE_SIDEBAR', payload: false })}
-                    onNewChat={createNewChat}
-                    userChats={state.userChats}
-                    selectedService={state.selectedService}
-                    activeContextId={state.activeChat?.context_id}
-                    onChatSelect={handleChatSelection}
-                    onChatDelete={(chat) => dispatch({ type: 'SET_DELETE_DIALOG', payload: { open: true, chat } })}
-                    onServiceSelect={handleServiceSelection}
-                    artifactSidebarOpen={state.artifactSidebarOpen}
-                >
-                    {!state.activeChat ? (
-                        /* Service selection / landing */
+            <div className={cn(
+                "h-[calc(100vh-50px)] flex bg-gray-50 dark:bg-gray-900 transition-all duration-300",
+                artifactSidebarOpen ? "mr-80" : ""
+            )}>
+                {/* Sidebar Desktop Ultra-Compacte */}
+                <div className="hidden lg:flex">
+                    <UltraCompactSidebar
+                        isCollapsed={isSidebarCollapsed}
+                        onToggleCollapse={() => {
+                            const newState = !isSidebarCollapsed;
+                            setSidebarCollapsed(newState);
+                            localStorage.setItem('career_advisor_sidebar_collapsed', JSON.stringify(newState));
+                        }}
+                        walletBalance={walletBalance}
+                        onNewChat={createNewChat}
+                        userChats={userChats}
+                        selectedService={selectedService}
+                        activeChat={activeChat}
+                        onChatSelect={handleChatSelection}
+                        onChatDelete={confirmDeleteChat}
+                        onServiceSelect={handleServiceSelection}
+                        isMobile={false}
+                    />
+                </div>
+
+                {/* Zone principale */}
+                <div className="flex-1 flex flex-col min-w-0 bg-gray-50 dark:bg-gray-900 h-full">
+
+                    {/* Contenu principal */}
+                    {!activeChat ? (
                         <div className="flex-1 flex flex-col min-h-0">
                             <div className="flex-1 overflow-y-auto">
                                 <div className="px-4 py-6">
+                                    {/* Mascotte du haut - disparaît quand on clique sur commencer */}
                                     <AnimatePresence>
                                         {showTopMascot && (
                                             <motion.div
                                                 className="text-center mb-8"
                                                 initial={{ scale: 0.9, opacity: 0 }}
                                                 animate={{ scale: 1, opacity: 1 }}
-                                                exit={{ scale: 0.5, opacity: 0, y: -50, transition: { duration: 0.5, ease: 'easeInOut' } }}
-                                                transition={{ duration: 0.5, type: 'spring' }}
+                                                exit={{
+                                                    scale: 0.5,
+                                                    opacity: 0,
+                                                    y: -50,
+                                                    transition: { duration: 0.5, ease: "easeInOut" }
+                                                }}
+                                                transition={{ duration: 0.5, type: "spring" }}
                                             >
                                                 <div className="w-20 h-20 rounded-2xl mx-auto mb-4 overflow-hidden shadow-lg">
                                                     <img src="/mascot/mas.png" alt="AI Assistant" className="w-full h-full object-cover" />
@@ -396,63 +1207,106 @@ function CareerAdvisorInner({ auth, userInfo }: Omit<PageProps, 'chatHistories'>
                                         )}
                                     </AnimatePresence>
 
+                                    {/* Interface Enhanced uniquement */}
                                     <div className="px-2">
                                         <ServiceSelector
                                             userInfo={userInfo}
                                             onServiceSubmit={handleEnhancedServiceSubmit}
-                                            isLoading={state.isLoading}
-                                            walletBalance={wallet.balance}
+                                            isLoading={isLoading}
+                                            walletBalance={walletBalance}
                                             onServiceSelect={() => setShowTopMascot(false)}
                                             onBackToServices={() => setShowTopMascot(true)}
                                         />
                                     </div>
                                 </div>
                             </div>
+
                         </div>
                     ) : (
-                        /* Active chat */
                         <div className="flex-1 flex flex-col min-h-0">
-                            <ChatHeader
-                                selectedService={state.selectedService}
+                            {/* Header de chat */}
+                            <CompactHeader
+                                selectedService={selectedService}
+                                walletBalance={walletBalance}
                                 onNewChat={createNewChat}
                                 onExport={handleExport}
-                                isExporting={exportHook.isExporting}
+                                isExporting={isExporting}
                                 isAndroidApp={isAndroidApp}
                                 isReady={isReady}
                                 artifactCount={currentArtifacts.length}
-                                onToggleArtifacts={() => dispatch({ type: 'SET_ARTIFACT_SIDEBAR', payload: !state.artifactSidebarOpen })}
-                                artifactSidebarOpen={state.artifactSidebarOpen}
+                                onToggleArtifacts={() => setArtifactSidebarOpen(!artifactSidebarOpen)}
+                                artifactSidebarOpen={artifactSidebarOpen}
                             />
 
-                            <ChatView
-                                messages={state.activeChat.messages}
-                                tempMessage={state.tempMessage}
-                                streamingContent={streamingContent}
-                                isStreaming={isStreaming}
-                                serviceId={state.selectedService.id}
-                                onArtifactAction={handleArtifactAction}
-                            />
+                            {/* Zone de messages optimisée */}
+                            <div className="flex-1 min-h-0">
+                                <ScrollArea className="h-full" ref={scrollRef}>
+                                    <div className="max-w-4xl mx-auto space-y-4 p-4">
+                                        <AnimatePresence mode="popLayout">
+                                            {(activeChat?.messages || []).map((message, index) => (
+                                                <motion.div
+                                                    key={`message-${index}`}
+                                                    initial={{ opacity: 0, y: 20 }}
+                                                    animate={{ opacity: 1, y: 0 }}
+                                                    exit={{ opacity: 0, y: -10 }}
+                                                    transition={{ duration: 0.3 }}
+                                                >
+                                                    <EnhancedMessageBubble
+                                                        message={{
+                                                            ...message,
+                                                            serviceId: selectedService.id,
+                                                            isLatest: index === (activeChat?.messages || []).length - 1
+                                                        }}
+                                                        onArtifactAction={handleArtifactAction}
+                                                    />
+                                                </motion.div>
+                                            ))}
 
+                                            {tempMessage && (
+                                                <motion.div
+                                                    key="thinking"
+                                                    initial={{ opacity: 0, y: 20 }}
+                                                    animate={{ opacity: 1, y: 0 }}
+                                                    exit={{ opacity: 0, y: -10 }}
+                                                    transition={{ duration: 0.3 }}
+                                                >
+                                                    <EnhancedMessageBubble
+                                                        message={{
+                                                            ...tempMessage,
+                                                            serviceId: selectedService.id,
+                                                            isLatest: true
+                                                        }}
+                                                        onArtifactAction={handleArtifactAction}
+                                                    />
+                                                </motion.div>
+                                            )}
+                                        </AnimatePresence>
+                                    </div>
+                                </ScrollArea>
+                            </div>
+
+                            {/* Zone de saisie compacte */}
                             <div className="bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-800 p-3">
                                 <div className="max-w-4xl mx-auto">
-                                    <ChatInput
-                                        value={inputValue}
-                                        onChange={setInputValue}
+                                    <CompactChatInput
+                                        value={data.question}
+                                        onChange={setData}
                                         onSubmit={handleSubmit}
-                                        placeholder={t(`services.${state.selectedService.id}.placeholder`)}
-                                        disabled={state.isLoading}
-                                        isLoading={state.isLoading}
-                                        cost={state.selectedService.cost}
+                                        placeholder={t(`services.${selectedService.id}.placeholder`)}
+                                        disabled={isLoading}
+                                        isLoading={isLoading}
+                                        cost={selectedService.cost}
+                                        onKeyDown={handleKeyDown}
                                     />
                                 </div>
                             </div>
                         </div>
                     )}
-                </ChatLayout>
-            </ErrorBoundary>
+                </div>
+            </div>
 
-            {/* Delete dialog */}
-            <AlertDialog open={state.deleteDialogOpen} onOpenChange={(open) => dispatch({ type: 'SET_DELETE_DIALOG', payload: { open, chat: open ? state.chatToDelete : null } })}>
+            {/* Dialogue de suppression */}
+            <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
                 <AlertDialogContent className="sm:max-w-md">
                     <AlertDialogHeader>
                         <AlertDialogTitle className="flex items-center gap-2">
@@ -467,7 +1321,10 @@ function CareerAdvisorInner({ auth, userInfo }: Omit<PageProps, 'chatHistories'>
                     </AlertDialogHeader>
                     <AlertDialogFooter>
                         <AlertDialogCancel>{t('common.cancel')}</AlertDialogCancel>
-                        <AlertDialogAction onClick={handleDeleteChat} className="bg-red-500 hover:bg-red-600 text-white">
+                        <AlertDialogAction
+                            onClick={handleDeleteChat}
+                            className="bg-red-500 hover:bg-red-600 text-white"
+                        >
                             <Trash2 className="h-4 w-4 mr-2" />
                             {t('common.delete')}
                         </AlertDialogAction>
@@ -475,34 +1332,61 @@ function CareerAdvisorInner({ auth, userInfo }: Omit<PageProps, 'chatHistories'>
                 </AlertDialogContent>
             </AlertDialog>
 
-            {/* Artifact sidebar */}
+            {/* Sidebar d'artefacts */}
             <ArtifactSidebar
                 artifacts={currentArtifacts}
-                isOpen={state.artifactSidebarOpen}
-                onClose={() => dispatch({ type: 'SET_ARTIFACT_SIDEBAR', payload: false })}
-                serviceId={state.selectedService.id}
+                isOpen={artifactSidebarOpen}
+                onClose={() => setArtifactSidebarOpen(false)}
+                serviceId={selectedService.id}
                 messageContent={currentArtifactContent}
             />
 
+            {/* Nouveau sidebar mobile complet */}
+            <MobileSidebarComplete />
+
+            {/* Styles supplémentaires */}
             <style>{`
-                .hide-scrollbar { scrollbar-width: none; -ms-overflow-style: none; }
-                .hide-scrollbar::-webkit-scrollbar { display: none; }
-                @media (max-width: 768px) { .mobile-optimized { font-size: 16px; } }
+                .hide-scrollbar {
+                    scrollbar-width: none;
+                    -ms-overflow-style: none;
+                }
+                .hide-scrollbar::-webkit-scrollbar {
+                    display: none;
+                }
+                
+                /* Animations fluides */
+                .smooth-transition {
+                    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+                }
+                
+                /* Focus amélioré */
+                .focus-ring:focus-visible {
+                    outline: 2px solid #f59e0b;
+                    outline-offset: 2px;
+                }
+                
+                /* Hover subtil */
+                .hover-lift:hover {
+                    transform: translateY(-1px);
+                    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+                }
+                
+                /* Mobile optimisé */
+                @media (max-width: 768px) {
+                    .mobile-optimized {
+                        font-size: 16px; /* Évite le zoom iOS */
+                    }
+                }
+                
+                /* Gradients améliorés */
+                .gradient-amber-purple {
+                    background: linear-gradient(135deg, #f59e0b 0%, #8b5cf6 100%);
+                }
+                
+                .gradient-amber-purple-soft {
+                    background: linear-gradient(135deg, #fef3c7 0%, #ede9fe 100%);
+                }
             `}</style>
         </AuthenticatedLayout>
-    );
-}
-
-export default function EnhancedCareerAdvisor({ auth, userInfo, chatHistories }: PageProps) {
-    const { i18n } = useTranslation();
-
-    return (
-        <CareerAdvisorProvider
-            initialBalance={auth.user.wallet_balance}
-            initialChats={chatHistories || []}
-            initialLanguage={i18n.language || 'fr'}
-        >
-            <CareerAdvisorInner auth={auth} userInfo={userInfo} />
-        </CareerAdvisorProvider>
     );
 }

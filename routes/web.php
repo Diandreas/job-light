@@ -33,14 +33,6 @@ use App\Http\Controllers\{AddressController,
     Admin\AnalyticsController,
     Admin\AuditLogController,
     Admin\CompanyManagementController};
-
-use App\Http\Controllers\CareerAdvisor\ChatController;
-use App\Http\Controllers\CareerAdvisor\ExportController as CareerExportController;
-use App\Http\Controllers\CareerAdvisor\CVAnalysisController;
-use App\Http\Controllers\CareerAdvisor\ScoringController;
-use App\Http\Controllers\CareerAdvisor\CoverLetterController;
-use App\Http\Controllers\CareerAdvisor\CVController;
-use App\Http\Controllers\CareerAdvisor\RoadmapController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -234,49 +226,13 @@ Route::get('/payment', [PaymentController::class, 'index'])->name('payment.index
 Route::get('/pricing', [PaymentController::class, 'index'])->name('pricing');
 
 Route::post('/api/paypal/capture-payment', [PayPalController::class, 'capturePayment'])->middleware(['auth']);
-Route::middleware(['auth'])->prefix('career-advisor')->group(function () {
-    // Main page
-    Route::get('/', [ChatController::class, 'index'])->name('career-advisor.index');
-
-    // Chat endpoints
-    Route::post('/chat', [ChatController::class, 'send'])->name('career-advisor.chat');
-    Route::post('/chat/stream', [ChatController::class, 'stream'])->name('career-advisor.chat.stream');
-
-    // Chat history CRUD
-    Route::get('/chats', [ChatHistoryController::class, 'index'])->name('career-advisor.chats');
-    Route::get('/chats/{contextId}', [ChatHistoryController::class, 'show'])->name('career-advisor.chat.show');
-    Route::delete('/chats/{contextId}', [ChatHistoryController::class, 'destroy'])->name('career-advisor.destroy');
-
-    // CV Analysis
-    Route::post('/analyze-cv', [CVAnalysisController::class, 'analyze'])->name('career-advisor.analyze-cv');
-
-    // Local scoring (free, deterministic, instant)
-    Route::post('/score/ats', [ScoringController::class, 'ats'])->name('career-advisor.score.ats');
-    Route::post('/score/interview', [ScoringController::class, 'interview'])->name('career-advisor.score.interview');
-    Route::post('/score/cover-letter', [ScoringController::class, 'coverLetter'])->name('career-advisor.score.cover-letter');
-
-    // Export
-    Route::post('/export', [CareerExportController::class, 'export'])->name('career-advisor.export');
-    Route::post('/export-pptx', [CareerExportController::class, 'exportPptx'])->name('career-advisor.export-pptx');
-    Route::get('/export-direct', [CareerExportController::class, 'exportDirect'])->name('career-advisor.export-direct');
-    Route::get('/print-direct', [CareerExportController::class, 'printDirect'])->name('career-advisor.print-direct');
-
-    // Cover Letter Module
-    Route::get('/cover-letter', [CoverLetterController::class, 'index'])->name('career-advisor.cover-letter');
-    Route::post('/cover-letter/analyze', [CoverLetterController::class, 'analyze'])->name('career-advisor.cover-letter.analyze');
-    Route::post('/cover-letter/suggest', [CoverLetterController::class, 'suggest'])->name('career-advisor.cover-letter.suggest');
-    Route::post('/cover-letter/generate', [CoverLetterController::class, 'generate'])->name('career-advisor.cover-letter.generate');
-
-    // CV Module
-    Route::get('/cv-heatmap', [CVController::class, 'heatmap'])->name('career-advisor.cv-heatmap');
-    Route::post('/cv/analyze-section', [CVController::class, 'analyzeSection'])->name('career-advisor.cv.analyze-section');
-    Route::post('/cv/improve-section', [CVController::class, 'improveSection'])->name('career-advisor.cv.improve-section');
-    Route::get('/cv/benchmark', [CVController::class, 'benchmark'])->name('career-advisor.cv.benchmark');
-
-    // Roadmap Module
-    Route::get('/roadmap', [RoadmapController::class, 'index'])->name('career-advisor.roadmap');
-    Route::post('/roadmap/generate', [RoadmapController::class, 'generate'])->name('career-advisor.roadmap.generate');
-    Route::get('/roadmap/analytics', [RoadmapController::class, 'analytics'])->name('career-advisor.roadmap.analytics');
+Route::prefix('career-advisor')->group(function () {
+    Route::get('/', [CareerAdvisorController::class, 'index'])->name('career-advisor.index');
+    Route::get('/chats', [CareerAdvisorController::class, 'getUserChats'])->name('career-advisor.chats');
+    Route::get('/chats/{contextId}', [CareerAdvisorController::class, 'show'])->name('career-advisor.chat.show');
+    Route::post('/chat', [CareerAdvisorController::class, 'chat'])->name('career-advisor.chat');
+    Route::post('/export', [CareerAdvisorController::class, 'export'])->name('career-advisor.export');
+    Route::delete('/chats/{contextId}', [CareerAdvisorController::class, 'destroyChat'])->name('career-advisor.destroy');
 });
     Route::get('/cv/{id}/download', [CvInfosController::class, 'downloadPdf'])->name('cv.download');
 
@@ -316,6 +272,8 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/api/cv/update-field', [CvInfosController::class, 'updateField'])->name('cv.updateField');
     Route::post('/api/cv/rephrase', [CvInfosController::class, 'rephraseContent'])->name('cv.rephrase');
 
+    Route::post('/career-advisor/export', [CareerAdvisorController::class, 'export'])
+        ->name('career-advisor.export');
     Route::post('/api/process-question-cost', [PaymentController::class, 'processQuestionCost']);
     Route::get('/api/check-download-status/{modelId}', [PaymentController::class, 'checkDownloadStatus']);
     Route::post('/api/update-wallet', [PaymentController::class, 'updateWallet']);
@@ -348,6 +306,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::delete('/experiences/{experience}/attachment', [ExperienceController::class, 'deleteAttachment'])
         ->name('experiences.attachment.delete');
 
+
+    Route::get('/career-advisor', [CareerAdvisorController::class, 'index'])->name('career-advisor.index');
+    Route::post('/career-advisor/advice', [CareerAdvisorController::class, 'getAdvice'])->name('career-advisor.advice');
 
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
@@ -482,6 +443,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
         // Le reste de vos routes authentifiées...
 //    });
+    // Dans le groupe career-advisor
+    Route::post('/export-pptx', [CareerAdvisorController::class, 'exportPptx'])->name('career-advisor.export-pptx');
+
     // Languages routes
     Route::get('/user-languages', [UserlanguageController::class, 'index'])->name('user-languages.index');
     Route::get('/user-languages/create', [UserlanguageController::class, 'create'])->name('user-languages.create');
@@ -496,7 +460,9 @@ Route::get('auth/linkedin/callback', [App\Http\Controllers\LinkedinController::c
 // Anciennes routes Socialite (à conserver temporairement pour la transition)
 Route::get('auth/{provider}', [App\Http\Controllers\SocialAuthController::class, 'redirectToProvider'])->name('social.login');
 Route::get('auth/{provider}/callback', [App\Http\Controllers\SocialAuthController::class, 'handleProviderCallback'])->name('social.callback');
-// Endpoints compatibles Median
+// Nouveaux endpoints compatibles Median
+Route::get('/career-advisor/export-direct', [CareerAdvisorController::class, 'exportDirect']);
+Route::get('/career-advisor/print-direct', [CareerAdvisorController::class, 'printDirect']);
 Route::get('/cv/download-direct/{id}', [CvInfosController::class, 'downloadPdfDirect']);
 Route::get('/cv/preview-print/{id}', [CvInfosController::class, 'previewPrint']);
 // Route de test pour vérifier le schéma de la base de données

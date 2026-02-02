@@ -12,10 +12,11 @@ import {
 } from "@/Components/ui/tooltip";
 import {
     Brain, FileText, MessageSquare, PenTool, Presentation,
-    ArrowRight, Sparkles, Star, Zap, Target, Info
+    ArrowRight, Sparkles, Star, Zap, Target, Info, Map
 } from 'lucide-react';
+import { router } from '@inertiajs/react';
 
-// Import des interfaces spécialisées
+// Import des interfaces spécialisées (legacy - for backward compatibility)
 import CareerAdviceWizard from './CareerAdviceWizard';
 import CoverLetterGenerator from './CoverLetterGenerator';
 import ResumeAnalyzer from './ResumeAnalyzer';
@@ -42,64 +43,68 @@ export default function ServiceSelector({ userInfo, onServiceSubmit, isLoading, 
     // Configuration des services avec traductions
     const ENHANCED_SERVICES = [
         {
-            id: 'career-advice',
-            icon: Brain,
-            title: t('services.career_advice.enhanced_title') || 'Conseil de Carrière Personnalisé',
-            description: t('services.career_advice.enhanced_description') || 'Assistant intelligent qui analyse votre profil et vos objectifs pour créer un plan de carrière sur mesure',
-            cost: 3,
-            color: 'amber',
-            features: [
-                t('services.career_advice.features.profile_analysis') || 'Analyse de profil',
-                t('services.career_advice.features.career_plan') || 'Plan de carrière',
-                t('services.career_advice.features.recommendations') || 'Recommandations',
-                t('services.career_advice.features.goal_tracking') || 'Suivi objectifs'
-            ],
-            component: CareerAdviceWizard
-        },
-        {
             id: 'cover-letter',
             icon: FileText,
-            title: t('services.cover_letter.enhanced_title') || 'Générateur de Lettre de Motivation',
-            description: t('services.cover_letter.enhanced_description') || 'Créez des lettres personnalisées et optimisées ATS en analysant automatiquement les offres d\'emploi',
+            title: t('services.cover_letter.enhanced_title') || 'Lettre de Motivation',
+            description: t('services.cover_letter.enhanced_description') || 'Éditeur immersif avec preview live, score ATS temps réel et suggestions IA',
             cost: 5,
             color: 'purple',
             features: [
-                t('services.cover_letter.features.job_analysis') || 'Analyse d\'offre',
-                t('services.cover_letter.features.ats_optimization') || 'Optimisation ATS',
-                t('services.cover_letter.features.personalization') || 'Personnalisation',
-                t('services.cover_letter.features.multiple_versions') || 'Multiple versions'
+                'Split-screen editor',
+                'ATS scoring live',
+                'AI suggestions',
+                'Export PDF/DOCX'
             ],
-            component: CoverLetterGenerator
+            route: '/career-advisor/cover-letter',
+            immersive: true,
         },
         {
             id: 'resume-review',
             icon: PenTool,
-            title: t('services.resume_review.enhanced_title') || 'Analyseur de CV Avancé',
-            description: t('services.resume_review.enhanced_description') || 'Audit complet avec scoring détaillé, recommandations visuelles et comparaison sectorielle',
+            title: t('services.resume_review.enhanced_title') || 'Analyse CV',
+            description: t('services.resume_review.enhanced_description') || 'Heatmap interactive avec drill-down par section et amélioration IA',
             cost: 4,
-            color: 'amber',
+            color: 'blue',
             features: [
-                t('services.resume_review.features.detailed_score') || 'Score détaillé',
-                t('services.resume_review.features.heatmap') || 'Heatmap',
-                t('services.resume_review.features.benchmarking') || 'Benchmarking',
-                t('services.resume_review.features.recommendations') || 'Recommandations'
+                'Heatmap interactive',
+                'Section editor',
+                'AI improvement',
+                'Benchmarking'
             ],
-            component: ResumeAnalyzer
+            route: '/career-advisor/cv-heatmap',
+            immersive: true,
         },
         {
             id: 'interview-prep',
             icon: MessageSquare,
-            title: t('services.interview_prep.enhanced_title') || 'Simulateur d\'Entretien Immersif',
-            description: t('services.interview_prep.enhanced_description') || 'Simulations réalistes avec questions adaptées au secteur et feedback détaillé de performance',
+            title: t('services.interview_prep.enhanced_title') || 'Simulation Entretien',
+            description: t('services.interview_prep.enhanced_description') || 'Enregistrement vocal/vidéo avec scoring STAR en temps réel',
             cost: 5,
-            color: 'purple',
+            color: 'green',
             features: [
-                t('services.interview_prep.features.realistic_simulation') || 'Simulation réaliste',
-                t('services.interview_prep.features.sector_questions') || 'Questions sectorielles',
-                t('services.interview_prep.features.timer') || 'Timer',
-                t('services.interview_prep.features.detailed_feedback') || 'Feedback détaillé'
+                'Voice recording',
+                'STAR detection',
+                'Live feedback',
+                'Detailed report'
             ],
-            component: InterviewSimulator
+            component: InterviewSimulator,
+            legacy: true,
+        },
+        {
+            id: 'career-roadmap',
+            icon: Map,
+            title: 'Roadmap Carrière',
+            description: 'Timeline interactive avec milestones trackables et génération IA streamée',
+            cost: 3,
+            color: 'amber',
+            features: [
+                'AI generation',
+                'Interactive timeline',
+                'Progress tracking',
+                'Analytics'
+            ],
+            route: '/career-advisor/roadmap',
+            immersive: true,
         }
     ];
 
@@ -115,16 +120,25 @@ export default function ServiceSelector({ userInfo, onServiceSubmit, isLoading, 
             return;
         }
 
-        // Faire disparaître la mascotte du haut
-        onServiceSelect?.();
+        // If service has immersive route, navigate directly
+        if (service.immersive && service.route) {
+            router.visit(service.route);
+            return;
+        }
 
-        // Animation de la mascotte vers l'icône du service
-        setMascotPosition({ x: 0, y: 0, show: false });
+        // Legacy: use old component-based interface
+        if (service.legacy && service.component) {
+            // Faire disparaître la mascotte du haut
+            onServiceSelect?.();
 
-        setTimeout(() => {
-            setSelectedService(serviceId);
-            setShowServiceInterface(true);
-        }, 500);
+            // Animation de la mascotte vers l'icône du service
+            setMascotPosition({ x: 0, y: 0, show: false });
+
+            setTimeout(() => {
+                setSelectedService(serviceId);
+                setShowServiceInterface(true);
+            }, 500);
+        }
     };
 
     const handleServiceSubmit = (data: any) => {
@@ -308,14 +322,14 @@ export default function ServiceSelector({ userInfo, onServiceSubmit, isLoading, 
 
                                         <Button
                                             onClick={() => handleServiceSelect(service.id)}
-                                            disabled={!canAfford || !service.component}
+                                            disabled={!canAfford || (!service.immersive && !service.component)}
                                             size="sm"
-                                            className={`w-full text-xs ${service.component && canAfford
+                                            className={`w-full text-xs ${(service.immersive || service.component) && canAfford
                                                 ? 'bg-gradient-to-r from-amber-500 to-purple-500 hover:from-amber-600 hover:to-purple-600'
                                                 : 'bg-gray-400'
                                                 }`}
                                         >
-                                            {!service.component ? (
+                                            {!service.immersive && !service.component ? (
                                                 <>
                                                     <Zap className="w-3 h-3 mr-1" />
                                                     {t('common.comingSoon') || 'Bientôt'}
@@ -326,7 +340,8 @@ export default function ServiceSelector({ userInfo, onServiceSubmit, isLoading, 
                                                 </>
                                             ) : (
                                                 <>
-                                                    <Target className="w-3 h-3 mr-1" />
+                                                    {service.immersive && <Sparkles className="w-3 h-3 mr-1" />}
+                                                    {!service.immersive && <Target className="w-3 h-3 mr-1" />}
                                                     {t('common.start') || 'Commencer'}
                                                 </>
                                             )}

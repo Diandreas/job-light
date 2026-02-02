@@ -22,7 +22,11 @@
       "mcp__chrome-devtools__navigate_page",
       "mcp__chrome-devtools__take_snapshot",
       "mcp__chrome-devtools__click",
-      "WebFetch(domain:guidy.space)"
+      "WebFetch(domain:guidy.space)",
+      "Bash(ls -la \"D:\\\\project\\\\job-light\\\\routes\"\" 2>/dev/null || dir \"D:projectjob-lightroutes\"\")",
+      "Bash(git -C \"D:\\\\project\\\\job-light\" log --oneline -20)",
+      "Bash(php:*)",
+      "Bash(php -l:*)"
     ],
     "deny": [],
     "ask": []

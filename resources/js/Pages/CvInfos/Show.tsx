@@ -66,7 +66,7 @@ export default function Show({ auth, cvInformation, selectedCvModel, cvModels })
                 cv_model_id: modelId
             });
 
-            toast({ title: "Modèle changé", description: "Le nouveau design a été appliqué." });
+            toast({ title: t('common.success'), description: "Le nouveau design a été appliqué." });
 
             // On ne recharge plus la page, tout est géré localement
         } catch (error) {
@@ -81,7 +81,7 @@ export default function Show({ auth, cvInformation, selectedCvModel, cvModels })
         setCurrentColor(newColor);
         setHasCustomColor(true);
         cvPreviewRef.current?.reload(); // Reload CV with new color
-        toast({ title: '🎨 Couleur appliquée', description: 'Prévisualisation mise à jour' });
+        toast({ title: t('common.success'), description: 'Prévisualisation mise à jour' });
     };
 
     const handleColorReset = async () => {
@@ -91,7 +91,7 @@ export default function Show({ auth, cvInformation, selectedCvModel, cvModels })
                 setCurrentColor('#3498db');
                 setHasCustomColor(false);
                 cvPreviewRef.current?.reload(); // Reload CV with default color
-                toast({ title: '🔄 Couleur réinitialisée', description: 'La couleur par défaut a été restaurée' });
+                toast({ title: t('common.success'), description: 'La couleur par défaut a été restaurée' });
             }
         } catch (error) {
             toast({ title: 'Erreur', description: 'Impossible de réinitialiser la couleur', variant: 'destructive' });
@@ -138,7 +138,7 @@ export default function Show({ auth, cvInformation, selectedCvModel, cvModels })
             document.body.removeChild(link);
 
             toast({
-                title: '✅ CV téléchargé',
+                title: t('common.success'),
                 description: 'Votre CV a été généré et téléchargé avec succès.',
             });
         } catch (error) {
@@ -164,7 +164,7 @@ export default function Show({ auth, cvInformation, selectedCvModel, cvModels })
                         <Star className="w-16 h-16 mx-auto text-amber-500" />
                         <p className="text-lg text-gray-600">{t('cv_preview.no_model.message')}</p>
                         <Link href={route('userCvModels.index')}>
-                            <Button className="bg-gradient-to-r from-amber-500 to-purple-500">
+                            <Button className="bg-amber-500 hover:bg-amber-600 text-white border-0 shadow-lg shadow-amber-500/20">
                                 <Star className="w-4 h-4 mr-2" />
                                 {t('cv_preview.no_model.action')}
                             </Button>
@@ -244,7 +244,7 @@ export default function Show({ auth, cvInformation, selectedCvModel, cvModels })
                                 onClick={handleDownload}
                                 disabled={isDownloading || (!canAccessFeatures && !hasDownloaded)}
                                 size="sm"
-                                className="bg-gradient-to-r from-amber-500 to-purple-500 text-white shadow-md hover:shadow-lg transition-all"
+                                className="bg-amber-500 hover:bg-amber-600 dark:bg-amber-500 dark:hover:bg-amber-400 text-white border-0 shadow-md hover:shadow-lg transition-all shadow-amber-500/20"
                             >
                                 {isDownloading ? (
                                     <Loader2 className="w-4 h-4 animate-spin" />

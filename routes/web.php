@@ -346,7 +346,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
     // CV Information
-    Route::resource('cv-infos', CvInfosController::class);
+    Route::get('cv-infos/show', [CvInfosController::class, 'show'])->name('cv-infos.show');
+    Route::resource('cv-infos', CvInfosController::class)->except(['show']);
+    
     Route::get('/cv-preview/{id}', [CvInfosController::class, 'previewCv'])
         ->name('cv.preview')
         ->middleware(['auth', 'check.print']);

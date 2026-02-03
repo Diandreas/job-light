@@ -103,8 +103,8 @@ const CompactHeader = ({
             <div className="flex items-center justify-between">
                 <div className="flex items-center gap-4 min-w-0">
                     <div className="flex items-center gap-3">
-                        <div className="w-9 h-9 bg-neutral-900 dark:bg-neutral-50 rounded-xl flex items-center justify-center">
-                            <selectedService.icon className="h-5 w-5 text-white dark:text-neutral-900" />
+                        <div className="w-9 h-9 bg-amber-500 rounded-xl flex items-center justify-center shadow-lg shadow-amber-500/10">
+                            <selectedService.icon className="h-5 w-5 text-white" />
                         </div>
                         <div className="min-w-0">
                             <h3 className="font-semibold text-neutral-900 dark:text-neutral-50 text-base truncate tracking-tight">
@@ -154,7 +154,7 @@ const CompactHeader = ({
                         >
                             <Sparkles className="h-4 w-4 mr-1.5" />
                             <span className="text-sm">Artefacts</span>
-                            <Badge variant="secondary" className="ml-2 h-5 px-2 text-xs bg-neutral-900 dark:bg-neutral-50 text-white dark:text-neutral-900">
+                            <Badge variant="secondary" className="ml-2 h-5 px-2 text-xs bg-amber-500 text-white border-amber-400">
                                 {artifactCount}
                             </Badge>
                         </Button>
@@ -729,14 +729,14 @@ export default function EnhancedCareerAdvisor({ auth, userInfo, chatHistories })
                 {/* Overlay */}
                 {isMobileSidebarOpen && (
                     <div
-                        className="fixed inset-0 bg-black bg-opacity-50 z-40 md:hidden"
+                        className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[90] md:hidden"
                         onClick={() => setIsMobileSidebarOpen(false)}
                     />
                 )}
 
                 {/* Sidebar */}
                 <div className={`
-                    fixed top-0 left-0 h-full w-80 bg-white dark:bg-gray-900 transform transition-transform duration-300 ease-in-out z-50 md:hidden
+                    fixed top-0 left-0 h-full w-80 bg-white dark:bg-gray-900 transform transition-transform duration-300 ease-in-out z-[100] md:hidden
                     ${isMobileSidebarOpen ? 'translate-x-0' : '-translate-x-full'}
                 `}>
                     <LuxurySidebar

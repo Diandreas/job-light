@@ -57,9 +57,9 @@ export const LuxuryCard: React.FC<CardProps> = ({
 
   const hoverAnimation = hover
     ? {
-        whileHover: { y: -4, scale: 1.01 },
-        transition: { duration: 0.3, ease: luxuryTheme.animations.easings.elegant },
-      }
+      whileHover: { y: -4, scale: 1.01 },
+      transition: { duration: 0.3, ease: luxuryTheme.animations.easings.elegant },
+    }
     : {};
 
   return (
@@ -113,7 +113,7 @@ export const CardHeader: React.FC<{
   return (
     <div className={`flex items-start justify-between mb-6 ${className}`}>
       <div>
-        <h3 className="text-2xl font-semibold text-neutral-900 dark:text-neutral-50 tracking-tight">
+        <h3 className="text-2xl font-semibold text-neutral-900 dark:text-neutral-50 tracking-tight group-hover:text-amber-500 transition-colors">
           {title}
         </h3>
         {subtitle && (
@@ -149,7 +149,7 @@ export const CardFooter: React.FC<{
   className?: string;
 }> = ({ children, className = '' }) => {
   return (
-    <div className={`mt-6 pt-6 border-t border-neutral-200 dark:border-neutral-800 flex items-center gap-3 ${className}`}>
+    <div className={`mt-6 pt-6 border-t border-neutral-200 dark:border-neutral-800 flex items-center gap-3 transition-colors group-hover:border-amber-500/20 ${className}`}>
       {children}
     </div>
   );

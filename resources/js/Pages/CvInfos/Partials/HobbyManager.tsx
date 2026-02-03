@@ -138,12 +138,12 @@ export default function HobbyInput({ auth, initialUserHobbies, availableHobbies,
                                 initial={{ opacity: 0, scale: 0.8 }}
                                 animate={{ opacity: 1, scale: 1 }}
                                 exit={{ opacity: 0, scale: 0.8 }}
-                                className="bg-purple-500 text-white px-2.5 py-1 rounded-full text-xs flex items-center gap-1.5 hover:bg-purple-600 transition-colors"
+                                className="bg-amber-500 text-white px-2.5 py-1 rounded-full text-xs flex items-center gap-1.5 hover:bg-amber-600 transition-colors shadow-sm shadow-amber-500/20"
                             >
                                 <span>{getLocalizedName(hobby, i18n.language)}</span>
                                 <button
                                     onClick={() => removeHobby(hobby.id)}
-                                    className="hover:bg-teal-600 rounded-full p-0.5 transition-colors"
+                                    className="hover:bg-amber-600 rounded-full p-0.5 transition-colors"
                                     disabled={loading}
                                 >
                                     <X className="w-3 h-3" />
@@ -158,7 +158,7 @@ export default function HobbyInput({ auth, initialUserHobbies, availableHobbies,
                     <div className="relative flex-1">
                         <input
                             type="text"
-                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-sm focus:ring-1 focus:ring-purple-500 focus:border-purple-500 dark:bg-gray-800 dark:text-white"
+                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-sm focus:ring-1 focus:ring-amber-500 focus:border-amber-500 dark:bg-gray-800 dark:text-white"
                             placeholder={t('cvInterface.hobbies.placeholder')}
                             value={inputValue}
                             onChange={(e) => setInputValue(e.target.value)}
@@ -184,7 +184,7 @@ export default function HobbyInput({ auth, initialUserHobbies, availableHobbies,
                     <button
                         onClick={() => addHobby()}
                         disabled={!inputValue.trim() || loading || hobbies.length >= 6}
-                        className="bg-purple-500 hover:bg-purple-600 text-white px-3 py-2 rounded-md text-sm disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1.5"
+                        className="bg-amber-500 hover:bg-amber-600 text-white px-3 py-2 rounded-md text-sm disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1.5 shadow-lg shadow-amber-500/20"
                     >
                         {loading ? (
                             <svg className="animate-spin h-3 w-3" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">

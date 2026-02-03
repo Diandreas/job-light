@@ -81,7 +81,7 @@ export const LuxuryChatInput: React.FC<LuxuryChatInputProps> = ({
                     relative rounded-2xl border transition-all duration-400
                     bg-white dark:bg-neutral-900
                     ${isFocused
-                        ? 'border-neutral-400 dark:border-neutral-600 shadow-lg'
+                        ? 'border-amber-400 dark:border-amber-500 shadow-lg shadow-amber-500/5'
                         : 'border-neutral-200 dark:border-neutral-800 shadow-sm'
                     }
                     ${disabled ? 'opacity-50 cursor-not-allowed' : ''}
@@ -127,10 +127,10 @@ export const LuxuryChatInput: React.FC<LuxuryChatInputProps> = ({
                                 animate={{ width: `${Math.min(characterPercentage, 100)}%` }}
                                 transition={{ duration: 0.2 }}
                                 className={`h-full transition-colors duration-300 ${characterPercentage > 90
-                                        ? 'bg-red-500'
-                                        : characterPercentage > 75
-                                            ? 'bg-yellow-500'
-                                            : 'bg-neutral-400 dark:bg-neutral-600'
+                                    ? 'bg-red-500'
+                                    : characterPercentage > 75
+                                        ? 'bg-yellow-500'
+                                        : 'bg-neutral-400 dark:bg-neutral-600'
                                     }`}
                             />
                         </motion.div>
@@ -183,7 +183,7 @@ export const LuxuryChatInput: React.FC<LuxuryChatInputProps> = ({
                             className={`
                                 p-2.5 rounded-xl transition-all duration-400
                                 ${message.trim() && !disabled
-                                    ? 'bg-neutral-900 dark:bg-neutral-50 text-white dark:text-neutral-900 shadow-md hover:shadow-lg'
+                                    ? 'bg-amber-500 text-white shadow-md hover:shadow-lg hover:bg-amber-600'
                                     : 'bg-neutral-100 dark:bg-neutral-800 text-neutral-400 dark:text-neutral-600 cursor-not-allowed'
                                 }
                             `}

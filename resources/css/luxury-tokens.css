@@ -1,0 +1,48 @@
+:root {
+    /* Luxury Gold Palette */
+    --luxury-gold-50: #FFFBEB;
+    --luxury-gold-100: #FEF3C7;
+    --luxury-gold-200: #FDE68A;
+    --luxury-gold-300: #FCD34D;
+    --luxury-gold-400: #FBBF24;
+    --luxury-gold-500: #F59E0B;
+    --luxury-gold-600: #D97706;
+    --luxury-gold-700: #B45309;
+    --luxury-gold-800: #92400E;
+    --luxury-gold-900: #78350F;
+
+    /* Luxury Neutral Palette (Warm Grays) */
+    --luxury-neutral-50: #FAFAF9;
+    --luxury-neutral-100: #F5F5F4;
+    --luxury-neutral-200: #E7E5E4;
+    --luxury-neutral-300: #D6D3D1;
+    --luxury-neutral-400: #A8A29E;
+    --luxury-neutral-500: #78716C;
+    --luxury-neutral-600: #57534E;
+    --luxury-neutral-700: #44403C;
+    --luxury-neutral-800: #292524;
+    --luxury-neutral-900: #1C1917;
+    --luxury-neutral-950: #0C0A09;
+
+    /* Semantic Colors */
+    --luxury-success: #059669;
+    --luxury-error: #DC2626;
+    --luxury-warning: #D97706;
+    --luxury-info: #0891B2;
+
+    /* Radius */
+    --luxury-radius-sm: 0.375rem;
+    --luxury-radius-md: 0.5rem;
+    --luxury-radius-lg: 0.75rem;
+    --luxury-radius-xl: 1rem;
+    --luxury-radius-2xl: 1.5rem;
+    --luxury-radius-full: 9999px;
+
+    /* Animations */
+    --luxury-ease-default: cubic-bezier(0.4, 0, 0.2, 1);
+    --luxury-ease-elegant: cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+.dark {
+    /* Dark Mode Overrides if needed, though usually handled by utility classes mapping to these vars */
+}

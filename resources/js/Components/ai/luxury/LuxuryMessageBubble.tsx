@@ -309,7 +309,7 @@ export const LuxuryMessageBubble: React.FC<LuxuryMessageBubbleProps> = ({ messag
 
     // Design monochrome élégant
     const bubbleClass = isUser
-        ? 'bg-neutral-900 dark:bg-neutral-50 text-white dark:text-neutral-900 shadow-md'
+        ? 'bg-amber-500 text-white shadow-md border-amber-500'
         : 'bg-white dark:bg-neutral-900 shadow-sm border-neutral-200 dark:border-neutral-800 text-neutral-900 dark:text-neutral-50';
 
     // Animation de réflexion minimaliste
@@ -333,7 +333,7 @@ export const LuxuryMessageBubble: React.FC<LuxuryMessageBubbleProps> = ({ messag
                 {isUser ? (
                     <>
                         <AvatarImage src="/user-avatar.png" alt="User" />
-                        <AvatarFallback className="bg-neutral-900 dark:bg-neutral-50 text-white dark:text-neutral-900">
+                        <AvatarFallback className="bg-amber-500 text-white">
                             <User className="h-4 w-4" />
                         </AvatarFallback>
                     </>
@@ -425,7 +425,7 @@ export const LuxuryMessageBubble: React.FC<LuxuryMessageBubbleProps> = ({ messag
                                         />
                                         : <code
                                             className={`block p-4 rounded-xl my-3 font-mono text-sm leading-relaxed ${isUser
-                                                ? 'bg-neutral-800 dark:bg-neutral-200 text-neutral-100 dark:text-neutral-800'
+                                                ? 'bg-amber-600 dark:bg-amber-400 text-white'
                                                 : 'bg-neutral-50 dark:bg-neutral-950 text-neutral-900 dark:text-neutral-100 border border-neutral-200 dark:border-neutral-800'
                                                 }`}
                                             {...props}
@@ -541,8 +541,8 @@ export const LuxuryMessageBubble: React.FC<LuxuryMessageBubbleProps> = ({ messag
                             className="mt-5 px-5 py-4 rounded-xl bg-neutral-50 dark:bg-neutral-950 border border-neutral-200 dark:border-neutral-800"
                         >
                             <div className="flex items-center gap-4">
-                                <div className="p-2.5 rounded-xl bg-neutral-900 dark:bg-neutral-50">
-                                    <Sparkles className="w-4 h-4 text-white dark:text-neutral-900" />
+                                <div className="p-2.5 rounded-xl bg-amber-500">
+                                    <Sparkles className="w-4 h-4 text-white" />
                                 </div>
                                 <div className="flex-1">
                                     <div className="font-medium text-neutral-900 dark:text-neutral-50 text-sm mb-0.5">

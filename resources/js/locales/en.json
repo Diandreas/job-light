@@ -392,6 +392,7 @@
         "fr": "French"
     },
     "common": {
+        "color": "Color",
         "saving": "Saving...",
         "search": "Search",
         "loading": "Loading...",
@@ -697,12 +698,9 @@
             "change_model": "Change model",
             "edit_cv": "Edit CV"
         },
-        "change_model": "Change model",
-        "download_pdf": "Download PDF",
         "loading": "Loading...",
         "free": "Free",
         "tokens": "tokens",
-        "download_pdf": "Download PDF",
         "print": "Print",
         "printing": "Printing...",
         "reset": "Reset",
@@ -710,13 +708,318 @@
     },
     "career_advisor": {
         "title": "AI Career Advisor",
+        "hero": {
+            "title": "Orchestrate Your Destiny",
+            "subtitle": "Unlock architectural precision in your professional journey with our suite of vector-driven career accelerators."
+        },
+        "tokens": "Tokens",
+        "initiate_protocol": "Initiate Protocol",
         "header": {
             "balance": "Balance",
             "history": "History"
         },
+        "services": {
+            "cover_letter": {
+                "enhanced_title": "Cover Letter Genesis",
+                "enhanced_description": "Craft a bespoke professional narrative with AI precision."
+            },
+            "resume_review": {
+                "enhanced_title": "CV Heatmap Insight",
+                "enhanced_description": "Visualize your resume's impact with orbital vector analysis."
+            },
+            "interview_prep": {
+                "enhanced_title": "Vocal Interview Simulation",
+                "enhanced_description": "Master your delivery with real-time AI speech diagnostics."
+            },
+            "roadmap": {
+                "enhanced_title": "Strategic Career Roadmap",
+                "enhanced_description": "A comprehensive trajectory synthesis toward your goals."
+            }
+        },
         "coming_soon": {
             "badge": "Coming Soon",
             "available_from": "Available from {{date}}"
+        },
+        "common": {
+            "junior": "Junior",
+            "senior": "Senior",
+            "expert": "Expert",
+            "strategic": "Strategic",
+            "easy": "Beginner",
+            "medium": "Intermediate",
+            "hard": "Advanced",
+            "short": "Short (15-30m)",
+            "standard": "Standard (30-45m)",
+            "detailed": "Detailed (45-60m)",
+            "sections": {
+                "summary": "Professional Summary",
+                "experience": "Professional Experience",
+                "skills": "Skills & Technology",
+                "education": "Education",
+                "layout": "Layout & Formatting"
+            },
+            "tokens": "tokens"
+        },
+        "cover_letter": {
+            "wizard": {
+                "title": "Concierge",
+                "concierge_tag": "Luxury Concierge",
+                "stage": "Stage {{current}} of {{total}}",
+                "analysis": "Vector Analysis",
+                "steps": {
+                    "foundations": {
+                        "title": "Baseline",
+                        "subtitle": "Defining the core structural parameters of your application."
+                    },
+                    "intelligence": {
+                        "title": "Intelligence",
+                        "subtitle": "Synthesizing organizational context and mission alignment."
+                    },
+                    "vibe": {
+                        "title": "Vibe",
+                        "subtitle": "Calibrating the strategic resonance of your narrative."
+                    },
+                    "refinement": {
+                        "title": "Refinement",
+                        "subtitle": "Finalizing the exclusive nuances of your profile."
+                    }
+                },
+                "labels": {
+                    "company": "Target Organization",
+                    "job_title": "Position Architecture",
+                    "recipient": "Decision Maker",
+                    "context": "Strategic Context",
+                    "tone": "Strategic Tone",
+                    "expertise": "Priority Expertise",
+                    "nuances": "Exclusive Nuances"
+                },
+                "placeholders": {
+                    "company": "e.g. Goldman Sachs, Tesla, or LVMH",
+                    "job_title": "e.g. Creative Director or Strategic Lead",
+                    "recipient": "Hiring Committee",
+                    "description": "Paste the job description for deep vector analysis...",
+                    "skills": "React, Architecture, Governance...",
+                    "nuances_desc": "Identify specific achievements or narratives you wish to emphasize in your professional story.",
+                    "nuances_placeholder": "e.g. Orchestrated a $50M transition..."
+                },
+                "tones": {
+                    "professional": "Professional",
+                    "creative": "Creative",
+                    "confident": "Confident",
+                    "humble": "Humble"
+                },
+                "buttons": {
+                    "retrospective": "Retrospective",
+                    "evolution": "Evolution",
+                    "generate": "Generate Strategy"
+                }
+            },
+            "studio": {
+                "title": "Studio",
+                "ai_assistant": "AI Assistant",
+                "refine_with_ai": "Refine your signature letter with intelligent guidance.",
+                "target_role": "Target Role",
+                "styling_opts": "Styling Options",
+                "coach_assistance": "Coach Assistance",
+                "regenerate": "Regenerate strategy",
+                "elevate": "Elevate vocabulary",
+                "conciseness": "Increase conciseness",
+                "job_role_placeholder": "Job Role",
+                "org_placeholder": "Organization",
+                "untitled": "Untitled Narrative",
+                "autosaved": "Autosaved",
+                "export_pdf": "Export PDF Portfolio",
+                "generating": "Architecting your narrative...",
+                "generated": "Narrative fully architected",
+                "error": "Transmission error during architecture"
+            }
+        },
+        "cv_heatmap": {
+            "title": "CV Heatmap & Analysis",
+            "engine_subtitle": "CV Analysis Engine",
+            "main_title": "CV Resonance Heatmap",
+            "impact_score": "Impact Score",
+            "percentile": "Percentile Ranking: Top 30%",
+            "report_title": "Intelligence Report",
+            "assessment": "Global Assessment",
+            "optimization_path": "Optimization Path",
+            "apply_fixes": "Apply AI Fixes"
+        },
+        "interview": {
+            "setup": {
+                "title": "Interview Simulation",
+                "premium_coaching": "Premium Coaching",
+                "architecture": "Interview Architecture",
+                "context_step": "Contextual Background",
+                "target_role": "Target Role / Industry",
+                "company": "Company / Organization",
+                "tech_config": "Technical Configuration",
+                "type": "Interview Type",
+                "duration": "Planned Duration",
+                "difficulty": "Aggression Level",
+                "focus": "Specialized Focus",
+                "begin": "Begin Session",
+                "calibrating": "Calibrating AI Recruiter...",
+                "latency": "Latency",
+                "focus_areas": {
+                    "intro": "Personal Presentation",
+                    "motivation": "Job Motivation",
+                    "experience": "Past Experiences",
+                    "technical": "Technical Skills",
+                    "team": "Team Management",
+                    "problem_solving": "Problem Solving",
+                    "company": "Company Research",
+                    "salary": "Salary Negotiation",
+                    "hard_questions": "Difficult Questions",
+                    "projects": "Projects & Achievements",
+                    "weaknesses": "Weaknesses areas",
+                    "vision": "Career Vision"
+                },
+                "common_concerns": {
+                    "stress": "Stress Management",
+                    "experience": "Gap in experience",
+                    "sector_change": "Industry Shift",
+                    "inactivity": "Career Gap",
+                    "failure": "Professional Failure",
+                    "salary": "Salary Expectations",
+                    "trap_questions": "Trick Questions",
+                    "shyness": "Shyness",
+                    "overqualified": "Overqualification",
+                    "language": "Foreign Language"
+                }
+            },
+            "types": {
+                "hr": "HR Interview",
+                "hr_desc": "Motivation, culture, fit",
+                "technical": "Technical Interview",
+                "technical_desc": "Specialized skills",
+                "behavioral": "Behavioral Interview",
+                "behavioral_desc": "Past situations, STAR",
+                "case": "Case Study",
+                "case_desc": "Problem solving",
+                "panel": "Panel Interview",
+                "panel_desc": "Multiple interviewers",
+                "final": "Final Interview",
+                "final_desc": "Management, negotiation"
+            },
+            "session": {
+                "active": "Live Simulation Active",
+                "terminate": "Terminate Early",
+                "pause": "Pause Session",
+                "resume": "Resume Session",
+                "greeting": "Hello! Thank you for joining the interview today. Could you start by introducing yourself and telling me briefly about your background?",
+                "cognitive_engine": "Cognitive Engine",
+                "architecting": "Architecting response...",
+                "clarification": "Ask for Clarification",
+                "break": "Request Break",
+                "transcription": "Transcription",
+                "you": "You",
+                "advisor": "Advisor",
+                "listening": "Listening to your expertise...",
+                "active_status": "Active"
+            },
+            "report": {
+                "title": "Performance Intelligence",
+                "subtitle": "Performance Intelligence",
+                "post_analysis": "Post-Simulation Analysis",
+                "mastery_score": "Mastery Score",
+                "metric_breakdown": "Metric Breakdown",
+                "strategic_assets": "Strategic Assets",
+                "refinement_areas": "Refinement Areas",
+                "substance": "Substance Intelligence",
+                "new_expedition": "Initiate New Expedition",
+                "share": "Share",
+                "export": "Export PDF",
+                "resonance": "Coach Resonance",
+                "interrogatory": "Interrogatory",
+                "metrics": {
+                    "elocution": "Elocution",
+                    "structuring": "Structuring",
+                    "confidence": "Confidence",
+                    "technicality": "Technicality"
+                }
+            }
+        },
+        "roadmap": {
+            "generator": {
+                "title": "Career Architecture",
+                "engine": "Strategic Engine",
+                "vision_label": "Ultimate Career Vision",
+                "vision_desc": "Define your destination. Precision in your goal leads to excellence in your path.",
+                "position_label": "Current Positioning",
+                "horizon_label": "Temporal Horizon",
+                "finalization": "Strategy Finalization",
+                "finalization_desc": "System ready to architect your personalized career roadmap based on your unique profile.",
+                "architect": "Architect Roadmap",
+                "blueprint": "Expedition Blueprint",
+                "alternative": "Generate Alternative Strategy",
+                "quote": "\"Strategic planning is not thinking about future decisions, but about the future of current decisions.\"",
+                "architecting": "Architecting Strategy...",
+                "steps": {
+                    "goal": {
+                        "title": "Goal",
+                        "desc": "What you want to achieve"
+                    },
+                    "state": {
+                        "title": "Situation",
+                        "desc": "Where you are today"
+                    },
+                    "time": {
+                        "title": "Deadline",
+                        "desc": "Your temporal horizon"
+                    },
+                    "focus": {
+                        "title": "Focus",
+                        "desc": "Development priorities"
+                    }
+                },
+                "vision_placeholder": "e.g. Chief Technology Officer",
+                "position_placeholder": "e.g. Senior Backend Engineer",
+                "levels": {
+                    "junior": "Junior",
+                    "senior": "Senior",
+                    "expert": "Expert",
+                    "strategic": "Strategic"
+                },
+                "horizons": {
+                    "3_months": "3 Months",
+                    "6_months": "6 Months",
+                    "1_year": "1 Year",
+                    "2_years": "2 Years"
+                },
+                "master_strategy": "Master Strategy",
+                "phases": {
+                    "foundation": {
+                        "title": "Foundations & Upgrading",
+                        "desc": "Master the technical basics and familiarize yourself with the ecosystem.",
+                        "tasks": {
+                            "patterns": "Advanced patterns review",
+                            "audit": "Current skills audit",
+                            "env": "Environment setup"
+                        }
+                    },
+                    "specialization": {
+                        "title": "Specialization & Projects",
+                        "desc": "Practical application on real and complex use cases.",
+                        "tasks": {
+                            "mvp": "Full MVP development",
+                            "oss": "Open Source contribution",
+                            "perf": "Performance optimization"
+                        }
+                    },
+                    "acceleration": {
+                        "title": "Acceleration & Opportunities",
+                        "desc": "Finalization of the profile and highlighting expertise.",
+                        "tasks": {
+                            "interviews": "System interview preparation",
+                            "networking": "Strategic networking",
+                            "launch": "Career launch"
+                        }
+                    }
+                },
+                "return": "Return",
+                "continue": "Continue"
+            }
         },
         "messages": {
             "loading_error": "Error loading conversations",
@@ -753,6 +1056,24 @@
                 "export": {
                     "pdf": "Export to PDF",
                     "docx": "Export to DOCX"
+                },
+                "ai": {
+                    "improve_button": "Improve with AI",
+                    "choose_tone": "Choose tone:",
+                    "tone": {
+                        "professional": "👔 Professional",
+                        "concise": "⚡ Concise",
+                        "creative": "✨ Creative"
+                    },
+                    "success": {
+                        "title": "Reformulation successful",
+                        "desc": "The text has been improved by AI."
+                    },
+                    "error": {
+                        "too_short_title": "Text too short",
+                        "too_short_desc": "The text must contain at least 10 characters.",
+                        "generic": "Could not reformulate text at this moment."
+                    }
                 }
             }
         },
@@ -765,13 +1086,6 @@
             "balance": "Wallet Balance",
             "tokens": "Tokens Used",
             "questions": "Questions Remaining"
-        },
-        "services": {
-            "choose": "Choose a service",
-            "description": "Select the service that best fits your professional needs"
-        },
-        "common": {
-            "tokens": "tokens"
         },
         "sidebar": {
             "collapse": "Collapse",

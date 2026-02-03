@@ -167,12 +167,12 @@ export default function Authenticated({ user, header, children, hideHeaderOnMobi
             icon: Folder,
             active: route().current('cv-infos.index')
         },
-        {
-            name: 'Portfolio',
-            href: route('portfolio.index'),
-            icon: User,
-            active: route().current('portfolio.edit') || route().current('portfolio.index')
-        },
+        /* {
+                    name: 'Portfolio',
+                    href: route('portfolio.index'),
+                    icon: User,
+                    active: route().current('portfolio.edit') || route().current('portfolio.index')
+                }, */
         {
             name: t('menu.assistant'),
             href: route('career-advisor.index'),
@@ -629,13 +629,13 @@ export default function Authenticated({ user, header, children, hideHeaderOnMobi
                                         <Sparkles className="h-4 w-4 sm:h-5 sm:w-5 text-white" />
                                     </div>
                                     <span className="font-bold text-lg sm:text-xl text-gray-900 dark:text-white">
-                                        {isCareerAdvisorPage ? 'Guidy AI' : t('brand')}
+                                        {isCareerAdvisorPage ? (
+                                            <>
+                                                <span className="sm:hidden">Guidy</span>
+                                                <span className="hidden sm:inline">Guidy AI</span>
+                                            </>
+                                        ) : t('brand')}
                                     </span>
-                                    {isCareerAdvisorPage && (
-                                        <Badge variant="secondary" className="text-[10px] sm:text-xs px-1.5 py-0.5 bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300 border-0">
-                                            PRO
-                                        </Badge>
-                                    )}
                                 </Link>
                             </div>
 
@@ -718,7 +718,7 @@ export default function Authenticated({ user, header, children, hideHeaderOnMobi
                             }}
                             className="bg-white dark:bg-gray-800 px-3 py-2 rounded-lg shadow-md hover:shadow-lg transition-shadow border border-gray-200 dark:border-gray-600"
                         >
-                            <span className="text-gray-700 dark:text-gray-200 text-sm font-medium">Menu</span>
+                            <span className="text-gray-700 dark:text-gray-200 text-sm font-medium">{t('menu.title', 'Menu')}</span>
                         </button>
                     </div>
                 )}
@@ -736,11 +736,11 @@ export default function Authenticated({ user, header, children, hideHeaderOnMobi
 
                 <div className="flex flex-1">
                     {showNav && !isCareerAdvisorPage && !hideSidebar && (
-                        <aside className="hidden md:block w-48 sm:w-64 bg-white/80 dark:bg-gray-900/90 backdrop-blur-md border-r border-amber-100 dark:border-gray-700 min-h-screen">
+                        <aside className="hidden md:block w-48 sm:w-56 bg-white/80 dark:bg-gray-900/90 backdrop-blur-md border-r border-amber-100 dark:border-gray-700 min-h-screen">
                             <div className="sticky top-16 p-3 sm:p-4">
                                 <div className="mb-3 sm:mb-6">
-                                    <h2 className="text-sm sm:text-lg font-semibold bg-gradient-to-r from-amber-500 to-purple-500 dark:from-amber-400 dark:to-purple-400 text-transparent bg-clip-text">
-                                        Navigation CV
+                                    <h2 className="text-sm sm:text-lg font-semibold font-serif bg-gradient-to-r from-amber-500 to-purple-500 dark:from-amber-400 dark:to-purple-400 text-transparent bg-clip-text">
+                                        {t('cv.navigation')}
                                     </h2>
                                 </div>
                                 <div className="space-y-1.5 sm:space-y-2">
@@ -776,7 +776,7 @@ export default function Authenticated({ user, header, children, hideHeaderOnMobi
                                         className="flex items-center gap-1 text-gray-500 hover:text-amber-500 transition-colors"
                                     >
                                         <MessageSquare className="h-3 w-3 sm:h-4 sm:w-4" />
-                                        <span>{t('footer.support')}</span>
+                                        <span>{t('footer.support.title')}</span>
                                     </Link>
 
                                     <button

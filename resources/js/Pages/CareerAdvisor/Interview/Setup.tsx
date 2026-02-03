@@ -2,8 +2,10 @@ import React, { useState } from 'react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Head, router } from '@inertiajs/react';
 import InterviewSimulator from '@/Components/ai/specialized/InterviewSimulator';
+import { useTranslation } from 'react-i18next';
 
 export default function Setup({ auth }) {
+    const { t } = useTranslation();
     const [loading, setLoading] = useState(false);
 
     const handleSimulationStart = (data) => {
@@ -23,7 +25,7 @@ export default function Setup({ auth }) {
 
     return (
         <AuthenticatedLayout user={auth.user}>
-            <Head title="Interview Simulation" />
+            <Head title={t('career_advisor.services.interview_prep.enhanced_title')} />
 
             <div className="min-h-[calc(100vh-65px)] bg-neutral-50 dark:bg-neutral-950 py-20 px-10 flex items-center justify-center relative overflow-hidden">
                 <div className="relative z-10 w-full">

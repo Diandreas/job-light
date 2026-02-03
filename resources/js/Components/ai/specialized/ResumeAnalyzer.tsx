@@ -242,16 +242,16 @@ Donnez-moi une analyse détaillée avec :
                                                 whileTap={{ scale: 0.98 }}
                                                 onClick={() => setFormData(prev => ({ ...prev, analysisType: type.id as any }))}
                                                 className={`p-4 rounded-lg border cursor-pointer transition-all ${isSelected
-                                                    ? `bg-${type.color}-50 border-${type.color}-300 dark:bg-${type.color}-950/50`
-                                                    : 'bg-gray-50 border-gray-200 hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-700'
+                                                    ? `bg-amber-500 text-white border-amber-600 shadow-lg shadow-amber-500/20`
+                                                    : 'bg-gray-50 border-gray-200 hover:bg-amber-50 dark:bg-gray-800 dark:border-gray-700'
                                                     }`}
                                             >
                                                 <div className="flex items-center gap-3 mb-2">
-                                                    <Icon className={`w-5 h-5 text-${type.color}-600`} />
+                                                    <Icon className={`w-5 h-5 ${isSelected ? 'text-white' : 'text-amber-600'}`} />
                                                     <span className="font-medium">{type.title}</span>
-                                                    {isSelected && <CheckCircle className="w-4 h-4 text-green-600 ml-auto" />}
+                                                    {isSelected && <CheckCircle className="w-4 h-4 text-white ml-auto" />}
                                                 </div>
-                                                <p className="text-xs text-gray-600 dark:text-gray-400">
+                                                <p className={`text-xs ${isSelected ? 'text-amber-50' : 'text-gray-600 dark:text-gray-400'}`}>
                                                     {type.description}
                                                 </p>
                                             </motion.div>

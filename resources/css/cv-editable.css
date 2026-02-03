@@ -6,15 +6,15 @@
 }
 
 .editable-field:hover {
-    background-color: rgba(251, 191, 36, 0.1);
-    outline: 1px dashed rgba(251, 191, 36, 0.5);
+    background-color: color-mix(in srgb, var(--luxury-gold-400), transparent 90%);
+    outline: 1px dashed color-mix(in srgb, var(--luxury-gold-400), transparent 50%);
     outline-offset: 2px;
     cursor: text;
 }
 
 .editable-field:focus {
-    background-color: rgba(251, 191, 36, 0.15);
-    outline: 2px solid rgba(251, 191, 36, 0.8);
+    background-color: color-mix(in srgb, var(--luxury-gold-400), transparent 85%);
+    outline: 2px solid var(--luxury-gold-400);
     outline-offset: 2px;
     cursor: text;
 }
@@ -35,20 +35,22 @@
 /* Field update animation */
 .field-updated {
     animation: pulse-update 0.5s ease-in-out;
-    background-color: rgba(34, 197, 94, 0.15) !important;
+    background-color: color-mix(in srgb, var(--luxury-success), transparent 85%) !important;
 }
 
 @keyframes pulse-update {
     0% {
-        background-color: rgba(34, 197, 94, 0.3);
+        background-color: color-mix(in srgb, var(--luxury-success), transparent 70%);
         transform: scale(1);
     }
+
     50% {
-        background-color: rgba(34, 197, 94, 0.2);
+        background-color: color-mix(in srgb, var(--luxury-success), transparent 80%);
         transform: scale(1.02);
     }
+
     100% {
-        background-color: rgba(34, 197, 94, 0.15);
+        background-color: color-mix(in srgb, var(--luxury-success), transparent 85%);
         transform: scale(1);
     }
 }

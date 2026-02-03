@@ -224,7 +224,7 @@ export default function ProfessionInput({ auth, availableProfessions, initialUse
                         <button
                             onClick={handleAddProfession}
                             disabled={loading || !inputValue.trim()}
-                            className="min-w-16 px-4 py-3 bg-gradient-to-r from-amber-500 to-purple-500 hover:from-amber-600 hover:to-purple-600 text-white dark:from-amber-400 dark:to-purple-400 dark:hover:from-amber-500 dark:hover:to-purple-500 rounded-lg shadow-sm focus:ring-2 focus:ring-amber-500 focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed"
+                            className="min-w-16 px-4 py-3 bg-amber-500 hover:bg-amber-600 dark:bg-amber-500 dark:hover:bg-amber-400 text-white border-0 shadow-lg shadow-amber-500/20 transition-all duration-300 rounded-lg shadow-sm focus:ring-2 focus:ring-amber-500 focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed"
                             aria-label={t('cvInterface.profession.add')}
                         >
                             {loading ? (
@@ -244,7 +244,7 @@ export default function ProfessionInput({ auth, availableProfessions, initialUse
 
                     {/* Section profession actuelle */}
                     {hasProfession && (
-                        <div className="rounded-lg bg-gradient-to-r from-amber-50 to-purple-50 dark:from-amber-900/20 dark:to-purple-900/20 p-4 border border-amber-100 dark:border-amber-800">
+                        <div className="rounded-lg bg-amber-500/5 dark:bg-amber-500/10 p-4 border border-amber-100 dark:border-amber-800 shadow-sm">
                             <div className="flex items-center justify-between mb-2">
                                 <div className="flex items-center gap-2">
                                     <GraduationCap className="w-5 h-5 text-amber-500 dark:text-amber-400" />
@@ -265,18 +265,18 @@ export default function ProfessionInput({ auth, availableProfessions, initialUse
                                 <Badge
                                     variant="secondary"
                                     className={`
-                    ${currentProfession.type === 'standard'
-                                            ? 'bg-gradient-to-r from-amber-100 to-purple-100 hover:from-amber-200 hover:to-purple-200 dark:from-amber-900/40 dark:to-purple-900/40'
-                                            : 'bg-gradient-to-r from-purple-100 to-blue-100 hover:from-purple-200 hover:to-blue-200 dark:from-purple-900/40 dark:to-blue-900/40'
+                                        ${currentProfession.type === 'standard'
+                                            ? 'bg-amber-100 dark:bg-amber-900/40 text-amber-900 dark:text-amber-100'
+                                            : 'bg-amber-50 dark:bg-amber-900/20 text-amber-800 dark:text-amber-200'
                                         }
-                    text-gray-800 dark:text-gray-200 py-2 px-3 text-base`}
+                                        py-2 px-3 text-base border-amber-200 dark:border-amber-800`}
                                 >
                                     {currentProfession.type === 'standard'
                                         ? getLocalizedName(currentProfession.data)
                                         : currentProfession.manualText}
 
                                     {currentProfession.type === 'manual' && (
-                                        <span className="ml-2 px-1 py-0.5 text-[10px] rounded bg-purple-200 dark:bg-purple-800 text-purple-800 dark:text-purple-200">
+                                        <span className="ml-2 px-1 py-0.5 text-[10px] rounded bg-amber-200 dark:bg-amber-800 text-amber-800 dark:text-amber-200">
                                             {t('cvInterface.profession.manual')}
                                         </span>
                                     )}

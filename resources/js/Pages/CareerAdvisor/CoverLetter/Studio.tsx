@@ -7,10 +7,12 @@ import { ScrollArea } from "@/Components/ui/scroll-area";
 import RichEditor from '@/Components/ai/immersive/cover-letter/RichEditor';
 import { useAIStream } from '@/hooks/useAIStream';
 import { Sparkles, Download, ArrowLeft, RefreshCw, Wand2, FileText } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { motion } from 'framer-motion';
 import { toast } from 'sonner';
 
 export default function Studio({ auth }) {
+    const { t } = useTranslation();
     // Get query params from Inertia (passed from Wizard)
     const { url } = usePage();
     const queryParams = new URLSearchParams(url.split('?')[1]);
@@ -39,7 +41,7 @@ export default function Studio({ auth }) {
     const handleFullGeneration = async () => {
         setIsGenerating(true);
         let accumulated = '';
-        const toastId = toast.loading('Consulting AI Career Coach...');
+        const toastId = toast.loading(t('career_advisor.cover_letter.studio.generating'));
 
         try {
             // We'll generate the active letter structure in one go for the editor
@@ -55,11 +57,11 @@ export default function Studio({ auth }) {
                     setContent(accumulated.replace(/\n/g, '<br/>'));
                 },
                 onComplete: () => {
-                    toast.success('Draft generated!', { id: toastId });
+                    toast.success(t('career_advisor.cover_letter.studio.generated'), { id: toastId });
                     setIsGenerating(false);
                 },
                 onError: () => {
-                    toast.error('Failed to generate draft', { id: toastId });
+                    toast.error(t('career_advisor.cover_letter.studio.error'), { id: toastId });
                     setIsGenerating(false);
                 }
             });
@@ -70,31 +72,31 @@ export default function Studio({ auth }) {
 
     return (
         <AuthenticatedLayout user={auth.user}>
-            <Head title="Cover Letter Studio" />
+            <Head title={t('career_advisor.cover_letter.studio.title')} />
 
             <div className="h-[calc(100vh-65px)] flex bg-neutral-50 dark:bg-neutral-950 overflow-hidden">
 
                 {/* Left Sidebar - AI Controls */}
                 <div className="w-80 bg-white dark:bg-neutral-900 border-r border-neutral-200 dark:border-neutral-800 flex flex-col z-20 shadow-sm">
                     <div className="p-8 border-b border-neutral-200 dark:border-neutral-800">
-                        <div className="flex items-center gap-3 text-neutral-900 dark:text-neutral-50 font-semibold mb-2">
-                            <Sparkles className="w-5 h-5" /> AI Assistant
+                        <div className="flex items-center gap-3 text-amber-600 dark:text-amber-500 font-semibold mb-2">
+                            <Sparkles className="w-5 h-5" /> {t('career_advisor.cover_letter.studio.ai_assistant')}
                         </div>
-                        <p className="text-sm text-neutral-500 dark:text-neutral-500">Refine your letter with AI</p>
+                        <p className="text-sm text-amber-500/60 dark:text-amber-500/40">{t('career_advisor.cover_letter.studio.refine_with_ai')}</p>
                     </div>
 
                     <div className="flex-1 p-8 space-y-8 overflow-y-auto">
                         {/* Context Summary */}
                         <div className="space-y-6 mb-8">
                             <div className="space-y-1">
-                                <span className="text-[10px] text-neutral-400 uppercase tracking-widest block font-bold">Target Role</span>
+                                <span className="text-[10px] text-neutral-400 uppercase tracking-widest block font-bold">{t('career_advisor.cover_letter.studio.target_role')}</span>
                                 <span className="text-sm font-medium text-neutral-900 dark:text-neutral-100 line-clamp-2">
-                                    {context.jobTitle || 'Job Role'} @ {context.company || 'Organization'}
+                                    {context.jobTitle || t('career_advisor.cover_letter.studio.job_role_placeholder')} @ {context.company || t('career_advisor.cover_letter.studio.org_placeholder')}
                                 </span>
                             </div>
                             <div className="space-y-1">
-                                <span className="text-[10px] text-neutral-400 uppercase tracking-widest block font-bold">Styling Opts</span>
-                                <span className="inline-block px-3 py-1 rounded-full bg-neutral-100 dark:bg-neutral-800 text-[10px] font-bold text-neutral-600 dark:text-neutral-300 uppercase letter-spacing-widest">
+                                <span className="text-[10px] text-amber-500/60 uppercase tracking-widest block font-bold">{t('career_advisor.cover_letter.studio.styling_opts')}</span>
+                                <span className="inline-block px-3 py-1 rounded-full bg-amber-500/10 dark:bg-amber-500/20 text-[10px] font-bold text-amber-700 dark:text-amber-400 uppercase letter-spacing-widest">
                                     {context.tone}
                                 </span>
                             </div>
@@ -102,21 +104,21 @@ export default function Studio({ auth }) {
 
                         {/* Actions */}
                         <div className="space-y-4">
-                            <h3 className="text-[10px] font-bold uppercase text-neutral-400 tracking-[0.2em]">Coach Assistance</h3>
+                            <h3 className="text-[10px] font-bold uppercase text-neutral-400 tracking-[0.2em]">{t('career_advisor.cover_letter.studio.coach_assistance')}</h3>
 
                             <LuxuryButton variant="ghost" className="w-full justify-start text-xs h-11 border-neutral-100 dark:border-neutral-800" onClick={handleFullGeneration} disabled={isGenerating}>
                                 <RefreshCw className={`w-3.5 h-3.5 mr-3 ${isGenerating ? 'animate-spin' : ''}`} />
-                                Regenerate Entire Draft
+                                {t('career_advisor.cover_letter.studio.regenerate')}
                             </LuxuryButton>
 
                             <LuxuryButton variant="ghost" className="w-full justify-start text-xs h-11 border-neutral-100 dark:border-neutral-800">
                                 <Wand2 className="w-3.5 h-3.5 mr-3" />
-                                Elevate Professionalism
+                                {t('career_advisor.cover_letter.studio.elevate')}
                             </LuxuryButton>
 
                             <LuxuryButton variant="ghost" className="w-full justify-start text-xs h-11 border-neutral-100 dark:border-neutral-800">
                                 <Wand2 className="w-3.5 h-3.5 mr-3" />
-                                Conciseness Refinement
+                                {t('career_advisor.cover_letter.studio.conciseness')}
                             </LuxuryButton>
                         </div>
                     </div>
@@ -131,14 +133,14 @@ export default function Studio({ auth }) {
                                 <ArrowLeft className="w-5 h-5" />
                             </LuxuryButton>
                             <div>
-                                <h1 className="font-semibold text-neutral-900 dark:text-neutral-50 text-lg tracking-tight">Untitled Application</h1>
-                                <p className="text-[10px] text-neutral-400 uppercase tracking-widest mt-0.5">Cover Letter Studio</p>
+                                <h1 className="font-semibold text-neutral-900 dark:text-neutral-50 text-lg tracking-tight">{t('career_advisor.cover_letter.studio.untitled')}</h1>
+                                <p className="text-[10px] text-amber-600 dark:text-amber-500 uppercase tracking-widest mt-0.5 font-bold">{t('career_advisor.cover_letter.studio.title')}</p>
                             </div>
                         </div>
                         <div className="flex items-center gap-6">
-                            <span className="text-xs text-neutral-400 italic">Autosaved just now</span>
+                            <span className="text-xs text-neutral-400 italic">{t('career_advisor.cover_letter.studio.autosaved')}</span>
                             <LuxuryButton variant="primary" className="px-6">
-                                <Download className="w-4 h-4 mr-2" /> Export PDF
+                                <Download className="w-4 h-4 mr-2" /> {t('career_advisor.cover_letter.studio.export_pdf')}
                             </LuxuryButton>
                         </div>
                     </header>

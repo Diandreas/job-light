@@ -231,10 +231,10 @@ Pouvez-vous me donner des conseils personnalisés pour atteindre mes objectifs d
                             </div>
                             {currentStepData.title}
                         </h3>
-                        <div className="flex items-center justify-center gap-3 text-sm text-gray-500 dark:text-gray-400">
-                            <span className="bg-gray-100 dark:bg-gray-800 px-2 py-0.5 rounded-md font-medium">Étape {currentStep + 1} / {WIZARD_STEPS.length}</span>
+                        <div className="flex items-center justify-center gap-3 text-sm text-amber-600/60 dark:text-amber-500/40">
+                            <span className="bg-amber-500/5 dark:bg-amber-500/10 px-2 py-0.5 rounded-md font-bold text-amber-600 dark:text-amber-500 uppercase tracking-tighter">Étape {currentStep + 1} / {WIZARD_STEPS.length}</span>
                             <div className="w-1.5 h-1.5 bg-amber-500/40 rounded-full" />
-                            <div className="flex items-center gap-1.5">
+                            <div className="flex items-center gap-1.5 font-medium">
                                 <Clock className="w-3.5 h-3.5" />
                                 <span>~2 min restantes</span>
                             </div>
@@ -285,7 +285,7 @@ Pouvez-vous me donner des conseils personnalisés pour atteindre mes objectifs d
                                             rows={4}
                                             className="resize-none rounded-xl border-gray-200 dark:border-gray-800 focus:border-amber-500 focus:ring-amber-500/20"
                                         />
-                                        <div className="text-xs text-gray-500 flex justify-between">
+                                        <div className="text-xs text-amber-600/60 flex justify-between font-medium">
                                             <span>{formData.currentSituation.length}/500 {t('career_advice_wizard.form.characters_min_20') || 'caractères (minimum 20)'}</span>
                                             {formData.currentSituation.length >= 20 && <CheckCircle className="w-4 h-4 text-green-500" />}
                                         </div>

@@ -98,7 +98,7 @@ a.button:active {
 }
 
 .mobile-tab-item.active {
-    color: #F59E0B;
+    color: var(--luxury-gold-500);
 }
 
 /* Style spécial pour l'onglet du milieu (Assistant) */
@@ -115,8 +115,9 @@ a.button:active {
 }
 
 /* Contenu du bouton du milieu avec effet de mise en valeur */
+/* Contenu du bouton du milieu avec effet de mise en valeur */
 .mobile-tab-item-content-middle {
-    background: linear-gradient(135deg, #F59E0B 0%, #F97316 100%);
+    background: linear-gradient(135deg, var(--luxury-gold-500) 0%, var(--luxury-gold-600) 100%);
     padding: 8px;
     border-radius: 50%;
     box-shadow: 0 2px 8px rgba(245, 158, 11, 0.4);
@@ -152,7 +153,7 @@ a.button:active {
 .mobile-tab-item-label-middle {
     font-weight: 700;
     font-size: 10px;
-    color: #F59E0B;
+    color: var(--luxury-gold-500);
 }
 
 /* Indicateur actif moderne */
@@ -164,7 +165,7 @@ a.button:active {
     width: 4px;
     height: 4px;
     border-radius: 50%;
-    background-color: #F59E0B;
+    background-color: var(--luxury-gold-500);
 }
 
 .mobile-tab-item-middle .mobile-tab-active-indicator {
@@ -188,7 +189,7 @@ select {
     top: 0;
     left: 0;
     width: 100%;
-    color: #F59E0B;
+    color: var(--luxury-gold-500);
     z-index: 10;
     text-align: center;
     height: 50px;

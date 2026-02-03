@@ -9,6 +9,7 @@ import { luxuryTheme } from '@/design-system/luxury-theme';
 import { ArrowRight, CheckCircle2, Briefcase, Target, Zap, Clock, Info } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from "@/lib/utils";
+import { useTranslation } from 'react-i18next';
 
 const StepIndicator = ({ current, total }) => (
     <div className="flex justify-center items-center gap-6 mb-20">
@@ -18,8 +19,8 @@ const StepIndicator = ({ current, total }) => (
                     <div
                         className={cn(
                             "h-1.5 rounded-full transition-all duration-700",
-                            i === current ? "bg-neutral-900 dark:bg-neutral-50 w-12" :
-                                i < current ? "bg-neutral-400 dark:bg-neutral-600 w-6" : "bg-neutral-200 dark:bg-neutral-800 w-6"
+                            i === current ? "bg-amber-500 w-12" :
+                                i < current ? "bg-amber-200 dark:bg-amber-800 w-6" : "bg-neutral-200 dark:border-neutral-800 w-6"
                         )}
                     />
                 </div>
@@ -40,11 +41,13 @@ export default function Wizard({ auth }) {
         key_points: ''
     });
 
+    const { t } = useTranslation();
+
     const STEPS = [
-        { title: 'Foundations', subtitle: 'Target Details' },
-        { title: 'Intelligence', subtitle: 'Company Context' },
-        { title: 'Vibe', subtitle: 'Strategic Tone' },
-        { title: 'Refinement', subtitle: 'Final Nuances' }
+        { title: t('career_advisor.cover_letter.wizard.steps.foundations.title'), subtitle: t('career_advisor.cover_letter.wizard.steps.foundations.subtitle') },
+        { title: t('career_advisor.cover_letter.wizard.steps.intelligence.title'), subtitle: t('career_advisor.cover_letter.wizard.steps.intelligence.subtitle') },
+        { title: t('career_advisor.cover_letter.wizard.steps.vibe.title'), subtitle: t('career_advisor.cover_letter.wizard.steps.vibe.subtitle') },
+        { title: t('career_advisor.cover_letter.wizard.steps.refinement.title'), subtitle: t('career_advisor.cover_letter.wizard.steps.refinement.subtitle') }
     ];
 
     const nextStep = () => {
@@ -70,7 +73,7 @@ export default function Wizard({ auth }) {
 
     return (
         <AuthenticatedLayout user={auth.user}>
-            <Head title="Concierge" />
+            <Head title={t('career_advisor.cover_letter.wizard.title')} />
 
             <div className="min-h-[calc(100vh-65px)] flex flex-col items-center justify-center bg-neutral-50 dark:bg-neutral-950 p-6 sm:p-10 relative overflow-hidden">
 
@@ -86,16 +89,16 @@ export default function Wizard({ auth }) {
                         <motion.div
                             initial={{ opacity: 0, y: -10 }}
                             animate={{ opacity: 1, y: 0 }}
-                            className="inline-flex items-center gap-2 px-4 py-1.5 bg-neutral-900 dark:bg-neutral-50 rounded-full text-[10px] font-bold text-white dark:text-neutral-900 uppercase tracking-[0.3em] mb-4 shadow-xl"
+                            className="inline-flex items-center gap-2 px-4 py-1.5 bg-amber-500 rounded-full text-[10px] font-bold text-white uppercase tracking-[0.3em] mb-4 shadow-xl shadow-amber-500/10"
                         >
                             <Zap className="w-3 h-3" />
-                            <span>Premium Concierge</span>
+                            <span>{t('career_advisor.cover_letter.wizard.concierge_tag')}</span>
                         </motion.div>
                         <h1 className="text-5xl md:text-6xl font-serif text-neutral-900 dark:text-neutral-50 tracking-tight leading-tight">
-                            {STEPS[step].title} <span className="italic font-normal">Analysis</span>
+                            {STEPS[step].title} <span className="italic font-normal text-amber-500">{t('career_advisor.cover_letter.wizard.analysis')}</span>
                         </h1>
                         <p className="text-neutral-500 font-light text-lg tracking-tight">
-                            {STEPS[step].subtitle} • Stage {step + 1} of 4
+                            {STEPS[step].subtitle} • {t('career_advisor.cover_letter.wizard.stage', { current: step + 1, total: 4 })}
                         </p>
                     </div>
 
@@ -116,29 +119,29 @@ export default function Wizard({ auth }) {
                                     <div className="space-y-12">
                                         <div className="space-y-10">
                                             <div className="space-y-4">
-                                                <Label className="text-[10px] font-bold text-neutral-400 uppercase tracking-[0.3em]">Target Company</Label>
+                                                <Label className="text-[10px] font-bold text-neutral-400 uppercase tracking-[0.3em]">{t('career_advisor.cover_letter.wizard.labels.company')}</Label>
                                                 <Input
                                                     className="w-full h-20 text-3xl font-serif bg-transparent border-none p-0 focus-visible:ring-0 placeholder:text-neutral-100 dark:placeholder:text-neutral-800 text-neutral-900 dark:text-neutral-50 transition-all"
-                                                    placeholder="e.g. Goldman Sachs"
+                                                    placeholder={t('career_advisor.cover_letter.wizard.placeholders.company')}
                                                     value={data.company}
                                                     onChange={e => setData({ ...data, company: e.target.value })}
                                                     autoFocus
                                                 />
                                             </div>
                                             <div className="space-y-4">
-                                                <Label className="text-[10px] font-bold text-neutral-400 uppercase tracking-[0.3em]">Vertical / Job Title</Label>
+                                                <Label className="text-[10px] font-bold text-neutral-400 uppercase tracking-[0.3em]">{t('career_advisor.cover_letter.wizard.labels.job_title')}</Label>
                                                 <Input
                                                     className="w-full h-20 text-3xl font-serif bg-transparent border-none p-0 focus-visible:ring-0 placeholder:text-neutral-100 dark:placeholder:text-neutral-800 text-neutral-900 dark:text-neutral-50 transition-all"
-                                                    placeholder="Investment Analyst"
+                                                    placeholder={t('career_advisor.cover_letter.wizard.placeholders.job_title')}
                                                     value={data.jobTitle}
                                                     onChange={e => setData({ ...data, jobTitle: e.target.value })}
                                                 />
                                             </div>
                                             <div className="space-y-4">
-                                                <Label className="text-[10px] font-bold text-neutral-400 uppercase tracking-[0.3em]">Attention Of (Optional)</Label>
+                                                <Label className="text-[10px] font-bold text-neutral-400 uppercase tracking-[0.3em]">{t('career_advisor.cover_letter.wizard.labels.recipient')}</Label>
                                                 <Input
                                                     className="w-full h-20 text-3xl font-serif bg-transparent border-none p-0 focus-visible:ring-0 placeholder:text-neutral-100 dark:placeholder:text-neutral-800 text-neutral-900 dark:text-neutral-50 transition-all"
-                                                    placeholder="Hiring Committee"
+                                                    placeholder={t('career_advisor.cover_letter.wizard.placeholders.recipient')}
                                                     value={data.recipient}
                                                     onChange={e => setData({ ...data, recipient: e.target.value })}
                                                 />
@@ -151,15 +154,15 @@ export default function Wizard({ auth }) {
                                     <div className="space-y-8">
                                         <div className="space-y-6">
                                             <div className="flex justify-between items-end">
-                                                <Label className="text-[10px] font-bold text-neutral-400 uppercase tracking-[0.3em]">Strategic Context</Label>
-                                                <div className="flex items-center gap-2">
-                                                    <div className="w-1 h-1 bg-neutral-900 dark:bg-neutral-50 rounded-full animate-pulse" />
-                                                    <span className="text-[9px] font-bold text-neutral-900 dark:text-neutral-50 uppercase tracking-widest">ATS Ready</span>
+                                                <Label className="text-[10px] font-bold text-neutral-400 uppercase tracking-[0.3em]">{t('career_advisor.cover_letter.wizard.labels.context')}</Label>
+                                                <div className="flex items-center gap-2 text-amber-500">
+                                                    <div className="w-1 h-1 bg-amber-500 rounded-full animate-pulse" />
+                                                    <span className="text-[9px] font-bold uppercase tracking-widest">ATS Ready</span>
                                                 </div>
                                             </div>
                                             <Textarea
                                                 className="w-full min-h-[350px] text-lg font-light leading-relaxed bg-neutral-50 dark:bg-neutral-950/50 border-none rounded-[2rem] p-10 focus-visible:ring-1 focus-visible:ring-neutral-200 dark:focus-visible:ring-neutral-800 placeholder:text-neutral-300 dark:placeholder:text-neutral-700 resize-none transition-all"
-                                                placeholder="Paste the job description for deep vector analysis..."
+                                                placeholder={t('career_advisor.cover_letter.wizard.placeholders.description')}
                                                 value={data.jobDescription}
                                                 onChange={e => setData({ ...data, jobDescription: e.target.value })}
                                             />
@@ -170,30 +173,30 @@ export default function Wizard({ auth }) {
                                 {step === 2 && (
                                     <div className="space-y-12">
                                         <div className="space-y-8">
-                                            <Label className="text-[10px] font-bold text-neutral-400 uppercase tracking-[0.3em]">Strategic Tone</Label>
+                                            <Label className="text-[10px] font-bold text-neutral-400 uppercase tracking-[0.3em]">{t('career_advisor.cover_letter.wizard.labels.tone')}</Label>
                                             <div className="grid grid-cols-2 gap-6">
-                                                {['Professional', 'Creative', 'Confident', 'Humble'].map((tone) => (
+                                                {['professional', 'creative', 'confident', 'humble'].map((toneKey) => (
                                                     <button
-                                                        key={tone}
-                                                        onClick={() => setData({ ...data, tone: tone.toLowerCase() })}
+                                                        key={toneKey}
+                                                        onClick={() => setData({ ...data, tone: toneKey })}
                                                         className={cn(
                                                             "h-24 flex items-center justify-center text-sm font-bold uppercase tracking-[0.2em] transition-all rounded-[1.5rem] border-2",
-                                                            data.tone === tone.toLowerCase()
-                                                                ? "border-neutral-900 dark:border-neutral-50 bg-neutral-900 dark:bg-neutral-50 text-white dark:text-neutral-900 shadow-xl scale-[1.02]"
-                                                                : "border-neutral-100 dark:border-neutral-800 text-neutral-400 hover:border-neutral-300 dark:hover:border-neutral-700"
+                                                            data.tone === toneKey
+                                                                ? "border-amber-500 bg-amber-500 text-white shadow-xl shadow-amber-500/20 scale-[1.02]"
+                                                                : "border-neutral-100 dark:border-neutral-800 text-neutral-400 hover:border-amber-200 dark:hover:border-amber-800"
                                                         )}
                                                     >
-                                                        {tone}
+                                                        {t(`career_advisor.cover_letter.wizard.tones.${toneKey}`)}
                                                     </button>
                                                 ))}
                                             </div>
                                         </div>
 
                                         <div className="space-y-6">
-                                            <Label className="text-[10px] font-bold text-neutral-400 uppercase tracking-[0.3em]">Priority Expertise</Label>
+                                            <Label className="text-[10px] font-bold text-neutral-400 uppercase tracking-[0.3em]">{t('career_advisor.cover_letter.wizard.labels.expertise')}</Label>
                                             <Textarea
                                                 className="w-full h-32 text-lg font-serif bg-transparent border-b-2 border-neutral-100 dark:border-neutral-800 rounded-none p-0 focus-visible:ring-0 placeholder:text-neutral-200 resize-none transition-all"
-                                                placeholder="React, Architecture, Governance..."
+                                                placeholder={t('career_advisor.cover_letter.wizard.placeholders.skills')}
                                                 value={data.skills}
                                                 onChange={e => setData({ ...data, skills: e.target.value })}
                                             />
@@ -204,13 +207,13 @@ export default function Wizard({ auth }) {
                                 {step === 3 && (
                                     <div className="space-y-10">
                                         <div className="space-y-6">
-                                            <Label className="text-[10px] font-bold text-neutral-400 uppercase tracking-[0.3em]">Exclusive Nuances</Label>
+                                            <Label className="text-[10px] font-bold text-neutral-400 uppercase tracking-[0.3em]">{t('career_advisor.cover_letter.wizard.labels.nuances')}</Label>
                                             <p className="text-neutral-500 font-light leading-relaxed text-lg">
-                                                Identify specific achievements or narratives you wish to emphasize in your professional story.
+                                                {t('career_advisor.cover_letter.wizard.placeholders.nuances_desc')}
                                             </p>
                                             <Textarea
                                                 className="w-full min-h-[300px] text-lg font-serif bg-neutral-50 dark:bg-neutral-950/50 border-none rounded-[2rem] p-10 focus-visible:ring-1 focus-visible:ring-neutral-200 dark:focus-visible:ring-neutral-800 placeholder:text-neutral-300 dark:placeholder:text-neutral-700 resize-none transition-all"
-                                                placeholder="e.g. Orchestrated a $50M transition..."
+                                                placeholder={t('career_advisor.cover_letter.wizard.placeholders.nuances_placeholder')}
                                                 value={data.key_points}
                                                 onChange={e => setData({ ...data, key_points: e.target.value })}
                                             />
@@ -229,14 +232,14 @@ export default function Wizard({ auth }) {
                             disabled={step === 0}
                             className="h-14 px-8 text-[10px] font-bold uppercase tracking-[0.3em] opacity-40 hover:opacity-100 transition-opacity disabled:opacity-0"
                         >
-                            Retrospective
+                            {t('career_advisor.cover_letter.wizard.buttons.retrospective')}
                         </LuxuryButton>
                         <LuxuryButton
                             variant="primary"
                             className="h-16 px-12 text-[10px] font-bold uppercase tracking-[0.3em] shadow-2xl group"
                             onClick={nextStep}
                         >
-                            {step === 3 ? 'Generate Strategy' : 'Evolution'}
+                            {step === 3 ? t('career_advisor.cover_letter.wizard.buttons.generate') : t('career_advisor.cover_letter.wizard.buttons.evolution')}
                             {step === 3 ? <CheckCircle2 className="ml-4 w-4 h-4" /> : <ArrowRight className="ml-4 w-4 h-4 group-hover:translate-x-2 transition-transform" />}
                         </LuxuryButton>
                     </div>

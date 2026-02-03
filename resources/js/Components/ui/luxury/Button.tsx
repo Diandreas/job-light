@@ -1,11 +1,10 @@
-import React from 'react';
-import { motion } from 'framer-motion';
+import { motion, HTMLMotionProps } from 'framer-motion';
 import { luxuryTheme } from '@/design-system/luxury-theme';
 
 export type ButtonVariant = 'primary' | 'secondary' | 'ghost' | 'minimal';
 export type ButtonSize = 'sm' | 'md' | 'lg';
 
-interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+interface ButtonProps extends HTMLMotionProps<"button"> {
   variant?: ButtonVariant;
   size?: ButtonSize;
   loading?: boolean;
@@ -37,12 +36,12 @@ export const LuxuryButton: React.FC<ButtonProps> = ({
 
   const variantStyles = {
     primary: `
-      bg-neutral-900 text-white
-      hover:bg-neutral-800
-      focus:ring-neutral-900
-      shadow-md hover:shadow-lg
-      dark:bg-neutral-50 dark:text-neutral-900
-      dark:hover:bg-neutral-100
+      bg-amber-500 text-white
+      hover:bg-amber-600
+      focus:ring-amber-500
+      shadow-md shadow-amber-500/10 hover:shadow-lg hover:shadow-amber-500/20
+      dark:bg-amber-500 dark:text-white
+      dark:hover:bg-amber-600
     `,
     secondary: `
       bg-white text-neutral-900
@@ -118,10 +117,10 @@ export const LuxuryIconButton: React.FC<Omit<ButtonProps, 'children'> & { icon: 
 
   const variantStyles = {
     primary: `
-      bg-neutral-900 text-white
-      hover:bg-neutral-800
-      focus:ring-neutral-900
-      dark:bg-neutral-50 dark:text-neutral-900
+      bg-amber-500 text-white
+      hover:bg-amber-600
+      focus:ring-amber-500
+      dark:bg-amber-500 dark:text-white
     `,
     secondary: `
       bg-white text-neutral-900

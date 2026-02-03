@@ -26,32 +26,32 @@ export default function ServiceSelector({ walletBalance }: ServiceSelectorProps)
         {
             id: 'cover-letter',
             icon: FileText,
-            title: t('services.cover_letter.enhanced_title') || 'Cover Letter Genesis',
-            description: t('services.cover_letter.enhanced_description') || 'Create a bespoke professional narrative with AI precision.',
-            cost: 5,
+            title: t('career_advisor.services.cover_letter.enhanced_title') || 'Cover Letter Genesis',
+            description: t('career_advisor.services.cover_letter.enhanced_description') || 'Craft a bespoke professional narrative with AI precision.',
+            cost: 3,
             route: 'career-advisor.cover-letter.index'
         },
         {
-            id: 'resume-review',
-            icon: PenTool,
-            title: t('services.resume_review.enhanced_title') || 'CV Heatmap Insight',
-            description: t('services.resume_review.enhanced_description') || 'Visualize your resume strengths with orbital vector analysis.',
-            cost: 4,
+            id: 'cv-heatmap',
+            icon: Target,
+            title: t('career_advisor.services.resume_review.enhanced_title') || 'CV Heatmap Insight',
+            description: t('career_advisor.services.resume_review.enhanced_description') || 'Visualize your resume\'s impact with orbital vector analysis.',
+            cost: 3,
             route: 'career-advisor.cv-heatmap.index'
         },
         {
             id: 'interview-prep',
             icon: MessageSquare,
-            title: t('services.interview_prep.enhanced_title') || 'Voice Interview Simulation',
-            description: t('services.interview_prep.enhanced_description') || 'Master your delivery with real-time vocal AI diagnostics.',
-            cost: 5,
+            title: t('career_advisor.services.interview_prep.enhanced_title') || 'Vocal Interview Simulation',
+            description: t('career_advisor.services.interview_prep.enhanced_description') || 'Master your delivery with real-time AI speech diagnostics.',
+            cost: 3,
             route: 'career-advisor.interview.setup'
         },
         {
             id: 'career-roadmap',
             icon: Layout,
-            title: t('services.roadmap.enhanced_title') || 'Strategic Career Roadmap',
-            description: t('services.roadmap.enhanced_description') || 'A comprehensive trajectory synthesis toward your goals.',
+            title: t('career_advisor.services.roadmap.enhanced_title') || 'Strategic Career Roadmap',
+            description: t('career_advisor.services.roadmap.enhanced_description') || 'A comprehensive trajectory synthesis toward your goals.',
             cost: 4,
             route: 'career-advisor.roadmap.index'
         }
@@ -69,7 +69,7 @@ export default function ServiceSelector({ walletBalance }: ServiceSelectorProps)
                 <motion.div
                     initial={{ opacity: 0, scale: 0.9 }}
                     animate={{ opacity: 1, scale: 1 }}
-                    className="inline-flex items-center gap-3 px-6 py-2 rounded-full bg-neutral-900 dark:bg-neutral-50 text-white dark:text-neutral-900 text-[10px] font-bold uppercase tracking-[0.4em] shadow-2xl"
+                    className="inline-flex items-center gap-3 px-6 py-2 rounded-full bg-amber-500 dark:bg-amber-400 text-white text-[10px] font-bold uppercase tracking-[0.4em] shadow-2xl"
                 >
                     <Zap className="w-3.5 h-3.5" />
                     <span>Intelligence Suite</span>
@@ -79,18 +79,18 @@ export default function ServiceSelector({ walletBalance }: ServiceSelectorProps)
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.1, duration: 0.8 }}
-                    className="text-5xl md:text-7xl font-serif text-neutral-900 dark:text-neutral-50 tracking-tight leading-tight"
+                    className="text-5xl md:text-7xl font-serif text-gray-800 dark:text-white tracking-tight leading-tight"
                 >
-                    Orchestrate Your <span className="italic font-normal">Destiny</span>
+                    {t('careerAdvisor.hero.title', 'Orchestrate Your Destiny').split(' ').slice(0, -1).join(' ')} <span className="italic font-normal text-amber-500">{t('careerAdvisor.hero.title', 'Orchestrate Your Destiny').split(' ').slice(-1)}</span>
                 </motion.h1>
 
                 <motion.p
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.2, duration: 0.8 }}
-                    className="text-xl text-neutral-500 font-light max-w-2xl mx-auto leading-relaxed"
+                    className="text-xl text-gray-500 dark:text-gray-400 font-light max-w-2xl mx-auto leading-relaxed"
                 >
-                    Unlock architectural precision in your professional journey with our suite of vector-driven career accelerators.
+                    {t('careerAdvisor.hero.subtitle', 'Unlock architectural precision in your professional journey with our suite of vector-driven career accelerators.')}
                 </motion.p>
             </div>
 
@@ -109,34 +109,37 @@ export default function ServiceSelector({ walletBalance }: ServiceSelectorProps)
                             onClick={() => handleServiceClick(service.id, service.route, service.cost)}
                             className="
                                 h-full flex flex-col p-10 rounded-[3rem] 
-                                bg-white dark:bg-neutral-900 
-                                border border-neutral-100 dark:border-neutral-800 
-                                shadow-sm hover:shadow-2xl transition-all duration-700 cursor-pointer
+                                bg-white dark:bg-gray-900 
+                                border border-gray-100 dark:border-gray-800 
+                                shadow-sm hover:shadow-2xl hover:bg-amber-500 hover:border-amber-500
+                                transition-all duration-500 cursor-pointer
                                 relative overflow-hidden group
                             "
                         >
                             {/* Subtle Inner Glow */}
-                            <div className="absolute inset-0 bg-neutral-900 dark:bg-neutral-50 opacity-0 group-hover:opacity-[0.02] transition-opacity duration-700" />
+                            <div
+                                className="absolute inset-0 bg-gradient-to-br from-amber-400/5 to-amber-500/5 opacity-0 group-hover:opacity-0 transition-opacity duration-700"
+                            />
 
                             <div className="flex justify-between items-start mb-12">
-                                <div className="p-5 rounded-2xl bg-neutral-50 dark:bg-neutral-800 text-neutral-900 dark:text-neutral-50 group-hover:bg-neutral-900 dark:group-hover:bg-neutral-50 group-hover:text-white dark:group-hover:text-neutral-900 transition-all duration-700">
+                                <div className="p-5 rounded-2xl bg-amber-50 dark:bg-white-500/10 text-amber-500 group-hover:bg-white group-hover:text-amber-500 transition-all duration-500">
                                     <service.icon className="w-8 h-8" />
                                 </div>
-                                <div className="px-4 py-1.5 rounded-full border border-neutral-100 dark:border-neutral-800 text-[9px] font-bold uppercase tracking-widest text-neutral-400 group-hover:text-neutral-900 dark:group-hover:text-neutral-50 transition-colors">
-                                    {service.cost} Tokens
+                                <div className="px-4 py-1.5 rounded-full border border-amber-200 dark:border-amber-700 text-[9px] font-bold uppercase tracking-widest text-amber-500 group-hover:border-white/50 group-hover:text-white transition-all duration-500">
+                                    {service.cost} {t('careerAdvisor.tokens', 'Tokens')}
                                 </div>
                             </div>
 
-                            <h3 className="text-2xl font-serif text-neutral-900 dark:text-neutral-50 mb-4 tracking-tight group-hover:translate-x-1 transition-transform duration-700">
+                            <h3 className="text-2xl font-serif text-gray-800 dark:text-white mb-4 tracking-tight group-hover:translate-x-1 group-hover:text-white transition-all duration-500">
                                 {service.title}
                             </h3>
 
-                            <p className="text-neutral-500 dark:text-neutral-500 font-light text-sm leading-relaxed mb-12 flex-1">
+                            <p className="text-gray-500 dark:text-gray-400 font-light text-sm leading-relaxed mb-12 flex-1 group-hover:text-white/80 transition-colors duration-500">
                                 {service.description}
                             </p>
 
-                            <div className="flex items-center gap-3 text-neutral-900 dark:text-neutral-50 text-[10px] font-bold uppercase tracking-[0.3em] opacity-0 group-hover:opacity-100 translate-x-[-10px] group-hover:translate-x-0 transition-all duration-700">
-                                Initiate Protocol <ArrowRight className="w-4 h-4" />
+                            <div className="flex items-center gap-3 text-amber-500 group-hover:text-white text-[10px] font-bold uppercase tracking-[0.3em] opacity-0 group-hover:opacity-100 translate-x-[-10px] group-hover:translate-x-0 transition-all duration-500">
+                                {t('career_advisor.initiate_protocol')} <ArrowRight className="w-4 h-4" />
                             </div>
                         </div>
                     </motion.div>

@@ -7,6 +7,7 @@ import { LuxuryCard } from '@/Components/ui/luxury/Card';
 import { luxuryTheme } from '@/design-system/luxury-theme';
 import { Info, ArrowRight, BarChart3, Sparkles, AlertCircle, CheckCircle2 } from 'lucide-react';
 import { cn } from "@/lib/utils";
+import { useTranslation } from 'react-i18next';
 
 // Minimal Fade Animation
 const fadeVariants = {
@@ -66,13 +67,15 @@ const HeatmapSection = ({ section, isSelected, onClick }) => {
 };
 
 export default function CVHeatmap({ auth }) {
-    // Mock Data
+    const { t } = useTranslation();
+
+    // Mock Data using translation keys for titles
     const [sections] = useState([
-        { id: 'summary', title: 'Professional Summary', score: 85, feedback: 'Strong and concise. Captures attention immediately.', improvements: [] },
-        { id: 'experience', title: 'Work Experience', score: 65, feedback: 'Missing quantification of achievements. Action verbs could be stronger.', improvements: ['Add metrics to 3 positions', 'Use stronger action verbs', 'Focus on results over duties'] },
-        { id: 'skills', title: 'Skills & Tech', score: 92, feedback: 'Excellent coverage of relevant technologies for your target role.', improvements: [] },
-        { id: 'education', title: 'Education', score: 100, feedback: 'Perfectly formatted and relevant.', improvements: [] },
-        { id: 'layout', title: 'Layout & Formatting', score: 70, feedback: 'Visual hierarchy is good but white space usage could be improved.', improvements: ['Increase margins', 'Consistent font sizes'] },
+        { id: 'summary', title: t('career_advisor.common.sections.summary'), score: 85, feedback: 'Strong and concise. Captures attention immediately.', improvements: [] },
+        { id: 'experience', title: t('career_advisor.common.sections.experience'), score: 65, feedback: 'Missing quantification of achievements. Action verbs could be stronger.', improvements: ['Add metrics to 3 positions', 'Use stronger action verbs', 'Focus on results over duties'] },
+        { id: 'skills', title: t('career_advisor.common.sections.skills'), score: 92, feedback: 'Excellent coverage of relevant technologies for your target role.', improvements: [] },
+        { id: 'education', title: t('career_advisor.common.sections.education'), score: 100, feedback: 'Perfectly formatted and relevant.', improvements: [] },
+        { id: 'layout', title: t('career_advisor.common.sections.layout'), score: 70, feedback: 'Visual hierarchy is good but white space usage could be improved.', improvements: ['Increase margins', 'Consistent font sizes'] },
     ]);
 
     const [selectedSection, setSelectedSection] = useState(sections[0]);
@@ -81,21 +84,21 @@ export default function CVHeatmap({ auth }) {
 
     return (
         <AuthenticatedLayout user={auth.user}>
-            <Head title="CV Heatmap & Analysis" />
+            <Head title={t('career_advisor.cv_heatmap.title')} />
 
             <div className="min-h-screen bg-neutral-50 dark:bg-neutral-950 py-20 px-6 sm:px-10 lg:px-16 relative overflow-hidden">
                 <div className="max-w-7xl mx-auto relative z-10">
                     <div className="flex flex-col md:flex-row justify-between items-end mb-16 gap-8">
                         <div>
-                            <p className="text-[10px] text-neutral-400 uppercase tracking-[0.3em] font-bold mb-3">CV Analysis Engine</p>
+                            <p className="text-[10px] text-neutral-400 uppercase tracking-[0.3em] font-bold mb-3">{t('career_advisor.cv_heatmap.engine_subtitle')}</p>
                             <h1 className="text-4xl md:text-5xl font-bold text-neutral-900 dark:text-neutral-50 leading-tight tracking-tighter">
-                                CV Resonance <span className="font-serif italic font-normal">Heatmap</span>
+                                {t('career_advisor.cv_heatmap.main_title').split(' ').slice(0, -1).join(' ')} <span className="font-serif italic font-normal">{t('career_advisor.cv_heatmap.main_title').split(' ').slice(-1)}</span>
                             </h1>
                         </div>
 
                         <div className="flex items-center gap-6 bg-white dark:bg-neutral-900 p-6 rounded-3xl shadow-xl border border-neutral-100 dark:border-neutral-800">
                             <div className="text-right">
-                                <p className="text-[10px] text-neutral-400 uppercase tracking-widest font-bold mb-1">Impact Score</p>
+                                <p className="text-[10px] text-neutral-400 uppercase tracking-widest font-bold mb-1">{t('career_advisor.cv_heatmap.impact_score')}</p>
                                 <p className="text-4xl font-bold text-neutral-900 dark:text-neutral-50 leading-none">{averageScore}</p>
                             </div>
                             <div className="h-14 w-14 rounded-full border border-neutral-100 dark:border-neutral-800 flex items-center justify-center relative">
@@ -149,14 +152,14 @@ export default function CVHeatmap({ auth }) {
                                                         <h2 className="text-2xl font-bold text-neutral-900 dark:text-neutral-50 tracking-tight">
                                                             {selectedSection.title}
                                                         </h2>
-                                                        <p className="text-[10px] text-neutral-400 uppercase tracking-[0.2em] mt-1">Intelligence Report</p>
+                                                        <p className="text-[10px] text-neutral-400 uppercase tracking-[0.2em] mt-1">{t('career_advisor.cv_heatmap.report_title')}</p>
                                                     </div>
                                                 </div>
 
                                                 <div className="space-y-10">
                                                     <div className="space-y-3">
                                                         <h4 className="text-[10px] font-bold text-neutral-400 uppercase tracking-widest flex items-center gap-2">
-                                                            <div className="w-1 h-1 rounded-full bg-neutral-400" /> Global Assessment
+                                                            <div className="w-1 h-1 rounded-full bg-neutral-400" /> {t('career_advisor.cv_heatmap.assessment')}
                                                         </h4>
                                                         <p className="text-neutral-600 dark:text-neutral-300 leading-relaxed text-sm">
                                                             {selectedSection.feedback}
@@ -166,7 +169,7 @@ export default function CVHeatmap({ auth }) {
                                                     {selectedSection.improvements && selectedSection.improvements.length > 0 && (
                                                         <div className="space-y-4">
                                                             <h4 className="text-[10px] font-bold text-neutral-400 uppercase tracking-widest flex items-center gap-2">
-                                                                <div className="w-1 h-1 rounded-full bg-neutral-400" /> Optimization Path
+                                                                <div className="w-1 h-1 rounded-full bg-neutral-400" /> {t('career_advisor.cv_heatmap.optimization_path')}
                                                             </h4>
                                                             <ul className="space-y-4">
                                                                 {selectedSection.improvements.map((item, idx) => (
@@ -184,7 +187,7 @@ export default function CVHeatmap({ auth }) {
                                                     <div className="pt-10 border-t border-neutral-100 dark:border-neutral-800">
                                                         <LuxuryButton variant="primary" className="w-full h-14 text-sm uppercase tracking-[0.2em] font-bold">
                                                             <Sparkles className="w-4 h-4 mr-3" />
-                                                            Apply AI Fixes
+                                                            {t('career_advisor.cv_heatmap.apply_fixes')}
                                                         </LuxuryButton>
                                                     </div>
                                                 </div>

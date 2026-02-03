@@ -67,6 +67,7 @@ export const LuxurySidebar: React.FC<LuxurySidebarProps> = ({
     const sourceChats = userChats || chats || [];
     const displayChats = sourceChats.map(c => ({
         id: c.id || c.context_id || c.id,
+        context_id: c.context_id || c.id,
         preview: c.preview,
         timestamp: c.timestamp || c.created_at,
         messagesCount: c.messagesCount || c.messages_count
@@ -111,8 +112,8 @@ export const LuxurySidebar: React.FC<LuxurySidebarProps> = ({
                 )}
 
                 <LuxuryIconButton
-                    icon={isCollapsed ? <ChevronRight className="w-4 h-4" /> : <ChevronLeft className="w-4 h-4" />}
-                    onClick={toggleCollapse}
+                    icon={isMobile ? <ChevronLeft className="w-5 h-5" /> : (isCollapsed ? <ChevronRight className="w-4 h-4" /> : <ChevronLeft className="w-4 h-4" />)}
+                    onClick={isMobile && onCloseMobile ? onCloseMobile : toggleCollapse}
                     variant="ghost"
                     size="sm"
                     aria-label={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
@@ -127,10 +128,9 @@ export const LuxurySidebar: React.FC<LuxurySidebarProps> = ({
                     whileTap={{ scale: 0.98 }}
                     className={`
                         w-full flex items-center gap-3 px-4 py-3 rounded-xl
-                        bg-neutral-900 dark:bg-neutral-50
-                        text-white dark:text-neutral-900
-                        hover:bg-neutral-800 dark:hover:bg-neutral-100
-                        shadow-sm hover:shadow-md
+                        bg-amber-500 text-white
+                        hover:bg-amber-600
+                        shadow-md shadow-amber-500/10 hover:shadow-lg hover:shadow-amber-500/20
                         transition-all duration-400
                         ${isCollapsed ? 'justify-center' : ''}
                     `}
@@ -222,7 +222,7 @@ const LuxuryChatItem: React.FC<{
                     w-full text-left px-4 py-3 rounded-xl
                     border transition-all duration-400
                     ${isActive
-                        ? 'border-neutral-900 dark:border-neutral-50 bg-neutral-50 dark:bg-neutral-950 shadow-sm'
+                        ? 'border-amber-500 bg-amber-50/50 dark:bg-amber-500/5 shadow-sm'
                         : 'border-transparent hover:border-neutral-200 dark:hover:border-neutral-800 hover:bg-neutral-50 dark:hover:bg-neutral-950'
                     }
                     ${isCollapsed ? 'flex items-center justify-center' : ''}
@@ -236,7 +236,7 @@ const LuxuryChatItem: React.FC<{
                             <p className={`
                                 text-sm font-medium leading-snug line-clamp-2
                                 ${isActive
-                                    ? 'text-neutral-900 dark:text-neutral-50'
+                                    ? 'text-amber-600 dark:text-amber-400'
                                     : 'text-neutral-700 dark:text-neutral-300'
                                 }
                             `}>
@@ -290,7 +290,7 @@ const LuxuryChatItem: React.FC<{
             {isActive && (
                 <motion.div
                     layoutId="activeChatIndicator"
-                    className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-8 bg-neutral-900 dark:bg-neutral-50 rounded-r-full"
+                    className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-8 bg-amber-500 rounded-r-full"
                     transition={{ duration: 0.3, ease: luxuryTheme.animations.easings.elegant }}
                 />
             )}

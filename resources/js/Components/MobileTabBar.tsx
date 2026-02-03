@@ -40,12 +40,12 @@ export const MobileTabBar: React.FC<MobileTabBarProps> = ({ onRenewCodeClick, is
             icon: Brain,
             active: url.includes('/career-advisor')
         },
-        {
-            name: 'Portfolio',
-            href: route('portfolio.index'),
-            icon: User,
-            active: url.includes('/portfolio')
-        }
+        // {
+        //     name: 'Portfolio',
+        //     href: route('portfolio.index'),
+        //     icon: User,
+        //     active: url.includes('/portfolio')
+        // }
     ];
 
     // Onglets pour les invités
@@ -67,8 +67,10 @@ export const MobileTabBar: React.FC<MobileTabBarProps> = ({ onRenewCodeClick, is
     // Sélectionner les onglets en fonction du statut de l'utilisateur
     const tabs = isGuest ? guestTabs : authTabs;
 
+    const isCompact = url.includes('/career-advisor') || url.includes('/cv-infos/show');
+
     return (
-        <div className="mobile-tab-bar">
+        <div className={cn("mobile-tab-bar", isCompact && "h-12 py-1")}>
             {tabs.map((tab, index) => {
                 const isMiddle = index === Math.floor(tabs.length / 2);
 
@@ -88,7 +90,7 @@ export const MobileTabBar: React.FC<MobileTabBarProps> = ({ onRenewCodeClick, is
                         )}>
                             <tab.icon className={cn(
                                 "mobile-tab-item-icon",
-                                isMiddle ? "h-6 w-6" : "h-5 w-5"
+                                isMiddle ? (isCompact ? "h-5 w-5" : "h-6 w-6") : "h-5 w-5"
                             )} />
                             {tab.active && (
                                 <motion.div
@@ -102,10 +104,12 @@ export const MobileTabBar: React.FC<MobileTabBarProps> = ({ onRenewCodeClick, is
                                 />
                             )}
                         </div>
-                        <span className={cn(
-                            "mobile-tab-item-label",
-                            isMiddle && "mobile-tab-item-label-middle"
-                        )}>{tab.name}</span>
+                        {!isCompact && (
+                            <span className={cn(
+                                "mobile-tab-item-label",
+                                isMiddle && "mobile-tab-item-label-middle"
+                            )}>{tab.name}</span>
+                        )}
                     </button>
                 ) : (
                     <Link
@@ -123,7 +127,7 @@ export const MobileTabBar: React.FC<MobileTabBarProps> = ({ onRenewCodeClick, is
                         )}>
                             <tab.icon className={cn(
                                 "mobile-tab-item-icon",
-                                isMiddle ? "h-6 w-6" : "h-5 w-5"
+                                isMiddle ? (isCompact ? "h-5 w-5" : "h-6 w-6") : "h-5 w-5"
                             )} />
                             {tab.active && (
                                 <motion.div
@@ -137,10 +141,12 @@ export const MobileTabBar: React.FC<MobileTabBarProps> = ({ onRenewCodeClick, is
                                 />
                             )}
                         </div>
-                        <span className={cn(
-                            "mobile-tab-item-label",
-                            isMiddle && "mobile-tab-item-label-middle"
-                        )}>{tab.name}</span>
+                        {!isCompact && (
+                            <span className={cn(
+                                "mobile-tab-item-label",
+                                isMiddle && "mobile-tab-item-label-middle"
+                            )}>{tab.name}</span>
+                        )}
                     </Link>
                 );
             })}

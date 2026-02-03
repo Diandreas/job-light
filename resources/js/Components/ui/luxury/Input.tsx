@@ -49,8 +49,8 @@ export const LuxuryInput = forwardRef<HTMLInputElement, InputProps>(
       default: `
         bg-white dark:bg-neutral-900
         border border-neutral-200 dark:border-neutral-800
-        focus:border-neutral-400 dark:focus:border-neutral-600
-        focus:ring-1 focus:ring-neutral-400 dark:focus:ring-neutral-600
+        focus:border-amber-400 dark:focus:border-amber-500
+        focus:ring-1 focus:ring-amber-400 dark:focus:ring-amber-500
         rounded-xl
         shadow-sm
         ${error ? 'border-red-300 dark:border-red-800 focus:border-red-400 focus:ring-red-400' : ''}
@@ -58,7 +58,7 @@ export const LuxuryInput = forwardRef<HTMLInputElement, InputProps>(
       minimal: `
         bg-transparent
         border-b border-neutral-200 dark:border-neutral-800
-        focus:border-neutral-900 dark:focus:border-neutral-100
+        focus:border-amber-500 dark:focus:border-amber-400
         rounded-none
         ${error ? 'border-red-300 dark:border-red-800 focus:border-red-400' : ''}
       `,
@@ -189,8 +189,8 @@ export const LuxuryTextarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
       default: `
         bg-white dark:bg-neutral-900
         border border-neutral-200 dark:border-neutral-800
-        focus:border-neutral-400 dark:focus:border-neutral-600
-        focus:ring-1 focus:ring-neutral-400 dark:focus:ring-neutral-600
+        focus:border-amber-400 dark:focus:border-amber-500
+        focus:ring-1 focus:ring-amber-400 dark:focus:ring-amber-500
         rounded-xl
         shadow-sm
         ${error ? 'border-red-300 dark:border-red-800 focus:border-red-400 focus:ring-red-400' : ''}
@@ -198,7 +198,7 @@ export const LuxuryTextarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
       minimal: `
         bg-transparent
         border border-neutral-200 dark:border-neutral-800
-        focus:border-neutral-900 dark:focus:border-neutral-100
+        focus:border-amber-500 dark:focus:border-amber-400
         rounded-lg
         ${error ? 'border-red-300 dark:border-red-800 focus:border-red-400' : ''}
       `,
@@ -253,10 +253,9 @@ export const LuxuryTextarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
             <p
               className={`
                 text-xs font-medium
-                ${
-                  characterCount > maxLength * 0.9
-                    ? 'text-red-600 dark:text-red-400'
-                    : characterCount > maxLength * 0.75
+                ${characterCount > maxLength * 0.9
+                  ? 'text-red-600 dark:text-red-400'
+                  : characterCount > maxLength * 0.75
                     ? 'text-yellow-600 dark:text-yellow-400'
                     : 'text-neutral-400 dark:text-neutral-600'
                 }

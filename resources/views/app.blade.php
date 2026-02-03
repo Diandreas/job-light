@@ -36,6 +36,11 @@
     <link rel="apple-touch-icon" href="{{ asset('flavicon.ico') }}">
     <link rel="shortcut icon" href="{{ asset('flavicon.ico') }}">
 
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+
     <!-- Titre de page dynamique -->
     <title inertia>{{ config('app.name', 'Guidy | Générateur de CV gratuit & Assistant de carrière IA') }}</title>
 
@@ -139,7 +144,8 @@
     <link rel="dns-prefetch" href="https://fonts.bunny.net">
 
     <!-- Fonts -->
-    <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet">
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
     <!-- Scripts -->
     @routes

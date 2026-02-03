@@ -298,7 +298,7 @@ const ProfessionSummaryManager: React.FC<Props> = ({
                 {/* Colonne gauche : Profession (= Titre CV) */}
                 <div className="space-y-4">
                     {/* Profession qui devient le titre du CV */}
-                    <div className="bg-white dark:bg-gray-800 rounded-lg p-4 space-y-3 border">
+                    <div className="bg-white dark:bg-gray-800 rounded-lg p-4 space-y-3 border dark:border-gray-700">
                         <div className="flex items-center gap-2">
                             <GraduationCap className="w-4 h-4 text-amber-500" />
                             <h3 className="font-medium text-gray-800 dark:text-white">Titre du CV / Profession</h3>
@@ -306,11 +306,11 @@ const ProfessionSummaryManager: React.FC<Props> = ({
 
                         {/* Affichage du titre actuel */}
                         {hasProfession && (
-                            <div className="p-3 bg-gradient-to-r from-amber-50 to-purple-50 dark:from-amber-900/20 dark:to-purple-900/20 rounded border border-amber-200 dark:border-amber-700 mb-3">
+                            <div className="p-3 bg-amber-50 dark:bg-amber-500/10 rounded-lg border border-amber-200 dark:border-amber-700 mb-3 shadow-sm">
                                 <div className="flex items-center justify-between">
-                                    <div className="flex items-center gap-2">
-                                        <FileText className="w-4 h-4 text-amber-600" />
-                                        <span className="font-medium text-amber-800 dark:text-amber-200">
+                                    <div className="flex items-center gap-2 overflow-hidden">
+                                        <FileText className="w-4 h-4 text-amber-600 flex-shrink-0" />
+                                        <span className="font-semibold text-amber-900 dark:text-amber-400 truncate">
                                             {getCurrentTitle()}
                                         </span>
                                     </div>
@@ -318,7 +318,7 @@ const ProfessionSummaryManager: React.FC<Props> = ({
                                         variant="ghost"
                                         size="sm"
                                         onClick={handleClearProfession}
-                                        className="h-6 w-6 p-0 text-red-500 hover:text-red-700"
+                                        className="h-6 w-6 p-0 text-red-500 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-900/20"
                                     >
                                         <X className="w-3 h-3" />
                                     </Button>
@@ -333,16 +333,16 @@ const ProfessionSummaryManager: React.FC<Props> = ({
                                     onChange={(e) => setInputValue(e.target.value)}
                                     onKeyDown={handleInputKeyDown}
                                     placeholder="Saisissez votre titre/profession..."
-                                    className="text-sm"
+                                    className="text-sm dark:text-white dark:bg-gray-700 dark:border-gray-600 dark:placeholder:text-gray-400"
                                     disabled={isLoading}
                                 />
 
                                 {suggestions.length > 0 && (
-                                    <div className="absolute z-10 w-full mt-1 bg-white rounded-md shadow-lg dark:bg-gray-800 border max-h-32 overflow-y-auto">
+                                    <div className="absolute z-10 w-full mt-1 bg-white rounded-md shadow-lg dark:bg-gray-800 border dark:border-gray-700 max-h-32 overflow-y-auto">
                                         {suggestions.map((profession) => (
                                             <div
                                                 key={profession.id}
-                                                className="px-3 py-2 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 text-sm"
+                                                className="px-3 py-2 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 text-sm text-gray-900 dark:text-white"
                                                 onClick={() => handleSelectSuggestion(profession)}
                                             >
                                                 {getLocalizedName(profession)}
@@ -356,7 +356,7 @@ const ProfessionSummaryManager: React.FC<Props> = ({
                                 onClick={handleAddProfession}
                                 disabled={isLoading || !inputValue.trim()}
                                 size="sm"
-                                className="h-8 w-8 p-0 bg-gradient-to-r from-amber-500 to-purple-500"
+                                className="h-8 w-8 p-0 bg-amber-500 hover:bg-amber-600 dark:bg-amber-500 dark:hover:bg-amber-400 text-white border-0 shadow-lg shadow-amber-500/20"
                             >
                                 <Check className="w-3 h-3" />
                             </Button>
@@ -369,10 +369,10 @@ const ProfessionSummaryManager: React.FC<Props> = ({
                 </div>
 
                 {/* Colonne droite : Résumé */}
-                <div className="bg-white dark:bg-gray-800 rounded-lg p-4 space-y-3 border">
+                <div className="bg-white dark:bg-gray-800 rounded-lg p-4 space-y-3 border dark:border-gray-700">
                     <div className="flex items-center justify-between">
                         <div className="flex items-center gap-2">
-                            <FileText className="w-4 h-4 text-emerald-500" />
+                            <FileText className="w-4 h-4 text-amber-500" />
                             <h3 className="font-medium text-gray-800 dark:text-white">Résumé professionnel</h3>
                         </div>
                         {!isEditingSummary && (
@@ -429,7 +429,7 @@ const ProfessionSummaryManager: React.FC<Props> = ({
                                     onClick={handleSaveSummary}
                                     disabled={isLoading || !summaryText.trim()}
                                     size="sm"
-                                    className="flex-1 h-7 bg-gradient-to-r from-emerald-500 to-teal-500"
+                                    className="flex-1 h-7 bg-amber-500 hover:bg-amber-600 dark:bg-amber-500 dark:hover:bg-amber-400 text-white border-0 shadow-lg shadow-amber-500/20"
                                 >
                                     <Save className="w-3 h-3 mr-1" />
                                     Sauver

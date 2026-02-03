@@ -3,6 +3,7 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Head } from '@inertiajs/react';
 import { LuxuryButton } from '@/Components/ui/luxury/Button';
 import { luxuryTheme } from '@/design-system/luxury-theme';
+import { useTranslation } from 'react-i18next';
 import { Mic, MicOff, Square, Play, RotateCcw, User, Brain, Volume2 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -12,10 +13,11 @@ import { cn } from "@/lib/utils";
 const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
 
 export default function Session({ auth }) {
+    const { t } = useTranslation();
     const [isRecording, setIsRecording] = useState(false);
     const [transcript, setTranscript] = useState('');
     const [messages, setMessages] = useState([
-        { role: 'assistant', content: "Hello! Thank you for joining the interview today. Could you start by introducing yourself and telling me briefly about your background?" }
+        { role: 'assistant', content: t('career_advisor.interview.session.greeting', "Hello! Thank you for joining the interview today. Could you start by introducing yourself and telling me briefly about your background?") }
     ]);
     const recognitionRef = useRef(null);
     const scrollRef = useRef(null);
@@ -81,19 +83,19 @@ export default function Session({ auth }) {
 
     return (
         <AuthenticatedLayout user={auth.user}>
-            <Head title="Active Simulation" />
+            <Head title={t('career_advisor.services.interview_prep.enhanced_title')} />
 
             <div className="h-[calc(100vh-65px)] flex flex-col bg-neutral-50 dark:bg-neutral-950 p-6 sm:p-10 relative overflow-hidden">
                 {/* Status Bar */}
                 <div className="flex justify-between items-center mb-8 px-4">
                     <div className="flex items-center gap-4">
-                        <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-                        <span className="text-[10px] font-bold text-neutral-400 uppercase tracking-[0.3em]">Live Simulation Active</span>
+                        <div className="w-2 h-2 rounded-full bg-amber-500 animate-pulse" />
+                        <span className="text-[10px] font-bold text-amber-600 dark:text-amber-500 uppercase tracking-[0.3em]">{t('career_advisor.interview.session.active')}</span>
                     </div>
                     <div className="flex items-center gap-6">
                         <div className="flex flex-col items-end">
-                            <span className="text-[10px] text-neutral-400 uppercase tracking-widest font-bold">Latency</span>
-                            <span className="text-xs font-medium text-neutral-900 dark:text-neutral-50">24ms</span>
+                            <span className="text-[10px] text-amber-500/60 uppercase tracking-widest font-bold">{t('career_advisor.interview.setup.latency')}</span>
+                            <span className="text-xs font-medium text-amber-600 dark:text-amber-500">24ms</span>
                         </div>
                     </div>
                 </div>
@@ -104,34 +106,34 @@ export default function Session({ auth }) {
                     <div className="flex-1 flex flex-col gap-6 overflow-hidden">
                         <div className="flex-1 bg-neutral-900 rounded-[3rem] relative shadow-2xl overflow-hidden flex flex-col border border-neutral-800">
                             <div className="absolute top-8 left-8 flex items-center gap-3 z-20">
-                                <div className="p-2 bg-white/10 backdrop-blur-md rounded-xl">
-                                    <Brain className="w-5 h-5 text-neutral-50" />
+                                <div className="p-2 bg-amber-500/20 backdrop-blur-md rounded-xl">
+                                    <Brain className="w-5 h-5 text-amber-500" />
                                 </div>
-                                <span className="text-[10px] font-bold text-neutral-300 uppercase tracking-widest">Cognitive Engine</span>
+                                <span className="text-[10px] font-bold text-neutral-300 uppercase tracking-widest">{t('career_advisor.interview.session.cognitive_engine')}</span>
                             </div>
 
                             <div className="flex-1 flex items-center justify-center relative">
                                 {/* Visualizer Placeholder */}
                                 <div className="relative">
-                                    <div className="w-40 h-40 rounded-full border border-neutral-800 flex items-center justify-center">
-                                        <div className="w-32 h-32 rounded-full border border-neutral-700 flex items-center justify-center animate-spin-slow">
-                                            <div className="w-24 h-24 rounded-full bg-neutral-50/5 flex items-center justify-center">
-                                                <Volume2 className="w-8 h-8 text-neutral-50 opacity-20" />
+                                    <div className="w-40 h-40 rounded-full border border-amber-500/20 flex items-center justify-center">
+                                        <div className="w-32 h-32 rounded-full border border-amber-500/30 flex items-center justify-center animate-spin-slow">
+                                            <div className="w-24 h-24 rounded-full bg-amber-500/5 flex items-center justify-center">
+                                                <Volume2 className="w-8 h-8 text-amber-500 opacity-20" />
                                             </div>
                                         </div>
                                     </div>
                                     {isRecording && (
                                         <div className="absolute inset-0 flex items-center justify-center">
-                                            <div className="w-48 h-48 rounded-full border border-neutral-50/20 animate-ping" />
+                                            <div className="w-48 h-48 rounded-full border border-amber-500/20 animate-ping" />
                                         </div>
                                     )}
                                 </div>
                             </div>
 
                             <div className="p-10 bg-gradient-to-t from-black/80 to-transparent">
-                                <div className="flex items-center gap-4 text-neutral-300">
-                                    <div className="w-1 h-1 rounded-full bg-neutral-50" />
-                                    <p className="text-sm font-light italic opacity-60">Architecting response...</p>
+                                <div className="flex items-center gap-4 text-amber-500/60">
+                                    <div className="w-1 h-1 rounded-full bg-amber-500" />
+                                    <p className="text-sm font-light italic opacity-60">{t('career_advisor.interview.session.architecting')}</p>
                                 </div>
                             </div>
                         </div>
@@ -139,10 +141,10 @@ export default function Session({ auth }) {
                         {/* Quick Actions */}
                         <div className="flex gap-4">
                             <LuxuryButton variant="ghost" className="flex-1 h-14 text-xs tracking-widest uppercase font-bold border-neutral-200 dark:border-neutral-800">
-                                Ask for Clarification
+                                {t('career_advisor.interview.session.clarification')}
                             </LuxuryButton>
                             <LuxuryButton variant="ghost" className="flex-1 h-14 text-xs tracking-widest uppercase font-bold border-neutral-200 dark:border-neutral-800">
-                                Request Break
+                                {t('career_advisor.interview.session.break')}
                             </LuxuryButton>
                         </div>
                     </div>
@@ -151,10 +153,10 @@ export default function Session({ auth }) {
                     <div className="w-full lg:w-[450px] flex flex-col gap-6 overflow-hidden">
                         <div className="flex-1 bg-white dark:bg-neutral-900 rounded-[3rem] border border-neutral-100 dark:border-neutral-800 shadow-2xl flex flex-col overflow-hidden">
                             <div className="p-8 border-b border-neutral-100 dark:border-neutral-800 flex justify-between items-center">
-                                <h3 className="text-[10px] font-bold text-neutral-400 uppercase tracking-[0.3em]">Transcription</h3>
+                                <h3 className="text-[10px] font-bold text-neutral-400 uppercase tracking-[0.3em]">{t('career_advisor.interview.session.transcription')}</h3>
                                 <div className="flex items-center gap-2">
-                                    <div className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
-                                    <span className="text-[9px] font-bold text-neutral-400 uppercase tracking-widest">Active</span>
+                                    <div className="w-1.5 h-1.5 rounded-full bg-amber-500" />
+                                    <span className="text-[9px] font-bold text-amber-600 dark:text-amber-500 uppercase tracking-widest">{t('career_advisor.interview.session.active_status')}</span>
                                 </div>
                             </div>
 
@@ -168,14 +170,14 @@ export default function Session({ auth }) {
                                     >
                                         <div className="flex items-center gap-2 mb-2">
                                             <span className="text-[8px] font-bold text-neutral-400 uppercase tracking-widest">
-                                                {msg.role === 'user' ? 'You' : 'Advisor'}
+                                                {msg.role === 'user' ? t('career_advisor.interview.session.you') : t('career_advisor.interview.session.advisor')}
                                             </span>
                                         </div>
                                         <div className={cn(
                                             "max-w-[90%] p-6 text-sm leading-relaxed",
                                             msg.role === 'user'
-                                                ? "bg-neutral-900 dark:bg-neutral-100 text-neutral-50 dark:text-neutral-900 rounded-[2rem] rounded-tr-none shadow-xl"
-                                                : "bg-neutral-50 dark:bg-neutral-800 text-neutral-600 dark:text-neutral-300 rounded-[2rem] rounded-tl-none"
+                                                ? "bg-amber-500 text-white rounded-[2rem] rounded-tr-none shadow-xl shadow-amber-500/20"
+                                                : "bg-amber-50 dark:bg-amber-950/30 text-neutral-600 dark:text-neutral-300 rounded-[2rem] rounded-tl-none border border-amber-100/50 dark:border-amber-900/20"
                                         )}>
                                             {msg.content}
                                         </div>
@@ -185,7 +187,7 @@ export default function Session({ auth }) {
                                     <div className="flex flex-col items-end">
                                         <div className="bg-neutral-100 dark:bg-neutral-800/50 p-6 rounded-[2rem] rounded-tr-none border border-dashed border-neutral-300 dark:border-neutral-700 animate-pulse max-w-[90%]">
                                             <p className="text-sm text-neutral-400 italic">
-                                                {transcript || 'Listening to your expertise...'}
+                                                {transcript || t('career_advisor.interview.session.listening')}
                                             </p>
                                         </div>
                                     </div>
@@ -205,8 +207,8 @@ export default function Session({ auth }) {
                                 <LuxuryButton
                                     variant="primary"
                                     className={cn(
-                                        "w-20 h-20 rounded-full p-0 flex items-center justify-center shadow-2xl transition-all duration-700",
-                                        isRecording && "bg-neutral-50 text-neutral-900 scale-110"
+                                        "w-20 h-20 rounded-full p-0 flex items-center justify-center shadow-2xl shadow-amber-500/40 transition-all duration-700",
+                                        isRecording && "bg-amber-600 scale-110"
                                     )}
                                     onClick={toggleRecording}
                                 >

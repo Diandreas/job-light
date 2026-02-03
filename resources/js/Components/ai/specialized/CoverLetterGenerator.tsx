@@ -225,10 +225,10 @@ Créez une lettre de motivation personnalisée qui met en valeur mon profil pour
                         <Card className="border-0 shadow-lg bg-white/90 dark:bg-gray-900/90 backdrop-blur-sm">
                             <CardContent className="p-6 space-y-4">
                                 <div className="flex items-center gap-3 mb-6">
-                                    <div className="w-8 h-8 rounded-full bg-amber-50 dark:bg-amber-900/20 flex items-center justify-center text-amber-600 dark:text-amber-500 border border-amber-100 dark:border-amber-800">
+                                    <div className="w-8 h-8 rounded-full bg-amber-500 flex items-center justify-center text-white border border-amber-600 shadow-lg shadow-amber-500/20">
                                         <Target className="w-4 h-4" />
                                     </div>
-                                    <h3 className="text-xl font-serif text-gray-900 dark:text-gray-100">
+                                    <h3 className="text-xl font-serif text-gray-900 dark:text-gray-100 italic">
                                         Informations sur le Poste
                                     </h3>
                                 </div>
@@ -332,10 +332,10 @@ Créez une lettre de motivation personnalisée qui met en valeur mon profil pour
                         <Card className="border-0 shadow-lg bg-white/90 dark:bg-gray-900/90 backdrop-blur-sm">
                             <CardContent className="p-6 space-y-4">
                                 <div className="flex items-center gap-3 mb-6">
-                                    <div className="w-8 h-8 rounded-full bg-amber-50 dark:bg-amber-900/20 flex items-center justify-center text-amber-600 dark:text-amber-500 border border-amber-100 dark:border-amber-800">
+                                    <div className="w-8 h-8 rounded-full bg-amber-500 flex items-center justify-center text-white border border-amber-600 shadow-lg shadow-amber-500/20">
                                         <Sparkles className="w-4 h-4" />
                                     </div>
-                                    <h3 className="text-xl font-serif text-gray-900 dark:text-gray-100">
+                                    <h3 className="text-xl font-serif text-gray-900 dark:text-gray-100 italic">
                                         Personnalisation
                                     </h3>
                                 </div>
@@ -398,7 +398,7 @@ Créez une lettre de motivation personnalisée qui met en valeur mon profil pour
                                                     (items) => setFormData(prev => ({ ...prev, motivations: items }))
                                                 )}
                                                 className={`p-2 text-xs rounded-lg border transition-all ${formData.motivations.includes(motivation)
-                                                    ? 'bg-amber-100 border-amber-300 text-amber-700'
+                                                    ? 'bg-amber-500 border-amber-600 text-white shadow-md shadow-amber-500/10'
                                                     : 'bg-gray-50 border-gray-200 text-gray-600 hover:bg-amber-50'
                                                     }`}
                                             >

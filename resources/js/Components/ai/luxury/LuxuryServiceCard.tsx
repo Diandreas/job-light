@@ -35,7 +35,7 @@ export const LuxuryServiceCard: React.FC<LuxuryServiceCardProps> = ({
                 w-full text-left p-6 rounded-2xl
                 border transition-all duration-400
                 ${isSelected
-                    ? 'border-neutral-900 dark:border-neutral-50 bg-neutral-50 dark:bg-neutral-950 shadow-md'
+                    ? 'border-amber-500 bg-amber-50/50 dark:bg-amber-500/5 shadow-md shadow-amber-500/10'
                     : 'border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 hover:border-neutral-300 dark:hover:border-neutral-700'
                 }
                 ${className}
@@ -49,14 +49,14 @@ export const LuxuryServiceCard: React.FC<LuxuryServiceCardProps> = ({
                 <div className={`
                     p-3 rounded-xl transition-colors duration-400
                     ${isSelected
-                        ? 'bg-neutral-900 dark:bg-neutral-50'
+                        ? 'bg-amber-500'
                         : 'bg-neutral-100 dark:bg-neutral-800'
                     }
                 `}>
                     <Icon className={`
                         w-5 h-5 transition-colors duration-400
                         ${isSelected
-                            ? 'text-white dark:text-neutral-900'
+                            ? 'text-white'
                             : 'text-neutral-700 dark:text-neutral-300'
                         }
                     `} />
@@ -66,7 +66,7 @@ export const LuxuryServiceCard: React.FC<LuxuryServiceCardProps> = ({
                     <div className={`
                         px-3 py-1 rounded-full text-xs font-medium tracking-wide
                         ${isSelected
-                            ? 'bg-neutral-900 dark:bg-neutral-50 text-white dark:text-neutral-900'
+                            ? 'bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-300'
                             : 'bg-neutral-100 dark:bg-neutral-800 text-neutral-600 dark:text-neutral-400'
                         }
                     `}>
@@ -80,7 +80,7 @@ export const LuxuryServiceCard: React.FC<LuxuryServiceCardProps> = ({
                 <h3 className={`
                     text-base font-semibold tracking-tight
                     ${isSelected
-                        ? 'text-neutral-900 dark:text-neutral-50'
+                        ? 'text-amber-700 dark:text-amber-400'
                         : 'text-neutral-800 dark:text-neutral-100'
                     }
                 `}>
@@ -104,7 +104,7 @@ export const LuxuryServiceCard: React.FC<LuxuryServiceCardProps> = ({
                     initial={{ scaleX: 0 }}
                     animate={{ scaleX: 1 }}
                     transition={{ duration: 0.3, ease: luxuryTheme.animations.easings.elegant }}
-                    className="mt-4 h-0.5 bg-neutral-900 dark:bg-neutral-50 rounded-full origin-left"
+                    className="mt-4 h-0.5 bg-amber-500 rounded-full origin-left"
                 />
             )}
         </motion.button>

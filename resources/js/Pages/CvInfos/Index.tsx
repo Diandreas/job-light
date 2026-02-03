@@ -50,9 +50,9 @@ import { formatPrice } from '@/utils/currency';
 
 const getSidebarItems = (t: any) => [
     { id: 'personalInfo', label: t('cvInterface.steps.step1'), icon: User, color: 'text-amber-500' },
-    { id: 'professionSummary', label: t('cvInterface.steps.step2'), icon: FileText, color: 'text-blue-500' },
-    { id: 'experience', label: t('cvInterface.steps.step3'), icon: Briefcase, color: 'text-amber-600' },
-    { id: 'skills', label: t('cvInterface.steps.step5'), icon: Code, color: 'text-purple-600' }
+    { id: 'professionSummary', label: t('cvInterface.steps.step2'), icon: FileText, color: 'text-amber-500' },
+    { id: 'experience', label: t('cvInterface.steps.step3'), icon: Briefcase, color: 'text-amber-500' },
+    { id: 'skills', label: t('cvInterface.steps.step5'), icon: Code, color: 'text-amber-500' }
 ];
 
 const getPersonalInfoFields = (t: any) => [
@@ -256,8 +256,8 @@ const TutorialOverlay = ({ targetRect, children }: { targetRect: DOMRect | null,
         left: 0,
         width: '100vw',
         height: '100vh',
-        backgroundColor: 'rgba(0, 0, 0, 0.4)',
-        backdropFilter: 'blur(1px)',
+        backgroundColor: 'rgba(0, 0, 0, 0.6)', // Plus sombre pour le luxe
+        backdropFilter: 'blur(2px)',
         clipPath: `polygon(
             0% 0%,
             0% 100%,
@@ -280,12 +280,12 @@ const TutorialOverlay = ({ targetRect, children }: { targetRect: DOMRect | null,
         left: Math.max(0, x),
         width: Math.min(window.innerWidth - Math.max(0, x), width),
         height: Math.min(window.innerHeight - Math.max(0, y), height),
-        border: '2px solid #f59e0b',
+        border: '1px solid var(--luxury-gold-400)', // Plus fin
         borderRadius: '8px',
-        boxShadow: '0 0 15px rgba(245, 158, 11, 0.3)',
+        boxShadow: '0 0 30px var(--luxury-gold-400)', // Glow doré
         zIndex: 9999,
         pointerEvents: 'none' as const,
-        animation: 'pulse 2s infinite'
+        animation: 'pulse 3s infinite ease-in-out' // Plus lent
     };
 
     return (
@@ -298,10 +298,12 @@ const TutorialOverlay = ({ targetRect, children }: { targetRect: DOMRect | null,
             <style>{`
                 @keyframes pulse {
                     0%, 100% {
-                        box-shadow: 0 0 15px rgba(245, 158, 11, 0.3);
+                        box-shadow: 0 0 15px rgba(245, 158, 11, 0.1);
+                        border-color: rgba(245, 158, 11, 0.3);
                     }
                     50% {
-                        box-shadow: 0 0 25px rgba(245, 158, 11, 0.6);
+                        box-shadow: 0 0 30px rgba(245, 158, 11, 0.3);
+                        border-color: rgba(245, 158, 11, 0.8);
                     }
                 }
             `}</style>
@@ -321,31 +323,9 @@ const Tutorial = ({ isVisible, onComplete, currentSection, onNavigateToSection }
             id: 'welcome',
             title: t('tutorial.welcome.title'),
             description: t('tutorial.welcome.description'),
-            target: null,
-            action: null
-        },
-        {
-            id: 'navbar',
-            title: t('tutorial.navbar.title'),
-            description: t('tutorial.navbar.description'),
-            target: () => isMobile ? null : 'nav .mx-auto', // Cibler la navbar principale
-            action: null,
-            skipOnMobile: true
-        },
-        {
-            id: 'cvNavigation',
-            title: t('tutorial.cvNavigation.title'),
-            description: t('tutorial.cvNavigation.description'),
-            target: () => isMobile
-                ? '.sticky.top-12' // Mobile CV nav
-                : 'aside.hidden.md\\:block', // Desktop CV sidebar
-            action: null
-        },
-        {
-            id: 'progress',
-            title: t('tutorial.progress.title'),
-            description: t('tutorial.progress.description'),
-            target: '[data-tutorial="progress"]',
+            target: '[data-tutorial="welcome-header"]',
+            skipOnMobile: false,
+            skipOnDesktop: false,
             action: null
         },
         {
@@ -353,15 +333,26 @@ const Tutorial = ({ isVisible, onComplete, currentSection, onNavigateToSection }
             title: t('tutorial.import.title'),
             description: t('tutorial.import.description'),
             target: '[data-tutorial="import"]',
+            skipOnMobile: false,
+            skipOnDesktop: false,
             action: null
         },
         {
-            id: 'sidebar',
-            title: t('tutorial.sidebar.title'),
-            description: t('tutorial.sidebar.description'),
-            target: () => isMobile
-                ? '.w-11[data-tutorial="sidebar"]'     // Mobile sidebar spécifique
-                : '.hidden.md\\:block[data-tutorial="sidebar"]',  // Desktop sidebar spécifique
+            id: 'progress',
+            title: t('tutorial.progress.title'),
+            description: t('tutorial.progress.description'),
+            target: '[data-tutorial="progress"]',
+            skipOnMobile: false,
+            skipOnDesktop: false,
+            action: null
+        },
+        {
+            id: 'stepper',
+            title: t('tutorial.stepper.title'),
+            description: t('tutorial.stepper.description'),
+            target: '[data-tutorial="stepper"]',
+            skipOnMobile: false,
+            skipOnDesktop: false,
             action: null
         },
         {
@@ -369,22 +360,9 @@ const Tutorial = ({ isVisible, onComplete, currentSection, onNavigateToSection }
             title: t('tutorial.personalInfo.title'),
             description: t('tutorial.personalInfo.description'),
             target: '[data-tutorial="content"]',
+            skipOnMobile: false,
+            skipOnDesktop: false,
             action: () => onNavigateToSection('personalInfo')
-        },
-        {
-            id: 'stepper',
-            title: t('tutorial.stepper.title'),
-            description: t('tutorial.stepper.description'),
-            target: '[data-tutorial="stepper"]',
-            action: null
-        },
-        {
-            id: 'tabbar',
-            title: t('tutorial.tabbar.title'),
-            description: t('tutorial.tabbar.description'),
-            target: () => isMobile ? '.mobile-tab-bar' : null, // TabBar mobile avec classe spécifique
-            action: null,
-            skipOnDesktop: true
         }
     ];
 
@@ -392,9 +370,6 @@ const Tutorial = ({ isVisible, onComplete, currentSection, onNavigateToSection }
 
     // Calculer le target dynamiquement
     const getTargetSelector = () => {
-        if (typeof currentStepData.target === 'function') {
-            return currentStepData.target();
-        }
         return currentStepData.target;
     };
 
@@ -647,7 +622,7 @@ const Tutorial = ({ isVisible, onComplete, currentSection, onNavigateToSection }
                     {/* Header */}
                     <div className="flex items-start justify-between mb-3">
                         <div className="flex items-start gap-3 flex-1 min-w-0">
-                            <div className={`${isMobile ? 'w-8 h-8' : 'w-10 h-10'} bg-gradient-to-r from-amber-500 to-purple-500 rounded-full flex items-center justify-center flex-shrink-0`}>
+                            <div className={`${isMobile ? 'w-8 h-8' : 'w-10 h-10'} bg-amber-500 rounded-full flex items-center justify-center flex-shrink-0 shadow-lg shadow-amber-500/20`}>
                                 <HelpCircle className={`${isMobile ? 'w-4 h-4' : 'w-5 h-5'} text-white`} />
                             </div>
                             <div className="min-w-0 flex-1">
@@ -671,9 +646,9 @@ const Tutorial = ({ isVisible, onComplete, currentSection, onNavigateToSection }
 
                     {/* Progress bar */}
                     <div className="mb-4">
-                        <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-1.5">
+                        <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-1.5 overflow-hidden">
                             <div
-                                className="bg-gradient-to-r from-amber-500 to-purple-500 h-1.5 rounded-full transition-all duration-300"
+                                className="bg-amber-500 h-1.5 rounded-full transition-all duration-500 ease-out"
                                 style={{ width: `${(getVisibleStepIndex() / getVisibleStepsCount()) * 100}%` }}
                             />
                         </div>
@@ -695,11 +670,11 @@ const Tutorial = ({ isVisible, onComplete, currentSection, onNavigateToSection }
                                     <Button
                                         onClick={nextStep}
                                         disabled={isAnimating}
-                                        className="flex-1 bg-gradient-to-r from-amber-500 to-purple-500 hover:from-amber-600 hover:to-purple-600 text-white h-9 border-0"
+                                        className="flex-1 bg-amber-500 hover:bg-amber-600 dark:hover:bg-amber-400 text-white h-9 border-0 shadow-lg shadow-amber-500/20"
                                         size="sm"
                                     >
                                         {isAnimating ? (
-                                            <div className="w-4 h-4 animate-spin border-2 border-white border-t-transparent rounded-full mr-2" />
+                                            <div className="w-4 h-4 animate-spin border-2 border-current border-t-transparent rounded-full mr-2" />
                                         ) : (getVisibleStepIndex() === getVisibleStepsCount()) ? (
                                             <Check className="w-4 h-4 mr-2" />
                                         ) : (
@@ -760,11 +735,11 @@ const Tutorial = ({ isVisible, onComplete, currentSection, onNavigateToSection }
                                     <Button
                                         onClick={nextStep}
                                         disabled={isAnimating}
-                                        className="bg-gradient-to-r from-amber-500 to-purple-500 hover:from-amber-600 hover:to-purple-600 text-white border-0"
+                                        className="bg-amber-500 hover:bg-amber-600 dark:hover:bg-amber-400 text-white border-0 shadow-lg shadow-amber-500/20"
                                         size="sm"
                                     >
                                         {isAnimating ? (
-                                            <div className="w-4 h-4 animate-spin border-2 border-white border-t-transparent rounded-full mr-1" />
+                                            <div className="w-4 h-4 animate-spin border-2 border-current border-t-transparent rounded-full mr-1" />
                                         ) : (getVisibleStepIndex() === getVisibleStepsCount()) ? (
                                             <Check className="w-4 h-4 mr-1" />
                                         ) : (
@@ -795,7 +770,7 @@ const ImportButton = ({ onImport, isImporting, isCompact = false }) => {
                 <DropdownMenuTrigger asChild>
                     <Button
                         variant="ghost"
-                        className={`${isCompact ? 'text-xs h-7 py-0 px-2' : 'text-xs sm:text-sm h-7 sm:h-9 py-0 sm:py-2 px-3'} text-amber-600 hover:text-amber-700 hover:bg-amber-50 dark:text-amber-400 dark:hover:bg-amber-900/20 border-0`}
+                        className={`${isCompact ? 'text-xs h-7 py-0 px-2' : 'text-xs sm:text-sm h-7 sm:h-9 py-0 sm:py-2 px-3'} text-neutral-600 hover:text-neutral-900 hover:bg-neutral-100 dark:text-neutral-400 dark:hover:text-neutral-50 dark:hover:bg-neutral-800 border-0`}
                         disabled={isImporting}
                     >
                         {isImporting ? (
@@ -831,7 +806,7 @@ const WelcomeCard = ({ onStartTutorial }) => {
     const { t } = useTranslation();
 
     return (
-        <div className="bg-gradient-to-r from-amber-50 to-purple-50 dark:from-gray-800 dark:to-gray-900 rounded-xl mb-2 sm:mb-3 p-2 sm:p-3 border-0">
+        <div className="bg-amber-500/5 dark:bg-amber-500/10 rounded-xl mb-2 sm:mb-3 p-2 sm:p-3 border border-amber-500/10">
             <div className="flex items-center justify-between gap-2 sm:gap-3">
                 <div className="min-w-0 flex-1">
                     <h3 className="text-sm sm:text-base font-semibold text-gray-800 dark:text-white truncate">
@@ -845,7 +820,7 @@ const WelcomeCard = ({ onStartTutorial }) => {
                     onClick={onStartTutorial}
                     variant="ghost"
                     size="sm"
-                    className="text-amber-700 hover:text-amber-800 hover:bg-amber-100 dark:text-amber-400 dark:hover:bg-amber-900/20 whitespace-nowrap flex-shrink-0 h-7 text-xs px-2 sm:h-8 sm:px-3 sm:text-sm border-0"
+                    className="text-amber-600 hover:text-amber-700 hover:bg-amber-100 dark:text-amber-400 dark:hover:bg-amber-900/20 whitespace-nowrap flex-shrink-0 h-7 text-xs px-2 sm:h-8 sm:px-3 sm:text-sm border-0"
                 >
                     <Play className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
                     <span className="hidden sm:inline">{t('tutorial.restart')}</span>
@@ -1019,7 +994,7 @@ const PersonalInfoCard = ({ item, onEdit, updateCvInformation }) => {
                 </h2>
                 <Button
                     onClick={onEdit}
-                    className="w-full sm:w-auto bg-gradient-to-r from-amber-500 to-purple-500 hover:from-amber-600 hover:to-purple-600 dark:from-amber-400 dark:to-purple-400 text-white h-8 sm:h-10 text-xs sm:text-sm py-0 border-0"
+                    className="w-full sm:w-auto bg-amber-500 hover:bg-amber-600 dark:bg-amber-500 dark:hover:bg-amber-400 text-white h-8 sm:h-10 text-xs sm:text-sm py-0 border-0 shadow-lg shadow-amber-500/10"
                 >
                     <PencilIcon className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
                     {t('cv.interface.personal.edit')}
@@ -1056,7 +1031,7 @@ const PersonalInfoCard = ({ item, onEdit, updateCvInformation }) => {
                                 </div>
                             </div>
                         ) : (
-                            <div className="h-full w-full rounded-full bg-gradient-to-r from-amber-500/10 to-purple-500/10 flex items-center justify-center">
+                            <div className="h-full w-full rounded-full bg-amber-500/10 flex items-center justify-center border border-amber-500/10">
                                 <label className="cursor-pointer">
                                     <input
                                         type="file"
@@ -1117,7 +1092,7 @@ const PersonalInfoCard = ({ item, onEdit, updateCvInformation }) => {
                         <Button
                             onClick={handleUpload}
                             disabled={!completedCrop || isUploading}
-                            className="bg-gradient-to-r from-amber-500 to-purple-500 hover:from-amber-600 hover:to-purple-600 dark:from-amber-400 dark:to-purple-400 h-8 sm:h-10 text-xs sm:text-sm border-0"
+                            className="bg-amber-500 hover:bg-amber-600 dark:bg-amber-500 dark:hover:bg-amber-400 h-8 sm:h-10 text-xs sm:text-sm border-0 shadow-lg shadow-amber-500/20"
                         >
                             {isUploading ? t('cv.interface.personal.photo.saving') : t('cv.interface.personal.photo.save')}
                         </Button>
@@ -1190,14 +1165,14 @@ const IntegratedLivePreview = ({ cvInformation, selectedCvModel, availableModels
                 <div style="padding: 20px; font-family: Arial, sans-serif; background: white; min-height: 400px;">
                     <div style="text-align: center; margin-bottom: 20px;">
                         <h1 style="color: #f59e0b; margin: 0;">${cvInformation.personalInformation?.firstName || t('cvInterface.personalInfo.firstName')}</h1>
-                        <h2 style="color: #8b5cf6; margin: 5px 0 0 0; font-size: 18px;">${selectedCvModel.name}</h2>
+                        <h2 style="color: #f59e0b; margin: 5px 0 0 0; font-size: 18px;">${selectedCvModel.name}</h2>
                     </div>
                     <div style="margin: 20px 0;">
                         <h3 style="color: #374151; border-bottom: 2px solid #f59e0b; padding-bottom: 5px;">${t('cvInterface.summary.title')}</h3>
                         <p style="color: #6b7280; line-height: 1.6;">${t('cvInterface.preview.description')}</p>
                     </div>
                     <div style="margin: 20px 0;">
-                        <h3 style="color: #374151; border-bottom: 2px solid #8b5cf6; padding-bottom: 5px;">${t('cvInterface.personalInfo.title')}</h3>
+                        <h3 style="color: #374151; border-bottom: 2px solid #f59e0b; padding-bottom: 5px;">${t('cvInterface.personalInfo.title')}</h3>
                         <p style="color: #6b7280;">Email: ${cvInformation.personalInformation?.email || t('common.notSpecified')}</p>
                         <p style="color: #6b7280;">${t('cvInterface.personalInfo.phone')}: ${cvInformation.personalInformation?.phone || t('common.notSpecified')}</p>
                     </div>
@@ -1240,7 +1215,7 @@ const IntegratedLivePreview = ({ cvInformation, selectedCvModel, availableModels
                     <Eye className="w-5 h-5 text-amber-500" />
                     <div>
                         <h3 className="font-semibold text-gray-800 dark:text-gray-200 text-sm">
-                            Aperçu Live
+                            {t('cvInterface.livePreview.title')}
                         </h3>
                         {selectedCvModel && (
                             <p className="text-xs text-gray-500 dark:text-gray-400">
@@ -1306,14 +1281,14 @@ const IntegratedLivePreview = ({ cvInformation, selectedCvModel, availableModels
                                 <FileText className="w-8 h-8 text-amber-500" />
                             </div>
                             <p className="text-gray-600 dark:text-gray-400 mb-4 text-sm">
-                                Sélectionnez un modèle
+                                {t('cvInterface.livePreview.selectModel')}
                             </p>
                             <Button
                                 onClick={() => setIsModelSelectorOpen(true)}
-                                className="bg-gradient-to-r from-amber-500 to-purple-500 hover:from-amber-600 hover:to-purple-600 text-white border-0 text-sm h-8"
+                                className="bg-amber-500 hover:bg-amber-600 text-white border-0 text-sm h-8 shadow-lg shadow-amber-500/20"
                             >
                                 <Star className="w-3.5 h-3.5 mr-2" />
-                                Choisir
+                                {t('cvInterface.livePreview.choose')}
                             </Button>
                         </div>
                     </div>
@@ -1342,7 +1317,7 @@ const IntegratedLivePreview = ({ cvInformation, selectedCvModel, availableModels
                                         <div className="flex items-center gap-3">
                                             <Loader2 className="w-5 h-5 text-amber-500 animate-spin" />
                                             <p className="text-sm text-gray-600 dark:text-gray-400">
-                                                Génération...
+                                                {t('cvInterface.livePreview.generating')}
                                             </p>
                                         </div>
                                     </div>
@@ -1357,14 +1332,14 @@ const IntegratedLivePreview = ({ cvInformation, selectedCvModel, availableModels
                                 <RefreshCw className="w-8 h-8 text-gray-400" />
                             </div>
                             <p className="text-gray-600 dark:text-gray-400 mb-4 text-sm">
-                                Générer l'aperçu
+                                {t('cvInterface.livePreview.generatePreview')}
                             </p>
                             <Button
                                 onClick={() => generatePreview(true)}
                                 variant="ghost"
                                 className="text-sm h-8 border-gray-200 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-800 border-0"
                             >
-                                Générer
+                                {t('cvInterface.livePreview.generate')}
                             </Button>
                         </div>
                     </div>
@@ -1380,7 +1355,7 @@ const IntegratedLivePreview = ({ cvInformation, selectedCvModel, availableModels
                                 "w-2 h-2 rounded-full",
                                 autoRefresh ? "bg-green-400" : "bg-gray-300"
                             )} />
-                            <span>{autoRefresh ? "Auto" : "Manuel"}</span>
+                            <span>{autoRefresh ? t('cvInterface.livePreview.auto') : t('cvInterface.livePreview.manual')}</span>
                         </div>
                         <span className="truncate">{selectedCvModel.name}</span>
                     </div>
@@ -1391,11 +1366,11 @@ const IntegratedLivePreview = ({ cvInformation, selectedCvModel, availableModels
             <Dialog open={isModelSelectorOpen} onOpenChange={setIsModelSelectorOpen}>
                 <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto border-0 rounded-2xl">
                     <DialogHeader>
-                        <DialogTitle className="flex items-center gap-2 text-lg">
-                            <div className="w-8 h-8 bg-gradient-to-r from-amber-500 to-purple-500 rounded-full flex items-center justify-center">
+                        <DialogTitle className="flex items-center gap-2 text-lg font-serif">
+                            <div className="w-8 h-8 bg-amber-500 rounded-full flex items-center justify-center shadow-lg shadow-amber-500/20">
                                 <Star className="w-4 h-4 text-white" />
                             </div>
-                            Choisir un modèle de CV
+                            {t('cvInterface.livePreview.chooseModelTitle')}
                         </DialogTitle>
                     </DialogHeader>
 
@@ -1408,7 +1383,7 @@ const IntegratedLivePreview = ({ cvInformation, selectedCvModel, availableModels
                                 className={cn(
                                     "rounded-xl p-4 cursor-pointer transition-all border-0",
                                     selectedCvModel?.id === model.id
-                                        ? "bg-gradient-to-br from-amber-50 to-purple-50 dark:from-amber-900/20 dark:to-purple-900/20 shadow-md"
+                                        ? "bg-amber-500/5 dark:bg-amber-500/10 border border-amber-500/20 shadow-md"
                                         : "bg-gray-50 dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700"
                                 )}
                                 onClick={() => {
@@ -1446,8 +1421,8 @@ const IntegratedLivePreview = ({ cvInformation, selectedCvModel, availableModels
                                     </span>
 
                                     {selectedCvModel?.id === model.id && (
-                                        <span className="text-xs px-2 py-1 bg-gradient-to-r from-amber-500 to-purple-500 text-white rounded-full font-medium">
-                                            Sélectionné
+                                        <span className="text-xs px-2 py-1 bg-amber-500 text-white rounded-full font-medium shadow-sm">
+                                            {t('cvInterface.livePreview.selected')}
                                         </span>
                                     )}
                                 </div>
@@ -1460,8 +1435,8 @@ const IntegratedLivePreview = ({ cvInformation, selectedCvModel, availableModels
     );
 };
 const SidebarButton = ({ item, isActive, isComplete, onClick, isMobile }) => {
-    const activeClass = "bg-gradient-to-r from-amber-500 to-purple-500 dark:from-amber-400 dark:to-purple-400 text-white shadow-sm";
-    const inactiveClass = "hover:bg-amber-50 dark:hover:bg-gray-800 text-gray-700 dark:text-gray-200";
+    const activeClass = "bg-amber-500 text-white shadow-lg shadow-amber-500/20";
+    const inactiveClass = "hover:bg-amber-50 dark:hover:bg-amber-900/10 text-gray-700 dark:text-gray-200";
 
     return (
         <motion.button
@@ -1684,7 +1659,7 @@ export default function CvInterface({ auth, cvInformation: initialCvInformation 
                         {completionStatus.skills && (
                             <div className="mt-8 pt-6 border-t border-gray-100 dark:border-gray-800 flex justify-center">
                                 <Link href={route('userCvModels.index')}>
-                                    <Button className="h-10 sm:h-12 px-6 sm:px-8 text-sm sm:text-base bg-gradient-to-r from-amber-500 to-purple-500 hover:from-amber-600 hover:to-purple-600 dark:from-amber-400 dark:to-purple-400 text-white border-0 shadow-lg hover:shadow-xl transition-all">
+                                    <Button className="h-10 sm:h-12 px-6 sm:px-8 text-sm sm:text-base bg-amber-500 hover:bg-amber-600 dark:bg-amber-500 dark:hover:bg-amber-400 text-white border-0 shadow-lg hover:shadow-xl transition-all shadow-amber-500/20">
                                         <Star className="mr-2 h-4 w-4 sm:h-5 sm:w-5" />
                                         {t('cv.interface.chooseDesign')}
                                         <CircleChevronRight className="ml-2 h-4 w-4 sm:h-5 sm:w-5" />
@@ -1870,58 +1845,54 @@ export default function CvInterface({ auth, cvInformation: initialCvInformation 
                 </div>
             )}
 
-            <div className="min-h-screen bg-gradient-to-b from-amber-50/30 to-purple-50/30 dark:from-gray-900 dark:to-gray-800">
+            <div className="min-h-screen bg-gray-50/30 dark:bg-gray-900/30">
                 <div className="container mx-auto py-3 sm:py-4 px-3 sm:px-4 transition-all duration-300">
-                    {/* Header responsive amélioré - avec pourcentage et import intégrés */}
-                    <div className="flex justify-between items-center mb-3 sm:mb-4">
-                        <div className="hidden sm:flex items-center gap-1.5 sm:gap-2">
-                            <Sparkles className="h-5 w-5 sm:h-6 sm:w-6 text-amber-500 dark:text-amber-400" />
-                            <h2 className="hidden sm:flex font-bold text-base sm:text-xl bg-gradient-to-r from-amber-500 to-purple-500 dark:from-amber-400 dark:to-purple-400 text-transparent bg-clip-text">
-                                {t('cv.interface.title')}
-                            </h2>
-                        </div>
-                        <div className="flex items-center gap-2">
-                            {/* Bouton Voir CV */}
-                            <Link href={route('cv-infos.show', auth.user.id)}>
-                                <Button
-                                    variant="ghost"
-                                    size="sm"
-                                    className="flex items-center gap-1 text-purple-600 hover:text-purple-700 hover:bg-purple-50 dark:text-purple-400 dark:hover:bg-purple-900/20 transition-all border-0"
-                                >
-                                    <FileText className="w-4 h-4" />
-                                    <span className="text-xs sm:text-sm">{t('cv.interface.viewCv')}</span>
-                                </Button>
-                            </Link>
+                    {/* Header responsive amélioré - Centré et Épuré */}
+                    <div className="flex flex-col gap-6 mb-8">
+                        {/* Top Bar: Import & View (Secondary Actions) */}
+                        <div className="flex justify-between items-center">
+                            <ImportButton onImport={handleImport} isImporting={isImporting} isCompact={true} data-tutorial="import" />
 
-                            {/* Bouton Changer modèle */}
-                            <Link href={route('userCvModels.index')}>
-                                <Button
-                                    variant="ghost"
-                                    size="sm"
-                                    className="flex items-center gap-1 text-blue-600 hover:text-blue-700 hover:bg-blue-50 dark:text-blue-400 dark:hover:bg-blue-900/20 transition-all border-0"
-                                >
-                                    <Sparkles className="w-4 h-4" />
-                                    <span className="text-xs sm:text-sm">{t('cv.interface.changeModel')}</span>
-                                </Button>
-                            </Link>
+                            <div className="flex items-center gap-2">
+                                <Link href={route('cv-infos.show', auth.user.id)}>
+                                    <Button
+                                        variant="ghost"
+                                        size="sm"
+                                        className="flex items-center gap-1 text-neutral-600 hover:text-neutral-900 hover:bg-neutral-50 dark:text-neutral-400 dark:hover:bg-neutral-800 transition-all border-0"
+                                    >
+                                        <FileText className="w-4 h-4" />
+                                        <span className="text-xs sm:text-sm">{t('cv.interface.viewCv')}</span>
+                                    </Button>
+                                </Link>
 
-
-
-                            {/* Pourcentage et progression */}
-                            <div className="flex items-center gap-2" data-tutorial="progress">
-                                <Progress value={getCompletionPercentage()} className="w-16 sm:w-24 h-2" />
-                                <span className="text-xs font-medium text-gray-600 dark:text-gray-400">
-                                    {getCompletionPercentage()}%
-                                </span>
+                                <div className="flex items-center gap-2 px-3 py-1 bg-neutral-100 dark:bg-neutral-800 rounded-full" data-tutorial="progress">
+                                    <span className="text-xs font-medium text-neutral-600 dark:text-neutral-400">
+                                        {getCompletionPercentage()}%
+                                    </span>
+                                </div>
                             </div>
+                        </div>
 
-                            {/* Bouton d'import */}
-                            <ImportButton onImport={handleImport} isImporting={isImporting} isCompact={true} />
+                        {/* Title Section: Centered & Luxury */}
+                        <div className="text-center space-y-1 sm:space-y-2" data-tutorial="welcome-header">
+                            <h2 className="text-lg sm:text-3xl font-bold text-gray-900 dark:text-white">
+                                {t('cv.editor.welcome_title', "Bienvenue dans l'éditeur de CV")}
+                            </h2>
+                            <p className="text-xs sm:text-base text-neutral-500 dark:text-neutral-400 max-w-lg mx-auto hidden sm:block">
+                                {t('cv.editor.welcome_subtitle', "Complétez votre profil pour créer un CV professionnel")}
+                            </p>
+
+                            <Button
+                                onClick={handleStartTutorial}
+                                variant="link"
+                                size="sm"
+                                className="text-luxury-gold-500 hover:text-luxury-gold-600 dark:text-luxury-gold-400 p-0 h-auto font-medium text-xs sm:text-sm"
+                            >
+                                <Play className="w-3 h-3 mr-1.5" />
+                                {t('cv.editor.restart_tutorial', "Relancer le tutoriel")}
+                            </Button>
                         </div>
                     </div>
-
-                    {/* WelcomeCard avec bouton tutoriel */}
-                    <WelcomeCard onStartTutorial={handleStartTutorial} />
 
                     <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border-0 overflow-hidden">
                         {/* Stepper horizontal en haut */}

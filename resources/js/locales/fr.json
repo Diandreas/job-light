@@ -300,6 +300,35 @@
             "register_button": "S'inscrire gratuitement",
             "free_guarantee": "100% Gratuit ! Créez et téléchargez votre CV sans inscription."
         },
+        "common": {
+            "saved": "Sauvegardé"
+        },
+        "careerAdvisor": {
+            "hero": {
+                "title": "Orchestrez Votre Destin",
+                "subtitle": "Débloquez la précision architecturale dans votre parcours professionnel avec notre suite d'accélérateurs de carrière pilotés par vecteurs."
+            },
+            "tokens": "Jetons",
+            "initiate_protocol": "Initier le Protocole"
+        },
+        "services": {
+            "cover_letter": {
+                "enhanced_title": "Genèse de Lettre de Motivation",
+                "enhanced_description": "Créez un récit professionnel sur mesure avec une précision IA."
+            },
+            "resume_review": {
+                "enhanced_title": "Aperçu Heatmap du CV",
+                "enhanced_description": "Visualisez les forces de votre CV avec une analyse vectorielle orbitale."
+            },
+            "interview_prep": {
+                "enhanced_title": "Simulation d'Entretien Vocal",
+                "enhanced_description": "Maîtrisez votre élocution avec des diagnostics vocaux IA en temps réel."
+            },
+            "roadmap": {
+                "enhanced_title": "Feuille de Route Stratégique",
+                "enhanced_description": "Une synthèse complète de la trajectoire vers vos objectifs."
+            }
+        },
         "dialog": {
             "title": "Télécharger votre CV",
             "description": "Pour télécharger votre CV, veuillez vous connecter ou créer un compte gratuit.",
@@ -452,6 +481,18 @@
             "cta": {
                 "title": "Créez votre CV maintenant",
                 "subtitle": "Choisissez parmi nos designs professionnels"
+            },
+            "livePreview": {
+                "title": "Aperçu Live",
+                "selectModel": "Sélectionnez un modèle",
+                "choose": "Choisir",
+                "generating": "Génération...",
+                "generatePreview": "Générer l'aperçu",
+                "generate": "Générer",
+                "auto": "Auto",
+                "manual": "Manuel",
+                "chooseModelTitle": "Choisir un modèle de CV",
+                "selected": "Sélectionné"
             }
         },
         "sidebar": {
@@ -493,6 +534,7 @@
         "fr": "Français"
     },
     "common": {
+        "color": "Couleur",
         "saving": "Enregistrement...",
         "search": "Rechercher",
         "loading": "Chargement...",
@@ -680,11 +722,9 @@
             "insufficient_tokens": "Vous n'avez pas assez de jetons pour utiliser ce template. Veuillez recharger votre compte.",
             "recharge_tokens": "Recharger mes jetons",
             "recharge": "Recharger",
-            "insufficient_access": {
-                "title": "Accès insuffisant"
-            }
+            "insufficient_balance_title": "Accès insuffisant"
         },
-        "no_model": {
+        "no_model_warning": {
             "message": "Veuillez sélectionner un template de CV dans la section \"Mes designs\" avant de continuer.",
             "action": "Choisir un template"
         },
@@ -710,7 +750,6 @@
         "loading": "Chargement...",
         "free": "Gratuit",
         "tokens": "tokens",
-        "download_pdf": "Télécharger PDF",
         "print": "Imprimer",
         "printing": "Impression...",
         "reset": "Réinitialiser",
@@ -718,13 +757,320 @@
     },
     "career_advisor": {
         "title": "Conseiller de Carrière IA",
+        "hero": {
+            "title": "Orchestrez Votre Destin",
+            "subtitle": "Débloquez la précision architecturale dans votre parcours professionnel avec notre suite d'accélérateurs de carrière pilotés par vecteurs."
+        },
+        "tokens": "Jetons",
+        "initiate_protocol": "Initier le Protocole",
         "header": {
             "balance": "Solde",
             "history": "Historique"
         },
+        "services": {
+            "choose": "Choisissez un service",
+            "description": "Sélectionnez le service qui correspond le mieux à vos besoins professionnels",
+            "cover_letter": {
+                "enhanced_title": "Genèse de Lettre de Motivation",
+                "enhanced_description": "Créez un récit professionnel sur mesure avec une précision IA."
+            },
+            "resume_review": {
+                "enhanced_title": "Aperçu Heatmap du CV",
+                "enhanced_description": "Visualisez les forces de votre CV avec une analyse vectorielle orbitale."
+            },
+            "interview_prep": {
+                "enhanced_title": "Simulation d'Entretien Vocal",
+                "enhanced_description": "Maîtrisez votre élocution avec des diagnostics vocaux IA en temps réel."
+            },
+            "roadmap": {
+                "enhanced_title": "Feuille de Route Stratégique",
+                "enhanced_description": "Une synthèse complète de la trajectoire vers vos objectifs."
+            }
+        },
         "coming_soon": {
             "badge": "Bientôt disponible",
             "available_from": "Dès le {{date}}"
+        },
+        "common": {
+            "junior": "Junior",
+            "senior": "Senior",
+            "expert": "Expert",
+            "strategic": "Stratégique",
+            "easy": "Débutant",
+            "medium": "Intermédiaire",
+            "hard": "Avancé",
+            "short": "Court (15-30m)",
+            "standard": "Standard (30-45m)",
+            "detailed": "Détaillé (45-60m)",
+            "sections": {
+                "summary": "Résumé Professionnel",
+                "experience": "Expérience Professionnelle",
+                "skills": "Compétences & Tech",
+                "education": "Éducation",
+                "layout": "Mise en page & Formatage"
+            },
+            "tokens": "tokens"
+        },
+        "cover_letter": {
+            "wizard": {
+                "title": "Concierge",
+                "concierge_tag": "Concierge de Luxe",
+                "stage": "Étape {{current}} sur {{total}}",
+                "analysis": "Analyse Vectorielle",
+                "steps": {
+                    "foundations": {
+                        "title": "Base de Référence",
+                        "subtitle": "Définition des paramètres structurels de votre candidature."
+                    },
+                    "intelligence": {
+                        "title": "Intelligence",
+                        "subtitle": "Synthèse du contexte organisationnel et alignement des missions."
+                    },
+                    "vibe": {
+                        "title": "Vibe",
+                        "subtitle": "Calibration de la résonance stratégique de votre récit."
+                    },
+                    "refinement": {
+                        "title": "Raffinement",
+                        "subtitle": "Finalisation des nuances exclusives de votre profil."
+                    }
+                },
+                "labels": {
+                    "company": "Organisation Cible",
+                    "job_title": "Architecture du Poste",
+                    "recipient": "Décisionnaire",
+                    "context": "Contexte Stratégique",
+                    "tone": "Ton Stratégique",
+                    "expertise": "Expertise Prioritaire",
+                    "nuances": "Nuances Exclusives"
+                },
+                "placeholders": {
+                    "company": "ex: Goldman Sachs, Tesla ou LVMH",
+                    "job_title": "ex: Directeur de Création ou Responsable Stratégique",
+                    "recipient": "Comité de Recrutement",
+                    "description": "Collez la description du poste pour une analyse vectorielle profonde...",
+                    "skills": "React, Architecture, Gouvernance...",
+                    "nuances_desc": "Identifiez des réalisations spécifiques ou des récits que vous souhaitez souligner dans votre parcours.",
+                    "nuances_placeholder": "ex: Orchestration d'une transition de 50M$..."
+                },
+                "tones": {
+                    "professional": "Professionnel",
+                    "creative": "Créatif",
+                    "confident": "Confiant",
+                    "humble": "Humble"
+                },
+                "buttons": {
+                    "retrospective": "Rétrospective",
+                    "evolution": "Évolution",
+                    "generate": "Générer la Stratégie"
+                }
+            },
+            "studio": {
+                "title": "Studio",
+                "ai_assistant": "Assistant IA",
+                "refine_with_ai": "Affinez votre lettre de motivation avec des conseils intelligents.",
+                "target_role": "Poste Cible",
+                "styling_opts": "Options de Style",
+                "coach_assistance": "Assistance du Coach",
+                "regenerate": "Régénérer la stratégie",
+                "elevate": "Améliorer le vocabulaire",
+                "conciseness": "Augmenter la concision",
+                "job_role_placeholder": "Poste Cible",
+                "org_placeholder": "Organisation",
+                "untitled": "Récit sans titre",
+                "autosaved": "Sauvegardé automatiquement",
+                "export_pdf": "Exporter Portfolio PDF",
+                "generating": "Architecture de votre récit...",
+                "generated": "Récit entièrement architecturé",
+                "error": "Erreur de transmission pendant l'architecture"
+            }
+        },
+        "cv_heatmap": {
+            "title": "Analyse Heatmap du CV",
+            "engine_subtitle": "Moteur d'Analyse de CV",
+            "main_title": "Heatmap de Résonance",
+            "impact_score": "Score d'Impact",
+            "percentile": "Classement Percentile : Top 30%",
+            "report_title": "Rapport d'Intelligence",
+            "assessment": "Évaluation Globale",
+            "optimization_path": "Voie d'Optimisation",
+            "apply_fixes": "Appliquer les corrections IA"
+        },
+        "interview": {
+            "setup": {
+                "title": "Simulation d'Entretien",
+                "premium_coaching": "Coaching Premium",
+                "architecture": "Architecture d'Entretien",
+                "context_step": "Contexte Professionnel",
+                "target_role": "Poste / Secteur Visé",
+                "company": "Entreprise / Organisation",
+                "tech_config": "Configuration Technique",
+                "type": "Type d'Entretien",
+                "duration": "Durée Prévue",
+                "difficulty": "Niveau d'Agressivité",
+                "focus": "Focus Spécialisé",
+                "begin": "Démarrer la Session",
+                "calibrating": "Calibration du recruteur IA...",
+                "latency": "Latence",
+                "focus_areas": {
+                    "intro": "Présentation personnelle",
+                    "motivation": "Motivation pour le poste",
+                    "experience": "Expériences passées",
+                    "technical": "Compétences techniques",
+                    "team": "Gestion d'équipe",
+                    "problem_solving": "Résolution de problèmes",
+                    "company": "Questions sur l'entreprise",
+                    "salary": "Négociation salariale",
+                    "hard_questions": "Questions difficiles",
+                    "projects": "Projets et réalisations",
+                    "weaknesses": "Points faibles",
+                    "vision": "Vision de carrière"
+                },
+                "common_concerns": {
+                    "stress": "Stress et gestion du stress",
+                    "experience": "Manque d'expérience",
+                    "sector_change": "Changement de secteur",
+                    "inactivity": "Période d'inactivité",
+                    "failure": "Échec professionnel",
+                    "salary": "Prétentions salariales",
+                    "trap_questions": "Questions pièges",
+                    "shyness": "Timidité",
+                    "overqualified": "Surqualification",
+                    "language": "Langue étrangère"
+                }
+            },
+            "types": {
+                "hr": "Entretien RH",
+                "hr_desc": "Motivation, culture, fit",
+                "technical": "Entretien Technique",
+                "technical_desc": "Compétences spécialisées",
+                "behavioral": "Entretien Comportemental",
+                "behavioral_desc": "Situations passées, STAR",
+                "case": "Étude de Cas",
+                "case_desc": "Résolution de problèmes",
+                "panel": "Entretien Panel",
+                "panel_desc": "Plusieurs intervieweurs",
+                "final": "Entretien Final",
+                "final_desc": "Direction, négociation"
+            },
+            "session": {
+                "active": "Simulation en Direct Active",
+                "terminate": "Terminer Anticipativement",
+                "pause": "Mettre en Pause",
+                "resume": "Reprendre la Session",
+                "greeting": "Bonjour ! Merci de participer à cet entretien aujourd'hui. Pourriez-vous commencer par vous présenter et me parler brièvement de votre parcours ?",
+                "cognitive_engine": "Moteur Cognitif",
+                "architecting": "Architecture de la réponse...",
+                "clarification": "Demander une Clarification",
+                "break": "Demander une Pause",
+                "transcription": "Transcription",
+                "you": "Vous",
+                "advisor": "Conseiller",
+                "listening": "À l'écoute de votre expertise...",
+                "active_status": "Actif"
+            },
+            "report": {
+                "title": "Performance Intelligence",
+                "subtitle": "Intelligence de Performance",
+                "post_analysis": "Analyse Post-Simulation",
+                "mastery_score": "Score de Maîtrise",
+                "metric_breakdown": "Détail des Métriques",
+                "strategic_assets": "Atouts Stratégiques",
+                "refinement_areas": "Zones de Perfectionnement",
+                "substance": "Intelligence de Substance",
+                "new_expedition": "Initier une Nouvelle Expédition",
+                "share": "Partager",
+                "export": "Exporter PDF",
+                "resonance": "Résonance du Coach",
+                "interrogatory": "Interrogatoire",
+                "metrics": {
+                    "elocution": "Élocution",
+                    "structuring": "Structuration",
+                    "confidence": "Confiance",
+                    "technicality": "Technicité"
+                }
+            }
+        },
+        "roadmap": {
+            "generator": {
+                "title": "Architecture de Carrière",
+                "engine": "Moteur Stratégique",
+                "vision_label": "Vision Ultime de Carrière",
+                "vision_desc": "Définissez votre destination. La précision dans votre objectif mène à l'excellence dans votre parcours.",
+                "position_label": "Positionnement Actuel",
+                "horizon_label": "Horizon Temporel",
+                "finalization": "Finalisation de la Stratégie",
+                "finalization_desc": "Système prêt à architecturer votre roadmap de carrière personnalisée basée sur votre profil unique.",
+                "architect": "Architecturer la Roadmap",
+                "blueprint": "Plan d'Expédition",
+                "alternative": "Générer une stratégie alternative",
+                "quote": "\"La planification stratégique n'est pas de penser aux décisions futures, mais au futur des décisions actuelles.\"",
+                "architecting": "Architecture de la Stratégie...",
+                "steps": {
+                    "goal": {
+                        "title": "Objectif",
+                        "desc": "Ce que vous voulez atteindre"
+                    },
+                    "state": {
+                        "title": "Situation",
+                        "desc": "Où vous en êtes aujourd'hui"
+                    },
+                    "time": {
+                        "title": "Délai",
+                        "desc": "Votre horizon temporel"
+                    },
+                    "focus": {
+                        "title": "Focus",
+                        "desc": "Priorités de développement"
+                    }
+                },
+                "vision_placeholder": "ex: Directeur Technique (CTO)",
+                "position_placeholder": "ex: Ingénieur Backend Senior",
+                "levels": {
+                    "junior": "Junior",
+                    "senior": "Senior",
+                    "expert": "Expert",
+                    "strategic": "Stratégique"
+                },
+                "horizons": {
+                    "3_months": "3 Mois",
+                    "6_months": "6 Mois",
+                    "1_year": "1 An",
+                    "2_years": "2 Ans"
+                },
+                "master_strategy": "Stratégie Maîtresse",
+                "phases": {
+                    "foundation": {
+                        "title": "Fondations & Mise à niveau",
+                        "desc": "Maîtriser les bases techniques et se familiariser avec l'écosystème.",
+                        "tasks": {
+                            "patterns": "Révision des patterns avancés",
+                            "audit": "Audit des compétences actuelles",
+                            "env": "Mise en place de l'environnement"
+                        }
+                    },
+                    "specialization": {
+                        "title": "Spécialisation & Projets",
+                        "desc": "Application pratique sur des cas d'usage réels et complexes.",
+                        "tasks": {
+                            "mvp": "Développement d'un MVP complet",
+                            "oss": "Contribution Open Source",
+                            "perf": "Optimisation de performance"
+                        }
+                    },
+                    "acceleration": {
+                        "title": "Accélération & Opportunités",
+                        "desc": "Finalisation du profil et mise en avant de l'expertise.",
+                        "tasks": {
+                            "interviews": "Préparation aux entretiens système",
+                            "networking": "Networking stratégique",
+                            "launch": "Lancement de carrière"
+                        }
+                    }
+                },
+                "return": "Retour",
+                "continue": "Continuer"
+            }
         },
         "messages": {
             "loading_error": "Erreur lors du chargement des conversations",
@@ -773,13 +1119,6 @@
             "balance": "Solde du Portefeuille",
             "tokens": "Tokens Utilisés",
             "questions": "Questions Restantes"
-        },
-        "services": {
-            "choose": "Choisissez un service",
-            "description": "Sélectionnez le service qui correspond le mieux à vos besoins professionnels"
-        },
-        "common": {
-            "tokens": "tokens"
         },
         "sidebar": {
             "collapse": "Réduire",
@@ -2354,7 +2693,7 @@
                 "ai_advisor": "IA Conseiller",
                 "professional_ai_advisor": "Conseiller IA Professionnel",
                 "start_intelligent_conversation": "Démarrez une conversation intelligente avec notre IA spécialisée pour faire avancer votre carrière",
-                "export": "Export",
+                "export_btn": "Export",
                 "export_success": "Export réussi",
                 "export_error": "Erreur d'export",
                 "export_file_downloaded": "Fichier {{format}} téléchargé",
@@ -2377,12 +2716,6 @@
                 "new_conversation": "Nouvelle conversation",
                 "custom_request": "Demande personnalisée"
             }
-        }
-    },
-    "jobPortal": {
-        "comingSoon": {
-            "title": "Bientôt disponible !",
-            "description": "Nous travaillons activement pour vous proposer notre nouvelle fonctionnalité de portail d'emploi. Restez à l'écoute pour des opportunités passionnantes dans votre parcours professionnel !"
         }
     },
     "portfolio": {
@@ -2680,7 +3013,7 @@
             },
             "experiences": "Expériences",
             "competences": "Compétences",
-            "hobbies": "Centres d'intérêt",
+            "interests": "Centres d'intérêt",
             "summary": "Résumé",
             "contact_info": "Contact",
             "languages": "Langues",
@@ -2706,6 +3039,10 @@
         }
     },
     "jobPortal": {
+        "comingSoon": {
+            "title": "Bientôt disponible !",
+            "description": "Nous travaillons activement pour vous proposer notre nouvelle fonctionnalité de portail d'emploi. Restez à l'écoute pour des opportunités passionnantes dans votre parcours professionnel !"
+        },
         "title": "Portail d'Emploi",
         "subtitle": "Trouvez votre emploi de rêve ou publiez vos offres",
         "searchPlaceholder": "Poste, entreprise, mot-clé...",
@@ -2755,7 +3092,7 @@
         "remoteWork": "Travail à distance",
         "salaryRange": "Fourchette de salaire",
         "jobsFound": "offres trouvées",
-        "noJobsFound": "Aucune offre d'emploi trouvée",
+        "noOffersExist": "Aucune offre d'emploi trouvée",
         "noJobsDescription": "Essayez de modifier vos critères de recherche",
         "viewDetails": "Voir les détails",
         "apply": "Postuler",
@@ -2864,7 +3201,7 @@
             "edit": "Modifier",
             "createSimpleAd": "Créer une annonce simple",
             "quickPublication": "Publication rapide",
-            "fillForm": "Remplissez le formulaire",
+            "fillTheForm": "Remplissez le formulaire",
             "reviewPublish": "Relisez et publiez",
             "jobTitlePlaceholder": "Ex: Développeur Full-Stack, Commercial, Assistant...",
             "descriptionPlaceholder": "Décrivez le poste, les missions, l'environnement de travail...",
@@ -2888,44 +3225,6 @@
             "successDescription": "Votre annonce est maintenant visible par les candidats",
             "backToJobs": "Retour aux offres",
             "viewPublishedAd": "Voir l'annonce publiée"
-        },
-        "profile": {
-            "accessRestricted": "Accès Restreint",
-            "accessMessage": "La recherche de profils est réservée aux entreprises partenaires et aux recruteurs certifiés.",
-            "requestAccess": "Demander l'accès",
-            "pageTitle": "Recherche de Profils",
-            "pageDescription": "Trouvez les meilleurs candidats pour vos postes. Recherchez par compétences, localisation et expérience.",
-            "profileSearch": "Recherche de Profils",
-            "findCandidates": "Trouvez les candidats parfaits pour vos postes",
-            "backToJobs": "Retour aux offres",
-            "searchFilters": "Filtres de recherche",
-            "professionPlaceholder": "Profession, métier...",
-            "locationPlaceholder": "Localisation...",
-            "experiencePlaceholder": "Expérience",
-            "anyExperience": "Toute expérience",
-            "oneYearPlus": "1+ an",
-            "threeYearsPlus": "3+ ans",
-            "fiveYearsPlus": "5+ ans",
-            "tenYearsPlus": "10+ ans",
-            "skillsPlaceholder": "Compétences (séparées par ,)",
-            "search": "Rechercher",
-            "clear": "Effacer",
-            "profilesFound": "{{count}} profil trouvé",
-            "profilesFound_plural": "{{count}} profils trouvés",
-            "professionNotSpecified": "Profession non spécifiée",
-            "experience": "Expérience",
-            "experienceYears": "{{years}} ans",
-            "positions": "{{count}} poste",
-            "positions_plural": "{{count}} postes",
-            "skills": "Compétences",
-            "languages": "Langues",
-            "viewPortfolio": "Voir le portfolio",
-            "linkedin": "LinkedIn",
-            "github": "GitHub",
-            "contact": "Contact",
-            "noProfilesFound": "Aucun profil trouvé",
-            "tryModifyingSearch": "Essayez de modifier vos critères de recherche",
-            "viewAllProfiles": "Voir tous les profils"
         },
         "show": {
             "jobNotFound": "Offre non trouvée",

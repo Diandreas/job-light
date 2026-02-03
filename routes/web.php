@@ -32,7 +32,11 @@ use App\Http\Controllers\{AddressController,
     Admin\ReferralLevelController,
     Admin\AnalyticsController,
     Admin\AuditLogController,
-    Admin\CompanyManagementController};
+    Admin\CompanyManagementController,
+    CareerAdvisor\CoverLetterController,
+    CareerAdvisor\CVAdvisorController,
+    CareerAdvisor\InterviewController,
+    CareerAdvisor\RoadmapController};
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -233,6 +237,33 @@ Route::prefix('career-advisor')->group(function () {
     Route::post('/chat', [CareerAdvisorController::class, 'chat'])->name('career-advisor.chat');
     Route::post('/export', [CareerAdvisorController::class, 'export'])->name('career-advisor.export');
     Route::delete('/chats/{contextId}', [CareerAdvisorController::class, 'destroyChat'])->name('career-advisor.destroy');
+
+    // Immersive Modules
+    Route::prefix('cover-letter')->name('career-advisor.cover-letter.')->group(function () {
+        Route::get('/', function () { return Inertia::render('CareerAdvisor/CoverLetter/Wizard'); })->name('index');
+        Route::get('/studio', function () { return Inertia::render('CareerAdvisor/CoverLetter/Studio'); })->name('studio');
+        Route::post('/generate', [CoverLetterController::class, 'generate'])->name('generate');
+        Route::post('/score', [CoverLetterController::class, 'score'])->name('score');
+    });
+
+    Route::prefix('cv-heatmap')->name('career-advisor.cv-heatmap.')->group(function () {
+        Route::get('/', function () { return Inertia::render('CareerAdvisor/CV/Heatmap'); })->name('index');
+        Route::post('/analyze', [CVAdvisorController::class, 'analyze'])->name('analyze');
+        Route::post('/improve-section', [CVAdvisorController::class, 'improveSection'])->name('improve');
+    });
+
+    Route::prefix('interview')->name('career-advisor.interview.')->group(function () {
+        Route::get('/setup', function () { return Inertia::render('CareerAdvisor/Interview/Setup'); })->name('setup');
+        Route::get('/session', function () { return Inertia::render('CareerAdvisor/Interview/Session'); })->name('session');
+        Route::get('/report', function () { return Inertia::render('CareerAdvisor/Interview/Report'); })->name('report');
+        Route::post('/start', [InterviewController::class, 'startSession'])->name('start');
+        Route::post('/feedback', [InterviewController::class, 'verboseFeedback'])->name('feedback');
+    });
+
+    Route::prefix('roadmap')->name('career-advisor.roadmap.')->group(function () {
+        Route::get('/', function () { return Inertia::render('CareerAdvisor/Roadmap/Generator'); })->name('index');
+        Route::post('/generate', [RoadmapController::class, 'generate'])->name('generate');
+    });
 });
     Route::get('/cv/{id}/download', [CvInfosController::class, 'downloadPdf'])->name('cv.download');
 

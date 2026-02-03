@@ -6,7 +6,7 @@ import { Textarea } from "@/Components/ui/textarea";
 import { Progress } from "@/Components/ui/progress";
 import { Card, CardHeader, CardTitle, CardContent } from "@/Components/ui/card";
 import { useToast } from "@/Components/ui/use-toast";
-import { useMedian } from '@/Hooks/useMedian';
+import { useMedian } from '@/hooks/useMedian';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { ScrollArea } from "@/Components/ui/scroll-area";
 import { AnimatePresence, motion } from 'framer-motion';
@@ -16,10 +16,13 @@ import {
     FileText, Presentation, ChevronDown, FileSpreadsheet,
     FileInput, MessageCircleQuestion, PenTool, Sparkles, ChevronRight, ChevronLeft,
     Smartphone, Monitor, Zap, MoreHorizontal, Star,
-    TrendingUp, Target, Users, BookOpen, Award, Briefcase
+    TrendingUp, Target, Users, BookOpen, Award, Briefcase, PanelsTopLeft
 } from 'lucide-react';
 import EnhancedMessageBubble from '@/Components/ai/enhanced/EnhancedMessageBubble';
-import { ServiceCard, MobileServiceCard } from '@/Components/ai/ServiceCard';
+import { LuxuryMessageBubble } from '@/Components/ai/luxury/LuxuryMessageBubble';
+import { LuxurySidebar } from '@/Components/ai/luxury/LuxurySidebar';
+import { LuxuryChatInput } from '@/Components/ai/luxury/LuxuryChatInput';
+import { LuxuryServiceCard } from '@/Components/ai/luxury/LuxuryServiceCard';
 import { SERVICES, DEFAULT_PROMPTS } from '@/Components/ai/constants';
 import { PowerPointService } from '@/Components/ai/PresentationService';
 import ServiceSelector from '@/Components/ai/specialized/ServiceSelector';
@@ -78,171 +81,7 @@ const useSmartInput = () => {
     return { inputRef, inputHeight, handleInputChange, adjustHeight };
 };
 
-// Composant d'input ultra-compact
-const CompactChatInput = ({
-    value,
-    onChange,
-    onSubmit,
-    placeholder,
-    disabled,
-    isLoading,
-    cost,
-    onKeyDown
-}) => {
-    const { inputRef, handleInputChange } = useSmartInput();
-    const [isFocused, setIsFocused] = useState(false);
 
-    return (
-        <div className="relative">
-            <form onSubmit={onSubmit}>
-                <div className="relative flex items-end gap-2 p-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl shadow-sm transition-all hover:shadow-md focus-within:shadow-md focus-within:border-amber-400 dark:focus-within:border-amber-500">
-                    <Textarea
-                        ref={inputRef}
-                        value={value}
-                        onChange={(e) => handleInputChange(e, onChange)}
-                        onKeyDown={onKeyDown}
-                        onFocus={() => setIsFocused(true)}
-                        onBlur={() => setIsFocused(false)}
-                        placeholder={placeholder}
-                        className="flex-1 min-h-[36px] max-h-[72px] border-0 p-0 resize-none bg-transparent text-sm placeholder:text-gray-400 dark:placeholder:text-gray-500 focus-visible:ring-0 focus-visible:ring-offset-0"
-                        disabled={disabled}
-                        maxLength={2000}
-                    />
-
-                    <div className="flex items-center gap-2 flex-shrink-0">
-                        {/* Indicateur de coût */}
-                        <div className="flex items-center gap-1 px-2 py-1 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-700 rounded-md">
-                            <Coins className="h-3 w-3 text-amber-600 dark:text-amber-400" />
-                            <span className="text-xs font-medium text-amber-700 dark:text-amber-300">
-                                {cost}
-                            </span>
-                        </div>
-
-                        {/* Bouton d'envoi */}
-                        <Button
-                            type="submit"
-                            size="sm"
-                            disabled={disabled || !value.trim()}
-                            className={cn(
-                                "h-8 w-8 p-0 rounded-lg transition-all duration-200",
-                                disabled || !value.trim()
-                                    ? "opacity-40 cursor-not-allowed bg-gray-400"
-                                    : "bg-gradient-to-r from-amber-500 to-purple-500 hover:from-amber-600 hover:to-purple-600 shadow-md hover:shadow-lg hover:scale-105 active:scale-95"
-                            )}
-                        >
-                            {isLoading ? (
-                                <motion.div
-                                    animate={{ rotate: 360 }}
-                                    transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-                                >
-                                    <Loader className="h-4 w-4 text-white" />
-                                </motion.div>
-                            ) : (
-                                <Send className="h-4 w-4 text-white" />
-                            )}
-                        </Button>
-                    </div>
-                </div>
-
-                {/* Barre de progression */}
-                {value.length > 0 && (
-                    <div className="mt-1 px-1">
-                        <div className="flex justify-between items-center text-xs text-gray-500 dark:text-gray-400 mb-1">
-                            {/* @ts-ignore */}
-                            <span>{value.length}/2000 {t('components.career_advisor.interface.progress_characters')}</span>
-                            <div className="flex items-center gap-2">
-                                <kbd className="px-1 py-0.5 text-[10px] bg-gray-100 dark:bg-gray-700 rounded border">
-                                    Enter
-                                </kbd>
-                                {/* @ts-ignore */}
-                                <span>{t('components.career_advisor.interface.send')}</span>
-                            </div>
-                        </div>
-                        <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-0.5">
-                            <motion.div
-                                initial={{ width: 0 }}
-                                animate={{ width: `${(value.length / 2000) * 100}%` }}
-                                className={cn(
-                                    "h-0.5 rounded-full transition-colors",
-                                    value.length > 1800 ? "bg-red-500" :
-                                        value.length > 1500 ? "bg-yellow-500" : "bg-amber-500"
-                                )}
-                            />
-                        </div>
-                    </div>
-                )}
-            </form>
-        </div>
-    );
-};
-
-// Card de chat optimisée
-const CompactChatCard = ({ chat, isActive, onSelect, onDelete }) => {
-    const { t } = useTranslation();
-
-    const truncatedPreview = chat.preview ?
-        (chat.preview.length > 28 ? chat.preview.substring(0, 28) + '...' : chat.preview) :
-        t('components.career_advisor.interface.new_conversation');
-
-    return (
-        <motion.div
-            layout
-            initial={{ opacity: 0, y: 2 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, x: -8 }}
-            whileHover={{ y: -1 }}
-            whileTap={{ scale: 0.98 }}
-            className={cn(
-                "group relative p-2 rounded-lg cursor-pointer transition-all border",
-                isActive
-                    ? "bg-gradient-to-r from-amber-50 to-purple-50 dark:from-amber-900/20 dark:to-purple-900/20 border-amber-300 dark:border-amber-600 shadow-sm"
-                    : "bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-750 border-gray-200 dark:border-gray-700 hover:border-amber-200 dark:hover:border-amber-800"
-            )}
-            onClick={() => onSelect(chat)}
-        >
-            <div className="flex items-start gap-2 pr-6">
-                <div className={cn(
-                    "w-1 h-1 rounded-full mt-2 flex-shrink-0",
-                    isActive ? "bg-amber-500" : "bg-gray-300 dark:bg-gray-600"
-                )} />
-                <div className="min-w-0 flex-1">
-                    <h3 className="text-xs font-medium text-gray-900 dark:text-gray-100 line-clamp-1 mb-1" title={chat.preview}>
-                        {truncatedPreview}
-                    </h3>
-                    <div className="flex items-center gap-3 text-xs text-gray-500 dark:text-gray-400">
-                        <div className="flex items-center gap-1">
-                            <Calendar className="h-2.5 w-2.5" />
-                            <span>
-                                {new Date(chat.created_at).toLocaleDateString('fr-FR', {
-                                    day: 'numeric',
-                                    month: 'short'
-                                })}
-                            </span>
-                        </div>
-                        {chat.messages_count && (
-                            <div className="flex items-center gap-1">
-                                <MessageSquare className="h-2.5 w-2.5" />
-                                <span>{chat.messages_count}</span>
-                            </div>
-                        )}
-                    </div>
-                </div>
-            </div>
-
-            <Button
-                variant="ghost"
-                size="sm"
-                onClick={(e) => {
-                    e.stopPropagation();
-                    onDelete(chat);
-                }}
-                className="absolute right-1 top-1/2 -translate-y-1/2 h-5 w-5 p-0 opacity-0 group-hover:opacity-100 hover:text-red-500 dark:hover:text-red-400 transition-all"
-            >
-                <Trash2 className="h-3 w-3" />
-            </Button>
-        </motion.div>
-    );
-};
 
 // Header compact
 const CompactHeader = ({
@@ -260,21 +99,21 @@ const CompactHeader = ({
     const { t } = useTranslation();
 
     return (
-        <div className="bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 px-3 py-2">
+        <div className="bg-white dark:bg-neutral-900 border-b border-neutral-200 dark:border-neutral-800 px-6 py-4">
             <div className="flex items-center justify-between">
-                <div className="flex items-center gap-3 min-w-0">
-                    <div className="flex items-center gap-2">
-                        <div className="w-7 h-7 bg-gradient-to-r from-amber-500 to-purple-500 rounded-lg flex items-center justify-center">
-                            <selectedService.icon className="h-4 w-4 text-white" />
+                <div className="flex items-center gap-4 min-w-0">
+                    <div className="flex items-center gap-3">
+                        <div className="w-9 h-9 bg-neutral-900 dark:bg-neutral-50 rounded-xl flex items-center justify-center">
+                            <selectedService.icon className="h-5 w-5 text-white dark:text-neutral-900" />
                         </div>
                         <div className="min-w-0">
-                            <h3 className="font-semibold text-gray-900 dark:text-gray-100 text-sm truncate">
+                            <h3 className="font-semibold text-neutral-900 dark:text-neutral-50 text-base truncate tracking-tight">
                                 {t(`services.${selectedService.id}.title`)}
                             </h3>
                             <div className="flex items-center gap-2">
                                 <div className="flex items-center gap-1">
-                                    <div className="w-1.5 h-1.5 bg-green-500 rounded-full" />
-                                    <span className="text-xs text-gray-500 dark:text-gray-400">{t('components.sidebar.active')}</span>
+                                    <div className="w-1.5 h-1.5 bg-neutral-400 dark:bg-neutral-600 rounded-full" />
+                                    <span className="text-xs text-neutral-500 dark:text-neutral-500">{t('components.sidebar.active')}</span>
                                 </div>
 
                             </div>
@@ -309,13 +148,13 @@ const CompactHeader = ({
                             variant="outline"
                             size="sm"
                             className={cn(
-                                "h-8 px-2 relative",
-                                artifactSidebarOpen ? "bg-amber-100 border-amber-300 text-amber-700" : ""
+                                "h-9 px-3 relative",
+                                artifactSidebarOpen ? "bg-neutral-100 dark:bg-neutral-800 border-neutral-300 dark:border-neutral-700 text-neutral-900 dark:text-neutral-50" : ""
                             )}
                         >
-                            <Sparkles className="h-3.5 w-3.5 mr-1" />
-                            <span className="text-xs">Artefacts</span>
-                            <Badge variant="secondary" className="ml-1 h-4 px-1 text-xs bg-amber-500 text-white">
+                            <Sparkles className="h-4 w-4 mr-1.5" />
+                            <span className="text-sm">Artefacts</span>
+                            <Badge variant="secondary" className="ml-2 h-5 px-2 text-xs bg-neutral-900 dark:bg-neutral-50 text-white dark:text-neutral-900">
                                 {artifactCount}
                             </Badge>
                         </Button>
@@ -365,243 +204,7 @@ const CompactHeader = ({
     );
 };
 
-// Sidebar ultra-compacte améliorée
-const UltraCompactSidebar = ({
-    isCollapsed,
-    onToggleCollapse,
-    walletBalance,
-    onNewChat,
-    userChats,
-    selectedService,
-    activeChat,
-    onChatSelect,
-    onChatDelete,
-    onServiceSelect,
-    onCloseMobile = null,
-    isMobile = false
-}) => {
-    const { t } = useTranslation();
-    const filteredChats = userChats.filter(chat => chat.service_id === selectedService.id);
 
-    return (
-        <div className={cn(
-            "bg-white dark:bg-gray-900 flex flex-col transition-all duration-300 h-full",
-            isMobile ? "w-full" : (isCollapsed ? "w-12" : "w-64"),
-            !isMobile && "border-r border-gray-200 dark:border-gray-800"
-        )}>
-            {/* Header */}
-            <div className={cn(
-                "border-b border-gray-200 dark:border-gray-800",
-                isMobile ? "p-4" : "p-2"
-            )}>
-                {/* Bouton fermeture mobile */}
-                {isMobile && onCloseMobile && (
-                    <div className="flex justify-end mb-2">
-                        <Button
-                            onClick={(e) => {
-                                e.stopPropagation();
-                                onCloseMobile();
-                            }}
-                            variant="ghost"
-                            size="sm"
-                            className="h-8 w-8 p-0"
-                        >
-                            <ChevronLeft className="h-4 w-4" />
-                        </Button>
-                    </div>
-                )}
-
-                {isCollapsed ? (
-                    <div className="flex flex-col items-center gap-2">
-                        <Avatar className="w-8 h-8">
-                            <AvatarImage src="/mascot/mascot.png" />
-                            <AvatarFallback className="bg-gradient-to-r from-amber-500 to-purple-500 text-white text-xs">
-                                AI
-                            </AvatarFallback>
-                        </Avatar>
-                        <Button
-                            onClick={(e) => {
-                                e.stopPropagation();
-                                onNewChat();
-                            }}
-                            size="sm"
-                            className="w-8 h-8 p-0 bg-gradient-to-r from-amber-500 to-purple-500"
-                        >
-                            <Plus className="h-4 w-4" />
-                        </Button>
-                    </div>
-                ) : (
-                    <div className="space-y-2">
-                        <div className="flex items-center gap-2">
-                            <Avatar className="w-8 h-8">
-                                <AvatarImage src="/mascot/mascot.png" />
-                                <AvatarFallback className="bg-gradient-to-r from-amber-500 to-purple-500 text-white text-xs">
-                                    AI
-                                </AvatarFallback>
-                            </Avatar>
-                            <div className="flex-1 min-w-0">
-                                <div className="flex items-center gap-1.5">
-                                    <h1 className="text-sm font-bold text-gray-900 dark:text-gray-100 truncate">
-                                        {t('components.career_advisor.interface.ai_advisor')}
-                                    </h1>
-                                    <Badge variant="secondary" className="text-xs px-1.5 py-0 h-4 bg-amber-50 text-amber-600">
-                                        <Sparkles className="w-2.5 h-2.5 mr-0.5" />
-                                        {t('components.sidebar.pro_badge')}
-                                    </Badge>
-                                </div>
-                                <p className="text-xs text-gray-600 dark:text-gray-400 truncate">
-                                    {t(`services.${selectedService.id}.title`)}
-                                </p>
-                            </div>
-                        </div>
-
-                        {/* Sélecteur de service */}
-                        <DropdownMenu>
-                            <DropdownMenuTrigger asChild>
-                                <Button
-                                    variant="outline"
-                                    size="sm"
-                                    className="w-full h-7 text-xs justify-between"
-                                >
-                                    <div className="flex items-center gap-1">
-                                        <selectedService.icon className="h-3 w-3" />
-                                        <span className="truncate">
-                                            {t(`services.${selectedService.id}.title`)}
-                                        </span>
-                                    </div>
-                                    <ChevronDown className="h-3 w-3" />
-                                </Button>
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent align="start" className="w-56">
-                                {SERVICES.map((service) => (
-                                    <DropdownMenuItem
-                                        key={service.id}
-                                        onSelect={(e) => {
-                                            e.stopPropagation();
-                                            onServiceSelect(service);
-                                        }}
-                                        className="text-xs"
-                                    >
-                                        <service.icon className="h-3.5 w-3.5 mr-2" />
-                                        {t(`services.${service.id}.title`)}
-                                    </DropdownMenuItem>
-                                ))}
-                            </DropdownMenuContent>
-                        </DropdownMenu>
-
-
-
-                        <Button
-                            onClick={(e) => {
-                                e.stopPropagation();
-                                onNewChat();
-                            }}
-                            className="w-full h-7 bg-gradient-to-r from-amber-500 to-purple-500 text-white text-xs"
-                        >
-                            <Plus className="h-3.5 w-3.5 mr-1" />
-                            {t('components.career_advisor.interface.new_chat')}
-                        </Button>
-                    </div>
-                )}
-
-                {/* Toggle button - masqué en mode mobile */}
-                {!isMobile && (
-                    <Button
-                        onClick={onToggleCollapse}
-                        variant="ghost"
-                        size="sm"
-                        className={cn(
-                            "mt-2 transition-all",
-                            isCollapsed ? "w-8 h-8 p-0 mx-auto" : "w-full h-6"
-                        )}
-                    >
-                        {isCollapsed ? (
-                            <ChevronRight className="h-3.5 w-3.5" />
-                        ) : (
-                            <div className="flex items-center justify-between w-full">
-                                <span className="text-xs">{t('components.career_advisor.interface.collapse')}</span>
-                                <ChevronLeft className="h-3.5 w-3.5" />
-                            </div>
-                        )}
-                    </Button>
-                )}
-            </div>
-
-            {/* Chat history */}
-            <div className={cn(
-                "flex-1 min-h-0",
-                isMobile ? "p-4" : "p-2"
-            )}>
-                {!isCollapsed && (
-                    <div className="flex items-center justify-between mb-2">
-                        <h3 className="text-xs font-semibold text-gray-700 dark:text-gray-300">
-                            {t('components.career_advisor.interface.history')}
-                        </h3>
-                        <Badge variant="outline" className="text-xs h-4 px-1.5 border-amber-200 text-amber-600">
-                            {filteredChats.length}
-                        </Badge>
-                    </div>
-                )}
-
-                <ScrollArea className="h-full">
-                    <div className={cn(
-                        "space-y-1",
-                        isCollapsed && "flex flex-col items-center"
-                    )}>
-                        <AnimatePresence>
-                            {filteredChats.map(chat => (
-                                isCollapsed ? (
-                                    <TooltipProvider key={chat.context_id}>
-                                        <Tooltip>
-                                            <TooltipTrigger asChild>
-                                                <motion.button
-                                                    layout
-                                                    initial={{ opacity: 0 }}
-                                                    animate={{ opacity: 1 }}
-                                                    exit={{ opacity: 0 }}
-                                                    whileHover={{ scale: 1.05 }}
-                                                    onClick={() => onChatSelect(chat)}
-                                                    className={cn(
-                                                        "w-8 h-8 flex items-center justify-center rounded-lg border transition-all",
-                                                        activeChat?.context_id === chat.context_id
-                                                            ? "bg-amber-100 dark:bg-amber-900/30 text-amber-600 dark:text-amber-300 border-amber-300"
-                                                            : "bg-white dark:bg-gray-800 text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-700 border-gray-200 dark:border-gray-700"
-                                                    )}
-                                                >
-                                                    <MessageSquare className="h-3.5 w-3.5" />
-                                                </motion.button>
-                                            </TooltipTrigger>
-                                            <TooltipContent side="right">
-                                                <p className="text-xs">{chat.preview?.substring(0, 30)}</p>
-                                            </TooltipContent>
-                                        </Tooltip>
-                                    </TooltipProvider>
-                                ) : (
-                                    <CompactChatCard
-                                        key={chat.context_id}
-                                        chat={chat}
-                                        isActive={activeChat?.context_id === chat.context_id}
-                                        onSelect={onChatSelect}
-                                        onDelete={onChatDelete}
-                                    />
-                                )
-                            ))}
-                        </AnimatePresence>
-
-                        {filteredChats.length === 0 && !isCollapsed && (
-                            <div className="text-center py-6">
-                                <MessageSquare className="h-8 w-8 text-gray-300 dark:text-gray-600 mx-auto mb-2" />
-                                <p className="text-xs text-gray-500 dark:text-gray-400">
-                                    {t('components.career_advisor.interface.no_conversations')}
-                                </p>
-                            </div>
-                        )}
-                    </div>
-                </ScrollArea>
-            </div>
-        </div>
-    );
-};
 
 // Messages temporaires de réflexion
 const thinkingMessages = [
@@ -726,6 +329,24 @@ export default function EnhancedCareerAdvisor({ auth, userInfo, chatHistories })
                 description: t('career_advisor.coming_soon.available_from', { date: service.releaseDate }),
                 variant: "default"
             });
+            return;
+        }
+
+        // Redirection for Immersive Modules
+        if (service.id === 'cover-letter') {
+            window.location.href = route('career-advisor.cover-letter.index');
+            return;
+        }
+        if (service.id === 'cv-heatmap') {
+            window.location.href = route('career-advisor.cv-heatmap.index');
+            return;
+        }
+        if (service.id === 'interview-prep') {
+            window.location.href = route('career-advisor.interview.setup');
+            return;
+        }
+        if (service.id === 'career-roadmap') {
+            window.location.href = route('career-advisor.roadmap.index');
             return;
         }
 
@@ -1118,7 +739,7 @@ export default function EnhancedCareerAdvisor({ auth, userInfo, chatHistories })
                     fixed top-0 left-0 h-full w-80 bg-white dark:bg-gray-900 transform transition-transform duration-300 ease-in-out z-50 md:hidden
                     ${isMobileSidebarOpen ? 'translate-x-0' : '-translate-x-full'}
                 `}>
-                    <UltraCompactSidebar
+                    <LuxurySidebar
                         isCollapsed={false}
                         onToggleCollapse={() => { }}
                         walletBalance={walletBalance}
@@ -1148,17 +769,17 @@ export default function EnhancedCareerAdvisor({ auth, userInfo, chatHistories })
 
     return (
         <AuthenticatedLayout user={auth.user}>
-            <div className="opacity-10">
+            <div className="opacity-5">
                 <FluidCursorEffect zIndex={100} />
             </div>
 
             <div className={cn(
-                "h-[calc(100vh-50px)] flex bg-gray-50 dark:bg-gray-900 transition-all duration-300",
+                "h-[calc(100vh-50px)] flex bg-neutral-50 dark:bg-neutral-950 transition-all duration-400",
                 artifactSidebarOpen ? "mr-80" : ""
             )}>
                 {/* Sidebar Desktop Ultra-Compacte */}
                 <div className="hidden lg:flex">
-                    <UltraCompactSidebar
+                    <LuxurySidebar
                         isCollapsed={isSidebarCollapsed}
                         onToggleCollapse={() => {
                             const newState = !isSidebarCollapsed;
@@ -1178,7 +799,7 @@ export default function EnhancedCareerAdvisor({ auth, userInfo, chatHistories })
                 </div>
 
                 {/* Zone principale */}
-                <div className="flex-1 flex flex-col min-w-0 bg-gray-50 dark:bg-gray-900 h-full">
+                <div className="flex-1 flex flex-col min-w-0 bg-neutral-50 dark:bg-neutral-950 h-full">
 
                     {/* Contenu principal */}
                     {!activeChat ? (
@@ -1241,23 +862,23 @@ export default function EnhancedCareerAdvisor({ auth, userInfo, chatHistories })
                             {/* Zone de messages optimisée */}
                             <div className="flex-1 min-h-0">
                                 <ScrollArea className="h-full" ref={scrollRef}>
-                                    <div className="max-w-4xl mx-auto space-y-4 p-4">
+                                    <div className="max-w-5xl mx-auto space-y-0 p-8">
                                         <AnimatePresence mode="popLayout">
                                             {(activeChat?.messages || []).map((message, index) => (
                                                 <motion.div
                                                     key={`message-${index}`}
-                                                    initial={{ opacity: 0, y: 20 }}
+                                                    initial={{ opacity: 0, y: 8 }}
                                                     animate={{ opacity: 1, y: 0 }}
-                                                    exit={{ opacity: 0, y: -10 }}
-                                                    transition={{ duration: 0.3 }}
+                                                    exit={{ opacity: 0, y: -8 }}
+                                                    transition={{ duration: 0.6, ease: [0.25, 0.46, 0.45, 0.94] }}
                                                 >
-                                                    <EnhancedMessageBubble
+                                                    <LuxuryMessageBubble
                                                         message={{
                                                             ...message,
                                                             serviceId: selectedService.id,
                                                             isLatest: index === (activeChat?.messages || []).length - 1
                                                         }}
-                                                        onArtifactAction={handleArtifactAction}
+                                                        onArtifactsDetected={handleArtifactsDetected}
                                                     />
                                                 </motion.div>
                                             ))}
@@ -1265,18 +886,18 @@ export default function EnhancedCareerAdvisor({ auth, userInfo, chatHistories })
                                             {tempMessage && (
                                                 <motion.div
                                                     key="thinking"
-                                                    initial={{ opacity: 0, y: 20 }}
+                                                    initial={{ opacity: 0, y: 8 }}
                                                     animate={{ opacity: 1, y: 0 }}
-                                                    exit={{ opacity: 0, y: -10 }}
-                                                    transition={{ duration: 0.3 }}
+                                                    exit={{ opacity: 0, y: -8 }}
+                                                    transition={{ duration: 0.6, ease: [0.25, 0.46, 0.45, 0.94] }}
                                                 >
-                                                    <EnhancedMessageBubble
+                                                    <LuxuryMessageBubble
                                                         message={{
                                                             ...tempMessage,
                                                             serviceId: selectedService.id,
                                                             isLatest: true
                                                         }}
-                                                        onArtifactAction={handleArtifactAction}
+                                                        onArtifactsDetected={handleArtifactsDetected}
                                                     />
                                                 </motion.div>
                                             )}
@@ -1286,17 +907,16 @@ export default function EnhancedCareerAdvisor({ auth, userInfo, chatHistories })
                             </div>
 
                             {/* Zone de saisie compacte */}
-                            <div className="bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-800 p-3">
+                            <div className="bg-neutral-50 dark:bg-neutral-950 border-t border-neutral-200 dark:border-neutral-800 p-6">
                                 <div className="max-w-4xl mx-auto">
-                                    <CompactChatInput
-                                        value={data.question}
-                                        onChange={setData}
-                                        onSubmit={handleSubmit}
+                                    <LuxuryChatInput
+                                        initialValue={data.question}
+                                        onSend={(val) => {
+                                            setData('question', val);
+                                            handleSubmit({ preventDefault: () => { } });
+                                        }}
                                         placeholder={t(`services.${selectedService.id}.placeholder`)}
                                         disabled={isLoading}
-                                        isLoading={isLoading}
-                                        cost={selectedService.cost}
-                                        onKeyDown={handleKeyDown}
                                     />
                                 </div>
                             </div>
@@ -1344,7 +964,7 @@ export default function EnhancedCareerAdvisor({ auth, userInfo, chatHistories })
             {/* Nouveau sidebar mobile complet */}
             <MobileSidebarComplete />
 
-            {/* Styles supplémentaires */}
+            {/* Styles supplémentaires - Luxury Monochrome */}
             <style>{`
                 .hide-scrollbar {
                     scrollbar-width: none;
@@ -1353,38 +973,29 @@ export default function EnhancedCareerAdvisor({ auth, userInfo, chatHistories })
                 .hide-scrollbar::-webkit-scrollbar {
                     display: none;
                 }
-                
-                /* Animations fluides */
+
+                /* Animations fluides et élégantes */
                 .smooth-transition {
-                    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+                    transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
                 }
-                
-                /* Focus amélioré */
+
+                /* Focus monochrome */
                 .focus-ring:focus-visible {
-                    outline: 2px solid #f59e0b;
+                    outline: 1px solid #1c1917;
                     outline-offset: 2px;
                 }
-                
+
                 /* Hover subtil */
                 .hover-lift:hover {
-                    transform: translateY(-1px);
-                    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+                    transform: translateY(-2px);
+                    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
                 }
-                
+
                 /* Mobile optimisé */
                 @media (max-width: 768px) {
                     .mobile-optimized {
                         font-size: 16px; /* Évite le zoom iOS */
                     }
-                }
-                
-                /* Gradients améliorés */
-                .gradient-amber-purple {
-                    background: linear-gradient(135deg, #f59e0b 0%, #8b5cf6 100%);
-                }
-                
-                .gradient-amber-purple-soft {
-                    background: linear-gradient(135deg, #fef3c7 0%, #ede9fe 100%);
                 }
             `}</style>
         </AuthenticatedLayout>

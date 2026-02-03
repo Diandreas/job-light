@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
+import { cn } from "@/lib/utils";
 import { Button } from '@/Components/ui/button';
 import { Card, CardHeader, CardTitle, CardContent } from '@/Components/ui/card';
 import { Input } from '@/Components/ui/input';
@@ -181,11 +182,11 @@ Pouvez-vous me donner des conseils personnalisés pour atteindre mes objectifs d
 
     return (
         <div className="max-w-3xl mx-auto">
-            {/* Header avec progression modernisé */}
+            {/* Header with modernized progress */}
             <div className="mb-8">
-                {/* Barre de progression circulaire moderne */}
+                {/* Modern circular progress indicators */}
                 <div className="text-center mb-6">
-                    <div className="flex justify-center items-center gap-2 mb-4">
+                    <div className="flex justify-center items-center gap-2 mb-6">
                         {WIZARD_STEPS.map((step, index) => {
                             const Icon = step.icon;
                             const isActive = index === currentStep;
@@ -196,22 +197,22 @@ Pouvez-vous me donner des conseils personnalisés pour atteindre mes objectifs d
                                     <motion.div
                                         initial={{ scale: 0.8 }}
                                         animate={{
-                                            scale: isActive ? 1.2 : 1,
-                                            backgroundColor: isActive ? '#f59e0b' : isCompleted ? '#10b981' : '#d1d5db'
+                                            scale: isActive ? 1.15 : 1,
+                                            backgroundColor: isActive ? '#f59e0b' : isCompleted ? '#fbbf24' : '#e5e7eb'
                                         }}
                                         transition={{ duration: 0.3 }}
-                                        className={`w-10 h-10 rounded-full flex items-center justify-center text-white shadow-lg
-                                            ${isActive ? 'bg-amber-500 shadow-amber-200' :
-                                              isCompleted ? 'bg-green-500 shadow-green-200' : 'bg-gray-300'}`}
-                                    >
-                                        {isCompleted ? (
-                                            <CheckCircle className="w-5 h-5" />
-                                        ) : (
-                                            <Icon className="w-5 h-5" />
+                                        className={cn(
+                                            "w-2.5 h-2.5 rounded-full transition-all duration-500",
+                                            isActive ? 'bg-amber-500 ring-4 ring-amber-500/20' :
+                                                isCompleted ? 'bg-amber-400' : 'bg-gray-200 dark:bg-gray-800'
                                         )}
+                                    >
                                     </motion.div>
                                     {index < WIZARD_STEPS.length - 1 && (
-                                        <div className={`flex-1 h-0.5 ${isCompleted ? 'bg-green-500' : 'bg-gray-200'} transition-colors duration-300`} />
+                                        <div className={cn(
+                                            "flex-1 h-0.5 transition-colors duration-500 rounded-full mx-1",
+                                            isCompleted ? 'bg-amber-400' : 'bg-gray-200 dark:bg-gray-800'
+                                        )} />
                                     )}
                                 </React.Fragment>
                             );
@@ -224,64 +225,38 @@ Pouvez-vous me donner des conseils personnalisés pour atteindre mes objectifs d
                         animate={{ opacity: 1, y: 0 }}
                         className="space-y-2"
                     >
-                        <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 flex items-center justify-center gap-3">
-                            {/* Mascotte comme icône du titre de l'étape */}
-                            <motion.div
-                                initial={{ scale: 0, rotate: -90 }}
-                                animate={{ scale: 1, rotate: 0 }}
-                                transition={{
-                                    type: "spring",
-                                    stiffness: 200,
-                                    damping: 15,
-                                    delay: 0.1
-                                }}
-                                className="relative"
-                            >
-                                <div className="w-7 h-7 rounded-lg overflow-hidden shadow-md">
-                                    <img
-                                        src="/mascot/mas.png"
-                                        alt="AI Assistant"
-                                        className="w-full h-full object-cover"
-                                    />
-                                </div>
-                                {/* Badge avec l'icône de l'étape */}
-                                <motion.div
-                                    initial={{ scale: 0, x: 3, y: -3 }}
-                                    animate={{ scale: 1, x: 0, y: 0 }}
-                                    transition={{ delay: 0.3 }}
-                                    className="absolute -bottom-1 -right-1 w-3.5 h-3.5 rounded-md bg-gradient-to-r from-amber-500 to-purple-500 flex items-center justify-center shadow-sm"
-                                >
-                                    <currentStepData.icon className="w-2 h-2 text-white" />
-                                </motion.div>
-                            </motion.div>
+                        <h3 className="text-2xl font-serif text-gray-900 dark:text-gray-100 flex items-center justify-center gap-4">
+                            <div className="w-10 h-10 rounded-full bg-amber-50 dark:bg-amber-900/20 flex items-center justify-center text-amber-600 dark:text-amber-500 border border-amber-100 dark:border-amber-800">
+                                <currentStepData.icon className="w-5 h-5" />
+                            </div>
                             {currentStepData.title}
                         </h3>
-                        <div className="flex items-center justify-center gap-2 text-sm text-gray-600">
-                            <span>Étape {currentStep + 1} sur {WIZARD_STEPS.length}</span>
-                            <div className="w-1 h-1 bg-gray-400 rounded-full" />
-                            <div className="flex items-center gap-1">
-                                <Clock className="w-3 h-3" />
+                        <div className="flex items-center justify-center gap-3 text-sm text-gray-500 dark:text-gray-400">
+                            <span className="bg-gray-100 dark:bg-gray-800 px-2 py-0.5 rounded-md font-medium">Étape {currentStep + 1} / {WIZARD_STEPS.length}</span>
+                            <div className="w-1.5 h-1.5 bg-amber-500/40 rounded-full" />
+                            <div className="flex items-center gap-1.5">
+                                <Clock className="w-3.5 h-3.5" />
                                 <span>~2 min restantes</span>
                             </div>
                         </div>
                     </motion.div>
 
-                    {/* Barre de progression linéaire */}
-                    <div className="mt-4 mx-auto max-w-md">
-                        <div className="w-full bg-gray-200 rounded-full h-1.5">
+                    {/* Minimal linear progress */}
+                    <div className="mt-6 mx-auto max-w-sm">
+                        <div className="w-full bg-gray-100 dark:bg-gray-800 rounded-full h-1 overflow-hidden">
                             <motion.div
                                 initial={{ width: 0 }}
                                 animate={{ width: `${progress}%` }}
-                                transition={{ duration: 0.5, ease: "easeOut" }}
-                                className="bg-gradient-to-r from-amber-500 to-purple-500 h-1.5 rounded-full shadow-sm"
+                                transition={{ duration: 0.6, ease: "anticipate" }}
+                                className="bg-amber-500 h-full rounded-full"
                             />
                         </div>
                     </div>
                 </div>
             </div>
 
-            {/* Contenu des étapes modernisé */}
-            <Card className="min-h-[500px] border-0 shadow-xl bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm">
+            {/* Wizard Content */}
+            <Card className="min-h-[500px] border border-gray-100 dark:border-gray-800 shadow-xl bg-white/80 dark:bg-gray-950/80 backdrop-blur-xl rounded-2xl overflow-hidden">
                 <CardContent className="p-8">
                     <AnimatePresence mode="wait">
                         <motion.div
@@ -295,8 +270,8 @@ Pouvez-vous me donner des conseils personnalisés pour atteindre mes objectifs d
                             {/* Étape 1: Situation actuelle */}
                             {currentStep === 0 && (
                                 <div className="space-y-4">
-                                    <div>
-                                        <Label htmlFor="currentSituation">
+                                    <div className="space-y-2">
+                                        <Label htmlFor="currentSituation" className="text-sm font-semibold text-gray-700 dark:text-gray-300">
                                             {t('career_advice_wizard.form.current_situation') || 'Décrivez votre situation professionnelle actuelle *'}
                                         </Label>
                                         <Textarea
@@ -308,26 +283,29 @@ Pouvez-vous me donner des conseils personnalisés pour atteindre mes objectifs d
                                             }))}
                                             placeholder={t('career_advice_wizard.form.current_situation_placeholder') || 'Ex: Je suis développeur junior depuis 2 ans dans une startup. Je souhaite évoluer vers un poste de tech lead...'}
                                             rows={4}
-                                            className="resize-none"
+                                            className="resize-none rounded-xl border-gray-200 dark:border-gray-800 focus:border-amber-500 focus:ring-amber-500/20"
                                         />
-                                        <div className="text-xs text-gray-500 mt-1">
-                                            {formData.currentSituation.length}/500 {t('career_advice_wizard.form.characters_min_20') || 'caractères (minimum 20)'}
+                                        <div className="text-xs text-gray-500 flex justify-between">
+                                            <span>{formData.currentSituation.length}/500 {t('career_advice_wizard.form.characters_min_20') || 'caractères (minimum 20)'}</span>
+                                            {formData.currentSituation.length >= 20 && <CheckCircle className="w-4 h-4 text-green-500" />}
                                         </div>
                                     </div>
 
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                        <div>
-                                            <Label htmlFor="industry">{t('career_advice_wizard.form.industry') || 'Secteur d\'activité'}</Label>
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                        <div className="space-y-2">
+                                            <Label htmlFor="industry" className="text-sm font-semibold text-gray-700 dark:text-gray-300">
+                                                {t('career_advice_wizard.form.industry') || 'Secteur d\'activité'}
+                                            </Label>
                                             <Select
                                                 value={formData.industry}
                                                 onValueChange={(value) => setFormData(prev => ({ ...prev, industry: value }))}
                                             >
-                                                <SelectTrigger>
+                                                <SelectTrigger className="rounded-xl border-gray-200 dark:border-gray-800 focus:ring-amber-500/20">
                                                     <SelectValue placeholder={t('career_advice_wizard.form.select_industry') || 'Sélectionnez votre secteur'} />
                                                 </SelectTrigger>
-                                                <SelectContent>
+                                                <SelectContent className="rounded-xl border-gray-200 dark:border-gray-700">
                                                     {INDUSTRIES.map(industry => (
-                                                        <SelectItem key={industry} value={industry}>
+                                                        <SelectItem key={industry} value={industry} className="rounded-lg m-1">
                                                             {industry}
                                                         </SelectItem>
                                                     ))}
@@ -335,18 +313,20 @@ Pouvez-vous me donner des conseils personnalisés pour atteindre mes objectifs d
                                             </Select>
                                         </div>
 
-                                        <div>
-                                            <Label htmlFor="experience">{t('career_advice_wizard.form.experience_level') || 'Niveau d\'expérience'}</Label>
+                                        <div className="space-y-2">
+                                            <Label htmlFor="experience" className="text-sm font-semibold text-gray-700 dark:text-gray-300">
+                                                {t('career_advice_wizard.form.experience_level') || 'Niveau d\'expérience'}
+                                            </Label>
                                             <Select
                                                 value={formData.experience_level}
                                                 onValueChange={(value) => setFormData(prev => ({ ...prev, experience_level: value }))}
                                             >
-                                                <SelectTrigger>
+                                                <SelectTrigger className="rounded-xl border-gray-200 dark:border-gray-800 focus:ring-amber-500/20">
                                                     <SelectValue />
                                                 </SelectTrigger>
-                                                <SelectContent>
+                                                <SelectContent className="rounded-xl border-gray-200 dark:border-gray-700">
                                                     {EXPERIENCE_LEVELS.map(level => (
-                                                        <SelectItem key={level} value={level}>
+                                                        <SelectItem key={level} value={level} className="rounded-lg m-1">
                                                             {level}
                                                         </SelectItem>
                                                     ))}
@@ -360,8 +340,8 @@ Pouvez-vous me donner des conseils personnalisés pour atteindre mes objectifs d
                             {/* Étape 2: Objectifs */}
                             {currentStep === 1 && (
                                 <div className="space-y-4">
-                                    <div>
-                                        <Label htmlFor="careerGoals">
+                                    <div className="space-y-2">
+                                        <Label htmlFor="careerGoals" className="text-sm font-semibold text-gray-700 dark:text-gray-300">
                                             {t('career_advice_wizard.form.career_goals') || 'Quels sont vos objectifs de carrière ? *'}
                                         </Label>
                                         <Textarea
@@ -373,31 +353,36 @@ Pouvez-vous me donner des conseils personnalisés pour atteindre mes objectifs d
                                             }))}
                                             placeholder={t('career_advice_wizard.form.career_goals_placeholder') || 'Ex: Je veux devenir CTO d\'une scale-up tech d\'ici 3 ans, manager une équipe de 10+ développeurs...'}
                                             rows={4}
+                                            className="resize-none rounded-xl border-gray-200 dark:border-gray-800 focus:border-amber-500 focus:ring-amber-500/20"
                                         />
                                     </div>
 
-                                    <div>
-                                        <Label htmlFor="timeframe">{t('career_advice_wizard.form.timeframe') || 'Dans quel délai ?'}</Label>
+                                    <div className="space-y-2">
+                                        <Label htmlFor="timeframe" className="text-sm font-semibold text-gray-700 dark:text-gray-300">
+                                            {t('career_advice_wizard.form.timeframe') || 'Dans quel délai ?'}
+                                        </Label>
                                         <Select
                                             value={formData.timeframe}
                                             onValueChange={(value) => setFormData(prev => ({ ...prev, timeframe: value }))}
                                         >
-                                            <SelectTrigger>
+                                            <SelectTrigger className="rounded-xl border-gray-200 dark:border-gray-800 focus:ring-amber-500/20">
                                                 <SelectValue />
                                             </SelectTrigger>
-                                            <SelectContent>
-                                                <SelectItem value="6 mois">6 mois</SelectItem>
-                                                <SelectItem value="1 an">1 an</SelectItem>
-                                                <SelectItem value="1-2 ans">1-2 ans</SelectItem>
-                                                <SelectItem value="2-5 ans">2-5 ans</SelectItem>
-                                                <SelectItem value="5+ ans">5+ ans</SelectItem>
+                                            <SelectContent className="rounded-xl border-gray-200 dark:border-gray-700">
+                                                <SelectItem value="6 mois" className="rounded-lg m-1">6 mois</SelectItem>
+                                                <SelectItem value="1 an" className="rounded-lg m-1">1 an</SelectItem>
+                                                <SelectItem value="1-2 ans" className="rounded-lg m-1">1-2 ans</SelectItem>
+                                                <SelectItem value="2-5 ans" className="rounded-lg m-1">2-5 ans</SelectItem>
+                                                <SelectItem value="5+ ans" className="rounded-lg m-1">5+ ans</SelectItem>
                                             </SelectContent>
                                         </Select>
                                     </div>
 
-                                    <div>
-                                        <Label>{t('career_advice_wizard.form.priorities') || 'Vos priorités principales (sélectionnez 2-3)'}</Label>
-                                        <div className="grid grid-cols-2 md:grid-cols-3 gap-2 mt-2">
+                                    <div className="space-y-2">
+                                        <Label className="text-sm font-semibold text-gray-700 dark:text-gray-300">
+                                            {t('career_advice_wizard.form.priorities') || 'Vos priorités principales (sélectionnez 2-3)'}
+                                        </Label>
+                                        <div className="grid grid-cols-2 lg:grid-cols-3 gap-2.5 mt-2">
                                             {CAREER_PRIORITIES.map(priority => (
                                                 <button
                                                     key={priority}
@@ -407,10 +392,12 @@ Pouvez-vous me donner des conseils personnalisés pour atteindre mes objectifs d
                                                         priority,
                                                         (items) => setFormData(prev => ({ ...prev, priorities: items }))
                                                     )}
-                                                    className={`p-2 text-xs rounded-lg border transition-all ${formData.priorities.includes(priority)
-                                                            ? 'bg-amber-100 border-amber-300 text-amber-700'
-                                                            : 'bg-gray-50 border-gray-200 text-gray-600 hover:bg-amber-50'
-                                                        }`}
+                                                    className={cn(
+                                                        "p-3 text-[11px] font-medium rounded-xl border transition-all duration-200",
+                                                        formData.priorities.includes(priority)
+                                                            ? 'bg-amber-100 border-amber-300 text-amber-700 dark:bg-amber-900/30 dark:border-amber-700 dark:text-amber-300 shadow-sm'
+                                                            : 'bg-gray-50 dark:bg-gray-900/50 border-gray-100 dark:border-gray-800 text-gray-600 dark:text-gray-400 hover:border-amber-200'
+                                                    )}
                                                 >
                                                     {priority}
                                                 </button>
@@ -422,9 +409,9 @@ Pouvez-vous me donner des conseils personnalisés pour atteindre mes objectifs d
 
                             {/* Étape 3: Contraintes */}
                             {currentStep === 2 && (
-                                <div className="space-y-4">
-                                    <div>
-                                        <Label htmlFor="location">Préférences géographiques</Label>
+                                <div className="space-y-5">
+                                    <div className="space-y-2">
+                                        <Label htmlFor="location" className="text-sm font-semibold text-gray-700 dark:text-gray-300">Préférences géographiques</Label>
                                         <Input
                                             id="location"
                                             value={formData.location_preference}
@@ -433,11 +420,12 @@ Pouvez-vous me donner des conseils personnalisés pour atteindre mes objectifs d
                                                 location_preference: e.target.value
                                             }))}
                                             placeholder="Ex: Paris, télétravail, international..."
+                                            className="rounded-xl border-gray-200 dark:border-gray-800 focus:border-amber-500 focus:ring-amber-500/20"
                                         />
                                     </div>
 
-                                    <div>
-                                        <Label htmlFor="salary">Attentes salariales (optionnel)</Label>
+                                    <div className="space-y-2">
+                                        <Label htmlFor="salary" className="text-sm font-semibold text-gray-700 dark:text-gray-300">Attentes salariales (optionnel)</Label>
                                         <Input
                                             id="salary"
                                             value={formData.salary_expectations}
@@ -446,12 +434,13 @@ Pouvez-vous me donner des conseils personnalisés pour atteindre mes objectifs d
                                                 salary_expectations: e.target.value
                                             }))}
                                             placeholder="Ex: 50-60k€, négociable selon projet..."
+                                            className="rounded-xl border-gray-200 dark:border-gray-800 focus:border-amber-500 focus:ring-amber-500/20"
                                         />
                                     </div>
 
-                                    <div>
-                                        <Label>Principaux défis à surmonter</Label>
-                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-2 mt-2">
+                                    <div className="space-y-2">
+                                        <Label className="text-sm font-semibold text-gray-700 dark:text-gray-300">Principaux défis à surmonter</Label>
+                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-2.5 mt-2">
                                             {COMMON_CHALLENGES.map(challenge => (
                                                 <button
                                                     key={challenge}
@@ -461,10 +450,12 @@ Pouvez-vous me donner des conseils personnalisés pour atteindre mes objectifs d
                                                         challenge,
                                                         (items) => setFormData(prev => ({ ...prev, challenges: items }))
                                                     )}
-                                                    className={`p-2 text-xs rounded-lg border transition-all text-left ${formData.challenges.includes(challenge)
-                                                            ? 'bg-orange-100 border-orange-300 text-orange-700'
-                                                            : 'bg-gray-50 border-gray-200 text-gray-600 hover:bg-orange-50'
-                                                        }`}
+                                                    className={cn(
+                                                        "p-3 text-[11px] font-medium rounded-xl border transition-all duration-200 text-left",
+                                                        formData.challenges.includes(challenge)
+                                                            ? 'bg-amber-100 border-amber-300 text-amber-700 dark:bg-amber-900/30 dark:border-amber-700 dark:text-amber-300 shadow-sm'
+                                                            : 'bg-gray-50 dark:bg-gray-900/50 border-gray-100 dark:border-gray-800 text-gray-600 dark:text-gray-400 hover:border-amber-200'
+                                                    )}
                                                 >
                                                     {challenge}
                                                 </button>
@@ -477,9 +468,9 @@ Pouvez-vous me donner des conseils personnalisés pour atteindre mes objectifs d
                             {/* Étape 4: Développement */}
                             {currentStep === 3 && (
                                 <div className="space-y-4">
-                                    <div>
-                                        <Label>Compétences que vous souhaitez développer</Label>
-                                        <div className="space-y-2 mt-2">
+                                    <div className="space-y-2">
+                                        <Label className="text-sm font-semibold text-gray-700 dark:text-gray-300">Compétences que vous souhaitez développer</Label>
+                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mt-2">
                                             {['Leadership', 'Communication', 'Gestion de projet', 'Analyse de données',
                                                 'Négociation', 'Innovation', 'Stratégie', 'Coaching', 'Vente'].map(skill => (
                                                     <button
@@ -490,14 +481,16 @@ Pouvez-vous me donner des conseils personnalisés pour atteindre mes objectifs d
                                                             skill,
                                                             (items) => setFormData(prev => ({ ...prev, skills_to_develop: items }))
                                                         )}
-                                                        className={`w-full p-3 text-sm rounded-lg border transition-all text-left flex items-center justify-between ${formData.skills_to_develop.includes(skill)
-                                                                ? 'bg-green-100 border-green-300 text-green-700'
-                                                                : 'bg-gray-50 border-gray-200 text-gray-600 hover:bg-green-50'
-                                                            }`}
+                                                        className={cn(
+                                                            "p-4 text-sm font-medium rounded-xl border transition-all duration-200 text-left flex items-center justify-between",
+                                                            formData.skills_to_develop.includes(skill)
+                                                                ? 'bg-amber-500 border-amber-600 text-white shadow-lg shadow-amber-500/20'
+                                                                : 'bg-gray-50 dark:bg-gray-900/50 border-gray-100 dark:border-gray-800 text-gray-600 dark:text-gray-400 hover:border-amber-200'
+                                                        )}
                                                     >
                                                         <span>{skill}</span>
                                                         {formData.skills_to_develop.includes(skill) && (
-                                                            <CheckCircle className="w-4 h-4" />
+                                                            <CheckCircle className="w-5 h-5 text-white" />
                                                         )}
                                                     </button>
                                                 ))}
@@ -509,25 +502,44 @@ Pouvez-vous me donner des conseils personnalisés pour atteindre mes objectifs d
                             {/* Étape 5: Résumé */}
                             {currentStep === 4 && (
                                 <div className="space-y-6">
-                                    <div className="bg-blue-50 dark:bg-blue-950/50 p-4 rounded-xl border border-blue-200">
-                                        <h3 className="font-semibold text-blue-800 dark:text-blue-300 mb-3 flex items-center gap-2">
-                                            <Rocket className="w-4 h-4" />
+                                    <div className="bg-amber-50 dark:bg-amber-950/30 p-6 rounded-2xl border border-amber-100 dark:border-amber-900/50 shadow-sm relative overflow-hidden">
+                                        <div className="absolute top-0 right-0 p-4 opacity-10">
+                                            <Sparkles className="w-16 h-16 text-amber-500" />
+                                        </div>
+                                        <h3 className="font-bold text-amber-700 dark:text-amber-400 mb-4 flex items-center gap-2">
+                                            <Rocket className="w-5 h-5" />
                                             Votre Profil de Carrière
                                         </h3>
-                                        <div className="space-y-2 text-sm">
-                                            <div><strong>Situation :</strong> {formData.currentSituation.substring(0, 100)}...</div>
-                                            <div><strong>Objectif :</strong> {formData.careerGoals.substring(0, 100)}...</div>
-                                            <div><strong>Délai :</strong> {formData.timeframe}</div>
-                                            <div><strong>Secteur :</strong> {formData.industry}</div>
-                                            <div><strong>Priorités :</strong> {formData.priorities.join(', ')}</div>
+                                        <div className="space-y-3 text-sm text-gray-700 dark:text-gray-300">
+                                            <div className="flex gap-2">
+                                                <strong className="text-amber-600 dark:text-amber-500 shrink-0">Situation :</strong>
+                                                <span className="line-clamp-2">{formData.currentSituation}</span>
+                                            </div>
+                                            <div className="flex gap-2">
+                                                <strong className="text-amber-600 dark:text-amber-500 shrink-0">Objectif :</strong>
+                                                <span className="line-clamp-2">{formData.careerGoals}</span>
+                                            </div>
+                                            <div className="grid grid-cols-2 gap-4 pt-2">
+                                                <div>
+                                                    <strong className="text-amber-600 dark:text-amber-500 block mb-1">Délai :</strong>
+                                                    <Badge variant="outline" className="border-amber-200 bg-white dark:bg-gray-900">{formData.timeframe}</Badge>
+                                                </div>
+                                                <div>
+                                                    <strong className="text-amber-600 dark:text-amber-500 block mb-1">Secteur :</strong>
+                                                    <Badge variant="outline" className="border-amber-200 bg-white dark:bg-gray-900">{formData.industry}</Badge>
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
 
-                                    <div className="text-center">
-                                        <div className="mb-4">
-                                            <Award className="w-12 h-12 text-amber-500 mx-auto mb-2" />
-                                            <p className="text-gray-600 dark:text-gray-400">
-                                                Prêt à recevoir vos conseils personnalisés !
+                                    <div className="text-center space-y-4 py-4">
+                                        <div className="mx-auto w-16 h-16 rounded-2xl bg-amber-100 dark:bg-amber-900/30 flex items-center justify-center">
+                                            <Award className="w-10 h-10 text-amber-500" />
+                                        </div>
+                                        <div className="space-y-1">
+                                            <h4 className="font-bold text-gray-900 dark:text-white">Prêt à décoller !</h4>
+                                            <p className="text-sm text-gray-500 dark:text-gray-400">
+                                                Cliquez sur le bouton ci-dessous pour recevoir vos conseils personnalisés basés sur votre profil.
                                             </p>
                                         </div>
                                     </div>
@@ -536,37 +548,41 @@ Pouvez-vous me donner des conseils personnalisés pour atteindre mes objectifs d
                         </motion.div>
                     </AnimatePresence>
 
-                    {/* Navigation modernisée */}
-                    <div className="flex justify-between items-center mt-8 pt-6">
+                    {/* Desktop Navigation */}
+                    <div className="flex justify-between items-center mt-10 pt-8 border-t border-gray-100 dark:border-gray-800">
                         <Button
-                            variant="outline"
+                            variant="ghost"
                             onClick={handleBack}
                             disabled={currentStep === 0}
-                            className="flex items-center gap-2 px-6 py-3 rounded-xl border-2 hover:bg-gray-50 dark:hover:bg-gray-800 disabled:opacity-50 transition-all"
+                            className="flex items-center gap-2 px-6 h-12 rounded-xl text-gray-500 hover:text-gray-900 hover:bg-gray-50 dark:hover:bg-gray-900 disabled:opacity-30 transition-all font-medium"
                         >
-                            <ChevronLeft className="w-4 h-4" />
+                            <ChevronLeft className="w-5 h-5" />
                             {t('common.previous') || 'Précédent'}
                         </Button>
 
                         <Button
                             onClick={handleNext}
                             disabled={!isStepValid() || isLoading}
-                            className="flex items-center gap-2 px-8 py-3 rounded-xl bg-gradient-to-r from-amber-500 to-purple-500 hover:from-amber-600 hover:to-purple-600 shadow-lg hover:shadow-xl disabled:opacity-50 transition-all text-white font-medium"
+                            className={cn(
+                                "flex items-center gap-2 px-8 h-12 rounded-xl shadow-lg transition-all font-bold text-white",
+                                "bg-amber-500 hover:bg-amber-600 shadow-amber-500/20 hover:shadow-amber-500/30",
+                                (isLoading || !isStepValid()) && "opacity-50"
+                            )}
                         >
                             {isLoading ? (
                                 <>
-                                    <Loader2 className="w-4 h-4 animate-spin" />
-                                    {t('common.processing') || 'Traitement...'}
+                                    <Loader2 className="w-5 h-5 animate-spin" />
+                                    {t('common.processing') || 'Analyse...'}
                                 </>
                             ) : currentStep === WIZARD_STEPS.length - 1 ? (
                                 <>
-                                    <Sparkles className="w-4 h-4" />
-                                    {t('career_advice_wizard.generate_advice') || 'Générer conseils'}
+                                    <Sparkles className="w-5 h-5" />
+                                    {t('career_advice_wizard.generate_advice') || 'Générer mon plan'}
                                 </>
                             ) : (
                                 <>
-                                    {t('common.next') || 'Suivant'}
-                                    <ChevronRight className="w-4 h-4" />
+                                    {t('common.next') || 'Étape suivante'}
+                                    <ChevronRight className="w-5 h-5" />
                                 </>
                             )}
                         </Button>

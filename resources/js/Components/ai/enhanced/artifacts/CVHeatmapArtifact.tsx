@@ -136,7 +136,7 @@ export default function CVHeatmapArtifact({ data, messageContent, onAction }: CV
             {/* Header de l'artefact */}
             <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                    <div className="w-8 h-8 bg-gradient-to-r from-amber-500 to-purple-500 rounded-lg flex items-center justify-center">
+                    <div className="w-8 h-8 bg-amber-500 rounded-lg flex items-center justify-center">
                         <BarChart3 className="w-4 h-4 text-white" />
                     </div>
                     <div>
@@ -144,31 +144,29 @@ export default function CVHeatmapArtifact({ data, messageContent, onAction }: CV
                         <p className="text-xs text-amber-600">Zones d'amélioration identifiées</p>
                     </div>
                 </div>
-                
+
                 <div className="flex items-center gap-2">
                     <Badge className={`${globalScore >= 80 ? 'bg-green-100 text-green-700' : globalScore >= 60 ? 'bg-amber-100 text-amber-700' : 'bg-red-100 text-red-700'}`}>
                         <TrendingUp className="w-3 h-3 mr-1" />
                         Score global: {globalScore}/100
                     </Badge>
-                    
+
                     <div className="flex bg-amber-100 rounded-lg p-1">
                         <button
                             onClick={() => setViewMode('heatmap')}
-                            className={`px-2 py-1 rounded text-xs transition-all ${
-                                viewMode === 'heatmap' 
-                                    ? 'bg-amber-500 text-white' 
+                            className={`px-2 py-1 rounded text-xs transition-all ${viewMode === 'heatmap'
+                                    ? 'bg-amber-500 text-white'
                                     : 'text-amber-700 hover:bg-amber-200'
-                            }`}
+                                }`}
                         >
                             Heatmap
                         </button>
                         <button
                             onClick={() => setViewMode('detailed')}
-                            className={`px-2 py-1 rounded text-xs transition-all ${
-                                viewMode === 'detailed' 
-                                    ? 'bg-amber-500 text-white' 
+                            className={`px-2 py-1 rounded text-xs transition-all ${viewMode === 'detailed'
+                                    ? 'bg-amber-500 text-white'
                                     : 'text-amber-700 hover:bg-amber-200'
-                            }`}
+                                }`}
                         >
                             Détaillé
                         </button>
@@ -184,7 +182,7 @@ export default function CVHeatmapArtifact({ data, messageContent, onAction }: CV
                             const Icon = section.icon;
                             const colors = getStatusColor(section.status);
                             const intensity = section.score / section.maxScore;
-                            
+
                             return (
                                 <motion.div
                                     key={section.id}
@@ -194,12 +192,12 @@ export default function CVHeatmapArtifact({ data, messageContent, onAction }: CV
                                     className={`relative p-4 rounded-lg border-2 cursor-pointer transition-all hover:shadow-md ${colors.border}`}
                                     style={{
                                         background: `linear-gradient(135deg, 
-                                            ${intensity > 0.8 ? '#10b981' : 
-                                              intensity > 0.6 ? '#f59e0b' : 
-                                              intensity > 0.4 ? '#f97316' : '#ef4444'}15,
-                                            ${intensity > 0.8 ? '#10b981' : 
-                                              intensity > 0.6 ? '#f59e0b' : 
-                                              intensity > 0.4 ? '#f97316' : '#ef4444'}05)`
+                                            ${intensity > 0.8 ? '#10b981' :
+                                                intensity > 0.6 ? '#f59e0b' :
+                                                    intensity > 0.4 ? '#f97316' : '#ef4444'}15,
+                                            ${intensity > 0.8 ? '#10b981' :
+                                                intensity > 0.6 ? '#f59e0b' :
+                                                    intensity > 0.4 ? '#f97316' : '#ef4444'}05)`
                                     }}
                                     onClick={() => setSelectedSection(selectedSection === section.id ? null : section.id)}
                                 >
@@ -221,10 +219,9 @@ export default function CVHeatmapArtifact({ data, messageContent, onAction }: CV
                                         {Array.from({ length: 3 - section.priority + 1 }).map((_, i) => (
                                             <div
                                                 key={i}
-                                                className={`w-1.5 h-1.5 rounded-full mb-0.5 ${
-                                                    section.priority <= 2 ? 'bg-red-500' :
-                                                    section.priority <= 3 ? 'bg-amber-500' : 'bg-green-500'
-                                                }`}
+                                                className={`w-1.5 h-1.5 rounded-full mb-0.5 ${section.priority <= 2 ? 'bg-red-500' :
+                                                        section.priority <= 3 ? 'bg-amber-500' : 'bg-green-500'
+                                                    }`}
                                             />
                                         ))}
                                     </div>
@@ -245,7 +242,7 @@ export default function CVHeatmapArtifact({ data, messageContent, onAction }: CV
                                 {(() => {
                                     const section = cvSections.find(s => s.id === selectedSection);
                                     if (!section) return null;
-                                    
+
                                     return (
                                         <div className="space-y-3">
                                             <div className="flex items-center gap-2">
@@ -254,7 +251,7 @@ export default function CVHeatmapArtifact({ data, messageContent, onAction }: CV
                                                     {section.name} - Recommandations
                                                 </h4>
                                             </div>
-                                            
+
                                             <div className="space-y-2">
                                                 {section.recommendations.map((rec, index) => (
                                                     <div key={index} className="flex items-start gap-3 p-2 bg-amber-50 rounded-lg">
@@ -262,8 +259,8 @@ export default function CVHeatmapArtifact({ data, messageContent, onAction }: CV
                                                             <span className="text-white text-xs font-bold">{index + 1}</span>
                                                         </div>
                                                         <span className="text-sm text-amber-800 flex-1">{rec}</span>
-                                                        <Button 
-                                                            size="sm" 
+                                                        <Button
+                                                            size="sm"
                                                             variant="ghost"
                                                             className="h-6 px-2 text-amber-600 hover:bg-amber-100"
                                                             onClick={() => onAction?.('apply-recommendation', { section: section.id, recommendation: rec })}
@@ -290,7 +287,7 @@ export default function CVHeatmapArtifact({ data, messageContent, onAction }: CV
                         .map((section, index) => {
                             const Icon = section.icon;
                             const colors = getStatusColor(section.status);
-                            
+
                             return (
                                 <motion.div
                                     key={section.id}
@@ -302,7 +299,7 @@ export default function CVHeatmapArtifact({ data, messageContent, onAction }: CV
                                         <CardContent className="p-4">
                                             <div className="flex items-center justify-between mb-3">
                                                 <div className="flex items-center gap-3">
-                                                    <div className={`w-10 h-10 bg-gradient-to-r from-amber-500 to-purple-500 rounded-lg flex items-center justify-center`}>
+                                                    <div className={`w-10 h-10 bg-amber-500 rounded-lg flex items-center justify-center`}>
                                                         <Icon className="w-5 h-5 text-white" />
                                                     </div>
                                                     <div>
@@ -319,7 +316,7 @@ export default function CVHeatmapArtifact({ data, messageContent, onAction }: CV
                                                         </div>
                                                     </div>
                                                 </div>
-                                                
+
                                                 <div className="text-right">
                                                     <div className={`text-2xl font-bold ${colors.text}`}>
                                                         {section.score}%
@@ -327,7 +324,7 @@ export default function CVHeatmapArtifact({ data, messageContent, onAction }: CV
                                                     <Progress value={section.score} className="w-20 h-2 mt-1" />
                                                 </div>
                                             </div>
-                                            
+
                                             <div className="space-y-2">
                                                 <h5 className="text-sm font-medium text-gray-700 dark:text-gray-300 flex items-center gap-1">
                                                     <Target className="w-3 h-3" />
@@ -337,8 +334,8 @@ export default function CVHeatmapArtifact({ data, messageContent, onAction }: CV
                                                     <div key={i} className="flex items-center gap-2 text-sm">
                                                         <div className={`w-2 h-2 rounded-full ${colors.bg}`} />
                                                         <span className="text-gray-600 dark:text-gray-400 flex-1">{rec}</span>
-                                                        <Button 
-                                                            size="sm" 
+                                                        <Button
+                                                            size="sm"
                                                             variant="ghost"
                                                             className="h-5 px-1 text-amber-600 hover:bg-amber-50"
                                                             onClick={() => onAction?.('fix-section', { section: section.id, issue: rec })}
@@ -357,7 +354,7 @@ export default function CVHeatmapArtifact({ data, messageContent, onAction }: CV
             )}
 
             {/* Résumé et actions */}
-            <Card className="bg-gradient-to-r from-amber-50 to-purple-50 border-amber-200">
+            <Card className="bg-amber-50 dark:bg-amber-950/20 border-amber-200">
                 <CardContent className="p-4">
                     <div className="flex items-center justify-between mb-3">
                         <div className="flex items-center gap-2">
@@ -368,7 +365,7 @@ export default function CVHeatmapArtifact({ data, messageContent, onAction }: CV
                             {globalScore >= 80 ? 'CV Excellent' : globalScore >= 60 ? 'CV Bon' : 'CV à Améliorer'}
                         </Badge>
                     </div>
-                    
+
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
                         <div className="text-center">
                             <div className="text-lg font-bold text-green-600">
@@ -383,25 +380,25 @@ export default function CVHeatmapArtifact({ data, messageContent, onAction }: CV
                             <div className="text-gray-600">À améliorer</div>
                         </div>
                         <div className="text-center">
-                            <div className="text-lg font-bold text-purple-600">
+                            <div className="text-lg font-bold text-amber-600">
                                 {cvSections.reduce((acc, s) => acc + s.recommendations.length, 0)}
                             </div>
                             <div className="text-gray-600">Recommandations</div>
                         </div>
                     </div>
-                    
+
                     <div className="flex justify-center gap-3 mt-4">
-                        <Button 
-                            size="sm" 
-                            className="bg-gradient-to-r from-amber-500 to-purple-500 text-white"
+                        <Button
+                            size="sm"
+                            className="bg-amber-500 text-white"
                             onClick={() => onAction?.('optimize-cv', cvSections)}
                         >
                             <Zap className="w-3 h-3 mr-2" />
                             Optimiser maintenant
                         </Button>
-                        
-                        <Button 
-                            size="sm" 
+
+                        <Button
+                            size="sm"
                             variant="outline"
                             className="border-amber-200 text-amber-700 hover:bg-amber-50"
                             onClick={() => onAction?.('export-analysis', { sections: cvSections, globalScore })}

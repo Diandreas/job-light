@@ -70,7 +70,7 @@ export default function InterviewReportArtifact({ data, messageContent, onAction
                 feedback: 'Potentiel de leadership identifié mais à développer',
                 improvements: ['Partager des exemples de gestion d\'équipe', 'Démontrer la prise d\'initiative'],
                 icon: Users,
-                color: 'purple'
+                color: 'amber'
             },
             {
                 category: 'Résolution de Problèmes',
@@ -141,7 +141,7 @@ export default function InterviewReportArtifact({ data, messageContent, onAction
                     const now = Date.now();
                     const progress = Math.min((now - startTime) / duration, 1);
                     const current = Math.round(start + (end - start) * progress);
-                    
+
                     setAnimatedScores(prev => ({
                         ...prev,
                         [metric.category]: current
@@ -167,7 +167,7 @@ export default function InterviewReportArtifact({ data, messageContent, onAction
         switch (category) {
             case 'behavioral': return 'amber';
             case 'technical': return 'blue';
-            case 'company': return 'purple';
+            case 'company': return 'amber';
             case 'situational': return 'green';
             default: return 'gray';
         }
@@ -178,7 +178,7 @@ export default function InterviewReportArtifact({ data, messageContent, onAction
             {/* Header de l'artefact */}
             <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                    <div className="w-8 h-8 bg-gradient-to-r from-amber-500 to-purple-500 rounded-lg flex items-center justify-center">
+                    <div className="w-8 h-8 bg-amber-500 rounded-lg flex items-center justify-center">
                         <BarChart3 className="w-4 h-4 text-white" />
                     </div>
                     <div>
@@ -186,23 +186,22 @@ export default function InterviewReportArtifact({ data, messageContent, onAction
                         <p className="text-xs text-amber-600">Analyse de performance détaillée</p>
                     </div>
                 </div>
-                
+
                 <div className="flex items-center gap-2">
                     <Badge className={`${globalScore >= 80 ? 'bg-green-100 text-green-700' : globalScore >= 60 ? 'bg-amber-100 text-amber-700' : 'bg-red-100 text-red-700'}`}>
                         <Award className="w-3 h-3 mr-1" />
                         Score: {globalScore}/100
                     </Badge>
-                    
+
                     <div className="flex bg-amber-100 rounded-lg p-1">
                         {['overview', 'detailed', 'questions'].map(mode => (
                             <button
                                 key={mode}
                                 onClick={() => setViewMode(mode as any)}
-                                className={`px-2 py-1 rounded text-xs transition-all ${
-                                    viewMode === mode 
-                                        ? 'bg-amber-500 text-white' 
+                                className={`px-2 py-1 rounded text-xs transition-all ${viewMode === mode
+                                        ? 'bg-amber-500 text-white'
                                         : 'text-amber-700 hover:bg-amber-200'
-                                }`}
+                                    }`}
                             >
                                 {mode === 'overview' ? 'Aperçu' : mode === 'detailed' ? 'Détaillé' : 'Questions'}
                             </button>
@@ -220,12 +219,11 @@ export default function InterviewReportArtifact({ data, messageContent, onAction
                             <div className="relative w-32 h-32 mx-auto mb-4">
                                 {/* Simulation graphique radar simple */}
                                 <div className="absolute inset-0 border-4 border-gray-200 rounded-full" />
-                                <div 
-                                    className={`absolute inset-2 border-4 rounded-full transition-all duration-2000 ${
-                                        globalScore >= 80 ? 'border-green-500' :
-                                        globalScore >= 60 ? 'border-amber-500' : 'border-red-500'
-                                    }`}
-                                    style={{ 
+                                <div
+                                    className={`absolute inset-2 border-4 rounded-full transition-all duration-2000 ${globalScore >= 80 ? 'border-green-500' :
+                                            globalScore >= 60 ? 'border-amber-500' : 'border-red-500'
+                                        }`}
+                                    style={{
                                         transform: `scale(${globalScore / 100})`,
                                         opacity: 0.7
                                     }}
@@ -239,26 +237,26 @@ export default function InterviewReportArtifact({ data, messageContent, onAction
                                     </div>
                                 </div>
                             </div>
-                            
+
                             <h4 className="font-semibold text-gray-800 dark:text-gray-200 mb-2">
                                 Performance Globale
                             </h4>
                             <p className="text-xs text-gray-600 dark:text-gray-400">
                                 {globalScore >= 80 ? 'Excellent entretien ! Très bonnes chances' :
-                                 globalScore >= 60 ? 'Bon entretien avec points à améliorer' :
-                                 'Entretien à retravailler significativement'}
+                                    globalScore >= 60 ? 'Bon entretien avec points à améliorer' :
+                                        'Entretien à retravailler significativement'}
                             </p>
                         </CardContent>
                     </Card>
 
                     {/* Top 3 points forts/faibles */}
-                    <Card className="bg-white dark:bg-gray-800 border-purple-200">
+                    <Card className="bg-white dark:bg-gray-800 border-amber-200">
                         <CardContent className="p-4">
                             <h4 className="font-semibold text-gray-800 dark:text-gray-200 mb-3 flex items-center gap-2">
-                                <TrendingUp className="w-4 h-4 text-purple-600" />
+                                <TrendingUp className="w-4 h-4 text-amber-600" />
                                 Points Clés
                             </h4>
-                            
+
                             <div className="space-y-3">
                                 <div>
                                     <div className="flex items-center gap-2 mb-2">
@@ -277,7 +275,7 @@ export default function InterviewReportArtifact({ data, messageContent, onAction
                                             ))}
                                     </div>
                                 </div>
-                                
+
                                 <div>
                                     <div className="flex items-center gap-2 mb-2">
                                         <AlertTriangle className="w-3 h-3 text-red-600" />
@@ -307,7 +305,7 @@ export default function InterviewReportArtifact({ data, messageContent, onAction
                     {metrics.map((metric, index) => {
                         const Icon = metric.icon;
                         const score = animatedScores[metric.category] || 0;
-                        
+
                         return (
                             <motion.div
                                 key={metric.category}
@@ -319,7 +317,7 @@ export default function InterviewReportArtifact({ data, messageContent, onAction
                                     <CardContent className="p-4">
                                         <div className="flex items-center justify-between mb-3">
                                             <div className="flex items-center gap-3">
-                                                <div className="w-10 h-10 bg-gradient-to-r from-amber-500 to-purple-500 rounded-lg flex items-center justify-center">
+                                                <div className="w-10 h-10 bg-amber-500 rounded-lg flex items-center justify-center">
                                                     <Icon className="w-5 h-5 text-white" />
                                                 </div>
                                                 <div>
@@ -331,7 +329,7 @@ export default function InterviewReportArtifact({ data, messageContent, onAction
                                                     </p>
                                                 </div>
                                             </div>
-                                            
+
                                             <div className="text-right">
                                                 <div className={`text-2xl font-bold ${getScoreColor(score)}`}>
                                                     {score}%
@@ -339,7 +337,7 @@ export default function InterviewReportArtifact({ data, messageContent, onAction
                                                 <Progress value={score} className="w-20 h-2 mt-1" />
                                             </div>
                                         </div>
-                                        
+
                                         <div className="space-y-2">
                                             <h5 className="text-sm font-medium text-gray-700 dark:text-gray-300 flex items-center gap-1">
                                                 <Lightbulb className="w-3 h-3 text-amber-600" />
@@ -349,8 +347,8 @@ export default function InterviewReportArtifact({ data, messageContent, onAction
                                                 <div key={i} className="flex items-start gap-2 text-sm">
                                                     <div className="w-2 h-2 bg-amber-500 rounded-full mt-2 flex-shrink-0" />
                                                     <span className="text-gray-600 dark:text-gray-400 flex-1">{improvement}</span>
-                                                    <Button 
-                                                        size="sm" 
+                                                    <Button
+                                                        size="sm"
                                                         variant="ghost"
                                                         className="h-5 px-1 text-amber-600 hover:bg-amber-50"
                                                         onClick={() => onAction?.('practice-skill', { category: metric.category, improvement })}
@@ -373,7 +371,7 @@ export default function InterviewReportArtifact({ data, messageContent, onAction
                 <div className="space-y-3">
                     {questions.map((qa, index) => {
                         const color = getCategoryColor(qa.category);
-                        
+
                         return (
                             <motion.div
                                 key={index}
@@ -398,14 +396,14 @@ export default function InterviewReportArtifact({ data, messageContent, onAction
                                                     R: {qa.response}
                                                 </p>
                                             </div>
-                                            
+
                                             <div className="text-right ml-4">
                                                 <div className={`text-lg font-bold ${getScoreColor(qa.score)}`}>
                                                     {qa.score}%
                                                 </div>
                                             </div>
                                         </div>
-                                        
+
                                         <div className="bg-amber-50 dark:bg-amber-950/50 rounded-lg p-3">
                                             <p className="text-sm text-amber-800 dark:text-amber-300 mb-2">
                                                 <strong>Feedback:</strong> {qa.feedback}
@@ -428,7 +426,7 @@ export default function InterviewReportArtifact({ data, messageContent, onAction
             )}
 
             {/* Actions et résumé */}
-            <Card className="bg-gradient-to-r from-amber-50 to-purple-50 border-amber-200">
+            <Card className="bg-amber-50 dark:bg-amber-950/20 border-amber-200">
                 <CardContent className="p-4">
                     <div className="flex items-center justify-between mb-3">
                         <div className="flex items-center gap-2">
@@ -436,12 +434,12 @@ export default function InterviewReportArtifact({ data, messageContent, onAction
                             <span className="font-semibold text-amber-800">Plan d'amélioration</span>
                         </div>
                         <Badge className={`${globalScore >= 80 ? 'bg-green-100 text-green-700' : globalScore >= 60 ? 'bg-amber-100 text-amber-700' : 'bg-red-100 text-red-700'}`}>
-                            {globalScore >= 80 ? 'Prêt pour entretiens' : 
-                             globalScore >= 60 ? 'Quelques améliorations' : 
-                             'Entraînement nécessaire'}
+                            {globalScore >= 80 ? 'Prêt pour entretiens' :
+                                globalScore >= 60 ? 'Quelques améliorations' :
+                                    'Entraînement nécessaire'}
                         </Badge>
                     </div>
-                    
+
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs mb-4">
                         <div className="text-center">
                             <div className="text-lg font-bold text-green-600">
@@ -462,19 +460,19 @@ export default function InterviewReportArtifact({ data, messageContent, onAction
                             <div className="text-gray-600">Points faibles</div>
                         </div>
                     </div>
-                    
+
                     <div className="flex justify-center gap-3">
-                        <Button 
-                            size="sm" 
-                            className="bg-gradient-to-r from-amber-500 to-purple-500 text-white"
+                        <Button
+                            size="sm"
+                            className="bg-amber-500 text-white"
                             onClick={() => onAction?.('schedule-practice', { weakAreas: metrics.filter(m => m.score < 70) })}
                         >
                             <Clock className="w-3 h-3 mr-2" />
                             Programmer entraînement
                         </Button>
-                        
-                        <Button 
-                            size="sm" 
+
+                        <Button
+                            size="sm"
                             variant="outline"
                             className="border-amber-200 text-amber-700 hover:bg-amber-50"
                             onClick={() => onAction?.('export-report', { metrics, questions, globalScore })}
@@ -482,11 +480,11 @@ export default function InterviewReportArtifact({ data, messageContent, onAction
                             <Download className="w-3 h-3 mr-2" />
                             Exporter rapport
                         </Button>
-                        
-                        <Button 
-                            size="sm" 
+
+                        <Button
+                            size="sm"
                             variant="outline"
-                            className="border-purple-200 text-purple-700 hover:bg-purple-50"
+                            className="border-amber-200 text-amber-700 hover:bg-amber-50"
                             onClick={() => onAction?.('new-simulation', {})}
                         >
                             <RefreshCw className="w-3 h-3 mr-2" />

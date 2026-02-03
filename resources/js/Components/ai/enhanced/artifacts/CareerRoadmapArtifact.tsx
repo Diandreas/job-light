@@ -52,7 +52,7 @@ export default function CareerRoadmapArtifact({ data, messageContent, onAction }
 
     // Utiliser les données ou fallback
     const roadmapSteps = data.steps || [];
-    const overallProgress = roadmapSteps.length > 0 
+    const overallProgress = roadmapSteps.length > 0
         ? roadmapSteps.reduce((acc, step) => acc + step.progress, 0) / roadmapSteps.length
         : 0;
 
@@ -70,7 +70,7 @@ export default function CareerRoadmapArtifact({ data, messageContent, onAction }
         switch (category) {
             case 'skill': return 'bg-blue-100 text-blue-700 border-blue-200';
             case 'experience': return 'bg-green-100 text-green-700 border-green-200';
-            case 'network': return 'bg-purple-100 text-purple-700 border-purple-200';
+            case 'network': return 'bg-amber-100/50 text-amber-700 border-amber-200';
             case 'certification': return 'bg-amber-100 text-amber-700 border-amber-200';
             default: return 'bg-gray-100 text-gray-700 border-gray-200';
         }
@@ -95,10 +95,10 @@ export default function CareerRoadmapArtifact({ data, messageContent, onAction }
 
     return (
         <Card className="overflow-hidden">
-            <CardHeader className="bg-gradient-to-r from-blue-50 to-purple-50 border-b pb-3">
+            <CardHeader className="bg-amber-50 dark:bg-amber-950/20 border-b pb-3">
                 <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
-                        <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-purple-500 rounded-lg flex items-center justify-center">
+                        <div className="w-8 h-8 bg-amber-500 rounded-lg flex items-center justify-center">
                             <MapPin className="w-4 h-4 text-white" />
                         </div>
                         <div>
@@ -118,7 +118,7 @@ export default function CareerRoadmapArtifact({ data, messageContent, onAction }
                             </div>
                         </div>
                     </div>
-                    
+
                     <Button
                         size="sm"
                         variant="outline"
@@ -129,7 +129,7 @@ export default function CareerRoadmapArtifact({ data, messageContent, onAction }
                         {viewMode === 'timeline' ? 'Compact' : 'Timeline'}
                     </Button>
                 </div>
-                
+
                 {/* Stats Compactes */}
                 <div className="grid grid-cols-4 gap-2 mt-3">
                     <div className="bg-white rounded p-2 border text-center">
@@ -137,20 +137,20 @@ export default function CareerRoadmapArtifact({ data, messageContent, onAction }
                         <div className="text-xs text-gray-500">Progress</div>
                     </div>
                     <div className="bg-white rounded p-2 border text-center">
-                        <div className="text-lg font-bold text-blue-600">
+                        <div className="text-lg font-bold text-amber-600">
                             {roadmapSteps.filter(s => s.completed).length}/{roadmapSteps.length}
                         </div>
                         <div className="text-xs text-gray-500">Étapes</div>
                     </div>
                     {data.successProbability && (
                         <div className="bg-white rounded p-2 border text-center">
-                            <div className="text-lg font-bold text-purple-600">{data.successProbability}%</div>
+                            <div className="text-lg font-bold text-amber-600">{data.successProbability}%</div>
                             <div className="text-xs text-gray-500">Réussite</div>
                         </div>
                     )}
                     {data.salaryProgression && (
-                        <div className="bg-white rounded p-2 border text-center cursor-pointer" 
-                             onClick={() => setShowSalaryDetails(!showSalaryDetails)}>
+                        <div className="bg-white rounded p-2 border text-center cursor-pointer"
+                            onClick={() => setShowSalaryDetails(!showSalaryDetails)}>
                             <div className="text-lg font-bold text-amber-600">
                                 +{Math.round((data.salaryProgression.projected_3years - data.salaryProgression.current) / 1000)}k€
                             </div>
@@ -179,7 +179,7 @@ export default function CareerRoadmapArtifact({ data, messageContent, onAction }
                                 </div>
                                 <div className="flex justify-between">
                                     <span className="text-gray-600">3 ans</span>
-                                    <span className="text-blue-600">+{((data.salaryProgression.projected_3years - data.salaryProgression.current) / 1000).toFixed(0)}k€</span>
+                                    <span className="text-amber-600">+{((data.salaryProgression.projected_3years - data.salaryProgression.current) / 1000).toFixed(0)}k€</span>
                                 </div>
                             </div>
                         </motion.div>
@@ -194,7 +194,7 @@ export default function CareerRoadmapArtifact({ data, messageContent, onAction }
                         {roadmapSteps.map((step, index) => {
                             const IconComponent = getCategoryIcon(step.category);
                             const isSelected = selectedStep === step.id;
-                            
+
                             return (
                                 <motion.div
                                     key={step.id}
@@ -207,12 +207,11 @@ export default function CareerRoadmapArtifact({ data, messageContent, onAction }
                                     {index < roadmapSteps.length - 1 && (
                                         <div className="absolute left-4 top-12 w-0.5 h-12 bg-gradient-to-b from-gray-300 to-transparent" />
                                     )}
-                                    
-                                    <Card 
-                                        className={`transition-all duration-200 hover:shadow-md border-l-4 ${
-                                            step.priority === 'high' ? 'border-l-red-500' :
-                                            step.priority === 'medium' ? 'border-l-yellow-500' : 'border-l-green-500'
-                                        } ${isSelected ? 'ring-2 ring-blue-500' : ''}`}
+
+                                    <Card
+                                        className={`transition-all duration-200 hover:shadow-md border-l-4 ${step.priority === 'high' ? 'border-l-red-500' :
+                                                step.priority === 'medium' ? 'border-l-yellow-500' : 'border-l-green-500'
+                                            } ${isSelected ? 'ring-2 ring-amber-500' : ''}`}
                                     >
                                         <CardContent className="p-3">
                                             <div className="flex items-start gap-3">
@@ -227,7 +226,7 @@ export default function CareerRoadmapArtifact({ data, messageContent, onAction }
                                                         </div>
                                                     )}
                                                 </div>
-                                                
+
                                                 {/* Content */}
                                                 <div className="flex-1 min-w-0">
                                                     <div className="flex items-start justify-between mb-2">
@@ -241,11 +240,11 @@ export default function CareerRoadmapArtifact({ data, messageContent, onAction }
                                                                 </p>
                                                             )}
                                                         </div>
-                                                        
+
                                                         <div className="flex items-center gap-1 ml-2 flex-shrink-0">
                                                             <Badge variant="outline" className={`${getPriorityColor(step.priority)} text-xs px-1 py-0`}>
                                                                 {step.priority === 'high' ? 'H' :
-                                                                 step.priority === 'medium' ? 'M' : 'L'}
+                                                                    step.priority === 'medium' ? 'M' : 'L'}
                                                             </Badge>
                                                             {step.timeframe && (
                                                                 <Badge variant="outline" className="text-xs px-1 py-0">
@@ -254,7 +253,7 @@ export default function CareerRoadmapArtifact({ data, messageContent, onAction }
                                                             )}
                                                         </div>
                                                     </div>
-                                                    
+
                                                     {/* Progress Bar */}
                                                     <div className="mb-2">
                                                         <div className="flex items-center justify-between mb-1">
@@ -262,7 +261,7 @@ export default function CareerRoadmapArtifact({ data, messageContent, onAction }
                                                         </div>
                                                         <Progress value={step.progress} className="h-1.5" />
                                                     </div>
-                                                    
+
                                                     {/* Actions Compactes */}
                                                     <div className="flex items-center gap-1">
                                                         <Button
@@ -283,7 +282,7 @@ export default function CareerRoadmapArtifact({ data, messageContent, onAction }
                                                                 </>
                                                             )}
                                                         </Button>
-                                                        
+
                                                         {!step.completed && step.milestones && (
                                                             <Button
                                                                 size="sm"
@@ -296,7 +295,7 @@ export default function CareerRoadmapArtifact({ data, messageContent, onAction }
                                                             </Button>
                                                         )}
                                                     </div>
-                                                    
+
                                                     {/* Expanded Details */}
                                                     <AnimatePresence>
                                                         {isSelected && step.milestones && (
@@ -333,7 +332,7 @@ export default function CareerRoadmapArtifact({ data, messageContent, onAction }
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
                         {roadmapSteps.map((step, index) => {
                             const IconComponent = getCategoryIcon(step.category);
-                            
+
                             return (
                                 <motion.div
                                     key={step.id}
@@ -359,7 +358,7 @@ export default function CareerRoadmapArtifact({ data, messageContent, onAction }
                                                         </h4>
                                                         <Badge variant="outline" className={`${getPriorityColor(step.priority)} text-xs px-1 py-0`}>
                                                             {step.priority === 'high' ? 'H' :
-                                                             step.priority === 'medium' ? 'M' : 'L'}
+                                                                step.priority === 'medium' ? 'M' : 'L'}
                                                         </Badge>
                                                     </div>
                                                     <div className="flex items-center gap-1">

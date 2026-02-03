@@ -277,7 +277,7 @@ export default function EnhancedMessageBubble({ message, onArtifactAction }: Enh
             {!isUser && (
                 <Avatar className="w-8 h-8 border-2 border-amber-200">
                     <AvatarImage src="/mascot/mascot.png" alt="Assistant IA" />
-                    <AvatarFallback className="bg-gradient-to-r from-amber-500 to-purple-500 text-white text-xs">
+                    <AvatarFallback className="bg-amber-500 text-white text-xs">
                         <Bot className="w-4 h-4" />
                     </AvatarFallback>
                 </Avatar>
@@ -288,8 +288,8 @@ export default function EnhancedMessageBubble({ message, onArtifactAction }: Enh
                 <div
                     ref={messageRef}
                     className={`relative px-4 py-3 rounded-2xl shadow-sm ${isUser
-                            ? 'bg-gradient-to-r from-amber-500 to-purple-500 text-white'
-                            : 'bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700'
+                        ? 'bg-amber-500 text-white shadow-md shadow-amber-500/20'
+                        : 'bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700'
                         }`}
                 >
                     {/* Contenu du message */}
@@ -442,10 +442,10 @@ export default function EnhancedMessageBubble({ message, onArtifactAction }: Enh
                             transition={{ delay: 0.6 }}
                             className="mt-4 w-full"
                         >
-                            <Card className="bg-gradient-to-r from-amber-50 to-purple-50 border-amber-200">
+                            <Card className="bg-amber-50 dark:bg-amber-950/20 border-amber-200">
                                 <CardContent className="p-4">
                                     <div className="flex items-center gap-2 mb-3">
-                                        <div className="w-6 h-6 bg-gradient-to-r from-amber-500 to-purple-500 rounded-full flex items-center justify-center">
+                                        <div className="w-6 h-6 bg-amber-500 rounded-full flex items-center justify-center">
                                             <Sparkles className="w-3 h-3 text-white" />
                                         </div>
                                         <span className="text-sm font-medium text-amber-800">
@@ -483,7 +483,7 @@ export default function EnhancedMessageBubble({ message, onArtifactAction }: Enh
             {/* Avatar utilisateur */}
             {isUser && (
                 <Avatar className="w-8 h-8 border-2 border-amber-200">
-                    <AvatarFallback className="bg-gradient-to-r from-amber-500 to-purple-500 text-white text-xs">
+                    <AvatarFallback className="bg-amber-500 text-white text-xs">
                         <User className="w-4 h-4" />
                     </AvatarFallback>
                 </Avatar>

@@ -5,7 +5,7 @@ import { Brain, Sparkles } from 'lucide-react';
 interface ThinkingAnimationProps {
     isVisible: boolean;
     variant?: 'default' | 'compact' | 'minimal';
-    theme?: 'amber-purple' | 'blue-indigo';
+    theme?: 'amber' | 'blue-indigo';
 }
 
 /**
@@ -13,10 +13,10 @@ interface ThinkingAnimationProps {
  * Supporte différentes variantes et thèmes de couleurs
  */
 export const ThinkingAnimation: React.FC<ThinkingAnimationProps> = ({
-                                                                        isVisible,
-                                                                        variant = 'default',
-                                                                        theme = 'amber-purple'
-                                                                    }) => {
+    isVisible,
+    variant = 'default',
+    theme = 'amber'
+}) => {
     const [step, setStep] = useState(0);
     const [pulseActive, setPulseActive] = useState(false);
 
@@ -30,9 +30,9 @@ export const ThinkingAnimation: React.FC<ThinkingAnimationProps> = ({
 
     // Couleurs selon le thème
     const colors = {
-        'amber-purple': {
-            from: 'from-amber-500',
-            to: 'to-purple-500',
+        'amber': {
+            from: 'from-amber-400',
+            to: 'to-amber-600',
             text: 'text-amber-600 dark:text-amber-400',
             bgLight: 'bg-amber-50/80',
             bgDark: 'dark:bg-amber-900/20',
@@ -178,7 +178,7 @@ export const ThinkingAnimation: React.FC<ThinkingAnimationProps> = ({
                             ease: "easeOut"
                         }}
                         style={{
-                            background: `radial-gradient(circle, ${theme === 'amber-purple' ? 'rgba(245, 158, 11, 0.3)' : 'rgba(59, 130, 246, 0.3)'} 0%, transparent 70%)`
+                            background: `radial-gradient(circle, ${theme === 'amber' ? 'rgba(245, 158, 11, 0.3)' : 'rgba(59, 130, 246, 0.3)'} 0%, transparent 70%)`
                         }}
                     />
                 ))}
@@ -221,10 +221,10 @@ export const ThinkingAnimation: React.FC<ThinkingAnimationProps> = ({
  */
 export const TypingIndicator: React.FC<{
     isTyping: boolean;
-    theme?: 'amber-purple' | 'blue-indigo' | 'neutral';
-}> = ({ isTyping, theme = 'amber-purple' }) => {
+    theme?: 'amber' | 'blue-indigo' | 'neutral';
+}> = ({ isTyping, theme = 'amber' }) => {
     const colors = {
-        'amber-purple': 'bg-amber-400 dark:bg-amber-500',
+        'amber': 'bg-amber-400 dark:bg-amber-500',
         'blue-indigo': 'bg-blue-400 dark:bg-blue-500',
         'neutral': 'bg-gray-400 dark:bg-gray-500'
     };

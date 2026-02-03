@@ -4,13 +4,14 @@
  */
 
 import React, { useState, useEffect } from 'react';
+import { cn } from "@/lib/utils";
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/Components/ui/button';
 import { Card, CardContent } from '@/Components/ui/card';
 import { Badge } from '@/Components/ui/badge';
 import { Alert, AlertDescription } from '@/Components/ui/alert';
 import {
-    Bot, User, Sparkles, TrendingUp, Eye, 
+    Bot, User, Sparkles, TrendingUp, Eye,
     CheckCircle, BarChart3, Clock, Zap,
     Brain, Lightbulb, Target
 } from 'lucide-react';
@@ -33,11 +34,11 @@ interface MessageBubbleWithAIProps {
     enableAIAnalysis?: boolean;
 }
 
-export default function MessageBubbleWithAI({ 
-    message, 
+export default function MessageBubbleWithAI({
+    message,
     userContext,
     showArtifacts = true,
-    enableAIAnalysis = true 
+    enableAIAnalysis = true
 }: MessageBubbleWithAIProps) {
     const [artifacts, setArtifacts] = useState<ArtifactData[]>([]);
     const [aiAnalysis, setAiAnalysis] = useState<any>(null);
@@ -66,11 +67,11 @@ export default function MessageBubbleWithAI({
         try {
             // 1. Analyse du contenu avec l'IA
             const analysis = AIContentAnalyzer.analyzeAIContent(
-                message.content, 
-                message.serviceId, 
+                message.content,
+                message.serviceId,
                 userContext
             );
-            
+
             console.log('🧠 Analyse IA complétée:', analysis);
             setAiAnalysis(analysis);
 
@@ -180,9 +181,9 @@ export default function MessageBubbleWithAI({
                         </div>
                         <div className="flex flex-wrap gap-1">
                             {aiAnalysis.suggestions.slice(0, 3).map((suggestion, index) => (
-                                <Badge 
+                                <Badge
                                     key={index}
-                                    variant="secondary" 
+                                    variant="secondary"
                                     className="text-xs cursor-pointer hover:bg-amber-100"
                                     onClick={() => {
                                         // Action sur clic de suggestion
@@ -238,9 +239,9 @@ export default function MessageBubbleWithAI({
                         {artifacts.slice(0, 4).map((artifact, index) => {
                             const Icon = artifactIcons[artifact.type] || BarChart3;
                             return (
-                                <div 
+                                <div
                                     key={index}
-                                    className="w-6 h-6 rounded bg-gradient-to-r from-amber-100 to-purple-100 flex items-center justify-center"
+                                    className="w-6 h-6 rounded bg-amber-100 dark:bg-amber-900/30 flex items-center justify-center"
                                     title={artifact.title}
                                 >
                                     <Icon className="w-3 h-3 text-amber-600" />
@@ -277,10 +278,12 @@ export default function MessageBubbleWithAI({
                 className={`flex ${isBot ? 'justify-start' : 'justify-end'} mb-4`}
             >
                 <div className={`max-w-[80%] ${isBot ? 'order-2 ml-2' : 'order-1 mr-2'}`}>
-                    <Card className={`${isBot 
-                        ? 'bg-white border-gray-200' 
-                        : 'bg-gradient-to-r from-blue-500 to-purple-600 text-white border-none'
-                    }`}>
+                    <Card className={cn(
+                        "border-none shadow-sm",
+                        isBot
+                            ? "bg-white dark:bg-gray-800"
+                            : "bg-amber-500 text-white shadow-md shadow-amber-500/20"
+                    )}>
                         <CardContent className="p-4">
                             {/* Indicateur d'analyse IA */}
                             {renderAIAnalysisIndicator()}
@@ -313,26 +316,27 @@ export default function MessageBubbleWithAI({
 
                 {/* Avatar */}
                 <div className={`${isBot ? 'order-1' : 'order-2'} flex-shrink-0`}>
-                    <div className={`w-8 h-8 rounded-full flex items-center justify-center ${
-                        isBot 
-                            ? 'bg-gradient-to-r from-amber-500 to-purple-500 text-white' 
-                            : 'bg-gray-200 text-gray-600'
-                    }`}>
+                    <div className={`w-8 h-8 rounded-full flex items-center justify-center ${isBot
+                        ? 'bg-amber-500 text-white shadow-sm shadow-amber-500/30'
+                        : 'bg-gray-200 text-gray-600 dark:bg-gray-800'
+                        }`}>
                         {isBot ? <Bot className="w-4 h-4" /> : <User className="w-4 h-4" />}
                     </div>
                 </div>
-            </motion.div>
+            </motion.div >
 
             {/* Sidebar des artefacts */}
-            {showArtifacts && (
-                <ArtifactSidebar
-                    artifacts={artifacts}
-                    isOpen={showArtifactSidebar}
-                    onClose={() => setShowArtifactSidebar(false)}
-                    serviceId={message.serviceId}
-                    messageContent={message.content}
-                />
-            )}
+            {
+                showArtifacts && (
+                    <ArtifactSidebar
+                        artifacts={artifacts}
+                        isOpen={showArtifactSidebar}
+                        onClose={() => setShowArtifactSidebar(false)}
+                        serviceId={message.serviceId}
+                        messageContent={message.content}
+                    />
+                )
+            }
         </>
     );
 }

@@ -112,7 +112,7 @@ const CVAnalyzer: React.FC<CVAnalyzerProps> = ({ walletBalance, onAnalysisComple
             animate={{ opacity: 1, y: 0 }}
             className={className}
         >
-            <Card className="bg-gradient-to-br from-amber-50/50 to-purple-50/50 dark:from-amber-950/50 dark:to-purple-950/50 border-dashed border-2 border-amber-200 dark:border-amber-800">
+            <Card className="bg-amber-50/50 dark:bg-amber-950/20 border-dashed border-2 border-amber-200 dark:border-amber-800">
                 <CardContent className="p-6">
                     <div className="space-y-4">
                         <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">

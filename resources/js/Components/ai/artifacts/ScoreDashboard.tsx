@@ -66,16 +66,16 @@ export default function ScoreDashboard({ title, data, serviceId }: ScoreDashboar
 RAPPORT D'ÉVALUATION - ${title}
 ${'='.repeat(50)}
 
-SCORE GLOBAL: ${data.globalScore}/${data.maxScore} (${Math.round((data.globalScore/data.maxScore)*100)}%)
+SCORE GLOBAL: ${data.globalScore}/${data.maxScore} (${Math.round((data.globalScore / data.maxScore) * 100)}%)
 Évaluation: ${getScoreLabel(data.globalScore, data.maxScore)}
 
 DÉTAIL PAR CRITÈRE:
-${data.subScores.map(sub => 
-    `• ${sub.name}: ${sub.score}/${sub.max} (${Math.round((sub.score/sub.max)*100)}%)`
-).join('\n')}
+${data.subScores.map(sub =>
+            `• ${sub.name}: ${sub.score}/${sub.max} (${Math.round((sub.score / sub.max) * 100)}%)`
+        ).join('\n')}
 
 RECOMMANDATIONS:
-${data.recommendations.map((rec, i) => `${i+1}. ${rec}`).join('\n')}
+${data.recommendations.map((rec, i) => `${i + 1}. ${rec}`).join('\n')}
 
 Généré par Guidy - ${new Date().toLocaleDateString('fr-FR')}
         `.trim();
@@ -102,7 +102,7 @@ Généré par Guidy - ${new Date().toLocaleDateString('fr-FR')}
                             <BarChart3 className="w-5 h-5 text-amber-600" />
                             {title}
                         </CardTitle>
-                        
+
                         <div className="flex items-center gap-2">
                             <Button
                                 variant="ghost"
@@ -113,7 +113,7 @@ Généré par Guidy - ${new Date().toLocaleDateString('fr-FR')}
                                 <Eye className="w-3 h-3 mr-1" />
                                 {showDetails ? 'Masquer' : 'Détails'}
                             </Button>
-                            
+
                             {data.recommendations.length > 0 && (
                                 <Button
                                     variant="ghost"
@@ -155,7 +155,7 @@ Généré par Guidy - ${new Date().toLocaleDateString('fr-FR')}
                                     </div>
                                 </div>
                             </div>
-                            
+
                             <motion.div
                                 initial={{ scale: 0 }}
                                 animate={{ scale: 1 }}
@@ -179,11 +179,11 @@ Généré par Guidy - ${new Date().toLocaleDateString('fr-FR')}
                                 <Target className="w-4 h-4" />
                                 Détail par critère
                             </h4>
-                            
+
                             {data.subScores.map((subScore, index) => {
                                 const percentage = (subScore.score / subScore.max) * 100;
                                 const colors = getScoreColor(subScore.score, subScore.max);
-                                
+
                                 return (
                                     <motion.div
                                         key={index}
@@ -201,8 +201,8 @@ Généré par Guidy - ${new Date().toLocaleDateString('fr-FR')}
                                                     {subScore.score}/{subScore.max}
                                                 </span>
                                             </div>
-                                            <Progress 
-                                                value={percentage} 
+                                            <Progress
+                                                value={percentage}
                                                 className="h-2"
                                             />
                                         </div>
@@ -219,7 +219,7 @@ Généré par Guidy - ${new Date().toLocaleDateString('fr-FR')}
                                 <Lightbulb className="w-4 h-4 text-amber-600" />
                                 Recommandations prioritaires
                             </h4>
-                            
+
                             <div className="space-y-2">
                                 {data.recommendations.slice(0, 3).map((recommendation, index) => (
                                     <motion.div
@@ -229,7 +229,7 @@ Généré par Guidy - ${new Date().toLocaleDateString('fr-FR')}
                                         transition={{ delay: 0.2 + index * 0.1 }}
                                         className="flex items-start gap-2 p-2 rounded-lg bg-white/50 border border-amber-200"
                                     >
-                                        <div className="w-5 h-5 rounded-full bg-gradient-to-r from-amber-500 to-purple-500 flex items-center justify-center flex-shrink-0 mt-0.5">
+                                        <div className="w-5 h-5 rounded-full bg-amber-500 flex items-center justify-center flex-shrink-0 mt-0.5">
                                             <span className="text-white text-xs font-bold">{index + 1}</span>
                                         </div>
                                         <span className="text-xs text-gray-700 dark:text-gray-300 leading-relaxed">

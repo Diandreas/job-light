@@ -44,28 +44,28 @@ const ANALYSIS_TYPES = [
         title: 'Analyse Générale',
         description: 'Évaluation complète de votre CV',
         icon: Eye,
-        color: 'blue'
+        color: 'amber'
     },
     {
         id: 'targeted',
         title: 'Analyse Ciblée',
         description: 'Optimisation pour un poste spécifique',
         icon: Target,
-        color: 'green'
+        color: 'amber'
     },
     {
         id: 'ats',
         title: 'Optimisation ATS',
         description: 'Compatibilité avec les systèmes de recrutement',
         icon: BarChart3,
-        color: 'purple'
+        color: 'amber'
     },
     {
         id: 'competitive',
         title: 'Analyse Concurrentielle',
         description: 'Comparaison avec le marché',
         icon: TrendingUp,
-        color: 'orange'
+        color: 'amber'
     }
 ];
 
@@ -174,15 +174,15 @@ Donnez-moi une analyse détaillée avec :
     };
 
     const getScoreColor = (score: number) => {
-        if (score >= 80) return 'text-green-600';
-        if (score >= 60) return 'text-orange-600';
-        return 'text-red-600';
+        if (score >= 80) return 'text-amber-600';
+        if (score >= 60) return 'text-amber-500';
+        return 'text-red-500';
     };
 
     const getScoreBg = (score: number) => {
-        if (score >= 80) return 'bg-green-100 border-green-200';
-        if (score >= 60) return 'bg-orange-100 border-orange-200';
-        return 'bg-red-100 border-red-200';
+        if (score >= 80) return 'bg-amber-100/50 border-amber-200';
+        if (score >= 60) return 'bg-amber-50 border-amber-100';
+        return 'bg-red-50 border-red-200';
     };
 
     return (
@@ -222,42 +222,42 @@ Donnez-moi une analyse détaillée avec :
                     >
                         <Card className="border-0 shadow-lg bg-white/90 dark:bg-gray-900/90 backdrop-blur-sm">
                             <CardContent className="p-6">
-                                <div className="flex items-center gap-2 mb-4">
-                                    <div className="w-8 h-8 rounded-lg bg-gradient-to-r from-blue-500 to-cyan-500 flex items-center justify-center">
-                                        <Eye className="w-4 h-4 text-white" />
+                                <div className="flex items-center gap-3 mb-6">
+                                    <div className="w-8 h-8 rounded-full bg-amber-50 dark:bg-amber-900/20 flex items-center justify-center text-amber-600 dark:text-amber-500 border border-amber-100 dark:border-amber-800">
+                                        <Eye className="w-4 h-4" />
                                     </div>
-                                    <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+                                    <h3 className="text-xl font-serif text-gray-900 dark:text-gray-100">
                                         Type d'Analyse
                                     </h3>
                                 </div>
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                {ANALYSIS_TYPES.map(type => {
-                                    const Icon = type.icon;
-                                    const isSelected = formData.analysisType === type.id;
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    {ANALYSIS_TYPES.map(type => {
+                                        const Icon = type.icon;
+                                        const isSelected = formData.analysisType === type.id;
 
-                                    return (
-                                        <motion.div
-                                            key={type.id}
-                                            whileHover={{ scale: 1.02 }}
-                                            whileTap={{ scale: 0.98 }}
-                                            onClick={() => setFormData(prev => ({ ...prev, analysisType: type.id as any }))}
-                                            className={`p-4 rounded-lg border cursor-pointer transition-all ${isSelected
+                                        return (
+                                            <motion.div
+                                                key={type.id}
+                                                whileHover={{ scale: 1.02 }}
+                                                whileTap={{ scale: 0.98 }}
+                                                onClick={() => setFormData(prev => ({ ...prev, analysisType: type.id as any }))}
+                                                className={`p-4 rounded-lg border cursor-pointer transition-all ${isSelected
                                                     ? `bg-${type.color}-50 border-${type.color}-300 dark:bg-${type.color}-950/50`
                                                     : 'bg-gray-50 border-gray-200 hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-700'
-                                                }`}
-                                        >
-                                            <div className="flex items-center gap-3 mb-2">
-                                                <Icon className={`w-5 h-5 text-${type.color}-600`} />
-                                                <span className="font-medium">{type.title}</span>
-                                                {isSelected && <CheckCircle className="w-4 h-4 text-green-600 ml-auto" />}
-                                            </div>
-                                            <p className="text-xs text-gray-600 dark:text-gray-400">
-                                                {type.description}
-                                            </p>
-                                        </motion.div>
-                                    );
-                                })}
-                            </div>
+                                                    }`}
+                                            >
+                                                <div className="flex items-center gap-3 mb-2">
+                                                    <Icon className={`w-5 h-5 text-${type.color}-600`} />
+                                                    <span className="font-medium">{type.title}</span>
+                                                    {isSelected && <CheckCircle className="w-4 h-4 text-green-600 ml-auto" />}
+                                                </div>
+                                                <p className="text-xs text-gray-600 dark:text-gray-400">
+                                                    {type.description}
+                                                </p>
+                                            </motion.div>
+                                        );
+                                    })}
+                                </div>
                             </CardContent>
                         </Card>
                     </motion.div>
@@ -271,42 +271,42 @@ Donnez-moi une analyse détaillée avec :
                         >
                             <Card className="border-0 shadow-lg bg-white/90 dark:bg-gray-900/90 backdrop-blur-sm">
                                 <CardContent className="p-6 space-y-4">
-                                    <div className="flex items-center gap-2 mb-4">
-                                        <div className="w-8 h-8 rounded-lg bg-gradient-to-r from-green-500 to-emerald-500 flex items-center justify-center">
-                                            <Target className="w-4 h-4 text-white" />
+                                    <div className="flex items-center gap-3 mb-6">
+                                        <div className="w-8 h-8 rounded-full bg-amber-50 dark:bg-amber-900/20 flex items-center justify-center text-amber-600 dark:text-amber-500 border border-amber-100 dark:border-amber-800">
+                                            <Target className="w-4 h-4" />
                                         </div>
-                                        <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+                                        <h3 className="text-xl font-serif text-gray-900 dark:text-gray-100">
                                             Poste Cible
                                         </h3>
                                     </div>
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                    <div>
-                                        <Label htmlFor="targetPosition">Intitulé du poste visé</Label>
-                                        <Input
-                                            id="targetPosition"
-                                            value={formData.targetPosition}
-                                            onChange={(e) => setFormData(prev => ({
-                                                ...prev,
-                                                targetPosition: e.target.value
-                                            }))}
-                                            placeholder="Ex: Senior Product Manager"
-                                        />
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        <div>
+                                            <Label htmlFor="targetPosition">Intitulé du poste visé</Label>
+                                            <Input
+                                                id="targetPosition"
+                                                value={formData.targetPosition}
+                                                onChange={(e) => setFormData(prev => ({
+                                                    ...prev,
+                                                    targetPosition: e.target.value
+                                                }))}
+                                                placeholder="Ex: Senior Product Manager"
+                                            />
+                                        </div>
+                                        <div>
+                                            <Label htmlFor="targetIndustry">Secteur cible</Label>
+                                            <Input
+                                                id="targetIndustry"
+                                                value={formData.targetIndustry}
+                                                onChange={(e) => setFormData(prev => ({
+                                                    ...prev,
+                                                    targetIndustry: e.target.value
+                                                }))}
+                                                placeholder="Ex: FinTech, E-commerce..."
+                                            />
+                                        </div>
                                     </div>
-                                    <div>
-                                        <Label htmlFor="targetIndustry">Secteur cible</Label>
-                                        <Input
-                                            id="targetIndustry"
-                                            value={formData.targetIndustry}
-                                            onChange={(e) => setFormData(prev => ({
-                                                ...prev,
-                                                targetIndustry: e.target.value
-                                            }))}
-                                            placeholder="Ex: FinTech, E-commerce..."
-                                        />
-                                    </div>
-                                </div>
-                            </CardContent>
-                        </Card>
+                                </CardContent>
+                            </Card>
                         </motion.div>
                     )}
 
@@ -318,11 +318,11 @@ Donnez-moi une analyse détaillée avec :
                     >
                         <Card className="border-0 shadow-lg bg-white/90 dark:bg-gray-900/90 backdrop-blur-sm">
                             <CardContent className="p-6">
-                                <div className="flex items-center gap-2 mb-4">
-                                    <div className="w-8 h-8 rounded-lg bg-gradient-to-r from-purple-500 to-pink-500 flex items-center justify-center">
-                                        <Target className="w-4 h-4 text-white" />
+                                <div className="flex items-center gap-3 mb-6">
+                                    <div className="w-8 h-8 rounded-full bg-amber-50 dark:bg-amber-900/20 flex items-center justify-center text-amber-600 dark:text-amber-500 border border-amber-100 dark:border-amber-800">
+                                        <Target className="w-4 h-4" />
                                     </div>
-                                    <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+                                    <h3 className="text-xl font-serif text-gray-900 dark:text-gray-100">
                                         Zones d'Analyse Prioritaires
                                     </h3>
                                 </div>
@@ -337,8 +337,8 @@ Donnez-moi une analyse détaillée avec :
                                                 (items) => setFormData(prev => ({ ...prev, focusAreas: items }))
                                             )}
                                             className={`p-2 text-xs rounded-lg border transition-all text-left ${formData.focusAreas.includes(area)
-                                                    ? 'bg-purple-100 border-purple-300 text-purple-700'
-                                                    : 'bg-gray-50 border-gray-200 text-gray-600 hover:bg-purple-50'
+                                                ? 'bg-amber-100 border-amber-300 text-amber-700'
+                                                : 'bg-gray-50 border-gray-200 text-gray-600 hover:bg-amber-50'
                                                 }`}
                                         >
                                             {area}
@@ -394,22 +394,22 @@ Donnez-moi une analyse détaillée avec :
                         <CardContent className="space-y-3">
                             <div className="grid grid-cols-2 gap-3 text-xs">
                                 <div className="text-center p-2 bg-gray-50 dark:bg-gray-800 rounded">
-                                    <Briefcase className="w-4 h-4 mx-auto mb-1 text-blue-600" />
+                                    <Briefcase className="w-4 h-4 mx-auto mb-1 text-amber-600" />
                                     <div className="font-bold">{userInfo?.experiences?.length || 0}</div>
                                     <div className="text-gray-600">Expériences</div>
                                 </div>
                                 <div className="text-center p-2 bg-gray-50 dark:bg-gray-800 rounded">
-                                    <Star className="w-4 h-4 mx-auto mb-1 text-purple-600" />
+                                    <Star className="w-4 h-4 mx-auto mb-1 text-amber-500" />
                                     <div className="font-bold">{userInfo?.competences?.length || 0}</div>
                                     <div className="text-gray-600">Compétences</div>
                                 </div>
                                 <div className="text-center p-2 bg-gray-50 dark:bg-gray-800 rounded">
-                                    <GraduationCap className="w-4 h-4 mx-auto mb-1 text-green-600" />
+                                    <GraduationCap className="w-4 h-4 mx-auto mb-1 text-amber-600" />
                                     <div className="font-bold">{userInfo?.languages?.length || 0}</div>
                                     <div className="text-gray-600">Langues</div>
                                 </div>
                                 <div className="text-center p-2 bg-gray-50 dark:bg-gray-800 rounded">
-                                    <FileText className="w-4 h-4 mx-auto mb-1 text-amber-600" />
+                                    <FileText className="w-4 h-4 mx-auto mb-1 text-amber-500" />
                                     <div className="font-bold">{userInfo?.summaries?.length || 0}</div>
                                     <div className="text-gray-600">Résumés</div>
                                 </div>
@@ -437,17 +437,17 @@ Donnez-moi une analyse détaillée avec :
                                 )}
 
                                 {userInfo?.competences?.length < 5 && (
-                                    <Alert className="border-blue-200 bg-blue-50 p-2">
-                                        <Star className="w-3 h-3" />
+                                    <Alert className="border-amber-200 bg-amber-50 p-2">
+                                        <Star className="w-3 h-3 text-amber-600" />
                                         <AlertDescription className="text-xs">
                                             Ajoutez plus de compétences pour +5 points
                                         </AlertDescription>
                                     </Alert>
                                 )}
 
-                                {!userInfo?.personalInformation?.photo && (
-                                    <Alert className="border-purple-200 bg-purple-50 p-2">
-                                        <Upload className="w-3 h-3" />
+                                {userInfo?.personalInformation?.photo === null && (
+                                    <Alert className="border-amber-200 bg-amber-50 p-2">
+                                        <Upload className="w-3 h-3 text-amber-600" />
                                         <AlertDescription className="text-xs">
                                             Ajoutez une photo professionnelle pour +5 points
                                         </AlertDescription>
@@ -465,7 +465,7 @@ Donnez-moi une analyse détaillée avec :
                     onClick={handleSubmit}
                     disabled={isLoading}
                     size="lg"
-                    className="bg-gradient-to-r from-amber-500 to-purple-500 hover:from-amber-600 hover:to-purple-600 px-8"
+                    className="bg-amber-500 hover:bg-amber-600 shadow-md hover:shadow-lg transition-all px-8 py-2 rounded-xl"
                 >
                     {isLoading ? (
                         <>

@@ -204,8 +204,8 @@ Créez une lettre de motivation personnalisée qui met en valeur mon profil pour
                 >
                     <Badge
                         variant="outline"
-                        className={`${atsScore >= 80 ? 'bg-green-50 text-green-700 border-green-200' :
-                            atsScore >= 60 ? 'bg-orange-50 text-orange-700 border-orange-200' :
+                        className={`${atsScore >= 80 ? 'bg-amber-50 text-amber-700 border-amber-200' :
+                            atsScore >= 60 ? 'bg-amber-50 text-amber-700 border-amber-200' :
                                 'bg-red-50 text-red-700 border-red-200'}`}
                     >
                         <TrendingUp className="w-3 h-3 mr-1" />
@@ -224,101 +224,101 @@ Créez une lettre de motivation personnalisée qui met en valeur mon profil pour
                     >
                         <Card className="border-0 shadow-lg bg-white/90 dark:bg-gray-900/90 backdrop-blur-sm">
                             <CardContent className="p-6 space-y-4">
-                                <div className="flex items-center gap-2 mb-4">
-                                    <div className="w-8 h-8 rounded-lg bg-gradient-to-r from-green-500 to-emerald-500 flex items-center justify-center">
-                                        <Target className="w-4 h-4 text-white" />
+                                <div className="flex items-center gap-3 mb-6">
+                                    <div className="w-8 h-8 rounded-full bg-amber-50 dark:bg-amber-900/20 flex items-center justify-center text-amber-600 dark:text-amber-500 border border-amber-100 dark:border-amber-800">
+                                        <Target className="w-4 h-4" />
                                     </div>
-                                    <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+                                    <h3 className="text-xl font-serif text-gray-900 dark:text-gray-100">
                                         Informations sur le Poste
                                     </h3>
                                 </div>
-                            <Tabs value={formData.inputMethod} onValueChange={(value) =>
-                                setFormData(prev => ({ ...prev, inputMethod: value as 'manual' | 'paste' | 'url' }))
-                            }>
-                                <TabsList className="grid w-full grid-cols-3">
-                                    <TabsTrigger value="manual">Saisie manuelle</TabsTrigger>
-                                    <TabsTrigger value="paste">Coller l'annonce</TabsTrigger>
-                                    <TabsTrigger value="url">URL de l'offre</TabsTrigger>
-                                </TabsList>
+                                <Tabs value={formData.inputMethod} onValueChange={(value) =>
+                                    setFormData(prev => ({ ...prev, inputMethod: value as 'manual' | 'paste' | 'url' }))
+                                }>
+                                    <TabsList className="grid w-full grid-cols-3">
+                                        <TabsTrigger value="manual">Saisie manuelle</TabsTrigger>
+                                        <TabsTrigger value="paste">Coller l'annonce</TabsTrigger>
+                                        <TabsTrigger value="url">URL de l'offre</TabsTrigger>
+                                    </TabsList>
 
-                                <TabsContent value="manual" className="space-y-4 mt-4">
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <TabsContent value="manual" className="space-y-4 mt-4">
+                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                            <div>
+                                                <Label htmlFor="jobTitle">Intitulé du poste *</Label>
+                                                <Input
+                                                    id="jobTitle"
+                                                    value={formData.jobTitle}
+                                                    onChange={(e) => setFormData(prev => ({
+                                                        ...prev,
+                                                        jobTitle: e.target.value
+                                                    }))}
+                                                    placeholder="Ex: Développeur Full-Stack Senior"
+                                                />
+                                            </div>
+                                            <div>
+                                                <Label htmlFor="companyName">Nom de l'entreprise *</Label>
+                                                <Input
+                                                    id="companyName"
+                                                    value={formData.companyName}
+                                                    onChange={(e) => setFormData(prev => ({
+                                                        ...prev,
+                                                        companyName: e.target.value
+                                                    }))}
+                                                    placeholder="Ex: TechCorp"
+                                                />
+                                            </div>
+                                        </div>
+
                                         <div>
-                                            <Label htmlFor="jobTitle">Intitulé du poste *</Label>
-                                            <Input
-                                                id="jobTitle"
-                                                value={formData.jobTitle}
+                                            <Label htmlFor="jobDescription">Description du poste *</Label>
+                                            <Textarea
+                                                id="jobDescription"
+                                                value={formData.jobDescription}
                                                 onChange={(e) => setFormData(prev => ({
                                                     ...prev,
-                                                    jobTitle: e.target.value
+                                                    jobDescription: e.target.value
                                                 }))}
-                                                placeholder="Ex: Développeur Full-Stack Senior"
+                                                placeholder="Collez ici la description complète du poste..."
+                                                rows={6}
+                                                className="resize-none"
                                             />
+                                            <div className="text-xs text-gray-500 mt-1">
+                                                {formData.jobDescription.length}/2000 caractères
+                                            </div>
                                         </div>
+                                    </TabsContent>
+
+                                    <TabsContent value="paste" className="space-y-4 mt-4">
                                         <div>
-                                            <Label htmlFor="companyName">Nom de l'entreprise *</Label>
-                                            <Input
-                                                id="companyName"
-                                                value={formData.companyName}
-                                                onChange={(e) => setFormData(prev => ({
-                                                    ...prev,
-                                                    companyName: e.target.value
-                                                }))}
-                                                placeholder="Ex: TechCorp"
+                                            <Label htmlFor="fullJobPosting">Annonce complète</Label>
+                                            <Textarea
+                                                id="fullJobPosting"
+                                                placeholder="Collez ici l'annonce d'emploi complète (titre + entreprise + description)..."
+                                                rows={8}
+                                                className="resize-none"
                                             />
+                                            <Button variant="outline" size="sm" className="mt-2">
+                                                <Zap className="w-4 h-4 mr-2" />
+                                                Analyser automatiquement
+                                            </Button>
                                         </div>
-                                    </div>
+                                    </TabsContent>
 
-                                    <div>
-                                        <Label htmlFor="jobDescription">Description du poste *</Label>
-                                        <Textarea
-                                            id="jobDescription"
-                                            value={formData.jobDescription}
-                                            onChange={(e) => setFormData(prev => ({
-                                                ...prev,
-                                                jobDescription: e.target.value
-                                            }))}
-                                            placeholder="Collez ici la description complète du poste..."
-                                            rows={6}
-                                            className="resize-none"
-                                        />
-                                        <div className="text-xs text-gray-500 mt-1">
-                                            {formData.jobDescription.length}/2000 caractères
+                                    <TabsContent value="url" className="space-y-4 mt-4">
+                                        <div>
+                                            <Label htmlFor="jobUrl">URL de l'offre d'emploi</Label>
+                                            <Input
+                                                id="jobUrl"
+                                                placeholder="https://exemple.com/jobs/123"
+                                                type="url"
+                                            />
+                                            <Button variant="outline" size="sm" className="mt-2">
+                                                <Upload className="w-4 h-4 mr-2" />
+                                                Importer l'offre
+                                            </Button>
                                         </div>
-                                    </div>
-                                </TabsContent>
-
-                                <TabsContent value="paste" className="space-y-4 mt-4">
-                                    <div>
-                                        <Label htmlFor="fullJobPosting">Annonce complète</Label>
-                                        <Textarea
-                                            id="fullJobPosting"
-                                            placeholder="Collez ici l'annonce d'emploi complète (titre + entreprise + description)..."
-                                            rows={8}
-                                            className="resize-none"
-                                        />
-                                        <Button variant="outline" size="sm" className="mt-2">
-                                            <Zap className="w-4 h-4 mr-2" />
-                                            Analyser automatiquement
-                                        </Button>
-                                    </div>
-                                </TabsContent>
-
-                                <TabsContent value="url" className="space-y-4 mt-4">
-                                    <div>
-                                        <Label htmlFor="jobUrl">URL de l'offre d'emploi</Label>
-                                        <Input
-                                            id="jobUrl"
-                                            placeholder="https://exemple.com/jobs/123"
-                                            type="url"
-                                        />
-                                        <Button variant="outline" size="sm" className="mt-2">
-                                            <Upload className="w-4 h-4 mr-2" />
-                                            Importer l'offre
-                                        </Button>
-                                    </div>
-                                </TabsContent>
-                            </Tabs>
+                                    </TabsContent>
+                                </Tabs>
                             </CardContent>
                         </Card>
                     </motion.div>
@@ -331,82 +331,82 @@ Créez une lettre de motivation personnalisée qui met en valeur mon profil pour
                     >
                         <Card className="border-0 shadow-lg bg-white/90 dark:bg-gray-900/90 backdrop-blur-sm">
                             <CardContent className="p-6 space-y-4">
-                                <div className="flex items-center gap-2 mb-4">
-                                    <div className="w-8 h-8 rounded-lg bg-gradient-to-r from-purple-500 to-pink-500 flex items-center justify-center">
-                                        <Sparkles className="w-4 h-4 text-white" />
+                                <div className="flex items-center gap-3 mb-6">
+                                    <div className="w-8 h-8 rounded-full bg-amber-50 dark:bg-amber-900/20 flex items-center justify-center text-amber-600 dark:text-amber-500 border border-amber-100 dark:border-amber-800">
+                                        <Sparkles className="w-4 h-4" />
                                     </div>
-                                    <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+                                    <h3 className="text-xl font-serif text-gray-900 dark:text-gray-100">
                                         Personnalisation
                                     </h3>
                                 </div>
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <div>
-                                    <Label>Ton de la lettre</Label>
-                                    <Select
-                                        value={formData.tone}
-                                        onValueChange={(value) => setFormData(prev => ({ ...prev, tone: value }))}
-                                    >
-                                        <SelectTrigger>
-                                            <SelectValue />
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                            {TONES.map(tone => (
-                                                <SelectItem key={tone.value} value={tone.value}>
-                                                    <div>
-                                                        <div className="font-medium">{tone.label}</div>
-                                                        <div className="text-xs text-gray-500">{tone.description}</div>
-                                                    </div>
-                                                </SelectItem>
-                                            ))}
-                                        </SelectContent>
-                                    </Select>
-                                </div>
-
-                                <div>
-                                    <Label>Longueur souhaitée</Label>
-                                    <Select
-                                        value={formData.length}
-                                        onValueChange={(value) => setFormData(prev => ({ ...prev, length: value }))}
-                                    >
-                                        <SelectTrigger>
-                                            <SelectValue />
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                            {LENGTHS.map(length => (
-                                                <SelectItem key={length.value} value={length.value}>
-                                                    <div>
-                                                        <div className="font-medium">{length.label}</div>
-                                                        <div className="text-xs text-gray-500">{length.description}</div>
-                                                    </div>
-                                                </SelectItem>
-                                            ))}
-                                        </SelectContent>
-                                    </Select>
-                                </div>
-                            </div>
-
-                            <div>
-                                <Label>Vos motivations principales (sélectionnez 2-3)</Label>
-                                <div className="grid grid-cols-2 md:grid-cols-3 gap-2 mt-2">
-                                    {COMMON_MOTIVATIONS.map(motivation => (
-                                        <button
-                                            key={motivation}
-                                            type="button"
-                                            onClick={() => toggleArrayItem(
-                                                formData.motivations,
-                                                motivation,
-                                                (items) => setFormData(prev => ({ ...prev, motivations: items }))
-                                            )}
-                                            className={`p-2 text-xs rounded-lg border transition-all ${formData.motivations.includes(motivation)
-                                                    ? 'bg-green-100 border-green-300 text-green-700'
-                                                    : 'bg-gray-50 border-gray-200 text-gray-600 hover:bg-green-50'
-                                                }`}
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div>
+                                        <Label>Ton de la lettre</Label>
+                                        <Select
+                                            value={formData.tone}
+                                            onValueChange={(value) => setFormData(prev => ({ ...prev, tone: value }))}
                                         >
-                                            {motivation}
-                                        </button>
-                                    ))}
+                                            <SelectTrigger>
+                                                <SelectValue />
+                                            </SelectTrigger>
+                                            <SelectContent>
+                                                {TONES.map(tone => (
+                                                    <SelectItem key={tone.value} value={tone.value}>
+                                                        <div>
+                                                            <div className="font-medium">{tone.label}</div>
+                                                            <div className="text-xs text-gray-500">{tone.description}</div>
+                                                        </div>
+                                                    </SelectItem>
+                                                ))}
+                                            </SelectContent>
+                                        </Select>
+                                    </div>
+
+                                    <div>
+                                        <Label>Longueur souhaitée</Label>
+                                        <Select
+                                            value={formData.length}
+                                            onValueChange={(value) => setFormData(prev => ({ ...prev, length: value }))}
+                                        >
+                                            <SelectTrigger>
+                                                <SelectValue />
+                                            </SelectTrigger>
+                                            <SelectContent>
+                                                {LENGTHS.map(length => (
+                                                    <SelectItem key={length.value} value={length.value}>
+                                                        <div>
+                                                            <div className="font-medium">{length.label}</div>
+                                                            <div className="text-xs text-gray-500">{length.description}</div>
+                                                        </div>
+                                                    </SelectItem>
+                                                ))}
+                                            </SelectContent>
+                                        </Select>
+                                    </div>
                                 </div>
-                            </div>
+
+                                <div>
+                                    <Label>Vos motivations principales (sélectionnez 2-3)</Label>
+                                    <div className="grid grid-cols-2 md:grid-cols-3 gap-2 mt-2">
+                                        {COMMON_MOTIVATIONS.map(motivation => (
+                                            <button
+                                                key={motivation}
+                                                type="button"
+                                                onClick={() => toggleArrayItem(
+                                                    formData.motivations,
+                                                    motivation,
+                                                    (items) => setFormData(prev => ({ ...prev, motivations: items }))
+                                                )}
+                                                className={`p-2 text-xs rounded-lg border transition-all ${formData.motivations.includes(motivation)
+                                                    ? 'bg-amber-100 border-amber-300 text-amber-700'
+                                                    : 'bg-gray-50 border-gray-200 text-gray-600 hover:bg-amber-50'
+                                                    }`}
+                                            >
+                                                {motivation}
+                                            </button>
+                                        ))}
+                                    </div>
+                                </div>
                             </CardContent>
                         </Card>
                     </motion.div>
@@ -421,11 +421,11 @@ Créez une lettre de motivation personnalisée qui met en valeur mon profil pour
                 >
                     {/* Score ATS */}
                     {atsScore && (
-                        <Card className="border-0 shadow-lg bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-950/50 dark:to-indigo-950/50">
+                        <Card className="border-0 shadow-lg bg-amber-50/50 dark:bg-amber-950/20">
                             <CardContent className="p-4">
                                 <div className="text-center mb-4">
-                                    <div className={`text-3xl font-bold ${atsScore >= 80 ? 'text-green-600' :
-                                            atsScore >= 60 ? 'text-orange-600' : 'text-red-600'
+                                    <div className={`text-3xl font-bold ${atsScore >= 80 ? 'text-amber-600' :
+                                        atsScore >= 60 ? 'text-amber-600' : 'text-red-600'
                                         }`}>
                                         {atsScore}%
                                     </div>
@@ -453,10 +453,10 @@ Créez une lettre de motivation personnalisée qui met en valeur mon profil pour
                     )}
 
                     {/* Conseils personnalisés */}
-                    <Card className="border-0 shadow-lg bg-gradient-to-br from-amber-50 to-orange-50 dark:from-amber-950/50 dark:to-orange-950/50">
+                    <Card className="border-0 shadow-lg bg-amber-50/30 dark:bg-amber-950/10">
                         <CardContent className="p-4">
                             <div className="flex items-center gap-2 mb-3">
-                                <div className="w-6 h-6 rounded-md bg-gradient-to-r from-amber-500 to-orange-500 flex items-center justify-center">
+                                <div className="w-6 h-6 rounded-md bg-amber-500 flex items-center justify-center">
                                     <Lightbulb className="w-3 h-3 text-white" />
                                 </div>
                                 <h4 className="font-medium text-gray-900 dark:text-gray-100 text-sm">
@@ -465,15 +465,15 @@ Créez une lettre de motivation personnalisée qui met en valeur mon profil pour
                             </div>
                             <div className="text-xs space-y-2">
                                 <div className="flex items-start gap-2">
-                                    <CheckCircle className="w-3 h-3 text-green-600 mt-0.5 flex-shrink-0" />
+                                    <CheckCircle className="w-3 h-3 text-amber-600 mt-0.5 flex-shrink-0" />
                                     <span>Mentionnez vos {userInfo?.experiences?.length || 0} expériences</span>
                                 </div>
                                 <div className="flex items-start gap-2">
-                                    <CheckCircle className="w-3 h-3 text-green-600 mt-0.5 flex-shrink-0" />
+                                    <CheckCircle className="w-3 h-3 text-amber-600 mt-0.5 flex-shrink-0" />
                                     <span>Mettez en avant vos compétences en {userInfo?.competences?.[0]?.name}</span>
                                 </div>
                                 <div className="flex items-start gap-2">
-                                    <CheckCircle className="w-3 h-3 text-green-600 mt-0.5 flex-shrink-0" />
+                                    <CheckCircle className="w-3 h-3 text-amber-600 mt-0.5 flex-shrink-0" />
                                     <span>Adaptez le ton à la culture d'entreprise</span>
                                 </div>
                             </div>
@@ -482,10 +482,10 @@ Créez une lettre de motivation personnalisée qui met en valeur mon profil pour
 
                     {/* Aperçu des points clés */}
                     {formData.keyPoints.length > 0 && (
-                        <Card className="border-0 shadow-lg bg-gradient-to-br from-purple-50 to-pink-50 dark:from-purple-950/50 dark:to-pink-950/50">
+                        <Card className="border-0 shadow-lg bg-amber-50 dark:bg-amber-950/20">
                             <CardContent className="p-4">
                                 <div className="flex items-center gap-2 mb-3">
-                                    <div className="w-6 h-6 rounded-md bg-gradient-to-r from-purple-500 to-pink-500 flex items-center justify-center">
+                                    <div className="w-6 h-6 rounded-md bg-amber-500 flex items-center justify-center">
                                         <Star className="w-3 h-3 text-white" />
                                     </div>
                                     <h4 className="font-medium text-gray-900 dark:text-gray-100 text-sm">
@@ -495,7 +495,7 @@ Créez une lettre de motivation personnalisée qui met en valeur mon profil pour
                                 <div className="space-y-2">
                                     {formData.keyPoints.map((point, index) => (
                                         <div key={index} className="text-xs flex items-center gap-2">
-                                            <div className="w-1.5 h-1.5 bg-purple-500 rounded-full flex-shrink-0" />
+                                            <div className="w-1.5 h-1.5 bg-amber-500 rounded-full flex-shrink-0" />
                                             {point}
                                         </div>
                                     ))}
@@ -517,7 +517,7 @@ Créez une lettre de motivation personnalisée qui met en valeur mon profil pour
                     onClick={handleSubmit}
                     disabled={!isFormValid() || isLoading}
                     size="lg"
-                    className="bg-gradient-to-r from-amber-500 to-purple-500 hover:from-amber-600 hover:to-purple-600 shadow-lg hover:shadow-xl disabled:opacity-50 transition-all px-8 py-3 rounded-xl font-medium"
+                    className="bg-amber-500 hover:bg-amber-600 shadow-md hover:shadow-lg transition-all px-8 py-3 rounded-xl font-medium"
                 >
                     {isLoading ? (
                         <>

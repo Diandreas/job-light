@@ -107,11 +107,11 @@ const FluidCursorEffect: React.FC<FluidCursorEffectProps> = ({ zIndex = -1 }) =>
         function initFluid(): () => void {
             // Canvas setup
             const canvas = canvasRef.current;
-            if (!canvas) return () => {};
+            if (!canvas) return () => { };
 
             resizeCanvas();
 
-            // Configuration options with amber/purple theme
+            // Configuration options with amber theme
             let config: Config = {
                 SIM_RESOLUTION: 128,
                 DYE_RESOLUTION: 1440,
@@ -142,7 +142,7 @@ const FluidCursorEffect: React.FC<FluidCursorEffectProps> = ({ zIndex = -1 }) =>
                     deltaY: 0,
                     down: false,
                     moved: false,
-                    color: { r: 30, g: 0, b: 300 } // Amber/purple theme
+                    color: { r: 0.15, g: 0.1, b: 0 } // Initial amber color
                 };
             }
 
@@ -151,7 +151,7 @@ const FluidCursorEffect: React.FC<FluidCursorEffectProps> = ({ zIndex = -1 }) =>
 
             // Setup WebGL context
             const webGLContext = getWebGLContext(canvas);
-            if (!webGLContext) return () => {};
+            if (!webGLContext) return () => { };
             const { gl, ext } = webGLContext;
 
             if (!ext.supportLinearFiltering) {
@@ -1228,12 +1228,10 @@ const FluidCursorEffect: React.FC<FluidCursorEffectProps> = ({ zIndex = -1 }) =>
                 return delta;
             }
 
-            // Generate color in amber/purple theme
+            // Generate color in exclusive amber theme
             function generateColor(): Color {
-                // Use amber and purple hues to match the theme
-                const hue = Math.random() < 0.5 ?
-                    0.1 + Math.random() * 0.05 :  // Amber range (0.10-0.15)
-                    0.7 + Math.random() * 0.15;   // Purple range (0.7-0.85)
+                // Use amber hues to match the theme
+                const hue = 0.08 + Math.random() * 0.08; // Amber range (0.08-0.16)
 
                 let c = HSVtoRGB(hue, 1.0, 1.0);
                 c.r *= 0.15;

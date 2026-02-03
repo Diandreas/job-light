@@ -15,13 +15,13 @@ interface ServiceCardProps {
 }
 
 export const ServiceCard: React.FC<ServiceCardProps> = ({
-                                                            icon: Icon,
-                                                            title,
-                                                            description,
-                                                            cost,
-                                                            isSelected,
-                                                            onClick
-                                                        }) => {
+    icon: Icon,
+    title,
+    description,
+    cost,
+    isSelected,
+    onClick
+}) => {
     const { t } = useTranslation();
 
     return (
@@ -29,14 +29,13 @@ export const ServiceCard: React.FC<ServiceCardProps> = ({
             whileHover={{ y: -3, transition: { duration: 0.2 } }}
             whileTap={{ scale: 0.98 }}
             onClick={onClick}
-            className={`cursor-pointer p-3.5 rounded-lg border transition-all ${
-                isSelected
-                    ? 'border-amber-400 dark:border-amber-500 bg-gradient-to-r from-amber-50 to-purple-50 dark:from-amber-500/10 dark:to-purple-500/10 shadow-sm'
-                    : 'border-gray-200 dark:border-gray-700 hover:border-amber-300/70 dark:hover:border-amber-500/30 bg-white dark:bg-gray-800 hover:bg-gradient-to-r hover:from-amber-50/50 hover:to-purple-50/50 dark:hover:from-amber-500/5 dark:hover:to-purple-500/5'
-            }`}
+            className={`cursor-pointer p-3.5 rounded-lg border transition-all ${isSelected
+                    ? 'border-amber-400 dark:border-amber-500 bg-amber-50 dark:bg-amber-500/10 shadow-sm'
+                    : 'border-gray-200 dark:border-gray-700 hover:border-amber-300/70 dark:hover:border-amber-500/30 bg-white dark:bg-gray-800 hover:bg-amber-50/50 dark:hover:bg-amber-500/5'
+                }`}
         >
             <div className="flex items-start justify-between mb-2.5">
-                <div className="p-1.5 rounded-lg bg-gradient-to-r from-amber-500 to-purple-500 dark:from-amber-400 dark:to-purple-400">
+                <div className="p-1.5 rounded-lg bg-amber-500 dark:bg-amber-400">
                     <Icon className="text-white h-4 w-4" />
                 </div>
                 <TooltipProvider>
@@ -79,13 +78,12 @@ export const MobileServiceCard: React.FC<{
         <motion.div
             whileTap={{ scale: 0.98 }}
             onClick={onClick}
-            className={`flex items-center gap-2 p-2.5 rounded-lg cursor-pointer transition-all border ${
-                isSelected
-                    ? 'bg-gradient-to-r from-amber-50 to-purple-50 dark:from-amber-900/20 dark:to-purple-900/20 border-amber-300 dark:border-amber-500/40'
+            className={`flex items-center gap-2 p-2.5 rounded-lg cursor-pointer transition-all border ${isSelected
+                    ? 'bg-amber-50 dark:bg-amber-900/20 border-amber-300 dark:border-amber-500/40'
                     : 'hover:bg-amber-50/50 dark:hover:bg-amber-500/5 border-transparent dark:hover:border-amber-500/20 bg-white dark:bg-gray-800'
-            }`}
+                }`}
         >
-            <div className="p-1.5 rounded-lg bg-gradient-to-r from-amber-500 to-purple-500 dark:from-amber-400 dark:to-purple-400">
+            <div className="p-1.5 rounded-lg bg-amber-500 dark:bg-amber-400">
                 <service.icon className="h-3.5 w-3.5 text-white" />
             </div>
             <div className="flex-1 min-w-0">

@@ -43,9 +43,9 @@ GRAPHIQUE - ${title}
 ${'='.repeat(50)}
 
 DONNÉES:
-${data.labels.map((label, i) => 
-    `${label}: ${data.values[i]}${data.unit || ''}`
-).join('\n')}
+${data.labels.map((label, i) =>
+            `${label}: ${data.values[i]}${data.unit || ''}`
+        ).join('\n')}
 
 TOTAL: ${totalValue}${data.unit || ''}
 MAXIMUM: ${maxValue}${data.unit || ''}
@@ -66,7 +66,7 @@ Généré par Guidy - ${new Date().toLocaleDateString('fr-FR')}
                 const value = data.values[index];
                 const percentage = (value / maxValue) * 100;
                 const isHovered = hoveredIndex === index;
-                
+
                 return (
                     <motion.div
                         key={index}
@@ -82,27 +82,25 @@ Généré par Guidy - ${new Date().toLocaleDateString('fr-FR')}
                                 {label}
                             </span>
                             {showValues && (
-                                <span className={`text-xs font-bold transition-colors ${
-                                    isHovered ? 'text-amber-600' : 'text-gray-600'
-                                }`}>
+                                <span className={`text-xs font-bold transition-colors ${isHovered ? 'text-amber-600' : 'text-gray-600'
+                                    }`}>
                                     {value}{data.unit || ''}
                                 </span>
                             )}
                         </div>
-                        
+
                         <div className="relative h-6 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
                             <motion.div
                                 initial={{ width: 0 }}
                                 animate={{ width: `${percentage}%` }}
                                 transition={{ delay: index * 0.1, duration: 0.8, ease: "easeOut" }}
-                                className={`h-full rounded-full transition-all ${
-                                    isHovered 
-                                        ? 'bg-gradient-to-r from-amber-400 to-purple-400' 
-                                        : 'bg-gradient-to-r from-amber-500 to-purple-500'
-                                }`}
+                                className={`h-full rounded-full transition-all ${isHovered
+                                        ? 'bg-amber-400'
+                                        : 'bg-amber-500'
+                                    }`}
                                 style={{ backgroundColor: colors[index] }}
                             />
-                            
+
                             {isHovered && (
                                 <motion.div
                                     initial={{ opacity: 0 }}
@@ -123,7 +121,7 @@ Généré par Guidy - ${new Date().toLocaleDateString('fr-FR')}
 
     const renderPieChart = () => {
         let cumulativePercentage = 0;
-        
+
         return (
             <div className="flex items-center gap-6">
                 {/* Graphique circulaire simple */}
@@ -133,9 +131,9 @@ Généré par Guidy - ${new Date().toLocaleDateString('fr-FR')}
                             const percentage = (value / totalValue) * 100;
                             const strokeDasharray = `${percentage} ${100 - percentage}`;
                             const strokeDashoffset = -cumulativePercentage;
-                            
+
                             cumulativePercentage += percentage;
-                            
+
                             return (
                                 <motion.circle
                                     key={index}
@@ -156,7 +154,7 @@ Généré par Guidy - ${new Date().toLocaleDateString('fr-FR')}
                             );
                         })}
                     </svg>
-                    
+
                     {/* Valeur centrale */}
                     <div className="absolute inset-0 flex items-center justify-center">
                         <div className="text-center">
@@ -176,20 +174,19 @@ Généré par Guidy - ${new Date().toLocaleDateString('fr-FR')}
                         const value = data.values[index];
                         const percentage = (value / totalValue) * 100;
                         const isHovered = hoveredIndex === index;
-                        
+
                         return (
                             <motion.div
                                 key={index}
                                 initial={{ opacity: 0, x: 10 }}
                                 animate={{ opacity: 1, x: 0 }}
                                 transition={{ delay: index * 0.1 }}
-                                className={`flex items-center gap-2 p-1 rounded transition-colors ${
-                                    isHovered ? 'bg-amber-50' : ''
-                                }`}
+                                className={`flex items-center gap-2 p-1 rounded transition-colors ${isHovered ? 'bg-amber-50' : ''
+                                    }`}
                                 onMouseEnter={() => setHoveredIndex(index)}
                                 onMouseLeave={() => setHoveredIndex(null)}
                             >
-                                <div 
+                                <div
                                     className="w-3 h-3 rounded-full"
                                     style={{ backgroundColor: colors[index] }}
                                 />
@@ -213,7 +210,7 @@ Généré par Guidy - ${new Date().toLocaleDateString('fr-FR')}
             animate={{ opacity: 1, y: 0 }}
             className="my-4"
         >
-            <Card className="border-amber-200 bg-gradient-to-r from-amber-50/30 to-purple-50/30">
+            <Card className="border-amber-200 bg-amber-50/30 dark:bg-amber-950/20">
                 <CardHeader className="pb-3">
                     <div className="flex items-center justify-between">
                         <CardTitle className="text-sm font-medium text-gray-800 dark:text-gray-200 flex items-center gap-2">
@@ -224,7 +221,7 @@ Généré par Guidy - ${new Date().toLocaleDateString('fr-FR')}
                             )}
                             {title}
                         </CardTitle>
-                        
+
                         <div className="flex items-center gap-2">
                             <Button
                                 variant="ghost"
@@ -234,7 +231,7 @@ Généré par Guidy - ${new Date().toLocaleDateString('fr-FR')}
                             >
                                 {showValues ? <EyeOff className="w-3 h-3" /> : <Eye className="w-3 h-3" />}
                             </Button>
-                            
+
                             <Button
                                 variant="ghost"
                                 size="sm"
@@ -249,7 +246,7 @@ Généré par Guidy - ${new Date().toLocaleDateString('fr-FR')}
 
                 <CardContent>
                     {data.type === 'pie' ? renderPieChart() : renderBarChart()}
-                    
+
                     {/* Info hover */}
                     {hoveredIndex !== null && interactive && (
                         <motion.div

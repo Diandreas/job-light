@@ -82,14 +82,14 @@ export default function SalaryNegotiator({
             animate={{ opacity: 1, y: 0 }}
             className="my-4"
         >
-            <Card className="border-amber-200 bg-gradient-to-r from-amber-50/30 to-purple-50/30">
+            <Card className="border-amber-200 bg-amber-50/30 dark:bg-amber-950/20">
                 <CardHeader className="pb-4">
                     <div className="flex items-center justify-between">
                         <CardTitle className="text-base font-semibold text-gray-800 dark:text-gray-200 flex items-center gap-2">
                             <DollarSign className="w-5 h-5 text-amber-600" />
                             {title}
                         </CardTitle>
-                        
+
                         <div className="flex items-center gap-2">
                             <Badge className="bg-gradient-to-r from-green-100 to-blue-100 text-green-800 border-green-200">
                                 {successProbability}% succès
@@ -122,7 +122,7 @@ export default function SalaryNegotiator({
                             <Target className="w-4 h-4 text-amber-600" />
                             Stratégies Recommandées
                         </h4>
-                        
+
                         <div className="space-y-2">
                             {negotiationStrategies.map((strategy, index) => (
                                 <motion.div
@@ -130,11 +130,10 @@ export default function SalaryNegotiator({
                                     initial={{ opacity: 0, x: -10 }}
                                     animate={{ opacity: 1, x: 0 }}
                                     transition={{ delay: index * 0.1 }}
-                                    className={`p-3 rounded-lg border cursor-pointer transition-all ${
-                                        selectedStrategy?.id === strategy.id
+                                    className={`p-3 rounded-lg border cursor-pointer transition-all ${selectedStrategy?.id === strategy.id
                                             ? 'border-amber-500 bg-amber-50'
                                             : 'border-gray-200 bg-white hover:border-amber-300'
-                                    }`}
+                                        }`}
                                     onClick={() => setSelectedStrategy(
                                         selectedStrategy?.id === strategy.id ? null : strategy
                                     )}
@@ -148,7 +147,7 @@ export default function SalaryNegotiator({
                                                 {strategy.description}
                                             </p>
                                         </div>
-                                        
+
                                         <div className="flex items-center gap-2 ml-3">
                                             <Badge className={getRiskColor(strategy.risk)}>
                                                 {strategy.risk}
@@ -176,7 +175,7 @@ export default function SalaryNegotiator({
                             <Lightbulb className="w-4 h-4 text-amber-600" />
                             Arguments Clés
                         </h4>
-                        
+
                         <div className="space-y-2">
                             {argumentationPoints.map((point, index) => (
                                 <motion.div
@@ -186,7 +185,7 @@ export default function SalaryNegotiator({
                                     transition={{ delay: index * 0.05 }}
                                     className="flex items-start gap-2 p-2 rounded-lg bg-white border border-gray-200"
                                 >
-                                    <div className="w-5 h-5 rounded-full bg-gradient-to-r from-amber-500 to-purple-500 flex items-center justify-center flex-shrink-0 mt-0.5">
+                                    <div className="w-5 h-5 rounded-full bg-amber-500 flex items-center justify-center flex-shrink-0 mt-0.5">
                                         <span className="text-white text-xs font-bold">{index + 1}</span>
                                     </div>
                                     <span className="text-sm text-gray-700 dark:text-gray-300">{point}</span>
@@ -201,7 +200,7 @@ export default function SalaryNegotiator({
                             <Trophy className="w-4 h-4 text-amber-600" />
                             Alternatives Non-monétaires
                         </h4>
-                        
+
                         <div className="grid grid-cols-2 gap-2">
                             {alternativeOffers.map((offer, index) => (
                                 <motion.div
@@ -209,7 +208,7 @@ export default function SalaryNegotiator({
                                     initial={{ opacity: 0, scale: 0.9 }}
                                     animate={{ opacity: 1, scale: 1 }}
                                     transition={{ delay: index * 0.05 }}
-                                    className="p-2 text-center rounded-lg bg-gradient-to-r from-amber-50 to-purple-50 border border-amber-200"
+                                    className="p-2 text-center rounded-lg bg-amber-50 border border-amber-200"
                                 >
                                     <span className="text-sm font-medium text-gray-700">{offer}</span>
                                 </motion.div>
@@ -223,7 +222,7 @@ export default function SalaryNegotiator({
                             <BarChart3 className="w-4 h-4 text-amber-600" />
                             Simulateur de Négociation
                         </h4>
-                        
+
                         <div className="space-y-3">
                             <div className="grid grid-cols-2 gap-3">
                                 <div>
@@ -257,7 +256,7 @@ export default function SalaryNegotiator({
 
                             <Button
                                 onClick={runNegotiationSimulation}
-                                className="w-full bg-gradient-to-r from-amber-500 to-purple-500 hover:from-amber-600 hover:to-purple-600"
+                                className="w-full bg-amber-500 hover:bg-amber-600"
                                 size="sm"
                             >
                                 <Zap className="w-4 h-4 mr-2" />
@@ -277,7 +276,7 @@ export default function SalaryNegotiator({
                                 <CheckCircle className="w-5 h-5 text-green-600" />
                                 <span className="font-bold text-green-800">Simulation Complétée</span>
                             </div>
-                            
+
                             <div className="grid grid-cols-2 gap-4 text-sm">
                                 <div>
                                     <div className="text-gray-600">Probabilité de succès</div>
@@ -292,11 +291,11 @@ export default function SalaryNegotiator({
                                     </div>
                                 </div>
                             </div>
-                            
+
                             <div className="mt-3 p-2 bg-white rounded border border-green-200">
                                 <p className="text-xs text-green-700">
-                                    <strong>Recommandation :</strong> Avec une augmentation de {calculateIncrease()}%, 
-                                    votre demande semble raisonnable. Mettez l'accent sur vos réalisations récentes 
+                                    <strong>Recommandation :</strong> Avec une augmentation de {calculateIncrease()}%,
+                                    votre demande semble raisonnable. Mettez l'accent sur vos réalisations récentes
                                     et la valeur ajoutée que vous apportez à l'équipe.
                                 </p>
                             </div>

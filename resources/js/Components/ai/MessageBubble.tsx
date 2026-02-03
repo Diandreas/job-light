@@ -158,7 +158,7 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({ message, serviceId
                         setArtifacts(detectedArtifacts);
                         const cleaned = ArtifactDetector.cleanContentForDisplay(message.content, detectedArtifacts);
                         setCleanContent(cleaned);
-                        
+
                         // Notifier le parent des artefacts détectés
                         if (detectedArtifacts.length > 0 && onArtifactsDetected) {
                             onArtifactsDetected(detectedArtifacts, message.content);
@@ -359,7 +359,7 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({ message, serviceId
 
     // Classes de bulle de message améliorées - plus soft et compactes
     const bubbleClass = isUser
-        ? 'bg-gradient-to-r from-amber-500 to-purple-500 text-white shadow-sm'
+        ? 'bg-gradient-to-br from-amber-500 to-amber-600 text-white shadow-sm'
         : 'bg-white dark:bg-gray-800 shadow-sm border border-gray-100 dark:border-gray-700 text-gray-800 dark:text-gray-200';
 
     // Indicateurs de réflexion améliorés
@@ -385,14 +385,14 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({ message, serviceId
                 {isUser ? (
                     <>
                         <AvatarImage src="/user-avatar.png" alt="User" />
-                        <AvatarFallback className="bg-gradient-to-r from-amber-500 to-purple-500 text-white">
+                        <AvatarFallback className="bg-amber-500 text-white">
                             <User className="h-4 w-4" />
                         </AvatarFallback>
                     </>
                 ) : (
                     <>
                         <AvatarImage src="/ai-avatar.png" alt="AI" />
-                        <AvatarFallback className="bg-gradient-to-r from-amber-500 to-purple-500 text-white">
+                        <AvatarFallback className="bg-amber-100 text-amber-600 dark:bg-amber-900/40 dark:text-amber-300">
                             <Sparkles className="h-4 w-4" />
                         </AvatarFallback>
                     </>
@@ -441,7 +441,7 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({ message, serviceId
                                     repeat: Infinity,
                                     ease: "easeInOut"
                                 }}
-                                className="h-1 bg-gradient-to-r from-amber-300 to-purple-300 dark:from-amber-600 dark:to-purple-600 rounded-full opacity-40"
+                                className="h-1 bg-amber-200 dark:bg-amber-800/40 rounded-full opacity-40"
                             />
                         </div>
                     ) : (
@@ -461,7 +461,7 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({ message, serviceId
                                         className={`font-semibold ${isUser
                                             ? 'text-white'
                                             : 'text-amber-600 dark:text-amber-300'
-                                        }`}
+                                            }`}
                                         {...props}
                                     />
                                 ),
@@ -471,7 +471,7 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({ message, serviceId
                                         className={`border-l-2 ${isUser
                                             ? 'border-white/30'
                                             : 'border-amber-200 dark:border-amber-700'
-                                        } pl-3 italic my-2 text-sm`}
+                                            } pl-3 italic my-2 text-sm`}
                                         {...props}
                                     />
                                 ),
@@ -482,14 +482,14 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({ message, serviceId
                                             className={`px-1 py-0.5 rounded text-xs font-mono ${isUser
                                                 ? 'bg-white/15'
                                                 : 'bg-gray-100 dark:bg-gray-700 text-amber-700 dark:text-amber-300'
-                                            }`}
+                                                }`}
                                             {...props}
                                         />
                                         : <code
                                             className={`block p-2 rounded-lg my-2 font-mono text-xs ${isUser
                                                 ? 'bg-white/15'
                                                 : 'bg-gray-50 dark:bg-gray-800/80 text-gray-800 dark:text-gray-200'
-                                            }`}
+                                                }`}
                                             {...props}
                                         />
                                 )
@@ -504,7 +504,7 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({ message, serviceId
                         <div key={index} className="mt-3">
                             {artifact.type === 'table' && (
                                 <div className="border border-amber-200 rounded-lg overflow-hidden bg-white dark:bg-gray-800">
-                                    <div className="px-3 py-2 bg-gradient-to-r from-amber-50 to-purple-50 dark:from-amber-950/50 dark:to-purple-950/50 border-b border-amber-200">
+                                    <div className="px-3 py-2 bg-amber-50 dark:bg-amber-900/20 border-b border-amber-200">
                                         <h4 className="text-sm font-medium text-gray-800 dark:text-gray-200">
                                             {artifact.title}
                                         </h4>
@@ -545,7 +545,7 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({ message, serviceId
 
                             {artifact.type === 'cv-evaluation' && (
                                 <div className="border border-amber-200 rounded-lg overflow-hidden bg-white dark:bg-gray-800">
-                                    <div className="px-3 py-2 bg-gradient-to-r from-amber-50 to-purple-50 dark:from-amber-950/50 dark:to-purple-950/50 border-b border-amber-200">
+                                    <div className="px-3 py-2 bg-amber-50 dark:bg-amber-900/20 border-b border-amber-200">
                                         <h4 className="text-sm font-medium text-gray-800 dark:text-gray-200 flex items-center gap-2">
                                             <Sparkles className="w-4 h-4 text-amber-600" />
                                             {artifact.title}
@@ -588,7 +588,7 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({ message, serviceId
                             )}
 
                             {(artifact.type === 'heatmap' || artifact.type === 'timer' || artifact.type === 'roadmap' || artifact.type === 'dashboard' || artifact.type === 'salary-negotiator') && (
-                                <div className="p-3 border border-amber-200 rounded-lg bg-gradient-to-r from-amber-50/50 to-purple-50/50">
+                                <div className="p-3 border border-amber-200 rounded-lg bg-amber-50/50">
                                     <div className="flex items-center justify-between">
                                         <div>
                                             <h4 className="text-sm font-medium text-gray-800 dark:text-gray-200">
@@ -649,10 +649,10 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({ message, serviceId
                         <motion.div
                             initial={{ opacity: 0, scale: 0.9 }}
                             animate={{ opacity: 1, scale: 1 }}
-                            className="mt-3 p-3 rounded-lg bg-gradient-to-r from-amber-50 to-purple-50 border border-amber-200"
+                            className="mt-3 p-3 rounded-lg bg-amber-50 border border-amber-200"
                         >
                             <div className="flex items-center gap-3">
-                                <div className="p-2 rounded-lg bg-gradient-to-r from-amber-500 to-purple-500">
+                                <div className="p-2 rounded-lg bg-amber-500">
                                     <Sparkles className="w-4 h-4 text-white" />
                                 </div>
                                 <div className="flex-1">
@@ -758,7 +758,7 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({ message, serviceId
                             <div className="flex gap-3">
                                 <Button
                                     onClick={handleDownload}
-                                    className="flex-1 bg-gradient-to-r from-amber-500 to-purple-500 hover:from-amber-600 hover:to-purple-600 text-white font-medium shadow-sm"
+                                    className="flex-1 bg-amber-500 hover:bg-amber-600 text-white font-medium shadow-sm transition-all"
                                 >
                                     <Download className="h-4 w-4 mr-2" />
                                     {t('components.messageBubble.download.button')}

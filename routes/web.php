@@ -244,6 +244,10 @@ Route::prefix('career-advisor')->group(function () {
         Route::get('/studio', function () { return Inertia::render('CareerAdvisor/CoverLetter/Studio'); })->name('studio');
         Route::post('/generate', [CoverLetterController::class, 'generate'])->name('generate');
         Route::post('/score', [CoverLetterController::class, 'score'])->name('score');
+        Route::post('/export-pdf', [CoverLetterController::class, 'exportPdf'])->name('export-pdf');
+        Route::post('/export-docx', [CoverLetterController::class, 'exportDocx'])->name('export-docx');
+        Route::post('/improve', [CoverLetterController::class, 'improveText'])->name('improve');
+        Route::post('/correct', [CoverLetterController::class, 'correctGrammar'])->name('correct');
     });
 
     Route::prefix('cv-heatmap')->name('career-advisor.cv-heatmap.')->group(function () {

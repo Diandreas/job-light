@@ -4,7 +4,7 @@ import { Head } from '@inertiajs/react';
 import { LuxuryButton } from '@/Components/ui/luxury/Button';
 import { luxuryTheme } from '@/design-system/luxury-theme';
 import { useTranslation } from 'react-i18next';
-import { Mic, MicOff, Square, Play, RotateCcw, User, Brain, Volume2, VolumeX, Loader2 } from 'lucide-react';
+import { Mic, MicOff, Square, Play, RotateCcw, User, Brain, Volume2, VolumeX, Loader2, Send } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import axios from 'axios';
 import { toast } from 'sonner';
@@ -22,6 +22,7 @@ export default function Session({ auth }) {
     const [messages, setMessages] = useState<Array<{role: string; content: string}>>([]);
     const [setupData, setSetupData] = useState<any>({});
     const [isMuted, setIsMuted] = useState(false);
+    const [textInput, setTextInput] = useState('');
     
     const isMutedRef = useRef(false);
     const recognitionRef = useRef<any>(null);
@@ -40,11 +41,16 @@ export default function Session({ auth }) {
         
         window.speechSynthesis.cancel();
         const utterance = new SpeechSynthesisUtterance(text);
-        utterance.lang = 'fr-FR';
         
+        const langCode = setupData.language === 'en' ? 'en-US' : 
+                         setupData.language === 'es' ? 'es-ES' : 
+                         setupData.language === 'de' ? 'de-DE' : 'fr-FR';
+        utterance.lang = langCode;
+        
+        const langPrefix = langCode.split('-')[0];
         const voices = window.speechSynthesis.getVoices();
-        const frVoice = voices.find(v => v.lang.startsWith('fr') && (v.name.includes('Google') || v.name.includes('Microsoft'))) || voices.find(v => v.lang.startsWith('fr'));
-        if (frVoice) utterance.voice = frVoice;
+        const targetedVoice = voices.find(v => v.lang.startsWith(langPrefix) && (v.name.includes('Google') || v.name.includes('Microsoft'))) || voices.find(v => v.lang.startsWith(langPrefix));
+        if (targetedVoice) utterance.voice = targetedVoice;
         
         utterance.rate = 1.0;
         utterance.pitch = 1.0;
@@ -223,10 +229,12 @@ export default function Session({ auth }) {
         }
     };
 
-    // Helper text simulation for those without mic (easier testing)
-    const simulateTextSubmit = () => {
-        const text = prompt("Simuler votre réponse vocale (Texte) :");
-        if (text) handleAnswerSubmit(text);
+    const handleTextSubmit = (e: React.FormEvent) => {
+        e.preventDefault();
+        if (textInput.trim()) {
+            handleAnswerSubmit(textInput.trim());
+            setTextInput('');
+        }
     };
 
     return (
@@ -284,12 +292,20 @@ export default function Session({ auth }) {
                             </div>
                         </div>
 
-                        {/* Quick Actions */}
-                        <div className="flex gap-4">
-                            <LuxuryButton onClick={simulateTextSubmit} disabled={isAiTyping} variant="ghost" className="flex-1 h-14 text-xs tracking-widest uppercase font-bold border-neutral-200 dark:border-neutral-800">
-                                Simuler Texte (sans micro)
+                        {/* Text Input */}
+                        <form onSubmit={handleTextSubmit} className="flex gap-3 items-center bg-white dark:bg-neutral-900 rounded-[2rem] p-2 border border-neutral-200 dark:border-neutral-800 shadow-xl">
+                            <input 
+                                type="text"
+                                value={textInput}
+                                onChange={e => setTextInput(e.target.value)}
+                                disabled={isAiTyping || isRecording}
+                                placeholder={isRecording ? t('career_advisor.interview.session.mic_active_placeholder', 'Désactivez le micro pour écrire...') : t('career_advisor.interview.session.text_placeholder', 'Tapez votre réponse ici...')}
+                                className="flex-1 bg-transparent border-none focus:ring-0 text-sm px-4 text-neutral-700 dark:text-neutral-300 placeholder:text-neutral-400"
+                            />
+                            <LuxuryButton type="submit" disabled={isAiTyping || isRecording || !textInput.trim()} className="w-12 h-12 rounded-full p-0 flex items-center justify-center bg-amber-500 text-white hover:bg-amber-600 shrink-0">
+                                <Send className="w-5 h-5 ml-1" />
                             </LuxuryButton>
-                        </div>
+                        </form>
                     </div>
 
                     {/* Right: Transcript & Controls */}

@@ -31,6 +31,7 @@ interface InterviewData {
     interviewType: string;
     duration: string;
     difficulty: string;
+    language: string;
     focusAreas: string[];
     preparationLevel: string;
     specificConcerns: string[];
@@ -80,6 +81,7 @@ export default function InterviewSimulator({ onSubmit, userInfo, isLoading, init
         interviewType: 'hr',
         duration: '30-45 min',
         difficulty: 'medium',
+        language: 'fr',
         focusAreas: [],
         preparationLevel: 'intermediate',
         specificConcerns: [],
@@ -238,10 +240,26 @@ export default function InterviewSimulator({ onSubmit, userInfo, isLoading, init
                     <div className="space-y-10 group">
                         <div className="flex items-center gap-4 opacity-70 group-focus-within:opacity-100 transition-opacity">
                             <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-amber-600 dark:text-amber-500">02</span>
-                            <div className="h-px flex-1 bg-neutral-100 dark:bg-neutral-800" />
-                            <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-neutral-400">{t('career_advisor.interview.setup.tech_config')}</span>
+                            <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-neutral-400">{t('career_advisor.interview.setup.tech_config', 'Configuration')}</span>
                         </div>
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                            <div className="space-y-3">
+                                <label className="text-[10px] text-neutral-400 uppercase tracking-widest font-bold">Langue</label>
+                                <Select
+                                    value={formData.language}
+                                    onValueChange={(value) => setFormData(prev => ({ ...prev, language: value }))}
+                                >
+                                    <SelectTrigger className="h-12 border-neutral-200 dark:border-neutral-800 border-x-0 border-t-0 rounded-none px-0 bg-transparent focus:ring-0 shadow-none text-base">
+                                        <SelectValue />
+                                    </SelectTrigger>
+                                    <SelectContent className="bg-white dark:bg-neutral-900 border-neutral-200 dark:border-neutral-800">
+                                        <SelectItem value="fr" className="text-xs uppercase tracking-widest font-medium py-3 cursor-pointer focus:bg-neutral-50 dark:focus:bg-neutral-800">Français</SelectItem>
+                                        <SelectItem value="en" className="text-xs uppercase tracking-widest font-medium py-3 cursor-pointer focus:bg-neutral-50 dark:focus:bg-neutral-800">English</SelectItem>
+                                        <SelectItem value="es" className="text-xs uppercase tracking-widest font-medium py-3 cursor-pointer focus:bg-neutral-50 dark:focus:bg-neutral-800">Español</SelectItem>
+                                        <SelectItem value="de" className="text-xs uppercase tracking-widest font-medium py-3 cursor-pointer focus:bg-neutral-50 dark:focus:bg-neutral-800">Deutsch</SelectItem>
+                                    </SelectContent>
+                                </Select>
+                            </div>
                             <div className="space-y-3">
                                 <label className="text-[10px] text-neutral-400 uppercase tracking-widest font-bold">{t('career_advisor.interview.setup.type')}</label>
                                 <Select

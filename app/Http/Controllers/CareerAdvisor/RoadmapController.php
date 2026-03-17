@@ -22,38 +22,56 @@ class RoadmapController extends Controller
         $currentRole = $request->input('currentRole');
         $timeframe = $request->input('timeframe', '6 months');
 
-        return response()->stream(function () use ($goal, $currentRole, $timeframe) {
-            $messages = [
-                ['role' => 'system', 'content' => "You are a career strategist. Create a detailed, phased roadmap from {$currentRole} to {$goal} over {$timeframe}. Structure it in phases."],
-                ['role' => 'user', 'content' => "Generate the roadmap."]
-            ];
+        $systemPrompt = <<<EOT
+You are an expert career strategist. Create a highly actionable, phased career roadmap from "$currentRole" to "$goal" over a timeframe of "$timeframe".
+You MUST output ONLY valid JSON.
+The JSON must strictly follow this structure:
+{
+    "phases": [
+        {
+            "title": "Phase 1: Title (e.g. Foundation & Assessment)",
+            "duration": "Duration (e.g. Months 1-2)",
+            "description": "A 2-3 sentence overview of the phase's objective.",
+            "tasks": [
+                "Actionable task 1",
+                "Actionable task 2",
+                "Actionable task 3"
+            ]
+        }
+    ]
+}
+Generate 3 to 4 distinct phases logic to the timeline. All text must be in French.
+EOT;
 
-            try {
-                $stream = $this->mistral->chat()->createStream(
-                    messages: $messages,
-                    model: 'mistral-large-latest'
-                );
+        $messages = [
+            ['role' => 'system', 'content' => $systemPrompt],
+            ['role' => 'user', 'content' => "Génère la roadmap détaillée pour passer de $currentRole à $goal en $timeframe."]
+        ];
 
-                foreach ($stream as $chunk) {
-                    $content = $chunk->choices[0]->delta->content ?? '';
-                    if ($content) {
-                        echo "data: " . json_encode(['content' => $content]) . "\n\n";
-                        ob_flush();
-                        flush();
-                    }
-                }
-                echo "data: [DONE]\n\n";
-                ob_flush();
-                flush();
-            } catch (\Exception $e) {
-                echo "data: " . json_encode(['error' => $e->getMessage()]) . "\n\n";
-                ob_flush();
-                flush();
+        try {
+            $response = $this->mistral->chat()->create(
+                messages: $messages,
+                model: 'mistral-large-latest',
+                temperature: 0.4,
+                responseFormat: ['type' => 'json_object']
+            );
+
+            // HelgeSverre/Mistral returns a DTO or array depending on the version,
+            // but for JSON format we should ensure we get the content string safely.
+            // Using object() to get the parsed Saloon Response
+            $responseData = $response->object();
+            $jsonContent = $responseData->choices[0]->message->content ?? '';
+            $data = json_decode($jsonContent, true);
+
+            if (!$data || !isset($data['phases'])) {
+                throw new \Exception("Invalid JSON response from AI.");
             }
-        }, 200, [
-            'Cache-Control' => 'no-cache',
-            'Content-Type' => 'text/event-stream',
-            'X-Accel-Buffering' => 'no',
-        ]);
+
+            return response()->json($data);
+
+        } catch (\Exception $e) {
+            Log::error("Roadmap Generation Error: " . $e->getMessage());
+            return response()->json(['error' => 'Une erreur est survenue lors de la génération de la roadmap.'], 500);
+        }
     }
 }

@@ -251,7 +251,7 @@ Route::prefix('career-advisor')->group(function () {
     });
 
     Route::prefix('cv-heatmap')->name('career-advisor.cv-heatmap.')->group(function () {
-        Route::get('/', function () { return Inertia::render('CareerAdvisor/CV/Heatmap'); })->name('index');
+        Route::get('/', [CVAdvisorController::class, 'index'])->name('index');
         Route::post('/analyze', [CVAdvisorController::class, 'analyze'])->name('analyze');
         Route::post('/improve-section', [CVAdvisorController::class, 'improveSection'])->name('improve');
     });

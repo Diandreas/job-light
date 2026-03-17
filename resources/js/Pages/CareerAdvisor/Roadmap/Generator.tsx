@@ -1,10 +1,9 @@
 import React, { useState } from 'react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
-import { Head } from '@inertiajs/react';
+import { Head, router } from '@inertiajs/react';
 import { LuxuryButton } from '@/Components/ui/luxury/Button';
 import { LuxuryCard } from '@/Components/ui/luxury/Card';
 import { luxuryTheme } from '@/design-system/luxury-theme';
-import { useAIStream } from '@/hooks/useAIStream';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
     Flag, CheckCircle2, Clock, MapPin, Sparkles,
@@ -13,21 +12,22 @@ import {
 } from 'lucide-react';
 import { cn } from "@/lib/utils";
 import { useTranslation } from 'react-i18next';
+import axios from 'axios';
+import { toast } from 'sonner';
 
-const getSteps = (t) => [
+const getSteps = (t: any) => [
     { id: 'goal', title: t('career_advisor.roadmap.generator.steps.goal.title'), description: t('career_advisor.roadmap.generator.steps.goal.desc'), icon: Target },
     { id: 'state', title: t('career_advisor.roadmap.generator.steps.state.title'), description: t('career_advisor.roadmap.generator.steps.state.desc'), icon: MapPin },
     { id: 'time', title: t('career_advisor.roadmap.generator.steps.time.title'), description: t('career_advisor.roadmap.generator.steps.time.desc'), icon: Clock },
     { id: 'focus', title: t('career_advisor.roadmap.generator.steps.focus.title'), description: t('career_advisor.roadmap.generator.steps.focus.desc'), icon: Brain }
 ];
 
-export default function RoadmapGenerator({ auth }) {
+export default function RoadmapGenerator({ auth }: { auth: any }) {
     const { t } = useTranslation();
     const STEPS = getSteps(t);
     const [currentStep, setCurrentStep] = useState(0);
     const [isGenerated, setIsGenerated] = useState(false);
-    const [roadmap, setRoadmap] = useState([]);
-    const { stream, isStreaming } = useAIStream();
+    const [roadmap, setRoadmap] = useState<any[]>([]);
 
     const [formData, setFormData] = useState({
         goal: '',
@@ -65,29 +65,24 @@ export default function RoadmapGenerator({ auth }) {
         setIsGenerated(true);
         setRoadmap([]);
 
-        // Mock roadmap generation for now, should use stream in production
-        setTimeout(() => {
-            setRoadmap([
-                {
-                    title: t('career_advisor.roadmap.generator.phases.foundation.title'),
-                    duration: t('career_advisor.roadmap.generator.horizons.3_months'),
-                    description: t('career_advisor.roadmap.generator.phases.foundation.desc'),
-                    tasks: [t('career_advisor.roadmap.generator.phases.foundation.tasks.patterns', 'Advanced patterns review'), t('career_advisor.roadmap.generator.phases.foundation.tasks.audit', 'Current skills audit'), t('career_advisor.roadmap.generator.phases.foundation.tasks.env', 'Environment setup')]
-                },
-                {
-                    title: t('career_advisor.roadmap.generator.phases.specialization.title'),
-                    duration: t('career_advisor.roadmap.generator.horizons.6_months'),
-                    description: t('career_advisor.roadmap.generator.phases.specialization.desc'),
-                    tasks: [t('career_advisor.roadmap.generator.phases.specialization.tasks.mvp', 'Full MVP development'), t('career_advisor.roadmap.generator.phases.specialization.tasks.oss', 'Open Source contribution'), t('career_advisor.roadmap.generator.phases.specialization.tasks.perf', 'Performance optimization')]
-                },
-                {
-                    title: t('career_advisor.roadmap.generator.phases.acceleration.title'),
-                    duration: t('career_advisor.roadmap.generator.horizons.1_year'),
-                    description: t('career_advisor.roadmap.generator.phases.acceleration.desc'),
-                    tasks: [t('career_advisor.roadmap.generator.phases.acceleration.tasks.interviews', 'System interview preparation'), t('career_advisor.roadmap.generator.phases.acceleration.tasks.networking', 'Strategic networking'), t('career_advisor.roadmap.generator.phases.acceleration.tasks.launch', 'Career launch')]
-                },
-            ]);
-        }, 1500);
+        try {
+            const response = await axios.post(route('career-advisor.roadmap.generate'), {
+                goal: formData.goal,
+                currentRole: formData.currentRole,
+                timeframe: formData.timeframe
+            });
+
+            if (response.data && response.data.phases) {
+                setRoadmap(response.data.phases);
+                toast.success('Roadmap générée avec succès ! ✨', { duration: 4000 });
+            } else {
+                throw new Error("Invalid response format");
+            }
+        } catch (error) {
+            console.error("Roadmap generation error:", error);
+            setIsGenerated(false);
+            toast.error('Erreur lors de la génération. Veuillez réessayer.', { duration: 5000 });
+        }
     };
 
     return (

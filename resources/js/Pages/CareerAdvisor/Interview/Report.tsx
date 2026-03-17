@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Head, Link } from '@inertiajs/react';
 import { LuxuryButton } from '@/Components/ui/luxury/Button';
@@ -11,23 +11,46 @@ import { cn } from "@/lib/utils";
 
 export default function Report({ auth }) {
     const { t, i18n } = useTranslation();
-    // Mock Data
-    const report = {
-        score: 78,
-        date: new Date().toLocaleDateString(i18n.language === 'fr' ? 'fr-FR' : 'en-US', { day: 'numeric', month: 'long', year: 'numeric' }),
-        strengths: ['Clear delivery', 'Good STAR structure', 'Relevant examples'],
-        weaknesses: ['Too many filler words', 'Rushed conclusion', 'Did not ask questions'],
-        metrics: [
-            { label: t('career_advisor.interview.report.metrics.elocution'), value: 85 },
-            { label: t('career_advisor.interview.report.metrics.structuring'), value: 72 },
-            { label: t('career_advisor.interview.report.metrics.confidence'), value: 90 },
-            { label: t('career_advisor.interview.report.metrics.technicality'), value: 65 }
-        ],
-        transcript: [
-            { q: 'Tell me about yourself', a: 'I am a developer...', feedback: 'Good intro but a bit long.' },
-            { q: 'Technical challenge?', a: 'I fixed a bug...', feedback: 'Excellent technical depth.' }
-        ]
+    const [report, setReport] = useState<any>(null);
+
+    useEffect(() => {
+        const savedReport = sessionStorage.getItem('interviewReport');
+        if (savedReport) {
+            try {
+                const parsed = JSON.parse(savedReport);
+                setReport({
+                    ...parsed,
+                    date: new Date().toLocaleDateString(i18n.language === 'fr' ? 'fr-FR' : 'en-US', { day: 'numeric', month: 'long', year: 'numeric' })
+                });
+            } catch (e) {
+                console.error("Failed to parse report data", e);
+                loadMockFallback();
+            }
+        } else {
+            loadMockFallback();
+        }
+    }, [i18n.language]);
+
+    const loadMockFallback = () => {
+        setReport({
+            score: 78,
+            date: new Date().toLocaleDateString(i18n.language === 'fr' ? 'fr-FR' : 'en-US', { day: 'numeric', month: 'long', year: 'numeric' }),
+            strengths: ['Clear delivery', 'Good STAR structure', 'Relevant examples'],
+            weaknesses: ['Too many filler words', 'Rushed conclusion', 'Did not ask questions'],
+            metrics: [
+                { label: t('career_advisor.interview.report.metrics.elocution'), value: 85 },
+                { label: t('career_advisor.interview.report.metrics.structuring'), value: 72 },
+                { label: t('career_advisor.interview.report.metrics.confidence'), value: 90 },
+                { label: t('career_advisor.interview.report.metrics.technicality'), value: 65 }
+            ],
+            transcript: [
+                { q: 'Tell me about yourself', a: 'I am a developer...', feedback: 'Good intro but a bit long.' },
+                { q: 'Technical challenge?', a: 'I fixed a bug...', feedback: 'Excellent technical depth.' }
+            ]
+        });
     };
+
+    if (!report) return null;
 
     return (
         <AuthenticatedLayout user={auth.user}>
@@ -75,7 +98,7 @@ export default function Report({ auth }) {
                             <div className="bg-white dark:bg-neutral-900 rounded-[3rem] p-12 border border-neutral-100 dark:border-neutral-800 shadow-xl h-full">
                                 <h3 className="text-[10px] font-bold text-neutral-400 uppercase tracking-[0.3em] mb-10">{t('career_advisor.interview.report.metric_breakdown')}</h3>
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-10">
-                                    {report.metrics.map((m, i) => (
+                                    {report.metrics.map((m: any, i: number) => (
                                         <div key={i} className="space-y-4">
                                             <div className="flex justify-between items-end">
                                                 <span className="text-sm font-bold text-neutral-900 dark:text-neutral-50 uppercase tracking-widest">{m.label}</span>
@@ -103,7 +126,7 @@ export default function Report({ auth }) {
                                 <CheckCircle className="w-4 h-4 text-amber-500" /> {t('career_advisor.interview.report.strategic_assets')}
                             </h3>
                             <ul className="space-y-6">
-                                {report.strengths.map((s, i) => (
+                                {report.strengths.map((s: string, i: number) => (
                                     <li key={i} className="flex gap-4 text-neutral-600 dark:text-neutral-400 group items-center">
                                         <div className="w-1.5 h-1.5 bg-amber-500 rounded-full group-hover:scale-150 transition-transform" />
                                         <span className="text-lg font-light tracking-tight group-hover:text-amber-600 dark:group-hover:text-amber-500 transition-colors">{s}</span>
@@ -118,7 +141,7 @@ export default function Report({ auth }) {
                                 <Target className="w-4 h-4 text-neutral-400" /> {t('career_advisor.interview.report.refinement_areas')}
                             </h3>
                             <ul className="space-y-6">
-                                {report.weaknesses.map((w, i) => (
+                                {report.weaknesses.map((w: string, i: number) => (
                                     <li key={i} className="flex gap-4 text-neutral-600 dark:text-neutral-400 group items-center">
                                         <div className="w-1.5 h-1.5 border border-amber-200 dark:border-amber-800 rounded-full group-hover:bg-amber-500 transition-all" />
                                         <span className="text-lg font-light tracking-tight group-hover:text-amber-600 dark:group-hover:text-amber-500 transition-colors">{w}</span>
@@ -132,7 +155,7 @@ export default function Report({ auth }) {
                     <div className="space-y-10">
                         <h3 className="text-[10px] font-bold text-neutral-400 uppercase tracking-[0.3em] pl-4">{t('career_advisor.interview.report.substance')}</h3>
                         <div className="grid gap-6">
-                            {report.transcript.map((item, i) => (
+                            {report.transcript?.map((item: any, i: number) => (
                                 <div key={i} className="bg-white dark:bg-neutral-900 p-12 rounded-[3.5rem] border border-neutral-100 dark:border-neutral-800 shadow-xl group hover:border-amber-500 transition-all duration-700">
                                     <div className="flex flex-col md:flex-row gap-10">
                                         <div className="md:w-1/3">

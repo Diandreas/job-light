@@ -19,6 +19,10 @@ interface InterviewSimulatorProps {
     onSubmit: (data: InterviewData) => void;
     userInfo: any;
     isLoading: boolean;
+    initialData?: {
+        jobTitle?: string;
+        companyName?: string;
+    };
 }
 
 interface InterviewData {
@@ -63,7 +67,7 @@ const getDifficultyLevels = (t: any) => [
     { value: 'expert', label: t('career_advisor.common.expert'), description: 'Trap questions' }
 ];
 
-export default function InterviewSimulator({ onSubmit, userInfo, isLoading }: InterviewSimulatorProps) {
+export default function InterviewSimulator({ onSubmit, userInfo, isLoading, initialData }: InterviewSimulatorProps) {
     const { t } = useTranslation();
     const INTERVIEW_TYPES = getInterviewTypes(t);
     const FOCUS_AREAS = getFocusAreas(t);
@@ -71,8 +75,8 @@ export default function InterviewSimulator({ onSubmit, userInfo, isLoading }: In
     const DIFFICULTY_LEVELS = getDifficultyLevels(t);
 
     const [formData, setFormData] = useState<InterviewData>({
-        jobTitle: '',
-        companyName: '',
+        jobTitle: initialData?.jobTitle || '',
+        companyName: initialData?.companyName || '',
         interviewType: 'hr',
         duration: '30-45 min',
         difficulty: 'medium',

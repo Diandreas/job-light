@@ -261,7 +261,8 @@ Route::prefix('career-advisor')->group(function () {
         Route::get('/session', function () { return Inertia::render('CareerAdvisor/Interview/Session'); })->name('session');
         Route::get('/report', function () { return Inertia::render('CareerAdvisor/Interview/Report'); })->name('report');
         Route::post('/start', [InterviewController::class, 'startSession'])->name('start');
-        Route::post('/feedback', [InterviewController::class, 'verboseFeedback'])->name('feedback');
+        Route::post('/respond', [InterviewController::class, 'respond'])->name('respond');
+        Route::post('/generate-report', [InterviewController::class, 'generateReport'])->name('generate-report');
     });
 
     Route::prefix('roadmap')->name('career-advisor.roadmap.')->group(function () {

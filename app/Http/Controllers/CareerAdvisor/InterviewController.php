@@ -18,61 +18,144 @@ class InterviewController extends Controller
 
     public function startSession(Request $request)
     {
-        // Initialize a new interview session in DB (simplified for now)
-        // returns session_id + first question
-        $type = $request->input('type', 'behavioral');
-        
-        $initialPrompt = "You are conducting a {$type} interview. Start by welcoming the candidate and asking the first question. Keep it professional.";
-        
-        $response = $this->mistral->chat()->create(
-            messages: [['role' => 'system', 'content' => $initialPrompt]],
-            model: 'mistral-large-latest'
-        );
+        $data = $request->all();
+        $jobTitle = $data['jobTitle'] ?? 'candidat';
+        $companyName = $data['companyName'] ?? 'notre entreprise';
+        $interviewType = $data['interviewType'] ?? 'RH';
+        $difficulty = $data['difficulty'] ?? 'moyenne';
+        $focusAreas = isset($data['focusAreas']) ? implode(', ', $data['focusAreas']) : '';
 
-        return response()->json([
-            'sessionId' => uniqid('int_'),
-            'message' => $response->dto()->choices[0]->message->content
-        ]);
-    }
+        $systemPrompt = "Vous êtes un recruteur expert (Assistant Guidy) menant un entretien d'embauche de type '{$interviewType}' pour le poste de '{$jobTitle}' chez '{$companyName}'.
+Niveau de difficulté : {$difficulty}.
+Thèmes prioritaires : {$focusAreas}.
+Votre objectif est de mener un entretien réaliste et professionnel, en posant une question à la fois.
+Pour commencer, accueillez brièvement le candidat et posez la TOUTE PREMIÈRE question.
+VOUS DEVEZ RÉPONDRE UNIQUEMENT EN JSON avec la structure exacte suivante :
+{
+    \"feedback\": \"\", 
+    \"next_question\": \"Votre phrase d'accueil et votre première question ici\",
+    \"is_finished\": false
+}
+Répondez en Français.";
 
-    public function verboseFeedback(Request $request)
-    {
-        // Analyze a specific answer
-        return response()->stream(function () use ($request) {
-            $question = $request->input('question');
-            $answer = $request->input('answer');
-
-            $messages = [
-                ['role' => 'system', 'content' => 'You are an interview coach. Provide real-time feedback on this answer. analyze: 1. Clarity, 2. STAR method usage, 3. Impact.'],
-                ['role' => 'user', 'content' => "Question: {$question}\nAnswer: {$answer}"]
-            ];
-
-            $stream = $this->mistral->chat()->createStream(
-                messages: $messages,
-                model: 'mistral-large-latest'
+        try {
+            $response = $this->mistral->chat()->create(
+                messages: [['role' => 'system', 'content' => $systemPrompt]],
+                model: 'mistral-large-latest',
+                temperature: 0.7,
+                responseFormat: ['type' => 'json_object']
             );
 
-            foreach ($stream as $chunk) {
-                $content = $chunk->choices[0]->delta->content ?? '';
-                if ($content) {
-                    echo "data: " . json_encode(['content' => $content]) . "\n\n";
-                    ob_flush();
-                    flush();
-                }
-            }
-            echo "data: [DONE]\n\n";
-            ob_flush();
-            flush();
-        }, 200, [
-            'Cache-Control' => 'no-cache',
-            'Content-Type' => 'text/event-stream',
-            'X-Accel-Buffering' => 'no',
-        ]);
+            $responseData = $response->object();
+            $jsonContent = $responseData->choices[0]->message->content ?? '';
+            $result = json_decode($jsonContent, true);
+
+            return response()->json([
+                'sessionId' => uniqid('int_'),
+                'data' => $result
+            ]);
+        } catch (\Exception $e) {
+            Log::error("Interview Start Error: " . $e->getMessage());
+            return response()->json(['error' => 'Failed to start interview.'], 500);
+        }
     }
-    
-    public function generateReport(Request $request) {
-        // Generate final report
-        // Logic to aggregate session data would go here
-        return response()->json(['status' => 'mock_report_generated']);
+
+    public function respond(Request $request)
+    {
+        $history = $request->input('history', []);
+        $jobTitle = $request->input('jobTitle', 'candidat');
+
+        $systemPrompt = "Vous êtes un recruteur professionnel menant un entretien pour le poste de {$jobTitle}.
+Voici l'historique de l'entretien. Le candidat vient de répondre à votre dernière question.
+Votre tâche :
+1. Évaluer brièvement (1-2 phrases) la réponse du candidat (impact, clarté).
+2. Poser la question suivante. Si l'entretien a duré assez longtemps ou que le candidat a répondu à plusieurs questions clés de manière satisfaisante, mettez fin à l'entretien poliment.
+VOUS DEVEZ RÉPONDRE UNIQUEMENT EN JSON avec la structure exacte suivante :
+{
+    \"feedback\": \"Votre court retour bienveillant et constructif sur la réponse précédente\",
+    \"next_question\": \"La question suivante OU votre phrase de conclusion si c'est la fin (laissez vide si is_finished est true et que vous l'incluez dans le feedback)\",
+    \"is_finished\": true ou false (true si l'entretien est terminé)
+}
+Répondez en Français.";
+
+        $messages = [['role' => 'system', 'content' => $systemPrompt]];
+        foreach ($history as $msg) {
+            if (isset($msg['role']) && isset($msg['content'])) {
+                // Roles mapping (frontend sends 'user' and 'advisor')
+                $role = $msg['role'] === 'advisor' ? 'assistant' : 'user';
+                $messages[] = ['role' => $role, 'content' => $msg['content']];
+            }
+        }
+
+        try {
+            $response = $this->mistral->chat()->create(
+                messages: $messages,
+                model: 'mistral-large-latest',
+                temperature: 0.7,
+                responseFormat: ['type' => 'json_object']
+            );
+
+            $responseData = $response->object();
+            $jsonContent = $responseData->choices[0]->message->content ?? '';
+            $result = json_decode($jsonContent, true);
+
+            return response()->json($result);
+        } catch (\Exception $e) {
+            Log::error("Interview Respond Error: " . $e->getMessage());
+            return response()->json(['error' => 'Failed to process response.'], 500);
+        }
+    }
+
+    public function generateReport(Request $request)
+    {
+        $history = $request->input('history', []);
+        $jobTitle = $request->input('jobTitle', 'candidat');
+
+        $transcriptText = "";
+        foreach ($history as $msg) {
+            $role = $msg['role'] === 'user' ? 'Candidat' : 'Recruteur';
+            $transcriptText .= "{$role}: {$msg['content']}\n\n";
+        }
+
+        $systemPrompt = "Vous êtes un coach carrière d'élite (Assistant Guidy).
+Analysez le transcript de cet entretien d'embauche pour le poste de {$jobTitle}.
+Générez un rapport complet et détaillé en JSON.
+VOUS DEVEZ RÉPONDRE UNIQUEMENT EN JSON avec la structure exacte suivante :
+{
+    \"score\": 85, // Score global sur 100
+    \"strengths\": [\"Point fort 1\", \"Point fort 2\", \"Point fort 3\"],
+    \"weaknesses\": [\"Axe d'amélioration 1\", \"Axe 2\", \"Axe 3\"],
+    \"metrics\": [
+        { \"label\": \"Élocution et Clarté\", \"value\": 80 },
+        { \"label\": \"Structuration (STAR)\", \"value\": 70 },
+        { \"label\": \"Rassurance & Confiance\", \"value\": 90 },
+        { \"label\": \"Profondeur Technique/Métier\", \"value\": 75 }
+    ],
+    \"transcript\": [
+        { \"q\": \"Question posée par le recruteur\", \"a\": \"Réponse résumée du candidat\", \"feedback\": \"Critique précise de la réponse\" }
+    ] // Tableau des 3 ou 4 échanges clés de l'entretien avec analyse de chaque échange
+}
+Répondez en Français.";
+
+        try {
+            $response = $this->mistral->chat()->create(
+                messages: [
+                    ['role' => 'system', 'content' => $systemPrompt],
+                    ['role' => 'user', 'content' => "Voici le transcript :\n\n" . $transcriptText]
+                ],
+                model: 'mistral-large-latest',
+                temperature: 0.3,
+                responseFormat: ['type' => 'json_object']
+            );
+
+            $responseData = $response->object();
+            $jsonContent = $responseData->choices[0]->message->content ?? '';
+            $result = json_decode($jsonContent, true);
+
+            return response()->json($result);
+        } catch (\Exception $e) {
+            Log::error("Interview Report Error: " . $e->getMessage());
+            return response()->json(['error' => 'Failed to generate report.'], 500);
+        }
     }
 }

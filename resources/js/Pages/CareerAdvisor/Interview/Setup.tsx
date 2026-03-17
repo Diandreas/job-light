@@ -1,19 +1,22 @@
 import React, { useState } from 'react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
-import { Head, router } from '@inertiajs/react';
+import { Head, router, usePage } from '@inertiajs/react';
 import InterviewSimulator from '@/Components/ai/specialized/InterviewSimulator';
 import { useTranslation } from 'react-i18next';
 
 export default function Setup({ auth }) {
     const { t } = useTranslation();
+    const { url } = usePage();
+    const queryParams = new URLSearchParams(url.split('?')[1] || '');
     const [loading, setLoading] = useState(false);
 
-    const handleSimulationStart = (data) => {
-        setLoading(true);
-        // In a real scenario, we might save this config to the backend first
-        // then redirect to the active session.
-        // For now, we'll pass the data as state to the session page or simular.
+    const initialData = {
+        jobTitle: queryParams.get('jobTitle') || '',
+        companyName: queryParams.get('company') || ''
+    };
 
+    const handleSimulationStart = (data: any) => {
+        setLoading(true);
         // Simulating API call/Setup time
         setTimeout(() => {
             const url = route('career-advisor.interview.session', {
@@ -33,6 +36,7 @@ export default function Setup({ auth }) {
                         userInfo={auth.user}
                         onSubmit={handleSimulationStart}
                         isLoading={loading}
+                        initialData={initialData}
                     />
                 </div>
             </div>

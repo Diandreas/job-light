@@ -93,4 +93,8 @@ return [
         'url' => env('WEASYPRINT_URL', 'http://127.0.0.1:8001'),
         'api_key' => env('WEASYPRINT_API_KEY'),
     ],
+
+    'deepgram' => [
+        'api_key' => env('DEEPGRAM_API_KEY'),
+    ],
 ];

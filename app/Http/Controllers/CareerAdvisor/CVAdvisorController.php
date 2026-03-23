@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Log;
 use HelgeSverre\Mistral\Mistral;
 use HelgeSverre\Mistral\Enums\Role;
 use Inertia\Inertia;
+use App\Models\ChatHistory;
 
 class CVAdvisorController extends Controller
 {
@@ -129,6 +130,24 @@ Données du CV : " . json_encode($cvData);
 
             if (!$parsed) {
                 return response()->json(['error' => 'Erreur de parsing JSON depuis Mistral'], 500);
+            }
+
+            // Save to history — isolated so a DB failure never blocks the response
+            try {
+                ChatHistory::create([
+                    'user_id'        => auth()->id(),
+                    'context'        => 'cv_analysis',
+                    'context_id'     => \Illuminate\Support\Str::limit($targetRole, 30),
+                    'messages'       => [
+                        ['role' => 'system', 'content' => 'Tu es un auditeur de CV top-tier. Réponds uniquement en JSON.'],
+                        ['role' => 'user', 'content' => $prompt]
+                    ],
+                    'structured_data' => $parsed,
+                    'service_id'      => 'mistral',
+                    'tokens_used'     => $response->dto()->usage->totalTokens ?? 0,
+                ]);
+            } catch (\Exception $dbError) {
+                Log::error("CV Analysis history save failed: " . $dbError->getMessage());
             }
 
             return response()->json($parsed);

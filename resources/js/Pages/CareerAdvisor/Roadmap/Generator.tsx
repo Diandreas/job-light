@@ -8,12 +8,13 @@ import { motion, AnimatePresence } from 'framer-motion';
 import {
     Flag, CheckCircle2, Clock, MapPin, Sparkles,
     ArrowRight, Target, ChevronRight, ChevronLeft,
-    Brain, Rocket, Award, Loader2, Star, Zap
+    Brain, Rocket, Award, Loader2, Star, Zap, History as HistoryIcon
 } from 'lucide-react';
 import { cn } from "@/lib/utils";
 import { useTranslation } from 'react-i18next';
 import axios from 'axios';
 import { toast } from 'sonner';
+import HistoryDrawer from '@/Components/ai/HistoryDrawer';
 
 const getSteps = (t: any) => [
     { id: 'goal', title: t('career_advisor.roadmap.generator.steps.goal.title'), description: t('career_advisor.roadmap.generator.steps.goal.desc'), icon: Target },
@@ -28,6 +29,7 @@ export default function RoadmapGenerator({ auth }: { auth: any }) {
     const [currentStep, setCurrentStep] = useState(0);
     const [isGenerated, setIsGenerated] = useState(false);
     const [roadmap, setRoadmap] = useState<any[]>([]);
+    const [isHistoryOpen, setIsHistoryOpen] = useState(false);
 
     const [formData, setFormData] = useState({
         goal: '',
@@ -36,6 +38,20 @@ export default function RoadmapGenerator({ auth }: { auth: any }) {
         timeframe: '6 mois',
         focus: []
     });
+
+    React.useEffect(() => {
+        const historyData = sessionStorage.getItem('load_history_roadmap');
+        if (historyData) {
+            try {
+                const parsedRoadmap = JSON.parse(historyData);
+                setRoadmap(parsedRoadmap.phases || parsedRoadmap);
+                setIsGenerated(true);
+            } catch (e) {
+                console.error("Failed to load history data for roadmap", e);
+            }
+            sessionStorage.removeItem('load_history_roadmap');
+        }
+    }, []);
 
     const isStepValid = () => {
         switch (currentStep) {
@@ -92,9 +108,34 @@ export default function RoadmapGenerator({ auth }: { auth: any }) {
             <div className="min-h-screen bg-neutral-50 dark:bg-neutral-950 py-20 px-6 relative overflow-hidden">
                 <div className="max-w-4xl mx-auto relative z-10">
 
+                    <HistoryDrawer 
+                        isOpen={isHistoryOpen} 
+                        onClose={() => setIsHistoryOpen(false)}
+                        context="roadmap"
+                        title="Historique des Roadmaps"
+                        onSelect={(item) => {
+                            if (item.structured_data && item.structured_data.phases) {
+                                setRoadmap(item.structured_data.phases);
+                                setIsGenerated(true);
+                                toast.success("Ancienne Roadmap chargée.");
+                            } else {
+                                toast.error("Données d'historique invalides.");
+                            }
+                        }}
+                    />
+
                     {/* Progress Header */}
                     {!isGenerated && (
-                        <div className="mb-20 text-center">
+                        <div className="mb-20 text-center relative">
+                            <div className="absolute right-0 top-0">
+                                <button 
+                                    onClick={() => setIsHistoryOpen(true)}
+                                    className="flex items-center gap-2 px-4 py-2 bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-full hover:shadow-md transition-all text-xs font-bold text-neutral-600 dark:text-neutral-300"
+                                >
+                                    <HistoryIcon className="w-4 h-4" />
+                                    Historique
+                                </button>
+                            </div>
                             <motion.div
                                 initial={{ opacity: 0, y: -10 }}
                                 animate={{ opacity: 1, y: 0 }}
@@ -297,7 +338,16 @@ export default function RoadmapGenerator({ auth }: { auth: any }) {
                                 animate={{ opacity: 1, y: 0 }}
                                 className="space-y-12"
                             >
-                                <div className="text-center mb-24">
+                                <div className="text-center mb-24 relative">
+                                    <div className="absolute right-0 top-0">
+                                        <button 
+                                            onClick={() => setIsHistoryOpen(true)}
+                                            className="flex items-center gap-2 px-4 py-2 bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-full hover:shadow-md transition-all text-xs font-bold text-neutral-600 dark:text-neutral-300"
+                                        >
+                                            <HistoryIcon className="w-4 h-4" />
+                                            Historique
+                                        </button>
+                                    </div>
                                     <p className="text-[10px] tracking-[0.5em] font-bold text-neutral-400 uppercase mb-4">{t('career_advisor.roadmap.generator.master_strategy')}</p>
                                     <h2 className="text-5xl font-serif text-neutral-900 dark:text-neutral-50 tracking-tight">{t('career_advisor.roadmap.generator.blueprint').split(' ')[0]} <span className="italic font-normal">{t('career_advisor.roadmap.generator.blueprint').split(' ')[1]}</span></h2>
                                 </div>

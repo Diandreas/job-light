@@ -5,7 +5,8 @@ import { LuxuryButton } from '@/Components/ui/luxury/Button';
 import { luxuryTheme } from '@/design-system/luxury-theme';
 import {
     Clock, Target, Mic, Play, Pause, RotateCcw,
-    CheckCircle, TrendingUp, Brain, Lightbulb, AlertCircle, Sparkles
+    CheckCircle, TrendingUp, Brain, Lightbulb, AlertCircle, Sparkles,
+    Heart, Briefcase, Flame, Eye, BookOpen
 } from 'lucide-react';
 import {
     Select,
@@ -37,6 +38,9 @@ interface InterviewData {
     specificConcerns: string[];
     interviewFormat: string;
     companySize: string;
+    aggressionLevel: string;
+    showScore: string;
+    showFeedback: string;
 }
 
 const getInterviewTypes = (t: any) => [
@@ -48,11 +52,29 @@ const getInterviewTypes = (t: any) => [
     { value: 'final', label: t('career_advisor.interview.types.final'), description: t('career_advisor.interview.types.final_desc') }
 ];
 
+// Indices match the getFocusAreas array order below
+const DEFAULT_FOCUS_BY_TYPE: Record<string, number[]> = {
+    'hr':         [0, 1, 2, 10, 11],       // intro, motivation, experience, weaknesses, vision
+    'technical':  [2, 3, 5, 9],            // experience, technical, problem_solving, projects
+    'behavioral': [2, 4, 5, 10],           // experience, team, problem_solving, weaknesses
+    'case-study': [3, 5, 9, 6],            // technical, problem_solving, projects, company
+    'panel':      [0, 1, 8, 11],           // intro, motivation, hard_questions, vision
+    'final':      [1, 6, 7, 8, 11],        // motivation, company, salary, hard_questions, vision
+};
+
 const getFocusAreas = (t: any) => [
-    t('career_advisor.interview.setup.focus_areas.intro'), t('career_advisor.interview.setup.focus_areas.motivation'), t('career_advisor.interview.setup.focus_areas.experience'),
-    t('career_advisor.interview.setup.focus_areas.technical'), t('career_advisor.interview.setup.focus_areas.team'), t('career_advisor.interview.setup.focus_areas.problem_solving'),
-    t('career_advisor.interview.setup.focus_areas.company'), t('career_advisor.interview.setup.focus_areas.salary'), t('career_advisor.interview.setup.focus_areas.hard_questions'),
-    t('career_advisor.interview.setup.focus_areas.projects'), t('career_advisor.interview.setup.focus_areas.weaknesses'), t('career_advisor.interview.setup.focus_areas.vision')
+    t('career_advisor.interview.setup.focus_areas.intro'),           // 0
+    t('career_advisor.interview.setup.focus_areas.motivation'),      // 1
+    t('career_advisor.interview.setup.focus_areas.experience'),      // 2
+    t('career_advisor.interview.setup.focus_areas.technical'),       // 3
+    t('career_advisor.interview.setup.focus_areas.team'),            // 4
+    t('career_advisor.interview.setup.focus_areas.problem_solving'), // 5
+    t('career_advisor.interview.setup.focus_areas.company'),         // 6
+    t('career_advisor.interview.setup.focus_areas.salary'),          // 7
+    t('career_advisor.interview.setup.focus_areas.hard_questions'),  // 8
+    t('career_advisor.interview.setup.focus_areas.projects'),        // 9
+    t('career_advisor.interview.setup.focus_areas.weaknesses'),      // 10
+    t('career_advisor.interview.setup.focus_areas.vision'),          // 11
 ];
 
 const getCommonConcerns = (t: any) => [
@@ -86,8 +108,18 @@ export default function InterviewSimulator({ onSubmit, userInfo, isLoading, init
         preparationLevel: 'intermediate',
         specificConcerns: [],
         interviewFormat: 'video',
-        companySize: 'medium'
+        companySize: 'medium',
+        aggressionLevel: '2',
+        showScore: 'true',
+        showFeedback: 'true',
     });
+
+    // Auto-select default focus areas when interview type changes
+    useEffect(() => {
+        const indices = DEFAULT_FOCUS_BY_TYPE[formData.interviewType] ?? [0, 1, 2];
+        const areas   = getFocusAreas(t);
+        setFormData(prev => ({ ...prev, focusAreas: indices.map(i => areas[i]) }));
+    }, [formData.interviewType]);
 
     const [simulationStarted, setSimulationStarted] = useState(false);
     const [currentQuestion, setCurrentQuestion] = useState(0);
@@ -132,9 +164,7 @@ export default function InterviewSimulator({ onSubmit, userInfo, isLoading, init
     };
 
     const isFormValid = () => {
-        return formData.jobTitle.length > 0 &&
-            formData.companyName.length > 0 &&
-            formData.focusAreas.length > 0;
+        return formData.jobTitle.length > 0 && formData.companyName.length > 0;
     };
 
     // Calculate score for simple progress bar
@@ -242,7 +272,7 @@ export default function InterviewSimulator({ onSubmit, userInfo, isLoading, init
                             <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-amber-600 dark:text-amber-500">02</span>
                             <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-neutral-400">{t('career_advisor.interview.setup.tech_config', 'Configuration')}</span>
                         </div>
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                             <div className="space-y-3">
                                 <label className="text-[10px] text-neutral-400 uppercase tracking-widest font-bold">Langue</label>
                                 <Select
@@ -292,27 +322,83 @@ export default function InterviewSimulator({ onSubmit, userInfo, isLoading, init
                                     </SelectContent>
                                 </Select>
                             </div>
-                            <div className="space-y-3">
-                                <label className="text-[10px] text-neutral-400 uppercase tracking-widest font-bold">{t('career_advisor.interview.setup.difficulty')}</label>
-                                <div className="flex gap-4">
-                                    {DIFFICULTY_LEVELS.map(level => (
-                                        <button
-                                            key={level.value}
-                                            onClick={() => setFormData(prev => ({ ...prev, difficulty: level.value }))}
-                                            className={`flex-1 h-12 text-[10px] border tracking-[0.2em] font-bold uppercase transition-all duration-500 rounded-lg ${formData.difficulty === level.value ? 'bg-amber-500 text-white border-amber-600 shadow-lg shadow-amber-500/20' : 'border-neutral-100 dark:border-neutral-800 text-neutral-400 hover:border-amber-200 dark:hover:border-amber-900/40'}`}
-                                        >
-                                            {level.label}
-                                        </button>
-                                    ))}
+                        </div>
+                    </div>
+
+                    {/* Section 3: Mode & Options */}
+                    <div className="space-y-10">
+                        <div className="flex items-center gap-4">
+                            <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-amber-600 dark:text-amber-500">03</span>
+                            <div className="h-px flex-1 bg-neutral-100 dark:bg-neutral-800" />
+                            <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-neutral-400">{t('career_advisor.interview.setup.interview_mode')}</span>
+                        </div>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
+                            {/* Aggression + Difficulty (merged) */}
+                            <div className="space-y-4">
+                                <label className="text-[10px] text-neutral-400 uppercase tracking-widest font-bold">{t('career_advisor.interview.setup.aggression_level')}</label>
+                                <div className="flex gap-3">
+                                    {([
+                                        { value: '1', difficulty: 'easy',   labelKey: 'aggression_gentle',   diffKey: 'aggression_diff_easy',     Icon: Heart,     color: 'text-green-500' },
+                                        { value: '2', difficulty: 'medium', labelKey: 'aggression_standard', diffKey: 'aggression_diff_medium',   Icon: Briefcase, color: 'text-amber-500' },
+                                        { value: '3', difficulty: 'expert', labelKey: 'aggression_brutal',   diffKey: 'aggression_diff_expert',   Icon: Flame,     color: 'text-red-500'   },
+                                    ] as const).map(lvl => {
+                                        const active = formData.aggressionLevel === lvl.value;
+                                        return (
+                                            <button
+                                                key={lvl.value}
+                                                type="button"
+                                                onClick={() => setFormData(p => ({ ...p, aggressionLevel: lvl.value, difficulty: lvl.difficulty }))}
+                                                className={`flex-1 flex flex-col items-center gap-2 py-4 px-2 rounded-xl border transition-all duration-300 ${
+                                                    active
+                                                        ? 'bg-amber-500 border-amber-600 text-white shadow-lg shadow-amber-500/20'
+                                                        : 'border-neutral-100 dark:border-neutral-800 text-neutral-400 hover:border-amber-200 dark:hover:border-amber-900/40'
+                                                }`}
+                                            >
+                                                <lvl.Icon className={`w-5 h-5 ${active ? 'text-white' : lvl.color}`} />
+                                                <span className="text-[10px] font-bold uppercase tracking-wider">
+                                                    {t(`career_advisor.interview.setup.${lvl.labelKey}`)}
+                                                </span>
+                                                <span className={`text-[9px] tracking-wide ${active ? 'text-white/70' : 'text-neutral-300 dark:text-neutral-600'}`}>
+                                                    {t(`career_advisor.interview.setup.${lvl.diffKey}`)}
+                                                </span>
+                                            </button>
+                                        );
+                                    })}
+                                </div>
+                            </div>
+                            {/* Display toggles */}
+                            <div className="space-y-4">
+                                <label className="text-[10px] text-neutral-400 uppercase tracking-widest font-bold">{t('career_advisor.interview.setup.display_options')}</label>
+                                <div className="space-y-4">
+                                    {([
+                                        { key: 'showScore',    labelKey: 'show_score',    Icon: Eye },
+                                        { key: 'showFeedback', labelKey: 'show_coaching', Icon: BookOpen },
+                                    ] as const).map(opt => {
+                                        const active = formData[opt.key as keyof InterviewData] === 'true';
+                                        return (
+                                            <label key={opt.key} className="flex items-center gap-3 cursor-pointer group">
+                                                <div
+                                                    onClick={() => setFormData(p => ({ ...p, [opt.key]: active ? 'false' : 'true' }))}
+                                                    className={`w-10 h-5 rounded-full transition-colors duration-300 relative flex-shrink-0 ${active ? 'bg-amber-500' : 'bg-neutral-200 dark:bg-neutral-700'}`}
+                                                >
+                                                    <div className={`absolute top-0.5 w-4 h-4 rounded-full bg-white shadow transition-transform duration-300 ${active ? 'translate-x-5' : 'translate-x-0.5'}`} />
+                                                </div>
+                                                <opt.Icon className="w-3.5 h-3.5 text-neutral-400 flex-shrink-0" />
+                                                <span className="text-xs text-neutral-600 dark:text-neutral-400 group-hover:text-neutral-900 dark:group-hover:text-neutral-100 transition-colors">
+                                                    {t(`career_advisor.interview.setup.${opt.labelKey}`)}
+                                                </span>
+                                            </label>
+                                        );
+                                    })}
                                 </div>
                             </div>
                         </div>
                     </div>
 
-                    {/* Section 3: Focus */}
+                    {/* Section 4: Focus */}
                     <div className="space-y-10 group">
                         <div className="flex items-center gap-4 opacity-70 group-focus-within:opacity-100 transition-opacity">
-                            <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-amber-600 dark:text-amber-500">03</span>
+                            <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-amber-600 dark:text-amber-500">04</span>
                             <div className="h-px flex-1 bg-neutral-100 dark:bg-neutral-800" />
                             <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-neutral-400">{t('career_advisor.interview.setup.focus')}</span>
                         </div>

@@ -36,6 +36,8 @@ use App\Http\Controllers\{AddressController,
     CareerAdvisor\CoverLetterController,
     CareerAdvisor\CVAdvisorController,
     CareerAdvisor\InterviewController,
+    CareerAdvisor\DeepgramController,
+    CareerAdvisor\HistoryController,
     CareerAdvisor\RoadmapController};
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -260,15 +262,22 @@ Route::prefix('career-advisor')->group(function () {
         Route::get('/setup', function () { return Inertia::render('CareerAdvisor/Interview/Setup'); })->name('setup');
         Route::get('/session', function () { return Inertia::render('CareerAdvisor/Interview/Session'); })->name('session');
         Route::get('/report', function () { return Inertia::render('CareerAdvisor/Interview/Report'); })->name('report');
-        Route::post('/start', [InterviewController::class, 'startSession'])->name('start');
-        Route::post('/respond', [InterviewController::class, 'respond'])->name('respond');
+        Route::post('/prepare', [InterviewController::class, 'prepare'])->name('prepare');
+        Route::post('/evaluate', [InterviewController::class, 'evaluate'])->name('evaluate');
         Route::post('/generate-report', [InterviewController::class, 'generateReport'])->name('generate-report');
+        Route::get('/deepgram-token', [DeepgramController::class, 'getToken'])->name('deepgram-token');
+        Route::post('/tts', [DeepgramController::class, 'tts'])->name('tts');
+        Route::get('/tts-test', fn() => inertia('CareerAdvisor/Interview/TtsTest'))->name('tts-test');
     });
 
     Route::prefix('roadmap')->name('career-advisor.roadmap.')->group(function () {
         Route::get('/', function () { return Inertia::render('CareerAdvisor/Roadmap/Generator'); })->name('index');
         Route::post('/generate', [RoadmapController::class, 'generate'])->name('generate');
     });
+
+    // History
+    Route::get('/history', [HistoryController::class, 'index'])->name('career-advisor.history.index');
+    Route::delete('/history/{id}', [HistoryController::class, 'destroy'])->name('career-advisor.history.destroy');
 });
     Route::get('/cv/{id}/download', [CvInfosController::class, 'downloadPdf'])->name('cv.download');
 

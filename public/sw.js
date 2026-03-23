@@ -96,13 +96,20 @@ self.addEventListener('fetch', event => {
                         return response;
                     }
                 ).catch(error => {
-                    console.error('Erreur de fetch:', error);
-                    // Retourner une réponse basique pour éviter l'erreur uncaught
-                    return new Response('Erreur réseau', {
-                        status: 408,
-                        headers: new Headers({
-                            'Content-Type': 'text/plain'
-                        })
+                    console.warn('Service Worker fetch error:', url, error.message);
+                    // Try to return cached version as fallback
+                    return caches.match(event.request).then(cachedResponse => {
+                        if (cachedResponse) {
+                            return cachedResponse;
+                        }
+                        // No cache available — let the error propagate naturally
+                        return new Response('Network error', {
+                            status: 503,
+                            statusText: 'Service Unavailable',
+                            headers: new Headers({
+                                'Content-Type': 'text/plain'
+                            })
+                        });
                     });
                 });
             })

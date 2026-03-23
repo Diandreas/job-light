@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use HelgeSverre\Mistral\Mistral;
+use App\Models\ChatHistory;
 
 class RoadmapController extends Controller
 {
@@ -58,13 +59,27 @@ EOT;
 
             // HelgeSverre/Mistral returns a DTO or array depending on the version,
             // but for JSON format we should ensure we get the content string safely.
-            // Using object() to get the parsed Saloon Response
-            $responseData = $response->object();
-            $jsonContent = $responseData->choices[0]->message->content ?? '';
+            $dto = $response->dto();
+            $jsonContent = $dto->choices[0]->message->content ?? '';
             $data = json_decode($jsonContent, true);
 
             if (!$data || !isset($data['phases'])) {
                 throw new \Exception("Invalid JSON response from AI.");
+            }
+
+            // Save to history — isolated so a DB failure never blocks the response
+            try {
+                ChatHistory::create([
+                    'user_id'         => auth()->id(),
+                    'context'         => 'roadmap',
+                    'context_id'      => \Illuminate\Support\Str::limit($goal, 30),
+                    'messages'        => $messages,
+                    'structured_data' => $data,
+                    'service_id'      => 'mistral',
+                    'tokens_used'     => $dto->usage->totalTokens ?? 0,
+                ]);
+            } catch (\Exception $dbError) {
+                Log::error("Roadmap history save failed: " . $dbError->getMessage());
             }
 
             return response()->json($data);

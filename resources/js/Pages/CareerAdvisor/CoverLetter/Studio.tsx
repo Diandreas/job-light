@@ -28,12 +28,13 @@ import {
     Target, Zap, PenTool, SpellCheck, Minimize2, Maximize2,
     FileDown, Users, Briefcase, Building2, User, BookOpen,
     BarChart3, Hash, AlignLeft, TrendingUp, Info, Mic,
-    ChevronRight
+    ChevronRight, History as HistoryIcon
 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { motion, AnimatePresence } from 'framer-motion';
 import { toast } from 'sonner';
 import { cn } from "@/lib/utils";
+import HistoryDrawer from '@/Components/ai/HistoryDrawer';
 import { useEditor, EditorContent } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
 import Underline from '@tiptap/extension-underline';
@@ -357,6 +358,7 @@ export default function Studio({ auth }) {
     const [isSaving, setIsSaving] = useState(false);
     const [isExporting, setIsExporting] = useState(false);
     const [showContextPanel, setShowContextPanel] = useState(true);
+    const [isHistoryOpen, setIsHistoryOpen] = useState(false);
     const [letterTitle, setLetterTitle] = useState(
         context.company ? `Lettre — ${context.jobTitle} @ ${context.company}` : 'Lettre de motivation'
     );
@@ -391,6 +393,25 @@ export default function Studio({ auth }) {
             editor.commands.setContent(content);
         }
     }, [content, editor]);
+
+    // Load history from sidebar click
+    useEffect(() => {
+        const historyData = sessionStorage.getItem('load_history_cover_letter');
+        if (historyData && editor) {
+            try {
+                const parsedData = JSON.parse(historyData);
+                if (parsedData.content) {
+                    setContent(parsedData.content);
+                }
+                if (parsedData.context) {
+                    setContext(parsedData.context);
+                }
+            } catch (e) {
+                console.error("Failed to load history data for cover letter", e);
+            }
+            sessionStorage.removeItem('load_history_cover_letter');
+        }
+    }, [editor]);
 
     // Quality analysis (algorithmic, no tokens)
     const quality = useMemo(() => {
@@ -579,6 +600,23 @@ export default function Studio({ auth }) {
             <Head title="Studio — Lettre de motivation" />
 
             <div className="h-[calc(100vh-50px)] flex bg-neutral-50 dark:bg-neutral-950 overflow-hidden">
+                <HistoryDrawer 
+                    isOpen={isHistoryOpen} 
+                    onClose={() => setIsHistoryOpen(false)}
+                    context="cover_letter"
+                    title="Historique des Lettres"
+                    onSelect={(item) => {
+                        if (item.structured_data && item.structured_data.content) {
+                            setContent(item.structured_data.content);
+                            if (item.structured_data.context) {
+                                setContext(item.structured_data.context);
+                            }
+                            toast.success("Ancienne lettre chargée.");
+                        } else {
+                            toast.error("Données d'historique invalides.");
+                        }
+                    }}
+                />
 
                 {/* ─── LEFT SIDEBAR — AI Assistant ─── */}
                 <div className="w-[280px] bg-white dark:bg-neutral-900 border-r border-neutral-100 dark:border-neutral-800 flex-shrink-0 flex flex-col hidden lg:flex">
@@ -732,7 +770,16 @@ export default function Studio({ auth }) {
                             </div>
                         </div>
                         <div className="flex items-center gap-3 flex-shrink-0">
-                            {/* Mobile AI toggle */}
+                            {/* Historique Button */}
+                            <LuxuryButton variant="ghost" size="sm" className="hidden lg:flex h-8 px-3" onClick={() => setIsHistoryOpen(true)}>
+                                <HistoryIcon className="w-3.5 h-3.5 mr-1.5" />
+                                <span className="text-xs font-bold text-neutral-600 dark:text-neutral-300">Historique</span>
+                            </LuxuryButton>
+                            
+                            {/* Mobile AI & History toggle */}
+                            <LuxuryButton variant="ghost" size="sm" className="lg:hidden h-8 px-2" onClick={() => setIsHistoryOpen(true)}>
+                                <HistoryIcon className="w-3.5 h-3.5 mr-1" />
+                            </LuxuryButton>
                             <LuxuryButton variant="ghost" size="sm" className="lg:hidden h-8 px-3" onClick={() => setShowContextPanel(!showContextPanel)}>
                                 <Sparkles className="w-3.5 h-3.5 mr-1.5" />
                                 <span className="text-xs">IA</span>

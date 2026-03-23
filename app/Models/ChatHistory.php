@@ -11,12 +11,14 @@ class ChatHistory extends Model
         'context_id',
         'context',
         'messages',
+        'structured_data',
         'service_id',
         'tokens_used'
     ];
 
     protected $casts = [
-        'messages' => 'array'
+        'messages' => 'array',
+        'structured_data' => 'array'
     ];
 
     public function user()

@@ -5,13 +5,15 @@ import { LuxuryButton } from '@/Components/ui/luxury/Button';
 import { LuxuryCard } from '@/Components/ui/luxury/Card';
 import { useTranslation } from 'react-i18next';
 import { luxuryTheme } from '@/design-system/luxury-theme';
-import { CheckCircle, XCircle, ArrowRight, Share2, Download, Award, Target, Zap, Clock } from 'lucide-react';
+import { CheckCircle, ArrowRight, Share2, Download, Award, Target, Zap, History } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { cn } from "@/lib/utils";
+import HistoryDrawer from '@/Components/ai/HistoryDrawer';
 
 export default function Report({ auth }) {
     const { t, i18n } = useTranslation();
-    const [report, setReport] = useState<any>(null);
+    const [report, setReport]           = useState<any>(null);
+    const [historyOpen, setHistoryOpen] = useState(false);
 
     useEffect(() => {
         const savedReport = sessionStorage.getItem('interviewReport');
@@ -19,8 +21,14 @@ export default function Report({ auth }) {
             try {
                 const parsed = JSON.parse(savedReport);
                 setReport({
-                    ...parsed,
-                    date: new Date().toLocaleDateString(i18n.language === 'fr' ? 'fr-FR' : 'en-US', { day: 'numeric', month: 'long', year: 'numeric' })
+                    score:             parsed.score ?? 0,
+                    rejected:          parsed.rejected ?? false,
+                    rejection_message: parsed.rejection_message ?? null,
+                    strengths:         parsed.strengths ?? [],
+                    weaknesses:        parsed.weaknesses ?? [],
+                    metrics:           parsed.metrics ?? [],
+                    transcript:        parsed.transcript ?? [],
+                    date:              new Date().toLocaleDateString(i18n.language === 'fr' ? 'fr-FR' : 'en-US', { day: 'numeric', month: 'long', year: 'numeric' })
                 });
             } catch (e) {
                 console.error("Failed to parse report data", e);
@@ -59,6 +67,19 @@ export default function Report({ auth }) {
             <div className="min-h-screen bg-neutral-50 dark:bg-neutral-950 py-20 px-6 sm:px-10 relative overflow-hidden">
                 <div className="max-w-5xl mx-auto relative z-10">
 
+                    {/* Rejection banner */}
+                    {report.rejected && (
+                        <motion.div
+                            initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }}
+                            className="mb-12 p-8 rounded-3xl border border-red-200 dark:border-red-900/30 bg-red-50 dark:bg-red-950/20 text-center"
+                        >
+                            <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-red-400 mb-3">Résultat de l'entretien</p>
+                            <p className="text-red-700 dark:text-red-300 text-sm leading-relaxed max-w-xl mx-auto">
+                                {report.rejection_message ?? "Suite à votre entretien, nous avons décidé de ne pas donner suite à votre candidature. Nous vous encourageons à continuer à vous entraîner pour progresser."}
+                            </p>
+                        </motion.div>
+                    )}
+
                     {/* Header */}
                     <div className="flex flex-col md:flex-row justify-between items-end mb-20 gap-8 text-left">
                         <div>
@@ -69,11 +90,11 @@ export default function Report({ auth }) {
                             <p className="text-neutral-500 font-light mt-4 tracking-widest text-xs uppercase">{report.date} • Session #842</p>
                         </div>
                         <div className="flex gap-4">
+                            <LuxuryButton variant="ghost" className="rounded-full px-6 border-neutral-200 dark:border-neutral-800" onClick={() => setHistoryOpen(true)}>
+                                <History className="w-4 h-4 mr-3" /> Historique
+                            </LuxuryButton>
                             <LuxuryButton variant="ghost" className="rounded-full px-6 border-neutral-200 dark:border-neutral-800">
                                 <Share2 className="w-4 h-4 mr-3" /> {t('career_advisor.interview.report.share')}
-                            </LuxuryButton>
-                            <LuxuryButton variant="primary" className="rounded-full px-8">
-                                <Download className="w-4 h-4 mr-3" /> {t('career_advisor.interview.report.export')}
                             </LuxuryButton>
                         </div>
                     </div>
@@ -188,6 +209,26 @@ export default function Report({ auth }) {
                     </div>
                 </div>
             </div>
+
+            <HistoryDrawer
+                isOpen={historyOpen}
+                onClose={() => setHistoryOpen(false)}
+                context="interview_session"
+                title="Entretiens passés"
+                onSelect={(item) => {
+                    const data = item.structured_data;
+                    if (!data) return;
+                    setReport({
+                        score:      data.score ?? 0,
+                        strengths:  data.strengths ?? [],
+                        weaknesses: data.weaknesses ?? [],
+                        metrics:    data.metrics ?? [],
+                        transcript: data.transcript ?? [],
+                        date: new Date(item.created_at).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' }),
+                    });
+                    setHistoryOpen(false);
+                }}
+            />
         </AuthenticatedLayout>
     );
 }

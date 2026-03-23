@@ -11,6 +11,7 @@ use HelgeSverre\Mistral\Enums\Role;
 use PhpOffice\PhpWord\PhpWord;
 use PhpOffice\PhpWord\IOFactory;
 use Barryvdh\DomPDF\Facade\Pdf;
+use App\Models\ChatHistory;
 
 class CoverLetterController extends Controller
 {
@@ -56,9 +57,11 @@ class CoverLetterController extends Controller
                     maxTokens: 2000
                 );
 
+                $fullContent = '';
                 foreach ($stream as $chunk) {
                     $content = $chunk->choices[0]->delta->content ?? '';
                     if ($content) {
+                        $fullContent .= $content;
                         echo "data: " . json_encode(['content' => $content]) . "\n\n";
                         if (ob_get_level()) ob_flush();
                         flush();
@@ -67,6 +70,27 @@ class CoverLetterController extends Controller
                 echo "data: [DONE]\n\n";
                 if (ob_get_level()) ob_flush();
                 flush();
+
+                // Save full letter history ONLY if it's a full letter generation
+                // Isolated try/catch so a DB failure never blocks the SSE response
+                if ($section === 'full_letter') {
+                    try {
+                        ChatHistory::create([
+                            'user_id'         => auth()->id(),
+                            'context'         => 'cover_letter',
+                            'context_id'      => \Illuminate\Support\Str::limit($context['jobTitle'] ?? 'Lettre', 30),
+                            'messages'        => $messages,
+                            'structured_data' => [
+                                'content'       => $fullContent,
+                                'setup_context' => $context,
+                            ],
+                            'service_id'  => 'mistral',
+                            'tokens_used' => 0,
+                        ]);
+                    } catch (\Exception $dbError) {
+                        Log::error("CoverLetter history save failed: " . $dbError->getMessage());
+                    }
+                }
 
             } catch (\Exception $e) {
                 Log::error("CoverLetter Generation Error: " . $e->getMessage());

@@ -4,10 +4,11 @@ import { Head } from '@inertiajs/react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { LuxuryButton } from '@/Components/ui/luxury/Button';
 import { luxuryTheme } from '@/design-system/luxury-theme';
-import { BarChart3, Sparkles, CheckCircle2, RotateCw, AlertCircle, FileText, Send, Loader2 } from 'lucide-react';
+import { BarChart3, Sparkles, CheckCircle2, RotateCw, AlertCircle, FileText, Send, Loader2, History as HistoryIcon } from 'lucide-react';
 import { cn } from "@/lib/utils";
 import axios from 'axios';
 import { toast, Toaster } from 'sonner';
+import HistoryDrawer from '@/Components/ai/HistoryDrawer';
 
 // Minimal Fade Animation
 const fadeVariants = {
@@ -83,6 +84,7 @@ export default function CVHeatmap({ auth, cvData, personalInfo }: any) {
     const [isAnalyzing, setIsAnalyzing] = useState(false);
     const [isImproving, setIsImproving] = useState(false);
     const [improvedContent, setImprovedContent] = useState<string>("");
+    const [isHistoryOpen, setIsHistoryOpen] = useState(false);
 
     // Initial algorithmic analysis
     const getInitialSections = (): SectionData[] => {
@@ -137,12 +139,27 @@ export default function CVHeatmap({ auth, cvData, personalInfo }: any) {
 
     // Initialize exactly once
     useEffect(() => {
-        const init = getInitialSections();
-        setSections(init);
-        setSelectedSection(init[0]);
-    }, []);
+        const historyData = sessionStorage.getItem('load_history_cv');
+        if (historyData) {
+            try {
+                const parsedSections: SectionData[] = JSON.parse(historyData);
+                setSections(parsedSections);
+                setSelectedSection(parsedSections[0] || null);
+            } catch (e) {
+                console.error("Failed to parse history data", e);
+                const initial = getInitialSections();
+                setSections(initial);
+                setSelectedSection(initial[0]);
+            }
+            sessionStorage.removeItem('load_history_cv');
+        } else {
+            const initial = getInitialSections();
+            setSections(initial);
+            setSelectedSection(initial[0]);
+        }
+    }, [cvData, personalInfo]);
 
-    const averageScore = sections.length > 0 ? Math.round(sections.reduce((acc, curr) => acc + curr.score, 0) / sections.length) : 0;
+    const averageScore = sections.length > 0 ? Math.round(sections.reduce((acc, curr) => acc + (curr.score || 0), 0) / sections.length) : 0;
 
     const handleDeepAnalysis = async () => {
         setIsAnalyzing(true);
@@ -264,7 +281,51 @@ export default function CVHeatmap({ auth, cvData, personalInfo }: any) {
 
             <div className="min-h-screen bg-neutral-50 dark:bg-neutral-950 py-20 px-6 sm:px-10 lg:px-16 relative overflow-hidden">
                 <div className="max-w-7xl mx-auto relative z-10">
-                    <div className="flex flex-col lg:flex-row justify-between items-start lg:items-end mb-16 gap-8">
+                    <HistoryDrawer 
+                        isOpen={isHistoryOpen} 
+                        onClose={() => setIsHistoryOpen(false)}
+                        context="cv_analysis"
+                        title="Historique des Analyses"
+                        onSelect={(item) => {
+                            if (item.structured_data) {
+                                const aiData = item.structured_data;
+                                setSections(prev => prev.map(sec => {
+                                    const aiResult = aiData[sec.id];
+                                    if (aiResult && sec.id !== 'contact') {
+                                        return {
+                                            ...sec,
+                                            score: aiResult.score_ia || sec.score,
+                                            feedback: aiResult.feedback || sec.feedback,
+                                            improvements: aiResult.improvements || sec.improvements,
+                                            isAiAnalyzed: true
+                                        };
+                                    }
+                                    return sec;
+                                }));
+                                // Reset selected
+                                setSelectedSection(prev => {
+                                    if (!prev) return null;
+                                    const aiResult = aiData[prev.id];
+                                    if (aiResult && prev.id !== 'contact') {
+                                        return { ...prev, score: aiResult.score_ia, feedback: aiResult.feedback, improvements: aiResult.improvements, isAiAnalyzed: true };
+                                    }
+                                    return prev;
+                                });
+                                toast.success("Ancienne analyse chargée.");
+                            }
+                        }}
+                    />
+
+                    <div className="flex flex-col lg:flex-row justify-between items-start lg:items-end mb-16 gap-8 relative">
+                        <div className="absolute right-0 top-0 lg:-top-12">
+                            <button 
+                                onClick={() => setIsHistoryOpen(true)}
+                                className="flex items-center gap-2 px-4 py-2 bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-full hover:shadow-md transition-all text-xs font-bold text-neutral-600 dark:text-neutral-300"
+                            >
+                                <HistoryIcon className="w-4 h-4" />
+                                Historique
+                            </button>
+                        </div>
                         <div>
                             <p className="text-[10px] text-neutral-400 uppercase tracking-[0.3em] font-bold mb-3">Moteur d'Analyse CV</p>
                             <h1 className="text-4xl md:text-5xl font-bold text-neutral-900 dark:text-neutral-50 leading-tight tracking-tighter">

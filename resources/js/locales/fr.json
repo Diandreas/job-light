@@ -904,6 +904,9 @@
                 "context_step": "Contexte Professionnel",
                 "target_role": "Poste / Secteur Visé",
                 "company": "Entreprise / Organisation",
+                "job_description": "Description du poste",
+                "optional": "(optionnel)",
+                "job_description_placeholder": "Collez l'offre d'emploi ou décrivez les attentes du poste...",
                 "tech_config": "Configuration Technique",
                 "type": "Type d'Entretien",
                 "duration": "Durée Prévue",
@@ -999,7 +1002,15 @@
                     "structuring": "Structuration",
                     "confidence": "Confiance",
                     "technicality": "Technicité"
-                }
+                },
+                "rejection_result": "Résultat de l'entretien",
+                "history": "Historique",
+                "dimension_analysis": "Analyse par dimension",
+                "dim_relevance": "Pertinence",
+                "dim_structure": "Structure",
+                "dim_depth": "Profondeur",
+                "dim_delivery": "Expression",
+                "past_interviews": "Entretiens passés"
             }
         },
         "roadmap": {

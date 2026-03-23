@@ -74,7 +74,7 @@ class CareerAdvisorController extends Controller
                     'context_id' => $chat->context_id,
                     'service_id' => $chat->service_id,
                     'created_at' => $chat->created_at,
-                    'messages' => json_decode($chat->messages),
+                    'messages' => $chat->messages,
                 ];
             });
 

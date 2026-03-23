@@ -853,6 +853,9 @@
                 "context_step": "Contextual Background",
                 "target_role": "Target Role / Industry",
                 "company": "Company / Organization",
+                "job_description": "Job description",
+                "optional": "(optional)",
+                "job_description_placeholder": "Paste the job offer or describe the position's requirements...",
                 "tech_config": "Technical Configuration",
                 "type": "Interview Type",
                 "duration": "Planned Duration",
@@ -948,7 +951,15 @@
                     "structuring": "Structuring",
                     "confidence": "Confidence",
                     "technicality": "Technicality"
-                }
+                },
+                "rejection_result": "Interview Result",
+                "history": "History",
+                "dimension_analysis": "Dimension Analysis",
+                "dim_relevance": "Relevance",
+                "dim_structure": "Structure",
+                "dim_depth": "Depth",
+                "dim_delivery": "Delivery",
+                "past_interviews": "Past Interviews"
             }
         },
         "roadmap": {

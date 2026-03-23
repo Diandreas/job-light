@@ -21,14 +21,15 @@ export default function Report({ auth }) {
             try {
                 const parsed = JSON.parse(savedReport);
                 setReport({
-                    score:             parsed.score ?? 0,
-                    rejected:          parsed.rejected ?? false,
-                    rejection_message: parsed.rejection_message ?? null,
-                    strengths:         parsed.strengths ?? [],
-                    weaknesses:        parsed.weaknesses ?? [],
-                    metrics:           parsed.metrics ?? [],
-                    transcript:        parsed.transcript ?? [],
-                    date:              new Date().toLocaleDateString(i18n.language === 'fr' ? 'fr-FR' : 'en-US', { day: 'numeric', month: 'long', year: 'numeric' })
+                    score:              parsed.score ?? 0,
+                    rejected:           parsed.rejected ?? false,
+                    rejection_message:  parsed.rejection_message ?? null,
+                    strengths:          parsed.strengths ?? [],
+                    weaknesses:         parsed.weaknesses ?? [],
+                    metrics:            parsed.metrics ?? [],
+                    transcript:         parsed.transcript ?? [],
+                    client_dimensions:  parsed.client_dimensions ?? null,
+                    date:               new Date().toLocaleDateString(i18n.language === 'fr' ? 'fr-FR' : 'en-US', { day: 'numeric', month: 'long', year: 'numeric' })
                 });
             } catch (e) {
                 console.error("Failed to parse report data", e);
@@ -73,7 +74,7 @@ export default function Report({ auth }) {
                             initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }}
                             className="mb-12 p-8 rounded-3xl border border-red-200 dark:border-red-900/30 bg-red-50 dark:bg-red-950/20 text-center"
                         >
-                            <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-red-400 mb-3">Résultat de l'entretien</p>
+                            <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-red-400 mb-3">{t('career_advisor.interview.report.rejection_result')}</p>
                             <p className="text-red-700 dark:text-red-300 text-sm leading-relaxed max-w-xl mx-auto">
                                 {report.rejection_message ?? "Suite à votre entretien, nous avons décidé de ne pas donner suite à votre candidature. Nous vous encourageons à continuer à vous entraîner pour progresser."}
                             </p>
@@ -87,11 +88,11 @@ export default function Report({ auth }) {
                             <h1 className="text-5xl md:text-6xl font-serif text-neutral-900 dark:text-neutral-50 tracking-tight leading-tight">
                                 {t('career_advisor.interview.report.title').split(' ')[0]} <span className="italic font-normal">{t('career_advisor.interview.report.title').split(' ').slice(1).join(' ')}</span>
                             </h1>
-                            <p className="text-neutral-500 font-light mt-4 tracking-widest text-xs uppercase">{report.date} • Session #842</p>
+                            <p className="text-neutral-500 font-light mt-4 tracking-widest text-xs uppercase">{report.date}</p>
                         </div>
                         <div className="flex gap-4">
                             <LuxuryButton variant="ghost" className="rounded-full px-6 border-neutral-200 dark:border-neutral-800" onClick={() => setHistoryOpen(true)}>
-                                <History className="w-4 h-4 mr-3" /> Historique
+                                <History className="w-4 h-4 mr-3" /> {t('career_advisor.interview.report.history')}
                             </LuxuryButton>
                             <LuxuryButton variant="ghost" className="rounded-full px-6 border-neutral-200 dark:border-neutral-800">
                                 <Share2 className="w-4 h-4 mr-3" /> {t('career_advisor.interview.report.share')}
@@ -110,7 +111,7 @@ export default function Report({ auth }) {
                                 </div>
                                 <div className="mt-12">
                                     <div className="text-8xl font-serif leading-none mb-2 text-white">{report.score}</div>
-                                    <div className="text-[10px] uppercase tracking-[0.3em] font-bold opacity-60 text-white/80">Percentile Ranking: Top 30%</div>
+                                    <div className="text-[10px] uppercase tracking-[0.3em] font-bold opacity-60 text-white/80">{report.score >= 75 ? '🏆' : report.score >= 50 ? '📈' : '💪'}</div>
                                 </div>
                             </div>
                         </div>
@@ -139,6 +140,47 @@ export default function Report({ auth }) {
                             </div>
                         </div>
                     </div>
+
+                    {/* Real-time dimension scores from session */}
+                    {report.client_dimensions && (
+                        <div className="mb-20 bg-white dark:bg-neutral-900 rounded-[3rem] p-12 border border-neutral-100 dark:border-neutral-800 shadow-xl">
+                            <h3 className="text-[10px] font-bold text-neutral-400 uppercase tracking-[0.3em] mb-10">{t('career_advisor.interview.report.dimension_analysis')}</h3>
+                            <div className="grid grid-cols-2 md:grid-cols-4 gap-10">
+                                {[
+                                    { key: 'relevance', label: t('career_advisor.interview.report.dim_relevance') },
+                                    { key: 'structure', label: t('career_advisor.interview.report.dim_structure') },
+                                    { key: 'depth',     label: t('career_advisor.interview.report.dim_depth') },
+                                    { key: 'delivery',  label: t('career_advisor.interview.report.dim_delivery') },
+                                ].map(({ key, label }) => {
+                                    const val = report.client_dimensions[key] ?? 50;
+                                    const strokeColor = val >= 75 ? '#22c55e' : val >= 50 ? '#f59e0b' : '#f87171';
+                                    const textColor   = val >= 75 ? 'text-green-500' : val >= 50 ? 'text-amber-500' : 'text-red-400';
+                                    const circumference = 2 * Math.PI * 15.9;
+                                    return (
+                                        <div key={key} className="flex flex-col items-center gap-4">
+                                            <div className="relative w-20 h-20">
+                                                <svg viewBox="0 0 36 36" className="w-full h-full -rotate-90">
+                                                    <circle cx="18" cy="18" r="15.9" fill="none" stroke="#e5e7eb" strokeWidth="2.5" />
+                                                    <motion.circle
+                                                        cx="18" cy="18" r="15.9" fill="none" strokeWidth="2.5"
+                                                        stroke={strokeColor} strokeLinecap="round"
+                                                        strokeDasharray={circumference}
+                                                        initial={{ strokeDashoffset: circumference }}
+                                                        animate={{ strokeDashoffset: circumference * (1 - val / 100) }}
+                                                        transition={{ duration: 1.5, ease: 'easeOut', delay: 0.3 }}
+                                                    />
+                                                </svg>
+                                                <div className="absolute inset-0 flex items-center justify-center">
+                                                    <span className={cn("text-lg font-bold tabular-nums", textColor)}>{val}</span>
+                                                </div>
+                                            </div>
+                                            <span className="text-[10px] font-bold uppercase tracking-widest text-neutral-500">{label}</span>
+                                        </div>
+                                    );
+                                })}
+                            </div>
+                        </div>
+                    )}
 
                     <div className="grid md:grid-cols-2 gap-10 mb-20">
                         {/* Strengths */}
@@ -214,7 +256,7 @@ export default function Report({ auth }) {
                 isOpen={historyOpen}
                 onClose={() => setHistoryOpen(false)}
                 context="interview_session"
-                title="Entretiens passés"
+                title={t('career_advisor.interview.report.past_interviews')}
                 onSelect={(item) => {
                     const data = item.structured_data;
                     if (!data) return;

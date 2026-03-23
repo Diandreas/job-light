@@ -55,7 +55,7 @@ const TOOL_CATEGORIES: Omit<ToolHistoryCategory, 'items'>[] = [
     { context: 'cv_analysis', label: 'Analyse CV', icon: FileText, color: 'text-blue-500', route: '/career-advisor/cv-heatmap' },
     { context: 'roadmap', label: 'Roadmap', icon: Route, color: 'text-emerald-500', route: '/career-advisor/roadmap' },
     { context: 'interview_session', label: 'Entretiens', icon: Mic, color: 'text-purple-500', route: '/career-advisor/interview/setup' },
-    { context: 'cover_letter', label: 'Lettres', icon: PenTool, color: 'text-amber-500', route: '/career-advisor/cover-letter' },
+    { context: 'cover_letter', label: 'Lettres', icon: PenTool, color: 'text-amber-500', route: '/career-advisor/cover-letter/studio' },
 ];
 
 /**

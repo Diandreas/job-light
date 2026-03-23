@@ -29,6 +29,7 @@ interface InterviewSimulatorProps {
 interface InterviewData {
     jobTitle: string;
     companyName: string;
+    jobDescription: string;
     interviewType: string;
     duration: string;
     difficulty: string;
@@ -100,6 +101,7 @@ export default function InterviewSimulator({ onSubmit, userInfo, isLoading, init
     const [formData, setFormData] = useState<InterviewData>({
         jobTitle: initialData?.jobTitle || '',
         companyName: initialData?.companyName || '',
+        jobDescription: '',
         interviewType: 'hr',
         duration: '30-45 min',
         difficulty: 'medium',
@@ -263,6 +265,19 @@ export default function InterviewSimulator({ onSubmit, userInfo, isLoading, init
                                     onChange={(e) => setFormData(prev => ({ ...prev, companyName: e.target.value }))}
                                 />
                             </div>
+                        </div>
+                        <div className="space-y-3">
+                            <label className="text-[10px] text-neutral-400 uppercase tracking-widest font-bold">
+                                {t('career_advisor.interview.setup.job_description', 'Description du poste')}
+                                <span className="ml-2 text-neutral-300 dark:text-neutral-600 normal-case tracking-normal">{t('career_advisor.interview.setup.optional', '(optionnel)')}</span>
+                            </label>
+                            <textarea
+                                rows={3}
+                                className="w-full border-x-0 border-t-0 border-b border-neutral-200 dark:border-neutral-800 rounded-none px-0 py-2 focus:outline-none focus:border-amber-500 text-sm bg-transparent transition-all duration-500 placeholder:text-neutral-200 dark:placeholder:text-neutral-800 resize-none"
+                                placeholder={t('career_advisor.interview.setup.job_description_placeholder', 'Collez l\'offre d\'emploi ou décrivez les attentes du poste...')}
+                                value={formData.jobDescription}
+                                onChange={(e) => setFormData(prev => ({ ...prev, jobDescription: e.target.value }))}
+                            />
                         </div>
                     </div>
 

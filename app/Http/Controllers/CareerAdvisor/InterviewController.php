@@ -23,15 +23,15 @@ class InterviewController extends Controller
      */
     public function prepare(Request $request)
     {
-        $jobTitle       = $request->input('jobTitle', 'candidat');
-        $companyName    = $request->input('companyName', 'notre entreprise');
-        $interviewType  = $request->input('interviewType', 'RH');
-        $difficulty     = $request->input('difficulty', 'medium');
-        $focusAreas     = implode(', ', $request->input('focusAreas', []));
-        $duration       = $request->input('duration', '30-45 min');
-        $language       = $request->input('language', 'fr');
+        $jobTitle        = $request->input('jobTitle', 'candidat');
+        $companyName     = $request->input('companyName', 'notre entreprise');
+        $jobDescription  = $request->input('jobDescription', '');
+        $interviewType   = $request->input('interviewType', 'RH');
+        $difficulty      = $request->input('difficulty', 'medium');
+        $focusAreas      = implode(', ', $request->input('focusAreas', []));
+        $duration        = $request->input('duration', '30-45 min');
+        $language        = $request->input('language', 'fr');
 
-        // Keep counts small — large batches cause timeouts on slow connections
         $count = match ($duration) {
             '15-30 min' => 5,
             '45-60 min' => 8,
@@ -45,20 +45,56 @@ class InterviewController extends Controller
             default => 'Français',
         };
 
-        $systemPrompt = "You are an expert recruiter. Generate exactly {$count} interview questions for the role '{$jobTitle}' at '{$companyName}'.
+        // ── Inject candidate CV from authenticated user profile ───────────
+        $user = auth()->user();
+        $cvLines = [];
+        if ($user) {
+            $name = $user->name;
+            if ($name) $cvLines[] = "Candidate: {$name}";
+
+            $profession = $user->full_profession ?? $user->profession?->name ?? null;
+            if ($profession) $cvLines[] = "Current role: {$profession}";
+
+            $exps = $user->experiences()
+                ->orderBy('date_start', 'desc')
+                ->take(8)
+                ->get();
+            if ($exps->count()) {
+                $cvLines[] = "Experience:";
+                foreach ($exps as $exp) {
+                    $end = $exp->date_end ?? 'Present';
+                    $desc = $exp->description ? ' — ' . \Illuminate\Support\Str::limit($exp->description, 150) : '';
+                    $cvLines[] = "  • {$exp->name} @ {$exp->InstitutionName} ({$exp->date_start}–{$end}){$desc}";
+                }
+            }
+
+            $skills = $user->competences()->take(10)->pluck('name')->toArray();
+            if ($skills) $cvLines[] = "Skills: " . implode(', ', $skills);
+
+            $langs = $user->languages()->get()->map(fn($l) => $l->name . ' (' . ($l->pivot->level ?? 'B2') . ')')->toArray();
+            if ($langs) $cvLines[] = "Languages: " . implode(', ', $langs);
+        }
+        $cvSection    = $cvLines ? "\n\nCANDIDATE PROFILE (use this to ask targeted, personalised questions):\n" . implode("\n", $cvLines) : '';
+        $jobDescLine  = $jobDescription ? "\n\nJOB POSTING:\n{$jobDescription}" : '';
+
+        $systemPrompt = "You are an expert senior recruiter conducting a rigorous interview.
+Generate exactly {$count} interview questions for the role '{$jobTitle}' at '{$companyName}'.{$cvSection}{$jobDescLine}
+
 Interview type: {$interviewType}. Difficulty: {$difficulty}. Focus areas: {$focusAreas}.
+
 Rules:
-- Always start with a brief welcome + \"Tell me about yourself\" as the very first question.
-- Progress from simple to complex.
-- Questions must be realistic and targeted for this specific role.
-- Write questions in {$lang}.
+- Start with a brief personalised welcome using the candidate's name (if known) + \"Tell me about yourself\" as Q1.
+- Make questions highly specific: reference the candidate's actual companies, job titles, or skills from their CV.
+- Progress from simple/biographical to complex/challenging.
+- If a job posting is provided, align questions tightly with its requirements." . ($cvLines ? "\n- Challenge the candidate on gaps or transitions visible in their CV." : '') . "
+- Write ALL questions in {$lang}.
 RESPOND ONLY IN JSON: {\"questions\": [\"Q1\", \"Q2\", ...]}";
 
         try {
-            // mistral-small — 3-5x faster than large, plenty capable for question lists
+            // mistral-large — best quality for personalised question generation
             $response = $this->mistral->chat()->create(
                 messages: [['role' => 'system', 'content' => $systemPrompt]],
-                model: 'mistral-small-latest',
+                model: 'mistral-large-latest',
                 temperature: 0.5,
                 responseFormat: ['type' => 'json_object']
             );
@@ -114,12 +150,19 @@ RESPOND ONLY IN JSON: {\"questions\": [\"Q1\", \"Q2\", ...]}";
 Question asked: \"{$question}\"
 Candidate's answer: \"{$answer}\"
 
-Evaluate the answer and respond ONLY IN JSON:
+Evaluate the answer and respond ONLY IN JSON — no markdown, no explanation:
 {
-    \"score_delta\": <integer between -15 and 10>,
-    \"comment\": \"<What you say to the candidate — 1 to 2 short sentences, stay in character as the interviewer>\",
-    \"feedback\": \"<Private coaching tip for the learner — what they should improve>\",
-    \"pass\": <true or false — whether to move to the next question>
+    \"score_delta\": <integer -15 to +10, negative if weak answer>,
+    \"comment\": \"<1-2 short sentences spoken aloud as the interviewer — stay in character>\",
+    \"feedback\": \"<Private coaching tip for the learner, NOT spoken>\",
+    \"pass\": <true = move to next planned question, false = answer needs follow-up>,
+    \"adaptive_follow_up\": <if pass=false: a short targeted follow-up question to help the candidate dig deeper OR clarify their answer. If pass=true: null>,
+    \"dimensions\": {
+        \"relevance\": <0-100 — does the answer address the question?>,
+        \"structure\": <0-100 — logical flow, STAR method, clarity?>,
+        \"depth\": <0-100 — specific examples, concrete details?>,
+        \"delivery\": <0-100 — confidence, conciseness, no filler?>
+    }
 }
 Write everything in {$lang}.";
 
@@ -136,10 +179,12 @@ Write everything in {$lang}.";
             $result = json_decode($dto->choices[0]->message->content ?? '{}', true);
 
             return response()->json(array_merge([
-                'score_delta' => 0,
-                'comment'     => '',
-                'feedback'    => '',
-                'pass'        => true,
+                'score_delta'          => 0,
+                'comment'              => '',
+                'feedback'             => '',
+                'pass'                 => true,
+                'adaptive_follow_up'   => null,
+                'dimensions'           => ['relevance' => 50, 'structure' => 50, 'depth' => 50, 'delivery' => 50],
             ], $result ?? []));
 
         } catch (\Exception $e) {

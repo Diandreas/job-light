@@ -6,7 +6,7 @@ import { Textarea } from "@/Components/ui/textarea";
 import { Progress } from "@/Components/ui/progress";
 import { Card, CardHeader, CardTitle, CardContent } from "@/Components/ui/card";
 import { useToast } from "@/Components/ui/use-toast";
-import { useMedian } from '@/hooks/useMedian';
+import { useMedian } from '@/Hooks/useMedian';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { ScrollArea } from "@/Components/ui/scroll-area";
 import { AnimatePresence, motion } from 'framer-motion';

@@ -1,4 +1,4 @@
-const CACHE_NAME = 'guidy-v2';
+const CACHE_NAME = 'guidy-v4';
 const urlsToCache = [
     '/',
     '/index.php',
@@ -8,111 +8,52 @@ const urlsToCache = [
     '/manifest.json'
 ];
 
-// Liste des URL à ne pas intercepter
-const urlsToIgnore = [
-    '/auth/',
-    '/login',
-    '/callback',
-    '/api/auth',
-    '/sanctum',
-    '/csrf-cookie'
-];
+// Ne jamais intercepter : POST, API, paiement, auth, Inertia
+function shouldPassThrough(request, url) {
+    if (request.method !== 'GET') return true;
+    const path = new URL(url).pathname;
+    const blocked = [
+        '/api/', '/payment', '/auth/', '/login', '/logout',
+        '/callback', '/sanctum', '/csrf-cookie', '/webhook',
+        '/career-advisor', '/cv-infos', '/profile',
+    ];
+    return blocked.some(p => path.startsWith(p));
+}
 
 // Installation du service worker
 self.addEventListener('install', event => {
-    self.skipWaiting(); // Force activation immediately
+    self.skipWaiting();
     event.waitUntil(
         caches.open(CACHE_NAME)
-            .then(cache => {
-                return cache.addAll(urlsToCache);
-            })
-            .catch(error => {
-                console.error('Erreur durant la mise en cache des ressources initiales:', error);
-            })
+            .then(cache => cache.addAll(urlsToCache))
+            .catch(() => {})
     );
 });
 
-// Vérifie si une URL doit être ignorée par le Service Worker
-function shouldIgnoreRequest(url) {
-    return urlsToIgnore.some(ignoreUrl => url.includes(ignoreUrl));
-}
-
-// Récupération des ressources
+// Récupération des ressources — uniquement assets statiques
 self.addEventListener('fetch', event => {
     const url = event.request.url;
 
-    // Ignorer les requêtes avec un schéma non supporté (ex: chrome-extension://)
-    if (!url.startsWith('http')) {
-        return;
-    }
+    if (!url.startsWith('http')) return;
 
-    // Ignorer les requêtes liées à l'authentification
-    if (shouldIgnoreRequest(url)) {
-        return;
-    }
+    // Laisser passer sans interception : tout sauf les assets statiques
+    if (shouldPassThrough(event.request, url)) return;
+
+    // Uniquement mettre en cache les assets statiques (js, css, images)
+    const isStaticAsset = /\.(js|css|png|jpg|jpeg|svg|gif|ico|woff2?)(\?.*)?$/.test(url);
+    if (!isStaticAsset) return;
 
     event.respondWith(
-        caches.match(event.request)
-            .then(response => {
-                // Cache hit - retourne la réponse du cache
-                if (response) {
-                    return response;
+        caches.match(event.request).then(cached => {
+            if (cached) return cached;
+            return fetch(event.request).then(response => {
+                if (response && response.status === 200 && response.type === 'basic') {
+                    const clone = response.clone();
+                    caches.open(CACHE_NAME).then(cache => cache.put(event.request, clone));
                 }
-
-                // Clonage de la requête pour pouvoir l'utiliser à la fois pour le fetch et le cache
-                const fetchRequest = event.request.clone();
-
-                return fetch(fetchRequest).then(
-                    response => {
-                        // Ne pas mettre en cache les réponses non valides
-                        if (!response || response.status !== 200) {
-                            return response;
-                        }
-
-                        // Ne pas mettre en cache les requêtes cross-origin
-                        // On peut mettre en cache des ressources non-basic si nécessaire
-                        if (response.type !== 'basic' && response.type !== 'cors') {
-                            return response;
-                        }
-
-                        // Clonage de la réponse pour la mettre en cache et la renvoyer
-                        const responseToCache = response.clone();
-
-                        // Mise en cache stratégique : on ajoute les JS, CSS et images au cache
-                        if (url.endsWith('.js') || url.endsWith('.css') ||
-                            url.endsWith('.png') || url.endsWith('.jpg') ||
-                            url.endsWith('.jpeg') || url.endsWith('.svg') ||
-                            url.endsWith('.gif')) {
-
-                            caches.open(CACHE_NAME)
-                                .then(cache => {
-                                    cache.put(event.request, responseToCache);
-                                })
-                                .catch(error => {
-                                    console.error('Erreur durant la mise en cache de:', url, error);
-                                });
-                        }
-
-                        return response;
-                    }
-                ).catch(error => {
-                    console.warn('Service Worker fetch error:', url, error.message);
-                    // Try to return cached version as fallback
-                    return caches.match(event.request).then(cachedResponse => {
-                        if (cachedResponse) {
-                            return cachedResponse;
-                        }
-                        // No cache available — let the error propagate naturally
-                        return new Response('Network error', {
-                            status: 503,
-                            statusText: 'Service Unavailable',
-                            headers: new Headers({
-                                'Content-Type': 'text/plain'
-                            })
-                        });
-                    });
-                });
-            })
+                return response;
+            });
+        })
     );
 });
 

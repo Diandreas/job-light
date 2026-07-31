@@ -4,6 +4,7 @@ use App\Http\Controllers\{AddressController,
     CareerAdvisorController,
     ChatHistoryController,
     CompetenceController,
+    CrossPayController,
     CvColorController,
     CvInfosController,
     CvModelController,
@@ -303,6 +304,9 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/api/notchpay/initialize', [NotchPayController::class, 'initializePayment']);
     // Route CinetPay d'initialisation (option de backup)
     Route::post('/api/cinetpay/initialize', [CinetPayController::class, 'initialize']);
+    // Routes Cross Payment Service (Mobile Money MTN / Orange)
+    Route::post('/api/crosspay/cashin', [CrossPayController::class, 'cashin'])->name('api.crosspay.cashin');
+    Route::get('/api/crosspay/verify', [CrossPayController::class, 'verify'])->name('api.crosspay.verify');
 
     Route::post('/api/cv/update-color', [CvColorController::class, 'updateColor'])->name('cv.updateColor');
 

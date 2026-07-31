@@ -136,6 +136,38 @@
         "cta_start": "Accéder à l'assistant",
         "pro_label": "Fonctionnalité Premium"
     },
+    "ai_artifacts": {
+        "score_dashboard": "Évaluation IA",
+        "checklist": "Plan d'action",
+        "roadmap": "Feuille de route",
+        "table": "Tableau de données",
+        "chart": "Visualisation",
+        "heatmap": "Carte de chaleur",
+        "dashboard": "Tableau de bord IA",
+        "timer": "Chronomètre",
+        "cv_analysis": "Analyse Visuelle de votre CV",
+        "interview_simulator": "Simulateur d'Entretien IA",
+        "salary_negotiator": "Assistant Négociation Salariale",
+        "ats_analyzer": "Analyseur ATS Intelligence",
+        "career_planner": "Planificateur de Carrière IA",
+        "estimated_time": "Temps estimé",
+        "difficulty": {
+            "easy": "Facile",
+            "medium": "Moyen",
+            "hard": "Difficile"
+        },
+        "priorities": {
+            "high": "Haute",
+            "medium": "Moyenne",
+            "low": "Basse"
+        },
+        "categories": {
+            "skill": "Compétence",
+            "experience": "Expérience",
+            "network": "Réseau",
+            "certification": "Certification"
+        }
+    },
     "features": {
         "learn_more": "En savoir plus",
         "cv_designer": {
@@ -2023,9 +2055,17 @@
             "recognition": "Reconnaissance"
         },
         "form": {
+            "step_indicator": "Étape {{current}} / {{total}}",
+            "time_remaining": "~{{minutes}} min restantes",
+            "characters_min_20": "caractères (minimum 20)",
+            "location_preference": "Préférences géographiques",
+            "location_placeholder": "Ex: Paris, télétravail, international...",
+            "salary_expectations": "Attentes salariales (optionnel)",
+            "salary_placeholder": "Ex: 50-60k€, négociable selon projet...",
+            "challenges_title": "Principaux défis à surmonter",
+            "skills_to_develop_title": "Compétences que vous souhaitez développer",
             "current_situation": "Décrivez votre situation professionnelle actuelle *",
             "current_situation_placeholder": "Ex: Je suis développeur junior depuis 2 ans dans une startup. Je souhaite évoluer vers un poste de tech lead...",
-            "characters_min_20": "caractères (minimum 20)",
             "industry": "Secteur d'activité",
             "select_industry": "Sélectionnez votre secteur",
             "experience_level": "Niveau d'expérience",
@@ -2033,6 +2073,94 @@
             "career_goals_placeholder": "Ex: Je veux devenir CTO d'une scale-up tech d'ici 3 ans, manager une équipe de 10+ développeurs...",
             "timeframe": "Dans quel délai ?",
             "priorities": "Vos priorités principales (sélectionnez 2-3)"
+        },
+        "summary": {
+            "profile_title": "Votre Profil de Carrière",
+            "situation": "Situation",
+            "goals": "Objectif",
+            "timeframe": "Délai",
+            "industry": "Secteur",
+            "ready_title": "Prêt à décoller !",
+            "ready_description": "Cliquez sur le bouton ci-dessous pour recevoir vos conseils personnalisés basés sur votre profil."
+        },
+        "actions": {
+            "previous": "Précédent",
+            "next": "Étape suivante",
+            "processing": "Analyse...",
+            "generate": "Générer mon plan"
+        },
+        "timeframes": {
+            "6_months": "6 mois",
+            "1_year": "1 an",
+            "1_2_years": "1-2 ans",
+            "2_5_years": "2-5 ans",
+            "5_plus_years": "5+ ans"
+        },
+        "skills": {
+            "leadership": "Leadership",
+            "communication": "Communication",
+            "project_management": "Gestion de projet",
+            "data_analysis": "Analyse de données",
+            "negotiation": "Négociation",
+            "innovation": "Innovation",
+            "strategy": "Stratégie",
+            "coaching": "Coaching",
+            "sales": "Vente"
+        },
+        "prompt": {
+            "intro": "Voici ma situation professionnelle actuelle :",
+            "current_situation": "Situation actuelle",
+            "career_goals": "Objectifs de carrière",
+            "timeframe": "Délai souhaité",
+            "industry": "Secteur d'activité",
+            "experience_level": "Niveau d'expérience",
+            "challenges": "Défis principaux",
+            "priorities": "Priorités",
+            "location": "Contraintes géographiques",
+            "salary": "Attentes salariales",
+            "skills": "Compétences à développer",
+            "conclusion": "Pouvez-vous me donner des conseils personnalisés pour atteindre mes objectifs de carrière ?"
+        }
+    },
+    "resume_analyzer": {
+        "analysis_types": {
+            "full": {
+                "label": "Analyse Complète",
+                "description": "Examen approfondi de tous les aspects."
+            },
+            "quick": {
+                "label": "Analyse Rapide",
+                "description": "Points clés et premières impressions."
+            },
+            "targeted": {
+                "label": "Analyse Ciblée",
+                "description": "Optimisation pour une offre spécifique."
+            }
+        },
+        "focus_areas": {
+            "general": "Général",
+            "content": "Contenu & Impact",
+            "format": "Format & Design",
+            "ats": "Optimisation ATS"
+        },
+        "improvement_goals": {
+            "response_rate": "Augmenter le taux de réponse",
+            "ats_filters": "Passer les filtres ATS",
+            "competition": "Se démarquer de la concurrence",
+            "value_experience": "Valoriser l'expérience",
+            "fill_gaps": "Combler les lacunes",
+            "modernize": "Moderniser le format",
+            "mobile": "Optimiser pour mobile",
+            "readability": "Améliorer la lisibilité",
+            "consistency": "Renforcer la cohérence"
+        },
+        "criteria": {
+            "structure": "Structure",
+            "content": "Contenu",
+            "keywords": "Mots-clés",
+            "experience": "Expériences",
+            "skills": "Compétences",
+            "presentation": "Présentation"
         }
     },
     "cover_letter_generator": {
@@ -2686,6 +2814,15 @@
             "actions": {
                 "copy": "Copier",
                 "cancel": "Annuler"
+            },
+            "thinking": "L'IA réfléchit...",
+            "assistant_signature": "Votre conseiller carrière Guidy",
+            "artifacts": {
+                "show": "Voir artefacts",
+                "hide": "Masquer artefacts",
+                "generated": "Artefact IA Généré",
+                "interactive": "Interactif",
+                "now": "Maintenant"
             }
         },
         "sidebar": {
@@ -2695,7 +2832,17 @@
             "conversations": "Conversations",
             "active_conversation": "Conversation active",
             "ai_assistant": "Assistant IA",
-            "quick_actions": "Actions rapides"
+            "quick_actions": "Actions rapides",
+            "new_conversation": "Nouvelle conversation",
+            "free_chat": "Discussion libre",
+            "see_all": "Voir tout",
+            "elements_count": "{{count}} élément(s)",
+            "luxury_categories": {
+                "cv_analysis": "Analyse CV",
+                "roadmap": "Roadmap",
+                "interview_session": "Entretiens",
+                "cover_letter": "Lettres"
+            }
         },
         "career_advisor": {
             "interface": {

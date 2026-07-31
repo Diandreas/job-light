@@ -373,7 +373,7 @@ export const LuxuryMessageBubble: React.FC<LuxuryMessageBubbleProps> = ({ messag
                                     ))}
                                 </div>
                                 <span className="text-sm font-medium text-neutral-600 dark:text-neutral-400 tracking-wide">
-                                    {displayContent}
+                                    {isThinking ? t('components.messageBubble.thinking') : displayContent}
                                 </span>
                             </div>
 
@@ -473,7 +473,7 @@ export const LuxuryMessageBubble: React.FC<LuxuryMessageBubbleProps> = ({ messag
                                             </table>
                                             {artifact.data.rows && artifact.data.rows.length > 5 && (
                                                 <div className="text-center py-3 text-xs text-neutral-500 dark:text-neutral-500">
-                                                    + {artifact.data.rows.length - 5} lignes supplémentaires
+                                                    + {t('components.messageBubble.elements_count', { count: artifact.data.rows.length - 5 })}
                                                 </div>
                                             )}
                                         </div>
@@ -489,7 +489,7 @@ export const LuxuryMessageBubble: React.FC<LuxuryMessageBubbleProps> = ({ messag
                                                 {artifact.title}
                                             </h4>
                                             <p className="text-xs text-neutral-500 dark:text-neutral-500">
-                                                Ouvrez la sidebar pour interagir avec ce widget
+                                                {t('components.career_advisor.interface.history')}
                                             </p>
                                         </div>
                                         <div className="text-neutral-400 dark:text-neutral-600">

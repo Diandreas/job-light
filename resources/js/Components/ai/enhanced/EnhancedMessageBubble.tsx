@@ -142,13 +142,13 @@ export default function EnhancedMessageBubble({ message, onArtifactAction }: Enh
             setCopied(true);
             setTimeout(() => setCopied(false), 2000);
             toast({
-                title: "Copié !",
-                description: "Le message a été copié dans le presse-papier"
+                title: t('components.messageBubble.copy.title'),
+                description: t('components.messageBubble.copy.description')
             });
         } catch (error) {
             toast({
-                title: "Erreur",
-                description: "Impossible de copier le message",
+                title: t('components.messageBubble.copyError.title'),
+                description: t('components.messageBubble.copyError.description'),
                 variant: "destructive"
             });
         }
@@ -355,7 +355,7 @@ export default function EnhancedMessageBubble({ message, onArtifactAction }: Enh
                                 <div className="w-1.5 h-1.5 bg-amber-500 rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
                                 <div className="w-1.5 h-1.5 bg-amber-500 rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
                             </div>
-                            <span className="text-xs text-amber-600 ml-2">L'IA réfléchit...</span>
+                            <span className="text-xs text-amber-600 ml-2">{t('components.messageBubble.thinking')}</span>
                         </div>
                     )}
 
@@ -380,7 +380,7 @@ export default function EnhancedMessageBubble({ message, onArtifactAction }: Enh
                                 >
                                     <BarChart3 className="w-3 h-3 mr-1" />
                                     <span className="text-xs">
-                                        {showArtifacts ? 'Masquer' : 'Voir'} artefacts
+                                        {showArtifacts ? t('components.messageBubble.artifacts.hide') : t('components.messageBubble.artifacts.show')}
                                     </span>
                                 </Button>
                             )}
@@ -449,10 +449,10 @@ export default function EnhancedMessageBubble({ message, onArtifactAction }: Enh
                                             <Sparkles className="w-3 h-3 text-white" />
                                         </div>
                                         <span className="text-sm font-medium text-amber-800">
-                                            Artefact IA Généré
+                                            {t('components.messageBubble.artifacts.generated')}
                                         </span>
                                         <Badge className="bg-amber-100 text-amber-700 text-xs">
-                                            Interactif
+                                            {t('components.messageBubble.artifacts.interactive')}
                                         </Badge>
                                     </div>
                                     {renderArtifact()}
@@ -469,12 +469,12 @@ export default function EnhancedMessageBubble({ message, onArtifactAction }: Enh
                             const timestamp = typeof message.timestamp === 'string'
                                 ? new Date(message.timestamp)
                                 : message.timestamp;
-                            return timestamp.toLocaleTimeString('fr-FR', {
+                            return timestamp.toLocaleTimeString(window.i18next?.language === 'fr' ? 'fr-FR' : 'en-US', {
                                 hour: '2-digit',
                                 minute: '2-digit'
                             });
                         } catch (error) {
-                            return 'Maintenant';
+                            return t('components.messageBubble.artifacts.now');
                         }
                     })()}
                 </div>

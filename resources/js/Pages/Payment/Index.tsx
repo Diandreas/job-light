@@ -8,6 +8,8 @@ import { Card, CardContent } from "@/Components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/Components/ui/tabs";
 import { useToast } from "@/Components/ui/use-toast";
 import { Alert, AlertDescription } from "@/Components/ui/alert";
+import { Input } from "@/Components/ui/input";
+import { Label } from "@/Components/ui/label";
 import { useTranslation } from 'react-i18next';
 import {
     Coins,
@@ -16,7 +18,9 @@ import {
     AlertCircle,
     Smartphone,
     CreditCard,
-    Loader2
+    Loader2,
+    CheckCircle,
+    Phone
 } from 'lucide-react';
 
 const TOKEN_PACKS = [
@@ -70,6 +74,250 @@ const PaymentMethodsInfo = {
         // { name: 'Visa', logo: '/visa.png' },
         // { name: 'Mastercard', logo: '/mastercard.png' }
     ]
+};
+
+// Opérateurs Mobile Money disponibles via Cross Payment Service (CashOut)
+const MOBILE_OPERATORS = [
+    {
+        id: 'mtn',
+        name: 'MTN Mobile Money',
+        serviceId: '20053',
+        payItemId: 'S-112-949-MTNMOMO-20053-200050001-1',
+        color: 'from-yellow-400 to-yellow-600',
+        logo: '/mtn-momo.png',
+        prefix: '67'
+    },
+    {
+        id: 'orange',
+        name: 'Orange Money',
+        serviceId: '30053',
+        payItemId: 'S-112-949-CMORANGEOM-30053-2006125105-1',
+        color: 'from-orange-400 to-orange-600',
+        logo: '/orange-money.png',
+        prefix: '69'
+    },
+];
+
+const csrfToken = () => {
+    const meta = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+    if (meta) return meta;
+    // Fallback: lire le cookie XSRF-TOKEN (Laravel le set automatiquement)
+    const cookie = document.cookie.split('; ').find(r => r.startsWith('XSRF-TOKEN='));
+    return cookie ? decodeURIComponent(cookie.split('=')[1]) : '';
+};
+
+// Cross Payment Service — Mobile Money CashIn
+const CrossPayMobileButton = ({ pack, onSuccess, user }) => {
+    const [loading, setLoading] = useState(false);
+    const [step, setStep] = useState<'select' | 'form' | 'pending' | 'success'>('select');
+    const [selectedOperator, setSelectedOperator] = useState(MOBILE_OPERATORS[0]);
+    const [phoneNumber, setPhoneNumber] = useState('');
+    const [trid, setTrid] = useState<string | null>(null);
+    const [pollInterval, setPollInterval] = useState<ReturnType<typeof setInterval> | null>(null);
+    const [errorMessage, setErrorMessage] = useState<string | null>(null);
+    const { toast } = useToast();
+    const { t } = useTranslation();
+
+    const stopPolling = () => {
+        if (pollInterval) {
+            clearInterval(pollInterval);
+            setPollInterval(null);
+        }
+    };
+
+    const startPolling = (transactionTrid: string) => {
+        const interval = setInterval(async () => {
+            try {
+                const res = await fetch(`/api/crosspay/verify?trid=${transactionTrid}`, {
+                    credentials: 'same-origin',
+                });
+                const data = await res.json();
+                const status = data?.status;
+                if (status === 'SUCCESS') {
+                    stopPolling();
+                    setStep('success');
+                    toast({ title: t('payment.success.title'), description: t('payment.success.description') });
+                    onSuccess(data?.new_balance);
+                } else if (status === 'FAILED' || status === 'CANCELLED') {
+                    stopPolling();
+                    setStep('form');
+                    setLoading(false);
+                    let msg = data.message || `Transaction ${status.toLowerCase()}`;
+                    // Si le backend n'a pas de message exploitable, construire à partir du code Maviance
+                    if (msg.includes('via service') || msg.includes('Initialisation')) {
+                        msg = data.error_code
+                            ? `Le paiement a échoué (Code Maviance: ${data.error_code}). Aucun montant n'a été débité.`
+                            : "Le paiement a échoué. Aucun montant n'a été débité.";
+                    }
+                    setErrorMessage(msg);
+                }
+            } catch {}
+        }, 5000);
+        setPollInterval(interval);
+    };
+
+    const handleCashIn = async () => {
+        const cleanPhone = phoneNumber.replace(/\s/g, '');
+        if (!cleanPhone || cleanPhone.length < 9) {
+            toast({ variant: 'destructive', title: 'Numéro invalide', description: 'Entrez un numéro valide (ex: 677389120)' });
+            return;
+        }
+        const fullPhone = cleanPhone.startsWith('237') ? cleanPhone : `237${cleanPhone}`;
+
+        setLoading(true);
+        setErrorMessage(null);
+        try {
+            const res = await fetch('/api/crosspay/cashin', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': csrfToken(),
+                    'Accept': 'application/json',
+                },
+                credentials: 'same-origin',
+                body: JSON.stringify({
+                    serviceId: selectedOperator.serviceId,
+                    payItemId: selectedOperator.payItemId,
+                    amount: pack.priceFCFA,
+                    phoneNumber: fullPhone,
+                    tokens: pack.tokens + pack.bonusTokens,
+                }),
+            });
+
+            const data = await res.json();
+
+            if (!res.ok) {
+                throw new Error(data.message || t('payment.errors.default'));
+            }
+
+            // SUCCESS immédiat (MTN en test) — jetons déjà crédités
+            if (data.status === 'SUCCESS') {
+                setStep('success');
+                toast({ title: t('payment.success.title'), description: t('payment.success.description') });
+                onSuccess(data.new_balance);
+                return;
+            }
+
+            // PENDING — attendre confirmation sur le téléphone
+            setTrid(data.trid);
+            setStep('pending');
+            toast({
+                title: 'Paiement initié',
+                description: `Confirmez le paiement de ${pack.priceFCFA.toLocaleString()} FCFA sur votre téléphone ${selectedOperator.name}.`
+            });
+            startPolling(data.trid);
+
+        } catch (err: any) {
+            let msg = err.message || t('payment.errors.default');
+            if (msg.includes('Paiement via service')) {
+                msg = "Le paiement a échoué. Veuillez vérifier votre solde et réessayer.";
+            }
+            setErrorMessage(msg);
+            setLoading(false);
+        }
+    };
+
+    if (!user) {
+        return (
+            <button
+                onClick={() => window.location.href = '/login'}
+                className="w-full py-3 px-4 rounded-lg font-medium text-white bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600 transition-all duration-200 flex items-center justify-center gap-2"
+            >
+                <Smartphone className="w-5 h-5" />
+                <span>{t('auth.login_to_purchase')}</span>
+            </button>
+        );
+    }
+
+    if (step === 'pending') {
+        return (
+            <div className="text-center space-y-4 py-4">
+                <Loader2 className="w-10 h-10 text-yellow-500 mx-auto animate-spin" />
+                <p className="font-medium">En attente de confirmation...</p>
+                <p className="text-sm text-gray-500">Confirmez le paiement sur votre téléphone {selectedOperator.name}</p>
+                <button
+                    onClick={() => { stopPolling(); setStep('form'); setLoading(false); }}
+                    className="text-sm text-red-500 underline"
+                >
+                    Annuler
+                </button>
+            </div>
+        );
+    }
+
+    if (step === 'success') {
+        return (
+            <div className="text-center space-y-3 py-4">
+                <CheckCircle className="w-10 h-10 text-green-500 mx-auto" />
+                <p className="font-medium text-green-700">Paiement confirmé !</p>
+            </div>
+        );
+    }
+
+    if (step === 'select') {
+        return (
+            <div className="space-y-3">
+                <p className="text-sm font-medium text-center text-gray-600">Choisissez votre opérateur</p>
+                <div className="grid grid-cols-2 gap-3">
+                    {MOBILE_OPERATORS.map(op => (
+                        <button
+                            key={op.id}
+                            onClick={() => { setSelectedOperator(op); setStep('form'); }}
+                            className={`flex flex-col items-center gap-2 p-3 rounded-lg border-2 border-gray-200 hover:border-yellow-400 transition-all`}
+                        >
+                            <img src={op.logo} alt={op.name} className="h-8 object-contain" />
+                            <span className="text-xs font-medium">{op.name}</span>
+                        </button>
+                    ))}
+                </div>
+            </div>
+        );
+    }
+
+    // step === 'form'
+    return (
+        <div className="space-y-4">
+            <div className="flex items-center gap-2 text-sm text-gray-600">
+                <img src={selectedOperator.logo} alt={selectedOperator.name} className="h-6 object-contain" />
+                <span>{selectedOperator.name}</span>
+                <button onClick={() => setStep('select')} className="ml-auto text-xs text-blue-500 underline">Changer</button>
+            </div>
+            <div>
+                <Label htmlFor="crosspay-phone">Numéro {selectedOperator.name}</Label>
+                <div className="flex gap-2 mt-1">
+                    <span className="flex items-center px-3 bg-gray-100 border border-gray-300 rounded-l-lg text-sm font-medium text-gray-700">+237</span>
+                    <Input
+                        id="crosspay-phone"
+                        type="tel"
+                        value={phoneNumber}
+                        onChange={(e) => setPhoneNumber(e.target.value)}
+                        placeholder={`${selectedOperator.prefix}XXXXXXX`}
+                        className="rounded-l-none"
+                    />
+                </div>
+                <p className="text-xs text-gray-500 mt-1">Vous recevrez une notification pour confirmer</p>
+            </div>
+
+            {errorMessage && (
+                <div className="p-3 rounded-lg bg-red-50 border border-red-200 text-red-600 text-sm flex items-start gap-2">
+                    <AlertCircle className="w-4 h-4 mt-0.5 flex-shrink-0" />
+                    <span>{errorMessage}</span>
+                </div>
+            )}
+
+            <button
+                onClick={handleCashIn}
+                disabled={loading}
+                className={`w-full py-3 px-4 rounded-lg font-medium text-white bg-gradient-to-r ${selectedOperator.color} hover:opacity-90 transition-all duration-200 flex items-center justify-center gap-2 ${loading ? 'opacity-75 cursor-not-allowed' : ''}`}
+            >
+                {loading ? (
+                    <><Loader2 className="w-5 h-5 animate-spin" /><span>{t('payment.processing')}</span></>
+                ) : (
+                    <><Phone className="w-5 h-5" /><span>Payer {pack.priceFCFA.toLocaleString()} FCFA</span></>
+                )}
+            </button>
+        </div>
+    );
 };
 
 // NotchPay Button Component (Primary)
@@ -348,18 +596,7 @@ const PaymentTabs = ({ pack, onSuccess, user }) => {
                     {pack.priceFCFA.toLocaleString()} FCFA
                 </div>
 
-                <CinetPayButton pack={pack} onSuccess={onSuccess} user={user} />
-
-                <div className="flex items-center justify-center gap-4 mt-2">
-                    {PaymentMethodsInfo.mobileMoneyLogos.map((logo, index) => (
-                        <img
-                            key={index}
-                            src={logo.logo}
-                            alt={logo.name}
-                            className="h-8 object-contain"
-                        />
-                    ))}
-                </div>
+                <CrossPayMobileButton pack={pack} onSuccess={onSuccess} user={user} />
             </TabsContent>
 
             <TabsContent value="card" className="mt-4 space-y-4">
@@ -385,9 +622,48 @@ const PaymentTabs = ({ pack, onSuccess, user }) => {
     );
 };
 
+// Modal de succès visible
+const SuccessModal = ({ newBalance, onClose }: { newBalance: number, onClose: () => void }) => (
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4" style={{ background: 'rgba(0,0,0,0.6)' }}>
+        <motion.div
+            initial={{ scale: 0.7, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            transition={{ type: 'spring', stiffness: 300, damping: 20 }}
+            className="bg-white dark:bg-gray-900 rounded-2xl shadow-2xl p-8 max-w-sm w-full text-center"
+        >
+            <motion.div
+                initial={{ scale: 0 }}
+                animate={{ scale: 1 }}
+                transition={{ delay: 0.1, type: 'spring', stiffness: 400 }}
+                className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4"
+            >
+                <CheckCircle className="w-12 h-12 text-green-500" />
+            </motion.div>
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">Paiement réussi !</h2>
+            <p className="text-gray-500 dark:text-gray-400 mb-4">
+                Vos jetons ont été crédités sur votre compte.
+            </p>
+            {newBalance !== undefined && (
+                <div className="bg-amber-50 dark:bg-amber-900/20 rounded-xl px-6 py-3 mb-6 inline-flex items-center gap-2">
+                    <Coins className="w-5 h-5 text-amber-500" />
+                    <span className="text-lg font-bold text-amber-600 dark:text-amber-400">{newBalance} jetons</span>
+                </div>
+            )}
+            <button
+                onClick={onClose}
+                className="w-full py-3 rounded-xl font-semibold text-white bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 transition-all"
+            >
+                Continuer
+            </button>
+        </motion.div>
+    </div>
+);
+
 export default function Index({ auth, paypalConfig }) {
     const { toast } = useToast();
     const [error, setError] = useState(null);
+    const [walletBalance, setWalletBalance] = useState(auth?.user?.wallet_balance ?? 0);
+    const [successModal, setSuccessModal] = useState<{ show: boolean, balance?: number }>({ show: false });
     const { t } = useTranslation();
 
     // if (!auth?.user) {
@@ -404,12 +680,8 @@ export default function Index({ auth, paypalConfig }) {
     };
 
     const handlePaymentSuccess = (newBalance) => {
-        auth.user.wallet_balance = newBalance;
-        toast({
-            title: t('payment.success.title'),
-            description: t('payment.success.description'),
-        });
-        window.location.reload();
+        if (newBalance !== undefined) setWalletBalance(newBalance);
+        setSuccessModal({ show: true, balance: newBalance });
     };
 
     const Content = () => (
@@ -503,12 +775,7 @@ export default function Index({ auth, paypalConfig }) {
                                         </div> */}
 
                                         <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
-                                            <div className="space-y-4">
-                                                <div className="text-2xl font-bold text-center">
-                                                    {pack.priceEuros}€
-                                                </div>
-                                                <PayPalPackButton pack={pack} onSuccess={handlePaymentSuccess} user={user} />
-                                            </div>
+                                            <PaymentTabs pack={pack} onSuccess={handlePaymentSuccess} user={user} />
                                         </div>
                                     </div>
                                 </CardContent>
@@ -520,13 +787,26 @@ export default function Index({ auth, paypalConfig }) {
                 <div className="mt-12 space-y-4">
                     <div className="bg-white dark:bg-gray-800 rounded-lg p-6 max-w-3xl mx-auto">
                         <h2 className="text-lg font-semibold mb-4">{t('payment.importantInfo.title')}</h2>
-                        <div className="space-y-2">
-                            <h3 className="font-medium">PayPal</h3>
-                            <ul className="text-sm text-gray-600 dark:text-gray-300 space-y-1">
-                                <li>• {t('payment.importantInfo.bankCard.secure')}</li>
-                                <li>• Paiement en euros (€)</li>
-                                <li>• Accepte les cartes bancaires et comptes PayPal</li>
-                            </ul>
+                        <div className="space-y-4">
+                            <div className="space-y-2">
+                                <h3 className="font-medium flex items-center gap-2">
+                                    <Smartphone className="w-4 h-4 text-yellow-500" />
+                                    Mobile Money (MTN MoMo / Orange Money)
+                                </h3>
+                                <ul className="text-sm text-gray-600 dark:text-gray-300 space-y-1">
+                                    <li>• Paiement en FCFA (XAF)</li>
+                                    <li>• Confirmation par notification push sur votre téléphone</li>
+                                    <li>• Crédité immédiatement après confirmation</li>
+                                </ul>
+                            </div>
+                            <div className="space-y-2">
+                                <h3 className="font-medium">PayPal</h3>
+                                <ul className="text-sm text-gray-600 dark:text-gray-300 space-y-1">
+                                    <li>• {t('payment.importantInfo.bankCard.secure')}</li>
+                                    <li>• Paiement en euros (€)</li>
+                                    <li>• Accepte les cartes bancaires et comptes PayPal</li>
+                                </ul>
+                            </div>
                         </div>
                     </div>
 
@@ -546,6 +826,7 @@ export default function Index({ auth, paypalConfig }) {
                 <PayPalScriptProvider options={initialOptions}>
                     <Content />
                 </PayPalScriptProvider>
+                {successModal.show && <SuccessModal newBalance={successModal.balance} onClose={() => setSuccessModal({ show: false })} />}
             </GuestLayout>
         );
     }
@@ -557,6 +838,7 @@ export default function Index({ auth, paypalConfig }) {
             <PayPalScriptProvider options={initialOptions as any}>
                 <Content />
             </PayPalScriptProvider>
+            {successModal.show && <SuccessModal newBalance={successModal.balance} onClose={() => setSuccessModal({ show: false })} />}
         </AuthenticatedLayout>
     );
 }

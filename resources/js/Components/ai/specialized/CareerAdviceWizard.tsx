@@ -150,23 +150,23 @@ export default function CareerAdviceWizard({ onSubmit, userInfo, isLoading }: Ca
     };
 
     const generateCareerAdvicePrompt = (data: CareerAdviceData) => {
-        return `Voici ma situation professionnelle actuelle :
+        return `${t('career_advice_wizard.prompt.intro')}
+        
+**${t('career_advice_wizard.prompt.current_situation')}:** ${data.currentSituation}
 
-**Situation actuelle :** ${data.currentSituation}
+**${t('career_advice_wizard.prompt.career_goals')}:** ${data.careerGoals}
+**${t('career_advice_wizard.prompt.timeframe')}:** ${data.timeframe}
+**${t('career_advice_wizard.prompt.industry')}:** ${data.industry}
+**${t('career_advice_wizard.prompt.experience_level')}:** ${data.experience_level}
 
-**Objectifs de carrière :** ${data.careerGoals}
-**Délai souhaité :** ${data.timeframe}
-**Secteur d'activité :** ${data.industry}
-**Niveau d'expérience :** ${data.experience_level}
+**${t('career_advice_wizard.prompt.challenges')}:** ${data.challenges.join(', ')}
+**${t('career_advice_wizard.prompt.priorities')}:** ${data.priorities.join(', ')}
 
-**Défis principaux :** ${data.challenges.join(', ')}
-**Priorités :** ${data.priorities.join(', ')}
+**${t('career_advice_wizard.prompt.location')}:** ${data.location_preference}
+**${t('career_advice_wizard.prompt.salary')}:** ${data.salary_expectations}
+**${t('career_advice_wizard.prompt.skills')}:** ${data.skills_to_develop.join(', ')}
 
-**Contraintes géographiques :** ${data.location_preference}
-**Attentes salariales :** ${data.salary_expectations}
-**Compétences à développer :** ${data.skills_to_develop.join(', ')}
-
-Pouvez-vous me donner des conseils personnalisés pour atteindre mes objectifs de carrière ?`;
+${t('career_advice_wizard.prompt.conclusion')}`;
     };
 
     const isStepValid = () => {
@@ -232,11 +232,11 @@ Pouvez-vous me donner des conseils personnalisés pour atteindre mes objectifs d
                             {currentStepData.title}
                         </h3>
                         <div className="flex items-center justify-center gap-3 text-sm text-amber-600/60 dark:text-amber-500/40">
-                            <span className="bg-amber-500/5 dark:bg-amber-500/10 px-2 py-0.5 rounded-md font-bold text-amber-600 dark:text-amber-500 uppercase tracking-tighter">Étape {currentStep + 1} / {WIZARD_STEPS.length}</span>
+                            <span className="bg-amber-500/5 dark:bg-amber-500/10 px-2 py-0.5 rounded-md font-bold text-amber-600 dark:text-amber-500 uppercase tracking-tighter">{t('career_advice_wizard.form.step_indicator', { current: currentStep + 1, total: WIZARD_STEPS.length })}</span>
                             <div className="w-1.5 h-1.5 bg-amber-500/40 rounded-full" />
                             <div className="flex items-center gap-1.5 font-medium">
                                 <Clock className="w-3.5 h-3.5" />
-                                <span>~2 min restantes</span>
+                                <span>{t('career_advice_wizard.form.time_remaining', { minutes: 2 })}</span>
                             </div>
                         </div>
                     </motion.div>
@@ -286,7 +286,7 @@ Pouvez-vous me donner des conseils personnalisés pour atteindre mes objectifs d
                                             className="resize-none rounded-xl border-gray-200 dark:border-gray-800 focus:border-amber-500 focus:ring-amber-500/20"
                                         />
                                         <div className="text-xs text-amber-600/60 flex justify-between font-medium">
-                                            <span>{formData.currentSituation.length}/500 {t('career_advice_wizard.form.characters_min_20') || 'caractères (minimum 20)'}</span>
+                                            <span>{formData.currentSituation.length}/500 {t('career_advice_wizard.form.characters_min_20')}</span>
                                             {formData.currentSituation.length >= 20 && <CheckCircle className="w-4 h-4 text-green-500" />}
                                         </div>
                                     </div>
@@ -369,11 +369,11 @@ Pouvez-vous me donner des conseils personnalisés pour atteindre mes objectifs d
                                                 <SelectValue />
                                             </SelectTrigger>
                                             <SelectContent className="rounded-xl border-gray-200 dark:border-gray-700">
-                                                <SelectItem value="6 mois" className="rounded-lg m-1">6 mois</SelectItem>
-                                                <SelectItem value="1 an" className="rounded-lg m-1">1 an</SelectItem>
-                                                <SelectItem value="1-2 ans" className="rounded-lg m-1">1-2 ans</SelectItem>
-                                                <SelectItem value="2-5 ans" className="rounded-lg m-1">2-5 ans</SelectItem>
-                                                <SelectItem value="5+ ans" className="rounded-lg m-1">5+ ans</SelectItem>
+                                                <SelectItem value="6 mois" className="rounded-lg m-1">{t('career_advice_wizard.timeframes.6_months')}</SelectItem>
+                                                <SelectItem value="1 an" className="rounded-lg m-1">{t('career_advice_wizard.timeframes.1_year')}</SelectItem>
+                                                <SelectItem value="1-2 ans" className="rounded-lg m-1">{t('career_advice_wizard.timeframes.1_2_years')}</SelectItem>
+                                                <SelectItem value="2-5 ans" className="rounded-lg m-1">{t('career_advice_wizard.timeframes.2_5_years')}</SelectItem>
+                                                <SelectItem value="5+ ans" className="rounded-lg m-1">{t('career_advice_wizard.timeframes.5_plus_years')}</SelectItem>
                                             </SelectContent>
                                         </Select>
                                     </div>
@@ -411,7 +411,7 @@ Pouvez-vous me donner des conseils personnalisés pour atteindre mes objectifs d
                             {currentStep === 2 && (
                                 <div className="space-y-5">
                                     <div className="space-y-2">
-                                        <Label htmlFor="location" className="text-sm font-semibold text-gray-700 dark:text-gray-300">Préférences géographiques</Label>
+                                        <Label htmlFor="location" className="text-sm font-semibold text-gray-700 dark:text-gray-300">{t('career_advice_wizard.form.location_preference')}</Label>
                                         <Input
                                             id="location"
                                             value={formData.location_preference}
@@ -419,13 +419,13 @@ Pouvez-vous me donner des conseils personnalisés pour atteindre mes objectifs d
                                                 ...prev,
                                                 location_preference: e.target.value
                                             }))}
-                                            placeholder="Ex: Paris, télétravail, international..."
+                                            placeholder={t('career_advice_wizard.form.location_placeholder')}
                                             className="rounded-xl border-gray-200 dark:border-gray-800 focus:border-amber-500 focus:ring-amber-500/20"
                                         />
                                     </div>
 
                                     <div className="space-y-2">
-                                        <Label htmlFor="salary" className="text-sm font-semibold text-gray-700 dark:text-gray-300">Attentes salariales (optionnel)</Label>
+                                        <Label htmlFor="salary" className="text-sm font-semibold text-gray-700 dark:text-gray-300">{t('career_advice_wizard.form.salary_expectations')}</Label>
                                         <Input
                                             id="salary"
                                             value={formData.salary_expectations}
@@ -433,13 +433,13 @@ Pouvez-vous me donner des conseils personnalisés pour atteindre mes objectifs d
                                                 ...prev,
                                                 salary_expectations: e.target.value
                                             }))}
-                                            placeholder="Ex: 50-60k€, négociable selon projet..."
+                                            placeholder={t('career_advice_wizard.form.salary_placeholder')}
                                             className="rounded-xl border-gray-200 dark:border-gray-800 focus:border-amber-500 focus:ring-amber-500/20"
                                         />
                                     </div>
 
                                     <div className="space-y-2">
-                                        <Label className="text-sm font-semibold text-gray-700 dark:text-gray-300">Principaux défis à surmonter</Label>
+                                        <Label className="text-sm font-semibold text-gray-700 dark:text-gray-300">{t('career_advice_wizard.form.challenges_title')}</Label>
                                         <div className="grid grid-cols-1 md:grid-cols-2 gap-2.5 mt-2">
                                             {COMMON_CHALLENGES.map(challenge => (
                                                 <button
@@ -469,10 +469,19 @@ Pouvez-vous me donner des conseils personnalisés pour atteindre mes objectifs d
                             {currentStep === 3 && (
                                 <div className="space-y-4">
                                     <div className="space-y-2">
-                                        <Label className="text-sm font-semibold text-gray-700 dark:text-gray-300">Compétences que vous souhaitez développer</Label>
+                                        <Label className="text-sm font-semibold text-gray-700 dark:text-gray-300">{t('career_advice_wizard.form.skills_to_develop_title')}</Label>
                                         <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mt-2">
-                                            {['Leadership', 'Communication', 'Gestion de projet', 'Analyse de données',
-                                                'Négociation', 'Innovation', 'Stratégie', 'Coaching', 'Vente'].map(skill => (
+                                            {[
+                                                t('career_advice_wizard.skills.leadership'),
+                                                t('career_advice_wizard.skills.communication'),
+                                                t('career_advice_wizard.skills.project_management'),
+                                                t('career_advice_wizard.skills.data_analysis'),
+                                                t('career_advice_wizard.skills.negotiation'),
+                                                t('career_advice_wizard.skills.innovation'),
+                                                t('career_advice_wizard.skills.strategy'),
+                                                t('career_advice_wizard.skills.coaching'),
+                                                t('career_advice_wizard.skills.sales')
+                                            ].map(skill => (
                                                     <button
                                                         key={skill}
                                                         type="button"
@@ -508,24 +517,24 @@ Pouvez-vous me donner des conseils personnalisés pour atteindre mes objectifs d
                                         </div>
                                         <h3 className="font-bold text-amber-700 dark:text-amber-400 mb-4 flex items-center gap-2">
                                             <Rocket className="w-5 h-5" />
-                                            Votre Profil de Carrière
+                                            {t('career_advice_wizard.summary.profile_title')}
                                         </h3>
                                         <div className="space-y-3 text-sm text-gray-700 dark:text-gray-300">
                                             <div className="flex gap-2">
-                                                <strong className="text-amber-600 dark:text-amber-500 shrink-0">Situation :</strong>
+                                                <strong className="text-amber-600 dark:text-amber-500 shrink-0">{t('career_advice_wizard.summary.situation')}:</strong>
                                                 <span className="line-clamp-2">{formData.currentSituation}</span>
                                             </div>
                                             <div className="flex gap-2">
-                                                <strong className="text-amber-600 dark:text-amber-500 shrink-0">Objectif :</strong>
+                                                <strong className="text-amber-600 dark:text-amber-500 shrink-0">{t('career_advice_wizard.summary.goals')}:</strong>
                                                 <span className="line-clamp-2">{formData.careerGoals}</span>
                                             </div>
                                             <div className="grid grid-cols-2 gap-4 pt-2">
                                                 <div>
-                                                    <strong className="text-amber-600 dark:text-amber-500 block mb-1">Délai :</strong>
+                                                    <strong className="text-amber-600 dark:text-amber-500 block mb-1">{t('career_advice_wizard.summary.timeframe')}:</strong>
                                                     <Badge variant="outline" className="border-amber-200 bg-white dark:bg-gray-900">{formData.timeframe}</Badge>
                                                 </div>
                                                 <div>
-                                                    <strong className="text-amber-600 dark:text-amber-500 block mb-1">Secteur :</strong>
+                                                    <strong className="text-amber-600 dark:text-amber-500 block mb-1">{t('career_advice_wizard.summary.industry')}:</strong>
                                                     <Badge variant="outline" className="border-amber-200 bg-white dark:bg-gray-900">{formData.industry}</Badge>
                                                 </div>
                                             </div>
@@ -537,9 +546,9 @@ Pouvez-vous me donner des conseils personnalisés pour atteindre mes objectifs d
                                             <Award className="w-10 h-10 text-amber-500" />
                                         </div>
                                         <div className="space-y-1">
-                                            <h4 className="font-bold text-gray-900 dark:text-white">Prêt à décoller !</h4>
+                                            <h4 className="font-bold text-gray-900 dark:text-white">{t('career_advice_wizard.summary.ready_title')}</h4>
                                             <p className="text-sm text-gray-500 dark:text-gray-400">
-                                                Cliquez sur le bouton ci-dessous pour recevoir vos conseils personnalisés basés sur votre profil.
+                                                {t('career_advice_wizard.summary.ready_description')}
                                             </p>
                                         </div>
                                     </div>
@@ -557,7 +566,7 @@ Pouvez-vous me donner des conseils personnalisés pour atteindre mes objectifs d
                             className="flex items-center gap-2 px-6 h-12 rounded-xl text-gray-500 hover:text-gray-900 hover:bg-gray-50 dark:hover:bg-gray-900 disabled:opacity-30 transition-all font-medium"
                         >
                             <ChevronLeft className="w-5 h-5" />
-                            {t('common.previous') || 'Précédent'}
+                            {t('career_advice_wizard.actions.previous')}
                         </Button>
 
                         <Button
@@ -572,16 +581,16 @@ Pouvez-vous me donner des conseils personnalisés pour atteindre mes objectifs d
                             {isLoading ? (
                                 <>
                                     <Loader2 className="w-5 h-5 animate-spin" />
-                                    {t('common.processing') || 'Analyse...'}
+                                    {t('career_advice_wizard.actions.processing')}
                                 </>
                             ) : currentStep === WIZARD_STEPS.length - 1 ? (
                                 <>
                                     <Sparkles className="w-5 h-5" />
-                                    {t('career_advice_wizard.generate_advice') || 'Générer mon plan'}
+                                    {t('career_advice_wizard.actions.generate')}
                                 </>
                             ) : (
                                 <>
-                                    {t('common.next') || 'Étape suivante'}
+                                    {t('career_advice_wizard.actions.next')}
                                     <ChevronRight className="w-5 h-5" />
                                 </>
                             )}

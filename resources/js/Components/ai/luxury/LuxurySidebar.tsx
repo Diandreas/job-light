@@ -6,6 +6,7 @@ import { LuxuryIconButton } from '@/Components/ui/luxury/Button';
 import { Avatar, AvatarFallback } from "@/Components/ui/avatar";
 import axios from 'axios';
 import { router } from '@inertiajs/react';
+import { useTranslation } from 'react-i18next';
 
 interface Chat {
     id: string;
@@ -52,10 +53,10 @@ interface LuxurySidebarProps {
 }
 
 const TOOL_CATEGORIES: Omit<ToolHistoryCategory, 'items'>[] = [
-    { context: 'cv_analysis', label: 'Analyse CV', icon: FileText, color: 'text-blue-500', route: '/career-advisor/cv-heatmap' },
-    { context: 'roadmap', label: 'Roadmap', icon: Route, color: 'text-emerald-500', route: '/career-advisor/roadmap' },
-    { context: 'interview_session', label: 'Entretiens', icon: Mic, color: 'text-purple-500', route: '/career-advisor/interview/setup' },
-    { context: 'cover_letter', label: 'Lettres', icon: PenTool, color: 'text-amber-500', route: '/career-advisor/cover-letter/studio' },
+    { context: 'cv_analysis', label: 'components.sidebar.luxury_categories.cv_analysis', icon: FileText, color: 'text-blue-500', route: '/career-advisor/cv-heatmap' },
+    { context: 'roadmap', label: 'components.sidebar.luxury_categories.roadmap', icon: Route, color: 'text-emerald-500', route: '/career-advisor/roadmap' },
+    { context: 'interview_session', label: 'components.sidebar.luxury_categories.interview_session', icon: Mic, color: 'text-purple-500', route: '/career-advisor/interview/setup' },
+    { context: 'cover_letter', label: 'components.sidebar.luxury_categories.cover_letter', icon: PenTool, color: 'text-amber-500', route: '/career-advisor/cover-letter/studio' },
 ];
 
 /**
@@ -81,6 +82,7 @@ export const LuxurySidebar: React.FC<LuxurySidebarProps> = ({
     onChatDelete,
     onServiceSelect,
 }) => {
+    const { t } = useTranslation();
     const [internalIsCollapsed, setInternalIsCollapsed] = useState(false);
     const isCollapsed = externalIsCollapsed !== undefined ? externalIsCollapsed : internalIsCollapsed;
     const toggleCollapse = onToggleCollapse || (() => setInternalIsCollapsed(!internalIsCollapsed));
@@ -195,10 +197,10 @@ export const LuxurySidebar: React.FC<LuxurySidebarProps> = ({
                         </Avatar>
                         <div>
                             <h2 className="text-sm font-semibold text-neutral-900 dark:text-neutral-50 tracking-tight">
-                                Career Advisor
+                                {t('components.sidebar.ai_assistant')}
                             </h2>
                             <p className="text-xs text-neutral-500 dark:text-neutral-500">
-                                {displayChats.length + totalToolItems} élément{(displayChats.length + totalToolItems) > 1 ? 's' : ''}
+                                {t('components.sidebar.elements_count', { count: displayChats.length + totalToolItems })}
                             </p>
                         </div>
                     </motion.div>
@@ -229,7 +231,7 @@ export const LuxurySidebar: React.FC<LuxurySidebarProps> = ({
                         title="Discussion libre"
                     >
                         <MessageSquare className="w-3.5 h-3.5 group-hover:scale-110 transition-transform" />
-                        {!isCollapsed && <span className="text-xs font-medium">Discussion libre</span>}
+                        {!isCollapsed && <span className="text-xs font-medium">{t('components.sidebar.free_chat')}</span>}
                     </button>
                 </div>
 
@@ -238,7 +240,7 @@ export const LuxurySidebar: React.FC<LuxurySidebarProps> = ({
                     <div className="space-y-1">
                         {totalToolItems > 0 && (
                             <div className="text-[9px] font-bold text-neutral-400 dark:text-neutral-600 uppercase tracking-[0.2em] px-1 pb-1 pt-2">
-                                Outils IA
+                                {t('components.sidebar.ai_assistant')}
                             </div>
                         )}
                         {TOOL_CATEGORIES.map(cat => {
@@ -255,7 +257,7 @@ export const LuxurySidebar: React.FC<LuxurySidebarProps> = ({
                                     >
                                         <Icon className={`w-3.5 h-3.5 ${cat.color} flex-shrink-0`} />
                                         <span className="text-xs font-medium text-neutral-600 dark:text-neutral-400 flex-1 truncate">
-                                            {cat.label}
+                                            {t(cat.label)}
                                         </span>
                                         <span className="text-[10px] text-neutral-400 dark:text-neutral-600 tabular-nums">
                                             {items.length}
@@ -287,7 +289,7 @@ export const LuxurySidebar: React.FC<LuxurySidebarProps> = ({
                                                         className="flex items-center gap-2 px-3 py-1.5 text-[10px] text-amber-600 dark:text-amber-500 hover:text-amber-700 font-medium"
                                                     >
                                                         <ExternalLink className="w-2.5 h-2.5" />
-                                                        Voir tout
+                                                        {t('components.sidebar.see_all')}
                                                     </a>
                                                 </div>
                                             </motion.div>

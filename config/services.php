@@ -97,4 +97,9 @@ return [
     'deepgram' => [
         'api_key' => env('DEEPGRAM_API_KEY'),
     ],
+
+    'crosspay' => [
+        'url' => env('CROSS_PAYMENT_URL', 'http://localhost:3000'),
+        'internal_secret' => env('CROSS_PAYMENT_INTERNAL_SECRET'),
+    ],
 ];

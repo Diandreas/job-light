@@ -4,6 +4,7 @@
  */
 
 import { AIGeneratedArtifact } from '../artifacts/AIArtifactGenerator';
+import i18n from '../../../Config/i18n';
 
 export class SpecializedAIArtifacts {
     
@@ -23,7 +24,7 @@ export class SpecializedAIArtifacts {
         return {
             id: `cv-analysis-${Date.now()}`,
             type: 'heatmap',
-            title: 'Analyse Visuelle de votre CV',
+            title: i18n.t('ai_artifacts.cv_analysis'),
             data: {
                 sections: cvData.sections,
                 globalScore: cvData.globalScore,
@@ -63,7 +64,7 @@ export class SpecializedAIArtifacts {
         return {
             id: `interview-simulator-${Date.now()}`,
             type: 'timer',
-            title: 'Simulateur d\'Entretien IA',
+            title: i18n.t('ai_artifacts.interview_simulator'),
             data: {
                 duration: interviewData.estimatedDuration,
                 questions: interviewData.questions,
@@ -104,7 +105,7 @@ export class SpecializedAIArtifacts {
         return {
             id: `salary-negotiator-${Date.now()}`,
             type: 'salary-negotiator',
-            title: 'Assistant Négociation Salariale',
+            title: i18n.t('ai_artifacts.salary_negotiator'),
             data: {
                 currentSalary: salaryData.currentSalary,
                 targetSalary: salaryData.targetSalary,
@@ -145,7 +146,7 @@ export class SpecializedAIArtifacts {
         return {
             id: `ats-analyzer-${Date.now()}`,
             type: 'dashboard',
-            title: 'Analyseur ATS Intelligence',
+            title: i18n.t('ai_artifacts.ats_analyzer'),
             data: {
                 globalScore: atsData.globalScore,
                 keywords: atsData.keywords,
@@ -186,7 +187,7 @@ export class SpecializedAIArtifacts {
         return {
             id: `career-planner-${Date.now()}`,
             type: 'roadmap',
-            title: 'Planificateur de Carrière IA',
+            title: i18n.t('ai_artifacts.career_planner'),
             data: {
                 steps: careerData.steps,
                 currentPosition: careerData.currentPosition,

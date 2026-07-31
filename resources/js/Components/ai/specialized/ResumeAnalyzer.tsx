@@ -38,61 +38,68 @@ interface ResumeAnalysisData {
     analysisDepth: 'quick' | 'detailed' | 'comprehensive';
 }
 
-const ANALYSIS_TYPES = [
-    {
-        id: 'general',
-        title: 'Analyse Générale',
-        description: 'Évaluation complète de votre CV',
-        icon: Eye,
-        color: 'amber'
-    },
-    {
-        id: 'targeted',
-        title: 'Analyse Ciblée',
-        description: 'Optimisation pour un poste spécifique',
-        icon: Target,
-        color: 'amber'
-    },
-    {
-        id: 'ats',
-        title: 'Optimisation ATS',
-        description: 'Compatibilité avec les systèmes de recrutement',
-        icon: BarChart3,
-        color: 'amber'
-    },
-    {
-        id: 'competitive',
-        title: 'Analyse Concurrentielle',
-        description: 'Comparaison avec le marché',
-        icon: TrendingUp,
-        color: 'amber'
-    }
-];
-
-const FOCUS_AREAS = [
-    'Structure et mise en page', 'Contenu et descriptions', 'Mots-clés sectoriels',
-    'Expériences professionnelles', 'Compétences techniques', 'Soft skills',
-    'Formation et certifications', 'Projets et réalisations', 'Langues',
-    'Centres d\'intérêt', 'Références professionnelles'
-];
-
-const IMPROVEMENT_GOALS = [
-    'Augmenter le taux de réponse', 'Passer les filtres ATS', 'Se démarquer de la concurrence',
-    'Valoriser l\'expérience', 'Combler les lacunes', 'Moderniser le format',
-    'Optimiser pour mobile', 'Améliorer la lisibilité', 'Renforcer la cohérence'
-];
-
-const CV_CRITERIA = [
-    { name: 'Structure', weight: 15 },
-    { name: 'Contenu', weight: 25 },
-    { name: 'Mots-clés', weight: 20 },
-    { name: 'Expériences', weight: 20 },
-    { name: 'Compétences', weight: 10 },
-    { name: 'Présentation', weight: 10 }
-];
-
 export default function ResumeAnalyzer({ onSubmit, userInfo, isLoading }: ResumeAnalyzerProps) {
     const { t } = useTranslation();
+
+    const ANALYSIS_TYPES = [
+        {
+            id: 'general',
+            title: t('resume_analyzer.analysis_types.full.label'),
+            description: t('resume_analyzer.analysis_types.full.description'),
+            icon: Eye,
+            color: 'amber'
+        },
+        {
+            id: 'targeted',
+            title: t('resume_analyzer.analysis_types.targeted.label'),
+            description: t('resume_analyzer.analysis_types.targeted.description'),
+            icon: Target,
+            color: 'amber'
+        },
+        {
+            id: 'ats',
+            title: t('resume_analyzer.analysis_types.quick.label'),
+            description: t('resume_analyzer.analysis_types.quick.description'),
+            icon: BarChart3,
+            color: 'amber'
+        },
+        {
+            id: 'competitive',
+            title: t('resume_analyzer.analysis_types.full.label'), // Reusing for now or add specific key
+            description: t('resume_analyzer.analysis_types.full.description'),
+            icon: TrendingUp,
+            color: 'amber'
+        }
+    ];
+
+    const FOCUS_AREAS = [
+        t('resume_analyzer.focus_areas.general'),
+        t('resume_analyzer.focus_areas.content'),
+        t('resume_analyzer.focus_areas.format'),
+        t('resume_analyzer.focus_areas.ats'),
+        'Soft skills', // Fallbacks for less critical areas
+        'Langues'
+    ];
+
+    const IMPROVEMENT_GOALS = [
+        t('resume_analyzer.improvement_goals.response_rate'),
+        t('resume_analyzer.improvement_goals.ats_filters'),
+        t('resume_analyzer.improvement_goals.competition'),
+        t('resume_analyzer.improvement_goals.value_experience'),
+        t('resume_analyzer.improvement_goals.fill_gaps'),
+        t('resume_analyzer.improvement_goals.modernize'),
+        t('resume_analyzer.improvement_goals.readability'),
+        t('resume_analyzer.improvement_goals.consistency')
+    ];
+
+    const CV_CRITERIA = [
+        { name: t('resume_analyzer.criteria.structure'), weight: 15 },
+        { name: t('resume_analyzer.criteria.content'), weight: 25 },
+        { name: t('resume_analyzer.criteria.keywords'), weight: 20 },
+        { name: t('resume_analyzer.criteria.experience'), weight: 20 },
+        { name: t('resume_analyzer.criteria.skills'), weight: 10 },
+        { name: t('resume_analyzer.criteria.presentation'), weight: 10 }
+    ];
     const [formData, setFormData] = useState<ResumeAnalysisData>({
         analysisType: 'general',
         targetPosition: '',
@@ -122,12 +129,12 @@ export default function ResumeAnalyzer({ onSubmit, userInfo, isLoading }: Resume
 
             // Scores par critère (simulation)
             setCriteriaScores({
-                'Structure': Math.min(100, score + Math.random() * 20 - 10),
-                'Contenu': Math.min(100, score + Math.random() * 20 - 10),
-                'Mots-clés': Math.min(100, score + Math.random() * 20 - 10),
-                'Expériences': Math.min(100, score + Math.random() * 20 - 10),
-                'Compétences': Math.min(100, score + Math.random() * 20 - 10),
-                'Présentation': Math.min(100, score + Math.random() * 20 - 10)
+                [t('resume_analyzer.criteria.structure')]: Math.min(100, score + Math.random() * 20 - 10),
+                [t('resume_analyzer.criteria.content')]: Math.min(100, score + Math.random() * 20 - 10),
+                [t('resume_analyzer.criteria.keywords')]: Math.min(100, score + Math.random() * 20 - 10),
+                [t('resume_analyzer.criteria.experience')]: Math.min(100, score + Math.random() * 20 - 10),
+                [t('resume_analyzer.criteria.skills')]: Math.min(100, score + Math.random() * 20 - 10),
+                [t('resume_analyzer.criteria.presentation')]: Math.min(100, score + Math.random() * 20 - 10)
             });
         };
 

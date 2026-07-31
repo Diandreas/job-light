@@ -4,6 +4,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\CinetPayWebhookController;
 use App\Http\Controllers\CinetPayController;
+use App\Http\Controllers\CrossPayNotifyController;
 
 /*
 |--------------------------------------------------------------------------
@@ -28,3 +29,8 @@ Route::post('/cinetpay/notify', [CinetPayController::class, 'notify'])
 Route::match(['get', 'post'], '/cinetpay/return', [CinetPayController::class, 'return'])
     ->name('api.cinetpay.return')
     ->middleware('cinetpay.debug');
+
+// CrossPay internal callback (NestJS → Laravel)
+Route::post('/crosspay/notify', [CrossPayNotifyController::class, 'handle'])
+    ->name('api.crosspay.notify');
+

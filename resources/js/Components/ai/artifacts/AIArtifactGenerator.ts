@@ -2,6 +2,8 @@
  * Générateur d'artefacts IA - Analyse et génère tous les artefacts à partir du contenu IA
  */
 
+import i18n from '../../../Config/i18n';
+
 export interface AIGeneratedArtifact {
     id: string;
     type: 'table' | 'chart' | 'score' | 'checklist' | 'roadmap' | 'heatmap' | 'dashboard' | 'timer' | 'cv-analysis' | 'interview-simulator' | 'salary-negotiator';
@@ -399,7 +401,7 @@ export class AIArtifactGenerator {
     
     private static generateScoreTitle(serviceId?: string, content?: string) {
         // Génération intelligente du titre
-        return 'Évaluation IA'; // Placeholder
+        return i18n.t('ai_artifacts.score_dashboard');
     }
     
     private static async generateScoreInsights(content: string, globalScore: any) {
@@ -420,7 +422,7 @@ export class AIArtifactGenerator {
     private static async createIntelligentChecklist(items: any[], content: string, serviceId?: string) {
         // Création de checklist intelligente
         return { 
-            title: 'Plan d\'action',
+            title: i18n.t('ai_artifacts.checklist'),
             items: [],
             confidence: 80,
             estimatedTime: '2h',
